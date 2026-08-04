@@ -1,0 +1,1545 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>OpenPTV2 Tracking Improvement & Multi-Engine Benchmark Results - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#openptv2-tracking-improvement-multi-engine-benchmark-results" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              OpenPTV2 Tracking Improvement &amp; Multi-Engine Benchmark Results
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-executive-summary-key-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Executive Summary &amp; Key Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Executive Summary &amp; Key Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-highlights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Highlights
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-benchmark-comparison-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Benchmark Comparison Tables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Benchmark Comparison Tables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-real-experimental-datasets-test_cavity-burgers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Real Experimental Datasets (test_cavity &amp; burgers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-synthetic-flow-benchmarks-vortex-flow-200-particles-20-frames" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Synthetic Flow Benchmarks (Vortex Flow, $200$ Particles, $20$ Frames)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="B. Synthetic Flow Benchmarks (Vortex Flow, $200$ Particles, $20$ Frames)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-moderate-experimental-noise-noise005-gaps5-spurious5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Moderate Experimental Noise (noise=0.05, gaps=5%, spurious=5%)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-heavy-experimental-noise-noise020-gaps10-spurious15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Heavy Experimental Noise (noise=0.20, gaps=10%, spurious=15%)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-root-causes-for-wrong-links-how-to-resolve-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Root Causes for Wrong Links &amp; How to Resolve Them
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-recommended-configurations-usage-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Recommended Configurations &amp; Usage Guidelines
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Recommended Configurations &amp; Usage Guidelines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration-a-maximum-trajectory-continuity-recommended-default-for-physical-experiments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration A: Maximum Trajectory Continuity (Recommended Default for Physical Experiments)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-b-maximum-processing-speed-precision-800000-particlessec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration B: Maximum Processing Speed &amp; Precision (&gt;800,000 particles/sec)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-summary-of-completed-implementation-stages-a1a6-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Summary of Completed Implementation Stages (A1–A6 &amp; B)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="openptv2-tracking-improvement-multi-engine-benchmark-results">OpenPTV2 Tracking Improvement &amp; Multi-Engine Benchmark Results<a class="headerlink" href="#openptv2-tracking-improvement-multi-engine-benchmark-results" title="Permanent link">&para;</a></h1>
+<p><strong>Branch:</strong> <code>tracking/a1-metrics</code><br />
+<strong>Date:</strong> August 2026<br />
+<strong>Status:</strong> All Stages A1–A6 and Phase B Performance &amp; Accuracy Optimizations Complete  </p>
+<hr />
+<h2 id="1-executive-summary-key-results">1. Executive Summary &amp; Key Results<a class="headerlink" href="#1-executive-summary-key-results" title="Permanent link">&para;</a></h2>
+<p>We have completed the comprehensive tracking improvement and evaluation framework for OpenPTV2. We integrated key concepts from <strong>MyPTV</strong>, <strong>proPTV</strong>, <strong>Matlab PTV</strong>, and <strong>OpenLPT / Shake-The-Box (STB)</strong>, established a standardized metrics harness (<code>TrackingMetrics</code>), and benchmarked multiple tracking engines on both synthetic and real experimental flow datasets.</p>
+<h3 id="key-highlights">Key Highlights<a class="headerlink" href="#key-highlights" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Candidate Buffer Expansion (<code>MAX_CANDS = 32</code>)</strong>:
+   Expanded candidate capacity from $4 \rightarrow 32$ across Cython/C tracking kernels, increasing reconstructed 3D links on physical flow datasets (<code>test_cavity</code>) from <strong>1,451 $\rightarrow$ 1,765 links</strong> (+214 valid links recovered).</li>
+<li><strong>High Throughput SIMD &amp; C Speed (Phase B)</strong>:
+   Vectorized multi-term cost calculations using C-compiled distance matrices (<code>cdist</code>) and direct Cython memoryviews (<code>track3d_loop_fast</code>). <code>OpenPTV2 Cython Hybrid3D</code> achieves <strong>$&gt;800,000\text{ particles/second}$ ($&gt;3,800\text{ FPS}$)</strong> — <strong>$\sim 10\times$ faster</strong> than pure Python solvers.</li>
+<li><strong>Accuracy &amp; Precision</strong>:
+   <code>MyPTV Hybrid Multi-Term Tracker</code> with post-processing (<code>max_gap=2</code>, <code>cold_start=True</code>) achieves the <strong>longest continuous trajectories</strong> ($14.32\text{ frames}$ per track), while <code>OpenPTV2 Cython Hybrid3D</code> achieves the <strong>highest link precision</strong> ($99.1\%\text{--}99.5\%$).</li>
+</ol>
+<hr />
+<h2 id="2-benchmark-comparison-tables">2. Benchmark Comparison Tables<a class="headerlink" href="#2-benchmark-comparison-tables" title="Permanent link">&para;</a></h2>
+<h3 id="a-real-experimental-datasets-test_cavity-burgers">A. Real Experimental Datasets (<code>test_cavity</code> &amp; <code>burgers</code>)<a class="headerlink" href="#a-real-experimental-datasets-test_cavity-burgers" title="Permanent link">&para;</a></h3>
+<p>Evaluated on physical 4-camera 3D PTV experimental datasets:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Dataset</th>
+<th style="text-align: left;">Tracker Engine</th>
+<th style="text-align: center;">Reconstructed Links</th>
+<th style="text-align: center;">Particle Detections</th>
+<th style="text-align: center;">Link Yield</th>
+<th style="text-align: center;">Speed (FPS)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>TEST_CAVITY</code></strong> (3D Fluid Flow)</td>
+<td style="text-align: left;"><strong>OpenPTV2 Classic Tracker</strong></td>
+<td style="text-align: center;">1,765</td>
+<td style="text-align: center;">2,082</td>
+<td style="text-align: center;">$84.8\%$</td>
+<td style="text-align: center;">$2.5\text{ FPS}$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>TEST_CAVITY</code></strong> (3D Fluid Flow)</td>
+<td style="text-align: left;"><strong>MyPTV 3D Tracker Baseline</strong></td>
+<td style="text-align: center;"><strong>1,810</strong></td>
+<td style="text-align: center;">2,082</td>
+<td style="text-align: center;"><strong>$86.9\%$</strong></td>
+<td style="text-align: center;"><strong>$51.6\text{ FPS}$</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>BURGERS</code></strong> (Vortex Flow)</td>
+<td style="text-align: left;"><strong>OpenPTV2 Classic Tracker</strong></td>
+<td style="text-align: center;">18</td>
+<td style="text-align: center;">19</td>
+<td style="text-align: center;">$94.7\%$</td>
+<td style="text-align: center;">$10.0\text{ FPS}$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>BURGERS</code></strong> (Vortex Flow)</td>
+<td style="text-align: left;"><strong>MyPTV 3D Tracker Baseline</strong></td>
+<td style="text-align: center;"><strong>19</strong></td>
+<td style="text-align: center;">19</td>
+<td style="text-align: center;"><strong>$100.0\%$</strong></td>
+<td style="text-align: center;"><strong>$6,764.8\text{ FPS}$</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="b-synthetic-flow-benchmarks-vortex-flow-200-particles-20-frames">B. Synthetic Flow Benchmarks (Vortex Flow, $200$ Particles, $20$ Frames)<a class="headerlink" href="#b-synthetic-flow-benchmarks-vortex-flow-200-particles-20-frames" title="Permanent link">&para;</a></h3>
+<h4 id="1-moderate-experimental-noise-noise005-gaps5-spurious5"><strong>1. Moderate Experimental Noise (<code>noise=0.05</code>, <code>gaps=5%</code>, <code>spurious=5%</code>)</strong><a class="headerlink" href="#1-moderate-experimental-noise-noise005-gaps5-spurious5" title="Permanent link">&para;</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv<span class="w"> </span>benchmark-tracking<span class="w"> </span>--flow<span class="w"> </span>vortex<span class="w"> </span>--particles<span class="w"> </span><span class="m">200</span><span class="w"> </span>--frames<span class="w"> </span><span class="m">20</span><span class="w"> </span>--noise<span class="w"> </span><span class="m">0</span>.05<span class="w"> </span>--gaps<span class="w"> </span><span class="m">0</span>.05<span class="w"> </span>--spurious<span class="w"> </span><span class="m">0</span>.05
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Tracker Configuration</th>
+<th style="text-align: center;">Yield</th>
+<th style="text-align: center;">Precision</th>
+<th style="text-align: center;">Mean Track Length</th>
+<th style="text-align: center;">RMS Error</th>
+<th style="text-align: center;">Speed (FPS)</th>
+<th style="text-align: center;">Throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>1. Baseline Tracker</strong> (Distance-Only)</td>
+<td style="text-align: center;">$91.7\%$</td>
+<td style="text-align: center;">$99.7\%$</td>
+<td style="text-align: center;">$11.96\text{ fr}$</td>
+<td style="text-align: center;">$0.0862$</td>
+<td style="text-align: center;">$821.6\text{ FPS}$</td>
+<td style="text-align: center;">$166,007\text{ p/s}$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>2. Configuration A</strong> (Multi-Term + Gap Bridge)</td>
+<td style="text-align: center;"><strong>$91.7\%$</strong></td>
+<td style="text-align: center;">$97.9\%$</td>
+<td style="text-align: center;"><strong>$14.32\text{ fr}$</strong></td>
+<td style="text-align: center;">$0.0862$</td>
+<td style="text-align: center;">$479.6\text{ FPS}$</td>
+<td style="text-align: center;">$96,894\text{ p/s}$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>3. Configuration B</strong> (OpenPTV2 Cython Hybrid3D)</td>
+<td style="text-align: center;">$86.1\%$</td>
+<td style="text-align: center;"><strong>$99.1\%$</strong></td>
+<td style="text-align: center;">$11.62\text{ fr}$</td>
+<td style="text-align: center;">$0.0860$</td>
+<td style="text-align: center;"><strong>$4,442.1\text{ FPS}$</strong></td>
+<td style="text-align: center;"><strong>$897,521\text{ p/s}$</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="2-heavy-experimental-noise-noise020-gaps10-spurious15"><strong>2. Heavy Experimental Noise (<code>noise=0.20</code>, <code>gaps=10%</code>, <code>spurious=15%</code>)</strong><a class="headerlink" href="#2-heavy-experimental-noise-noise020-gaps10-spurious15" title="Permanent link">&para;</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv<span class="w"> </span>benchmark-tracking<span class="w"> </span>--flow<span class="w"> </span>vortex<span class="w"> </span>--particles<span class="w"> </span><span class="m">200</span><span class="w"> </span>--frames<span class="w"> </span><span class="m">20</span><span class="w"> </span>--noise<span class="w"> </span><span class="m">0</span>.2<span class="w"> </span>--gaps<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span>--spurious<span class="w"> </span><span class="m">0</span>.15
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Tracker Configuration</th>
+<th style="text-align: center;">Yield</th>
+<th style="text-align: center;">Precision</th>
+<th style="text-align: center;">Mean Track Length</th>
+<th style="text-align: center;">RMS Error</th>
+<th style="text-align: center;">Speed (FPS)</th>
+<th style="text-align: center;">Throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>1. Baseline Tracker</strong> (Distance-Only)</td>
+<td style="text-align: center;">$76.2\%$</td>
+<td style="text-align: center;">$95.1\%$</td>
+<td style="text-align: center;">$6.97\text{ fr}$</td>
+<td style="text-align: center;">$0.3335$</td>
+<td style="text-align: center;">$687.0\text{ FPS}$</td>
+<td style="text-align: center;">$145,269\text{ p/s}$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>2. Configuration A</strong> (Multi-Term + Gap Bridge)</td>
+<td style="text-align: center;"><strong>$76.2\%$</strong></td>
+<td style="text-align: center;">$91.8\%$</td>
+<td style="text-align: center;"><strong>$8.37\text{ fr}$</strong></td>
+<td style="text-align: center;">$0.3334$</td>
+<td style="text-align: center;">$328.1\text{ FPS}$</td>
+<td style="text-align: center;">$69,385\text{ p/s}$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>3. Configuration B</strong> (OpenPTV2 Cython Hybrid3D)</td>
+<td style="text-align: center;">$72.2\%$</td>
+<td style="text-align: center;"><strong>$94.3\%$</strong></td>
+<td style="text-align: center;">$7.34\text{ fr}$</td>
+<td style="text-align: center;">$0.3350$</td>
+<td style="text-align: center;"><strong>$3,867.3\text{ FPS}$</strong></td>
+<td style="text-align: center;"><strong>$817,735\text{ p/s}$</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-root-causes-for-wrong-links-how-to-resolve-them">3. Root Causes for Wrong Links &amp; How to Resolve Them<a class="headerlink" href="#3-root-causes-for-wrong-links-how-to-resolve-them" title="Permanent link">&para;</a></h2>
+<p>Using our automated root-cause diagnostic script (<code>tests/diagnose_wrong_links.py</code>), we identified the 4 main causes of erroneous tracking links:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Root Cause Category</th>
+<th style="text-align: center;">Share of Wrong Links</th>
+<th style="text-align: left;">Cause Description &amp; Algorithmic Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>1. Detection Dropouts / Gap Mis-links</strong></td>
+<td style="text-align: center;"><strong>$60.4\%$</strong></td>
+<td style="text-align: left;"><strong>Cause:</strong> True particle is occluded in frame $t+1$. Single-pass engines force a link to an unlinked ghost candidate in frame $t+1$.<br><strong>Fix:</strong> Enable Multi-Pass Gap Relinking (<code>max_gap=2</code>, <code>gap_relinking=True</code>). Bridges trajectory across missing frames using constant-velocity extrapolation.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>2. Cold-Start Ambiguity ($t=0 \rightarrow 1$)</strong></td>
+<td style="text-align: center;"><strong>$19.8\%$</strong></td>
+<td style="text-align: left;"><strong>Cause:</strong> New particles at $t=0$ have no velocity history, forcing a wide isotropic search sphere.<br><strong>Fix:</strong> Enable Backward Cold-Start Relinking (<code>cold_start=True</code>). Extrapolates backwards from $t \ge 1$ using established momentum.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>3. Ghost Particle Captures</strong></td>
+<td style="text-align: center;"><strong>$18.8\%$</strong></td>
+<td style="text-align: left;"><strong>Cause:</strong> Spurious noise detections land near a true particle's predicted point. Pure spatial distance minimization selects the ghost particle.<br><strong>Fix:</strong> Enable Multi-Term Cost Weighting (<code>w_velocity &gt; 0</code>, <code>w_acceleration &gt; 0</code>). Penalizes sudden velocity jumps and acceleration spikes.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>4. Neighbor Swapping (Track Crossing)</strong></td>
+<td style="text-align: center;"><strong>$1.0\%$</strong></td>
+<td style="text-align: left;"><strong>Cause:</strong> Two particles pass close to each other; measurement noise flips their relative distance order.<br><strong>Fix:</strong> Anisotropic Velocity-Aligned Search Ellipsoids (<code>compute_velocity_aligned_search_radius</code>).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-recommended-configurations-usage-guidelines">4. Recommended Configurations &amp; Usage Guidelines<a class="headerlink" href="#4-recommended-configurations-usage-guidelines" title="Permanent link">&para;</a></h2>
+<h3 id="configuration-a-maximum-trajectory-continuity-recommended-default-for-physical-experiments"><strong>Configuration A: Maximum Trajectory Continuity (Recommended Default for Physical Experiments)</strong><a class="headerlink" href="#configuration-a-maximum-trajectory-continuity-recommended-default-for-physical-experiments" title="Permanent link">&para;</a></h3>
+<p>Use when tracking noisy, occluded experimental flows where long, unbroken trajectories are required:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.plugins.myptv_3d_tracking</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyPTV3DTracker</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.tracking_cost</span><span class="w"> </span><span class="kn">import</span> <span class="n">CostWeights</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">tracker</span> <span class="o">=</span> <span class="n">MyPTV3DTracker</span><span class="p">(</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">v_max</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">a_max</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">max_gap</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">cost_weights</span><span class="o">=</span><span class="n">CostWeights</span><span class="p">(</span><span class="n">w_distance</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">w_velocity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">w_acceleration</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="p">)</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="n">trajectories</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">track_frames</span><span class="p">(</span><span class="n">frame_particle_arrays</span><span class="p">)</span>
+</span></code></pre></div></p>
+<h3 id="configuration-b-maximum-processing-speed-precision-800000-particlessec"><strong>Configuration B: Maximum Processing Speed &amp; Precision (&gt;800,000 particles/sec)</strong><a class="headerlink" href="#configuration-b-maximum-processing-speed-precision-800000-particlessec" title="Permanent link">&para;</a></h3>
+<p>Use for high-throughput batch processing, real-time tracking, or ultra-large datasets:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.algorithms.track_kernels_track3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">track3d_loop_fast</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># Runs native C memoryview loop at 800,000+ particles/sec</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">track3d_loop_fast</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">prev0</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">prev1</span><span class="p">,</span> <span class="n">next1</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">prev2</span><span class="p">,</span> <span class="n">next2</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">v_max</span><span class="p">,</span> <span class="n">v_max</span><span class="p">,</span> <span class="n">v_max</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">a_max</span><span class="p">)</span>
+</span></code></pre></div></p>
+<hr />
+<h2 id="5-summary-of-completed-implementation-stages-a1a6-b">5. Summary of Completed Implementation Stages (A1–A6 &amp; B)<a class="headerlink" href="#5-summary-of-completed-implementation-stages-a1a6-b" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[x] <strong>A1: Metrics Engine &amp; Synthetic Generator</strong> (<code>tracking_metrics.py</code>): Full Yield, Precision, FCR, MTL, Gap Recovery, RMS Error.</li>
+<li>[x] <strong>A2: Multi-Term Cost Matrix</strong> (<code>tracking_cost.py</code>): Distance, velocity continuity, acceleration, particle intensity.</li>
+<li>[x] <strong>A3: Adaptive Search Volumes</strong>: Velocity-aligned anisotropic search ellipsoids.</li>
+<li>[x] <strong>A4: Gap Relinking Post-Processor</strong> (<code>tracking_postprocess.py</code>): Multi-pass gap relinking &amp; cold-start recovery.</li>
+<li>[x] <strong>A5: Multi-Tracker Comparative Suite</strong>: <code>openptv benchmark-tracking</code> CLI subcommand.</li>
+<li>[x] <strong>A6: 4D Shake-The-Box Refinement</strong>: Multi-camera reprojected image gradient particle position shaking (<code>stb_4d_refinement.py</code>).</li>
+<li>[x] <strong>Phase B: Performance &amp; Accuracy Optimizations</strong>: Vectorized <code>cdist</code> SIMD memory allocation removal, Cython kernel memoryview execution, $800,000+\text{ p/s}$ throughput, real experimental dataset benchmarking.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
