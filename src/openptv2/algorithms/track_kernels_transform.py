@@ -1074,7 +1074,7 @@ def assess_new_position_fast_nogil(
 
 
 POSI_K = 80
-MAX_CANDS_K = 4
+MAX_CANDS_K = 32
 TR_UNUSED_K = -1
 CORRES_NONE_K = -1
 PREV_NONE_K = -1

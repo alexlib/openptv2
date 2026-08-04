@@ -7,7 +7,7 @@ else:
 
 from .track_kernels import track3d_loop_fast as _track3d_loop_fast
 
-MAX_CANDS = 4
+MAX_CANDS = 32
 
 
 @cython.ccall
@@ -93,6 +93,7 @@ def track3d_loop(run_info, step):
     dx = tpar.dvxmax
     dy = tpar.dvymax
     dz = tpar.dvzmax
+    dacc = float(getattr(tpar, "dacc", 0.0))
 
     fb.buf[0]._sync_path_to_soa()
     fb.buf[1]._sync_path_to_soa()
@@ -115,6 +116,7 @@ def track3d_loop(run_info, step):
         dy,
         dz,
         MAX_CANDS,
+        dacc,
     )
 
     _sync_soa_to_aos(fb.buf[1])

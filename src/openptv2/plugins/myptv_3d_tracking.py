@@ -268,7 +268,7 @@ class Tracking:
                 corres_base,  # res/rt_is
                 linkage_base,  # OUTPUT: res/ptv_is
                 prio_file_base=prio_base,
-                target_file_base="",
+                target_file_base=None,
                 frame_num=fn,
             )
 
