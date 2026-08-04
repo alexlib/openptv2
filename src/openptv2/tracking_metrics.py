@@ -295,7 +295,7 @@ def run_multi_tracker_benchmark(
 
     # 1. MyPTV Distance Baseline
     t0 = time.perf_counter()
-    tracker_base = MyPTV3DTracker(v_max=10.0, a_max=10.0, max_gap=1, dt=1.0)
+    tracker_base = MyPTV3DTracker(v_max=3.0, a_max=1.5, max_gap=1, dt=1.0)
     raw_base = tracker_base.track_frames(frame_particle_arrays)
     t_base = max(time.perf_counter() - t0, 1e-6)
 
@@ -316,7 +316,7 @@ def run_multi_tracker_benchmark(
     weights = CostWeights(w_distance=1.0, w_velocity=0.5, w_acceleration=0.2)
     t0 = time.perf_counter()
     tracker_hybrid = MyPTV3DTracker(
-        v_max=10.0, a_max=10.0, max_gap=1, dt=1.0, cost_weights=weights
+        v_max=3.0, a_max=1.5, max_gap=1, dt=1.0, cost_weights=weights
     )
     raw_hybrid = tracker_hybrid.track_frames(frame_particle_arrays)
     t_hybrid = max(time.perf_counter() - t0, 1e-6)
@@ -354,6 +354,8 @@ def run_multi_tracker_benchmark(
         ]
 
         # Step through frames using compiled C track3d_loop_fast
+        v_max = 3.0
+        a_max = 1.5
         for step in range(1, num_frames - 1):
             f0, f1, f2 = step - 1, step, step + 1
             n0, n1, n2 = num_parts_arr[f0], num_parts_arr[f1], num_parts_arr[f2]
@@ -363,9 +365,9 @@ def run_multi_tracker_benchmark(
                     path_x_arr[f0], path_prev_arr[f0], n0,
                     path_x_arr[f1], path_prev_arr[f1], path_next_arr[f1], n1,
                     path_x_arr[f2], path_prev_arr[f2], path_next_arr[f2], n2,
-                    10.0, 10.0, 10.0,  # dx, dy, dz
+                    v_max, v_max, v_max,  # dx, dy, dz velocity bounds
                     32,  # max_cands
-                    10.0,  # dacc
+                    a_max,  # dacc acceleration bound
                 )
 
         t_cython = max(time.perf_counter() - t0, 1e-6)
