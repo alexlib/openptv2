@@ -37,15 +37,17 @@ BUILTIN_SEQUENCE_PLUGINS = {
 }
 
 BUILTIN_TRACKING_PLUGINS = {
-    "default": "openptv2.plugins.default_tracking",
+    "default": "openptv2.plugins.hybrid_tracker",
+    "hybrid_3d_corr": "openptv2.plugins.hybrid_tracker",
+    "hybrid": "openptv2.plugins.hybrid_tracker",
+    "fast": "openptv2.plugins.default_tracking",
+    "fast_3d": "openptv2.plugins.default_tracking",
     "full_multipass": "openptv2.plugins.default_tracking",
     "standard_forward": "openptv2.plugins.default_tracking",
     "two_directional": "openptv2.plugins.default_tracking",
-    "fast_3d": "openptv2.plugins.default_tracking",
     "splitter_tracking": "openptv2.plugins.splitter_tracking",
     "myptv_3d_tracking": "openptv2.plugins.myptv_3d_tracking",
     "myptv_2d_tracking": "openptv2.plugins.myptv_2d_tracking",
-    "hybrid_3d_corr": "openptv2.plugins.hybrid_tracker",
 }
 
 LEGACY_ALIASES = {
@@ -54,6 +56,7 @@ LEGACY_ALIASES = {
     "ext_sequence_contour": "contour_sequence",
     "ext_sequence_rembg": "rembg_sequence",
     "ext_sequence_rembg_contour": "rembg_contour_sequence",
+    "fast": "fast_3d",
 }
 
 ENTRY_POINT_GROUP = "openptv2.plugins"
