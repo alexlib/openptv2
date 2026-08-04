@@ -173,6 +173,7 @@ def generate_synthetic_benchmark_dataset(
     domain_size: Tuple[float, float, float] = (100.0, 100.0, 100.0),
     noise_std: float = 0.01,
     gap_probability: float = 0.0,
+    false_positive_ratio: float = 0.0,
     flow_type: str = "vortex",
     seed: int = 42,
 ) -> Tuple[
@@ -246,6 +247,20 @@ def generate_synthetic_benchmark_dataset(
                 frame_blobs[frame].append((nx, ny, nz))
 
         true_tracks[pid] = track
+
+    # Add realistic spurious / ghost noise particles (false positives)
+    if false_positive_ratio > 0.0:
+        num_spurious = int(num_particles * false_positive_ratio)
+        for frame in range(num_frames):
+            for _ in range(num_spurious):
+                gx = rng.uniform(0.0, domain_size[0])
+                gy = rng.uniform(0.0, domain_size[1])
+                gz = rng.uniform(0.0, domain_size[2])
+                frame_blobs[frame].append((gx, gy, gz))
+
+    # Shuffle detections in each frame so tracker cannot assume order
+    for frame in range(num_frames):
+        rng.shuffle(frame_blobs[frame])
 
     return true_tracks, frame_blobs
 

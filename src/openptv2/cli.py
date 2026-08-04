@@ -80,7 +80,9 @@ def main():
             parser.add_argument("--flow", choices=["vortex", "linear", "burgers"], default="vortex", help="Synthetic flow field type")
             parser.add_argument("--particles", type=int, default=30, help="Number of particles")
             parser.add_argument("--frames", type=int, default=15, help="Number of frames")
-            parser.add_argument("--noise", type=float, default=0.01, help="Spatial noise std dev")
+            parser.add_argument("--noise", type=float, default=0.15, help="Spatial noise std dev")
+            parser.add_argument("--gaps", type=float, default=0.10, help="Probability of detection dropout / gap per frame")
+            parser.add_argument("--spurious", type=float, default=0.15, help="Ratio of false positive ghost noise particles")
             parser.add_argument("--w-vel", type=float, default=0.0, help="Velocity continuity cost weight")
             parser.add_argument("--w-acc", type=float, default=0.0, help="Acceleration cost weight")
             args, _ = parser.parse_known_args(sys.argv[2:])
@@ -91,11 +93,13 @@ def main():
                 run_multi_tracker_benchmark,
             )
 
-            print(f"--- Running Tracking Benchmark ({args.flow.upper()} flow, {args.particles} particles, {args.frames} frames) ---")
+            print(f"--- Running Tracking Benchmark ({args.flow.upper()} flow, {args.particles} particles, {args.frames} frames, noise={args.noise}, gaps={args.gaps}, spurious={args.spurious}) ---")
             true_tracks, frame_blobs = generate_synthetic_benchmark_dataset(
                 num_particles=args.particles,
                 num_frames=args.frames,
                 noise_std=args.noise,
+                gap_probability=args.gaps,
+                false_positive_ratio=args.spurious,
                 flow_type=args.flow,
             )
 
