@@ -7,7 +7,7 @@ else:
 
 from .track_kernels import track3d_loop_fast as _track3d_loop_fast
 
-MAX_CANDS = 4
+MAX_CANDS = 32
 
 
 @cython.ccall

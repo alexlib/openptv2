@@ -148,17 +148,24 @@ class Tracker:
 
         trackback_c(self._run)
 
-    def postprocess(self, cold_start: bool = True, reciprocity: bool = True):
+    def postprocess(
+        self,
+        cold_start: bool = True,
+        reciprocity: bool = True,
+        gap_relinking: bool = True,
+        max_gap: int = 2,
+    ):
         """Disk-level trajectory-quality post-passes over the linkage files.
 
         Run after full_forward (+ full_backward). ``cold_start`` recovers the
         under-linked first transition using the velocity field the later frames
-        established; ``reciprocity`` severs any non-bidirectional links. Returns
-        a stats dict (link counts before/after) for measurement.
+        established; ``reciprocity`` severs any non-bidirectional links; ``gap_relinking``
+        bridges occluded particle trajectory gaps. Returns a stats dict.
         """
         from openptv2.tracking_postprocess import (
             count_links,
             enforce_reciprocity,
+            relink_trajectory_gaps,
             seed_cold_start,
         )
 
@@ -168,6 +175,10 @@ class Tracker:
         if cold_start:
             stats["cold_start"] = seed_cold_start(
                 base, first, last, float(self._tpar_algo.dvxmax)
+            )
+        if gap_relinking:
+            stats["gap_relinking"] = relink_trajectory_gaps(
+                base, first, last, max_gap=max_gap, max_velocity_err=float(self._tpar_algo.dvxmax)
             )
         if reciprocity:
             stats["reciprocity"] = enforce_reciprocity(base, first, last)

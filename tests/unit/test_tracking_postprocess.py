@@ -6,6 +6,7 @@ from openptv2.tracking_postprocess import (
     count_links,
     enforce_reciprocity,
     read_linkage,
+    relink_trajectory_gaps,
     seed_cold_start,
     write_linkage,
 )
@@ -67,3 +68,22 @@ def test_seed_cold_start_rejects_out_of_tolerance(tmp_path):
     _write(base, 2, [0], [-2], [[10, 0, 0]])
     stats = seed_cold_start(base, 0, 2, dv_max=15.5)
     assert stats["added"] == 0
+
+
+def test_relink_trajectory_gaps_bridges_missing_frame(tmp_path):
+    base = str(tmp_path / "ptv_is")
+    # Frame 0: x=0, link to frame 1
+    # Frame 1: x=2, end of track (next=-2)
+    # Frame 2: missing detection (gap=1)
+    # Frame 3: x=6, start of track (prev=-1, next=0) -> pred pos at frame 3 is 2 + 2*2 = 6!
+    _write(base, 0, [-1], [0], [[0, 0, 0]])
+    _write(base, 1, [0], [-2], [[2, 0, 0]])
+    _write(base, 2, [], [], np.zeros((0, 3)))  # empty frame
+    _write(base, 3, [-1], [0], [[6, 0, 0]])
+    _write(base, 4, [0], [-2], [[8, 0, 0]])
+
+    stats = relink_trajectory_gaps(base, first=0, last=4, max_gap=2, max_velocity_err=1.0)
+    assert stats["bridged_gaps"] == 1
+    assert read_linkage(base, 1)[1][0] == 0  # frame 1 particle now links to frame 3 particle 0!
+    assert read_linkage(base, 3)[0][0] == 0  # frame 3 particle points back to frame 1 particle 0!
+

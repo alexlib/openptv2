@@ -29,23 +29,26 @@ from scipy.spatial.distance import cdist
 DENSE_CUTOFF = 150_000
 
 
-def _match_dense(pred, cands, radius):
+def _match_dense(pred, cands, radius, cost_matrix=None):
     """Big-M Hungarian over the full cost matrix. Exact, O(n^3)."""
-    dists = cdist(pred, cands)
-    in_radius = dists <= radius[:, None]
+    if cost_matrix is not None:
+        dists = np.asarray(cost_matrix, dtype=np.float64)
+    else:
+        dists = cdist(pred, cands)
+
+    spatial_dists = cdist(pred, cands) if cost_matrix is not None else dists
+    in_radius = spatial_dists <= radius[:, None]
     if not in_radius.any():
         return np.empty(0, dtype=np.intp), np.empty(0, dtype=np.intp)
 
-    # One sentinel outweighs every real distance combined, so the assignment
-    # maximises the number of links before it minimises their total length.
     sentinel = dists[in_radius].sum() + 1.0
     rows, cols = linear_sum_assignment(np.where(in_radius, dists, sentinel))
     keep = in_radius[rows, cols]
     return rows[keep], cols[keep]
 
 
-def match_within_radius(pred, cands, radius):
-    """Match predictions to candidates, minimising total distance.
+def match_within_radius(pred, cands, radius, cost_matrix=None):
+    """Match predictions to candidates, minimising total cost.
 
     Parameters
     ----------
@@ -55,6 +58,8 @@ def match_within_radius(pred, cands, radius):
         Candidate positions in the new frame.
     radius : float or ndarray (n_pred,)
         Search radius, scalar or per-prediction.
+    cost_matrix : ndarray (n_pred, n_cand), optional
+        Pre-computed cost matrix. If None, Euclidean distance is used.
 
     Returns
     -------
@@ -78,7 +83,7 @@ def match_within_radius(pred, cands, radius):
     radius = np.broadcast_to(np.asarray(radius, dtype=np.float64), (n_pred,))
 
     if n_pred * n_cand <= DENSE_CUTOFF:
-        return _match_dense(pred, cands, radius)
+        return _match_dense(pred, cands, radius, cost_matrix=cost_matrix)
 
     # In-radius edges only. query_ball_point takes a per-point radius array.
     neighbours = cKDTree(cands).query_ball_point(pred, r=radius)
@@ -89,7 +94,10 @@ def match_within_radius(pred, cands, radius):
 
     rows = np.repeat(np.arange(n_pred, dtype=np.intp), counts)
     cols = np.fromiter((c for n in neighbours for c in n), dtype=np.intp, count=n_edges)
-    dists = np.linalg.norm(pred[rows] - cands[cols], axis=1)
+    if cost_matrix is not None:
+        dists = cost_matrix[rows, cols]
+    else:
+        dists = np.linalg.norm(pred[rows] - cands[cols], axis=1)
 
     # Connected components of the bipartite graph, predictions indexed
     # [0, n_pred) and candidates [n_pred, n_pred + n_cand).

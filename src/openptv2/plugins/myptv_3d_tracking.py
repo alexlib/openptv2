@@ -16,6 +16,7 @@ import numpy as np
 
 from openptv2.algorithms.tracking_frame_buf import Frame
 from openptv2.plugins._assignment import match_within_radius
+from openptv2.tracking_cost import CostWeights, compute_multi_term_cost_matrix
 
 
 class MyPTV3DTracker:
@@ -25,11 +26,13 @@ class MyPTV3DTracker:
         a_max: float = 50.0,
         max_gap: int = 2,
         dt: float = 0.1,
+        cost_weights: CostWeights | None = None,
     ):
         self.v_max = v_max
         self.a_max = a_max
         self.max_gap = max_gap
         self.dt = dt
+        self.cost_weights = cost_weights
 
     def track_frames(self, frame_particles: list[np.ndarray]) -> list[dict]:
         """Track 3D particles across a list of frame particle arrays.
@@ -105,7 +108,20 @@ class MyPTV3DTracker:
             pred = np.where(seeded[:, None], last_p + last_v, last_p)
             radius = np.where(seeded, self.a_max, self.v_max)
 
-            row_ind, col_ind = match_within_radius(pred, cand_pts, radius)
+            if self.cost_weights is not None:
+                cost_mat = compute_multi_term_cost_matrix(
+                    pred_pos=pred,
+                    cand_pos=cand_pts,
+                    pred_vel=last_v,
+                    weights=self.cost_weights,
+                    dt=self.dt,
+                )
+            else:
+                cost_mat = None
+
+            row_ind, col_ind = match_within_radius(
+                pred, cand_pts, radius, cost_matrix=cost_mat
+            )
 
             matched_cands = set()
             matched_tracks = set()
