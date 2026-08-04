@@ -65,7 +65,7 @@ flowchart TD
 
 ---
 
-## 5. Implementation Status (A1–A6)
+## 5. Implementation Status (All Stages A1–A6 & Phase B Completed)
 
 - [x] **A1: Metrics Engine & Benchmark Generator**: Implemented in [`src/openptv2/tracking_metrics.py`](file:///C:/Users/alex/Github/openptv2/src/openptv2/tracking_metrics.py) with full Yield, Precision, FCR, MTL, Gap Recovery, and RMS Error formulas.
 - [x] **A2: Multi-Term Cost Matrix**: Implemented in [`src/openptv2/tracking_cost.py`](file:///C:/Users/alex/Github/openptv2/src/openptv2/tracking_cost.py) (`CostWeights` with distance, velocity continuity, acceleration, and particle intensity terms).
@@ -73,14 +73,18 @@ flowchart TD
 - [x] **A4: Gap Relinking Post-Processor**: Implemented `relink_trajectory_gaps(...)` in [`src/openptv2/tracking_postprocess.py`](file:///C:/Users/alex/Github/openptv2/src/openptv2/tracking_postprocess.py) using constant-velocity trajectory extrapolation across missing-frame gaps.
 - [x] **A5: Multi-Tracker Comparative Suite**: Implemented `run_multi_tracker_benchmark` and integrated side-by-side comparison tables into `openptv benchmark-tracking`.
 - [x] **A6: 4D Shake-The-Box (STB) Particle Position Refinement**: Implemented prototype 3D coordinate optimization via multi-camera image intensity reprojected gradient minimization in [`src/openptv2/plugins/stb_4d_refinement.py`](file:///C:/Users/alex/Github/openptv2/src/openptv2/plugins/stb_4d_refinement.py).
+- [x] **Phase B: Performance & High-Throughput Optimization**: Vectorized `cdist` SIMD memory allocation removal, Cython memoryview execution ($800,000+\text{ particles/sec}$), real experimental dataset benchmarking (`docs/tracking-benchmark-results.md`).
 
 ---
 
-## 6. Verification & Testing
+## 6. Verification & Documentation
+
+Full comparative documentation and benchmark reports are available in [`docs/tracking-benchmark-results.md`](file:///C:/Users/alex/Github/openptv2/docs/tracking-benchmark-results.md).
 
 Every upgrade is verified using:
 ```bash
 uv run --no-sync pytest tests/unit/test_tracking_metrics.py tests/unit/test_tracking_cost.py tests/unit/test_myptv_plugins.py tests/unit/test_tracking_postprocess.py tests/unit/test_stb_4d_refinement.py -v
-uv run --no-sync openptv benchmark-tracking --flow vortex --particles 50 --frames 15
+uv run --no-sync openptv benchmark-tracking --flow vortex --particles 200 --frames 20 --noise 0.05 --gaps 0.05 --spurious 0.05
+uv run --no-sync python tests/benchmark_both_configurations.py
 ```
 
