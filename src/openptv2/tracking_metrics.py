@@ -319,57 +319,62 @@ def run_multi_tracker_benchmark(
     m_hybrid.particles_per_sec = total_particles / t_hybrid
     results["MyPTV Hybrid Multi-Term"] = m_hybrid
 
-    # 3. OpenPTV2 Cython Hybrid3D (hybrid_3d_corr kernel)
+    # 3. OpenPTV2 Cython Hybrid3D / track3d_loop_fast (Compiled C Kernel)
     try:
-        from openptv2.algorithms.tracking_frame_buf import Frame
-        from openptv2.algorithms.track_kernels_hybrid import track_hybrid_kernel_loop
+        from openptv2.algorithms.track_kernels_track3d import track3d_loop_fast
 
         t0 = time.perf_counter()
-        # Set up frames
-        frames = []
-        for f_idx, pts in enumerate(frame_particle_arrays):
-            fr = Frame(num_cams=4, max_targets=max(20000, len(pts) + 100))
-            fr.num_parts = len(pts)
-            if len(pts) > 0:
-                fr.path_x[: len(pts)] = pts
-                fr.path_prev[: len(pts)] = -1
-                fr.path_next[: len(pts)] = -2
-            frames.append(fr)
+        
+        # Prepare C memoryview structures for each frame
+        num_parts_arr = [len(pts) for pts in frame_particle_arrays]
+        path_x_arr = [
+            np.ascontiguousarray(pts, dtype=np.float64) if len(pts) > 0 else np.zeros((0, 3), dtype=np.float64)
+            for pts in frame_particle_arrays
+        ]
+        path_prev_arr = [
+            np.full(len(pts), -1, dtype=np.int32) for pts in frame_particle_arrays
+        ]
+        path_next_arr = [
+            np.full(len(pts), -2, dtype=np.int32) for pts in frame_particle_arrays
+        ]
 
-        # Simple 3D nearest-neighbor linkage across consecutive frames
-        pred_cython = {}
-        for f_idx in range(num_frames - 1):
-            f0 = frames[f_idx]
-            f1 = frames[f_idx + 1]
-            if f0.num_parts > 0 and f1.num_parts > 0:
-                from scipy.spatial.distance import cdist
-                dmat = cdist(f0.path_x[: f0.num_parts], f1.path_x[: f1.num_parts])
-                for i in range(f0.num_parts):
-                    best_j = np.argmin(dmat[i])
-                    if dmat[i, best_j] < 10.0:
-                        f0.path_next[i] = best_j
-                        f1.path_prev[best_j] = i
+        # Step through frames using compiled C track3d_loop_fast
+        for step in range(1, num_frames - 1):
+            f0, f1, f2 = step - 1, step, step + 1
+            n0, n1, n2 = num_parts_arr[f0], num_parts_arr[f1], num_parts_arr[f2]
+            if n1 > 0 and n2 > 0:
+                track3d_loop_fast(
+                    n1,
+                    path_x_arr[f0], path_prev_arr[f0], n0,
+                    path_x_arr[f1], path_prev_arr[f1], path_next_arr[f1], n1,
+                    path_x_arr[f2], path_prev_arr[f2], path_next_arr[f2], n2,
+                    10.0, 10.0, 10.0,  # dx, dy, dz
+                    32,  # max_cands
+                    10.0,  # dacc
+                )
 
         t_cython = max(time.perf_counter() - t0, 1e-6)
 
-        # Reconstruct predicted trajectories from linkages
+        # Reconstruct predicted trajectories from C linkage arrays
         pred_cython_tr = {}
         tr_id = 1
         visited = set()
         for f in range(num_frames - 1):
-            f_curr = frames[f]
-            for i in range(f_curr.num_parts):
+            next_links = path_next_arr[f]
+            prev_links = path_prev_arr[f]
+            pts_curr = path_x_arr[f]
+            for i in range(num_parts_arr[f]):
                 if (f, i) in visited:
                     continue
-                if f_curr.path_prev[i] < 0 and f_curr.path_next[i] >= 0:
+                if prev_links[i] < 0 and next_links[i] >= 0:
                     curr_f = f
                     curr_i = i
                     pts_tr = []
                     while curr_f < num_frames and curr_i >= 0:
                         visited.add((curr_f, curr_i))
-                        p = frames[curr_f].path_x[curr_i]
+                        p = path_x_arr[curr_f][curr_i]
                         pts_tr.append((curr_f, float(p[0]), float(p[1]), float(p[2])))
-                        next_i = frames[curr_f].path_next[curr_i]
+                        next_i = path_next_arr[curr_f][curr_i] if curr_f < len(path_next_arr) else -1
                         curr_f += 1
                         curr_i = next_i
                     if len(pts_tr) >= 2:
