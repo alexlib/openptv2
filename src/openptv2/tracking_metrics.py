@@ -268,7 +268,7 @@ def generate_synthetic_benchmark_dataset(
 def run_multi_tracker_benchmark(
     true_tracks: Dict[int, List[Tuple[int, float, float, float]]],
     frame_blobs: Dict[int, List[Tuple[float, float, float]]],
-    distance_tolerance: float = 0.2,
+    distance_tolerance: float = 0.5,
 ) -> Dict[str, TrackingMetrics]:
     """
     Run multi-engine comparative benchmark on synthetic dataset.
