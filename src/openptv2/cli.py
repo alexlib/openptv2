@@ -101,14 +101,14 @@ def main():
 
             results = run_multi_tracker_benchmark(true_tracks, frame_blobs)
 
-            print("=" * 80)
-            print(f"{'Tracker Engine':<30} | {'Yield':<8} | {'Precision':<10} | {'Mean Length':<11} | {'RMS Error':<10}")
-            print("-" * 80)
+            print("=" * 105)
+            print(f"{'Tracker Engine':<28} | {'Yield':<7} | {'Precision':<9} | {'Mean Length':<11} | {'RMS Error':<9} | {'FPS':<8} | {'Throughput':<12}")
+            print("-" * 105)
             for engine_name, m in results.items():
                 print(
-                    f"{engine_name:<30} | {m.yield_recall*100:6.1f}% | {m.precision*100:8.1f}% | {m.mean_track_length:9.2f} fr | {m.rms_position_error:8.4f}"
+                    f"{engine_name:<28} | {m.yield_recall*100:5.1f}% | {m.precision*100:7.1f}% | {m.mean_track_length:9.2f} fr | {m.rms_position_error:8.4f} | {m.fps:7.1f} | {m.particles_per_sec:10.0f} p/s"
                 )
-            print("=" * 80)
+            print("=" * 105)
 
         except Exception as e:
             print(f"Benchmark failed: {e}")

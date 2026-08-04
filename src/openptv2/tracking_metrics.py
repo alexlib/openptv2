@@ -28,6 +28,8 @@ class TrackingMetrics:
     total_correct_links: int
     rms_position_error: float  # Spatial distance error for correctly matched detections
     gap_recovery_rate: float  # Ratio of successfully bridged missing-frame gaps
+    fps: float = 0.0  # Processing speed in frames per second
+    particles_per_sec: float = 0.0  # Processing throughput in particles per second
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert metrics to a standard dictionary."""
@@ -263,6 +265,7 @@ def run_multi_tracker_benchmark(
     Returns:
         Dict mapping tracker_name -> TrackingMetrics
     """
+    import time
     from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
     from openptv2.tracking_cost import CostWeights
 
@@ -270,37 +273,51 @@ def run_multi_tracker_benchmark(
         np.array(frame_blobs[f], dtype=np.float64)
         for f in sorted(frame_blobs.keys())
     ]
+    num_frames = len(frame_particle_arrays)
+    total_particles = sum(len(arr) for arr in frame_particle_arrays)
 
     results = {}
 
     # 1. MyPTV Distance Baseline
+    t0 = time.perf_counter()
     tracker_base = MyPTV3DTracker(v_max=10.0, a_max=10.0, max_gap=1, dt=1.0)
     raw_base = tracker_base.track_frames(frame_particle_arrays)
+    t_base = max(time.perf_counter() - t0, 1e-6)
+
     pred_base = {}
     for tr in raw_base:
         pred_base[int(tr["id"])] = [
             (int(f), float(p[0]), float(p[1]), float(p[2]))
             for f, p in zip(tr["time"], tr["pos"])
         ]
-    results["MyPTV Distance Baseline"] = calculate_tracking_metrics(
+    m_base = calculate_tracking_metrics(
         true_tracks, pred_base, distance_tolerance=distance_tolerance
     )
+    m_base.fps = num_frames / t_base
+    m_base.particles_per_sec = total_particles / t_base
+    results["MyPTV Distance Baseline"] = m_base
 
     # 2. MyPTV Hybrid Multi-Term Cost
     weights = CostWeights(w_distance=1.0, w_velocity=0.5, w_acceleration=0.2)
+    t0 = time.perf_counter()
     tracker_hybrid = MyPTV3DTracker(
         v_max=10.0, a_max=10.0, max_gap=1, dt=1.0, cost_weights=weights
     )
     raw_hybrid = tracker_hybrid.track_frames(frame_particle_arrays)
+    t_hybrid = max(time.perf_counter() - t0, 1e-6)
+
     pred_hybrid = {}
     for tr in raw_hybrid:
         pred_hybrid[int(tr["id"])] = [
             (int(f), float(p[0]), float(p[1]), float(p[2]))
             for f, p in zip(tr["time"], tr["pos"])
         ]
-    results["MyPTV Hybrid Multi-Term"] = calculate_tracking_metrics(
+    m_hybrid = calculate_tracking_metrics(
         true_tracks, pred_hybrid, distance_tolerance=distance_tolerance
     )
+    m_hybrid.fps = num_frames / t_hybrid
+    m_hybrid.particles_per_sec = total_particles / t_hybrid
+    results["MyPTV Hybrid Multi-Term"] = m_hybrid
 
     return results
 

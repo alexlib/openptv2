@@ -97,22 +97,25 @@ def compute_multi_term_cost_matrix(
     if n_pred == 0 or n_cand == 0:
         return np.zeros((n_pred, n_cand), dtype=np.float64)
 
+    from scipy.spatial.distance import cdist
+
     # 1. Spatial distance cost C_d = ||pos_cand - pos_pred||
-    diff_pos = pred_pos[:, None, :] - cand_pos[None, :, :]  # (N_pred, N_cand, 3)
-    dist = np.linalg.norm(diff_pos, axis=2)  # (N_pred, N_cand)
+    dist = cdist(pred_pos, cand_pos)  # (N_pred, N_cand) fast C implementation
     cost = w.w_distance * dist
 
     # 2. Velocity continuity cost C_v = || (pos_cand - pos_last)/dt - v_pred ||
     if w.w_velocity > 0 and pred_vel is not None and len(pred_vel) == n_pred:
-        # Implied link velocity from pred_pos (assuming pred_pos is last_pos + v*dt)
-        implied_vel = diff_pos / max(dt, 1e-6)  # (N_pred, N_cand, 3)
-        vel_diff = np.linalg.norm(implied_vel + pred_vel[:, None, :], axis=2)
+        # Distance from projected position to candidate position
+        last_pos = pred_pos - pred_vel * dt
+        implied_dist = cdist(last_pos, cand_pos)
+        vel_diff = implied_dist / max(dt, 1e-6)
         cost += w.w_velocity * vel_diff
 
     # 3. Acceleration cost C_a = || (v_link - v_pred)/dt - a_pred ||
     if w.w_acceleration > 0 and pred_acc is not None and len(pred_acc) == n_pred:
-        implied_acc = (diff_pos / max(dt, 1e-6)) / max(dt, 1e-6)
-        acc_diff = np.linalg.norm(implied_acc + pred_acc[:, None, :], axis=2)
+        last_pos_acc = pred_pos - pred_vel * dt - 0.5 * pred_acc * (dt**2)
+        implied_dist_acc = cdist(last_pos_acc, cand_pos)
+        acc_diff = implied_dist_acc / max(dt**2, 1e-6)
         cost += w.w_acceleration * acc_diff
 
     # 4. Intensity / blob size similarity cost C_i = |I_cand - I_pred|
