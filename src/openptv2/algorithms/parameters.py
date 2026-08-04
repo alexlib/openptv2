@@ -181,6 +181,9 @@ class TrackPar:
     dn: cython.double = cython.declare(cython.double, visibility="public")
     dnx: cython.double = cython.declare(cython.double, visibility="public")
     dny: cython.double = cython.declare(cython.double, visibility="public")
+    w_vel: cython.double = cython.declare(cython.double, visibility="public")
+    w_acc: cython.double = cython.declare(cython.double, visibility="public")
+    w_intensity: cython.double = cython.declare(cython.double, visibility="public")
 
     def __init__(
         self,
@@ -194,6 +197,9 @@ class TrackPar:
         dacc: float = 0.0,
         add: int = 0,
         track_mode: int = 0,
+        w_vel: float = 0.0,
+        w_acc: float = 0.0,
+        w_intensity: float = 0.0,
     ) -> None:
         self.dvxmin = dvxmin
         self.dvxmax = dvxmax
@@ -205,6 +211,9 @@ class TrackPar:
         self.dacc = dacc
         self.add = add
         self.track_mode = track_mode
+        self.w_vel = w_vel
+        self.w_acc = w_acc
+        self.w_intensity = w_intensity
         self.dsumg = 0.0
         self.dn = 0.0
         self.dnx = 0.0
@@ -250,8 +259,11 @@ class TrackPar:
             dvzmax=float(t.get("dvzmax", 0.0)),
             dangle=float(t.get("angle", t.get("dangle", 0.0))),
             dacc=float(t.get("dacc", 0.0)),
-            add=int(bool(add)),
+            add=int(add),
             track_mode=int(t.get("track_mode", 0)),
+            w_vel=float(t.get("w_vel", 0.0)),
+            w_acc=float(t.get("w_acc", 0.0)),
+            w_intensity=float(t.get("w_intensity", 0.0)),
         )
 
     # --- Backward Compatibility OOP Methods ---

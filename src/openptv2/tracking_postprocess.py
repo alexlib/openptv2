@@ -24,6 +24,7 @@ __all__ = [
     "count_links",
     "enforce_reciprocity",
     "seed_cold_start",
+    "relink_trajectory_gaps",
 ]
 
 
@@ -35,7 +36,7 @@ def read_linkage(linkage_base: str, frame: int):
     """Return (prev, next, xyz) arrays for a frame, or None if the file is absent
     or empty. ``prev``/``next`` are int32; ``xyz`` is (n, 3) float64."""
     p = _path(linkage_base, frame)
-    if not os.path.exists(p):
+    if not os.path.exists(p) or os.path.getsize(p) == 0:
         return None
     data = np.loadtxt(p, skiprows=1, ndmin=2)
     if data.size == 0:
@@ -189,3 +190,71 @@ def seed_cold_start(
         write_linkage(linkage_base, first, prev0, next0, xyz0)
         write_linkage(linkage_base, first + 1, prev1, next1, xyz1)
     return {"added": added, "candidates": int((prev1 < 0).sum()), "tol": tol}
+
+
+def relink_trajectory_gaps(
+    linkage_base: str,
+    first: int,
+    last: int,
+    max_gap: int = 2,
+    max_velocity_err: float = 5.0,
+) -> dict[str, int]:
+    """
+    Multi-pass post-processing gap relinking across linkage files.
+
+    Identifies terminated tracks at frame k and unlinked track starts at frame k+gap+1,
+    extrapolating particle positions using constant velocity to recover occluded
+    particles over missing-frame gaps.
+
+    Returns:
+        dict with count of recovered links: {'bridged_gaps': N}
+    """
+    bridged = 0
+    frames = {}
+    for k in range(first, last + 1):
+        r = read_linkage(linkage_base, k)
+        if r is not None:
+            frames[k] = r
+
+    for gap in range(1, max_gap + 1):
+        for k in range(first, last - gap):
+            if k not in frames or (k + gap + 1) not in frames:
+                continue
+
+            prev_k, next_k, xyz_k = frames[k]
+            prev_target, next_target, xyz_target = frames[k + gap + 1]
+
+            # Unlinked ends at frame k that have a valid incoming link (known velocity)
+            ends_k = np.where((next_k < 0) & (prev_k >= 0))[0]
+            # Unlinked starts at frame k+gap+1 that have a valid outgoing link
+            starts_target = np.where((prev_target < 0) & (next_target >= 0))[0]
+
+            if len(ends_k) == 0 or len(starts_target) == 0:
+                continue
+
+            for end_idx in ends_k:
+                p_prev_idx = prev_k[end_idx]
+                if p_prev_idx < 0 or (k - 1) not in frames:
+                    continue
+                _, _, xyz_prev = frames[k - 1]
+                if p_prev_idx >= len(xyz_prev):
+                    continue
+
+                v_est = xyz_k[end_idx] - xyz_prev[p_prev_idx]
+                pred_pos = xyz_k[end_idx] + v_est * (gap + 1)
+
+                cand_xyz = xyz_target[starts_target]
+                dists = np.linalg.norm(cand_xyz - pred_pos, axis=1)
+                best_cand = np.argmin(dists)
+
+                if dists[best_cand] <= max_velocity_err:
+                    target_idx = starts_target[best_cand]
+                    next_k[end_idx] = target_idx
+                    prev_target[target_idx] = end_idx
+                    bridged += 1
+
+                    write_linkage(linkage_base, k, prev_k, next_k, xyz_k)
+                    write_linkage(linkage_base, k + gap + 1, prev_target, next_target, xyz_target)
+
+    return {"bridged_gaps": bridged}
+
