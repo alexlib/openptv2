@@ -28,13 +28,32 @@ __all__ = [
 ]
 
 
+from pathlib import Path
+
+
 def _path(base: str, frame: int) -> str:
     return f"{base}.{frame}"
 
 
 def read_linkage(linkage_base: str, frame: int):
-    """Return (prev, next, xyz) arrays for a frame, or None if the file is absent
+    """Return (prev, next, xyz) arrays for a frame, or None if the file/Zarr entry is absent
     or empty. ``prev``/``next`` are int32; ``xyz`` is (n, 3) float64."""
+    base_path = Path(linkage_base)
+    zarr_dir = base_path.parent / "run.zarr"
+    if zarr_dir.exists():
+        try:
+            import zarr
+            root = zarr.open_group(str(zarr_dir), mode="r")
+            key = f"linkage/{base_path.name}/frame_{frame:05d}"
+            if key in root:
+                fg = root[key]
+                prev = np.asarray(fg["prev"], dtype=np.int32)
+                nxt = np.asarray(fg["next"], dtype=np.int32)
+                xyz = np.ascontiguousarray(fg["pos"], dtype=np.float64)
+                return prev, nxt, xyz
+        except Exception as e:
+            pass
+
     p = _path(linkage_base, frame)
     if not os.path.exists(p) or os.path.getsize(p) == 0:
         return None
@@ -48,7 +67,23 @@ def read_linkage(linkage_base: str, frame: int):
 
 
 def write_linkage(linkage_base: str, frame: int, prev, nxt, xyz) -> None:
-    """Rewrite a linkage file, preserving the tracker's column format."""
+    """Rewrite a linkage file or Zarr store entry, preserving the tracker's column format."""
+    base_path = Path(linkage_base)
+    zarr_dir = base_path.parent / "run.zarr"
+    if zarr_dir.exists():
+        try:
+            import zarr
+            root = zarr.open_group(str(zarr_dir), mode="r+")
+            key = f"linkage/{base_path.name}/frame_{frame:05d}"
+            if key in root:
+                fg = root[key]
+                fg.create_array("prev", data=np.asarray(prev, dtype=np.int32), overwrite=True)
+                fg.create_array("next", data=np.asarray(nxt, dtype=np.int32), overwrite=True)
+                fg.create_array("pos", data=np.asarray(xyz, dtype=np.float64), overwrite=True)
+                return
+        except Exception:
+            pass
+
     p = _path(linkage_base, frame)
     n = len(prev)
     with open(p, "w", encoding="utf-8") as f:
