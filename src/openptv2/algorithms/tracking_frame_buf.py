@@ -353,11 +353,8 @@ def reset_links(path):
 @cython.ccall
 def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_num):
     fname = f"{corres_file_base}.{frame_num}"
-    try:
-        corres_file = open(fname, "r")
-    except FileNotFoundError:
-        # Fallback to Zarr store
-        p = Path(fname)
+    p = Path(fname)
+    if not p.exists() or p.stat().st_size == 0:
         zarr_candidates = [
             p.parent / "run.zarr",
             p.parent / "targets.zarr",
@@ -368,7 +365,10 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_n
                 from openptv2.storage import ZarrFrameStore
 
                 try:
-                    store = ZarrFrameStore(zpath, mode="r")
+                    try:
+                        store = ZarrFrameStore(zpath, mode="r")
+                    except Exception:
+                        store = ZarrFrameStore(zpath, mode="a")
                     pos_3d, cam_ids = store.read_correspondences(frame_num)
 
                     link_name = (
@@ -399,6 +399,11 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_n
                     return cor_buf, path_buf
                 except Exception:
                     pass
+        return [], []
+
+    try:
+        corres_file = open(fname, "r")
+    except FileNotFoundError:
         return [], []
 
     corres_file.readline()  # number of points (read but use EOF)
