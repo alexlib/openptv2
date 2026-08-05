@@ -43,7 +43,10 @@ def read_linkage(linkage_base: str, frame: int):
     if zarr_dir.exists():
         try:
             import zarr
-            root = zarr.open_group(str(zarr_dir), mode="r")
+            try:
+                root = zarr.open_group(str(zarr_dir), mode="r")
+            except Exception:
+                root = zarr.open_group(str(zarr_dir), mode="a")
             key = f"linkage/{base_path.name}/frame_{frame:05d}"
             if key in root:
                 fg = root[key]
@@ -52,12 +55,15 @@ def read_linkage(linkage_base: str, frame: int):
                 xyz = np.ascontiguousarray(fg["pos"], dtype=np.float64)
                 return prev, nxt, xyz
         except Exception as e:
-            pass
+            print(f"[read_linkage] Zarr read warning frame {frame}: {e}")
 
     p = _path(linkage_base, frame)
     if not os.path.exists(p) or os.path.getsize(p) == 0:
         return None
-    data = np.loadtxt(p, skiprows=1, ndmin=2)
+    try:
+        data = np.loadtxt(p, skiprows=1, ndmin=2)
+    except Exception:
+        return None
     if data.size == 0:
         return None
     prev = data[:, 0].astype(np.int32)
