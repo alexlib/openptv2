@@ -352,9 +352,10 @@ def reset_links(path):
 
 @cython.ccall
 def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_num):
+    storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
     fname = f"{corres_file_base}.{frame_num}"
     p = Path(fname)
-    if not p.exists() or p.stat().st_size == 0:
+    if storage_mode == "zarr_only" or not p.exists() or p.stat().st_size == 0:
         zarr_candidates = [
             p.parent / "run.zarr",
             p.parent / "targets.zarr",
@@ -397,8 +398,12 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_n
                         cor_buf.append(cor)
                         path_buf.append(path)
                     return cor_buf, path_buf
-                except Exception:
+                except Exception as e:
+                    if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
+                        raise RuntimeError(f"Failed to read correspondences for frame {frame_num} from {zpath}: {e}") from e
                     pass
+        if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
+            raise RuntimeError(f"No Zarr store with correspondences found for frame {frame_num} in candidates: {zarr_candidates}")
         return [], []
 
     try:
@@ -611,14 +616,21 @@ def write_path_frame(
         except Exception:
             pass
 
-    if storage_mode == "zarr_only":
-        return True
-
     corres_file.close()
     if linkage_file:
         linkage_file.close()
     if prio_file:
         prio_file.close()
+
+    if storage_mode == "zarr_only":
+        prio_fname = f"{prio_file_base}.{frame_num}" if prio_file_base else None
+        for fn in (corres_fname, linkage_fname, prio_fname):
+            if fn and os.path.exists(fn):
+                try:
+                    os.remove(fn)
+                except Exception:
+                    pass
+        return True
 
     return True
 
