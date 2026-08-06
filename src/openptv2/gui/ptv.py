@@ -936,7 +936,7 @@ def py_sequence_loop(exp) -> None:
 
     storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
     zarr_store_path = None
-    if storage_mode == "zarr":
+    if storage_mode in ("zarr", "zarr_only"):
         exp_path = getattr(exp, "exp_path", None)
         if not isinstance(exp_path, (str, Path)) or hasattr(
             exp_path, "_mock_return_value"
@@ -966,7 +966,7 @@ def py_sequence_loop(exp) -> None:
             frame_images = read_frame_images(pm, img_base_names, num_cams, frame)
         for i_cam in range(num_cams):
             if existing_target:
-                if storage_mode == "zarr" and zarr_store_path:
+                if storage_mode in ("zarr", "zarr_only") and zarr_store_path:
                     from openptv2.storage import ZarrFrameStore
 
                     store = ZarrFrameStore(zarr_store_path, mode="r")
