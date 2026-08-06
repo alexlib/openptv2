@@ -854,8 +854,9 @@ class Frame:
                 frame_num = remaining_args.pop(0)
 
         # Execute read using resolved parameters
+        storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
         fname = f"{corres_file_base}.{frame_num}"
-        if not Path(fname).exists():
+        if storage_mode != "zarr_only" and not Path(fname).exists():
             return False
 
         cor_list, path_list = read_path_frame(
