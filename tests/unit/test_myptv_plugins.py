@@ -34,8 +34,12 @@ def test_myptv_3d_tracker_with_cost_weights():
     """Verify MyPTV3DTracker works cleanly with custom CostWeights."""
     from openptv2.tracking_cost import CostWeights
 
-    weights = CostWeights(w_distance=1.0, w_velocity=0.5, w_acceleration=0.2, w_intensity=0.0)
-    tracker = MyPTV3DTracker(v_max=5.0, a_max=10.0, max_gap=1, dt=0.1, cost_weights=weights)
+    weights = CostWeights(
+        w_distance=1.0, w_velocity=0.5, w_acceleration=0.2, w_intensity=0.0
+    )
+    tracker = MyPTV3DTracker(
+        v_max=5.0, a_max=10.0, max_gap=1, dt=0.1, cost_weights=weights
+    )
 
     frames = [
         np.array([[0.0, 0.0, 0.0], [10.0, 0.0, 0.0]]),

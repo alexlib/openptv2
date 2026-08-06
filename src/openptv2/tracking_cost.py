@@ -8,6 +8,7 @@ Inspired by Matlab PTV, proPTV, MyPTV, and OpenLPT.
 
 from dataclasses import dataclass
 from typing import Optional, Tuple
+
 import numpy as np
 
 
@@ -22,7 +23,9 @@ class CostWeights:
 
     def normalize(self) -> "CostWeights":
         """Return normalized weights summing to 1.0."""
-        total = self.w_distance + self.w_velocity + self.w_acceleration + self.w_intensity
+        total = (
+            self.w_distance + self.w_velocity + self.w_acceleration + self.w_intensity
+        )
         if total <= 0:
             return CostWeights(1.0, 0.0, 0.0, 0.0)
         return CostWeights(

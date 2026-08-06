@@ -1,11 +1,12 @@
-import numpy as np
 from pathlib import Path
+
+import numpy as np
 
 wp1_res = Path(r"C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\wp1\res")
 
+
 def parse_ptv_is(filepath):
     lines = filepath.read_text().strip().splitlines()
-    n_pts = int(lines[0])
     data = []
     for line in lines[1:]:
         parts = line.split()
@@ -15,6 +16,7 @@ def parse_ptv_is(filepath):
             x, y, z = float(parts[2]), float(parts[3]), float(parts[4])
             data.append((prev_id, next_id, x, y, z))
     return data
+
 
 f1_data = parse_ptv_is(wp1_res / "ptv_is.1")
 f2_data = parse_ptv_is(wp1_res / "ptv_is.2")
@@ -38,14 +40,24 @@ for i, (prev_id, next_id, x, y, z) in enumerate(f1_data):
 
 displacements = np.array(displacements)
 print(f"Total frame 1 particles: {len(f1_data)}")
-print(f"Linked particles: {len(displacements)} ({len(displacements)/len(f1_data)*100:.1f}%)")
+print(
+    f"Linked particles: {len(displacements)} ({len(displacements) / len(f1_data) * 100:.1f}%)"
+)
 if len(displacements) > 0:
-    print(f"Displacement stats (mm):")
-    print(f"  dx: min={displacements[:,0].min():.3f}, max={displacements[:,0].max():.3f}, mean={displacements[:,0].mean():.3f}, std={displacements[:,0].std():.3f}")
-    print(f"  dy: min={displacements[:,1].min():.3f}, max={displacements[:,1].max():.3f}, mean={displacements[:,1].mean():.3f}, std={displacements[:,1].std():.3f}")
-    print(f"  dz: min={displacements[:,2].min():.3f}, max={displacements[:,2].max():.3f}, mean={displacements[:,2].mean():.3f}, std={displacements[:,2].std():.3f}")
+    print("Displacement stats (mm):")
+    print(
+        f"  dx: min={displacements[:, 0].min():.3f}, max={displacements[:, 0].max():.3f}, mean={displacements[:, 0].mean():.3f}, std={displacements[:, 0].std():.3f}"
+    )
+    print(
+        f"  dy: min={displacements[:, 1].min():.3f}, max={displacements[:, 1].max():.3f}, mean={displacements[:, 1].mean():.3f}, std={displacements[:, 1].std():.3f}"
+    )
+    print(
+        f"  dz: min={displacements[:, 2].min():.3f}, max={displacements[:, 2].max():.3f}, mean={displacements[:, 2].mean():.3f}, std={displacements[:, 2].std():.3f}"
+    )
     mags = np.linalg.norm(displacements, axis=1)
-    print(f"  magnitude: min={mags.min():.3f}, max={mags.max():.3f}, mean={mags.mean():.3f}, p95={np.percentile(mags, 95):.3f}")
+    print(
+        f"  magnitude: min={mags.min():.3f}, max={mags.max():.3f}, mean={mags.mean():.3f}, p95={np.percentile(mags, 95):.3f}"
+    )
 
 # For unlinked particles in frame 1, find nearest neighbor in frame 2
 unlinked_idx = [i for i in range(len(f1_data)) if f1_next[i] == -1]
@@ -63,9 +75,11 @@ if unlinked_idx:
         nn_disps.append(diffs[min_idx])
     nn_dists = np.array(nn_dists)
     nn_disps = np.array(nn_disps)
-    print(f"Nearest neighbor distance in frame 2 for unlinked particles:")
-    print(f"  min={nn_dists.min():.3f}, max={nn_dists.max():.3f}, median={np.median(nn_dists):.3f}, p90={np.percentile(nn_dists, 90):.3f}")
-    print(f"  Nearest neighbor disps for unlinked:")
-    print(f"    dx: min={nn_disps[:,0].min():.3f}, max={nn_disps[:,0].max():.3f}")
-    print(f"    dy: min={nn_disps[:,1].min():.3f}, max={nn_disps[:,1].max():.3f}")
-    print(f"    dz: min={nn_disps[:,2].min():.3f}, max={nn_disps[:,2].max():.3f}")
+    print("Nearest neighbor distance in frame 2 for unlinked particles:")
+    print(
+        f"  min={nn_dists.min():.3f}, max={nn_dists.max():.3f}, median={np.median(nn_dists):.3f}, p90={np.percentile(nn_dists, 90):.3f}"
+    )
+    print("  Nearest neighbor disps for unlinked:")
+    print(f"    dx: min={nn_disps[:, 0].min():.3f}, max={nn_disps[:, 0].max():.3f}")
+    print(f"    dy: min={nn_disps[:, 1].min():.3f}, max={nn_disps[:, 1].max():.3f}")
+    print(f"    dz: min={nn_disps[:, 2].min():.3f}, max={nn_disps[:, 2].max():.3f}")

@@ -263,6 +263,7 @@ def preprocess_and_detect_all_parallel(
 
     if zarr_store_path:
         from openptv2.storage.zarr_store import ZarrFrameStore, _get_or_create_group
+
         pre_store = ZarrFrameStore(zarr_store_path, mode="a")
         targets_grp = _get_or_create_group(pre_store.root, "targets")
         for icam in range(num_cams):
@@ -826,26 +827,42 @@ def read_frame_images(pm, img_base_names, num_cams, frame) -> List[np.ndarray]:
     if zarr_img_path.exists():
         try:
             import zarr
+
             zstore = zarr.open_group(str(zarr_img_path), mode="r")
             if "raw_images" in zstore:
                 raw_arr = zstore["raw_images"]
-                first_frame = spar.get_first() if hasattr(pm, "spar") else 1
-                frame_idx = frame - first_frame if (frame - first_frame) < raw_arr.shape[0] else (frame - 1)
+                first_frame = pm.spar.get_first() if hasattr(pm, "spar") else 1
+                frame_idx = (
+                    frame - first_frame
+                    if (frame - first_frame) < raw_arr.shape[0]
+                    else (frame - 1)
+                )
                 if 0 <= frame_idx < raw_arr.shape[0]:
                     img = np.asarray(raw_arr[frame_idx])
                     if apply_negative:
                         img = negative(img)
                     if ptv_params.get("splitter", False):
-                        order = ptv_params.get("splitter_order") or list(DEFAULT_SPLITTER_ORDER)
-                        images = [view.copy() for view in image_split(img, order=order)[:num_cams]]
+                        order = ptv_params.get("splitter_order") or list(
+                            DEFAULT_SPLITTER_ORDER
+                        )
+                        images = [
+                            view.copy()
+                            for view in image_split(img, order=order)[:num_cams]
+                        ]
                         return images
-                    elif raw_arr.ndim == 4: # (N, cams, h, w)
-                        images = [np.asarray(raw_arr[frame_idx, c]) for c in range(num_cams)]
+                    elif raw_arr.ndim == 4:  # (N, cams, h, w)
+                        images = [
+                            np.asarray(raw_arr[frame_idx, c]) for c in range(num_cams)
+                        ]
                         return images
         except Exception as e:
             if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
-                raise RuntimeError(f"Failed to read frame {frame} from res/images.zarr: {e}") from e
-            print(f"Warning: Failed to read from res/images.zarr: {e}, falling back to disk files.")
+                raise RuntimeError(
+                    f"Failed to read frame {frame} from res/images.zarr: {e}"
+                ) from e
+            print(
+                f"Warning: Failed to read from res/images.zarr: {e}, falling back to disk files."
+            )
 
     if ptv_params.get("splitter", False):
         imname = _frame_image_name(img_base_names[0], frame)

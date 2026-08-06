@@ -1,9 +1,12 @@
 import glob
-import numpy as np
 from pathlib import Path
+
+import numpy as np
+
 from openptv2.plugins._assignment import match_within_radius
 
 wp1_res = Path(r"C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\wp1\res")
+
 
 def load_rt_is(filepath):
     lines = filepath.read_text().strip().splitlines()
@@ -16,7 +19,10 @@ def load_rt_is(filepath):
             pts.append([float(parts[1]), float(parts[2]), float(parts[3])])
     return np.array(pts)
 
-frame_files = sorted(glob.glob(str(wp1_res / "rt_is.*")), key=lambda x: int(Path(x).suffix[1:]))[:10]
+
+frame_files = sorted(
+    glob.glob(str(wp1_res / "rt_is.*")), key=lambda x: int(Path(x).suffix[1:])
+)[:10]
 frames = [load_rt_is(Path(f)) for f in frame_files]
 
 # Let's inspect Step 1 (Frame 1 -> Frame 2)
@@ -31,7 +37,9 @@ print(f"Frame 1 particles: {len(p1)}, Frame 2 particles: {len(p2)}")
 
 # MyPTV matching for Step 1:
 r_rows, r_cols = match_within_radius(p1, p2, 20.0)
-print(f"MyPTV Step 1 matched: {len(r_rows)} / {len(p1)} particles ({len(r_rows)/len(p1)*100:.1f}%)")
+print(
+    f"MyPTV Step 1 matched: {len(r_rows)} / {len(p1)} particles ({len(r_rows) / len(p1) * 100:.1f}%)"
+)
 
 # How many closest candidates are found within the box in fast_3d?
 # In fast_3d: _find_closest_in_3d uses MAX_CANDS = 4.

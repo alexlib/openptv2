@@ -82,8 +82,13 @@ def test_relink_trajectory_gaps_bridges_missing_frame(tmp_path):
     _write(base, 3, [-1], [0], [[6, 0, 0]])
     _write(base, 4, [0], [-2], [[8, 0, 0]])
 
-    stats = relink_trajectory_gaps(base, first=0, last=4, max_gap=2, max_velocity_err=1.0)
+    stats = relink_trajectory_gaps(
+        base, first=0, last=4, max_gap=2, max_velocity_err=1.0
+    )
     assert stats["bridged_gaps"] == 1
-    assert read_linkage(base, 1)[1][0] == 0  # frame 1 particle now links to frame 3 particle 0!
-    assert read_linkage(base, 3)[0][0] == 0  # frame 3 particle points back to frame 1 particle 0!
-
+    assert (
+        read_linkage(base, 1)[1][0] == 0
+    )  # frame 1 particle now links to frame 3 particle 0!
+    assert (
+        read_linkage(base, 3)[0][0] == 0
+    )  # frame 3 particle points back to frame 1 particle 0!

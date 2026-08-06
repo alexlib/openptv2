@@ -4,6 +4,7 @@ Replaces legacy per-frame ASCII text files (*_targets, rt_is.*, ptv_is.*) with a
 cloud-native, lock-free, chunked Zarr directory structure.
 """
 
+import time
 from pathlib import Path
 from typing import Any, List, Optional, Tuple, Union
 
@@ -13,8 +14,6 @@ import zarr
 
 from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
 
-
-import time
 
 def _get_or_create_group(parent: Any, name: str) -> Any:
     """Safely get or create a subgroup in a Zarr store handling concurrent workers."""
@@ -88,10 +87,30 @@ class ZarrFrameStore:
             for i, t in enumerate(targets):
                 if hasattr(t, "pnr"):
                     pnr_val = t.pnr() if callable(getattr(t, "pnr")) else t.pnr
-                    pos_val = t.pos() if callable(getattr(t, "pos", None)) else (getattr(t, "x", 0.0), getattr(t, "y", 0.0))
-                    counts_val = t.count_pixels() if callable(getattr(t, "count_pixels", None)) else (getattr(t, "n", 0), getattr(t, "nx", 0), getattr(t, "ny", 0))
-                    sumg_val = t.sum_grey_value() if callable(getattr(t, "sum_grey_value", None)) else getattr(t, "sumg", 0)
-                    tnr_val = t.tnr() if callable(getattr(t, "tnr", None)) else getattr(t, "tnr", -1)
+                    pos_val = (
+                        t.pos()
+                        if callable(getattr(t, "pos", None))
+                        else (getattr(t, "x", 0.0), getattr(t, "y", 0.0))
+                    )
+                    counts_val = (
+                        t.count_pixels()
+                        if callable(getattr(t, "count_pixels", None))
+                        else (
+                            getattr(t, "n", 0),
+                            getattr(t, "nx", 0),
+                            getattr(t, "ny", 0),
+                        )
+                    )
+                    sumg_val = (
+                        t.sum_grey_value()
+                        if callable(getattr(t, "sum_grey_value", None))
+                        else getattr(t, "sumg", 0)
+                    )
+                    tnr_val = (
+                        t.tnr()
+                        if callable(getattr(t, "tnr", None))
+                        else getattr(t, "tnr", -1)
+                    )
                     arr_data[i] = [
                         pnr_val,
                         pos_val[0],
@@ -413,8 +432,8 @@ class ZarrFrameStore:
 
 def inspect_zarr_store(zarr_path: Union[str, Path]) -> str:
     """Inspect a Zarr store dataset across all pipeline stages and return a human-readable report."""
-    import zarr
     import numpy as np
+    import zarr
 
     root = zarr.open_group(str(zarr_path), mode="r")
     lines = []
@@ -432,7 +451,9 @@ def inspect_zarr_store(zarr_path: Union[str, Path]) -> str:
             if f_keys:
                 f_min = f_keys[0].split("_")[1]
                 f_max = f_keys[-1].split("_")[1]
-                lines.append(f"   - {cam}: {len(f_keys)} frames (Range: {f_min} .. {f_max})")
+                lines.append(
+                    f"   - {cam}: {len(f_keys)} frames (Range: {f_min} .. {f_max})"
+                )
     else:
         lines.append("[Targets]: None")
 
@@ -444,7 +465,9 @@ def inspect_zarr_store(zarr_path: Union[str, Path]) -> str:
             f_min = f_keys[0].split("_")[1]
             f_max = f_keys[-1].split("_")[1]
             first_arr = np.asarray(corr_grp[f_keys[0]])
-            lines.append(f"[Correspondences]: {len(f_keys)} frames (Range: {f_min} .. {f_max}), ~{len(first_arr)} matches/frame")
+            lines.append(
+                f"[Correspondences]: {len(f_keys)} frames (Range: {f_min} .. {f_max}), ~{len(first_arr)} matches/frame"
+            )
         else:
             lines.append("[Correspondences]: Present (0 frames)")
     else:
@@ -458,11 +481,15 @@ def inspect_zarr_store(zarr_path: Union[str, Path]) -> str:
             times = np.asarray(traj_grp["time"])
             pos = np.asarray(traj_grp["pos"])
             u_ids = len(np.unique(trids))
-            lines.append(f"[Trajectories]: {u_ids} unique trajectories, {len(pos)} total points (Time: {times.min()} .. {times.max()})")
+            lines.append(
+                f"[Trajectories]: {u_ids} unique trajectories, {len(pos)} total points (Time: {times.min()} .. {times.max()})"
+            )
             if "vel" in traj_grp:
                 vel = np.asarray(traj_grp["vel"])
                 v_mag = np.linalg.norm(vel, axis=1)
-                lines.append(f"   - Velocities present: min={v_mag.min():.4f}, max={v_mag.max():.4f}, mean={v_mag.mean():.4f} m/s")
+                lines.append(
+                    f"   - Velocities present: min={v_mag.min():.4f}, max={v_mag.max():.4f}, mean={v_mag.mean():.4f} m/s"
+                )
         else:
             lines.append(f"[Trajectories]: Group present ({list(traj_grp.keys())})")
     else:
@@ -472,7 +499,9 @@ def inspect_zarr_store(zarr_path: Union[str, Path]) -> str:
     if "eulerian" in root:
         eul_grp = root["eulerian"]
         vars_found = list(eul_grp.keys())
-        lines.append(f"[Eulerian Fields]: {len(vars_found)} variables ({', '.join(vars_found[:5])}...)")
+        lines.append(
+            f"[Eulerian Fields]: {len(vars_found)} variables ({', '.join(vars_found[:5])}...)"
+        )
     else:
         lines.append("[Eulerian Fields]: None")
 
@@ -489,7 +518,9 @@ def main_cli():
         description="Inspect ZarrFrameStore binary data as human-readable legacy ASCII text."
     )
     parser.add_argument("store_path", help="Path to .zarr directory")
-    parser.add_argument("--frame", "-f", type=int, default=None, help="Frame index for text dump")
+    parser.add_argument(
+        "--frame", "-f", type=int, default=None, help="Frame index for text dump"
+    )
     parser.add_argument(
         "--type",
         "-t",
@@ -506,7 +537,9 @@ def main_cli():
         print(inspect_zarr_store(args.store_path))
     else:
         store = ZarrFrameStore(args.store_path, mode="r")
-        store.dump_frame_text(frame=args.frame, dataset_type=args.type, cam_idx=args.cam)
+        store.dump_frame_text(
+            frame=args.frame, dataset_type=args.type, cam_idx=args.cam
+        )
 
 
 if __name__ == "__main__":

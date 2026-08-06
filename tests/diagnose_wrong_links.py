@@ -11,7 +11,10 @@ import numpy as np
 from scipy.spatial import KDTree
 
 from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
-from openptv2.tracking_metrics import generate_synthetic_benchmark_dataset, _extract_links
+from openptv2.tracking_metrics import (
+    _extract_links,
+    generate_synthetic_benchmark_dataset,
+)
 
 
 def analyze_wrong_link_causes():
@@ -32,8 +35,7 @@ def analyze_wrong_link_causes():
     )
 
     frame_particle_arrays = [
-        np.array(frame_blobs[f], dtype=np.float64)
-        for f in sorted(frame_blobs.keys())
+        np.array(frame_blobs[f], dtype=np.float64) for f in sorted(frame_blobs.keys())
     ]
 
     # Run MyPTV 3D Tracker
@@ -115,8 +117,12 @@ def analyze_wrong_link_causes():
     print("--- ROOT-CAUSE DIAGNOSTIC ANALYSIS OF WRONG LINKS ---")
     print("=" * 70)
     print(f"Total Predicted Links:  {total_pred_links}")
-    print(f"Correct Links:          {correct_links} ({correct_links/max(1, total_pred_links)*100:.1f}%)")
-    print(f"Wrong Links:            {wrong_links} ({wrong_links/max(1, total_pred_links)*100:.1f}%)")
+    print(
+        f"Correct Links:          {correct_links} ({correct_links / max(1, total_pred_links) * 100:.1f}%)"
+    )
+    print(
+        f"Wrong Links:            {wrong_links} ({wrong_links / max(1, total_pred_links) * 100:.1f}%)"
+    )
     print("-" * 70)
     print("Breakdown of Root Causes for Erroneous Links:")
     for cause, count in causes.items():

@@ -45,11 +45,7 @@ from .tracking_viz_panel import create_tracking_viz_panel
 Python with Traits, TraitsUI, Numpy, Scipy and Chaco
 
 Copyright (c) 2008-2023, Turbulence Structure Laboratory, Tel Aviv University
-The GUI software is distributed under the terms of MIT-like license
-http://opensource.org/licenses/MIT
-
-OpenPTV library is distributed under the terms of LGPL license
-see http://www.openptv.net for more details.
+Distributed under the terms of the MIT license, see LICENSE.
 
 """
 

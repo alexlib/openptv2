@@ -45,7 +45,9 @@ class Tracking(TrackingPlugin):
 
         run_info = tracker._run
         res = self.track_sequence(run_info)
-        print(f"Hybrid 3D+Corr Tracking (Compiled C-Speed) completed: avg links/step = {res['avg_links_per_step']:.1f}")
+        print(
+            f"Hybrid 3D+Corr Tracking (Compiled C-Speed) completed: avg links/step = {res['avg_links_per_step']:.1f}"
+        )
 
     def track_sequence(self, run_info: Any) -> dict[str, Any]:
         """Track sequence using adaptive 2-pass hybrid strategy at compiled C-speed."""

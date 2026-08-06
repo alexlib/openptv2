@@ -2,16 +2,19 @@
 
 import numpy as np
 import pytest
+
 from openptv2.tracking_cost import (
     CostWeights,
-    compute_velocity_aligned_search_radius,
     compute_multi_term_cost_matrix,
+    compute_velocity_aligned_search_radius,
 )
 
 
 def test_cost_weights_normalize():
     """Verify weights normalization logic."""
-    cw = CostWeights(w_distance=2.0, w_velocity=2.0, w_acceleration=0.0, w_intensity=0.0)
+    cw = CostWeights(
+        w_distance=2.0, w_velocity=2.0, w_acceleration=0.0, w_intensity=0.0
+    )
     norm = cw.normalize()
     assert norm.w_distance == pytest.approx(0.5)
     assert norm.w_velocity == pytest.approx(0.5)
@@ -21,10 +24,12 @@ def test_cost_weights_normalize():
 
 def test_velocity_aligned_search_radius():
     """Verify adaptive search radius calculation along velocity direction."""
-    velocities = np.array([
-        [0.0, 0.0, 0.0],  # unseeded / zero speed
-        [10.0, 0.0, 0.0],  # moving particle
-    ])
+    velocities = np.array(
+        [
+            [0.0, 0.0, 0.0],  # unseeded / zero speed
+            [10.0, 0.0, 0.0],  # moving particle
+        ]
+    )
     r_long, r_trans = compute_velocity_aligned_search_radius(
         velocities, v_max=5.0, a_max=2.0, aspect_ratio=2.5
     )
@@ -58,7 +63,9 @@ def test_multi_term_cost_matrix_with_intensity():
     pred_intensity = np.array([100.0])
     cand_intensity = np.array([100.0, 200.0])
 
-    weights = CostWeights(w_distance=0.5, w_velocity=0.0, w_acceleration=0.0, w_intensity=0.5)
+    weights = CostWeights(
+        w_distance=0.5, w_velocity=0.0, w_acceleration=0.0, w_intensity=0.5
+    )
 
     cost = compute_multi_term_cost_matrix(
         pred_pos,

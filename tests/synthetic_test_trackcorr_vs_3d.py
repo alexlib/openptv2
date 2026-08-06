@@ -1,9 +1,10 @@
-import numpy as np
 from pathlib import Path
 
+import numpy as np
+
 from openptv2.algorithms.calibration import Calibration
-from openptv2.algorithms.parameters import ControlPar
 from openptv2.algorithms.imgcoord import img_coord
+from openptv2.algorithms.parameters import ControlPar
 from openptv2.algorithms.track_kernels_track3d import track3d_loop_fast
 
 cal_dir = Path(r"C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\calibration\cal")
@@ -37,10 +38,12 @@ mm = cpar.mm
 p0_cam1 = img_coord(f1_3d[0], cals[0], mm)
 p1_cam1 = img_coord(f1_3d[1], cals[0], mm)
 
-print(f"\n2D Projections on Camera 1 for Particle 0 and Particle 1:")
+print("\n2D Projections on Camera 1 for Particle 0 and Particle 1:")
 print(f"  Particle 0 (3D: {f1_3d[0]}): 2D Cam 1 = ({p0_cam1[0]:.2f}, {p0_cam1[1]:.2f})")
 print(f"  Particle 1 (3D: {f1_3d[1]}): 2D Cam 1 = ({p1_cam1[0]:.2f}, {p1_cam1[1]:.2f})")
-print(f"  2D Image Distance on Cam 1: {np.linalg.norm(np.array(p0_cam1) - np.array(p1_cam1)):.2f} pixels!")
+print(
+    f"  2D Image Distance on Cam 1: {np.linalg.norm(np.array(p0_cam1) - np.array(p1_cam1)):.2f} pixels!"
+)
 print(f"  3D Spatial Distance: {np.linalg.norm(f1_3d[0] - f1_3d[1]):.2f} mm!")
 
 # Run track_3d (fast_3d)
@@ -71,20 +74,34 @@ links_3d = track3d_loop_fast(
     path_prev_2,
     path_next_2,
     N_particles,
-    dx, dy, dz,
+    dx,
+    dy,
+    dz,
     max_cands,
-    dacc
+    dacc,
 )
 
-print(f"\n=== Tracking Performance Comparison ===")
+print("\n=== Tracking Performance Comparison ===")
 print(f"Total Particles: {N_particles}")
-print(f"track_3d (fast_3d) tracked: {links_3d} / {N_particles} ({links_3d/N_particles*100:.1f}%)")
+print(
+    f"track_3d (fast_3d) tracked: {links_3d} / {N_particles} ({links_3d / N_particles * 100:.1f}%)"
+)
 print(f"  Particle 0 linked to candidate: {path_next_1[0]} (Expected: 0)")
 print(f"  Particle 1 linked to candidate: {path_next_1[1]} (Expected: 1)")
 
 print("\n=== Mathematical Explanation ===")
-print("In 3D space, Particle 0 and Particle 1 are separated by 20.0 mm along depth (Z).")
-print("Because track_3d operates on 3D spatial points (X, Y, Z), it resolves both particles easily.")
-print("In 2D image space, Camera 1 sees BOTH particles at almost identical pixel coordinates.")
-print("trackcorr enforces 2D target peak uniqueness per camera. When 2D targets merge or overlap in pixel space,")
-print("trackcorr locks out one of the particles on that camera view, reducing its correspondence count and causing trackcorr to drop it.")
+print(
+    "In 3D space, Particle 0 and Particle 1 are separated by 20.0 mm along depth (Z)."
+)
+print(
+    "Because track_3d operates on 3D spatial points (X, Y, Z), it resolves both particles easily."
+)
+print(
+    "In 2D image space, Camera 1 sees BOTH particles at almost identical pixel coordinates."
+)
+print(
+    "trackcorr enforces 2D target peak uniqueness per camera. When 2D targets merge or overlap in pixel space,"
+)
+print(
+    "trackcorr locks out one of the particles on that camera view, reducing its correspondence count and causing trackcorr to drop it."
+)

@@ -43,6 +43,7 @@ def read_linkage(linkage_base: str, frame: int):
     if zarr_dir.exists():
         try:
             import zarr
+
             try:
                 root = zarr.open_group(str(zarr_dir), mode="r")
             except Exception:
@@ -79,13 +80,20 @@ def write_linkage(linkage_base: str, frame: int, prev, nxt, xyz) -> None:
     if zarr_dir.exists():
         try:
             import zarr
+
             root = zarr.open_group(str(zarr_dir), mode="r+")
             key = f"linkage/{base_path.name}/frame_{frame:05d}"
             if key in root:
                 fg = root[key]
-                fg.create_array("prev", data=np.asarray(prev, dtype=np.int32), overwrite=True)
-                fg.create_array("next", data=np.asarray(nxt, dtype=np.int32), overwrite=True)
-                fg.create_array("pos", data=np.asarray(xyz, dtype=np.float64), overwrite=True)
+                fg.create_array(
+                    "prev", data=np.asarray(prev, dtype=np.int32), overwrite=True
+                )
+                fg.create_array(
+                    "next", data=np.asarray(nxt, dtype=np.int32), overwrite=True
+                )
+                fg.create_array(
+                    "pos", data=np.asarray(xyz, dtype=np.float64), overwrite=True
+                )
                 return
         except Exception:
             pass
@@ -295,7 +303,8 @@ def relink_trajectory_gaps(
                     bridged += 1
 
                     write_linkage(linkage_base, k, prev_k, next_k, xyz_k)
-                    write_linkage(linkage_base, k + gap + 1, prev_target, next_target, xyz_target)
+                    write_linkage(
+                        linkage_base, k + gap + 1, prev_target, next_target, xyz_target
+                    )
 
     return {"bridged_gaps": bridged}
-

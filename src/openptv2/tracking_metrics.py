@@ -6,8 +6,9 @@ Mean Track Length, Gap Recovery, RMS Position Error) and synthetic trajectory ge
 for tracking algorithm verification.
 """
 
-from dataclasses import dataclass, asdict
-from typing import Dict, List, Tuple, Any, Optional
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, List, Tuple
+
 import numpy as np
 from scipy.spatial import KDTree
 
@@ -37,7 +38,7 @@ class TrackingMetrics:
 
 
 def _extract_links(
-    tracks: Dict[int, List[Tuple[int, float, float, float]]]
+    tracks: Dict[int, List[Tuple[int, float, float, float]]],
 ) -> Tuple[Dict[Tuple[int, int], Tuple[np.ndarray, np.ndarray]], List[int]]:
     """
     Extract frame-to-frame directional links from trajectory dictionaries.
@@ -107,8 +108,6 @@ def calculate_tracking_metrics(
             total_gaps_true += len(true_links[key][0])
 
     # Evaluate links per frame transition pair
-    all_pred_keys = set(pred_links.keys())
-
     for key, (true_p1s, true_p2s) in true_links.items():
         f1, f2 = key
         is_gap = f2 - f1 > 1
@@ -132,7 +131,12 @@ def calculate_tracking_metrics(
             d2, i2 = tree_p2.query(p2_pred)
 
             # Check if both endpoints match the SAME ground-truth link index within tolerance
-            if i1 == i2 and i1 not in matched_true and d1 <= distance_tolerance and d2 <= distance_tolerance:
+            if (
+                i1 == i2
+                and i1 not in matched_true
+                and d1 <= distance_tolerance
+                and d2 <= distance_tolerance
+            ):
                 matched_true.add(i1)
                 total_correct_links += 1
                 position_errors.append(d1)
@@ -148,8 +152,12 @@ def calculate_tracking_metrics(
     mean_track_length = float(np.mean(pred_lengths)) if pred_lengths else 0.0
     max_track_length = int(np.max(pred_lengths)) if pred_lengths else 0
 
-    rms_pos_err = float(np.sqrt(np.mean(np.square(position_errors)))) if position_errors else 0.0
-    gap_recovery = total_gaps_recovered / max(1, total_gaps_true) if total_gaps_true > 0 else 1.0
+    rms_pos_err = (
+        float(np.sqrt(np.mean(np.square(position_errors)))) if position_errors else 0.0
+    )
+    gap_recovery = (
+        total_gaps_recovered / max(1, total_gaps_true) if total_gaps_true > 0 else 1.0
+    )
 
     return TrackingMetrics(
         yield_recall=yield_recall,
@@ -281,12 +289,12 @@ def run_multi_tracker_benchmark(
         Dict mapping tracker_name -> TrackingMetrics
     """
     import time
+
     from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
     from openptv2.tracking_cost import CostWeights
 
     frame_particle_arrays = [
-        np.array(frame_blobs[f], dtype=np.float64)
-        for f in sorted(frame_blobs.keys())
+        np.array(frame_blobs[f], dtype=np.float64) for f in sorted(frame_blobs.keys())
     ]
     num_frames = len(frame_particle_arrays)
     total_particles = sum(len(arr) for arr in frame_particle_arrays)
@@ -339,11 +347,13 @@ def run_multi_tracker_benchmark(
         from openptv2.algorithms.track_kernels_track3d import track3d_loop_fast
 
         t0 = time.perf_counter()
-        
+
         # Prepare C memoryview structures for each frame
         num_parts_arr = [len(pts) for pts in frame_particle_arrays]
         path_x_arr = [
-            np.ascontiguousarray(pts, dtype=np.float64) if len(pts) > 0 else np.zeros((0, 3), dtype=np.float64)
+            np.ascontiguousarray(pts, dtype=np.float64)
+            if len(pts) > 0
+            else np.zeros((0, 3), dtype=np.float64)
             for pts in frame_particle_arrays
         ]
         path_prev_arr = [
@@ -362,10 +372,20 @@ def run_multi_tracker_benchmark(
             if n1 > 0 and n2 > 0:
                 track3d_loop_fast(
                     n1,
-                    path_x_arr[f0], path_prev_arr[f0], n0,
-                    path_x_arr[f1], path_prev_arr[f1], path_next_arr[f1], n1,
-                    path_x_arr[f2], path_prev_arr[f2], path_next_arr[f2], n2,
-                    v_max, v_max, v_max,  # dx, dy, dz velocity bounds
+                    path_x_arr[f0],
+                    path_prev_arr[f0],
+                    n0,
+                    path_x_arr[f1],
+                    path_prev_arr[f1],
+                    path_next_arr[f1],
+                    n1,
+                    path_x_arr[f2],
+                    path_prev_arr[f2],
+                    path_next_arr[f2],
+                    n2,
+                    v_max,
+                    v_max,
+                    v_max,  # dx, dy, dz velocity bounds
                     32,  # max_cands
                     a_max,  # dacc acceleration bound
                 )
@@ -379,7 +399,6 @@ def run_multi_tracker_benchmark(
         for f in range(num_frames - 1):
             next_links = path_next_arr[f]
             prev_links = path_prev_arr[f]
-            pts_curr = path_x_arr[f]
             for i in range(num_parts_arr[f]):
                 if (f, i) in visited:
                     continue
@@ -391,7 +410,11 @@ def run_multi_tracker_benchmark(
                         visited.add((curr_f, curr_i))
                         p = path_x_arr[curr_f][curr_i]
                         pts_tr.append((curr_f, float(p[0]), float(p[1]), float(p[2])))
-                        next_i = path_next_arr[curr_f][curr_i] if curr_f < len(path_next_arr) else -1
+                        next_i = (
+                            path_next_arr[curr_f][curr_i]
+                            if curr_f < len(path_next_arr)
+                            else -1
+                        )
                         curr_f += 1
                         curr_i = next_i
                     if len(pts_tr) >= 2:
@@ -417,4 +440,3 @@ __all__ = [
     "generate_synthetic_benchmark_dataset",
     "run_multi_tracker_benchmark",
 ]
-

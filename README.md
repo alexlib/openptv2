@@ -3,7 +3,7 @@
 **Unified OpenPTV**: Particle Tracking Velocimetry with dual-engine support
 
 [![Python](https://img.shields.io/pypi/pyversions/openptv2.svg)](https://pypi.org/project/openptv2/)
-[![License](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg)](https://alexlib.github.io/openptv2/)
 [![Coverage](https://img.shields.io/badge/coverage-22%25-red)](scripts/update_coverage_badge.sh)
 
@@ -515,7 +515,16 @@ cd docs && make html
 
 ## License
 
-LGPL-3.0 or later. See [LICENSE](LICENSE) for details.
+MIT. See [LICENSE](LICENSE) for details.
+
+As of 0.3.2, openptv2 is relicensed from LGPL-3.0 to MIT. The C/Cython
+core that carried the LGPL license now lives in the separate
+[openptv](https://github.com/openptv/openptv) repo; this codebase is a
+from-scratch pure-Python/Cython PTV engine plus a pluggable tracker
+architecture, with tracking algorithms motivated by ideas from
+[MyPTV](https://github.com/ronshnapp/MyPTV) and
+[ProPTV](https://github.com/SciSt-lab/ProPTV) (not derived code — no
+LGPL obligations carry over).
 
 ---
 
@@ -525,6 +534,7 @@ openptv2 combines work from:
 - [openptv](https://github.com/openptv/openptv) - C library and bindings
 - [pyptv](https://github.com/alexlib/pyptv) - Python GUI
 - [openptv-python](https://github.com/openptv/openptv-python) - Python/Numba engine
+- [MyPTV](https://github.com/ronshnapp/MyPTV) and [ProPTV](https://github.com/SciSt-lab/ProPTV) - tracking-algorithm ideas behind the plugin tracker architecture
 
 ---
 

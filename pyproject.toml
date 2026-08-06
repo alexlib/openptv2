@@ -8,10 +8,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openptv2"
-version = "0.3.1"
+version = "0.3.2"
 description = "OpenPTV2 single-engine particle tracking with Cython 3 pure Python modules"
 readme = "README.md"
-license = "LGPL-3.0-or-later"
+license = "MIT"
 authors = [
     {name = "OpenPTV Community", email = "openptv@googlegroups.com"}
 ]

@@ -5,7 +5,8 @@ Implements particle position 'shaking' (3D coordinate optimization via multi-cam
 projection residual minimization) inspired by OpenLPT / Shake-The-Box.
 """
 
-from typing import List, Tuple, Any
+from typing import Any, List
+
 import numpy as np
 
 

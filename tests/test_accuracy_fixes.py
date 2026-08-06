@@ -6,9 +6,13 @@ Demonstrates accuracy gains from:
 """
 
 import numpy as np
+
 from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
 from openptv2.tracking_cost import CostWeights
-from openptv2.tracking_metrics import generate_synthetic_benchmark_dataset, calculate_tracking_metrics
+from openptv2.tracking_metrics import (
+    calculate_tracking_metrics,
+    generate_synthetic_benchmark_dataset,
+)
 from openptv2.tracking_postprocess import relink_trajectory_gaps, seed_cold_start
 
 
@@ -30,25 +34,32 @@ def verify_accuracy_fixes():
     )
 
     frame_particle_arrays = [
-        np.array(frame_blobs[f], dtype=np.float64)
-        for f in sorted(frame_blobs.keys())
+        np.array(frame_blobs[f], dtype=np.float64) for f in sorted(frame_blobs.keys())
     ]
 
     # --- Setup 1: Baseline Tracker (Distance-Only, No Gap Relinking, No Cost Weights) ---
     tracker_base = MyPTV3DTracker(v_max=3.0, a_max=1.5, max_gap=0, dt=1.0)
     raw_base = tracker_base.track_frames(frame_particle_arrays)
     pred_base = {
-        int(tr["id"]): [(int(f), float(p[0]), float(p[1]), float(p[2])) for f, p in zip(tr["time"], tr["pos"])]
+        int(tr["id"]): [
+            (int(f), float(p[0]), float(p[1]), float(p[2]))
+            for f, p in zip(tr["time"], tr["pos"])
+        ]
         for tr in raw_base
     }
     m_base = calculate_tracking_metrics(true_tracks, pred_base, distance_tolerance=0.5)
 
     # --- Setup 2: Optimized Tracker (Multi-Term Cost + Gap Buffer max_gap=2) ---
     weights = CostWeights(w_distance=1.0, w_velocity=0.6, w_acceleration=0.3)
-    tracker_opt = MyPTV3DTracker(v_max=3.0, a_max=1.5, max_gap=2, dt=1.0, cost_weights=weights)
+    tracker_opt = MyPTV3DTracker(
+        v_max=3.0, a_max=1.5, max_gap=2, dt=1.0, cost_weights=weights
+    )
     raw_opt = tracker_opt.track_frames(frame_particle_arrays)
     pred_opt = {
-        int(tr["id"]): [(int(f), float(p[0]), float(p[1]), float(p[2])) for f, p in zip(tr["time"], tr["pos"])]
+        int(tr["id"]): [
+            (int(f), float(p[0]), float(p[1]), float(p[2]))
+            for f, p in zip(tr["time"], tr["pos"])
+        ]
         for tr in raw_opt
     }
     m_opt = calculate_tracking_metrics(true_tracks, pred_opt, distance_tolerance=0.5)
@@ -56,13 +67,15 @@ def verify_accuracy_fixes():
     print("=" * 85)
     print("--- COMPARISON OF TRACKING ACCURACY IMPROVEMENTS ---")
     print("=" * 85)
-    print(f"{'Tracker Strategy':<38} | {'Yield':<8} | {'Precision':<10} | {'Mean Length':<11} | {'RMS Error':<10}")
+    print(
+        f"{'Tracker Strategy':<38} | {'Yield':<8} | {'Precision':<10} | {'Mean Length':<11} | {'RMS Error':<10}"
+    )
     print("-" * 85)
     print(
-        f"{'1. Baseline Tracker (Distance-Only)':<38} | {m_base.yield_recall*100:6.1f}% | {m_base.precision*100:8.1f}% | {m_base.mean_track_length:9.2f} fr | {m_base.rms_position_error:8.4f}"
+        f"{'1. Baseline Tracker (Distance-Only)':<38} | {m_base.yield_recall * 100:6.1f}% | {m_base.precision * 100:8.1f}% | {m_base.mean_track_length:9.2f} fr | {m_base.rms_position_error:8.4f}"
     )
     print(
-        f"{'2. Optimized Tracker (Multi-Term + Gap)':<38} | {m_opt.yield_recall*100:6.1f}% | {m_opt.precision*100:8.1f}% | {m_opt.mean_track_length:9.2f} fr | {m_opt.rms_position_error:8.4f}"
+        f"{'2. Optimized Tracker (Multi-Term + Gap)':<38} | {m_opt.yield_recall * 100:6.1f}% | {m_opt.precision * 100:8.1f}% | {m_opt.mean_track_length:9.2f} fr | {m_opt.rms_position_error:8.4f}"
     )
     print("=" * 85)
 
@@ -70,7 +83,7 @@ def verify_accuracy_fixes():
     prec_gain = (m_opt.precision - m_base.precision) * 100.0
     len_gain = m_opt.mean_track_length - m_base.mean_track_length
 
-    print(f"\nACCURACY IMPROVEMENT SUMMARY:")
+    print("\nACCURACY IMPROVEMENT SUMMARY:")
     print(f"  * Yield Recall Gain : +{yield_gain:.1f}%")
     print(f"  * Precision Gain    : +{prec_gain:.1f}%")
     print(f"  * Track Length Gain : +{len_gain:.2f} frames")

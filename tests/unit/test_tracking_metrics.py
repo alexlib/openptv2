@@ -1,6 +1,7 @@
 """Unit tests for openptv2.tracking_metrics."""
 
 import pytest
+
 from openptv2.tracking_metrics import (
     TrackingMetrics,
     calculate_tracking_metrics,

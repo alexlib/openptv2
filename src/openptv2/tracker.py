@@ -178,7 +178,11 @@ class Tracker:
             )
         if gap_relinking:
             stats["gap_relinking"] = relink_trajectory_gaps(
-                base, first, last, max_gap=max_gap, max_velocity_err=float(self._tpar_algo.dvxmax)
+                base,
+                first,
+                last,
+                max_gap=max_gap,
+                max_velocity_err=float(self._tpar_algo.dvxmax),
             )
         if reciprocity:
             stats["reciprocity"] = enforce_reciprocity(base, first, last)

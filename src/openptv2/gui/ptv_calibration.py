@@ -57,7 +57,9 @@ def _read_calibrations(cpar: ControlParams, num_cams: int) -> List[Calibration]:
         else:
             missing_str = f"Missing: {ori_file if not ori_exists else ''} {addpar_file if not addpar_exists else ''}"
             if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
-                raise RuntimeError(f"Calibration files missing for camera {i_cam + 1}: {missing_str}")
+                raise RuntimeError(
+                    f"Calibration files missing for camera {i_cam + 1}: {missing_str}"
+                )
             print(
                 f"Calibration files not found for camera {i_cam + 1} - using defaults"
             )

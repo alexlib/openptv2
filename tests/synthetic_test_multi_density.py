@@ -12,8 +12,9 @@ In each density regime, a realistic 3D shear flow field is generated containing:
 """
 
 import time
-import numpy as np
 from pathlib import Path
+
+import numpy as np
 
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import ControlPar
@@ -45,7 +46,7 @@ for ppp in densities:
     vol_z = np.random.uniform(-20.0, 20.0, n_total)
 
     # Parabolic shear flow velocity field
-    vx = 10.0 + 5.0 * (1.0 - (vol_y / 50.0)**2)
+    vx = 10.0 + 5.0 * (1.0 - (vol_y / 50.0) ** 2)
     vy = 2.0 * np.sin(vol_x / 10.0)
     vz = 0.5 * np.cos(vol_y / 10.0)
 
@@ -67,7 +68,9 @@ for ppp in densities:
 
     path_prev_0 = np.full(n_cont, -1, dtype=np.int32)
     path_prev_1 = np.full(n_total, -1, dtype=np.int32)
-    path_prev_1[:n_cont] = np.arange(n_cont, dtype=np.int32)  # Continuous particles linked to f0
+    path_prev_1[:n_cont] = np.arange(
+        n_cont, dtype=np.int32
+    )  # Continuous particles linked to f0
 
     path_next_1 = np.full(n_total, -1, dtype=np.int32)
     path_prev_2 = np.full(n_total, -1, dtype=np.int32)
@@ -80,11 +83,23 @@ for ppp in densities:
     # A. Run fast_3d
     t0 = time.perf_counter()
     links_fast3d = track3d_loop_fast(
-        n_cont, # orig_parts (only continuous particles have f0 seeds)
-        path_x_0, path_prev_0, n_cont,
-        path_x_1, path_prev_1, path_next_1, n_total,
-        path_x_2, path_prev_2, path_next_2, n_total,
-        dx, dy, dz, max_cands, dacc
+        n_cont,  # orig_parts (only continuous particles have f0 seeds)
+        path_x_0,
+        path_prev_0,
+        n_cont,
+        path_x_1,
+        path_prev_1,
+        path_next_1,
+        n_total,
+        path_x_2,
+        path_prev_2,
+        path_next_2,
+        n_total,
+        dx,
+        dy,
+        dz,
+        max_cands,
+        dacc,
     )
     t1 = time.perf_counter()
     time_fast3d = t1 - t0
@@ -104,18 +119,42 @@ for ppp in densities:
     ret_trackcorr = (links_trackcorr / n_total) * 100.0
     ret_hybrid = (links_hybrid / n_total) * 100.0
 
-    results.append((ppp, n_total, links_fast3d, ret_fast3d, links_trackcorr, ret_trackcorr, links_hybrid, ret_hybrid, time_fast3d))
+    results.append(
+        (
+            ppp,
+            n_total,
+            links_fast3d,
+            ret_fast3d,
+            links_trackcorr,
+            ret_trackcorr,
+            links_hybrid,
+            ret_hybrid,
+            time_fast3d,
+        )
+    )
 
-    print(f"  Total Field: {n_total:,} particles ({n_cont:,} continuous + {n_new:,} newly entering)")
-    print(f"  1. fast_3d:     {links_fast3d:,} links ({ret_fast3d:.1f}% retention) [{time_fast3d*1000:.2f} ms]")
-    print(f"  2. trackcorr:   {links_trackcorr:,} links ({ret_trackcorr:.1f}% retention)")
-    print(f"  3. hybrid_3d:   {links_hybrid:,} links ({ret_hybrid:.1f}% PERFECT RECONSTRUCTION!)")
+    print(
+        f"  Total Field: {n_total:,} particles ({n_cont:,} continuous + {n_new:,} newly entering)"
+    )
+    print(
+        f"  1. fast_3d:     {links_fast3d:,} links ({ret_fast3d:.1f}% retention) [{time_fast3d * 1000:.2f} ms]"
+    )
+    print(
+        f"  2. trackcorr:   {links_trackcorr:,} links ({ret_trackcorr:.1f}% retention)"
+    )
+    print(
+        f"  3. hybrid_3d:   {links_hybrid:,} links ({ret_hybrid:.1f}% PERFECT RECONSTRUCTION!)"
+    )
 
-print("\n" + "="*85)
+print("\n" + "=" * 85)
 print("FINAL MULTI-DENSITY COMPARISON TABLE")
-print("="*85)
-print(f"{'Density (PPP)':<14} {'Particles':<12} {'fast_3d (%)':<16} {'trackcorr (%)':<16} {'hybrid_3d_corr (%)':<18} {'Computation Speed':<15}")
+print("=" * 85)
+print(
+    f"{'Density (PPP)':<14} {'Particles':<12} {'fast_3d (%)':<16} {'trackcorr (%)':<16} {'hybrid_3d_corr (%)':<18} {'Computation Speed':<15}"
+)
 print("-" * 85)
 for ppp, n_total, l_f3d, r_f3d, l_tc, r_tc, l_hy, r_hy, t_f3d in results:
-    print(f"{ppp:<14.3f} {n_total:<12,} {r_f3d:<16.1f} {r_tc:<16.1f} {r_hy:<18.1f} {t_f3d*1000:.2f} ms")
-print("="*85)
+    print(
+        f"{ppp:<14.3f} {n_total:<12,} {r_f3d:<16.1f} {r_tc:<16.1f} {r_hy:<18.1f} {t_f3d * 1000:.2f} ms"
+    )
+print("=" * 85)

@@ -17,9 +17,13 @@ def print_help():
     print()
     print("Available Commands:")
     print("  track               Run headless batch sequence and tracking processing")
-    print("  benchmark-tracking  Run quantitative tracking benchmark & metrics evaluation")
+    print(
+        "  benchmark-tracking  Run quantitative tracking benchmark & metrics evaluation"
+    )
     print("  inspect             Inspect Zarr store data across all pipeline stages")
-    print("  validate            Validate the single Cython runtime on bundled test data")
+    print(
+        "  validate            Validate the single Cython runtime on bundled test data"
+    )
     print("  gui                 Launch the interactive 3D-PTV GUI")
     print()
     print("For help on any specific command, run:")
@@ -68,32 +72,57 @@ def main():
     elif command in ("benchmark-tracking", "benchmark"):
         try:
             import argparse
-            import numpy as np
+
             from openptv2.tracking_metrics import (
                 generate_synthetic_benchmark_dataset,
-                calculate_tracking_metrics,
             )
-            from openptv2.tracking_cost import CostWeights
-            from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
 
             parser = argparse.ArgumentParser(prog="openptv benchmark-tracking")
-            parser.add_argument("--flow", choices=["vortex", "linear", "burgers"], default="vortex", help="Synthetic flow field type")
-            parser.add_argument("--particles", type=int, default=30, help="Number of particles")
-            parser.add_argument("--frames", type=int, default=15, help="Number of frames")
-            parser.add_argument("--noise", type=float, default=0.15, help="Spatial noise std dev")
-            parser.add_argument("--gaps", type=float, default=0.10, help="Probability of detection dropout / gap per frame")
-            parser.add_argument("--spurious", type=float, default=0.15, help="Ratio of false positive ghost noise particles")
-            parser.add_argument("--w-vel", type=float, default=0.0, help="Velocity continuity cost weight")
-            parser.add_argument("--w-acc", type=float, default=0.0, help="Acceleration cost weight")
+            parser.add_argument(
+                "--flow",
+                choices=["vortex", "linear", "burgers"],
+                default="vortex",
+                help="Synthetic flow field type",
+            )
+            parser.add_argument(
+                "--particles", type=int, default=30, help="Number of particles"
+            )
+            parser.add_argument(
+                "--frames", type=int, default=15, help="Number of frames"
+            )
+            parser.add_argument(
+                "--noise", type=float, default=0.15, help="Spatial noise std dev"
+            )
+            parser.add_argument(
+                "--gaps",
+                type=float,
+                default=0.10,
+                help="Probability of detection dropout / gap per frame",
+            )
+            parser.add_argument(
+                "--spurious",
+                type=float,
+                default=0.15,
+                help="Ratio of false positive ghost noise particles",
+            )
+            parser.add_argument(
+                "--w-vel",
+                type=float,
+                default=0.0,
+                help="Velocity continuity cost weight",
+            )
+            parser.add_argument(
+                "--w-acc", type=float, default=0.0, help="Acceleration cost weight"
+            )
             args, _ = parser.parse_known_args(sys.argv[2:])
 
             from openptv2.tracking_metrics import (
-                generate_synthetic_benchmark_dataset,
-                calculate_tracking_metrics,
                 run_multi_tracker_benchmark,
             )
 
-            print(f"--- Running Tracking Benchmark ({args.flow.upper()} flow, {args.particles} particles, {args.frames} frames, noise={args.noise}, gaps={args.gaps}, spurious={args.spurious}) ---")
+            print(
+                f"--- Running Tracking Benchmark ({args.flow.upper()} flow, {args.particles} particles, {args.frames} frames, noise={args.noise}, gaps={args.gaps}, spurious={args.spurious}) ---"
+            )
             true_tracks, frame_blobs = generate_synthetic_benchmark_dataset(
                 num_particles=args.particles,
                 num_frames=args.frames,
@@ -106,11 +135,13 @@ def main():
             results = run_multi_tracker_benchmark(true_tracks, frame_blobs)
 
             print("=" * 105)
-            print(f"{'Tracker Engine':<28} | {'Yield':<7} | {'Precision':<9} | {'Mean Length':<11} | {'RMS Error':<9} | {'FPS':<8} | {'Throughput':<12}")
+            print(
+                f"{'Tracker Engine':<28} | {'Yield':<7} | {'Precision':<9} | {'Mean Length':<11} | {'RMS Error':<9} | {'FPS':<8} | {'Throughput':<12}"
+            )
             print("-" * 105)
             for engine_name, m in results.items():
                 print(
-                    f"{engine_name:<28} | {m.yield_recall*100:5.1f}% | {m.precision*100:7.1f}% | {m.mean_track_length:9.2f} fr | {m.rms_position_error:8.4f} | {m.fps:7.1f} | {m.particles_per_sec:10.0f} p/s"
+                    f"{engine_name:<28} | {m.yield_recall * 100:5.1f}% | {m.precision * 100:7.1f}% | {m.mean_track_length:9.2f} fr | {m.rms_position_error:8.4f} | {m.fps:7.1f} | {m.particles_per_sec:10.0f} p/s"
                 )
             print("=" * 105)
 
@@ -123,11 +154,13 @@ def main():
             if len(sys.argv) < 3:
                 print("Usage: openptv inspect <zarr_path> [--frame FRAME] [--cam CAM]")
                 sys.exit(1)
-            from openptv2.storage.zarr_store import inspect_zarr_store, ZarrFrameStore
+            from openptv2.storage.zarr_store import inspect_zarr_store
+
             zarr_path = sys.argv[2]
             if "--frame" in sys.argv or "-f" in sys.argv:
                 sys.argv = [sys.argv[0]] + sys.argv[2:]
                 from openptv2.storage.zarr_store import main_cli
+
                 main_cli()
             else:
                 print(inspect_zarr_store(zarr_path))
