@@ -190,7 +190,7 @@ def read_targets(file_base, frame_num):
     except FileNotFoundError:
         import re
         p = Path(fname)
-        cam_match = re.search(r"cam(\d+)", p.name)
+        cam_match = re.search(r"(?:cam|_c|c)(\d+)", p.name, re.IGNORECASE)
         cam_idx = int(cam_match.group(1)) - 1 if cam_match else 0
         zarr_candidates = [
             p.parent / "run.zarr",
