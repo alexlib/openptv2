@@ -103,10 +103,6 @@ def infer_preset(
     if postprocess:
         return TrackingPreset.FULL_MULTIPASS.value
 
-    flag_new = bool(track_params.get("flagNewParticles", True))
-    if flag_new:
-        return TrackingPreset.HYBRID_3D_CORR.value
-
     return TrackingPreset.HYBRID_3D_CORR.value
 
 

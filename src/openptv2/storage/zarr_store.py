@@ -124,13 +124,6 @@ class ZarrFrameStore:
                 else:
                     arr_data[i] = [t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7]]
 
-        # Sort targets by Y coordinate (column 2) required for epipolar line search
-        if len(arr_data) > 0:
-            sort_indices = np.argsort(arr_data[:, 2])
-            arr_data = arr_data[sort_indices]
-            arr_data[:, 0] = np.arange(len(arr_data), dtype=np.float64)
-            arr_data[:, 7] = np.arange(len(arr_data), dtype=np.float64)
-
         # Store array for specific frame
         for attempt in range(10):
             try:

@@ -17,8 +17,12 @@ def test_infer_preset_from_custom_plugin():
 
 
 def test_infer_preset_from_track_mode():
+    # track_mode == 1 with no explicit preset/selected_tracking now defaults
+    # to the hybrid tracker (see ccf43da: "make hybrid_3d_corr the default
+    # tracker"). Pass an explicit preset to get fast_3d (see
+    # test_infer_preset_explicit).
     track_cfg = {"track_mode": 1, "flagNewParticles": False, "postprocess": False}
-    assert infer_preset(track_cfg) == TrackingPreset.FAST_3D.value
+    assert infer_preset(track_cfg) == TrackingPreset.HYBRID_3D_CORR.value
 
 
 def test_infer_preset_from_postprocess():
@@ -27,8 +31,12 @@ def test_infer_preset_from_postprocess():
 
 
 def test_infer_preset_standard_forward():
+    # No postprocess and no explicit preset/selected_tracking now defaults
+    # to the hybrid tracker regardless of flagNewParticles (see ccf43da:
+    # "make hybrid_3d_corr the default tracker"). Pass an explicit preset to
+    # get standard_forward.
     track_cfg = {"track_mode": 0, "flagNewParticles": True, "postprocess": False}
-    assert infer_preset(track_cfg) == TrackingPreset.STANDARD_FORWARD.value
+    assert infer_preset(track_cfg) == TrackingPreset.HYBRID_3D_CORR.value
 
 
 def test_apply_preset_full_multipass():
