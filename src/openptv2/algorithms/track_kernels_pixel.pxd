@@ -16,7 +16,7 @@ cpdef int _point_to_pixel_out(
     double inv_pix_y,
     int chfield,
     double[:] out,
-) nogil
+) noexcept nogil
 
 cpdef int _candsearch_in_pix_rest_nogil(
     double[:] targ_x,
@@ -32,7 +32,7 @@ cpdef int _candsearch_in_pix_rest_nogil(
     double imx,
     double imy,
     int tr_unused,
-) nogil
+) noexcept nogil
 
 cpdef int _pixel_to_metric_out(
     double x_pixel,
@@ -43,7 +43,7 @@ cpdef int _pixel_to_metric_out(
     double pix_y,
     int chfield,
     double[:] out,
-) nogil
+) noexcept nogil
 
 cpdef int _dist_to_flat_out(
     double dist_x,
@@ -59,7 +59,7 @@ cpdef int _dist_to_flat_out(
     double she,
     double tol,
     double[:] out,
-) nogil
+) noexcept nogil
 
 cpdef int _sorted_candidates_fast_out_nogil(
     double[:] center,
@@ -103,4 +103,6 @@ cpdef int _sorted_candidates_fast_out_nogil(
     int[:, :] whichcam_out,
     double[:] pt_buf,
     double[:] _pp,
-) nogil
+) noexcept nogil
+
+

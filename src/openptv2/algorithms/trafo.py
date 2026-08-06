@@ -39,7 +39,7 @@ def _old_pixel_to_metric_out(
     pix_size_y: cython.double,
     y_remap_mode: cython.int,
     out: cython.double[:],
-):
+) -> cython.void:
     """Convert pixel to metric coordinates — _out variant."""
     yp: cython.double = y_pixel
     if y_remap_mode == DOUBLED_PLUS_ONE:
@@ -51,7 +51,6 @@ def _old_pixel_to_metric_out(
 
 
 @cython.ccall
-@cython.exceptval(check=False)
 @cython.cdivision(True)
 @cython.profile(False)
 def old_pixel_to_metric(
@@ -175,7 +174,7 @@ def _old_metric_to_pixel_out(
     pix_size_y: cython.double,
     y_remap_mode: cython.int,
     out: cython.double[:],
-):
+) -> cython.void:
     """Convert metric to pixel coordinates — _out variant."""
     xp: cython.double = x_metric / pix_size_x + im_size_x * 0.5
     yp: cython.double = im_size_y * 0.5 - y_metric / pix_size_y
@@ -188,7 +187,6 @@ def _old_metric_to_pixel_out(
 
 
 @cython.ccall
-@cython.exceptval(check=False)
 def old_metric_to_pixel(
     x_metric: cython.double,
     y_metric: cython.double,
@@ -312,7 +310,7 @@ def _distort_brown_affin_core_out(
     sin_she: cython.double,
     cos_she: cython.double,
     out: cython.double[:],
-):
+) -> cython.void:
     """Brown distortion with precomputed trig values — _out variant."""
     r: cython.double = c_sqrt(x * x + y * y)
 
@@ -374,7 +372,7 @@ def distort_brown_affin_out(
     scx: cython.double,
     she: cython.double,
     out: cython.double[:],
-):
+) -> cython.void:
     """Apply Brown distortion — _out variant."""
     sin_she: cython.double = c_sin(she)
     cos_she: cython.double = c_cos(she)
@@ -382,7 +380,6 @@ def distort_brown_affin_out(
 
 
 @cython.ccall
-@cython.exceptval(check=False)
 def distort_brown_affin(
     x: cython.double,
     y: cython.double,
@@ -481,7 +478,7 @@ def _correct_brown_affin_out(
     she: cython.double,
     out: cython.double[:],
     _scratch: cython.double[:],
-):
+) -> cython.void:
     """Inverse Brown distortion — _out variant (no tuple allocation in loop).
 
     Args:
@@ -588,7 +585,7 @@ def _correct_brown_affine_exact_out(
     she: cython.double,
     tol: cython.double,
     out: cython.double[:],
-):
+) -> cython.void:
     """Iteratively solve inverse Brown distortion — _out variant.
 
     Args:
@@ -653,7 +650,6 @@ def _correct_brown_affine_exact_out(
 
 
 @cython.cfunc
-@cython.exceptval(check=False)
 def correct_brown_affine_exact(
     x: cython.double,
     y: cython.double,

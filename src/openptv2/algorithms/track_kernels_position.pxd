@@ -7,7 +7,7 @@ cpdef double _point_position_out(
     double[:, ::1] cal_arr,
     double[:] out,
     double[:] scratch_ray,
-) nogil
+) noexcept nogil
 
 cpdef int assess_new_position_fast_nogil(
     double[:] pos,
@@ -39,4 +39,6 @@ cpdef int assess_new_position_fast_nogil(
     double[:, :] targ_pos_out,
     int[:] cand_inds_out,
     double[:] scratch,
-) nogil
+) noexcept nogil
+
+

@@ -228,6 +228,7 @@ def _ray_tracing_out(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nogil
+@cython.exceptval(check=False)
 def _point_position_out(
     targets: cython.double[:, ::1],
     num_cams: cython.int,
@@ -420,6 +421,7 @@ def _point_position_out(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nogil
+@cython.exceptval(check=False)
 def assess_new_position_fast_nogil(
     pos: cython.double[:],
     num_cams: cython.int,

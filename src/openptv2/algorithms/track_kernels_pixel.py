@@ -125,6 +125,7 @@ def _multimed_r_nlay_1layer(
 @cython.ccall
 @cython.profile(False)
 @cython.nogil
+@cython.exceptval(check=False)
 def _point_to_pixel_out(
     pos: cython.double[:],
     cal: cython.double[:],
@@ -521,6 +522,7 @@ def candsearch_in_pix_fast_nogil(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nogil
+@cython.exceptval(check=False)
 def _sorted_candidates_fast_out_nogil(
     center: cython.double[:],
     center_proj_x: cython.double[:],
@@ -791,6 +793,7 @@ def _sorted_candidates_fast_out_nogil(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nogil
+@cython.exceptval(check=False)
 def _candsearch_in_pix_rest_nogil(
     targ_x: cython.double[:],
     targ_y: cython.double[:],
@@ -874,6 +877,7 @@ def _candsearch_in_pix_rest_nogil(
 @cython.cdivision(True)
 @cython.profile(False)
 @cython.nogil
+@cython.exceptval(check=False)
 def _pixel_to_metric_out(
     x_pixel: cython.double,
     y_pixel: cython.double,
@@ -903,6 +907,7 @@ def _pixel_to_metric_out(
 @cython.cdivision(True)
 @cython.profile(False)
 @cython.nogil
+@cython.exceptval(check=False)
 def _dist_to_flat_out(
     dist_x: cython.double,
     dist_y: cython.double,
