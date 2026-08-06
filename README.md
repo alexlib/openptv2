@@ -1,6 +1,6 @@
 # openptv2
 
-**Unified OpenPTV**: Particle Tracking Velocimetry with dual-engine support
+**Particle Tracking Velocimetry**, single Cython 3 pure-Python engine
 
 [![Python](https://img.shields.io/pypi/pyversions/openptv2.svg)](https://pypi.org/project/openptv2/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -9,19 +9,22 @@
 
 ## Overview
 
-openptv2 combines the best of three repositories into a single, maintainable package:
+openptv2 is a single-engine PTV library: the same
+`src/openptv2/algorithms/` modules run interpreted in development and
+compiled through Cython 3 when built, with no separate C core, no
+Cython bindings to an external library, and no runtime engine
+selector.
 
-- **C core library** (`lib/`) - High-performance particle tracking algorithms
-- **Cython bindings** (`bindings/`) - Python interface to C library
-- **Python/Numba fallback** (`algorithms/`) - Pure Python implementation for debugging
-- **TraitsUI GUI** (`gui/`) - Full-featured graphical interface
+- **Algorithms** (`src/openptv2/algorithms/`) - Cython 3 pure-Python particle tracking, correspondence, and calibration code
+- **Plugins** (`src/openptv2/plugins/`) - pluggable tracker implementations (hybrid, MyPTV/ProPTV-inspired trackers)
+- **GUI** (`src/openptv2/gui/`) - TraitsUI/Chaco desktop application
+- **Batch pipeline** (`openptv2-batch`) - headless sequence/tracking runner for scripting and cloud use
 
 ## Key Features
 
-- **Dual-engine architecture**: Use fast C/Cython (`optv`) or debuggable Python/Numba (`python`)
-- **Identical results**: Both engines produce the same output (within floating-point tolerance)
-- **Backward compatible**: Works with existing `optv` and `pyptv` code
-- **Easy installation**: Pre-built wheels for Linux, Windows, macOS
+- **Single runtime**: one codebase, no C/Cython vs. Python fallback split to keep in sync
+- **Pluggable trackers**: swap tracking algorithms via the plugin architecture
+- **Easy installation**: `pip install openptv2` for headless/batch use, `openptv2[gui]` to add the desktop GUI
 
 ---
 
@@ -32,7 +35,7 @@ There are three install profiles:
 | Command | For | Includes |
 | --- | --- | --- |
 | `pip install openptv2` | scripting + `openptv2-batch` (default) | headless algorithms/API + sequence/tracking pipeline |
-| `pip install openptv2[gui]` | desktop users | default **plus** the TraitsUI/Chaco/PySide6 GUI |
+| `pip install openptv2[gui]` | desktop users | default **plus** the TraitsUI/Chaco/PySide6 desktop GUI |
 | `pip install openptv2[dev]` | contributors | everything: GUI, tests, lint, type-check, notebooks, docs |
 
 ### Default (headless / batch)
@@ -75,7 +78,7 @@ A single image serves both the GUI and batch. It bakes in a trimmed
 
 ```bash
 # Build once
-docker build -t openptv2 .
+docker build -t openptv2 -f docker/Dockerfile .
 
 # GUI on the host X display (Linux/X11), current folder mounted at /data
 ./docker/run-gui.sh
@@ -90,7 +93,7 @@ X11 notes: `run-gui.sh` handles `xhost` and mounts `/tmp/.X11-unix`. On Wayland
 run `xhost +local:root` in an XWayland session; on macOS/Windows use an X
 server (XQuartz / VcXsrv) and set `DISPLAY` accordingly.
 
-**Headless cloud batch:** `Dockerfile.cloud` is a slim, no-GUI, free-threaded
+**Headless cloud batch:** `docker/Dockerfile.cloud` is a slim, no-GUI, free-threaded
 3.14t image for servers/Cloud Run. See [docs/cloud-batch.md](docs/cloud-batch.md)
 for the one-command install, `openptv2-batch` usage, and measured timings.
 
@@ -101,11 +104,8 @@ for the one-command install, `openptv2-batch` usage, and measured timings.
 ### For Developers (Build from Source)
 
 **Prerequisites:**
-- Python 3.11, 3.12, or 3.13
-- CMake 3.15+
-- C compiler (gcc on Linux, clang on macOS, MSVC on Windows)
-- Cython 3.0+
-- NumPy 2.0+
+- Python 3.11–3.14 (free-threaded 3.14t works too, see `docker/Dockerfile.cloud`)
+- C compiler (gcc on Linux, clang on macOS, MSVC Build Tools on Windows) — needed to build the Cython 3 extensions, no CMake involved
 - uv (recommended) or pip
 
 #### System Dependencies
@@ -113,31 +113,26 @@ for the one-command install, `openptv2-batch` usage, and measured timings.
 **Linux (Debian/Ubuntu):**
 ```bash
 sudo apt-get update
-sudo apt-get install -y cmake build-essential python3-dev
+sudo apt-get install -y build-essential python3-dev
 ```
 
 **Linux (Fedora/RHEL):**
 ```bash
-sudo dnf install -y cmake gcc gcc-c++ python3-devel
+sudo dnf install -y gcc gcc-c++ python3-devel
 ```
 
 **macOS:**
 ```bash
-# Install Xcode Command Line Tools
 xcode-select --install
-
-# Install cmake via Homebrew (optional, if not using system cmake)
-brew install cmake
 ```
 
 **Windows:**
 - Install [Microsoft Visual C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
-- Install [CMake](https://cmake.org/download/)
 
 #### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/openptv/openptv2.git
+git clone https://github.com/alexlib/openptv2.git
 cd openptv2
 ```
 
@@ -156,7 +151,7 @@ python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install build dependencies
-pip install scikit-build-core cython numpy
+pip install setuptools cython numpy
 
 # Install in development mode
 pip install -e ".[dev]"
@@ -186,16 +181,17 @@ uv run pytest tests/unit/ -v
 ### GUI Dependencies
 
 The `[gui]` extra includes:
-- traits, traitsui (Enthought framework)
-- enable, chaco (visualization)
+- traitsui, enable, chaco (Enthought framework + visualization)
 - PySide6 (Qt bindings)
-- scikit-image, pandas, matplotlib (analysis)
+- matplotlib, pandas, flowtracks (analysis)
+
+(`scikit-image` and `numpy` are core dependencies, installed either way.)
 
 ---
 
 ### Installing from Binary Wheels
 
-Pre-built manylinux wheels are available for Linux:
+Pre-built wheels are published to PyPI:
 
 ```bash
 # Using pip
@@ -205,51 +201,32 @@ pip install openptv2
 uv pip install openptv2
 ```
 
-The wheels are compatible with glibc 2.17+ (CentOS 7, Ubuntu 14.04, Debian 8, etc.)
-
----
-
-### Building Binary Wheels from Source
-
-See [BUILDING_BINARY_WHEELS.md](BUILDING_BINARY_WHEELS.md) for detailed instructions on building portable binary wheels using cibuildwheel.
-
 ---
 
 ### Troubleshooting Installation
 
 #### Common Issues
 
-**1. "CMake not found"**
-```bash
-# Install CMake
-# Linux: sudo apt-get install cmake
-# macOS: brew install cmake
-# Windows: Download from https://cmake.org/download/
-```
-
-**2. "C compiler not found"**
+**1. "C compiler not found"**
 ```bash
 # Linux: sudo apt-get install build-essential
 # macOS: xcode-select --install
 # Windows: Install MSVC Build Tools
 ```
 
-**3. "Cython not found"**
+**2. "Cython not found"**
 ```bash
 pip install cython>=3.0.0
 ```
 
-**4. "NumPy version mismatch"**
+**3. "NumPy version mismatch"**
 ```bash
 pip install numpy>=2.0.0
 ```
 
-**5. "optv module not found" (after cloning)**
+**4. Cython extensions not rebuilt after editing `src/openptv2/algorithms/`**
 ```bash
-# The optv package is built by CMake - you need to build the package
-uv sync --extra dev
-# or
-pip install -e ".[dev]"
+uv run python setup.py build_ext --inplace
 ```
 
 ---
@@ -258,24 +235,11 @@ pip install -e ".[dev]"
 
 ### Basic Tracking
 
-```python
-import openptv2
-from openptv2 import Tracker, detect_targets
-
-# Load images
-from skimage import io
-
-images = [io.imread(f"cam1_{i:04d}.tif") for i in range(100)]
-
-# Detect particles
-targets = [detect_targets(img) for img in images]
-
-# Track particles
-tracker = Tracker()
-tracks = tracker.track([t.coordinates for t in targets])
-
-print(f"Found {len(tracks)} tracks")
-```
+The quickest way to run a full detection → correspondence → tracking
+pipeline is the batch CLI (see [Batch Processing](#batch-processing)
+below) or the GUI. For scripting against the library directly —
+loading calibrations/parameters and driving `openptv2.Tracker` — see
+[docs/tutorials/](docs/tutorials/).
 
 ### Runtime
 
@@ -393,60 +357,25 @@ Both styles are fully supported across all command-line scripts. Choose based on
 
 ```
 openptv2/
-├── algorithms/        # Python/Numba fallback engine
-│   ├── calibration.py
-│   ├── correspondences.py
-│   ├── image_processing.py
-│   ├── orientation.py
-│   ├── parameters.py
-│   ├── segmentation.py
-│   ├── track.py
-│   └── ...
-├── bindings/          # Cython bindings source
-│   ├── optv/          # Cython .pyx, .pxd files
-│   ├── tests/         # Binding tests
-│   └── pyproject.toml # scikit-build-core config
-├── gui/               # TraitsUI GUI application
-│   ├── pyptv/         # Main GUI package
-│   ├── plugins/       # GUI plugins
-│   └── tests/         # GUI tests
-├── lib/               # C core library
-│   ├── include/       # C headers
-│   ├── src/           # C source files
-│   ├── tests/         # C library tests
-│   └── CMakeLists.txt
-├── openptv2/          # Main Python package
-│   ├── __init__.py
-│   ├── calibration.py
-│   ├── correspondence.py
-│   ├── engine.py      # Engine selector
-│   ├── tracker.py
-│   └── ...
-├── tests/             # Integration tests
-│   ├── engine_comparison/
-│   ├── fixtures/
-│   └── integration/
-├── docs/              # Documentation
-│   ├── algorithms/
-│   ├── developer_guide/
-│   ├── sphinx/
-│   └── tutorials/
-├── scripts/           # Build helpers
-├── CMakeLists.txt     # Root CMake build config
-├── pyproject.toml     # Python project config
+├── src/openptv2/
+│   ├── algorithms/    # Cython 3 pure-Python engine: calibration,
+│   │                  # correspondences, orientation, tracking, etc.
+│   │                  # (the only algorithm implementation path)
+│   ├── plugins/       # Pluggable tracker/sequence implementations
+│   │                  # (hybrid, MyPTV/ProPTV-inspired trackers, rembg, ...)
+│   ├── batch/         # openptv2-batch / pyptv_batch headless pipeline
+│   ├── storage/       # Zarr frame store (res/run.zarr)
+│   ├── gui/           # TraitsUI/Chaco desktop application
+│   ├── tracker.py, calibration.py, correspondences.py, ...  # public API
+│   └── __init__.py
+├── tests/             # Test suite (unit, parity, perf, integration, gui)
+├── docs/              # Documentation, tutorials, developer guide
+├── scripts/           # Build/analysis/benchmark helper scripts
+├── docker/            # Dockerfiles for GUI and cloud batch images
+├── test_data/         # Calibration files, parameter files, fixtures
+├── pyproject.toml     # Python project config (build, deps, entry points)
 └── README.md
 ```
-
----
-
-## Engine Comparison
-
-| Feature | optv (C/Cython) | python (Numba) |
-|---------|-----------------|----------------|
-| Speed | Fastest | Fast (JIT compiled) |
-| Debugging | Harder | Easy |
-| Visualization | Limited | Full |
-| Use case | Production | Development |
 
 ---
 
@@ -454,36 +383,17 @@ openptv2/
 
 ```bash
 # All tests
-pytest
+uv run pytest
 
-# C library tests
-cd lib && mkdir build && cd build && cmake .. && ctest
-
-# Engine comparison
-pytest tests/engine_comparison/ --validate-engine
+# By marker
+uv run pytest -m unit
+uv run pytest -m "not slow"
 
 # GUI tests (headless)
-pytest gui/tests/ --headless
+uv run pytest tests/gui/ -v
 
-# Integration tests
-pytest tests/integration/ -v
-```
-
----
-
-## Migration from optv/pyptv
-
-openptv2 maintains backward compatibility:
-
-```python
-# Old optv code (still works after installation)
-from optv.tracking_framebuf import Target
-from optv.tracker import Tracker
-
-# New openptv2 code
-from openptv2 import Target, Tracker
-
-# Both work identically
+# Hot-path smoke test (tracking + correspondences)
+uv run pytest tests/unit/test_track.py tests/unit/test_track3d.py tests/unit/test_correspondences.py -v --tb=short
 ```
 
 ---
@@ -541,8 +451,8 @@ openptv2 combines work from:
 ## Contact
 
 - Mailing list: openptv@googlegroups.com
-- GitHub: https://github.com/openptv/openptv2
-- Issues: https://github.com/openptv/openptv2/issues
+- GitHub: https://github.com/alexlib/openptv2
+- Issues: https://github.com/alexlib/openptv2/issues
 
 ---
 
@@ -555,6 +465,4 @@ The project includes scripts for building and testing:
 | `scripts/build_wheel.sh` | Build binary wheel from source |
 | `scripts/install_wheel.sh` | Install wheel in clean test environment |
 | `scripts/run_tests.sh` | Run test suite in test environment |
-| `scripts/Dockerfile.slim` | Slim Docker image for testing |
-
-See [BUILDING_BINARY_WHEELS.md](BUILDING_BINARY_WHEELS.md) for detailed usage.
+| `docker/Dockerfile.slim` | Slim Docker image for testing |
