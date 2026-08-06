@@ -55,14 +55,13 @@ def _read_calibrations(cpar: ControlParams, num_cams: int) -> List[Calibration]:
             cal.from_file(ori_file, addpar_file)
             print(f"Loaded calibration for camera {i_cam + 1} from {ori_file}")
         else:
-            # Files don't exist yet - this is normal for calibration GUI
-            # Create default/empty calibration
+            missing_str = f"Missing: {ori_file if not ori_exists else ''} {addpar_file if not addpar_exists else ''}"
+            if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
+                raise RuntimeError(f"Calibration files missing for camera {i_cam + 1}: {missing_str}")
             print(
                 f"Calibration files not found for camera {i_cam + 1} - using defaults"
             )
-            print(
-                f"  Missing: {ori_file if not ori_exists else ''} {addpar_file if not addpar_exists else ''}"
-            )
+            print(f"  {missing_str}")
 
         cals.append(cal)
 

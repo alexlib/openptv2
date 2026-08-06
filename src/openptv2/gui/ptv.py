@@ -843,6 +843,8 @@ def read_frame_images(pm, img_base_names, num_cams, frame) -> List[np.ndarray]:
                         images = [np.asarray(raw_arr[frame_idx, c]) for c in range(num_cams)]
                         return images
         except Exception as e:
+            if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
+                raise RuntimeError(f"Failed to read frame {frame} from res/images.zarr: {e}") from e
             print(f"Warning: Failed to read from res/images.zarr: {e}, falling back to disk files.")
 
     if ptv_params.get("splitter", False):
