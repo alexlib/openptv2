@@ -155,9 +155,9 @@ def _needs_rebuild():
         py_file = ROOT / "src" / "openptv2" / "algorithms" / f"{mod}.py"
         if py_file.exists():
             py_c = py_file.with_suffix(".c")
-            if not py_c.exists() or py_file.stat().st_mtime > py_c.stat().st_mtime:
+            if not py_c.exists() or py_file.stat().st_mtime >= py_c.stat().st_mtime:
                 print(
-                    f"[OpenPTV2] Pure Python module modified: {mod}.py. "
+                    f"[OpenPTV2] Pure Python module modified or uncompiled: {mod}.py. "
                     "Rebuild required."
                 )
                 return True
