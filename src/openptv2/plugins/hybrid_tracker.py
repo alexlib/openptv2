@@ -7,6 +7,7 @@ Combines the high-density 3D Euclidean tracking of fast_3d with targeted
 
 from typing import Any
 
+from openptv2.algorithms.track import trackcorr_c_finish
 from openptv2.algorithms.track_kernels_hybrid import track_hybrid_kernel_loop
 from openptv2.plugins.base import TrackingPlugin
 
@@ -58,6 +59,10 @@ class Tracking(TrackingPlugin):
         for step in range(seq_par.first, seq_par.last):
             # Run compiled Cython hybrid kernel
             track_hybrid_kernel_loop(run_info, step)
+
+        # Write the final frame (mirrors Tracker.full_forward_3d) — the loop
+        # above only writes frames [first, last-1) as it advances the buffer.
+        trackcorr_c_finish(run_info, seq_par.last)
 
         avg_links = float(run_info.nlinks) / float(steps) if steps > 0 else 0.0
 

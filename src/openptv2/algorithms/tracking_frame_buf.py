@@ -163,7 +163,7 @@ def _resolve_file_base(file_base, frame_num):
 
 
 @cython.ccall
-def read_targets(file_base, frame_num):
+def read_targets(file_base, frame_num, cam_idx=None):
     fname = _resolve_file_base(file_base, frame_num)
 
     try:
@@ -188,10 +188,12 @@ def read_targets(file_base, frame_num):
                 )
             return targets
     except FileNotFoundError:
-        import re
         p = Path(fname)
-        cam_match = re.search(r"(?:cam|_c|c)(\d+)", p.name, re.IGNORECASE)
-        cam_idx = int(cam_match.group(1)) - 1 if cam_match else 0
+        if cam_idx is None:
+            import re
+            # Match camera pattern e.g. c1_0001, c10001, cam1, _c1
+            cam_match = re.search(r"(?:cam|_c|c)(\d+)(?:\d{4})?_targets$", p.name, re.IGNORECASE) or re.search(r"(?:cam|_c|c)(\d+)", p.name, re.IGNORECASE)
+            cam_idx = int(cam_match.group(1)) - 1 if cam_match else 0
         zarr_candidates = [
             p.parent / "run.zarr",
             p.parent / "targets.zarr",
@@ -398,12 +400,14 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_n
                         cor_buf.append(cor)
                         path_buf.append(path)
                     return cor_buf, path_buf
+                except (KeyError, FileNotFoundError):
+                    return [], []
                 except Exception as e:
                     if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
                         raise RuntimeError(f"Failed to read correspondences for frame {frame_num} from {zpath}: {e}") from e
                     pass
         if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
-            raise RuntimeError(f"No Zarr store with correspondences found for frame {frame_num} in candidates: {zarr_candidates}")
+            return [], []
         return [], []
 
     try:
@@ -879,6 +883,7 @@ class Frame:
                 if isinstance(target_file_base, list)
                 else target_file_base,
                 frame_num,
+                cam_idx=cam,
             )
             self.num_targets[cam] = len(targets)
             tx = self.targ_x[cam]

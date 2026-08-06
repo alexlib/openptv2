@@ -87,18 +87,30 @@ class ZarrFrameStore:
             arr_data = np.zeros((count, 8), dtype=np.float64)
             for i, t in enumerate(targets):
                 if hasattr(t, "pnr"):
+                    pnr_val = t.pnr() if callable(getattr(t, "pnr")) else t.pnr
+                    pos_val = t.pos() if callable(getattr(t, "pos", None)) else (getattr(t, "x", 0.0), getattr(t, "y", 0.0))
+                    counts_val = t.count_pixels() if callable(getattr(t, "count_pixels", None)) else (getattr(t, "n", 0), getattr(t, "nx", 0), getattr(t, "ny", 0))
+                    sumg_val = t.sum_grey_value() if callable(getattr(t, "sum_grey_value", None)) else getattr(t, "sumg", 0)
+                    tnr_val = t.tnr() if callable(getattr(t, "tnr", None)) else getattr(t, "tnr", -1)
                     arr_data[i] = [
-                        t.pnr(),
-                        t.pos()[0],
-                        t.pos()[1],
-                        t.count_pixels()[0],
-                        t.count_pixels()[1],
-                        t.count_pixels()[2],
-                        t.sum_grey_value(),
-                        t.tnr(),
+                        pnr_val,
+                        pos_val[0],
+                        pos_val[1],
+                        counts_val[0],
+                        counts_val[1],
+                        counts_val[2],
+                        sumg_val,
+                        tnr_val,
                     ]
                 else:
                     arr_data[i] = [t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7]]
+
+        # Sort targets by Y coordinate (column 2) required for epipolar line search
+        if len(arr_data) > 0:
+            sort_indices = np.argsort(arr_data[:, 2])
+            arr_data = arr_data[sort_indices]
+            arr_data[:, 0] = np.arange(len(arr_data), dtype=np.float64)
+            arr_data[:, 7] = np.arange(len(arr_data), dtype=np.float64)
 
         # Store array for specific frame
         for attempt in range(10):
