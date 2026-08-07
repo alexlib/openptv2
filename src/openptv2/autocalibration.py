@@ -1009,6 +1009,56 @@ def _tracer_rcm_median(obs_list, cals, cpar):
     return float(np.median(rcm))
 
 
+def _load_tracer_frame_data(base: Path, cpar, frames):
+    """Load the sequence YAML, list res/ptv_is.* frames, and read each frame's
+    tracked 3D points + per-camera detections for tracer_self_calibrate.
+
+    Returns (frame_data, skip_reason): frame_data is a list of (pts, det)
+    tuples on success; skip_reason is None on success, else the reason
+    tracer_self_calibrate should skip.
+    """
+    yaml_path = _find_yaml(base)
+    if yaml_path is None:
+        return None, "no parameters YAML"
+    y = yaml.safe_load(yaml_path.read_text())
+    seq = (y.get("sequence") or {}).get("base_name")
+    if not seq:
+        return None, "no sequence.base_name in YAML"
+    seq_bases = [str(base / s.replace("%d", "")) for s in seq]
+
+    ptv_files = sorted(
+        (base / "res").glob("ptv_is.*"), key=lambda p: int(p.suffix.lstrip("."))
+    )
+    if frames is not None:
+        wanted = set(frames)
+        ptv_files = [p for p in ptv_files if int(p.suffix.lstrip(".")) in wanted]
+    if not ptv_files:
+        return None, "no res/ptv_is.* frames"
+
+    n_cams = cpar.num_cams
+    frame_data = []
+    for pf in ptv_files:
+        frame = int(pf.suffix.lstrip("."))
+        lines = pf.read_text().splitlines()
+        nn = int(lines[0])
+        pts = []
+        for line in lines[1 : nn + 1]:
+            parts = line.split()
+            if len(parts) >= 5:
+                pts.append([float(parts[2]), float(parts[3]), float(parts[4])])
+        if not pts:
+            continue
+        det = []
+        for cam in range(n_cams):
+            tg = read_targets(seq_bases[cam], frame)
+            det.append(np.array([[t.x, t.y] for t in tg]) if tg else np.empty((0, 2)))
+        frame_data.append((np.asarray(pts, float), det))
+    if not frame_data:
+        return None, "no tracked points in the selected frames"
+
+    return frame_data, None
+
+
 def tracer_self_calibrate(
     base,
     cpar,
@@ -1049,53 +1099,17 @@ def tracer_self_calibrate(
     from scipy import sparse
     from scipy.optimize import least_squares
 
-    from openptv2.algorithms.tracking_frame_buf import read_targets
     from openptv2.algorithms.trafo import pixel_to_metric
     from openptv2.imgcoord import image_coordinates
 
     base = Path(base)
-    yaml_path = _find_yaml(base)
-    if yaml_path is None:
-        return cals, {"skipped": "no parameters YAML"}
-    y = yaml.safe_load(yaml_path.read_text())
-    seq = (y.get("sequence") or {}).get("base_name")
-    if not seq:
-        return cals, {"skipped": "no sequence.base_name in YAML"}
-    seq_bases = [str(base / s.replace("%d", "")) for s in seq]
-
-    ptv_files = sorted(
-        (base / "res").glob("ptv_is.*"), key=lambda p: int(p.suffix.lstrip("."))
-    )
-    if frames is not None:
-        wanted = set(frames)
-        ptv_files = [p for p in ptv_files if int(p.suffix.lstrip(".")) in wanted]
-    if not ptv_files:
-        return cals, {"skipped": "no res/ptv_is.* frames"}
-
-    n_cams = cpar.num_cams
-
     # Load raw per-frame data ONCE (tracked 3D + per-camera detections), so the
     # match->fit iterations re-associate without re-reading the files.
-    frame_data = []
-    for pf in ptv_files:
-        frame = int(pf.suffix.lstrip("."))
-        lines = pf.read_text().splitlines()
-        nn = int(lines[0])
-        pts = []
-        for line in lines[1 : nn + 1]:
-            parts = line.split()
-            if len(parts) >= 5:
-                pts.append([float(parts[2]), float(parts[3]), float(parts[4])])
-        if not pts:
-            continue
-        det = []
-        for cam in range(n_cams):
-            tg = read_targets(seq_bases[cam], frame)
-            det.append(np.array([[t.x, t.y] for t in tg]) if tg else np.empty((0, 2)))
-        frame_data.append((np.asarray(pts, float), det))
-    if not frame_data:
-        return cals, {"skipped": "no tracked points in the selected frames"}
+    frame_data, skip_reason = _load_tracer_frame_data(base, cpar, frames)
+    if skip_reason is not None:
+        return cals, {"skipped": skip_reason}
 
+    n_cams = cpar.num_cams
     free_cams = [c for c in range(n_cams) if c != hold_cam]
     n_cam_params = 6 * len(free_cams)
 
