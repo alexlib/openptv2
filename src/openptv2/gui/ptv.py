@@ -805,6 +805,51 @@ def _read_gray_uint8(imname: Path) -> np.ndarray:
     return img
 
 
+def _read_frame_from_native_zarr(pm, ptv_params, apply_negative, num_cams, frame):
+    """Try reading one frame's per-camera images from res/images.zarr.
+
+    Returns the image list on success -- NOTE this bypasses the masking step
+    applied to the on-disk path in read_frame_images, matching prior
+    behavior -- or None to fall back to the on-disk file path.
+    """
+    zarr_img_path = Path("res/images.zarr")
+    if not zarr_img_path.exists():
+        return None
+    try:
+        import zarr
+
+        zstore = zarr.open_group(str(zarr_img_path), mode="r")
+        if "raw_images" not in zstore:
+            return None
+        raw_arr = zstore["raw_images"]
+        first_frame = pm.spar.get_first() if hasattr(pm, "spar") else 1
+        frame_idx = (
+            frame - first_frame
+            if (frame - first_frame) < raw_arr.shape[0]
+            else (frame - 1)
+        )
+        if not (0 <= frame_idx < raw_arr.shape[0]):
+            return None
+        img = np.asarray(raw_arr[frame_idx])
+        if apply_negative:
+            img = negative(img)
+        if ptv_params.get("splitter", False):
+            order = ptv_params.get("splitter_order") or list(DEFAULT_SPLITTER_ORDER)
+            return [view.copy() for view in image_split(img, order=order)[:num_cams]]
+        if raw_arr.ndim == 4:  # (N, cams, h, w)
+            return [np.asarray(raw_arr[frame_idx, c]) for c in range(num_cams)]
+        return None
+    except Exception as e:
+        if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
+            raise RuntimeError(
+                f"Failed to read frame {frame} from res/images.zarr: {e}"
+            ) from e
+        print(
+            f"Warning: Failed to read from res/images.zarr: {e}, falling back to disk files."
+        )
+        return None
+
+
 def read_frame_images(pm, img_base_names, num_cams, frame) -> List[np.ndarray]:
     """Return the per-camera images for one frame, entirely in memory.
 
@@ -823,46 +868,11 @@ def read_frame_images(pm, img_base_names, num_cams, frame) -> List[np.ndarray]:
     apply_negative = ptv_params.get("negative", False)
 
     # 0. Check for native res/images.zarr store
-    zarr_img_path = Path("res/images.zarr")
-    if zarr_img_path.exists():
-        try:
-            import zarr
-
-            zstore = zarr.open_group(str(zarr_img_path), mode="r")
-            if "raw_images" in zstore:
-                raw_arr = zstore["raw_images"]
-                first_frame = pm.spar.get_first() if hasattr(pm, "spar") else 1
-                frame_idx = (
-                    frame - first_frame
-                    if (frame - first_frame) < raw_arr.shape[0]
-                    else (frame - 1)
-                )
-                if 0 <= frame_idx < raw_arr.shape[0]:
-                    img = np.asarray(raw_arr[frame_idx])
-                    if apply_negative:
-                        img = negative(img)
-                    if ptv_params.get("splitter", False):
-                        order = ptv_params.get("splitter_order") or list(
-                            DEFAULT_SPLITTER_ORDER
-                        )
-                        images = [
-                            view.copy()
-                            for view in image_split(img, order=order)[:num_cams]
-                        ]
-                        return images
-                    elif raw_arr.ndim == 4:  # (N, cams, h, w)
-                        images = [
-                            np.asarray(raw_arr[frame_idx, c]) for c in range(num_cams)
-                        ]
-                        return images
-        except Exception as e:
-            if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
-                raise RuntimeError(
-                    f"Failed to read frame {frame} from res/images.zarr: {e}"
-                ) from e
-            print(
-                f"Warning: Failed to read from res/images.zarr: {e}, falling back to disk files."
-            )
+    zarr_images = _read_frame_from_native_zarr(
+        pm, ptv_params, apply_negative, num_cams, frame
+    )
+    if zarr_images is not None:
+        return zarr_images
 
     if ptv_params.get("splitter", False):
         imname = _frame_image_name(img_base_names[0], frame)
@@ -898,19 +908,21 @@ def read_frame_images(pm, img_base_names, num_cams, frame) -> List[np.ndarray]:
     return images
 
 
-def py_sequence_loop(exp) -> None:
-    """Run a sequence of detection, stereo-correspondence, and determination.
+def _write_rt_is_file(output_path: Path, pos, print_corresp) -> None:
+    """Write the rt_is.<frame> 3D-position + correspondence-index file."""
+    try:
+        with open(output_path, "w", encoding="utf8") as rt_is:
+            rt_is.write(f"{pos.shape[0]}\n")
+            for pix, pt in enumerate(pos):
+                pt_args = (pix + 1,) + tuple(pt) + tuple(print_corresp[:, pix])
+                rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
+    except OSError as exc:
+        _raise_output_write_error(output_path, exc)
 
-    Splitter mode is handled transparently: when ``ptv.splitter`` is set,
-    each frame is one multiplexed image that is split in memory (see
-    read_frame_images) before detection.
 
-    Args:
-        exp: Either an Experiment object with pm attribute,
-             or a MainGUI object with exp1.pm and cached parameter objects
-    """
-
-    # Handle both Experiment objects and MainGUI objects
+def _resolve_experiment_params(exp):
+    """Resolve (pm, num_cams, cpar, spar, vpar, tpar, cals) from either a plain
+    Experiment object (exp.pm) or a MainGUI object (exp.exp1.pm)."""
     if hasattr(exp, "pm"):
         # Traditional experiment object
         pm = exp.pm
@@ -931,6 +943,22 @@ def py_sequence_loop(exp) -> None:
         cals = exp.cals
     else:
         raise ValueError("Object must have either pm or exp1.pm attribute")
+    return pm, num_cams, cpar, spar, vpar, tpar, cals
+
+
+def py_sequence_loop(exp) -> None:
+    """Run a sequence of detection, stereo-correspondence, and determination.
+
+    Splitter mode is handled transparently: when ``ptv.splitter`` is set,
+    each frame is one multiplexed image that is split in memory (see
+    read_frame_images) before detection.
+
+    Args:
+        exp: Either an Experiment object with pm attribute,
+             or a MainGUI object with exp1.pm and cached parameter objects
+    """
+
+    pm, num_cams, cpar, spar, vpar, tpar, cals = _resolve_experiment_params(exp)
 
     existing_target = pm.get_parameter("pft_version").get("Existing_Target", False)
 
@@ -1057,14 +1085,7 @@ def py_sequence_loop(exp) -> None:
             output_path = _prepare_output_path(
                 f"{_safe_decode(default_naming['corres'])}.{frame}"
             )
-            try:
-                with open(output_path, "w", encoding="utf8") as rt_is:
-                    rt_is.write(f"{pos.shape[0]}\n")
-                    for pix, pt in enumerate(pos):
-                        pt_args = (pix + 1,) + tuple(pt) + tuple(print_corresp[:, pix])
-                        rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
-            except OSError as exc:
-                _raise_output_write_error(output_path, exc)
+            _write_rt_is_file(output_path, pos, print_corresp)
 
 
 def _convert_optv_params_for_python_engine(cpar, vpar, tpar, cals, num_cams):
@@ -1236,25 +1257,7 @@ def py_sequence_loop_python(exp) -> None:
     from openptv2.tracker import default_naming as alg_default_naming
     from openptv2.tracking_framebuf import Frame, read_targets
 
-    # Handle both Experiment objects and MainGUI objects
-    if hasattr(exp, "pm"):
-        pm = exp.pm
-        num_cams = pm.num_cams
-        cpar = exp.cpar
-        spar = exp.spar
-        vpar = exp.vpar
-        tpar = exp.tpar
-        cals = exp.cals
-    elif hasattr(exp, "exp1") and hasattr(exp.exp1, "pm"):
-        pm = exp.exp1.pm
-        num_cams = exp.num_cams
-        cpar = exp.cpar
-        spar = exp.spar
-        vpar = exp.vpar
-        tpar = exp.tpar
-        cals = exp.cals
-    else:
-        raise ValueError("Object must have either pm or exp1.pm attribute")
+    pm, num_cams, cpar, spar, vpar, tpar, cals = _resolve_experiment_params(exp)
 
     existing_target = pm.get_parameter("pft_version").get("Existing_Target", False)
 
@@ -1446,14 +1449,7 @@ def py_sequence_loop_python(exp) -> None:
 
         corres_path = alg_default_naming["corres"]
         output_path = _prepare_output_path(f"{corres_path}.{frame}")
-        try:
-            with open(output_path, "w", encoding="utf8") as rt_is:
-                rt_is.write(f"{pos.shape[0]}\n")
-                for pix, pt in enumerate(pos):
-                    pt_args = (pix + 1,) + tuple(pt) + tuple(print_corresp[:, pix])
-                    rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
-        except OSError as exc:
-            _raise_output_write_error(output_path, exc)
+        _write_rt_is_file(output_path, pos, print_corresp)
 
         print(
             "Frame "
@@ -1620,6 +1616,24 @@ def read_targets(short_file_base: str, frame: int) -> TargetArray:
     return targs
 
 
+def _number_position_candidates(all_matches):
+    """Rank number positions by how many distinct values they take across
+    all_matches -- the position that varies most is the camera id."""
+    candidate_indices = []
+    maxlen = max(len(m) for m in all_matches) if all_matches else 0
+    for idx in range(maxlen):
+        nums = []
+        for m in all_matches:
+            if len(m) > idx:
+                nums.append(m[idx][0])
+            else:
+                nums.append(None)
+        unique = set(n for n in nums if n is not None)
+        candidate_indices.append((idx, len(unique)))
+    candidate_indices.sort(key=lambda x: -x[1])
+    return candidate_indices
+
+
 def extract_cam_ids(file_bases: list[str]) -> list[int]:
     """
     Given a list of file base strings, extract the camera identification number from each.
@@ -1653,24 +1667,9 @@ def extract_cam_ids(file_bases: list[str]) -> list[int]:
     # Build a list of all numbers and their context for each string
     all_matches = [extract_number_context(s) for s in file_bases]
 
-    # Transpose to group by position in the list
-    # Find which number position varies the most across the list
-    # (i.e., the one that is different between the names)
-    candidate_indices = []
-    maxlen = max(len(m) for m in all_matches) if all_matches else 0
-    for idx in range(maxlen):
-        nums = []
-        for m in all_matches:
-            if len(m) > idx:
-                nums.append(m[idx][0])
-            else:
-                nums.append(None)
-        # Count unique numbers (ignoring None)
-        unique = set(n for n in nums if n is not None)
-        candidate_indices.append((idx, len(unique)))
-
-    # Pick the index with the most unique numbers (should be the cam id)
-    candidate_indices.sort(key=lambda x: -x[1])
+    # Transpose to group by position in the list, and find which number
+    # position varies the most across the list (i.e. the camera id).
+    candidate_indices = _number_position_candidates(all_matches)
     if not candidate_indices or candidate_indices[0][1] <= 1:
         # fallback: just use the last number in each string
         fallback_ids = []
@@ -1724,41 +1723,55 @@ def generate_short_file_bases(img_base_names: List[str]) -> List[str]:
     return short_bases
 
 
+def _read_correspondences_from_zarr_fallback(p: Path, frame: int):
+    """Try each candidate Zarr store for one frame's correspondences.
+
+    Returns the parsed [x, y, z, p1, p2, p3, p4] rows on success, or None if
+    no candidate store has this frame (falls back to the ascii rt_is file).
+    """
+    from openptv2.storage import ZarrFrameStore
+
+    zarr_candidates = [
+        p.parent / "run.zarr",
+        p.parent / "targets.zarr",
+        p.parent.parent / "res" / "run.zarr",
+    ]
+    for zpath in zarr_candidates:
+        if not zpath.exists():
+            continue
+        try:
+            store = ZarrFrameStore(zpath, mode="r")
+            pos_3d, cam_ids = store.read_correspondences(frame)
+            data = []
+            for pt, c in zip(pos_3d, cam_ids):
+                data.append(
+                    [
+                        float(pt[0]),
+                        float(pt[1]),
+                        float(pt[2]),
+                        int(c[0]),
+                        int(c[1]),
+                        int(c[2]),
+                        int(c[3]),
+                    ]
+                )
+            return data
+        except Exception:
+            pass
+    return None
+
+
 def read_rt_is_file(filename) -> List[List[float]]:
     """Read data from an rt_is file or Zarr store and return the parsed values."""
     if not Path(filename).exists():
         p = Path(filename)
         frame_match = re.search(r"\.(\d+)$", p.name)
         if frame_match:
-            frame = int(frame_match.group(1))
-            zarr_candidates = [
-                p.parent / "run.zarr",
-                p.parent / "targets.zarr",
-                p.parent.parent / "res" / "run.zarr",
-            ]
-            for zpath in zarr_candidates:
-                if zpath.exists():
-                    from openptv2.storage import ZarrFrameStore
-
-                    try:
-                        store = ZarrFrameStore(zpath, mode="r")
-                        pos_3d, cam_ids = store.read_correspondences(frame)
-                        data = []
-                        for pt, c in zip(pos_3d, cam_ids):
-                            data.append(
-                                [
-                                    float(pt[0]),
-                                    float(pt[1]),
-                                    float(pt[2]),
-                                    int(c[0]),
-                                    int(c[1]),
-                                    int(c[2]),
-                                    int(c[3]),
-                                ]
-                            )
-                        return data
-                    except Exception:
-                        pass
+            data = _read_correspondences_from_zarr_fallback(
+                p, int(frame_match.group(1))
+            )
+            if data is not None:
+                return data
 
     try:
         with open(filename, "r", encoding="utf-8") as file:
