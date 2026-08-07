@@ -1353,7 +1353,7 @@ class CalibrationGUI(HasTraits):
             print(f"Restoring {f}")
             shutil.copyfile(f + ".bck", f)
             g = f.replace("ori", "addpar")
-            shutil.copyfile(g, g + ".bck")
+            shutil.copyfile(g + ".bck", g)
 
     def _read_cal_points(self):
         return np.atleast_1d(
