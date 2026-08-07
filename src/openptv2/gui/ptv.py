@@ -1067,6 +1067,157 @@ def py_sequence_loop(exp) -> None:
                 _raise_output_write_error(output_path, exc)
 
 
+def _convert_optv_params_for_python_engine(cpar, vpar, tpar, cals, num_cams):
+    """Convert optv ControlParams/VolumeParams/TargetParams/Calibrations into
+    their algorithms-engine equivalents (ControlPar/VolumePar/TargetPar/
+    Calibration), for the Python engine's sequence loop.
+
+    Every optv getter is hasattr-guarded (some param objects are already
+    algorithms-engine objects or partial stand-ins in tests) and, where the
+    getter can itself raise, wrapped in try/except so one missing/broken
+    field doesn't abort the whole conversion.
+
+    Returns (cpar_py, vpar_py, tpar_py, cals_py).
+    """
+    from openptv2.algorithms.parameters import ControlPar, TargetPar, VolumePar
+    from openptv2.calibration import Calibration as AlgCalibration
+
+    cpar_py = ControlPar(num_cams=num_cams)
+    imx, imy = cpar.get_image_size()
+    cpar_py.imx = imx
+    cpar_py.imy = imy
+    pix_x, pix_y = cpar.get_pixel_size()
+    cpar_py.pix_x = pix_x
+    cpar_py.pix_y = pix_y
+    if hasattr(cpar, "get_hp_flag"):
+        cpar_py.hp_flag = cpar.get_hp_flag()
+    if hasattr(cpar, "get_allCam_flag"):
+        cpar_py.all_cam_flag = cpar.get_allCam_flag()
+        cpar_py.allCam_flag = cpar.get_allCam_flag()
+    if hasattr(cpar, "get_tiff_flag"):
+        cpar_py.tiff_flag = cpar.get_tiff_flag()
+    if hasattr(cpar, "get_chfield"):
+        cpar_py.chfield = cpar.get_chfield()
+    # Copy multimedia params
+    if hasattr(cpar, "get_multimedia_params"):
+        optv_mm = cpar.get_multimedia_params()
+        if hasattr(optv_mm, "get_n1"):
+            cpar_py.mm.n1 = optv_mm.get_n1()
+        if hasattr(optv_mm, "get_n3"):
+            cpar_py.mm.n3 = optv_mm.get_n3()
+        if hasattr(optv_mm, "get_nlay"):
+            nlay = optv_mm.get_nlay()
+            cpar_py.mm.nlay = nlay
+        if hasattr(optv_mm, "get_d"):
+            cpar_py.mm.d = list(optv_mm.get_d())
+        if hasattr(optv_mm, "get_n2"):
+            cpar_py.mm.n2 = list(optv_mm.get_n2())
+
+    vpar_py = VolumePar()
+    if hasattr(vpar, "get_X_lay"):
+        try:
+            val = list(vpar.get_X_lay())
+            vpar_py.x_lay = val
+            vpar_py.X_lay = np.array(val, dtype=np.float64)
+        except Exception:
+            pass
+    if hasattr(vpar, "get_Zmin_lay"):
+        try:
+            val = list(vpar.get_Zmin_lay())
+            vpar_py.z_min_lay = val
+            vpar_py.Zmin_lay = np.array(val, dtype=np.float64)
+        except Exception:
+            pass
+    if hasattr(vpar, "get_Zmax_lay"):
+        try:
+            val = list(vpar.get_Zmax_lay())
+            vpar_py.z_max_lay = val
+            vpar_py.Zmax_lay = np.array(val, dtype=np.float64)
+        except Exception:
+            pass
+    for attr in ("cn", "cnx", "cny", "csumg", "eps0", "corrmin"):
+        getter = f"get_{attr}"
+        if hasattr(vpar, getter):
+            try:
+                setattr(vpar_py, attr, getattr(vpar, getter)())
+            except Exception:
+                pass
+
+    tpar_py = TargetPar()
+    if hasattr(tpar, "get_grey_thresholds"):
+        try:
+            tpar_py.gvthresh = list(tpar.get_grey_thresholds())
+        except Exception:
+            pass
+    if hasattr(tpar, "get_max_discontinuity"):
+        try:
+            tpar_py.discont = tpar.get_max_discontinuity()
+        except Exception:
+            pass
+    if hasattr(tpar, "get_pixel_count_bounds"):
+        try:
+            lo, hi = tpar.get_pixel_count_bounds()
+            tpar_py.nnmin = lo
+            tpar_py.nnmax = hi
+        except Exception:
+            pass
+    if hasattr(tpar, "get_xsize_bounds"):
+        try:
+            lo, hi = tpar.get_xsize_bounds()
+            tpar_py.nxmin = lo
+            tpar_py.nxmax = hi
+        except Exception:
+            pass
+    if hasattr(tpar, "get_ysize_bounds"):
+        try:
+            lo, hi = tpar.get_ysize_bounds()
+            tpar_py.nymin = lo
+            tpar_py.nymax = hi
+        except Exception:
+            pass
+    if hasattr(tpar, "get_min_sum_grey"):
+        try:
+            tpar_py.sumg_min = tpar.get_min_sum_grey()
+        except Exception:
+            pass
+    if hasattr(tpar, "get_cross_size"):
+        try:
+            tpar_py.cr_sz = tpar.get_cross_size()
+        except Exception:
+            pass
+    if hasattr(tpar, "get_grey"):
+        try:
+            tpar_py.set_grey(tpar.get_grey())
+        except Exception:
+            pass
+
+    cals_py = []
+    for cal in cals:
+        py_cal = AlgCalibration()
+        if hasattr(cal, "get_pos"):
+            py_cal.set_pos(cal.get_pos())
+        if hasattr(cal, "get_angles"):
+            py_cal.set_angles(cal.get_angles())
+        if hasattr(cal, "get_primary_point"):
+            pp = cal.get_primary_point()
+            py_cal.set_primary_point(pp)
+        if hasattr(cal, "get_radial_distortion"):
+            rd = cal.get_radial_distortion()
+            py_cal.set_radial_distortion(rd)
+        if hasattr(cal, "get_decentering"):
+            dc = cal.get_decentering()
+            py_cal.set_decentering(dc)
+        if hasattr(cal, "get_affine"):
+            at = cal.get_affine()
+            py_cal.set_affine_trans(at)
+        if hasattr(cal, "get_glass_vec"):
+            gv = cal.get_glass_vec()
+            py_cal.set_glass_vec(gv)
+        cals_py.append(py_cal)
+
+    return cpar_py, vpar_py, tpar_py, cals_py
+
+
 def py_sequence_loop_python(exp) -> None:
     """Run detection, stereo-correspondence, and determination using the Python algorithms engine.
 
@@ -1080,12 +1231,6 @@ def py_sequence_loop_python(exp) -> None:
         correspondences as alg_correspondences,
     )
     from openptv2.algorithms.orientation import point_positions as alg_point_positions
-    from openptv2.algorithms.parameters import (
-        ControlPar,
-        TargetPar,
-        VolumePar,
-    )
-    from openptv2.calibration import Calibration as AlgCalibration
     from openptv2.correspondences import MatchedCoords as AlgMatchedCoords
     from openptv2.segmentation import target_recognition as alg_target_recognition
     from openptv2.tracker import default_naming as alg_default_naming
@@ -1142,142 +1287,9 @@ def py_sequence_loop_python(exp) -> None:
     short_file_bases = exp.target_filenames
     _ensure_target_output_writable(short_file_bases)
 
-    # Convert optv ControlParams to algorithms ControlPar
-    cpar_py = ControlPar(num_cams=num_cams)
-    imx, imy = cpar.get_image_size()
-    cpar_py.imx = imx
-    cpar_py.imy = imy
-    pix_x, pix_y = cpar.get_pixel_size()
-    cpar_py.pix_x = pix_x
-    cpar_py.pix_y = pix_y
-    if hasattr(cpar, "get_hp_flag"):
-        cpar_py.hp_flag = cpar.get_hp_flag()
-    if hasattr(cpar, "get_allCam_flag"):
-        cpar_py.all_cam_flag = cpar.get_allCam_flag()
-        cpar_py.allCam_flag = cpar.get_allCam_flag()
-    if hasattr(cpar, "get_tiff_flag"):
-        cpar_py.tiff_flag = cpar.get_tiff_flag()
-    if hasattr(cpar, "get_chfield"):
-        cpar_py.chfield = cpar.get_chfield()
-    # Copy multimedia params
-    if hasattr(cpar, "get_multimedia_params"):
-        optv_mm = cpar.get_multimedia_params()
-        if hasattr(optv_mm, "get_n1"):
-            cpar_py.mm.n1 = optv_mm.get_n1()
-        if hasattr(optv_mm, "get_n3"):
-            cpar_py.mm.n3 = optv_mm.get_n3()
-        if hasattr(optv_mm, "get_nlay"):
-            nlay = optv_mm.get_nlay()
-            cpar_py.mm.nlay = nlay
-        if hasattr(optv_mm, "get_d"):
-            cpar_py.mm.d = list(optv_mm.get_d())
-        if hasattr(optv_mm, "get_n2"):
-            cpar_py.mm.n2 = list(optv_mm.get_n2())
-
-    # Convert optv VolumeParams to algorithms VolumePar
-    vpar_py = VolumePar()
-    if hasattr(vpar, "get_X_lay"):
-        try:
-            val = list(vpar.get_X_lay())
-            vpar_py.x_lay = val
-            vpar_py.X_lay = np.array(val, dtype=np.float64)
-        except Exception:
-            pass
-    if hasattr(vpar, "get_Zmin_lay"):
-        try:
-            val = list(vpar.get_Zmin_lay())
-            vpar_py.z_min_lay = val
-            vpar_py.Zmin_lay = np.array(val, dtype=np.float64)
-        except Exception:
-            pass
-    if hasattr(vpar, "get_Zmax_lay"):
-        try:
-            val = list(vpar.get_Zmax_lay())
-            vpar_py.z_max_lay = val
-            vpar_py.Zmax_lay = np.array(val, dtype=np.float64)
-        except Exception:
-            pass
-    for attr in ("cn", "cnx", "cny", "csumg", "eps0", "corrmin"):
-        getter = f"get_{attr}"
-        if hasattr(vpar, getter):
-            try:
-                setattr(vpar_py, attr, getattr(vpar, getter)())
-            except Exception:
-                pass
-
-    # Convert optv TargetParams to algorithms TargetPar
-    tpar_py = TargetPar()
-    if hasattr(tpar, "get_grey_thresholds"):
-        try:
-            tpar_py.gvthresh = list(tpar.get_grey_thresholds())
-        except Exception:
-            pass
-    if hasattr(tpar, "get_max_discontinuity"):
-        try:
-            tpar_py.discont = tpar.get_max_discontinuity()
-        except Exception:
-            pass
-    if hasattr(tpar, "get_pixel_count_bounds"):
-        try:
-            lo, hi = tpar.get_pixel_count_bounds()
-            tpar_py.nnmin = lo
-            tpar_py.nnmax = hi
-        except Exception:
-            pass
-    if hasattr(tpar, "get_xsize_bounds"):
-        try:
-            lo, hi = tpar.get_xsize_bounds()
-            tpar_py.nxmin = lo
-            tpar_py.nxmax = hi
-        except Exception:
-            pass
-    if hasattr(tpar, "get_ysize_bounds"):
-        try:
-            lo, hi = tpar.get_ysize_bounds()
-            tpar_py.nymin = lo
-            tpar_py.nymax = hi
-        except Exception:
-            pass
-    if hasattr(tpar, "get_min_sum_grey"):
-        try:
-            tpar_py.sumg_min = tpar.get_min_sum_grey()
-        except Exception:
-            pass
-    if hasattr(tpar, "get_cross_size"):
-        try:
-            tpar_py.cr_sz = tpar.get_cross_size()
-        except Exception:
-            pass
-    if hasattr(tpar, "get_grey"):
-        try:
-            tpar_py.set_grey(tpar.get_grey())
-        except Exception:
-            pass
-
-    # Convert optv Calibrations to algorithms Calibrations
-    cals_py = []
-    for cal in cals:
-        py_cal = AlgCalibration()
-        if hasattr(cal, "get_pos"):
-            py_cal.set_pos(cal.get_pos())
-        if hasattr(cal, "get_angles"):
-            py_cal.set_angles(cal.get_angles())
-        if hasattr(cal, "get_primary_point"):
-            pp = cal.get_primary_point()
-            py_cal.set_primary_point(pp)
-        if hasattr(cal, "get_radial_distortion"):
-            rd = cal.get_radial_distortion()
-            py_cal.set_radial_distortion(rd)
-        if hasattr(cal, "get_decentering"):
-            dc = cal.get_decentering()
-            py_cal.set_decentering(dc)
-        if hasattr(cal, "get_affine"):
-            at = cal.get_affine()
-            py_cal.set_affine_trans(at)
-        if hasattr(cal, "get_glass_vec"):
-            gv = cal.get_glass_vec()
-            py_cal.set_glass_vec(gv)
-        cals_py.append(py_cal)
+    cpar_py, vpar_py, tpar_py, cals_py = _convert_optv_params_for_python_engine(
+        cpar, vpar, tpar, cals, num_cams
+    )
 
     for frame in range(first_frame, last_frame + 1):
         detections = []
