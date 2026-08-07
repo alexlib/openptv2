@@ -28,7 +28,7 @@ def main():
     images_dir.mkdir(parents=True, exist_ok=True)
 
     cavity_dir = original_cwd / "test_data/test_cavity"
-    cavity_dir / "parameters_Run1.yaml"
+    yaml_file = cavity_dir / "parameters_Run1.yaml"
     ptv_is_pattern = str(cavity_dir / "res/ptv_is.%d")
 
     # 2. Load trajectories using flowtracks
