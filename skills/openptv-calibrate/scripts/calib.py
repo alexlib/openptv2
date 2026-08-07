@@ -625,15 +625,65 @@ def cmd_pick(args) -> int:
 # --- run the calibration ----------------------------------------------------
 
 
+def _write_refined_cals(base: Path, ba_results) -> None:
+    """Write joint-BA-refined calibrations, backing up the prior .ori/.addpar first."""
+    import shutil
+
+    from openptv2.autocalibration import cam_files
+
+    for r in ba_results:
+        if r.error is not None or r.cal is None:
+            continue
+        _, ori, addpar = cam_files(base, r.cam)
+        shutil.copy2(ori, Path(str(ori) + ".jointba-bck"))
+        shutil.copy2(addpar, Path(str(addpar) + ".jointba-bck"))
+        r.cal.write(str(ori).encode(), str(addpar).encode())
+
+
+def _apply_joint_ba(args, results, cpar) -> dict:
+    """Run joint plate BA, print its result, and write refined cals when they
+    improve cross-camera RCM (unless --dry-run). Returns the info dict to
+    store under report['joint_ba']."""
+    from openptv2.autocalibration import joint_plate_bundle_adjust
+
+    ba_results, info = joint_plate_bundle_adjust(
+        results, cpar, shake_distortion=args.shake_distortion
+    )
+    before, after = info.get("rcm_before"), info.get("rcm_after")
+    if "skipped" in info:
+        print(f"joint BA: skipped ({info['skipped']})")
+        return info
+    if before is None or after is None:
+        return info
+
+    print(f"joint BA: cross-camera RCM median {before:.3f} -> {after:.3f} mm")
+    if args.shake_distortion:
+        ext = info.get("rcm_exterior_only")
+        print(
+            f"  distortion shaking: {ext:.3f} (exterior-only) -> "
+            f"{after:.3f} mm, shaken groups: "
+            f"{info.get('shaken_groups') or 'none'}"
+        )
+
+    if after >= before:
+        print("  did not improve -> cals unchanged")
+        return info
+    if args.dry_run:
+        print("  improved (dry-run, not written)")
+        return info
+
+    _write_refined_cals(Path(args.dataset).resolve(), ba_results)
+    print("  improved -> refined cals written")
+    return info
+
+
 def cmd_run(args) -> int:
     import numpy as np
 
     from openptv2.autocalibration import (
         _load_dataset_params,
         calibrate_dataset,
-        cam_files,
         cross_camera_rcm,
-        joint_plate_bundle_adjust,
         resolve_calblock,
     )
 
@@ -673,39 +723,7 @@ def cmd_run(args) -> int:
     report["cross_camera_rcm"] = rcm
 
     if args.joint_ba:
-        ba_results, info = joint_plate_bundle_adjust(
-            results, cpar, shake_distortion=args.shake_distortion
-        )
-        report["joint_ba"] = info
-        before, after = info.get("rcm_before"), info.get("rcm_after")
-        if "skipped" in info:
-            print(f"joint BA: skipped ({info['skipped']})")
-        elif before is not None and after is not None:
-            print(f"joint BA: cross-camera RCM median {before:.3f} -> {after:.3f} mm")
-            if args.shake_distortion:
-                ext = info.get("rcm_exterior_only")
-                print(
-                    f"  distortion shaking: {ext:.3f} (exterior-only) -> "
-                    f"{after:.3f} mm, shaken groups: "
-                    f"{info.get('shaken_groups') or 'none'}"
-                )
-            improved = after < before
-            if improved and not args.dry_run:
-                import shutil
-
-                base_ = Path(args.dataset).resolve()
-                for r in ba_results:
-                    if r.error is not None or r.cal is None:
-                        continue
-                    _, ori, addpar = cam_files(base_, r.cam)
-                    shutil.copy2(ori, Path(str(ori) + ".jointba-bck"))
-                    shutil.copy2(addpar, Path(str(addpar) + ".jointba-bck"))
-                    r.cal.write(str(ori).encode(), str(addpar).encode())
-                print("  improved -> refined cals written")
-            elif improved:
-                print("  improved (dry-run, not written)")
-            else:
-                print("  did not improve -> cals unchanged")
+        report["joint_ba"] = _apply_joint_ba(args, results, cpar)
 
     Path(args.output).write_text(json.dumps(report, indent=2))
     print(f"Success! Calibration report written to: {args.output}")
