@@ -504,6 +504,20 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_n
     return cor_buf, path_buf
 
 
+def _corres_p_at(cor_buf, pix):
+    """Extract the 4-element p[] array for one particle from cor_buf, which may
+    be a list of Corres objects, an (nr_array, p_array) SoA tuple, or generic."""
+    if (
+        isinstance(cor_buf, (list, tuple))
+        and len(cor_buf) == 2
+        and isinstance(cor_buf[0], np.ndarray)
+    ):
+        return cor_buf[1][pix]
+    if isinstance(cor_buf, list) and isinstance(cor_buf[0], Corres):
+        return cor_buf[pix].p
+    return cor_buf[pix].p if hasattr(cor_buf[pix], "p") else np.zeros(4, dtype=np.int32)
+
+
 @cython.ccall
 def write_path_frame(
     cor_buf,
@@ -550,22 +564,7 @@ def write_path_frame(
     for pix in range(num_parts):
         p = path_buf[pix]
 
-        # Handle cor_buf: can be list of Corres objects, or (nr_array, p_array) tuple
-        if (
-            isinstance(cor_buf, (list, tuple))
-            and len(cor_buf) == 2
-            and isinstance(cor_buf[0], np.ndarray)
-        ):
-            int(cor_buf[0][pix])
-            c_p = cor_buf[1][pix]
-        elif isinstance(cor_buf, list) and isinstance(cor_buf[0], Corres):
-            c_p = cor_buf[pix].p
-        else:
-            c_p = (
-                cor_buf[pix].p
-                if hasattr(cor_buf[pix], "p")
-                else np.zeros(4, dtype=np.int32)
-            )
+        c_p = _corres_p_at(cor_buf, pix)
 
         if linkage_file:
             linkage_file.write(
@@ -602,19 +601,7 @@ def write_path_frame(
                 store.write_linkage(frame=frame_num, prev_ids=prevs, next_ids=nexts, pos_3d=pos_3d, linkage_name=link_name)
 
             # Also extract camera IDs for correspondences
-            cam_ids = []
-            for pix in range(num_parts):
-                if (
-                    isinstance(cor_buf, (list, tuple))
-                    and len(cor_buf) == 2
-                    and isinstance(cor_buf[0], np.ndarray)
-                ):
-                    c_p = cor_buf[1][pix]
-                elif isinstance(cor_buf, list) and isinstance(cor_buf[0], Corres):
-                    c_p = cor_buf[pix].p
-                else:
-                    c_p = cor_buf[pix].p if hasattr(cor_buf[pix], "p") else np.zeros(4, dtype=np.int32)
-                cam_ids.append(c_p)
+            cam_ids = [_corres_p_at(cor_buf, pix) for pix in range(num_parts)]
 
             store.write_correspondences(frame=frame_num, pos_3d=pos_3d, cam_target_ids=np.array(cam_ids, dtype=np.int32))
         except Exception:

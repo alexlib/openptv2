@@ -9,6 +9,8 @@ Handles:
 - Volume dimension calculations
 """
 
+from itertools import product
+
 import cython
 import numpy as np
 
@@ -532,6 +534,53 @@ def get_mmf_from_mmlut(
     return mmf
 
 
+def _corner_ray_extremes(x_px, y_px, cpar, c, mm, Zmin, Zmax):
+    """Ray-trace one image corner through camera `c` and return its (X, Y)
+    ground position at Zmin and Zmax.
+
+    A camera whose pose puts this corner ray past the glass/water critical
+    angle (total internal reflection) makes ray_tracing legitimately return
+    NaN for that Z; such entries are omitted rather than returned, since a
+    NaN seed would poison every later min/max comparison in the caller.
+    """
+    from .ray_tracing import ray_tracing
+    from .trafo import correct_brown_affin, pixel_to_metric
+
+    ap = c.added_par
+    x, y = pixel_to_metric(x_px, y_px, cpar)
+    x -= c.int_par.xh
+    y -= c.int_par.yh
+
+    x, y = correct_brown_affin(
+        x, y, ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she
+    )
+
+    pos, a = ray_tracing(
+        x,
+        y,
+        c.ext_par.dm,
+        c.ext_par.x0,
+        c.ext_par.y0,
+        c.ext_par.z0,
+        c.int_par.cc,
+        c.glass_par.vec_x,
+        c.glass_par.vec_y,
+        c.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
+    )
+
+    extremes = []
+    for Z in (Zmin, Zmax):
+        X = pos[0] + (Z - pos[2]) * a[0] / a[2]
+        Y = pos[1] + (Z - pos[2]) * a[1] / a[2]
+        if np.isfinite(X) and np.isfinite(Y):
+            extremes.append((X, Y))
+    return extremes
+
+
 def volumedimension(vpar, cpar, cal):
     """Find measurement volume limits in 3D space.
 
@@ -545,9 +594,6 @@ def volumedimension(vpar, cpar, cal):
     Returns:
         (xmax, xmin, ymax, ymin, zmax, zmin) volume bounds.
     """
-    from .ray_tracing import ray_tracing
-    from .trafo import correct_brown_affin, pixel_to_metric
-
     xc = [0.0, float(cpar.imx)]
     yc = [0.0, float(cpar.imy)]
 
@@ -561,67 +607,25 @@ def volumedimension(vpar, cpar, cal):
     xmin = xmax = 0.0
     ymin = ymax = 0.0
     first = True
+    mm = cpar.mm
 
     for i_cam in range(cpar.num_cams):
         c = cal[i_cam]
-        ap = c.added_par
-        mm = cpar.mm
-
-        for i in range(2):
-            for j in range(2):
-                x, y = pixel_to_metric(xc[i], yc[j], cpar)
-                x -= c.int_par.xh
-                y -= c.int_par.yh
-
-                x, y = correct_brown_affin(
-                    x, y, ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she
-                )
-
-                pos, a = ray_tracing(
-                    x,
-                    y,
-                    c.ext_par.dm,
-                    c.ext_par.x0,
-                    c.ext_par.y0,
-                    c.ext_par.z0,
-                    c.int_par.cc,
-                    c.glass_par.vec_x,
-                    c.glass_par.vec_y,
-                    c.glass_par.vec_z,
-                    mm.n1,
-                    mm.n2[0],
-                    mm.n3,
-                    mm.d[0],
-                )
-
-                for Z in [Zmin, Zmax]:
-                    X = pos[0] + (Z - pos[2]) * a[0] / a[2]
-                    Y = pos[1] + (Z - pos[2]) * a[1] / a[2]
-
-                    # A camera whose pose puts a corner ray past the glass/water
-                    # critical angle (total internal reflection) makes
-                    # ray_tracing legitimately return NaN for that corner. Skip
-                    # it rather than let it seed xmin/xmax/ymin/ymax: with the
-                    # old "first" flag, a NaN seed poisons every later
-                    # comparison (X > xmax is False when either is NaN), so one
-                    # bad camera silently wipes out the volume even when the
-                    # others are fine.
-                    if not (np.isfinite(X) and np.isfinite(Y)):
-                        continue
-
-                    if first:
-                        xmin = xmax = X
-                        ymin = ymax = Y
-                        first = False
-                    else:
-                        if X > xmax:
-                            xmax = X
-                        if X < xmin:
-                            xmin = X
-                        if Y > ymax:
-                            ymax = Y
-                        if Y < ymin:
-                            ymin = Y
+        for i, j in product(range(2), range(2)):
+            for X, Y in _corner_ray_extremes(xc[i], yc[j], cpar, c, mm, Zmin, Zmax):
+                if first:
+                    xmin = xmax = X
+                    ymin = ymax = Y
+                    first = False
+                else:
+                    if X > xmax:
+                        xmax = X
+                    if X < xmin:
+                        xmin = X
+                    if Y > ymax:
+                        ymax = Y
+                    if Y < ymin:
+                        ymin = Y
 
     return xmax, xmin, ymax, ymin, Zmax, Zmin
 

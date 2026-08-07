@@ -9,6 +9,34 @@ from .parameter_models import AllParams
 
 
 class ParameterManager:
+    # .par files whose legacy-params class needs n_img (and nr, for man_ori).
+    _N_IMG_PAR_FILES = frozenset(
+        {
+            "cal_ori.par",
+            "sequence.par",
+            "targ_rec.par",
+            "man_ori.par",
+            "multi_planes.par",
+            "sortgrid.par",
+        }
+    )
+
+    def _instantiate(self, cls, filename, dir_path):
+        """Build a legacy-params object, passing n_img/nr when the class requires it."""
+        if filename not in self._N_IMG_PAR_FILES:
+            return cls(path=dir_path)
+        if filename == "man_ori.par":
+            return cls(n_img=self.num_cams, nr=[], path=dir_path)
+        return cls(n_img=self.num_cams, path=dir_path)
+
+    @staticmethod
+    def _pad_list_to_length(values: list, length: int) -> list:
+        """Repeat the last element to reach `length`, then truncate to it."""
+        if len(values) >= length:
+            return values[:length]
+        last = values[-1] if values else ""
+        return values + [last for _ in range(length - len(values))]
+
     def get_target_filenames(self):
         """Return the list of target_filenames for the current experiment, based on YAML parameters and splitter mode."""
         seq_params = self.parameters.get("sequence")
@@ -74,20 +102,7 @@ class ParameterManager:
             filename = par_file.name
             if filename in self._class_map:
                 cls = self._class_map[filename]
-                if filename in [
-                    "cal_ori.par",
-                    "sequence.par",
-                    "targ_rec.par",
-                    "man_ori.par",
-                    "multi_planes.par",
-                    "sortgrid.par",
-                ]:
-                    if filename == "man_ori.par":
-                        obj = cls(n_img=self.num_cams, nr=[], path=dir_path)
-                    else:
-                        obj = cls(n_img=self.num_cams, path=dir_path)
-                else:
-                    obj = cls(path=dir_path)
+                obj = self._instantiate(cls, filename, dir_path)
                 obj.read()
                 # Only include attributes that are actual parameters (not class/static fields)
                 # Use the class's 'fields' property if available, else filter by excluding known non-parameter fields
@@ -288,36 +303,20 @@ class ParameterManager:
             filename = f"{name}.par"
             if filename in self._class_map:
                 cls = self._class_map[filename]
-                if filename in [
-                    "cal_ori.par",
-                    "sequence.par",
-                    "targ_rec.par",
-                    "man_ori.par",
-                    "multi_planes.par",
-                    "sortgrid.par",
-                ]:
-                    if filename == "man_ori.par":
-                        obj = cls(n_img=self.num_cams, nr=[], path=dir_path)
-                    else:
-                        obj = cls(n_img=self.num_cams, path=dir_path)
-                else:
-                    obj = cls(path=dir_path)
-                # Special handling for cal_ori.par to ensure correct list lengths and repeat last value if needed
+                obj = self._instantiate(cls, filename, dir_path)
+                # cal_ori.par's image lists must match num_cams exactly: pad by
+                # repeating the last entry, or truncate.
                 if filename == "cal_ori.par":
                     if "img_cal_name" in data and isinstance(
                         data["img_cal_name"], list
                     ):
-                        L = data["img_cal_name"]
-                        if len(L) < self.num_cams:
-                            last = L[-1] if L else ""
-                            L = L + [last for _ in range(self.num_cams - len(L))]
-                        data["img_cal_name"] = L[: self.num_cams]
+                        data["img_cal_name"] = self._pad_list_to_length(
+                            data["img_cal_name"], self.num_cams
+                        )
                     if "img_ori" in data and isinstance(data["img_ori"], list):
-                        L = data["img_ori"]
-                        if len(L) < self.num_cams:
-                            last = L[-1] if L else ""
-                            L = L + [last for _ in range(self.num_cams - len(L))]
-                        data["img_ori"] = L[: self.num_cams]
+                        data["img_ori"] = self._pad_list_to_length(
+                            data["img_ori"], self.num_cams
+                        )
                 for k, v in data.items():
                     if hasattr(obj, k):
                         setattr(obj, k, v)

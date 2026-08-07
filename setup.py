@@ -253,6 +253,50 @@ if __name__ == "__main__":
         _cythonize_all()
 
 
+def _windows_compile_args(is_dev):
+    opt = "/Od" if is_dev else "/O2"
+    return [opt, "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS", "/openmp"], []
+
+
+def _darwin_compile_args(is_dev):
+    # Apple clang rejects bare -fopenmp; it needs Homebrew libomp via
+    # -Xpreprocessor -fopenmp + -lomp. delocate bundles libomp.dylib into the
+    # wheel and rewrites the rpath.
+    opt = "-O0" if is_dev else "-O3"
+    libomp = _libomp_prefix()
+    compile_args = [
+        opt,
+        "-Wno-cpp",
+        "-Wno-unused-function",
+        "-Xpreprocessor",
+        "-fopenmp",
+        f"-I{libomp}/include",
+    ]
+    link_args = ["-Wl,-rpath,@loader_path", f"-L{libomp}/lib", "-lomp"]
+    return compile_args, link_args
+
+
+def _posix_compile_args(is_dev):
+    opt = "-O0" if is_dev else "-O3"
+    compile_args = [
+        opt,
+        "-Wno-cpp",
+        "-Wno-unused-function",
+        "-Wno-maybe-uninitialized",
+        "-fopenmp",
+    ]
+    return compile_args, ["-Wl,-rpath,$ORIGIN", "-fopenmp"]
+
+
+def _platform_compile_args(is_dev):
+    """extra_compile_args/extra_link_args for the current platform. Same for every module."""
+    if sys.platform.startswith("win"):
+        return _windows_compile_args(is_dev)
+    if sys.platform == "darwin":
+        return _darwin_compile_args(is_dev)
+    return _posix_compile_args(is_dev)
+
+
 def get_extensions():
     """Create Extension objects for all Cython modules."""
     if not HAVE_COMPILER:
@@ -277,66 +321,31 @@ def get_extensions():
             "(using -O0 / /Od compiler flags)"
         )
 
+    extra_compile_args, extra_link_args = _platform_compile_args(is_dev)
+
     # Cython 3 Pure Python algorithms extensions only
     for mod in ALGORITHMS_MODULES:
         py_file = ROOT / "src" / "openptv2" / "algorithms" / f"{mod}.py"
-        if py_file.exists():
-            c_file = py_file.with_suffix(".c")
-            extra_compile_args = []
-            extra_link_args = []
-            sources = [str(c_file.relative_to(ROOT))]
+        if not py_file.exists():
+            continue
 
-            # Add CAS shim for MSVC portability (__sync_bool_compare_and_swap)
-            if mod == "track_kernels_corr":
-                sources.append("src/openptv2/algorithms/cas_shim.c")
+        c_file = py_file.with_suffix(".c")
+        sources = [str(c_file.relative_to(ROOT))]
 
-            if sys.platform.startswith("win"):
-                opt = "/Od" if is_dev else "/O2"
-                extra_compile_args.extend(
-                    [opt, "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS", "/openmp"]
-                )
-            elif sys.platform == "darwin":
-                # Apple clang rejects bare -fopenmp; it needs Homebrew libomp
-                # via -Xpreprocessor -fopenmp + -lomp. delocate bundles
-                # libomp.dylib into the wheel and rewrites the rpath.
-                opt = "-O0" if is_dev else "-O3"
-                libomp = _libomp_prefix()
-                extra_compile_args.extend(
-                    [
-                        opt,
-                        "-Wno-cpp",
-                        "-Wno-unused-function",
-                        "-Xpreprocessor",
-                        "-fopenmp",
-                        f"-I{libomp}/include",
-                    ]
-                )
-                extra_link_args.extend(
-                    ["-Wl,-rpath,@loader_path", f"-L{libomp}/lib", "-lomp"]
-                )
-            else:
-                opt = "-O0" if is_dev else "-O3"
-                extra_compile_args.extend(
-                    [
-                        opt,
-                        "-Wno-cpp",
-                        "-Wno-unused-function",
-                        "-Wno-maybe-uninitialized",
-                        "-fopenmp",
-                    ]
-                )
-                extra_link_args.extend(["-Wl,-rpath,$ORIGIN", "-fopenmp"])
+        # Add CAS shim for MSVC portability (__sync_bool_compare_and_swap)
+        if mod == "track_kernels_corr":
+            sources.append("src/openptv2/algorithms/cas_shim.c")
 
-            extensions.append(
-                Extension(
-                    f"openptv2.algorithms.{mod}",
-                    sources=sources,
-                    include_dirs=[numpy.get_include()],
-                    extra_compile_args=extra_compile_args,
-                    extra_link_args=extra_link_args,
-                    define_macros=define_macros,
-                )
+        extensions.append(
+            Extension(
+                f"openptv2.algorithms.{mod}",
+                sources=sources,
+                include_dirs=[numpy.get_include()],
+                extra_compile_args=extra_compile_args,
+                extra_link_args=extra_link_args,
+                define_macros=define_macros,
             )
+        )
 
     return extensions
 

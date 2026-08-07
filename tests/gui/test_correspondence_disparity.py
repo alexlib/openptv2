@@ -33,6 +33,24 @@ def cavity_dir():
     return d
 
 
+def _load_highpass(spar, cpar_optv, i_cam, frame):
+    """Load one camera's frame, coerce to uint8 grayscale, and highpass-filter
+    it — the shared optv-parity preprocessing step used by every test below."""
+    from imageio.v3 import imread
+    from skimage.color import rgb2gray
+    from skimage.util import img_as_ubyte
+
+    from openptv2.gui.ptv import simple_highpass
+
+    imname = Path(spar.get_img_base_name(i_cam) % frame)
+    img = imread(imname)
+    if img.ndim > 2:
+        img = rgb2gray(img)
+    if img.dtype != np.uint8:
+        img = img_as_ubyte(img)
+    return simple_highpass(img, cpar_optv)
+
+
 def _build_raw_algo_params(exp_pm, num_cams):
     from openptv2.algorithms.calibration import Calibration
     from openptv2.algorithms.parameters import ControlPar, TargetPar, VolumePar
@@ -101,12 +119,8 @@ def test_detection_parity(cavity_dir):
     os.chdir(cavity_dir)
 
     try:
-        from imageio.v3 import imread
-        from skimage.color import rgb2gray
-        from skimage.util import img_as_ubyte
-
         from openptv2.gui.experiment import Experiment
-        from openptv2.gui.ptv import py_start_proc_c, simple_highpass
+        from openptv2.gui.ptv import py_start_proc_c
 
         yaml_file = cavity_dir / "parameters_Run1.yaml"
         exp = Experiment()
@@ -120,13 +134,7 @@ def test_detection_parity(cavity_dir):
         all_match = True
 
         for i_cam in range(num_cams):
-            imname = Path(spar.get_img_base_name(i_cam) % frame)
-            img = imread(imname)
-            if img.ndim > 2:
-                img = rgb2gray(img)
-            if img.dtype != np.uint8:
-                img = img_as_ubyte(img)
-            high_pass = simple_highpass(img, cpar_optv)
+            high_pass = _load_highpass(spar, cpar_optv, i_cam, frame)
 
             from optv.segmentation import target_recognition as o_tr
 
@@ -179,17 +187,13 @@ def test_correspondence_raw_vs_optv(cavity_dir):
     os.chdir(cavity_dir)
 
     try:
-        from imageio.v3 import imread
-        from skimage.color import rgb2gray
-        from skimage.util import img_as_ubyte
-
         from openptv2.algorithms.correspondences import (
             correspondences as raw_corr,
         )
         from openptv2.algorithms.epi import Coord2d
         from openptv2.algorithms.tracking_frame_buf import Frame as AlgoFrame
         from openptv2.gui.experiment import Experiment
-        from openptv2.gui.ptv import py_start_proc_c, simple_highpass
+        from openptv2.gui.ptv import py_start_proc_c
 
         yaml_file = cavity_dir / "parameters_Run1.yaml"
         exp = Experiment()
@@ -208,13 +212,7 @@ def test_correspondence_raw_vs_optv(cavity_dir):
 
             detections, corrected_optv = [], []
             for i_cam in range(num_cams):
-                imname = Path(spar.get_img_base_name(i_cam) % frame)
-                img = imread(imname)
-                if img.ndim > 2:
-                    img = rgb2gray(img)
-                if img.dtype != np.uint8:
-                    img = img_as_ubyte(img)
-                high_pass = simple_highpass(img, cpar_optv)
+                high_pass = _load_highpass(spar, cpar_optv, i_cam, frame)
 
                 from optv.segmentation import target_recognition as o_tr
 
@@ -296,13 +294,9 @@ def test_detection_value_parity(cavity_dir):
     original_cwd = Path.cwd()
     os.chdir(cavity_dir)
     try:
-        from imageio.v3 import imread
-        from skimage.color import rgb2gray
-        from skimage.util import img_as_ubyte
-
         from openptv2.algorithms.segmentation import targ_rec
         from openptv2.gui.experiment import Experiment
-        from openptv2.gui.ptv import py_start_proc_c, simple_highpass
+        from openptv2.gui.ptv import py_start_proc_c
 
         exp = Experiment()
         exp.pm.from_yaml(cavity_dir / "parameters_Run1.yaml")
@@ -314,12 +308,7 @@ def test_detection_value_parity(cavity_dir):
 
         frame = 10000
         for cam in range(num_cams):
-            img = imread(Path(spar.get_img_base_name(cam) % frame))
-            if img.ndim > 2:
-                img = rgb2gray(img)
-            if img.dtype != np.uint8:
-                img = img_as_ubyte(img)
-            hp = simple_highpass(img, cpar_o)
+            hp = _load_highpass(spar, cpar_o, cam, frame)
 
             t_o = o_tr(hp, tpar, cam, cpar_o)
             t_a = targ_rec(
@@ -381,15 +370,11 @@ def test_correspondence_value_parity(cavity_dir):
     original_cwd = Path.cwd()
     os.chdir(cavity_dir)
     try:
-        from imageio.v3 import imread
-        from skimage.color import rgb2gray
-        from skimage.util import img_as_ubyte
-
         from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
         from openptv2.correspondences import MatchedCoords as OurMC
         from openptv2.correspondences import correspondences as our_corr
         from openptv2.gui.experiment import Experiment
-        from openptv2.gui.ptv import py_start_proc_c, simple_highpass
+        from openptv2.gui.ptv import py_start_proc_c
 
         exp = Experiment()
         exp.pm.from_yaml(cavity_dir / "parameters_Run1.yaml")
@@ -405,12 +390,7 @@ def test_correspondence_value_parity(cavity_dir):
             # identical detections fed to BOTH libraries
             dets_o, our_targs = [], []
             for cam in range(num_cams):
-                img = imread(Path(spar.get_img_base_name(cam) % frame))
-                if img.ndim > 2:
-                    img = rgb2gray(img)
-                if img.dtype != np.uint8:
-                    img = img_as_ubyte(img)
-                hp = simple_highpass(img, cpar_o)
+                hp = _load_highpass(spar, cpar_o, cam, frame)
                 t = o_tr(hp, tpar, cam, cpar_o)
                 t.sort_y()
                 dets_o.append(t)
