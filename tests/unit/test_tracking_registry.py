@@ -16,7 +16,6 @@ from openptv2.tracking_registry import (
 def test_registry_contains_all_trackers():
     """Verify all expected tracker names are in the registry."""
     expected = {
-        "hybrid_3d_corr",
         "full_multipass",
         "fast_3d",
         "standard_forward",
@@ -29,6 +28,11 @@ def test_registry_contains_all_trackers():
     registered = set(TRACKER_REGISTRY)
     for name in expected:
         assert name in registered, f"Missing tracker: {name}"
+
+
+def test_registry_does_not_contain_hybrid():
+    """Verify hybrid_3d_corr was removed from the registry."""
+    assert "hybrid_3d_corr" not in TRACKER_REGISTRY
 
 
 def test_every_tracker_has_required_fields():
@@ -46,10 +50,10 @@ def test_every_tracker_has_required_fields():
 
 def test_get_tracker_info():
     """Verify lookup by name works."""
-    info = get_tracker_info("hybrid_3d_corr")
+    info = get_tracker_info("fast_3d")
     assert info is not None
-    assert info.name == "hybrid_3d_corr"
-    assert info.display_name == "Hybrid 3D + 2D Correlation (Recommended Default)"
+    assert info.name == "fast_3d"
+    assert info.display_name == "Fast 3D-Only (Segment Mode)"
 
 
 def test_get_tracker_info_unknown():
@@ -85,9 +89,8 @@ def test_print_tracker_table():
 
 def test_print_tracker_detail():
     """Verify detail printing returns a non-empty string."""
-    detail = print_tracker_detail("hybrid_3d_corr")
+    detail = print_tracker_detail("fast_3d")
     assert detail
-    assert "Hybrid" in detail
     assert "Algorithm" in detail
     assert "Capabilities" in detail
     assert "Parameters" in detail
@@ -99,14 +102,14 @@ def test_print_tracker_detail_unknown(capsys):
     assert "Unknown tracker" in result
 
 
-def test_hybrid_3d_corr_capabilities():
-    """Verify hybrid tracker capabilities."""
-    info = get_tracker_info("hybrid_3d_corr")
-    assert info.supports_new_particles is True
-    assert info.supports_2d is True
+def test_fast_3d_capabilities():
+    """Verify fast_3d capabilities."""
+    info = get_tracker_info("fast_3d")
+    assert info is not None
+    assert info.supports_new_particles is False
+    assert info.supports_2d is False
     assert info.supports_backward is False
     assert info.supports_gap_relinking is False
-    assert info.supports_multimedia is False
 
 
 def test_full_multipass_capabilities():

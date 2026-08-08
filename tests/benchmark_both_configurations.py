@@ -1,8 +1,8 @@
 """Comprehensive Comparative Benchmark of Configuration A vs Configuration B.
 
 Compares:
-- Config A: MyPTV Hybrid Multi-Term + Post-Processing (Cold Start + Gap Relinking)
-- Config B: OpenPTV2 Cython Hybrid3D + Post-Processing
+- Config A: MyPTV Multi-Term Cost (Distance + Velocity + Acceleration + Gap Buffer)
+- Config B: OpenPTV2 Cython fast_3d (track3d_loop) Kernel
 - Baseline: Distance-Only Single-Pass Tracker
 """
 
@@ -88,7 +88,7 @@ def run_configuration_benchmark(title: str, noise: float, gaps: float, spurious:
         f"{'1. Baseline (Distance-Only)':<36} | {m_base.yield_recall * 100:5.1f}% | {m_base.precision * 100:7.1f}% | {m_base.mean_track_length:9.2f} fr | {m_base.rms_position_error:8.4f} | {m_base.fps:7.1f} | {m_base.particles_per_sec:9.0f} p/s"
     )
 
-    # 2. Configuration A: MyPTV Hybrid Multi-Term (Cost Weights + Gap Buffer max_gap=2)
+    # 2. Configuration A: MyPTV Multi-Term Cost (Cost Weights + Gap Buffer max_gap=2)
     weights = CostWeights(w_distance=1.0, w_velocity=0.6, w_acceleration=0.3)
     t0 = time.perf_counter()
     tracker_config_a = MyPTV3DTracker(
@@ -114,7 +114,7 @@ def run_configuration_benchmark(title: str, noise: float, gaps: float, spurious:
         f"{'2. Config A (Multi-Term + Gap Bridge)':<36} | {m_config_a.yield_recall * 100:5.1f}% | {m_config_a.precision * 100:7.1f}% | {m_config_a.mean_track_length:9.2f} fr | {m_config_a.rms_position_error:8.4f} | {m_config_a.fps:7.1f} | {m_config_a.particles_per_sec:9.0f} p/s"
     )
 
-    # 3. Configuration B: OpenPTV2 Cython Hybrid3D (Compiled C Kernel)
+    # 3. Configuration B: OpenPTV2 Cython fast_3d (Compiled C Kernel)
     try:
         from openptv2.algorithms.track_kernels_track3d import track3d_loop_fast
 
@@ -194,7 +194,7 @@ def run_configuration_benchmark(title: str, noise: float, gaps: float, spurious:
         m_config_b.particles_per_sec = total_particles / t_config_b
 
         print(
-            f"{'3. Config B (OpenPTV2 Cython Hybrid3D)':<36} | {m_config_b.yield_recall * 100:5.1f}% | {m_config_b.precision * 100:7.1f}% | {m_config_b.mean_track_length:9.2f} fr | {m_config_b.rms_position_error:8.4f} | {m_config_b.fps:7.1f} | {m_config_b.particles_per_sec:9.0f} p/s"
+            f"{'3. Config B (OpenPTV2 Cython fast_3d)':<36} | {m_config_b.yield_recall * 100:5.1f}% | {m_config_b.precision * 100:7.1f}% | {m_config_b.mean_track_length:9.2f} fr | {m_config_b.rms_position_error:8.4f} | {m_config_b.fps:7.1f} | {m_config_b.particles_per_sec:9.0f} p/s"
         )
     except Exception as e:
         print(f"Config B failed: {e}")

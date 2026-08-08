@@ -5,9 +5,8 @@ from typing import Any, Dict
 
 
 class TrackingPreset(str, Enum):
-    HYBRID_3D_CORR = "hybrid_3d_corr"  # Adaptive Hybrid Tracker (3D Kinematic + 2D Re-triangulation) [Recommended Default]
-    FAST = "fast"  # Fast 3D Kinematic Tracker (Sub-millisecond)
-    FAST_3D = "fast_3d"  # Fast 3D Kinematic Tracker (Alias)
+    FAST_3D = "fast_3d"  # Fast 3D Kinematic Tracker (Recommended Default)
+    FAST = "fast"  # Fast 3D Kinematic Tracker (Sub-millisecond — alias of fast_3d)
     FULL_MULTIPASS = "full_multipass"  # Forward + Backward + Reciprocity Postprocessing
     TWO_DIRECTIONAL = "two_directional"  # Forward + Backward
     STANDARD_FORWARD = "standard_forward"  # Standard Forward Pass (2D+3D)
@@ -16,11 +15,10 @@ class TrackingPreset(str, Enum):
 
 PRESET_CHOICES = [
     (
-        "hybrid_3d_corr",
-        "Adaptive Hybrid Tracker (3D Kinematic + 2D Re-triangulation) [Recommended Default]",
+        "fast_3d",
+        "Fast 3D Kinematic Tracker (Recommended Default)",
     ),
-    ("fast", "Fast 3D Kinematic Tracker (Sub-millisecond)"),
-    ("fast_3d", "Fast 3D Kinematic Tracker (Alias)"),
+    ("fast", "Fast 3D Kinematic Tracker (Alias)"),
     (
         "full_multipass",
         "High Accuracy Multi-Pass (Forward + Backward + Reciprocity)",
@@ -34,12 +32,6 @@ PRESET_MAP = dict(PRESET_CHOICES)
 REVERSE_PRESET_MAP = {v: k for k, v in PRESET_CHOICES}
 
 PRESET_CONFIGS: Dict[str, Dict[str, Any]] = {
-    "hybrid_3d_corr": {
-        "track_mode": 1,
-        "flagNewParticles": True,
-        "postprocess": False,
-        "selected_tracking": "hybrid_3d_corr",
-    },
     "fast": {
         "track_mode": 1,
         "flagNewParticles": False,
@@ -79,7 +71,6 @@ def infer_preset(
     """Infer preset / plugin pipeline name from track and plugins parameters."""
     selected_tracking = (plugins_params or {}).get("selected_tracking", "default")
     if selected_tracking in (
-        "hybrid_3d_corr",
         "fast",
         "fast_3d",
         "full_multipass",
@@ -97,13 +88,13 @@ def infer_preset(
 
     track_mode = int(track_params.get("track_mode", 0))
     if track_mode == 1:
-        return TrackingPreset.HYBRID_3D_CORR.value
+        return TrackingPreset.FAST_3D.value
 
     postprocess = bool(track_params.get("postprocess", False))
     if postprocess:
         return TrackingPreset.FULL_MULTIPASS.value
 
-    return TrackingPreset.HYBRID_3D_CORR.value
+    return TrackingPreset.FAST_3D.value
 
 
 def apply_preset(

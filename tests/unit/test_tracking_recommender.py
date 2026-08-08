@@ -104,8 +104,7 @@ def test_recommend_accuracy_priority():
     stats = compute_dataset_stats(frames)
     rec = recommend_tracker(stats, user_preferences={"priority": "accuracy"})
     assert rec.tracker_info is not None
-    if rec.tracker_info.accuracy_ranking == "highest":
-        assert rec.confidence > 0.3
+    assert rec.tracker_info.accuracy_ranking in ("high", "highest")
 
 
 def test_recommend_suggests_params():
@@ -121,7 +120,7 @@ def test_recommend_suggests_params():
 def test_print_recommendation():
     """Verify print_recommendation returns a formatted string."""
     rec = Recommendation(
-        tracker_name="hybrid_3d_corr",
+        tracker_name="fast_3d",
         confidence=0.85,
         rationale=["Test reason 1", "Test reason 2"],
         suggested_params={"dvxmax": 10.0, "dacc": 5.0},

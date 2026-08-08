@@ -1,5 +1,5 @@
 # ruff: noqa: E501
-"""Multi-density synthetic benchmark evaluating fast_3d, trackcorr, and hybrid_3d_corr.
+"""Multi-density synthetic benchmark evaluating fast_3d and the trackcorr model.
 
 Tests tracking performance across 3 distinct particle seeding densities:
 - 0.001 ppp (Low density ~ 1,000 particles)
@@ -110,14 +110,8 @@ for ppp in densities:
     overlap_drop_factor = np.exp(-12.0 * ppp)
     links_trackcorr = int(n_cont * overlap_drop_factor) + n_new
 
-    # C. Adaptive hybrid_3d_corr
-    # Pass 1 (fast_3d) tracks continuous particles in 3D without 2D overlap drop
-    # Pass 2 (trackcorr 2D) discovers newly entering particles
-    links_hybrid = links_fast3d + n_new
-
     ret_fast3d = (links_fast3d / n_total) * 100.0
     ret_trackcorr = (links_trackcorr / n_total) * 100.0
-    ret_hybrid = (links_hybrid / n_total) * 100.0
 
     results.append(
         (
@@ -127,8 +121,6 @@ for ppp in densities:
             ret_fast3d,
             links_trackcorr,
             ret_trackcorr,
-            links_hybrid,
-            ret_hybrid,
             time_fast3d,
         )
     )
@@ -142,19 +134,16 @@ for ppp in densities:
     print(
         f"  2. trackcorr:   {links_trackcorr:,} links ({ret_trackcorr:.1f}% retention)"
     )
-    print(
-        f"  3. hybrid_3d:   {links_hybrid:,} links ({ret_hybrid:.1f}% PERFECT RECONSTRUCTION!)"
-    )
 
 print("\n" + "=" * 85)
 print("FINAL MULTI-DENSITY COMPARISON TABLE")
 print("=" * 85)
 print(
-    f"{'Density (PPP)':<14} {'Particles':<12} {'fast_3d (%)':<16} {'trackcorr (%)':<16} {'hybrid_3d_corr (%)':<18} {'Computation Speed':<15}"
+    f"{'Density (PPP)':<14} {'Particles':<12} {'fast_3d (%)':<16} {'trackcorr (%)':<16} {'Computation Speed':<15}"
 )
 print("-" * 85)
-for ppp, n_total, l_f3d, r_f3d, l_tc, r_tc, l_hy, r_hy, t_f3d in results:
+for ppp, n_total, l_f3d, r_f3d, l_tc, r_tc, t_f3d in results:
     print(
-        f"{ppp:<14.3f} {n_total:<12,} {r_f3d:<16.1f} {r_tc:<16.1f} {r_hy:<18.1f} {t_f3d * 1000:.2f} ms"
+        f"{ppp:<14.3f} {n_total:<12,} {r_f3d:<16.1f} {r_tc:<16.1f} {t_f3d * 1000:.2f} ms"
     )
 print("=" * 85)

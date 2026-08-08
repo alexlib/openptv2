@@ -21,7 +21,6 @@ from openptv2.benchmarking.scenario import ScenarioSpec, generate_scenario
 # Recognised tracker names available for comparison.
 BENCHMARK_TRACKERS = [
     "fast_3d",
-    "hybrid_3d_corr",
     "full_multipass",
     "standard_forward",
     "two_directional",

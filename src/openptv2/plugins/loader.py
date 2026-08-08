@@ -37,9 +37,7 @@ BUILTIN_SEQUENCE_PLUGINS = {
 }
 
 BUILTIN_TRACKING_PLUGINS = {
-    "default": "openptv2.plugins.hybrid_tracker",
-    "hybrid_3d_corr": "openptv2.plugins.hybrid_tracker",
-    "hybrid": "openptv2.plugins.hybrid_tracker",
+    "default": "openptv2.plugins.default_tracking",
     "fast": "openptv2.plugins.default_tracking",
     "fast_3d": "openptv2.plugins.default_tracking",
     "full_multipass": "openptv2.plugins.default_tracking",

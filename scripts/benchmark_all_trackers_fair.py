@@ -26,13 +26,7 @@ run_tracking_plugin("fast_3d", exp)
 t1 = time.perf_counter()
 time_fast3d = t1 - t0
 
-# 2. Benchmark hybrid_3d_corr
-t0 = time.perf_counter()
-run_tracking_plugin("hybrid_3d_corr", exp)
-t1 = time.perf_counter()
-time_hybrid = t1 - t0
-
-# 3. Benchmark MyPTV 3D
+# 2. Benchmark MyPTV 3D
 frames = []
 for f in range(exp.spar.first, exp.spar.last + 1):
     exp.tracker._run.fb.read_frame_at_end(f)
@@ -51,5 +45,4 @@ links_myptv = sum(len(t["pos"]) - 1 for t in trajs_myptv) / float(len(frames) - 
 
 print("\n=== Exact Benchmark Summary ===")
 print(f"fast_3d (track_3d): {time_fast3d:.3f} s")
-print(f"hybrid_3d_corr:    {time_hybrid:.3f} s")
 print(f"myptv_3d:          {time_myptv:.3f} s ({links_myptv:.1f} links/step)")

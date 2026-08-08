@@ -242,7 +242,7 @@ def recommend_tracker(
     scored.sort(key=lambda x: (-x[0], x[1].speed_ranking))
     if not scored:
         return Recommendation(
-            tracker_name="hybrid_3d_corr",
+            tracker_name="fast_3d",
             confidence=0.0,
             rationale=["No suitable tracker found, falling back to default."],
         )

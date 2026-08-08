@@ -46,7 +46,7 @@ def _(mo):
         flow). Explore *how* each tracker behaves — fragmentation, wrong links,
         entering/leaving particles — and tune parameters.
 
-        **Trackers:** fast_3d, hybrid_3d_corr, myptv_3d_tracking, proptv_tracking
+        **Trackers:** fast_3d, myptv_3d_tracking, proptv_tracking
         """
     )
     return

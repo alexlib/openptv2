@@ -1,7 +1,7 @@
 # synthetic_turbulent — proPTV-style turbulent benchmark case
 
 A synthetic, deterministic PTV dataset used to compare trackers (proPTV vs
-MyPTV vs OpenPTV fast/hybrid) on the **same** ground-truth particles with the
+MyPTV vs OpenPTV fast) on the **same** ground-truth particles with the
 **same** tracking parameters.
 
 ## Contents
@@ -48,7 +48,7 @@ Deterministic given the fixed seed (2026) — identical outputs every run.
 uv run python scripts/benchmark_synthetic_turbulent.py
 ```
 
-Runs `fast_3d`, `hybrid_3d_corr`, `myptv_3d_tracking` and `proptv_tracking` on
+Runs `fast_3d`, `myptv_3d_tracking` and `proptv_tracking` on
 isolated copies with identical `track` parameters and reports proPTV-style
 identity metrics: F (fragmentation), C (completeness), Cr (purity), pmt
 (% correct tracks).

@@ -354,9 +354,8 @@ def parse_batch_output(output_lines):
         r"Frame \d+ had \[(\d+),\s*(\d+),\s*(\d+)\] correspondences"
     )
     avg_pattern = re.compile(
-        r"Average over sequence, particles:\s*([\d\.]+),\s*links:\s*([\d\.]+)"
+        r"Average over sequence,\s*particles:\s*([\d\.]+),\s*links:\s*([\d\.]+)"
     )
-    hybrid_pattern = re.compile(r"Hybrid 3D\+Corr Tracking.*avg links/step = ([\d\.]+)")
     step_pattern = re.compile(
         r"(?:track3d\s+)?step:\s*\d+,\s*curr:\s*(\d+),\s*next:\s*\d+,\s*links:\s*(\d+)"
     )
@@ -379,10 +378,6 @@ def parse_batch_output(output_lines):
             curr_p, lks = map(int, m_step.groups())
             detected_particles.append(curr_p)
             step_links.append(lks)
-
-        m_hybrid = hybrid_pattern.search(line)
-        if m_hybrid:
-            metrics["avg_links"] = float(m_hybrid.group(1))
 
         m_avg = avg_pattern.search(line)
         if m_avg:

@@ -78,98 +78,6 @@ class TrackerInfo:
 
 TRACKER_REGISTRY: dict[str, TrackerInfo] = {}
 
-HYBRID_INFO = TrackerInfo(
-    name="hybrid_3d_corr",
-    display_name="Hybrid 3D + 2D Correlation (Recommended Default)",
-    short_description="Two-pass adaptive tracker: 3D kinematic kernel then 2D re-triangulation for new particles",
-    algorithm_summary=(
-        "Pass 1 runs the compiled Cython 3D Euclidean kinematic kernel (track3d_loop) across all frames, "
-        "linking ~95 % of particles by velocity/acceleration consistency alone.  "
-        "Pass 2 re-triangulates remaining unlinked 2D camera targets into fresh 3D particles and seeds "
-        "new tracks, so particles that first appear mid-sequence are captured without a full multi-camera "
-        "epipolar pass.  Runs entirely at compiled C-speed."
-    ),
-    algorithm_detail=(
-        "Uses the Cython track_hybrid_kernel_loop which calls track3d_loop for the 3D pass, then the "
-        "trackcorr_c_finish step.  No Python-level loop overhead per frame.  "
-        "The resulting linkages are written to ptv_is.# files in the same format as all other trackers."
-    ),
-    supports_backward=False,
-    supports_new_particles=True,
-    supports_2d=True,
-    supports_postprocessing=False,
-    supports_gap_relinking=False,
-    supports_multimedia=False,
-    supports_splitter=False,
-    supports_cost_weights=False,
-    speed_ranking="fast",
-    density_ranking="moderate",
-    accuracy_ranking="high",
-    parameters=(
-        ParameterGuide(
-            name="dvxmin / dvxmax",
-            type="float",
-            default="±15.5",
-            description="Velocity search window in X (mm/frame).",
-            how_to_choose=(
-                "Compute max inter-frame displacement from a probe run and add 10 % margin. "
-                "Must be larger than true particle velocities but smaller than the typical "
-                "inter-particle distance to avoid ambiguity."
-            ),
-            typical_range="1 – 100",
-            unit="mm/frame",
-        ),
-        ParameterGuide(
-            name="dvymin / dvymax",
-            type="float",
-            default="±15.5",
-            description="Velocity search window in Y (mm/frame).",
-            how_to_choose="Same as dvx, set per axis based on measured displacements.",
-            typical_range="1 – 100",
-            unit="mm/frame",
-        ),
-        ParameterGuide(
-            name="dvzmin / dvzmax",
-            type="float",
-            default="±15.5",
-            description="Velocity search window in Z (mm/frame).",
-            how_to_choose="Same as dvx, set per axis based on measured displacements.",
-            typical_range="1 – 100",
-            unit="mm/frame",
-        ),
-        ParameterGuide(
-            name="dacc",
-            type="float",
-            default="5.5",
-            description="Maximum acceleration (mm/frame²).",
-            how_to_choose=(
-                "Compute max observed acceleration from a probe run and add 10 % margin. "
-                "Too tight → broken tracks; too loose → false links in dense regions."
-            ),
-            typical_range="0.5 – 50",
-            unit="mm/frame²",
-        ),
-        ParameterGuide(
-            name="angle",
-            type="float",
-            default="120",
-            description="Maximum angular deviation between successive velocity vectors (gon).",
-            how_to_choose=(
-                "Set to 120 gon for turbulent flow or 20–40 gon for laminar flow.  400 gon = 360°."
-            ),
-            typical_range="20 – 200",
-            unit="gon",
-        ),
-    ),
-    default_preset="hybrid_3d_corr",
-    best_for=(
-        "General-purpose PTV with moderate particle density and standard 3–6 camera setups. "
-        "The best starting point for most datasets."
-    ),
-    avoid_when="Low signal-to-noise ratio where 2D re-triangulation introduces many ghost particles.",
-    typical_datasets="Water-channel experiments, wind-tunnel flows, standard laboratory PTV.",
-)
-
 FULL_MULTIPASS_INFO = TrackerInfo(
     name="full_multipass",
     display_name="Full Multi-Pass (Highest Accuracy)",
@@ -205,7 +113,7 @@ FULL_MULTIPASS_INFO = TrackerInfo(
             type="float",
             default="±10.0",
             description="Velocity search window in X (mm/frame).",
-            how_to_choose="Same as hybrid_3d_corr — compute from probe data.",
+            how_to_choose="Same parameter guidance as fast_3d (from probe data) — compute from probe data.",
             typical_range="1 – 100",
             unit="mm/frame",
         ),
@@ -214,7 +122,7 @@ FULL_MULTIPASS_INFO = TrackerInfo(
             type="float",
             default="5.0",
             description="Maximum acceleration (mm/frame²).",
-            how_to_choose="Same as hybrid_3d_corr — compute from probe data.",
+            how_to_choose="Same parameter guidance as fast_3d (from probe data) — compute from probe data.",
             typical_range="0.5 – 50",
             unit="mm/frame²",
         ),
@@ -223,7 +131,7 @@ FULL_MULTIPASS_INFO = TrackerInfo(
             type="float",
             default="120",
             description="Maximum angular deviation (gon).",
-            how_to_choose="Same as hybrid_3d_corr.",
+            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
             typical_range="20 – 200",
             unit="gon",
         ),
@@ -326,7 +234,7 @@ STANDARD_FORWARD_INFO = TrackerInfo(
             type="float",
             default="±10.0",
             description="Velocity search window in X (mm/frame).",
-            how_to_choose="Same as hybrid_3d_corr.",
+            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
             typical_range="1 – 100",
             unit="mm/frame",
         ),
@@ -335,7 +243,7 @@ STANDARD_FORWARD_INFO = TrackerInfo(
             type="float",
             default="5.0",
             description="Maximum acceleration (mm/frame²).",
-            how_to_choose="Same as hybrid_3d_corr.",
+            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
             typical_range="0.5 – 50",
             unit="mm/frame²",
         ),
@@ -344,7 +252,7 @@ STANDARD_FORWARD_INFO = TrackerInfo(
             type="float",
             default="120",
             description="Maximum angular deviation (gon).",
-            how_to_choose="Same as hybrid_3d_corr.",
+            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
             typical_range="20 – 200",
             unit="gon",
         ),
@@ -385,7 +293,7 @@ TWO_DIRECTIONAL_INFO = TrackerInfo(
             type="float",
             default="±10.0",
             description="Velocity search window in X (mm/frame).",
-            how_to_choose="Same as hybrid_3d_corr.",
+            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
             typical_range="1 – 100",
             unit="mm/frame",
         ),
@@ -394,7 +302,7 @@ TWO_DIRECTIONAL_INFO = TrackerInfo(
             type="float",
             default="5.0",
             description="Maximum acceleration (mm/frame²).",
-            how_to_choose="Same as hybrid_3d_corr.",
+            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
             typical_range="0.5 – 50",
             unit="mm/frame²",
         ),
@@ -403,7 +311,7 @@ TWO_DIRECTIONAL_INFO = TrackerInfo(
             type="float",
             default="120",
             description="Maximum angular deviation (gon).",
-            how_to_choose="Same as hybrid_3d_corr.",
+            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
             typical_range="20 – 200",
             unit="gon",
         ),
@@ -542,7 +450,7 @@ SPLITTER_INFO = TrackerInfo(
     parameters=(),
     default_preset="",
     best_for="Datasets acquired with four-view image splitters on a single camera sensor.",
-    avoid_when="Standard multi-camera setups — use hybrid_3d_corr or full_multipass instead.",
+    avoid_when="Standard multi-camera setups — use fast_3d or full_multipass instead.",
     typical_datasets="Splitter-based tomo-PTV experiments.",
 )
 
@@ -641,7 +549,6 @@ PROPTV_INFO = TrackerInfo(
 
 def _build_registry() -> None:
     entries: list[TrackerInfo] = [
-        HYBRID_INFO,
         FULL_MULTIPASS_INFO,
         FAST_INFO,
         STANDARD_FORWARD_INFO,
@@ -751,3 +658,4 @@ __all__ = [
     "print_tracker_table",
     "print_tracker_detail",
 ]
+

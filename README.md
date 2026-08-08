@@ -17,7 +17,7 @@ Cython bindings to an external library, and no runtime engine
 selector.
 
 - **Algorithms** (`src/openptv2/algorithms/`) - Cython 3 pure-Python particle tracking, correspondence, and calibration code
-- **Plugins** (`src/openptv2/plugins/`) - pluggable tracker implementations (hybrid, MyPTV/ProPTV-informed trackers)
+- **Plugins** (`src/openptv2/plugins/`) - pluggable tracker implementations (fast, MyPTV/ProPTV-informed trackers)
 - **GUI** (`src/openptv2/gui/`) - TraitsUI/Chaco desktop application
 - **Batch pipeline** (`openptv2-batch`) - headless sequence/tracking runner for scripting and cloud use
 
@@ -398,7 +398,7 @@ openptv2/
 │   │                  # correspondences, orientation, tracking, etc.
 │   │                  # (the only algorithm implementation path)
 │   ├── plugins/       # Pluggable tracker/sequence implementations
-│   │                  # (hybrid, MyPTV/ProPTV-inspired trackers, rembg, ...)
+│   │                  # (fast, MyPTV/ProPTV-inspired trackers, rembg, ...)
 │   ├── batch/         # openptv2-batch / pyptv_batch headless pipeline
 │   ├── storage/       # Zarr frame store (res/run.zarr)
 │   ├── gui/           # TraitsUI/Chaco desktop application

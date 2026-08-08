@@ -2,7 +2,7 @@
 """Generate test_data/synthetic_turbulent — a proPTV-style turbulent benchmark case.
 
 This is the "Synthetic case (proPTV-style turbulent / DNS-RB-like flow)" used to
-compare trackers (proPTV vs MyPTV vs hybrid/fast) on the SAME synthetic data
+compare trackers (proPTV vs MyPTV vs fast) on the SAME synthetic data
 with the SAME parameters.
 
 The dataset is produced deterministically by the openptv2 benchmarking
