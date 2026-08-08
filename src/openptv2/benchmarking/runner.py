@@ -180,6 +180,16 @@ def run_tracker(
     if tracker in ("fast", "fast_3d"):
         exp.track3d = True
 
+    # Honor the requested preset even when the YAML says "selected_tracking:
+    # default" (otherwise default_tracking.infer_preset would silently force
+    # fast_3d and ``standard_forward`` would never run the trackcorr path).
+    if tracker in _CORE_PRESETS:
+        try:
+            exp.pm.parameters.setdefault("plugins", {})["selected_tracking"] = tracker
+            exp.pm.parameters.setdefault("track", {})
+        except Exception:
+            pass
+
     prev_cwd = os.getcwd()
     try:
         os.chdir(run_dir)

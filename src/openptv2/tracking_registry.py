@@ -547,10 +547,67 @@ PROPTV_INFO = TrackerInfo(
 )
 
 
+# ----------------------------------------------------------------------
+FAST_3D_SMOOTH_INFO = TrackerInfo(
+    name="fast_3d_smooth",
+    display_name="Fast 3D Smooth (SG velocity)",
+    short_description="Fast 3D-only tracking with a Savitzky-Golay smoothed velocity predictor",
+    algorithm_summary=(
+        "fast_3d 2-point extrapolation upgraded to a Savitzky-Golay smoothed "
+        "velocity estimate over a short track history, with radius-limited "
+        "Hungarian assignment instead of the order-dependent greedy scan."
+    ),
+    algorithm_detail=(
+        "Reads rt_is.# particles and links them in 3D only (no 2D epipolar search). "
+        "Each track's last positions are smoothed with an order-3 SG filter; the "
+        "smoothed velocity extrapolates the next position and candidates are matched "
+        "with a radius-limited Hungarian assignment (openptv2.plugins._assignment). "
+        "Cuts single-frame velocity-noise amplification roughly in half at window 5 "
+        "and removes greedy ordering bias at crossing particles."
+    ),
+    supports_backward=False,
+    supports_new_particles=True,
+    supports_2d=False,
+    supports_postprocessing=False,
+    supports_gap_relinking=True,
+    supports_multimedia=False,
+    supports_splitter=False,
+    supports_cost_weights=True,
+    speed_ranking="fast",
+    density_ranking="low_to_moderate",
+    accuracy_ranking="standard",
+    parameters=(
+        ParameterGuide(
+            name="dvxmin / dvxmax",
+            type="float",
+            default="±10.0",
+            description="Velocity search window in X for tracks without a velocity estimate (mm/frame).",
+            how_to_choose="From a myptv probe envelope (p1/p99), e.g. ±6 for the synthetic turbulent case.",
+            typical_range="1 – 20",
+            unit="mm/frame",
+        ),
+        ParameterGuide(
+            name="dacc",
+            type="float",
+            default="3.0",
+            description="Search radius around the predicted position for seeded tracks (mm).",
+            how_to_choose="From the probe's 2nd-derivative envelope; too large lets wrong neighbours in.",
+            typical_range="1 – 10",
+            unit="mm",
+        ),
+    ),
+    default_preset="fast_3d_smooth",
+    best_for="Same as fast_3d but on data with moderate noise or brief crossings.",
+    avoid_when="Extremely high density or particles vanishing for 2+ frames.",
+    typical_datasets="Synthetic verification, noisy first-pass 3D IS data, preview batches.",
+)
+
+
 def _build_registry() -> None:
     entries: list[TrackerInfo] = [
         FULL_MULTIPASS_INFO,
         FAST_INFO,
+        FAST_3D_SMOOTH_INFO,
         STANDARD_FORWARD_INFO,
         TWO_DIRECTIONAL_INFO,
         MYPTV_3D_INFO,
@@ -599,22 +656,22 @@ def print_tracker_detail(name: str) -> str:
         f"{'=' * 70}",
         f"  {info.display_name}",
         f"{'=' * 70}",
-        f"",
+        "",
         f"  {info.short_description}",
-        f"",
-        f"  Algorithm:",
+        "",
+        "  Algorithm:",
         f"    {info.algorithm_summary}",
     ]
     if info.algorithm_detail:
-        lines.append(f"")
-        lines.append(f"  Technical detail:")
+        lines.append("")
+        lines.append("  Technical detail:")
         lines.append(f"    {info.algorithm_detail}")
     if info.citation:
-        lines.append(f"")
+        lines.append("")
         lines.append(f"  Citation: {info.citation}")
 
-    lines.append(f"")
-    lines.append(f"  Capabilities:")
+    lines.append("")
+    lines.append("  Capabilities:")
     lines.append(f"    {'Backward pass':.<30} {'Yes' if info.supports_backward else 'No'}")
     lines.append(f"    {'New particles mid-seq':.<30} {'Yes' if info.supports_new_particles else 'No'}")
     lines.append(f"    {'2D target tracking':.<30} {'Yes' if info.supports_2d else 'No'}")
@@ -622,15 +679,15 @@ def print_tracker_detail(name: str) -> str:
     lines.append(f"    {'Gap relinking':.<30} {'Yes' if info.supports_gap_relinking else 'No'}")
     lines.append(f"    {'Cost weights':.<30} {'Yes' if info.supports_cost_weights else 'No'}")
 
-    lines.append(f"")
-    lines.append(f"  Performance:")
+    lines.append("")
+    lines.append("  Performance:")
     lines.append(f"    {'Speed':.<30} {info.speed_ranking}")
     lines.append(f"    {'Accuracy':.<30} {info.accuracy_ranking}")
     lines.append(f"    {'Density handling':.<30} {info.density_ranking}")
 
     if info.parameters:
-        lines.append(f"")
-        lines.append(f"  Parameters:")
+        lines.append("")
+        lines.append("  Parameters:")
         for p in info.parameters:
             lines.append(f"    {p.name}")
             lines.append(f"      Default: {p.default}  |  Range: {p.typical_range}  |  Unit: {p.unit}")
@@ -639,7 +696,7 @@ def print_tracker_detail(name: str) -> str:
                 lines.append(f"      Tuning: {p.how_to_choose}")
 
     if info.best_for:
-        lines.append(f"")
+        lines.append("")
         lines.append(f"  Best for: {info.best_for}")
     if info.avoid_when:
         lines.append(f"  Avoid when: {info.avoid_when}")

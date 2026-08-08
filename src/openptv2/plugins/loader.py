@@ -48,6 +48,7 @@ BUILTIN_TRACKING_PLUGINS = {
     "myptv_2d_tracking": "openptv2.plugins.myptv_2d_tracking",
     "proptv_tracking": "openptv2.plugins.proptv_tracking",
     "proptv": "openptv2.plugins.proptv_tracking",
+    "fast_3d_smooth": "openptv2.plugins.fast_3d_smooth_tracking",
 }
 
 LEGACY_ALIASES = {
