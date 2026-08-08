@@ -25,6 +25,9 @@ def print_help():
         "  validate            Validate the single Cython runtime on bundled test data"
     )
     print("  gui                 Launch the interactive 3D-PTV GUI")
+    print("  list-trackers       List all available trackers with capabilities")
+    print("  recommend           Analyse a dataset and recommend a tracker & parameters")
+    print("  benchmark           Generate datasets, sweep params, compare trackers")
     print()
     print("For help on any specific command, run:")
     print("  openptv <command> --help")
@@ -69,7 +72,7 @@ def main():
             print(f"Tracking command failed: {e}")
             sys.exit(1)
 
-    elif command in ("benchmark-tracking", "benchmark"):
+    elif command == "benchmark-tracking":
         try:
             import argparse
 
@@ -191,6 +194,154 @@ def main():
 
         except Exception as e:
             print(f"GUI launch failed: {e}")
+            sys.exit(1)
+
+    elif command in ("list-trackers", "list"):
+        from openptv2.tracking_registry import (
+            TRACKER_REGISTRY,
+            print_tracker_detail,
+            print_tracker_table,
+        )
+
+        if len(sys.argv) >= 3 and sys.argv[2] in ("--show", "-s"):
+            name = sys.argv[3] if len(sys.argv) > 3 else ""
+            if name:
+                info = TRACKER_REGISTRY.get(name)
+                if info:
+                    print(print_tracker_detail(name))
+                else:
+                    print(f"Unknown tracker: {name!r}")
+                    print(f"Available: {', '.join(sorted(TRACKER_REGISTRY))}")
+            else:
+                print("Usage: openptv list-trackers --show <tracker_name>")
+        else:
+            print("\nAvailable Trackers:\n")
+            print(print_tracker_table())
+            print()
+            print("For full details: openptv list-trackers --show <name>")
+
+    elif command == "benchmark":
+        import argparse
+
+        parser = argparse.ArgumentParser(prog="openptv benchmark")
+        sub = parser.add_subparsers(dest="action", required=True)
+
+        p_ds = sub.add_parser("dataset", help="Generate a ground-truth dataset")
+        p_ds.add_argument("out_dir")
+        p_ds.add_argument("--particles", type=int, default=60)
+        p_ds.add_argument("--frames", type=int, default=40)
+        p_ds.add_argument("--velocity", type=float, default=1.0)
+        p_ds.add_argument("--crossings", type=int, default=0)
+        p_ds.add_argument("--entering", type=int, default=0)
+        p_ds.add_argument("--leaving", type=int, default=0)
+        p_ds.add_argument("--gap", type=float, default=0.05)
+        p_ds.add_argument("--noise", type=float, default=0.02)
+        p_ds.add_argument("--ghost", type=float, default=0.02)
+        p_ds.add_argument("--refract", action="store_true")
+        p_ds.add_argument("--seed", type=int, default=42)
+
+        p_sw = sub.add_parser("sweep", help="Sweep a tracking parameter for a tracker")
+        p_sw.add_argument("out_dir")
+        p_sw.add_argument("--tracker", default="fast_3d")
+        p_sw.add_argument("--param", default="dvxmax",
+                          choices=["dvxmax", "dvy", "dvz", "dacc", "angle"])
+        p_sw.add_argument("--values", nargs="+", type=float,
+                          default=[1.0, 2.0, 4.0, 8.0])
+        p_sw.add_argument("--particles", type=int, default=60)
+        p_sw.add_argument("--frames", type=int, default=30)
+        p_sw.add_argument("--refract", action="store_true")
+        p_sw.add_argument("--seed", type=int, default=42)
+
+        p_cp = sub.add_parser("compare", help="Compare trackers on the same data")
+        p_cp.add_argument("out_dir")
+        p_cp.add_argument("--trackers", nargs="+", default=None)
+        p_cp.add_argument("--particles", type=int, default=60)
+        p_cp.add_argument("--frames", type=int, default=30)
+        p_cp.add_argument("--refract", action="store_true")
+        p_cp.add_argument("--seed", type=int, default=42)
+
+        args, _ = parser.parse_known_args(sys.argv[2:])
+
+        try:
+            from openptv2.benchmarking.cli_benchmark import (
+                cmd_dataset,
+                cmd_sweep,
+                cmd_compare,
+            )
+
+            if args.action == "dataset":
+                cmd_dataset(
+                    args.out_dir, args.particles, args.frames, args.velocity,
+                    args.crossings, args.entering, args.leaving, args.gap,
+                    args.noise, args.ghost, args.refract, args.seed,
+                )
+            elif args.action == "sweep":
+                cmd_sweep(
+                    args.out_dir, args.tracker, args.param, args.values,
+                    args.particles, args.frames, args.refract, args.seed,
+                )
+            elif args.action == "compare":
+                cmd_compare(
+                    args.out_dir, args.trackers, args.particles, args.frames,
+                    args.refract, args.seed,
+                )
+        except Exception as e:
+            print(f"Benchmark failed: {e}")
+            sys.exit(1)
+
+    elif command == "recommend":
+        try:
+            import argparse
+
+            parser = argparse.ArgumentParser(prog="openptv recommend")
+            parser.add_argument(
+                "rt_is_dir",
+                nargs="?",
+                default="res",
+                help="Directory containing rt_is.# files (default: res)",
+            )
+            parser.add_argument(
+                "--first", type=int, default=None, help="First frame"
+            )
+            parser.add_argument(
+                "--last", type=int, default=None, help="Last frame"
+            )
+            parser.add_argument(
+                "--priority",
+                choices=["speed", "accuracy", "default"],
+                default="default",
+                help="Optimisation priority",
+            )
+            parser.add_argument(
+                "--require-backward",
+                action="store_true",
+                help="Require backward tracking support",
+            )
+            parser.add_argument(
+                "--force",
+                action="store_true",
+                help="Show recommendation even if stats are incomplete",
+            )
+            args, _ = parser.parse_known_args(sys.argv[2:])
+
+            from openptv2.tracking_recommender import (
+                recommend_from_files,
+                print_recommendation,
+            )
+
+            rec = recommend_from_files(
+                args.rt_is_dir,
+                args.first or 0,
+                args.last or 0,
+                user_preferences={
+                    "priority": args.priority,
+                    "require_backward": args.require_backward,
+                },
+            )
+            print(print_recommendation(rec))
+
+        except Exception as e:
+            print(f"Recommendation failed: {e}")
             sys.exit(1)
 
     else:
