@@ -8,8 +8,6 @@ MyPTV vs OpenPTV fast/hybrid) on the **same** ground-truth particles with the
 
 ```
 synthetic_turbulent/
-├── create_synthetic_turbulent.py   # generator (reproduces the dataset)
-├── benchmark_synthetic_turbulent.py # cross-tracker benchmark runner
 ├── parameters_Run1.yaml            # runnable openptv2 experiment config
 ├── cal/                            # synthetic 4-camera calibration (.ori/.addpar)
 ├── img/                            # per-camera 2D targets (camN.<frame>_targets)
@@ -18,6 +16,13 @@ synthetic_turbulent/
 │   ├── ptv_is.<frame>, added.<frame>
 │   └── origin_<frame>.txt          # proPTV-style ground truth (ID, XYZ, cams)
 ```
+
+The scripts live in `scripts/`:
+
+| Script | Purpose |
+| --- | --- |
+| `scripts/create_synthetic_turbulent.py` | regenerates this dataset |
+| `scripts/benchmark_synthetic_turbulent.py` | cross-tracker benchmark runner |
 
 ## Case physics
 
@@ -32,7 +37,7 @@ synthetic_turbulent/
 ## Regenerate
 
 ```bash
-uv run python test_data/create_synthetic_turbulent.py
+uv run python scripts/create_synthetic_turbulent.py
 ```
 
 Deterministic given the fixed seed (2026) — identical outputs every run.
@@ -40,7 +45,7 @@ Deterministic given the fixed seed (2026) — identical outputs every run.
 ## Benchmark
 
 ```bash
-uv run python test_data/benchmark_synthetic_turbulent.py
+uv run python scripts/benchmark_synthetic_turbulent.py
 ```
 
 Runs `fast_3d`, `hybrid_3d_corr`, `myptv_3d_tracking` and `proptv_tracking` on

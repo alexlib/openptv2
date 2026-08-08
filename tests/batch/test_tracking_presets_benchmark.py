@@ -1,3 +1,4 @@
+import os
 import shutil
 import time
 from pathlib import Path
@@ -7,9 +8,6 @@ import yaml
 
 from openptv2.batch.pyptv_batch import run_batch
 
-AORTA_SAMPLE_YAML = Path(
-    r"C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\wp1\parameters_Run1_sample.yaml"
-)
 TEST_CAVITY_YAML = (
     Path(__file__).parent.parent.parent
     / "test_data"
@@ -71,23 +69,19 @@ def analyze_trajectories(res_dir: Path, first_frame: int, last_frame: int) -> di
 
 
 def get_benchmark_dataset(use_aorta: bool = False):
-    """Returns (yaml_path, first_frame, last_frame, is_aorta_dataset).
-    By default uses test_cavity (5 frames, ~200 particles) for instant pytest execution (~0.5s).
-    Set use_aorta=True or environment variable USE_AORTA_BENCHMARK=1 for full aorta sample run.
+    """Returns (yaml_path, first_frame, last_frame).
+    Uses test_cavity (5 frames, ~200 particles) for quick pytest execution.
+    The optional aorta path was removed as unsupported/dead in this checkout.
     """
-    import os
-
-    if (
-        use_aorta or os.environ.get("USE_AORTA_BENCHMARK") == "1"
-    ) and AORTA_SAMPLE_YAML.exists():
-        return AORTA_SAMPLE_YAML, 1, 5, True
-    return TEST_CAVITY_YAML, 10000, 10004, False
+    return TEST_CAVITY_YAML, 10000, 10004
 
 
+@pytest.mark.slow
+@pytest.mark.integration
 @pytest.mark.parametrize("preset", ["fast_3d", "standard_forward", "full_multipass"])
 def test_tracking_preset_execution_and_benchmark(preset, tmp_path):
     """Run batch mode for each preset, verify outputs, and print trajectory metrics."""
-    yaml_src, first_frame, last_frame, is_aorta = get_benchmark_dataset()
+    yaml_src, first_frame, last_frame = get_benchmark_dataset()
     data_dir = yaml_src.parent
 
     # Copy dataset into tmp_path sandbox
@@ -125,16 +119,18 @@ def test_tracking_preset_execution_and_benchmark(preset, tmp_path):
     )
 
     print(
-        f"\n[BENCHMARK] Preset: {preset:18s} | Dataset: {'Aorta' if is_aorta else 'Cavity'} | "
+        f"\n[BENCHMARK] Preset: {preset:18s} | Dataset: 'Cavity' | "
         f"Time: {stats['time_sec']}s | Links: {stats['total_links']} | "
         f"Trajectories: {stats['trajectories_count']} | Mean Len: {stats['mean_length']} | "
         f"Max Len: {stats['max_length']}"
     )
 
 
+@pytest.mark.slow
+@pytest.mark.integration
 def test_preset_comparison_summary_table(tmp_path, capsys):
     """Runs all 3 presets and prints a Markdown comparison table suitable for documentation."""
-    yaml_src, first_frame, last_frame, is_aorta = get_benchmark_dataset()
+    yaml_src, first_frame, last_frame = get_benchmark_dataset()
     data_dir = yaml_src.parent
 
     results = {}
@@ -165,7 +161,7 @@ def test_preset_comparison_summary_table(tmp_path, capsys):
         stats["time_sec"] = round(elapsed, 2)
         results[preset] = stats
 
-    dataset_name = "TT13_aorta (10 frames)" if is_aorta else "test_cavity (5 frames)"
+    dataset_name = "test_cavity (5 frames)"
     table_md = f"""
 ### Tracking Pipeline Benchmark Comparison ({dataset_name})
 

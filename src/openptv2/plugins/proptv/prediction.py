@@ -2,6 +2,18 @@
 Gaussian Mixture Model probabilistic track approximation (vendored from proPTV).
 
 Original source: https://github.com/RobinBarta/proPTV
+
+MIT License
+Copyright (c) 2023 DLR (Project owner: Robin Barta)
+
+This module vendors/adapts parts of the proPTV framework. The above
+copyright notice and this permission notice are included in all copies or
+substantial portions of this Software, and the underlying publication must
+be cited:
+
+  Barta, Robin, et al. "proPTV - A probabilistic particle tracking
+  velocimetry framework." Journal of Computational Physics (2024).
+  https://doi.org/10.1016/j.jcp.2024.113212
 """
 
 from __future__ import annotations

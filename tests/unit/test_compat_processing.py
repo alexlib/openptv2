@@ -25,6 +25,7 @@ from openptv2.transforms import (
     convert_arr_metric_to_pixel,
     convert_arr_pixel_to_metric,
     correct_arr_brown_affine,
+    distort_arr_brown_affine,
     distorted_to_flat,
 )
 
@@ -106,6 +107,30 @@ class TestTransformsCompat:
         flat = distorted_to_flat(distorted, cal, tol=1e-6)
 
         assert flat.shape == (2, 2)
+
+    def test_distort_correct_roundtrip(self):
+        """distort then correct must recover the original flat coordinates."""
+        cal = Calibration()
+        cal.set_radial_distortion(np.array([0.001, 0.0, 0.0]))
+        cal.set_decentering(np.array([0.0, 0.0]))
+        cal.set_affine_trans(np.array([1.0, 0.0]))
+
+        flat = np.array([[1.5, 1.5], [-2.0, 2.0], [0.1, -0.2]])
+        distorted = distort_arr_brown_affine(flat, cal)
+        corrected = correct_arr_brown_affine(distorted, cal)
+        np.testing.assert_allclose(corrected, flat, atol=1e-4)
+
+    def test_distort_changes_coordinates(self):
+        """Non-zero radial distortion must move the points."""
+        cal = Calibration()
+        cal.set_radial_distortion(np.array([0.001, 0.0, 0.0]))
+        cal.set_decentering(np.array([0.0, 0.0]))
+        cal.set_affine_trans(np.array([1.0, 0.0]))
+
+        flat = np.array([[2.0, 2.0]])
+        distorted = distort_arr_brown_affine(flat, cal)
+        assert distorted.shape == (1, 2)
+        assert not np.allclose(distorted, flat)
 
 
 class TestImgCoordCompat:

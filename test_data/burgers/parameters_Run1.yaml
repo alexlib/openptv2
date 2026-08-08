@@ -1,9 +1,5 @@
 num_cams: 4
 plugins:
-  available_tracking:
-  - default
-  available_sequence:
-  - default
   selected_tracking: default
   selected_sequence: default
 cal_ori:
@@ -24,14 +20,14 @@ cal_ori:
   cal_splitter: false
 criteria:
   X_lay:
-  - -40
-  - 40
+  - -40.0
+  - 40.0
   Zmax_lay:
-  - 10
-  - 10
+  - 10.0
+  - 10.0
   Zmin_lay:
-  - -10
-  - -10
+  - -10.0
+  - -10.0
   cn: 0.02
   cnx: 0.02
   cny: 0.02
@@ -125,12 +121,20 @@ ptv:
   pix_y: 0.0065
   tiff_flag: true
   splitter: false
+  splitter_order:
+  - 0
+  - 1
+  - 3
+  - 2
+  negative: false
+  parallel_preprocess: false
+  num_workers: 0
 sequence:
   base_name:
-  - img/cam1.
-  - img/cam2.
-  - img/cam3.
-  - img/cam4.
+  - img/cam1.%d
+  - img/cam2.%d
+  - img/cam3.%d
+  - img/cam4.%d
   first: 10001
   last: 10005
 shaking:
@@ -165,6 +169,13 @@ track:
   dvzmax: 0.5
   dvzmin: -0.5
   flagNewParticles: false
+masking:
+  mask_flag: false
+  mask_base_name: ''
+unsharp_mask:
+  flag: false
+  size: 3
+  strength: 1.0
 man_ori_coordinates:
   camera_0:
     point_1:
@@ -218,10 +229,3 @@ man_ori_coordinates:
     point_4:
       x: 820.0
       y: 819.0
-masking:
-  mask_flag: false
-  mask_base_name: ''
-unsharp_mask:
-  flag: false
-  size: 3
-  strength: 1.0

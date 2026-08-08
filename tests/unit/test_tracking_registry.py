@@ -8,8 +8,8 @@ from openptv2.tracking_registry import (
     TrackerInfo,
     get_tracker_info,
     list_trackers,
-    print_tracker_table,
     print_tracker_detail,
+    print_tracker_table,
 )
 
 
