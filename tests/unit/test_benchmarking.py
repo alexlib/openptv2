@@ -63,6 +63,25 @@ def test_scenario_gaps_and_ghosts():
     assert some_ghost
 
 
+def test_scenario_turbulent_flow():
+    """Turbulent flow produces curved (non-straight) trajectories."""
+    spec = bm.ScenarioSpec(
+        num_particles=20, num_frames=40, velocity=2.0, velocity_jitter=1.0,
+        flow_type="turbulent", seed=4,
+    )
+    tt, fg = bm.generate_scenario(spec)
+    # tracks should be long and their per-frame step directions vary (curved)
+    assert all(len(v) == 40 for v in tt.values())
+    # measure angular variance of successive steps for one track
+    track = tt[next(iter(tt))]
+    pts = np.array([p[1:] for p in track])
+    steps = np.diff(pts, axis=0)
+    steps = steps / np.linalg.norm(steps, axis=1, keepdims=True)
+    # dot of consecutive unit steps should not all be ~1 (not a straight line)
+    dots = np.clip(np.sum(steps[:-1] * steps[1:], axis=1), -1, 1)
+    assert np.mean(dots) < 0.95
+
+
 def test_write_dataset_readable_by_frame():
     """Written rt_is/targets must be readable by the Frame class."""
     spec = bm.ScenarioSpec(num_particles=15, num_frames=10, velocity=1.0, seed=3)

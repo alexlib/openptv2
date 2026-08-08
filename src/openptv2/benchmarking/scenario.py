@@ -70,7 +70,7 @@ class ScenarioSpec:
     seed: int = 42
 
     # ── Helpers present purely for ergonomics ─────────────────────────
-    flow_type: str = "linear"  # reserved: "linear" for now
+    flow_type: str = "linear"  # "linear" | "turbulent" (proPTV-style chaotic flow)
 
 
 def generate_scenario(
@@ -115,6 +115,15 @@ def generate_scenario(
         pos = np.array([x0, y0, z0])
         pts = []
         for f in range(spec.num_frames):
+            if spec.flow_type == "turbulent":
+                # proPTV-style smooth chaotic flow: velocity randomly walks
+                # with inertia (Ornstein-Uhlenbeck style) so tracks curve
+                # smoothly but unpredictably, like DNS turbulent convection.
+                vel = 0.9 * vel + rng.normal(0.0, spec.velocity_jitter, 3)
+                pos = pos + vel
+                pts.append((f, float(pos[0]), float(pos[1]), float(pos[2])))
+                continue
+
             vel = vel + acc
             # gentle curvature (rotate velocity slightly each frame)
             if spec.curvature > 0:
