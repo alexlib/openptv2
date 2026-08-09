@@ -126,11 +126,12 @@ def write_dataset(
             for slot, (pid, x, y, z) in enumerate(particles):
                 coords = []
                 for cam in range(spec.num_cams):
-                    slot_idx = cam_slot_to_targ[cam][slot]
-                    # entries are (slot, px, py); find px,py
-                    e = next(e for e in cam_targ_entries[cam] if e[0] == slot)
-                    coords.append(f"{e[1]:.4f}")
-                    coords.append(f"{e[2]:.4f}")
+                    # cam_slot_to_targ already maps slot -> its index in
+                    # cam_targ_entries[cam]; index directly instead of
+                    # rescanning the whole (sorted) entries list per slot.
+                    _, ex, ey = cam_targ_entries[cam][cam_slot_to_targ[cam][slot]]
+                    coords.append(f"{ex:.4f}")
+                    coords.append(f"{ey:.4f}")
                 fh.write(
                     f"{pid},{x:.6f},{y:.6f},{z:.6f},{','.join(coords)}\n"
                 )

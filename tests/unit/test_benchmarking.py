@@ -147,6 +147,44 @@ def test_metrics_fragmented():
     assert m.completeness > 0.95
 
 
+def test_metrics_one_to_one_no_double_claim():
+    """Two predicted points near one true particle must not both match it.
+
+    Regression for the old unconstrained-nearest-neighbour _match_frame,
+    which let two predicted tracks both claim the same true particle in a
+    frame (many-to-one). With eps wide enough to cover a second, more
+    distant true particle too, a many-to-one match would send the extra
+    predicted point to the wrong true particle instead of leaving it
+    unmatched -- inflating purity/pmt on data that is actually ambiguous.
+    """
+    tt = {
+        0: [(0, 0.0, 0.0, 0.0)],
+        1: [(0, 1.0, 0.0, 0.0)],
+    }
+    # Both predicted points sit closer to true particle 0 than to 1.
+    pred = {
+        10: [(0, 0.05, 0.0, 0.0)],
+        11: [(0, 0.15, 0.0, 0.0)],
+    }
+    m = bm.compute_identity_metrics(tt, pred, eps=0.6)
+    # Only one of the two predicted points can be assigned to true id 0;
+    # the other must go unmatched (true id 1 is too far for either).
+    assert m.n_correct_tracks == 1
+
+
+def test_metrics_ghost_capture_rate():
+    """A predicted point that only matches a ghost is reported as a capture."""
+    tt = {0: [(f, float(f), 0.0, 0.0) for f in range(5)]}
+    pred = {
+        0: [(f, float(f), 0.0, 0.0) for f in range(5)],  # correctly tracks id 0
+        1: [(f, float(f), 5.0, 0.0) for f in range(5)],  # only near the ghost
+    }
+    ghosts = {f: np.array([[float(f), 5.05, 0.0]]) for f in range(5)}
+    m = bm.compute_identity_metrics(tt, pred, eps=0.5, ghost_pos_by_frame=ghosts)
+    assert m.n_ghost_captures == 5
+    assert m.ghost_capture_rate == pytest.approx(5 / 10)
+
+
 def test_metrics_wrong_link():
     """A track that jumps particles should have low purity/pmt."""
     tt = {0: [(f, f, 0.0, 0.0) for f in range(10)],

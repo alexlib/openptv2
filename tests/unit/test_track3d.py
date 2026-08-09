@@ -13,10 +13,15 @@ from openptv2.algorithms.parameters import (
 )
 from openptv2.algorithms.track import track_forward_start, trackcorr_c_finish
 from openptv2.algorithms.track3d import find_candidates_in_3d, track3d_loop
+from openptv2.algorithms.track_kernels_track3d import track3d_loop_fast
 from openptv2.algorithms.tracking_frame_buf import Frame
 from openptv2.algorithms.tracking_run import tr_new
 
 EPS = 1e-5
+
+
+def _px(positions):
+    return np.array(positions, dtype=np.float64, order="C")
 
 
 def _has_optv():
@@ -108,6 +113,39 @@ def test_find_candidates_in_3d_boundary():
     assert len(indices) == 0
 
 
+def test_track3d_level1_ranks_by_forward_acceleration_not_decoy_behind():
+    """Regression for the sign bug in the Level 1 acceleration residual.
+
+    Particle 0 moves at constant velocity +0.1/frame along x: 0.0 -> 0.1 in
+    frames 0->1, so the correct frame-2 continuation is 0.2 (zero
+    acceleration). A decoy candidate is placed at 0.05 -- behind the
+    particle, near midpoint(prev, curr) -- which the old buggy expression
+    (curr - 2*cand + prev, instead of cand - 2*curr + prev) would rank as
+    closer. Both candidates sit inside the search box, so this only passes
+    if the acceleration residual is computed with the correct sign.
+    """
+    px0 = _px([[0.0, 0.0, 0.0]])
+    px1 = _px([[0.1, 0.0, 0.0]])
+    # index 0 = decoy (behind the particle), index 1 = true continuation.
+    px2 = _px([[0.05, 0.0, 0.0], [0.2, 0.0, 0.0]])
+    prev0 = np.array([-1], dtype=np.int32)
+    prev1 = np.array([0], dtype=np.int32)
+    next1 = np.full(1, -2, dtype=np.int32)
+    prev2 = np.full(2, -1, dtype=np.int32)
+    next2 = np.full(2, -2, dtype=np.int32)
+
+    count = track3d_loop_fast(
+        1,
+        px0, prev0, 1,
+        px1, prev1, next1, 1,
+        px2, prev2, next2, 2,
+        0.5, 0.5, 0.5,
+        4,
+    )
+    assert count == 1
+    assert next1[0] == 1, "linked to the decoy behind the particle, not the true continuation"
+
+
 def test_track3d_no_add():
     import os
 
@@ -193,7 +231,12 @@ def track3d_test_cavity():
         trackcorr_c_finish(run, run.seq_par.last)
 
         assert run.npart == 2082
-        assert run.nlinks == 1765
+        # 1765 -> 1753 after fixing the Level 1/2 acceleration-residual sign
+        # bug in track_kernels_track3d.py (candidates were ranked by
+        # proximity to a point behind the particle instead of the forward
+        # prediction). The drop is expected: some links that only existed
+        # because the wrong candidate ranked first no longer form.
+        assert run.nlinks == 1753
 
     finally:
         os.chdir(original)
@@ -238,7 +281,8 @@ def test_tracker_full_forward_3d_test_cavity():
         tracker.full_forward_3d()
 
         assert tracker.npart == 2082
-        assert tracker.nlinks == 1765
+        # See the matching note in track3d_test_cavity above: 1765 -> 1753.
+        assert tracker.nlinks == 1753
     finally:
         os.chdir(original)
 

@@ -176,9 +176,11 @@ def track3d_loop_fast(
         n_decis = 0
         for ci in range(n_cands):
             k = cand_inds[ci]
-            d0 = path_x_1[i, 0] - 2.0 * path_x_2[k, 0] + path_x_0[prev_idx, 0]
-            d1 = path_x_1[i, 1] - 2.0 * path_x_2[k, 1] + path_x_0[prev_idx, 1]
-            d2 = path_x_1[i, 2] - 2.0 * path_x_2[k, 2] + path_x_0[prev_idx, 2]
+            # Acceleration residual X(t+1) - 2X(t) + X(t-1); equivalently the
+            # distance from the candidate to the constant-velocity prediction.
+            d0 = path_x_2[k, 0] - 2.0 * path_x_1[i, 0] + path_x_0[prev_idx, 0]
+            d1 = path_x_2[k, 1] - 2.0 * path_x_1[i, 1] + path_x_0[prev_idx, 1]
+            d2 = path_x_2[k, 2] - 2.0 * path_x_1[i, 2] + path_x_0[prev_idx, 2]
             acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
             decis_vals[n_decis] = acc
             decis_inds[n_decis] = k
@@ -266,9 +268,11 @@ def track3d_loop_fast(
         n_decis = 0
         for ci in range(n_cands):
             k = cand_inds[ci]
-            d0 = cx - 2.0 * path_x_2[k, 0] + pred_x
-            d1 = cy - 2.0 * path_x_2[k, 1] + pred_y
-            d2 = cz - 2.0 * path_x_2[k, 2] + pred_z
+            # pred already carries the neighbour-averaged velocity, so the
+            # residual to it is the acceleration.
+            d0 = path_x_2[k, 0] - pred_x
+            d1 = path_x_2[k, 1] - pred_y
+            d2 = path_x_2[k, 2] - pred_z
             acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
             decis_vals[n_decis] = acc
             decis_inds[n_decis] = k
@@ -329,9 +333,11 @@ def track3d_loop_fast(
         n_decis = 0
         for ci in range(n_cands):
             k = cand_inds[ci]
-            d0 = pred_x - 2.0 * path_x_2[k, 0] + pred_x
-            d1 = pred_y - 2.0 * path_x_2[k, 1] + pred_y
-            d2 = pred_z - 2.0 * path_x_2[k, 2] + pred_z
+            # No velocity estimate: pred == curr, so this is plain distance
+            # (previously written as 2*(pred - cand), same ordering).
+            d0 = path_x_2[k, 0] - pred_x
+            d1 = path_x_2[k, 1] - pred_y
+            d2 = path_x_2[k, 2] - pred_z
             acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
             decis_vals[n_decis] = acc
             decis_inds[n_decis] = k

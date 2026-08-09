@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+import pytest
 
 from openptv2.algorithms.constants import NEXT_NONE, PREV_NONE
 from openptv2.algorithms.tracking_frame_buf import (
@@ -219,6 +220,38 @@ def test_read_write_frame(tmp_path):
     assert np.array_equal(readback.correspond[2].p, np.array([96, 66, 26, 26]))
     assert compare_path_info(t_path, readback.path_info[2])
     assert compare_targets(t_target, readback.targets[0][42])
+
+
+def test_read_raises_when_particle_count_exceeds_max_targets(tmp_path):
+    """Regression for a segfault: reading more particles than a Frame's
+    fixed-size buffers were allocated for used to silently corrupt memory
+    (boundscheck is off in the compiled hot path) instead of failing. A
+    frame with more particles than max_targets must now raise a clear
+    ValueError from read(), before any buffer is written past its capacity.
+    """
+    target_files = [os.path.join(str(tmp_path), "target_test_cam0")]
+    corres_base = os.path.join(str(tmp_path), "corres_test")
+    linkage_base = os.path.join(str(tmp_path), "ptv_test")
+    frame_num = 1
+    n_particles = 5
+
+    writer = Frame(num_cams=1, max_targets=n_particles)
+    for i in range(n_particles):
+        writer.correspond[i] = Corres(nr=1, p=np.array([i, -1, -1, -1], dtype=np.int32))
+        writer.path_info[i] = Pathinfo(
+            x=np.array([float(i), 0.0, 0.0]), prev=-1, next_idx=-2, prio=4,
+            finaldecis=1000000.0, inlist=0,
+        )
+        writer.targets[0][i] = Target(
+            pnr=i, x=float(i), y=0.0, n=1, nx=1, ny=1, sumg=1, tnr=i,
+        )
+    writer.num_parts = n_particles
+    writer.num_targets[0] = n_particles
+    assert writer.write(corres_base, linkage_base, "", target_files, frame_num)
+
+    too_small = Frame(num_cams=1, max_targets=n_particles - 1)
+    with pytest.raises(ValueError, match="exceeds max_targets"):
+        too_small.read(corres_base, linkage_base, "", target_files, frame_num)
 
 
 def test_compare_corres():

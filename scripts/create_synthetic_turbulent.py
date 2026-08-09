@@ -21,9 +21,11 @@ Files written (matching the openptv2 on-disk layout):
   parameters_Run1.yaml                — runnable openptv2 experiment config
 
 Usage (from repo root):
-    uv run python test_data/create_synthetic_turbulent.py
+    uv run python scripts/create_synthetic_turbulent.py
 
 The dataset is deterministic given the seed, so results are reproducible.
+``make_dataset()`` also backs the density-sweep variants used by
+scripts/bench_trackers.py (density=1000/5000/20000 in the same 100mm volume).
 """
 
 from pathlib import Path
@@ -36,7 +38,9 @@ FIRST_FRAME = 10001
 SEED = 2026
 VOLUME = (100.0, 100.0, 100.0)
 
-SCENARIO_KWARGS = dict(
+# Base turbulent-scenario config; num_particles is the density knob (see
+# make_dataset). Domain stays fixed so num_particles alone sets the density.
+BASE_SCENARIO_KWARGS = dict(
     num_particles=220,
     num_frames=30,
     velocity=2.0,
@@ -54,24 +58,46 @@ SCENARIO_KWARGS = dict(
     ],
 )
 
+# Backward-compat alias (used to be the only config).
+SCENARIO_KWARGS = BASE_SCENARIO_KWARGS
 
-def main() -> None:
-    spec = bm.ScenarioSpec(**SCENARIO_KWARGS)
+
+def make_dataset(
+    out_dir: Path,
+    num_particles: int = 220,
+    num_frames: int = 30,
+    seed: int = SEED,
+    first_frame: int = FIRST_FRAME,
+    volume: tuple[float, float, float] = VOLUME,
+) -> Path:
+    """Generate one turbulent-flow dataset at a given particle density.
+
+    Same flow/noise/gap/ghost/crossing config as the default
+    ``synthetic_turbulent`` case; only density (``num_particles`` in the
+    fixed ``volume``), frame count and seed vary. Returns the written
+    ``parameters_Run1.yaml`` path.
+    """
+    kwargs = {**BASE_SCENARIO_KWARGS, "num_particles": num_particles,
+              "num_frames": num_frames, "seed": seed}
+    spec = bm.ScenarioSpec(**kwargs)
     tt, fg = bm.generate_scenario(spec)
     rig = bm.make_standard_rig()
+    yaml_path = bm.write_experiment(rig, fg, out_dir, first_frame=first_frame, volume=volume)
 
-    yaml_path = bm.write_experiment(rig, fg, OUT_DIR, first_frame=FIRST_FRAME, volume=VOLUME)
-
-    n_true = len(tt)
     n_per_frame = [len(fg[f]) for f in fg]
-    print(f"Wrote synthetic turbulent experiment -> {OUT_DIR}/")
+    print(f"Wrote turbulent experiment -> {out_dir}/")
     print(f"  parameters: {yaml_path.name}")
-    print(f"  true trajectories: {n_true}")
-    print(f"  frames: {spec.num_frames} ({FIRST_FRAME}..{FIRST_FRAME + spec.num_frames - 1})")
+    print(f"  true trajectories: {len(tt)}")
+    print(f"  frames: {spec.num_frames} ({first_frame}..{first_frame + spec.num_frames - 1})")
     print(
         f"  particles/frame: {min(n_per_frame)}-{max(n_per_frame)} "
         f"(mean {sum(n_per_frame) / len(n_per_frame):.0f})"
     )
+    return yaml_path
+
+
+def main() -> None:
+    make_dataset(OUT_DIR, num_particles=220, num_frames=30, seed=SEED)
 
 
 if __name__ == "__main__":

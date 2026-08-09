@@ -14,7 +14,10 @@ import numpy as np
 
 from openptv2.benchmarking.camera_rig import make_standard_rig
 from openptv2.benchmarking.experiment import write_experiment
-from openptv2.benchmarking.metrics import compute_identity_metrics
+from openptv2.benchmarking.metrics import (
+    compute_identity_metrics,
+    ghost_positions_from_frame_gt,
+)
 from openptv2.benchmarking.runner import run_tracker
 from openptv2.benchmarking.scenario import ScenarioSpec, generate_scenario
 
@@ -118,6 +121,7 @@ def cmd_sweep(
     tt, fg = generate_scenario(spec)
     rig = make_standard_rig(refract=refract)
     yaml_path = write_experiment(rig, fg, out_dir, first_frame=10001)
+    ghosts = ghost_positions_from_frame_gt(fg)
 
     results = {}
     _base = {"dacc": 3.0, "angle": 120.0}
@@ -139,7 +143,7 @@ def cmd_sweep(
         pred = run_tracker(yaml_path, tracker, track_overrides=overrides)
         dt = time.perf_counter() - t0
         pred0 = _remap_to_zero(pred, 10001)
-        m = compute_identity_metrics(tt, pred0, eps=1.0)
+        m = compute_identity_metrics(tt, pred0, eps=1.0, ghost_pos_by_frame=ghosts)
         results[val] = {**m.to_dict(), "time_s": round(dt, 3)}
 
     # Print table
@@ -169,6 +173,7 @@ def cmd_compare(
     tt, fg = generate_scenario(spec)
     rig = make_standard_rig(refract=refract)
     yaml_path = write_experiment(rig, fg, out_dir, first_frame=10001)
+    ghosts = ghost_positions_from_frame_gt(fg)
 
     overrides = {"dvxmax": 3.0, "dvxmin": -3.0, "dvymax": 3.0, "dvymin": -3.0,
                  "dvzmax": 3.0, "dvzmin": -3.0, "dacc": 3.0}
@@ -180,7 +185,7 @@ def cmd_compare(
             pred = run_tracker(yaml_path, tr, track_overrides=overrides)
             dt = time.perf_counter() - t0
             pred0 = _remap_to_zero(pred, 10001)
-            m = compute_identity_metrics(tt, pred0, eps=1.0)
+            m = compute_identity_metrics(tt, pred0, eps=1.0, ghost_pos_by_frame=ghosts)
             results[tr] = {**m.to_dict(), "time_s": round(dt, 3)}
         except Exception as e:
             results[tr] = {"error": str(e)}

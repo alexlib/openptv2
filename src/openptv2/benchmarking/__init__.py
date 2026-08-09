@@ -22,18 +22,22 @@ runner
 """
 
 from .camera_rig import (
-    CameraRig,
-    make_standard_rig,
-    project_to_pixels,
     N_AIR,
     N_GLASS,
     N_WATER,
+    CameraRig,
+    make_standard_rig,
+    project_to_pixels,
 )
-from .scenario import ScenarioSpec, CrossingSpec, generate_scenario
 from .datawriter import DatasetSpec, write_dataset
 from .experiment import write_experiment
-from .runner import run_tracker, read_trajectories
-from .metrics import IdentityMetrics, compute_identity_metrics
+from .metrics import (
+    IdentityMetrics,
+    compute_identity_metrics,
+    ghost_positions_from_frame_gt,
+)
+from .runner import read_trajectories, run_tracker
+from .scenario import CrossingSpec, ScenarioSpec, generate_scenario
 
 __all__ = [
     "CameraRig",
@@ -52,4 +56,5 @@ __all__ = [
     "read_trajectories",
     "IdentityMetrics",
     "compute_identity_metrics",
+    "ghost_positions_from_frame_gt",
 ]

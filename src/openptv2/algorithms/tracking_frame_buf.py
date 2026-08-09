@@ -858,6 +858,13 @@ class Frame:
         )
 
         self.num_parts = len(cor_list)
+        if self.num_parts > self.max_targets:
+            raise ValueError(
+                f"frame {frame_num}: {self.num_parts} particles exceeds "
+                f"max_targets={self.max_targets} (Frame's fixed-size buffers); "
+                "increase max_targets when constructing Frame/Tracker for this "
+                "dataset's density, or downsample the frame."
+            )
         for i in range(self.num_parts):
             self.correspond[i] = cor_list[i]
             self.path_info[i] = path_list[i]
@@ -873,6 +880,12 @@ class Frame:
                 cam_idx=cam,
             )
             self.num_targets[cam] = len(targets)
+            if self.num_targets[cam] > self.max_targets:
+                raise ValueError(
+                    f"frame {frame_num} cam {cam}: {self.num_targets[cam]} targets "
+                    f"exceeds max_targets={self.max_targets} (Frame's fixed-size "
+                    "buffers); increase max_targets for this dataset's density."
+                )
             tx = self.targ_x[cam]
             ty = self.targ_y[cam]
             ttnr = self.targ_tnr[cam]

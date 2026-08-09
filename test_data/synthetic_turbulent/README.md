@@ -21,8 +21,8 @@ The scripts live in `scripts/`:
 
 | Script | Purpose |
 | --- | --- |
-| `scripts/create_synthetic_turbulent.py` | regenerates this dataset |
-| `scripts/benchmark_synthetic_turbulent.py` | cross-tracker benchmark runner |
+| `scripts/create_synthetic_turbulent.py` | regenerates this dataset (also backs the density variants below) |
+| `scripts/bench_trackers.py` | cross-tracker benchmark runner (single entry point; also drives the 1k/5k/20k density sweep) |
 
 ## Case physics
 
@@ -45,10 +45,13 @@ Deterministic given the fixed seed (2026) — identical outputs every run.
 ## Benchmark
 
 ```bash
-uv run python scripts/benchmark_synthetic_turbulent.py
+uv run python scripts/bench_trackers.py
+uv run python scripts/bench_trackers.py --density 1000,5000,20000  # see test_data/synthetic_turbulent_1k/
 ```
 
-Runs `fast_3d`, `myptv_3d_tracking` and `proptv_tracking` on
-isolated copies with identical `track` parameters and reports proPTV-style
-identity metrics: F (fragmentation), C (completeness), Cr (purity), pmt
-(% correct tracks).
+Runs `fast_3d`, `fast_3d_smooth`, `myptv_3d_tracking` and `proptv_tracking` on
+isolated copies with identical `track` parameters and reports one table
+merging both metric systems computed from the same run: proPTV-style
+identity metrics (F, C, Cr/purity, pmt, ghost-capture rate) and link-level
+metrics (precision, recall/yield, false-connection rate, gap-recovery),
+plus ms/frame.
