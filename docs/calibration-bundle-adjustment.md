@@ -127,7 +127,7 @@ you where the error is coming from.** The remaining error needs §3/§4, not mor
 ## 3. Roadmap — driving RCM down further
 
 The full plan lives in
-[`docs/plans/2026-07-24-cross-camera-rcm-calibration-report.md`](plans/2026-07-24-cross-camera-rcm-calibration-report.md).
+[`docs/plans/master-plan.md`](plans/master-plan.md).
 Status: RCM reporting **done**, joint-plate BA first cut **done**, the rest below
 **TODO**.
 

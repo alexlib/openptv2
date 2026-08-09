@@ -1,7 +1,7 @@
 """fast_3d's postprocess wiring is opt-in, gated by track.postprocess.
 
 Regression for Stage 1c of the tracker consolidation roadmap
-(docs/plans/2026-08-10-tracker-consolidation-roadmap.md): plugins/
+(docs/plans/master-plan.md): plugins/
 default_tracking.py's fast_3d branch can now run Tracker.postprocess()
 (seed_cold_start -> relink_trajectory_gaps -> enforce_reciprocity) after
 full_forward_3d(), same as the full_multipass path already does. It

@@ -2,7 +2,7 @@
 
 Fixture: ``test_data/synthetic_turbulent_1k`` (~1000 particles/frame, 30
 frames; see scripts/create_synthetic_turbulent.py --density 1000 and
-docs/plans/2026-08-10-tracker-consolidation-roadmap.md Stage 0). Unlike
+docs/plans/master-plan.md Stage 0). Unlike
 tests/unit/test_track3d.py, which pins a raw *link count* on test_cavity,
 this pins link-level *correctness* against exact ground truth (see
 src/openptv2/tracking_metrics.py's yield/precision, which requires both
