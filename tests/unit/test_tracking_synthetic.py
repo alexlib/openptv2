@@ -20,10 +20,17 @@ What the test pins down (and why the two engines differ):
     particle's links but never creates a wrong link.
   * trackcorr enforces dvxmax, dacc AND dangle (drops FAST / ACCEL / TURN).
   * track3d (3D segment) enforces dvxmax but, in this scene, does NOT gate on
-    dacc/dangle, and under a too-tight dvxmax it can produce WRONG cross-links.
-These properties tell you how to set parameters: keep dvxmax comfortably above
-the true peak displacement (too tight -> track3d mislinks), and use dacc/dangle
-to reject physically implausible motion in trackcorr.
+    dacc/dangle.
+Since the Stage 1b fix (per-level candidates are claimed in ascending
+cost order across ALL particles, not particle-by-particle in index
+order -- see track_kernels_track3d.py), track3d also fails safe under a
+too-tight dvxmax in this scene: the true (lowest-cost) match now wins the
+claim before a worse, merely-in-box candidate can grab it out of order.
+This is a reduction in mislink risk, not a correctness proof for every
+scene -- a genuinely closer wrong candidate (e.g. under noise or a track
+crossing) can still be claimed first. Keep dvxmax comfortably above the
+true peak displacement regardless, and use dacc/dangle to reject
+physically implausible motion in trackcorr.
 """
 
 import shutil
@@ -174,14 +181,24 @@ def test_track3d_ignores_dacc_and_dangle(tmp_path):
     assert (c_ang, w_ang) == (MAX_LINKS, 0)
 
 
-def test_track3d_can_mislink_under_tight_dvxmax(tmp_path):
-    """Hazard: too-tight dvxmax makes track3d reassign to the wrong particle
-    (cross-links), whereas trackcorr just drops the link. This is why dvxmax
-    must be kept generous for the 3D engine."""
-    c3, w3, _ = _run(tmp_path / "3d", "track3d", dvxmax=2.0, dvxmin=-2.0)
+def test_track3d_fails_safe_under_tight_dvxmax(tmp_path):
+    """track3d now fails safe under a too-tight dvxmax, like trackcorr does.
+
+    Before the Stage 1b fix (global cost-ordered claiming within a level,
+    replacing per-particle greedy claiming in index order), this scenario
+    reliably produced cross-particle mislinks in track3d: particle i would
+    grab a merely-in-box candidate before the particle it truly belonged to
+    got a turn. With claims made in ascending cost order across the whole
+    level, the true (lowest-cost) match wins first, so track3d drops the
+    over-constrained links (FAST, and its neighbors within dvxmax) instead
+    of cross-linking them -- same failure mode as trackcorr, not the
+    general absence of one (see module docstring)."""
+    c3, w3, lost3 = _run(tmp_path / "3d", "track3d", dvxmax=2.0, dvxmin=-2.0)
     c2, w2, _ = _run(tmp_path / "2d", "trackcorr", dvxmax=2.0, dvxmin=-2.0)
-    assert w3 >= 1  # track3d produces wrong links
-    assert w2 == 0  # trackcorr does not
+    assert w3 == 0  # track3d no longer produces wrong links here
+    assert w2 == 0  # trackcorr does not either
+    assert FAST in lost3  # the over-constrained particle is dropped, not mislinked
+    assert c3 < MAX_LINKS
 
 
 def test_add_flag_creates_no_wrong_links(tmp_path):

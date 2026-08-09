@@ -232,11 +232,14 @@ def track3d_test_cavity():
 
         assert run.npart == 2082
         # 1765 -> 1753 after fixing the Level 1/2 acceleration-residual sign
-        # bug in track_kernels_track3d.py (candidates were ranked by
-        # proximity to a point behind the particle instead of the forward
-        # prediction). The drop is expected: some links that only existed
-        # because the wrong candidate ranked first no longer form.
-        assert run.nlinks == 1753
+        # bug (candidates were ranked by proximity to a point behind the
+        # particle instead of the forward prediction). 1753 -> 1736 after
+        # Stage 1b: candidates are now claimed in ascending cost order
+        # across a whole level instead of particle-by-particle in index
+        # order, so some links that only existed because an earlier-index
+        # particle grabbed a candidate first no longer form -- the fewer,
+        # remaining links are the ones cost-ordering actually prefers.
+        assert run.nlinks == 1736
 
     finally:
         os.chdir(original)
@@ -281,8 +284,8 @@ def test_tracker_full_forward_3d_test_cavity():
         tracker.full_forward_3d()
 
         assert tracker.npart == 2082
-        # See the matching note in track3d_test_cavity above: 1765 -> 1753.
-        assert tracker.nlinks == 1753
+        # See the matching note in track3d_test_cavity above: 1765 -> 1753 -> 1736.
+        assert tracker.nlinks == 1736
     finally:
         os.chdir(original)
 

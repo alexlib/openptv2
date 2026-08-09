@@ -95,6 +95,14 @@ def track3d_loop_fast(
     Level 2: no prev link — average velocity from neighbors (search box = dacc).
     Level 3: no prev link, no neighbor info — use current position (search box = dx,dy,dz).
 
+    Within each level, candidates are claimed in ascending cost order across
+    ALL of that level's particles at once (one sort per level), not
+    particle-by-particle in index order: otherwise particle 0 always wins a
+    contested candidate over particle 500 regardless of which is the better
+    match. The three levels still run as a strict cascade (level 2 only
+    sees particles level 1 left unclaimed, etc.) — only the claim order
+    *within* a level changed.
+
     Returns count1 (number of links established).
     """
     count1: cython.int
@@ -107,14 +115,11 @@ def track3d_loop_fast(
     pred_y: cython.double
     pred_z: cython.double
     n_cands: cython.int
-    n_decis: cython.int
     k: cython.int
     d0: cython.double
     d1: cython.double
     d2: cython.double
     acc: cython.double
-    si: cython.int
-    sj: cython.int
     vel_x: cython.double
     vel_y: cython.double
     vel_z: cython.double
@@ -127,6 +132,11 @@ def track3d_loop_fast(
     ax: cython.double
     ay: cython.double
     az: cython.double
+    n_edges: cython.int
+    max_edges: cython.int
+    oi: cython.int
+    e: cython.int
+    order: cython.int[:]
 
     count1 = 0
     np2 = num_parts_2
@@ -136,44 +146,37 @@ def track3d_loop_fast(
 
     _cand_inds = np.empty(max_cands, dtype=np.int32)
     _cand_dists = np.empty(max_cands, dtype=np.float64)
-    _decis_vals = np.empty(max_cands, dtype=np.float64)
-    _decis_inds = np.empty(max_cands, dtype=np.int32)
-
     cand_inds: cython.int[:] = _cand_inds
     cand_dists: cython.double[:] = _cand_dists
-    decis_vals: cython.double[:] = _decis_vals
-    decis_inds: cython.int[:] = _decis_inds
+
+    # One (cost, particle, candidate) edge buffer, reused per level: upper
+    # bound is orig_parts candidate-generation calls x max_cands each.
+    max_edges = orig_parts * max_cands
+    _edge_cost = np.empty(max_edges, dtype=np.float64)
+    _edge_i = np.empty(max_edges, dtype=np.int32)
+    _edge_k = np.empty(max_edges, dtype=np.int32)
+    edge_cost: cython.double[:] = _edge_cost
+    edge_i: cython.int[:] = _edge_i
+    edge_k: cython.int[:] = _edge_k
 
     # ===== Level 1: Particles with previous links =====
+    n_edges = 0
     for i in range(orig_parts):
         if path_prev_1[i] < 0:
             continue
         prev_idx = path_prev_1[i]
         if prev_idx < 0 or prev_idx >= num_parts_0:
             continue
+        path_next_1[i] = -1  # default; a claim below may overwrite this
 
         pred_x = 2.0 * path_x_1[i, 0] - path_x_0[prev_idx, 0]
         pred_y = 2.0 * path_x_1[i, 1] - path_x_0[prev_idx, 1]
         pred_z = 2.0 * path_x_1[i, 2] - path_x_0[prev_idx, 2]
 
         n_cands = _find_closest_in_3d(
-            path_x_2,
-            np2,
-            pred_x,
-            pred_y,
-            pred_z,
-            ax,
-            ay,
-            az,
-            max_cands,
-            cand_inds,
-            cand_dists,
+            path_x_2, np2, pred_x, pred_y, pred_z, ax, ay, az,
+            max_cands, cand_inds, cand_dists,
         )
-        if n_cands == 0:
-            path_next_1[i] = -1
-            continue
-
-        n_decis = 0
         for ci in range(n_cands):
             k = cand_inds[ci]
             # Acceleration residual X(t+1) - 2X(t) + X(t-1); equivalently the
@@ -182,37 +185,25 @@ def track3d_loop_fast(
             d1 = path_x_2[k, 1] - 2.0 * path_x_1[i, 1] + path_x_0[prev_idx, 1]
             d2 = path_x_2[k, 2] - 2.0 * path_x_1[i, 2] + path_x_0[prev_idx, 2]
             acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
-            decis_vals[n_decis] = acc
-            decis_inds[n_decis] = k
-            n_decis += 1
+            edge_cost[n_edges] = acc
+            edge_i[n_edges] = i
+            edge_k[n_edges] = k
+            n_edges += 1
 
-        if n_decis > 1:
-            for si in range(n_decis - 1):
-                for sj in range(n_decis - 1, si, -1):
-                    if decis_vals[sj - 1] > decis_vals[sj]:
-                        decis_vals[sj - 1], decis_vals[sj] = (
-                            decis_vals[sj],
-                            decis_vals[sj - 1],
-                        )
-                        decis_inds[sj - 1], decis_inds[sj] = (
-                            decis_inds[sj],
-                            decis_inds[sj - 1],
-                        )
-
-        cand_assigned = 0
-        for ci in range(n_decis):
-            k = decis_inds[ci]
-            if path_prev_2[k] < 0:
+    if n_edges > 0:
+        _order = np.argsort(_edge_cost[:n_edges]).astype(np.int32)
+        order = _order
+        for oi in range(n_edges):
+            e = order[oi]
+            i = edge_i[e]
+            k = edge_k[e]
+            if path_next_1[i] < 0 and path_prev_2[k] < 0:
                 path_next_1[i] = k
                 path_prev_2[k] = i
                 count1 += 1
-                cand_assigned = 1
-                break
-
-        if not cand_assigned:
-            path_next_1[i] = -1
 
     # ===== Level 2: No previous link, neighbor velocity =====
+    n_edges = 0
     for i in range(orig_parts):
         if path_prev_1[i] >= 0 or path_next_1[i] >= 0:
             continue
@@ -243,29 +234,16 @@ def track3d_loop_fast(
         if nvel == 0:
             continue
 
+        path_next_1[i] = -1  # default; a claim below may overwrite this
         inv_nvel = 1.0 / nvel
         pred_x = cx + vel_x * inv_nvel
         pred_y = cy + vel_y * inv_nvel
         pred_z = cz + vel_z * inv_nvel
 
         n_cands = _find_closest_in_3d(
-            path_x_2,
-            np2,
-            pred_x,
-            pred_y,
-            pred_z,
-            ax,
-            ay,
-            az,
-            max_cands,
-            cand_inds,
-            cand_dists,
+            path_x_2, np2, pred_x, pred_y, pred_z, ax, ay, az,
+            max_cands, cand_inds, cand_dists,
         )
-        if n_cands == 0:
-            path_next_1[i] = -1
-            continue
-
-        n_decis = 0
         for ci in range(n_cands):
             k = cand_inds[ci]
             # pred already carries the neighbour-averaged velocity, so the
@@ -274,100 +252,61 @@ def track3d_loop_fast(
             d1 = path_x_2[k, 1] - pred_y
             d2 = path_x_2[k, 2] - pred_z
             acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
-            decis_vals[n_decis] = acc
-            decis_inds[n_decis] = k
-            n_decis += 1
+            edge_cost[n_edges] = acc
+            edge_i[n_edges] = i
+            edge_k[n_edges] = k
+            n_edges += 1
 
-        if n_decis > 1:
-            for si in range(n_decis - 1):
-                for sj in range(n_decis - 1, si, -1):
-                    if decis_vals[sj - 1] > decis_vals[sj]:
-                        decis_vals[sj - 1], decis_vals[sj] = (
-                            decis_vals[sj],
-                            decis_vals[sj - 1],
-                        )
-                        decis_inds[sj - 1], decis_inds[sj] = (
-                            decis_inds[sj],
-                            decis_inds[sj - 1],
-                        )
-
-        cand_assigned = 0
-        for ci in range(n_decis):
-            k = decis_inds[ci]
-            if path_prev_2[k] < 0:
+    if n_edges > 0:
+        _order = np.argsort(_edge_cost[:n_edges]).astype(np.int32)
+        order = _order
+        for oi in range(n_edges):
+            e = order[oi]
+            i = edge_i[e]
+            k = edge_k[e]
+            if path_next_1[i] < 0 and path_prev_2[k] < 0:
                 path_next_1[i] = k
                 path_prev_2[k] = i
                 count1 += 1
-                cand_assigned = 1
-                break
-
-        if not cand_assigned:
-            path_next_1[i] = -1
 
     # ===== Level 3: No previous link, no neighbors — static prediction =====
+    n_edges = 0
     for i in range(orig_parts):
         if path_prev_1[i] >= 0 or path_next_1[i] >= 0:
             continue
+        path_next_1[i] = -1  # default; a claim below may overwrite this
 
         pred_x = path_x_1[i, 0]
         pred_y = path_x_1[i, 1]
         pred_z = path_x_1[i, 2]
 
         n_cands = _find_closest_in_3d(
-            path_x_2,
-            np2,
-            pred_x,
-            pred_y,
-            pred_z,
-            dx,
-            dy,
-            dz,
-            max_cands,
-            cand_inds,
-            cand_dists,
+            path_x_2, np2, pred_x, pred_y, pred_z, dx, dy, dz,
+            max_cands, cand_inds, cand_dists,
         )
-        if n_cands == 0:
-            path_next_1[i] = -1
-            continue
-
-        n_decis = 0
         for ci in range(n_cands):
             k = cand_inds[ci]
-            # No velocity estimate: pred == curr, so this is plain distance
-            # (previously written as 2*(pred - cand), same ordering).
+            # No velocity estimate: pred == curr, so this is plain distance.
             d0 = path_x_2[k, 0] - pred_x
             d1 = path_x_2[k, 1] - pred_y
             d2 = path_x_2[k, 2] - pred_z
             acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
-            decis_vals[n_decis] = acc
-            decis_inds[n_decis] = k
-            n_decis += 1
+            edge_cost[n_edges] = acc
+            edge_i[n_edges] = i
+            edge_k[n_edges] = k
+            n_edges += 1
 
-        if n_decis > 1:
-            for si in range(n_decis - 1):
-                for sj in range(n_decis - 1, si, -1):
-                    if decis_vals[sj - 1] > decis_vals[sj]:
-                        decis_vals[sj - 1], decis_vals[sj] = (
-                            decis_vals[sj],
-                            decis_vals[sj - 1],
-                        )
-                        decis_inds[sj - 1], decis_inds[sj] = (
-                            decis_inds[sj],
-                            decis_inds[sj - 1],
-                        )
-
-        cand_assigned = 0
-        for ci in range(n_decis):
-            k = decis_inds[ci]
-            if path_prev_2[k] < 0:
+    if n_edges > 0:
+        _order = np.argsort(_edge_cost[:n_edges]).astype(np.int32)
+        order = _order
+        for oi in range(n_edges):
+            e = order[oi]
+            i = edge_i[e]
+            k = edge_k[e]
+            if path_next_1[i] < 0 and path_prev_2[k] < 0:
                 path_next_1[i] = k
                 path_prev_2[k] = i
                 count1 += 1
-                cand_assigned = 1
-                break
-
-        if not cand_assigned:
-            path_next_1[i] = -1
 
     return count1
 

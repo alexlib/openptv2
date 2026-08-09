@@ -8,10 +8,12 @@ this pins link-level *correctness* against exact ground truth (see
 src/openptv2/tracking_metrics.py's yield/precision, which requires both
 endpoints of a predicted link to match the same true link).
 
-Floors are set from the measured baseline (fast_3d, default BASE_OVERRIDES,
-after the Stage A candidate-ranking fix), with margin for incidental
-rebuild/tie-break drift -- not aspirational targets. A future quality
-improvement (Stage 1+ of the roadmap) is expected to raise these floors; a
+Floors are set from the measured baseline (fast_3d, default BASE_OVERRIDES),
+with margin for incidental rebuild/tie-break drift -- not aspirational
+targets. Raised once already after Stage 1b (global cost-ordered claiming
+within a level instead of particle-by-particle in index order) measurably
+improved precision 0.718 -> 0.871 and recall 0.648 -> 0.812 at this density.
+A future quality improvement is expected to raise these floors further; a
 drop below them without an intentional algorithm change is a regression.
 """
 
@@ -41,8 +43,9 @@ def test_fast_3d_quality_floor_at_1k_density():
     row = results["fast_3d"]["row"]
     assert row is not None, results["fast_3d"].get("error")
 
-    # Measured baseline: precision 0.718, yield_recall 0.648, ghost_capture
-    # 0.038 (see docstring). Floors keep ~10% margin below the measurement.
-    assert row["precision"] >= 0.65, row
-    assert row["yield_recall"] >= 0.55, row
+    # Measured baseline (post Stage 1b): precision 0.871, yield_recall
+    # 0.812, ghost_capture 0.038 (see docstring). Floors keep ~8-9% margin
+    # below the measurement.
+    assert row["precision"] >= 0.80, row
+    assert row["yield_recall"] >= 0.75, row
     assert row["ghost_capture_rate"] <= 0.10, row

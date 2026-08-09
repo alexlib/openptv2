@@ -171,7 +171,7 @@ def run_tracker(
             pm_track = exp.pm.parameters.get("track", {})
             for key, val in track_overrides.items():
                 if key in ("dvxmin", "dvxmax", "dvymin", "dvymax", "dvzmin", "dvzmax",
-                           "dacc", "angle", "flagNewParticles"):
+                           "dacc", "angle", "flagNewParticles", "postprocess"):
                     pm_track[key] = val
         except Exception:
             pass

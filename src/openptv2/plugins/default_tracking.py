@@ -50,6 +50,19 @@ class Tracking:
         if force_3d or active_pipeline in ("fast", "fast_3d"):
             print("Running Fast 3D-Only Tracking (Segment Mode)...")
             tracker.full_forward_3d()
+            # Postprocess is disk-level (reads/rewrites the linkage files
+            # tracker.full_forward_3d() just wrote) and tracker-agnostic --
+            # same call the full_multipass path below makes after
+            # full_forward()/full_backward(). Off by default here, matching
+            # PRESET_CONFIGS["fast_3d"]["postprocess"] = False in
+            # tracking_presets.py (fast_3d's whole point is minimal
+            # overhead) -- set track.postprocess: true to opt in.
+            if track_cfg.get("postprocess", False):
+                stats = tracker.postprocess()
+                print(
+                    f"Post-process links: {stats.get('links_before', 0)} -> "
+                    f"{stats.get('links_after', 0)}"
+                )
         elif active_pipeline == "standard_forward":
             print("Running Standard Forward Tracking...")
             tracker.full_forward()
