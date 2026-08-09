@@ -23,7 +23,7 @@
     
     
       
-        <title>Plugin restructure plan - OpenPTV2 Documentation</title>
+        <title>OpenPTV2 Master Development & Tracker Consolidation Plan - OpenPTV2 Documentation</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#plugin-restructure-plan" class="md-skip">
+        <a href="#openptv2-master-development-tracker-consolidation-plan" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Plugin restructure plan
+              OpenPTV2 Master Development &amp; Tracker Consolidation Plan
             
           </span>
         </div>
@@ -1078,10 +1078,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#problem" class="md-nav__link">
+  <a href="#1-executive-summary-active-roadmap" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem
+        1. Executive Summary &amp; Active Roadmap
       
     </span>
   </a>
@@ -1089,44 +1089,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision-on-cython" class="md-nav__link">
+  <a href="#2-active-roadmap-stages-24" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Decision on Cython
+        2. Active Roadmap: Stages 2–4
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#target-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Target architecture
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#phases" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Phases
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Phases">
+    <nav class="md-nav" aria-label="2. Active Roadmap: Stages 2–4">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#phase-1-single-source-of-truth-mechanical-low-risk" class="md-nav__link">
+  <a href="#stage-2-quality_3d-accuracy-optimal-compiled-engine-ready-to-implement" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 1 — single source of truth (mechanical, low risk)
+        Stage 2 — quality_3d: Accuracy-Optimal Compiled Engine (READY TO IMPLEMENT)
       
     </span>
   </a>
@@ -1134,10 +1112,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-2-formal-plugin-api" class="md-nav__link">
+  <a href="#stage-3-high-density-scaling-5k20k-particlesframe" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 2 — formal plugin API
+        Stage 3 — High-Density Scaling (5k–20k particles/frame)
       
     </span>
   </a>
@@ -1145,21 +1123,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-3-unify-default-into-the-plugin-system" class="md-nav__link">
+  <a href="#stage-4-consolidation-cleanup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 3 — unify "default" into the plugin system
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#phase-4-cloudbatch-alignment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Phase 4 — cloud/batch alignment
+        Stage 4 — Consolidation &amp; Cleanup
       
     </span>
   </a>
@@ -1172,10 +1139,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#out-of-scope-later" class="md-nav__link">
+  <a href="#3-completed-milestones-log" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Out of scope (later)
+        3. Completed Milestones Log
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Completed Milestones Log">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#august-2026-tracking-metrics-bug-fixes-ground-truth-harness-stages-a-0-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        August 2026: Tracking Metrics, Bug Fixes &amp; Ground Truth Harness (Stages A, 0, 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#july-2026-calibration-optics-submodule-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        July 2026: Calibration, Optics, &amp; Submodule Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-verification-testing-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Verification &amp; Testing Commands
       
     </span>
   </a>
@@ -1202,193 +1208,119 @@
   
 
 
-<h1 id="plugin-restructure-plan">Plugin restructure plan<a class="headerlink" href="#plugin-restructure-plan" title="Permanent link">&para;</a></h1>
-<p>Date: 2026-07-13
-Status: implemented (Phases 1–4)</p>
-<h2 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h2>
-<p>Plugins (<code>ext_sequence_*</code> / <code>ext_tracker_*</code>) currently live in <strong>five places</strong>:</p>
+<h1 id="openptv2-master-development-tracker-consolidation-plan">OpenPTV2 Master Development &amp; Tracker Consolidation Plan<a class="headerlink" href="#openptv2-master-development-tracker-consolidation-plan" title="Permanent link">&para;</a></h1>
+<p><strong>Date:</strong> 2026-08-10<br />
+<strong>Status:</strong> Active Master Plan<br />
+<strong>Primary Goal:</strong> Consolidate tracking engines into two primary presets (<code>fast_3d</code> throughput-optimal and <code>quality_3d</code> accuracy-optimal), scale high-density 3D particle tracking (5k–20k particles/frame), and maintain a single authoritative roadmap.</p>
+<hr />
+<h2 id="1-executive-summary-active-roadmap">1. Executive Summary &amp; Active Roadmap<a class="headerlink" href="#1-executive-summary-active-roadmap" title="Permanent link">&para;</a></h2>
+<p>openptv2 previously shipped six overlapping tracking engines with inconsistent metrics. We are consolidating them into <strong>two core compiled presets</strong> plus Python reference implementations for parity testing:</p>
 <table>
 <thead>
 <tr>
-<th>Location</th>
-<th>Contents</th>
-<th>State</th>
+<th>Preset</th>
+<th>Role</th>
+<th>Operating Constraint</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>src/openptv2/gui/plugins/</code></td>
-<td>contour, denis, rembg, rembg_contour</td>
-<td>packaged in the wheel, but <strong>never loaded from there</strong>; <code>ext_tracker_denis.py</code> still imports legacy <code>optv.*</code></td>
+<td><strong><code>fast_3d</code></strong></td>
+<td>Throughput-optimal default</td>
+<td>Cost-neutral speed; maintains 5k–20k particles/frame</td>
 </tr>
 <tr>
-<td><code>test_data/test_cavity/plugins/</code></td>
-<td>same five files</td>
-<td>drifted: contour/rembg/rembg_contour import legacy <code>optv.*</code></td>
-</tr>
-<tr>
-<td><code>test_data/test_splitter/plugins/</code></td>
-<td>splitter sequence + tracker</td>
-<td>imports legacy <code>optv.*</code> and <code>from pyptv import ptv</code></td>
-</tr>
-<tr>
-<td><code>test_data/test_rembg/plugins/</code></td>
-<td>rembg only</td>
-<td>legacy <code>optv.*</code> imports</td>
-</tr>
-<tr>
-<td><code>test_data/test_rembg_small/plugins/</code></td>
-<td>rembg only</td>
-<td>legacy <code>optv.*</code> imports</td>
+<td><strong><code>quality_3d</code></strong></td>
+<td>Accuracy-optimal engine</td>
+<td>Multi-frame Kalman prediction + cluster-local Hungarian assignment + reciprocal pass</td>
 </tr>
 </tbody>
 </table>
-<p>Root causes:</p>
-<ol>
-<li><strong>Loading is cwd-based.</strong> Both <code>gui/ptv.py</code> (<code>run_sequence_plugin</code> / <code>run_tracking_plugin</code>)
-   and <code>batch/pyptv_batch_plugins.py</code> resolve <code>Path.cwd() / "plugins"</code>, append it to
-   <code>sys.path</code>, and <code>importlib.import_module</code> by bare filename. Every experiment folder
-   therefore needs its own copy — hence the duplication and drift.</li>
-<li><strong>Discovery is filename sniffing.</strong> <code>parameter_manager.scan_plugins_dir()</code> classifies
-   a plugin by whether <code>"sequence"</code> or <code>"track"</code> appears in its filename.</li>
-<li><strong>No formal contract.</strong> The contract (a class named <code>Sequence</code> with <code>do_sequence()</code>,
-   or <code>Tracking</code> with <code>do_tracking()</code>, taking <code>exp=</code>) exists only by convention and
-   <code>hasattr</code> checks; errors are swallowed with <code>print</code>.</li>
-<li><strong>Heavy deps at import time.</strong> <code>ext_sequence_rembg*.py</code> runs
-   <code>session = new_session("u2net")</code> at module import — downloads an ONNX model as a side
-   effect. <code>rembg</code> is deliberately not a declared dependency, so availability is
-   discovered by ImportError at run time.</li>
-<li><strong>Dataset-specific code in shipped source.</strong> <code>pyptv_batch_plugins.py</code> contains a
-   "Patch: Ensure output files are written to 'res' directory for test_splitter", and
-   the splitter plugins encode what is really a core capability (the <code>splitter</code> /
-   <code>cal_splitter</code> flags already exist in <code>parameter_models.py</code>).</li>
-<li><strong>Cloud gap.</strong> <code>Dockerfile.cloud</code> installs the wheel non-editably and runs
-   <code>openptv2-batch</code> (no plugin support); <code>pyptv_batch_plugins</code> is not an entry point and
-   would only find plugins if the mounted data folder carried its own copies.</li>
-</ol>
-<h2 id="decision-on-cython">Decision on Cython<a class="headerlink" href="#decision-on-cython" title="Permanent link">&para;</a></h2>
-<p>Do <strong>not</strong> cythonize plugins — state this as a deliberate design decision, not an
-accident. Plugins are the extensibility surface: users must be able to drop a readable
-<code>.py</code> file into an experiment. They are I/O-and-glue code around the already-compiled
-<code>algorithms/</code> kernels, so there is no performance argument. Keeping them pure Python is
-consistent once they are moved out of the "compiled runtime" area into a dedicated
-plugins package.</p>
-<h2 id="target-architecture">Target architecture<a class="headerlink" href="#target-architecture" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>src/openptv2/plugins/            # runtime feature, not a GUI feature
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    __init__.py                  # registry + discovery API
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    base.py                      # SequencePlugin / TrackingPlugin protocols
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    loader.py                    # single resolve/load path used by GUI and batch
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    default_sequence.py          # &quot;default&quot; is a plugin too — see Phase 3
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    default_tracking.py
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    splitter_sequence.py
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    splitter_tracking.py
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    contour_sequence.py
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    rembg_sequence.py            # lazy rembg import, session created on first use
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    rembg_contour_sequence.py
+<hr />
+<h2 id="2-active-roadmap-stages-24">2. Active Roadmap: Stages 2–4<a class="headerlink" href="#2-active-roadmap-stages-24" title="Permanent link">&para;</a></h2>
+<h3 id="stage-2-quality_3d-accuracy-optimal-compiled-engine-ready-to-implement"><strong>Stage 2 — <code>quality_3d</code>: Accuracy-Optimal Compiled Engine (READY TO IMPLEMENT)</strong><a class="headerlink" href="#stage-2-quality_3d-accuracy-optimal-compiled-engine-ready-to-implement" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>2a. Multi-Frame Prediction (Constant-Acceleration Kalman Filter)</strong>:</li>
+<li>Per-track 9D state ($[x, y, z, v_x, v_y, v_z, a_x, a_y, a_z]$) with $9 \times 9$ covariance matrix.</li>
+<li>$O(1)$ per track prediction &amp; update.</li>
+<li>Dynamic innovation ellipsoid gates ($S = H P H^T + R$) replace fixed search boxes and scale radius adaptively.</li>
+<li>Fall back to wide isotropic gate for unseeded tracks ($&lt; 2$ history points).</li>
+<li><strong>2b. Multi-Term Cost Matrix</strong>:</li>
+<li>Inline distance + velocity continuity + acceleration cost terms with weights $w = (1.0, 0.6, 0.3)$ to suppress ghost captures.</li>
+<li><strong>2c. Cluster-Local Graph Decomposition &amp; Optimal Assignment</strong>:</li>
+<li>Port bipartite graph component decomposition from <code>src/openptv2/plugins/_assignment.py</code> to Cython.</li>
+<li>Solve size 1 components in bulk, components $\le 8$ with small Hungarian solver, components $&gt; 8$ with cost-ordered greedy fallback.</li>
+<li><strong>2d. Backward Pass &amp; Reciprocity Verification</strong>:</li>
+<li>Run reciprocal forward/backward pass (<code>trackback_c</code>) to filter non-reciprocal links.</li>
+</ul>
+<h3 id="stage-3-high-density-scaling-5k20k-particlesframe"><strong>Stage 3 — High-Density Scaling (5k–20k particles/frame)</strong><a class="headerlink" href="#stage-3-high-density-scaling-5k20k-particlesframe" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>3a. Uniform Grid Spatial Hash</strong>:</li>
+<li>Replace linear scans with $O(N)$ 3D cell hashing for candidate search and neighbour velocity queries.</li>
+<li><strong>3b. Adaptive Candidate Buffer</strong>:</li>
+<li>Dynamic buffer management to prevent truncation when local particle density exceeds static limits.</li>
+<li><strong>3c. Parallel Candidate Generation</strong>:</li>
+<li>Multi-threaded candidate search using <code>prange</code> and atomic claim patterns.</li>
+<li><strong>3d. High-Density Benchmark Curve</strong>:</li>
+<li>Measure execution speed and track quality across 1k, 5k, and 20k particle density sweeps.</li>
+</ul>
+<h3 id="stage-4-consolidation-cleanup"><strong>Stage 4 — Consolidation &amp; Cleanup</strong><a class="headerlink" href="#stage-4-consolidation-cleanup" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>4a. Collapse Predictive Plugins</strong>:</li>
+<li>Unify <code>fast_3d_smooth</code>, <code>myptv_3d_tracking</code>, and <code>proptv_tracking</code> into a single plugin wrapper (<code>_predictive_tracker.py</code>) kept as a reference implementation.</li>
+<li><strong>4b. Direct Candidate Index Mapping</strong>:</li>
+<li>Remove $O(N)$ position <code>argmin</code> remapping by carrying candidate indices directly through the tracking pipeline.</li>
+<li><strong>4c. Parameter Key Disambiguation</strong>:</li>
+<li>Introduce <code>dacc_search</code> for search box half-widths to separate it from <code>trackcorr</code>'s <code>dacc</code> cost denominator.</li>
+<li><strong>4d. Documentation Update</strong>:</li>
+<li>Update <code>docs/tracking-benchmark-results.md</code> with current measured benchmarks.</li>
+</ul>
+<hr />
+<h2 id="3-completed-milestones-log">3. Completed Milestones Log<a class="headerlink" href="#3-completed-milestones-log" title="Permanent link">&para;</a></h2>
+<h3 id="august-2026-tracking-metrics-bug-fixes-ground-truth-harness-stages-a-0-1"><strong>August 2026: Tracking Metrics, Bug Fixes &amp; Ground Truth Harness (Stages A, 0, 1)</strong><a class="headerlink" href="#august-2026-tracking-metrics-bug-fixes-ground-truth-harness-stages-a-0-1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] <strong>Stage A (Acceleration Residual Ranking Bug Fix)</strong>: Fixed sign error in <code>fast_3d</code> Level 1/2 candidate ranking (<code>track_kernels_track3d.py</code>). Particles are now correctly ranked by forward velocity continuity rather than points behind the particle.</li>
+<li>[x] <strong>Stage 0 (Honest Ground-Truth Benchmarking &amp; Segfault Fix)</strong>:</li>
+<li>Added exact particle-ID (<code>pid</code>) one-to-one identity metrics (<code>scipy.optimize.linear_sum_assignment</code>).</li>
+<li>Added ghost capture rate calculation (<code>pid &lt; 0</code>).</li>
+<li>Consolidated benchmarks into <code>scripts/bench_trackers.py</code> and <code>scripts/benchmark_utils.py</code>.</li>
+<li>Added density sweep dataset generation (1k, 5k, 20k particles/frame).</li>
+<li>Fixed buffer overflow segfault when reading frames with $&gt;10,000$ particles (<code>Frame.read()</code> now validates bounds).</li>
+<li>Added CI ground-truth quality floor test in <code>tests/unit/test_tracker_quality.py</code>.</li>
+<li>[x] <strong>Stage 1 (Cost-Neutral Correctness in <code>fast_3d</code>)</strong>:</li>
+<li>Implemented 1b global cost-ordered claiming across candidate levels, improving precision from $0.718 \rightarrow 0.871$ and recall from $0.648 \rightarrow 0.812$ at 1k particle density.</li>
+<li>Removed bubble sorts in candidate evaluation.</li>
+<li>Wired optional post-processing (<code>relink_trajectory_gaps</code>, <code>seed_cold_start</code>, <code>enforce_reciprocity</code>).</li>
+</ul>
+<h3 id="july-2026-calibration-optics-submodule-architecture"><strong>July 2026: Calibration, Optics, &amp; Submodule Architecture</strong><a class="headerlink" href="#july-2026-calibration-optics-submodule-architecture" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] <strong>Cross-Camera Ray-Convergence (RCM) Calibration</strong>: Implemented RCM report metrics, joint-plate bundle adjustment with distortion shaking, and iterated tracer self-calibration.</li>
+<li>[x] <strong>Splitter Quad-View Pipeline</strong>: Unified single-YAML splitter configuration across GUI, batch, and parallel cloud runs (<code>pyptv_batch.py</code>, <code>pyptv_batch_parallel.py</code>).</li>
+<li>[x] <strong>Orientation &amp; Calibration Fixes</strong>: Fixed orientation residual bias, implemented staged $k_3/k_2$ radial distortion fallback, and added fold detection.</li>
+<li>[x] <strong>Multimedia Lookup Table (<code>mmlut</code>) Optimization</strong>: Implemented ray tracing look-up table caching and optimization for refractive interfaces (air-glass-water).</li>
+<li>[x] <strong>Plugin Architecture Restructure</strong>: Consolidated legacy plugins into <code>src/openptv2/plugins/</code>, created central plugin loader and <code>TrackingRegistry</code>.</li>
+<li>[x] <strong>Parameter Simplification</strong>: Streamlined YAML configuration structure and normalized parameters in <code>ParameterManager</code>.</li>
+<li>[x] <strong>Track Kernels Submodule Split</strong>: Split monolithic <code>track_kernels_tracking.py</code> into focused Cython/Python modules (<code>track_kernels_corr.py</code>, <code>track_kernels_track3d.py</code>, <code>track_kernels_search.py</code>).</li>
+</ul>
+<hr />
+<h2 id="4-verification-testing-commands">4. Verification &amp; Testing Commands<a class="headerlink" href="#4-verification-testing-commands" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\a</span>lex<span class="se">\p</span>rojects<span class="se">\o</span>penptv2
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Rebuild Cython extensions after C/Cython changes</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>build_ext<span class="w"> </span>--inplace
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># Core unit test suite</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_track3d.py<span class="w"> </span>tests/unit/test_track.py<span class="w"> </span>tests/unit/test_tracking_synthetic.py<span class="w"> </span>-v
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># Ground-truth quality floor</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_tracker_quality.py<span class="w"> </span>-v<span class="w"> </span>-m<span class="w"> </span>slow
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1"># Comprehensive multi-engine tracking benchmark</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/bench_trackers.py<span class="w"> </span>--density<span class="w"> </span><span class="m">1000</span>,5000,20000
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># Code linting &amp; type checking</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>.<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>uv<span class="w"> </span>run<span class="w"> </span>mypy<span class="w"> </span>src/openptv2/
 </span></code></pre></div>
-<p>(The original plan listed <code>denis_sequence.py</code>/<code>denis_tracking.py</code> as built-ins; these
-were dropped during Phase 1 instead — they referenced C-API functions and a parameter
-shape that no longer exist in this codebase, and weren't used by any dataset.)</p>
-<p>Resolution order in <code>loader.py</code> (one function, used by GUI and batch):</p>
-<ol>
-<li>Built-ins: <code>openptv2.plugins.&lt;name&gt;</code> inside the package.</li>
-<li>Installed third-party plugins via <code>importlib.metadata</code> entry points, group
-   <code>"openptv2.plugins"</code> — the path for future separately-released plugins.</li>
-<li>Experiment-local <code>plugins/</code> directory next to the parameters file — kept as the
-   user-extension escape hatch (this is the <em>legitimate</em> use of the working-folder
-   location), tried last and clearly logged.</li>
-</ol>
-<p>Contract in <code>base.py</code>: a <code>Protocol</code> (or lightweight ABC) with <code>name</code>, <code>kind</code>
-("sequence" | "tracking"), and <code>run(exp)</code>. A thin adapter keeps the legacy
-<code>Sequence.do_sequence()</code> / <code>Tracking.do_tracking()</code> classes working during migration.
-Discovery for the GUI dropdown / YAML <code>plugins:</code> section comes from the registry, not
-from filename substring matching.</p>
-<h2 id="phases">Phases<a class="headerlink" href="#phases" title="Permanent link">&para;</a></h2>
-<h3 id="phase-1-single-source-of-truth-mechanical-low-risk">Phase 1 — single source of truth (mechanical, low risk)<a class="headerlink" href="#phase-1-single-source-of-truth-mechanical-low-risk" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Create <code>src/openptv2/plugins/</code> and move the plugin files there; fix all imports to
-  <code>openptv2.*</code>; delete the <code>from pyptv import ptv</code> and <code>optv.*</code> remnants.</li>
-<li>Delete all <code>test_data/*/plugins/</code> copies and <code>src/openptv2/gui/plugins/</code>.</li>
-<li>Point <code>run_sequence_plugin</code> / <code>run_tracking_plugin</code> and <code>pyptv_batch_plugins</code> at the
-  new loader (built-ins + cwd fallback), keeping current YAML plugin names working via
-  an alias map (<code>ext_sequence_splitter</code> → <code>splitter_sequence</code>, …).</li>
-<li>Update <code>pyproject.toml</code> packages list; add extras: <code>rembg = ["rembg"]</code>.</li>
-<li>Rewrite <code>tests/batch/test_pyptv_batch_plugins.py</code> to run on a tmp copy of
-  <code>test_data/test_splitter</code> (it is currently skipped for exactly this reason) — this
-  becomes the regression gate for the whole restructure.</li>
-</ul>
-<h3 id="phase-2-formal-plugin-api">Phase 2 — formal plugin API<a class="headerlink" href="#phase-2-formal-plugin-api" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Add <code>base.py</code> protocols and the registry; replace <code>scan_plugins_dir</code> filename
-  sniffing with registry queries (experiment-local dir still scanned, but by importing
-  and inspecting, not by name matching).</li>
-<li>Move rembg model-session creation from import time into <code>__init__</code>/first use; report
-  unavailable plugins in the GUI/YAML scan as <code>"rembg_sequence (requires
-  openptv2[rembg])"</code> instead of failing at run time.</li>
-<li>Replace <code>print</code>-and-continue error handling in the loaders with logging + raised
-  exceptions (batch must exit non-zero on plugin failure — important for cloud jobs).</li>
-</ul>
-<h3 id="phase-3-unify-default-into-the-plugin-system">Phase 3 — unify "default" into the plugin system<a class="headerlink" href="#phase-3-unify-default-into-the-plugin-system" title="Permanent link">&para;</a></h3>
-<p>Revised from the original plan: rather than folding the splitter into a non-plugin
-"core" pipeline, the better fit (matching how the GUI actually loads plugins at
-runtime — see below) was to make <strong>"default" itself a plugin</strong>, so every caller
-always goes through the same <code>Sequence(ptv=, exp=).do_sequence()</code> /
-<code>Tracking(ptv=, exp=).do_tracking()</code> contract instead of special-casing the string
-<code>"default"</code>. The splitter stays a plugin, symmetric with contour/rembg; <code>ptv.splitter</code>
-/ <code>cal_ori.cal_splitter</code> remain core config flags the user sets independently of which
-sequence plugin is selected.</p>
-<ul>
-<li>Added <code>openptv2.plugins.default_sequence</code>/<code>default_tracking</code>, registered as
-  <code>"default"</code> in <code>BUILTIN_SEQUENCE_PLUGINS</code>/<code>BUILTIN_TRACKING_PLUGINS</code> — built-in
-  lookup is tried first, so <code>"default"</code> can never be shadowed by an experiment-local
-  file. <code>default_tracking.py</code> also fixed a real divergence: <code>pyptv_batch_plugins.py</code>'s
-  old default-tracking branch never checked <code>track_mode</code> for 3D segment tracking,
-  unlike the GUI and <code>pyptv_batch.py</code>; there's now one implementation.</li>
-<li>Simplified every caller (<code>pyptv_gui.py</code>'s <code>sequence_action</code>/<code>track_no_disp_action</code>,
-  all <code>run_batch</code> variants) to unconditionally call the loader — no more
-  <code>if name != "default": ... else: ...</code> branches anywhere.</li>
-<li>Auditing the GUI's plugin-selection dialog (<code>Plugins</code> class) while doing this found
-  two real crash bugs, fixed as part of this phase: <code>Plugins.read()</code> called
-  <code>ParameterManager.get_parameter("plugins")</code> unguarded, which raises <code>ValueError</code>
-  (not <code>None</code>) for any YAML lacking a <code>plugins:</code> section — crashed GUI startup;
-  <code>Plugins.save()</code> called <code>Experiment.get_parameter("plugins", {})</code> with two
-  positional args against a one-arg method — crashed every "OK" click in the plugin
-  dialog. Both are fixed by going through <code>pm.parameters</code> (a plain dict) directly.</li>
-<li><code>Plugins.read()</code> also used to trust a session-cached, possibly-never-populated
-  snapshot (<code>ParameterManager.from_yaml()</code> doesn't scan plugins at all — only the
-  legacy <code>.par</code>-conversion path does); it now does a live
-  <code>discover_available_plugins()</code> rescan on every open, so a plugin file dropped into
-  the experiment's <code>plugins/</code> folder while the GUI is open shows up immediately.</li>
-<li>Plugin failures at the two GUI call sites now surface as a <code>pyface</code> warning dialog
-  with an actionable message (e.g. missing <code>rembg</code> extra) instead of an unhandled
-  traceback.</li>
-</ul>
-<h3 id="phase-4-cloudbatch-alignment">Phase 4 — cloud/batch alignment<a class="headerlink" href="#phase-4-cloudbatch-alignment" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Merged plugin selection into <code>openptv2-batch</code>: <code>pyptv_batch.py::run_batch</code>/<code>main</code>
-  gained <code>sequence_plugin</code>/<code>tracking_plugin</code> params and <code>--sequence-plugin</code>
-  /<code>--tracking-plugin</code> CLI flags (default <code>"default"</code>), replacing its inline
-  <code>py_sequence_loop</code>/<code>py_trackcorr_init</code> dispatch with calls through the loader.</li>
-<li><code>pyptv_batch_plugins.py::run_batch</code> is now a thin backward-compatible shim
-  delegating to <code>pyptv_batch.run_batch</code> — kept (not deleted) because several tests
-  import it directly with its legacy keyword order; <code>main()</code>'s CLI shape is
-  unchanged for the same reason. Not a registered <code>[project.scripts]</code> entry point,
-  same as before.</li>
-<li>Because built-ins ship in the wheel, <code>Dockerfile.cloud</code> gains plugin support with no
-  data-folder changes; it now also bakes <code>test_splitter</code> alongside <code>test_cavity</code> and
-  documents a smoke test exercising <code>--sequence-plugin splitter_sequence
-  --tracking-plugin splitter_tracking</code> against it (mirrored in <code>docs/cloud-batch.md</code>).</li>
-<li><code>pyptv_batch_parallel.py</code> (a third, multiprocessing batch variant, no CLI entry
-  point) was explicitly left untouched — flagged as a known future gap.</li>
-</ul>
-<h2 id="out-of-scope-later">Out of scope (later)<a class="headerlink" href="#out-of-scope-later" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Actual separately-packaged plugin repos (<code>openptv2-plugin-rembg</code>) — the entry-point
-  group makes this possible but nothing forces it yet.</li>
-<li>Sandboxing/trust policy for experiment-local plugins (cwd <code>sys.path</code> injection is
-  arbitrary code execution from a data directory; acceptable for now, worth a flag
-  like <code>--allow-local-plugins</code> for cloud mode later).</li>
-</ul>
 
 
 
