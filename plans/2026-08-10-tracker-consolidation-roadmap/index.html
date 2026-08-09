@@ -1078,6 +1078,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#progress-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Progress log
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#context" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1133,10 +1144,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#stage-1-cost-neutral-correctness-in-fast_3d" class="md-nav__link">
+  <a href="#stage-1-cost-neutral-correctness-in-fast_3d-done" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stage 1 — Cost-neutral correctness in fast_3d
+        Stage 1 — Cost-neutral correctness in fast_3d (DONE)
       
     </span>
   </a>
@@ -1231,10 +1242,40 @@
 
 <h1 id="tracker-consolidation-roadmap-two-presets-honest-measurement-high-density-scaling">Tracker consolidation roadmap: two presets, honest measurement, high-density scaling<a class="headerlink" href="#tracker-consolidation-roadmap-two-presets-honest-measurement-high-density-scaling" title="Permanent link">&para;</a></h1>
 <p><strong>Date:</strong> 2026-08-10
-<strong>Status:</strong> proposed
+<strong>Status:</strong> Stage A, Stage 0, and Stage 1 (1a–1d) done and measured. Stage 2
+in design (2a revised to a Kalman-filter predictor). Stages 3–4 not started.
 <strong>Supersedes:</strong> <code>docs/plans/2026-08-04-tracking-improvement-metrics-plan.md</code> (its
 A1–A6 deliverables shipped, but its results doc benchmarks a tracker that no
 longer exists — see Context)</p>
+<h2 id="progress-log">Progress log<a class="headerlink" href="#progress-log" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>2026-08-10 — Stage A</strong>: fixed <code>fast_3d</code>'s Level 1/2 acceleration-residual
+  sign bug (candidates were ranked by proximity to a point <em>behind</em> the
+  particle). <code>test_cavity</code> link count 1765 → 1753 (fewer but correct).</li>
+<li><strong>2026-08-10 — Stage 0</strong>: pid-exact one-to-one identity metrics, ghost-capture
+  rate, <code>benchmark_utils.combined_metrics</code> (both metric systems in one row),
+  <code>scripts/bench_trackers.py</code> single entry point, density-sweep dataset
+  generation (fixed an O(n²) bug in the origin-file writer along the way),
+  <code>tests/unit/test_tracker_quality.py</code> ground-truth CI floor. Also found and
+  fixed a <strong>segfault</strong> at 20k particles/frame (<code>Tracker</code>/plugins hardcode
+  <code>max_targets=10000</code>; <code>Frame.read()</code> now raises <code>ValueError</code> instead of
+  silently overflowing fixed-size buffers).</li>
+<li><strong>2026-08-10 — Stage 1</strong>: 1b global cost-ordered claiming (measured:
+  precision 0.718→0.871, recall 0.648→0.812 at 1k density; fast_3d now
+  nearly matches <code>myptv_3d_tracking</code>'s accuracy while staying faster). 1c
+  postprocess wiring landed but <strong>measured no benefit</strong> on this dataset (net
+  0–1 links for 5–13× runtime) — left off by default, contradicts the
+  assumed root-cause table until re-measured on other data. 1d (bubble
+  sorts) fell out of 1b for free.</li>
+<li><strong>Committed, not yet in this doc's Stage 2 text until this edit</strong>: decided
+  to replace Stage 2a's Savitzky-Golay prediction plan with a per-track
+  constant-acceleration Kalman filter — see 2a below for the reasoning
+  (O(1) vs proPTV's O(track length) per-link refit, and the innovation
+  covariance subsumes Stage 3's adaptive search volume).</li>
+</ul>
+<p><strong>Resume here:</strong> Stage 2 (<code>quality_3d</code>) is designed but no code written yet.
+Start with 2a (KF predictor) or 2c (cluster-local assignment, has a direct
+reference in <code>_assignment.py</code> to port) — either is a clean starting point.</p>
 <h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
 <p>openptv2 currently ships <strong>six</strong> selectable tracking engines that overlap heavily,
 and there is no trustworthy way to say which one is better. <code>docs/tracking-benchmark-results.md</code>
@@ -1413,38 +1454,77 @@ Floors set from the measured baseline, not aspirationally.</p>
 <p><strong>Deliverable:</strong> a table of where all six trackers actually stand at 1k / 5k / 20k.
 Everything after this is measured against it.</p>
 <hr />
-<h2 id="stage-1-cost-neutral-correctness-in-fast_3d">Stage 1 — Cost-neutral correctness in <code>fast_3d</code><a class="headerlink" href="#stage-1-cost-neutral-correctness-in-fast_3d" title="Permanent link">&para;</a></h2>
+<h2 id="stage-1-cost-neutral-correctness-in-fast_3d-done">Stage 1 — Cost-neutral correctness in <code>fast_3d</code> (DONE)<a class="headerlink" href="#stage-1-cost-neutral-correctness-in-fast_3d-done" title="Permanent link">&para;</a></h2>
 <p>These change no complexity class and are the whole of what <code>fast_3d</code> gets.</p>
 <p><strong>1a.</strong> Done in Stage A.</p>
-<p><strong>1b. Global cost-ordered claiming (F2).</strong> Keep the per-particle candidate
-generation, but instead of claiming inside the per-particle loop, emit
-<code>(cost, i, k)</code> triples into one buffer, sort once per frame, and claim in
-ascending cost order with an <code>is_claimed</code> bitmap. <code>O(E log E)</code> with <code>E ≈ 32N</code>;
-at 20k that is 640k edges, a single sort. This removes the index-order bias
-entirely and is within a couple of percent of the Hungarian optimum in practice.
-Do <strong>not</strong> port the Hungarian into <code>fast_3d</code> — that is <code>quality_3d</code>'s job.</p>
-<p><strong>1c. Wire post-processing (F5).</strong> Make <code>plugins/default_tracking.py</code> run
-<code>tracking_postprocess</code>'s <code>seed_cold_start</code> → <code>relink_trajectory_gaps(max_gap=2)</code>
-→ <code>enforce_reciprocity</code> for the <code>fast_3d</code> path too, under the existing
-<code>postprocess</code> config flag. Zero new code — reuse <code>tracking_postprocess.py</code> as-is.</p>
-<p><strong>1d. Replace the bubble sorts (F4).</strong> <code>track_kernels_track3d.py:187-198</code>,
-<code>:277-288</code>, <code>:340-351</code> are three copies of an O(n²) bubble sort over ≤32 elements,
-run once per particle per level. With 1b these disappear from levels 1 and 2 (the
-global sort subsumes them); the remaining one becomes a plain insertion sort.</p>
-<p>Expected: the bulk of the 60% dropout / 20% cold-start error budget, at zero
-throughput cost. Verify against Stage 0's table before proceeding.</p>
+<p><strong>1b. Global cost-ordered claiming (F2).</strong> DONE. Per level (still a strict
+1→2→3 cascade), candidate generation stays per-particle but claiming no longer
+happens inside that loop: <code>(cost, i, k)</code> triples go into one edge buffer, sorted
+once per level with <code>np.argsort</code>, then claimed in ascending-cost order with a
+<code>path_next_1[i] &lt; 0</code> / <code>path_prev_2[k] &lt; 0</code> bitmap check. Measured effect on
+<code>synthetic_turbulent</code> (1k density): precision 0.718 → 0.871, yield_recall
+0.648 → 0.812, fragmentation 10.04 → 5.72. At the tuned 220-density point,
+fast_3d now nearly matches <code>myptv_3d_tracking</code>'s precision/purity (0.974/0.970
+vs 0.984/0.982) while still running faster (197ms vs 312ms/frame). Also fixed
+a previously-documented hazard: <code>track3d</code> no longer mislinks under a too-tight
+<code>dvxmax</code> in <code>test_tracking_synthetic.py</code>'s scenario (was a known "fails unsafe"
+case; now fails safe like <code>trackcorr</code>) — see
+<code>test_track3d_fails_safe_under_tight_dvxmax</code>.</p>
+<p><strong>1c. Wire post-processing (F5).</strong> DONE, but <strong>the assumed payoff did not
+hold</strong> — measure before trusting root-cause tables. <code>plugins/default_tracking.py</code>
+now runs <code>Tracker.postprocess()</code> (<code>seed_cold_start</code> → <code>relink_trajectory_gaps</code>
+→ <code>enforce_reciprocity</code>) for <code>fast_3d</code> too, gated by <code>track.postprocess</code>
+(reused <code>tracking_postprocess.py</code> unchanged, per plan). Measured on
+<code>synthetic_turbulent</code> at both 220 and 1k density: <strong>net effect was 0-1 extra
+links total, while runtime went 5-13× (10s→57s at 220; 6.6s→89s at 1k)</strong>. The
+turbulent flow's <code>velocity_jitter=1.0</code> (Ornstein-Uhlenbeck) apparently makes
+constant-velocity extrapolation — which <code>seed_cold_start</code>/<code>relink_trajectory_gaps</code>
+both rely on — rarely land within their acceptance tolerance. Left <strong>off by
+default</strong> (matches <code>tracking_presets.PRESET_CONFIGS["fast_3d"]["postprocess"] =
+False</code>), opt-in via <code>track.postprocess: true</code>. Regression test:
+<code>tests/unit/test_default_tracking_postprocess.py</code> (pins the wiring, not a
+quality claim). Root-cause table's 60.4%/19.8% dropout/cold-start attribution
+in <code>docs/tracking-benchmark-results.md</code> should be re-measured before being
+used to justify further postprocess investment — it may be dataset-specific
+(a slower-varying flow, or a real experimental dataset, might behave
+differently) or the tolerance/guard conditions in <code>tracking_postprocess.py</code>
+may need loosening; either needs actual measurement, not assumption.</p>
+<p><strong>1d. Replace the bubble sorts (F4).</strong> DONE as a side effect of 1b — the three
+per-particle <code>decis_vals</code>/<code>decis_inds</code> bubble sorts in
+<code>track_kernels_track3d.py</code> are gone; each level now does one <code>np.argsort</code> over
+its whole edge list instead.</p>
+<p>Verified against Stage 0's harness throughout (see measurements above), not
+assumed.</p>
 <hr />
 <h2 id="stage-2-quality_3d-the-plugins-brain-in-the-kernel">Stage 2 — <code>quality_3d</code>: the plugins' brain, in the kernel<a class="headerlink" href="#stage-2-quality_3d-the-plugins-brain-in-the-kernel" title="Permanent link">&para;</a></h2>
 <p>New compiled tracker, selected as <code>quality_3d</code>, sharing Stage 1's candidate
 generation and spatial index (Stage 3) but a smarter predictor and matcher.</p>
-<p><strong>2a. Multi-frame prediction.</strong> Raise the ring buffer for the 3D path from
-<code>buf_len = 4</code> (<code>tracker.py:78</code>) to 6 and walk the existing <code>path_prev</code> chain
-backward to recover up to 5 history points — no new data structure. Apply the
-Savitzky-Golay order-3 derivative kernel from
-<code>fast_3d_smooth_tracking.py:47</code> (<code>_sg_deriv_coeffs</code>); the coefficients for
-windows 3/5 are 6 and 10 constants, hardcode them in the kernel. This halves
-velocity noise versus 2-point extrapolation and stays exact on constant
-acceleration. Tracks with &lt;3 history points fall back to 2-point.</p>
+<p><strong>2a. Multi-frame prediction — constant-acceleration Kalman filter (revised
+2026-08-10, superseding the earlier SG-smoothing plan below).</strong> A per-track
+KF (state <code>[x,y,z,vx,vy,vz,ax,ay,az]</code>, 9×9 covariance) replaces both fast_3d's
+2-point extrapolation and the SG-smoothing idea:
+  - <strong>O(1) per track per frame</strong> (a 9×9 predict + update), not O(track length)
+    — this is what keeps <code>quality_3d</code> compiled-fast where proPTV's per-link
+    GMM refit (<code>_smooth_history</code>, re-fit on every accepted link over the
+    <em>whole</em> track) is the reason it's 20–30× slower than fast_3d at the same
+    density (measured in Stage 0/1: 1470ms vs 216ms/frame at 220/frame, and
+    proptv was excluded from the 5k/20k sweep entirely as impractical).
+  - <strong>The innovation covariance sizes the search radius directly</strong> — replaces
+    the fixed <code>dvxmax</code>/<code>dacc</code> box with an ellipsoid that's tight when a track's
+    motion has been consistent and widens automatically after a gap or a
+    turn. This <em>is</em> Stage 3's "adaptive search volume," not a separate feature
+    to build twice.
+  - Tracks with &lt;2 history points fall back to a wide isotropic gate (no
+    velocity estimate yet) — same cold-start handling as today's Level 3.
+  - The KF replaces the <em>prediction</em> half only. Candidate generation (spatial
+    box/grid) and assignment (2c below) are unchanged — a KF does not by
+    itself resolve multi-track competition for one candidate.
+  - Reference to validate against: <code>fast_3d_smooth</code>'s SG-velocity plugin
+    (<code>fast_3d_smooth_tracking.py:47</code>) stays as-is per Stage 4 (a reference
+    implementation for parity testing), since it already demonstrates the
+    "smoothed prediction beats 2-point" effect cheaply in Python; the KF is
+    the compiled, principled version of that same idea plus the free adaptive
+    radius.</p>
 <p><strong>2b. Multi-term cost.</strong> Implement the three terms of
 <code>tracking_cost.compute_multi_term_cost_matrix:67</code> inline (distance +
 velocity-continuity + acceleration), weights from YAML with the proPTV plugin's
