@@ -2044,6 +2044,8 @@
 <h2 id="4-tracking-algorithms-plugins">4. Tracking Algorithms &amp; Plugins<a class="headerlink" href="#4-tracking-algorithms-plugins" title="Permanent link">&para;</a></h2>
 <p>OpenPTV2 supports extensible tracking algorithms selected via <code>plugins.selected_tracking</code>:</p>
 <ul>
+<li><strong><code>quality_3d_tracking</code></strong> (<code>quality_3d</code>):
+  High-accuracy Constant-Acceleration 3D Kalman Filter predictor with multi-term cost matrix (distance + velocity continuity + acceleration penalty) and Hungarian cluster assignment. Delivers <strong>98.0% precision</strong> at high speed (~178 ms/frame). See <a href="file:///C:/Users/alex/projects/openptv2/docs/quality_3d_tracking_guide.md"><strong><code>quality_3d</code> Mathematical Guide</strong></a>.</li>
 <li><strong><code>default</code> (<code>trackcorr</code>)</strong>:
   Standard OpenPTV Lagrangian tracking engine. Works best for 3D PTV setups with 2-4 cameras.</li>
 <li><strong><code>splitter_tracking</code></strong>:
