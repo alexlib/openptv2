@@ -1240,11 +1240,11 @@
 <h2 id="2-active-roadmap-stages-24">2. Active Roadmap: Stages 2–4<a class="headerlink" href="#2-active-roadmap-stages-24" title="Permanent link">&para;</a></h2>
 <h3 id="stage-2-quality_3d-accuracy-optimal-compiled-engine-ready-to-implement"><strong>Stage 2 — <code>quality_3d</code>: Accuracy-Optimal Compiled Engine (READY TO IMPLEMENT)</strong><a class="headerlink" href="#stage-2-quality_3d-accuracy-optimal-compiled-engine-ready-to-implement" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>2a. Multi-Frame Prediction (Constant-Acceleration Kalman Filter)</strong>:</li>
+<li>[x] <strong>2a. Multi-Frame Prediction (Constant-Acceleration Kalman Filter)</strong>: Implemented in <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_kalman.py"><code>src/openptv2/tracking_kalman.py</code></a> (<code>ConstantAccelerationKF3D</code>).</li>
 <li>Per-track 9D state ($[x, y, z, v_x, v_y, v_z, a_x, a_y, a_z]$) with $9 \times 9$ covariance matrix.</li>
-<li>$O(1)$ per track prediction &amp; update.</li>
+<li>$O(1)$ per track prediction &amp; update, batch predictions across active tracks.</li>
 <li>Dynamic innovation ellipsoid gates ($S = H P H^T + R$) replace fixed search boxes and scale radius adaptively.</li>
-<li>Fall back to wide isotropic gate for unseeded tracks ($&lt; 2$ history points).</li>
+<li>Fall back to wide isotropic gate for unseeded cold start tracks ($&lt; 2$ history points).</li>
 <li><strong>2b. Multi-Term Cost Matrix</strong>:</li>
 <li>Inline distance + velocity continuity + acceleration cost terms with weights $w = (1.0, 0.6, 0.3)$ to suppress ghost captures.</li>
 <li><strong>2c. Cluster-Local Graph Decomposition &amp; Optimal Assignment</strong>:</li>
