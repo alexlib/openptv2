@@ -120,13 +120,29 @@ class Quality3DTracker:
                 active_kf_states, dt=1.0
             )
 
-            # Per-track search radius: a_max for seeded tracks with velocity history, v_max for cold start
-            seeded = np.fromiter(
+            # Extract innovation standard deviation per track from S_mats
+            sigmas = np.sqrt(np.trace(S_mats, axis1=1, axis2=2) / 3.0)
+
+            # Identify seeded tracks with velocity history (history_len >= 2)
+            is_seeded = np.fromiter(
                 (ts.history_len >= 2 for ts in active_kf_states),
                 dtype=bool,
                 count=num_active,
             )
-            radii = np.where(seeded, self.a_max, self.v_max)
+
+            # Tier 1 Tight radii: high-confidence innovation radius clamped to [1.2, min(a_max, 3.0)] for seeded tracks
+            tight_radii = np.where(
+                is_seeded,
+                np.clip(2.5 * sigmas, 1.2, np.minimum(self.a_max, 3.0)),
+                self.v_max,
+            )
+
+            # Tier 2 Fallback radii: wider innovation radius clamped to [2.0, a_max]
+            fallback_radii = np.where(
+                is_seeded,
+                np.clip(4.0 * sigmas, 2.0, self.a_max),
+                self.v_max,
+            )
 
             # Velocity vectors for cost matrix
             pred_vels = pred_states[:, 3:6]
@@ -140,10 +156,37 @@ class Quality3DTracker:
                 dt=self.dt,
             )
 
-            # Cluster-local Hungarian / optimal assignment
-            row_ind, col_ind = match_within_radius(
-                pred_positions, cand_pts, radii, cost_matrix=cost_mat
+            # Tier 1: Cluster-local Hungarian assignment with tight high-confidence radii
+            row_ind1, col_ind1 = match_within_radius(
+                pred_positions, cand_pts, tight_radii, cost_matrix=cost_mat
             )
+
+            matched_r1 = set(row_ind1)
+            matched_c1 = set(col_ind1)
+
+            unmatched_r = [r for r in range(num_active) if r not in matched_r1]
+            unmatched_c = [c for c in range(num_cands) if c not in matched_c1]
+
+            # Tier 2: Fallback matching for remaining unmatched active tracks using wider radii
+            if unmatched_r and unmatched_c:
+                sub_pred = pred_positions[unmatched_r]
+                sub_cands = cand_pts[unmatched_c]
+                sub_radii = fallback_radii[unmatched_r]
+                sub_cost = cost_mat[np.ix_(unmatched_r, unmatched_c)]
+
+                row_ind2_sub, col_ind2_sub = match_within_radius(
+                    sub_pred, sub_cands, sub_radii, cost_matrix=sub_cost
+                )
+                row_ind2 = [unmatched_r[r] for r in row_ind2_sub]
+                col_ind2 = [unmatched_c[c] for c in col_ind2_sub]
+
+                if len(row_ind2) > 0:
+                    row_ind = np.concatenate([row_ind1, row_ind2])
+                    col_ind = np.concatenate([col_ind1, col_ind2])
+                else:
+                    row_ind, col_ind = row_ind1, col_ind1
+            else:
+                row_ind, col_ind = row_ind1, col_ind1
 
             matched_cands = set(col_ind)
             matched_tracks = set(row_ind)
