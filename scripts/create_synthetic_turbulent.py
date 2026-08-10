@@ -69,22 +69,38 @@ def make_dataset(
     seed: int = SEED,
     first_frame: int = FIRST_FRAME,
     volume: tuple[float, float, float] = VOLUME,
+    preserve_trackability: bool = True,
 ) -> Path:
     """Generate one turbulent-flow dataset at a given particle density.
 
-    Same flow/noise/gap/ghost/crossing config as the default
-    ``synthetic_turbulent`` case; only density (``num_particles`` in the
-    fixed ``volume``), frame count and seed vary. Returns the written
-    ``parameters_Run1.yaml`` path.
+    When ``preserve_trackability=True`` (default), scales particle displacement
+    and velocity jitter by (220 / num_particles)**(1/3) so that the PTV
+    Trackability Number M = (v * dt) / d_nn remains constant (M <= 0.2) as
+    seeding density increases. Returns the written ``parameters_Run1.yaml`` path.
     """
-    kwargs = {**BASE_SCENARIO_KWARGS, "num_particles": num_particles,
-              "num_frames": num_frames, "seed": seed}
+    scale = (220.0 / num_particles) ** (1.0 / 3.0) if (preserve_trackability and num_particles != 220) else 1.0
+    scaled_crossings = [
+        CrossingSpec(at_frame=cr.at_frame, min_distance=cr.min_distance, speed=cr.speed * scale, seed=cr.seed)
+        for cr in BASE_SCENARIO_KWARGS["crossings"]
+    ]
+    kwargs = {
+        **BASE_SCENARIO_KWARGS,
+        "num_particles": num_particles,
+        "num_frames": num_frames,
+        "seed": seed,
+        "velocity": BASE_SCENARIO_KWARGS["velocity"] * scale,
+        "velocity_jitter": BASE_SCENARIO_KWARGS["velocity_jitter"] * scale,
+        "crossings": scaled_crossings,
+    }
     spec = bm.ScenarioSpec(**kwargs)
     tt, fg = bm.generate_scenario(spec)
     rig = bm.make_standard_rig()
     yaml_path = bm.write_experiment(rig, fg, out_dir, first_frame=first_frame, volume=volume)
 
     n_per_frame = [len(fg[f]) for f in fg]
+    mean_d_nn = 0.554 * ((volume[0] * volume[1] * volume[2]) / num_particles) ** (1.0 / 3.0)
+    eff_vel = BASE_SCENARIO_KWARGS["velocity"] * scale
+    trackability_M = eff_vel / mean_d_nn
     print(f"Wrote turbulent experiment -> {out_dir}/")
     print(f"  parameters: {yaml_path.name}")
     print(f"  true trajectories: {len(tt)}")
@@ -93,6 +109,7 @@ def make_dataset(
         f"  particles/frame: {min(n_per_frame)}-{max(n_per_frame)} "
         f"(mean {sum(n_per_frame) / len(n_per_frame):.0f})"
     )
+    print(f"  trackability: d_nn = {mean_d_nn:.2f} mm | v = {eff_vel:.2f} mm/frame | M = {trackability_M:.3f}")
     return yaml_path
 
 
