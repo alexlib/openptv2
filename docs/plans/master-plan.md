@@ -21,11 +21,11 @@ openptv2 previously shipped six overlapping tracking engines with inconsistent m
 
 ### **Stage 2 — `quality_3d`: Accuracy-Optimal Compiled Engine (READY TO IMPLEMENT)**
 
-- **2a. Multi-Frame Prediction (Constant-Acceleration Kalman Filter)**:
+- [x] **2a. Multi-Frame Prediction (Constant-Acceleration Kalman Filter)**: Implemented in [`src/openptv2/tracking_kalman.py`](file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_kalman.py) (`ConstantAccelerationKF3D`).
   - Per-track 9D state ($[x, y, z, v_x, v_y, v_z, a_x, a_y, a_z]$) with $9 \times 9$ covariance matrix.
-  - $O(1)$ per track prediction & update.
+  - $O(1)$ per track prediction & update, batch predictions across active tracks.
   - Dynamic innovation ellipsoid gates ($S = H P H^T + R$) replace fixed search boxes and scale radius adaptively.
-  - Fall back to wide isotropic gate for unseeded tracks ($< 2$ history points).
+  - Fall back to wide isotropic gate for unseeded cold start tracks ($< 2$ history points).
 - **2b. Multi-Term Cost Matrix**:
   - Inline distance + velocity continuity + acceleration cost terms with weights $w = (1.0, 0.6, 0.3)$ to suppress ghost captures.
 - **2c. Cluster-Local Graph Decomposition & Optimal Assignment**:
