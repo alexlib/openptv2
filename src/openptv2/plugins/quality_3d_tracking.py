@@ -205,7 +205,7 @@ class Quality3DTracker:
             corres_base = str(res_dir / "rt_is")
             linkage_base = str(res_dir / "ptv_is")
             prio_base = str(res_dir / "added")
-            frame = Frame()
+            frame = Frame(num_cams=4, max_targets=100000)
             frame.read(
                 corres_base, linkage_base,
                 prio_file_base=prio_base, target_file_base=None, frame_num=fn,

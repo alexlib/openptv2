@@ -102,24 +102,24 @@ def compute_multi_term_cost_matrix(
 
     from scipy.spatial.distance import cdist
 
-    # 1. Spatial distance cost C_d = ||pos_cand - pos_pred||
-    dist = cdist(pred_pos, cand_pos)  # (N_pred, N_cand) fast C implementation
+    # 1. Primary spatial distance cost C_d = ||cand_pos - pred_pos|| (Kalman predicted position)
+    dist = cdist(pred_pos, cand_pos)  # (N_pred, N_cand) fast scipy/C cdist
     cost = w.w_distance * dist
 
-    # 2. Velocity continuity cost C_v = || (pos_cand - pos_last)/dt - v_pred ||
+    # 2. Velocity continuity cost C_v = ||v_implied - pred_vel|| = || (cand - last_pos)/dt - v_pred ||
     if w.w_velocity > 0 and pred_vel is not None and len(pred_vel) == n_pred:
-        # Distance from projected position to candidate position
-        last_pos = pred_pos - pred_vel * dt
-        implied_dist = cdist(last_pos, cand_pos)
-        vel_diff = implied_dist / max(dt, 1e-6)
-        cost += w.w_velocity * vel_diff
+        dt_eff = max(dt, 1e-6)
+        # Constant-velocity projected position: x_last + v_pred * dt
+        # Displacement from constant-velocity prediction measures acceleration change
+        v_proj = pred_pos - (0.5 * (pred_acc if pred_acc is not None else 0.0) * (dt_eff**2))
+        vel_err = cdist(v_proj, cand_pos) / dt_eff
+        cost += w.w_velocity * vel_err
 
-    # 3. Acceleration cost C_a = || (v_link - v_pred)/dt - a_pred ||
+    # 3. Acceleration continuity cost C_a = ||a_implied - pred_acc||
     if w.w_acceleration > 0 and pred_acc is not None and len(pred_acc) == n_pred:
-        last_pos_acc = pred_pos - pred_vel * dt - 0.5 * pred_acc * (dt**2)
-        implied_dist_acc = cdist(last_pos_acc, cand_pos)
-        acc_diff = implied_dist_acc / max(dt**2, 1e-6)
-        cost += w.w_acceleration * acc_diff
+        dt_eff2 = max(dt**2, 1e-6)
+        acc_err = cdist(pred_pos, cand_pos) / dt_eff2
+        cost += w.w_acceleration * acc_err
 
     # 4. Intensity / blob size similarity cost C_i = |I_cand - I_pred|
     if (
