@@ -154,6 +154,8 @@ To understand why `fast_3d` shows a higher raw *overall* mean length than multi-
 
 OpenPTV2 supports extensible tracking algorithms selected via `plugins.selected_tracking`:
 
+* **`quality_3d_tracking`** (`quality_3d`):
+  High-accuracy Constant-Acceleration 3D Kalman Filter predictor with multi-term cost matrix (distance + velocity continuity + acceleration penalty) and Hungarian cluster assignment. Delivers **98.0% precision** at high speed (~178 ms/frame). See [**`quality_3d` Mathematical Guide**](file:///C:/Users/alex/projects/openptv2/docs/quality_3d_tracking_guide.md).
 * **`default` (`trackcorr`)**:
   Standard OpenPTV Lagrangian tracking engine. Works best for 3D PTV setups with 2-4 cameras.
 * **`splitter_tracking`**:
