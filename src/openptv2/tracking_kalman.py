@@ -24,6 +24,7 @@ class KalmanTrackState:
     history_len: int = 1
     last_frame: int = 0
     history_positions: List[np.ndarray] = field(default_factory=list)
+    history_times: List[int] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if self.state.shape != (9,):
@@ -33,21 +34,7 @@ class KalmanTrackState:
 
 
 class ConstantAccelerationKF3D:
-    """3D Constant-Acceleration Kalman Filter with dynamic innovation gating.
-
-    Parameters
-    ----------
-    process_noise_acc : float, default=1.0
-        Spectral density / variance of random acceleration fluctuations (mm/frame^2).
-    measurement_noise : float, default=0.05
-        Standard deviation of 3D particle position measurement error (mm).
-    v_max : float, default=15.0
-        Maximum expected inter-frame displacement for unseeded cold start (mm/frame).
-    a_max : float, default=10.0
-        Maximum expected inter-frame acceleration for unseeded cold start (mm/frame^2).
-    gate_chi2 : float, default=11.34
-        Chi-square threshold for 3 degrees of freedom at 99% confidence level.
-    """
+    """3D Constant-Acceleration Kalman Filter with dynamic innovation gating."""
 
     def __init__(
         self,
@@ -81,11 +68,8 @@ class ConstantAccelerationKF3D:
         state[0:3] = pos
 
         cov = np.zeros((9, 9), dtype=np.float64)
-        # Position uncertainty
         cov[0:3, 0:3] = (self.measurement_noise**2) * np.eye(3)
-        # Velocity uncertainty
         cov[3:6, 3:6] = (self.v_max**2) * np.eye(3)
-        # Acceleration uncertainty
         cov[6:9, 6:9] = (self.a_max**2) * np.eye(3)
 
         return KalmanTrackState(
@@ -95,6 +79,7 @@ class ConstantAccelerationKF3D:
             history_len=1,
             last_frame=frame_idx,
             history_positions=[pos.copy()],
+            history_times=[int(frame_idx)],
         )
 
     def compute_F(self, dt: float = 1.0) -> np.ndarray:
@@ -236,6 +221,7 @@ class ConstantAccelerationKF3D:
 
         next_frame = track_state.last_frame + int(dt) if frame_idx is None else frame_idx
         history_positions = track_state.history_positions + [meas.copy()]
+        history_times = track_state.history_times + [int(next_frame)]
 
         return KalmanTrackState(
             track_id=track_state.track_id,
@@ -244,6 +230,7 @@ class ConstantAccelerationKF3D:
             history_len=track_state.history_len + 1,
             last_frame=next_frame,
             history_positions=history_positions,
+            history_times=history_times,
         )
 
     def batch_predict(

@@ -342,7 +342,33 @@ def run_multi_tracker_benchmark(
     m_hybrid.particles_per_sec = total_particles / t_hybrid
     results["MyPTV Hybrid Multi-Term"] = m_hybrid
 
-    # 3. OpenPTV2 Cython Hybrid3D / track3d_loop_fast (Compiled C Kernel)
+    # 3. OpenPTV2 Quality3D (Kalman Filter + Cluster-Local Assignment)
+    try:
+        from openptv2.plugins.quality_3d_tracking import Quality3DTracker
+
+        t0 = time.perf_counter()
+        tracker_quality = Quality3DTracker(
+            process_noise_acc=1.0, measurement_noise=0.05, v_max=3.0, a_max=1.5, max_gap=1, dt=1.0
+        )
+        raw_quality = tracker_quality.track_frames(frame_particle_arrays)
+        t_quality = max(time.perf_counter() - t0, 1e-6)
+
+        pred_quality = {}
+        for tr in raw_quality:
+            pred_quality[int(tr["id"])] = [
+                (int(f), float(p[0]), float(p[1]), float(p[2]))
+                for f, p in zip(tr["time"], tr["pos"])
+            ]
+        m_quality = calculate_tracking_metrics(
+            true_tracks, pred_quality, distance_tolerance=distance_tolerance
+        )
+        m_quality.fps = num_frames / t_quality
+        m_quality.particles_per_sec = total_particles / t_quality
+        results["OpenPTV2 Quality3D (Kalman)"] = m_quality
+    except Exception as e:
+        pass
+
+    # 4. OpenPTV2 Cython Hybrid3D / track3d_loop_fast (Compiled C Kernel)
     try:
         from openptv2.algorithms.track_kernels_track3d import track3d_loop_fast
 

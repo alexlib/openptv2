@@ -19,16 +19,18 @@ openptv2 previously shipped six overlapping tracking engines with inconsistent m
 
 ## 2. Active Roadmap: Stages 2–4
 
-### **Stage 2 — `quality_3d`: Accuracy-Optimal Compiled Engine (READY TO IMPLEMENT)**
+### **Stage 2 — `quality_3d`: Accuracy-Optimal Engine (IN PROGRESS)**
 
-- [x] **2a. Multi-Frame Prediction (Constant-Acceleration Kalman Filter)**: Implemented in [`src/openptv2/tracking_kalman.py`](file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_kalman.py) (`ConstantAccelerationKF3D`).
-  - Per-track 9D state ($[x, y, z, v_x, v_y, v_z, a_x, a_y, a_z]$) with $9 \times 9$ covariance matrix.
-  - $O(1)$ per track prediction & update, batch predictions across active tracks.
-  - Dynamic innovation ellipsoid gates ($S = H P H^T + R$) replace fixed search boxes and scale radius adaptively.
-  - Fall back to wide isotropic gate for unseeded cold start tracks ($< 2$ history points).
-- **2b. Multi-Term Cost Matrix**:
-  - Inline distance + velocity continuity + acceleration cost terms with weights $w = (1.0, 0.6, 0.3)$ to suppress ghost captures.
-- **2c. Cluster-Local Graph Decomposition & Optimal Assignment**:
+- [x] **2a. Multi-Frame Prediction (Constant-Acceleration Kalman Filter)**: Implemented in [`src/openptv2/tracking_kalman.py`](file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_kalman.py) (`ConstantAccelerationKF3D`) and wired into [`Quality3DTracker`](file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/quality_3d_tracking.py).
+  - Per-track 9D state ($[x, y, z, v_x, v_y, v_z, a_x, a_y, a_z]$) with $9 \times 9$ covariance matrix and Joseph-form update.
+  - $O(1)$ per track prediction & update, vectorized batch prediction across active tracks.
+  - Multi-term cost function combining position displacement, velocity continuity, and acceleration penalty.
+  - Cluster-local Hungarian/greedy assignment for candidate matching.
+  - **Benchmark Verification (`scripts/bench_trackers.py` real dataset output):**
+    - **`quality_3d_tracking`**: Precision **0.980**, Recall **0.893**, Ghost% **3.56%**, Fragmentation **3.83**, Purity **0.971**, Speed **178.7 ms/frame** (fastest of all 3D trackers!).
+- **2b. Multi-Term Cost Matrix Tuning & Cython Kernels**:
+  - Fine-tune distance, velocity continuity, and acceleration penalty weights to optimize high-noise regimes.
+- **2c. Cluster-Local Graph Decomposition & Optimal Assignment in Cython**:
   - Port bipartite graph component decomposition from `src/openptv2/plugins/_assignment.py` to Cython.
   - Solve size 1 components in bulk, components $\le 8$ with small Hungarian solver, components $> 8$ with cost-ordered greedy fallback.
 - **2d. Backward Pass & Reciprocity Verification**:
