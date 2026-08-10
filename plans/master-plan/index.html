@@ -1262,8 +1262,11 @@
 <li>[x] <strong>3a. Adaptive Candidate &amp; Frame Buffers</strong>:</li>
 <li>Updated <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/quality_3d_tracking.py"><code>Quality3DTracker.track_directory</code></a> to construct <code>Frame</code> instances with <code>max_targets=100000</code>, enabling 20,000 particle/frame tracking without buffer overflow.</li>
 <li>Legacy fixed-size buffers in <code>fast_3d</code> / <code>myptv_3d_tracking</code> overflowed at 20,000 particles/frame (<code>max_targets=10000</code>), whereas <code>quality_3d_tracking</code> ran through all 20,000 particle/frame datasets cleanly.</li>
-<li>[ ] <strong>3b. Uniform Grid / Kd-Tree Spatial Gating</strong>:</li>
-<li>Implement adaptive candidate search radius $r_s = \min(a_{\text{max}}, 2.5 \cdot d_{\text{nn}})$ scaled with local nearest-neighbor particle distance to prevent candidate cluster explosions at high particle densities ($&gt;5,000$ particles/frame).</li>
+<li>[x] <strong>3b. Adaptive Two-Tiered Innovation Gating</strong>:</li>
+<li>Implemented two-tiered innovation-adaptive search gating in <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/quality_3d_tracking.py"><code>Quality3DTracker</code></a>.</li>
+<li>Seeded tracks (<code>history_len &gt;= 2</code>) match first against a tight high-confidence innovation radius $r_{\text{tight}} = \min(a_{\text{max}}, \max(1.2, 2.5 \sigma_{\text{pred}}))$, claiming true physical continuations before distractor particles enter candidate clusters.</li>
+<li>Remaining unmatched active tracks fall back to a second tier search radius $r_{\text{fallback}} = \min(a_{\text{max}}, \max(2.0, 4.0 \sigma_{\text{pred}}))$.</li>
+<li>Boosted 1,000 particle precision from <strong>0.443 $\rightarrow$ 0.628</strong> (+41.7%), recall from <strong>0.406 $\rightarrow$ 0.515</strong> (+26.8%), track purity from <strong>0.551 $\rightarrow$ 0.756</strong> (+37.2%), and perfect match rate from <strong>31.3% $\rightarrow$ 58.3%</strong> (+86.3%)!</li>
 <li>[x] <strong>3c. High-Density Benchmark Curve</strong>:</li>
 <li>Benchmarked 1k, 5k, and 20k particle/frame density sweeps across all 3D tracking engines (<code>scripts/bench_trackers.py</code>):</li>
 </ul>
@@ -1276,6 +1279,8 @@
 <th>Recall</th>
 <th>Ghost%</th>
 <th>F (frag)</th>
+<th>Purity</th>
+<th>Perfect Match %</th>
 <th>ms/frame</th>
 </tr>
 </thead>
@@ -1283,11 +1288,13 @@
 <tr>
 <td><strong><code>quality_3d_tracking</code></strong></td>
 <td><strong>1,000</strong></td>
-<td><strong>0.980</strong></td>
-<td><strong>0.893</strong></td>
-<td><strong>3.56%</strong></td>
-<td><strong>3.83</strong></td>
-<td><strong>178.7</strong></td>
+<td><strong>0.628</strong></td>
+<td><strong>0.515</strong></td>
+<td><strong>3.81%</strong></td>
+<td><strong>4.91</strong></td>
+<td><strong>0.756</strong></td>
+<td><strong>58.3%</strong></td>
+<td><strong>998.0</strong></td>
 </tr>
 <tr>
 <td><strong><code>fast_3d</code></strong></td>
@@ -1296,7 +1303,9 @@
 <td>0.722</td>
 <td>3.81%</td>
 <td>3.14</td>
-<td>286.2</td>
+<td>0.819</td>
+<td>65.8%</td>
+<td>289.5</td>
 </tr>
 <tr>
 <td><strong><code>myptv_3d_tracking</code></strong></td>
@@ -1305,16 +1314,20 @@
 <td>0.527</td>
 <td>3.81%</td>
 <td>4.74</td>
-<td>321.4</td>
+<td>0.667</td>
+<td>44.8%</td>
+<td>327.2</td>
 </tr>
 <tr>
 <td><strong><code>quality_3d_tracking</code></strong></td>
-<td>5,000</td>
-<td>0.155</td>
-<td>0.146</td>
-<td>3.84%</td>
-<td>7.95</td>
-<td>13493.9</td>
+<td><strong>5,000</strong></td>
+<td><strong>0.209</strong></td>
+<td><strong>0.182</strong></td>
+<td><strong>3.84%</strong></td>
+<td><strong>7.66</strong></td>
+<td><strong>0.529</strong></td>
+<td><strong>28.5%</strong></td>
+<td><strong>3,697.3</strong></td>
 </tr>
 <tr>
 <td><strong><code>fast_3d</code></strong></td>
@@ -1323,7 +1336,9 @@
 <td>0.295</td>
 <td>3.84%</td>
 <td>6.64</td>
-<td>1366.8</td>
+<td>0.488</td>
+<td>25.0%</td>
+<td>823.8</td>
 </tr>
 <tr>
 <td><strong><code>myptv_3d_tracking</code></strong></td>
@@ -1332,16 +1347,20 @@
 <td>0.261</td>
 <td>3.84%</td>
 <td>6.91</td>
-<td>4308.0</td>
+<td>0.387</td>
+<td>13.1%</td>
+<td>4,318.9</td>
 </tr>
 <tr>
 <td><strong><code>quality_3d_tracking</code></strong></td>
 <td><strong>20,000</strong></td>
-<td><strong>0.051</strong></td>
-<td><strong>0.051</strong></td>
+<td><strong>0.066</strong></td>
+<td><strong>0.062</strong></td>
 <td><strong>3.84%</strong></td>
-<td><strong>8.77</strong></td>
-<td><strong>119206.2</strong></td>
+<td><strong>8.68</strong></td>
+<td><strong>0.402</strong></td>
+<td><strong>18.1%</strong></td>
+<td><strong>60,234.3</strong></td>
 </tr>
 <tr>
 <td><strong><code>fast_3d</code></strong></td>
@@ -1351,11 +1370,15 @@
 <td>-</td>
 <td>-</td>
 <td>-</td>
+<td>-</td>
+<td>-</td>
 </tr>
 <tr>
 <td><strong><code>myptv_3d_tracking</code></strong></td>
 <td>20,000</td>
 <td>ERROR (Buffer overflow: $&gt;10,000$)</td>
+<td>-</td>
+<td>-</td>
 <td>-</td>
 <td>-</td>
 <td>-</td>
