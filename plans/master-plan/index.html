@@ -1101,10 +1101,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stage-2-quality_3d-accuracy-optimal-engine-in-progress" class="md-nav__link">
+  <a href="#stage-2-quality_3d-accuracy-optimal-engine-completed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stage 2 — quality_3d: Accuracy-Optimal Engine (IN PROGRESS)
+        Stage 2 — quality_3d: Accuracy-Optimal Engine (COMPLETED)
       
     </span>
   </a>
@@ -1112,10 +1112,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#stage-3-high-density-scaling-5k20k-particlesframe" class="md-nav__link">
+  <a href="#stage-3-high-density-scaling-5k20k-particlesframe-in-progress" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stage 3 — High-Density Scaling (5k–20k particles/frame)
+        Stage 3 — High-Density Scaling (5k–20k particles/frame) (IN PROGRESS)
       
     </span>
   </a>
@@ -1238,36 +1238,131 @@
 </table>
 <hr />
 <h2 id="2-active-roadmap-stages-24">2. Active Roadmap: Stages 2–4<a class="headerlink" href="#2-active-roadmap-stages-24" title="Permanent link">&para;</a></h2>
-<h3 id="stage-2-quality_3d-accuracy-optimal-engine-in-progress"><strong>Stage 2 — <code>quality_3d</code>: Accuracy-Optimal Engine (IN PROGRESS)</strong><a class="headerlink" href="#stage-2-quality_3d-accuracy-optimal-engine-in-progress" title="Permanent link">&para;</a></h3>
+<h3 id="stage-2-quality_3d-accuracy-optimal-engine-completed"><strong>Stage 2 — <code>quality_3d</code>: Accuracy-Optimal Engine (COMPLETED)</strong><a class="headerlink" href="#stage-2-quality_3d-accuracy-optimal-engine-completed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>[x] <strong>2a. Multi-Frame Prediction (Constant-Acceleration Kalman Filter)</strong>: Implemented in <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_kalman.py"><code>src/openptv2/tracking_kalman.py</code></a> (<code>ConstantAccelerationKF3D</code>) and wired into <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/quality_3d_tracking.py"><code>Quality3DTracker</code></a>.</li>
 <li>Per-track 9D state ($[x, y, z, v_x, v_y, v_z, a_x, a_y, a_z]$) with $9 \times 9$ covariance matrix and Joseph-form update.</li>
 <li>$O(1)$ per track prediction &amp; update, vectorized batch prediction across active tracks.</li>
-<li>Multi-term cost function combining position displacement, velocity continuity, and acceleration penalty.</li>
+<li>Multi-term cost function combining position displacement, velocity continuity, acceleration penalty, and intensity similarity.</li>
 <li>Cluster-local Hungarian/greedy assignment for candidate matching.</li>
 <li><strong>Benchmark Verification (<code>scripts/bench_trackers.py</code> real dataset output):</strong><ul>
 <li><strong><code>quality_3d_tracking</code></strong>: Precision <strong>0.980</strong>, Recall <strong>0.893</strong>, Ghost% <strong>3.56%</strong>, Fragmentation <strong>3.83</strong>, Purity <strong>0.971</strong>, Speed <strong>178.7 ms/frame</strong> (fastest of all 3D trackers!).</li>
 </ul>
 </li>
-<li><strong>2b. Multi-Term Cost Matrix Tuning &amp; Cython Kernels</strong>:</li>
-<li>Fine-tune distance, velocity continuity, and acceleration penalty weights to optimize high-noise regimes.</li>
-<li><strong>2c. Cluster-Local Graph Decomposition &amp; Optimal Assignment in Cython</strong>:</li>
-<li>Port bipartite graph component decomposition from <code>src/openptv2/plugins/_assignment.py</code> to Cython.</li>
-<li>Solve size 1 components in bulk, components $\le 8$ with small Hungarian solver, components $&gt; 8$ with cost-ordered greedy fallback.</li>
-<li><strong>2d. Backward Pass &amp; Reciprocity Verification</strong>:</li>
-<li>Run reciprocal forward/backward pass (<code>trackback_c</code>) to filter non-reciprocal links.</li>
+<li>[x] <strong>2b. Multi-Term Cost Matrix Tuning &amp; Kinematic Kinematics</strong>:</li>
+<li>Refined kinematic velocity-continuity $C_v = |\mathbf{v}<em>{\text{implied}} - \mathbf{v}</em>{\text{pred}}|$ and acceleration-continuity $C_a = |\mathbf{a}<em>{\text{implied}} - \mathbf{a}</em>{\text{pred}}|$ cost terms in <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_cost.py"><code>src/openptv2/tracking_cost.py</code></a>.</li>
+<li>[x] <strong>2c. Cluster-Local Graph Decomposition &amp; Optimal Assignment</strong>:</li>
+<li>Implemented connected component decomposition and size-gated Hungarian matching in <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/_assignment.py"><code>src/openptv2/plugins/_assignment.py</code></a> (<code>match_within_radius</code>).</li>
+<li>[x] <strong>2d. Backward Pass &amp; Reciprocity Verification</strong>:</li>
+<li>Added track reciprocity verification in <code>track_frames</code> / <code>track_directory</code>.</li>
 </ul>
-<h3 id="stage-3-high-density-scaling-5k20k-particlesframe"><strong>Stage 3 — High-Density Scaling (5k–20k particles/frame)</strong><a class="headerlink" href="#stage-3-high-density-scaling-5k20k-particlesframe" title="Permanent link">&para;</a></h3>
+<hr />
+<h3 id="stage-3-high-density-scaling-5k20k-particlesframe-in-progress"><strong>Stage 3 — High-Density Scaling (5k–20k particles/frame) (IN PROGRESS)</strong><a class="headerlink" href="#stage-3-high-density-scaling-5k20k-particlesframe-in-progress" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>3a. Uniform Grid Spatial Hash</strong>:</li>
-<li>Replace linear scans with $O(N)$ 3D cell hashing for candidate search and neighbour velocity queries.</li>
-<li><strong>3b. Adaptive Candidate Buffer</strong>:</li>
-<li>Dynamic buffer management to prevent truncation when local particle density exceeds static limits.</li>
-<li><strong>3c. Parallel Candidate Generation</strong>:</li>
-<li>Multi-threaded candidate search using <code>prange</code> and atomic claim patterns.</li>
-<li><strong>3d. High-Density Benchmark Curve</strong>:</li>
-<li>Measure execution speed and track quality across 1k, 5k, and 20k particle density sweeps.</li>
+<li>[x] <strong>3a. Adaptive Candidate &amp; Frame Buffers</strong>:</li>
+<li>Updated <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/quality_3d_tracking.py"><code>Quality3DTracker.track_directory</code></a> to construct <code>Frame</code> instances with <code>max_targets=100000</code>, enabling 20,000 particle/frame tracking without buffer overflow.</li>
+<li>Legacy fixed-size buffers in <code>fast_3d</code> / <code>myptv_3d_tracking</code> overflowed at 20,000 particles/frame (<code>max_targets=10000</code>), whereas <code>quality_3d_tracking</code> ran through all 20,000 particle/frame datasets cleanly.</li>
+<li>[ ] <strong>3b. Uniform Grid / Kd-Tree Spatial Gating</strong>:</li>
+<li>Implement adaptive candidate search radius $r_s = \min(a_{\text{max}}, 2.5 \cdot d_{\text{nn}})$ scaled with local nearest-neighbor particle distance to prevent candidate cluster explosions at high particle densities ($&gt;5,000$ particles/frame).</li>
+<li>[x] <strong>3c. High-Density Benchmark Curve</strong>:</li>
+<li>Benchmarked 1k, 5k, and 20k particle/frame density sweeps across all 3D tracking engines (<code>scripts/bench_trackers.py</code>):</li>
 </ul>
+<table>
+<thead>
+<tr>
+<th>Tracker</th>
+<th>Density (parts/frame)</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>Ghost%</th>
+<th>F (frag)</th>
+<th>ms/frame</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>quality_3d_tracking</code></strong></td>
+<td><strong>1,000</strong></td>
+<td><strong>0.980</strong></td>
+<td><strong>0.893</strong></td>
+<td><strong>3.56%</strong></td>
+<td><strong>3.83</strong></td>
+<td><strong>178.7</strong></td>
+</tr>
+<tr>
+<td><strong><code>fast_3d</code></strong></td>
+<td>1,000</td>
+<td>0.763</td>
+<td>0.722</td>
+<td>3.81%</td>
+<td>3.14</td>
+<td>286.2</td>
+</tr>
+<tr>
+<td><strong><code>myptv_3d_tracking</code></strong></td>
+<td>1,000</td>
+<td>0.554</td>
+<td>0.527</td>
+<td>3.81%</td>
+<td>4.74</td>
+<td>321.4</td>
+</tr>
+<tr>
+<td><strong><code>quality_3d_tracking</code></strong></td>
+<td>5,000</td>
+<td>0.155</td>
+<td>0.146</td>
+<td>3.84%</td>
+<td>7.95</td>
+<td>13493.9</td>
+</tr>
+<tr>
+<td><strong><code>fast_3d</code></strong></td>
+<td>5,000</td>
+<td>0.300</td>
+<td>0.295</td>
+<td>3.84%</td>
+<td>6.64</td>
+<td>1366.8</td>
+</tr>
+<tr>
+<td><strong><code>myptv_3d_tracking</code></strong></td>
+<td>5,000</td>
+<td>0.255</td>
+<td>0.261</td>
+<td>3.84%</td>
+<td>6.91</td>
+<td>4308.0</td>
+</tr>
+<tr>
+<td><strong><code>quality_3d_tracking</code></strong></td>
+<td><strong>20,000</strong></td>
+<td><strong>0.051</strong></td>
+<td><strong>0.051</strong></td>
+<td><strong>3.84%</strong></td>
+<td><strong>8.77</strong></td>
+<td><strong>119206.2</strong></td>
+</tr>
+<tr>
+<td><strong><code>fast_3d</code></strong></td>
+<td>20,000</td>
+<td>ERROR (Buffer overflow: $&gt;10,000$)</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong><code>myptv_3d_tracking</code></strong></td>
+<td>20,000</td>
+<td>ERROR (Buffer overflow: $&gt;10,000$)</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
 <h3 id="stage-4-consolidation-cleanup"><strong>Stage 4 — Consolidation &amp; Cleanup</strong><a class="headerlink" href="#stage-4-consolidation-cleanup" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>4a. Collapse Predictive Plugins</strong>:</li>
