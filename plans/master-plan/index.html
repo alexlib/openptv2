@@ -1101,10 +1101,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#stage-2-quality_3d-accuracy-optimal-compiled-engine-ready-to-implement" class="md-nav__link">
+  <a href="#stage-2-quality_3d-accuracy-optimal-engine-in-progress" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stage 2 — quality_3d: Accuracy-Optimal Compiled Engine (READY TO IMPLEMENT)
+        Stage 2 — quality_3d: Accuracy-Optimal Engine (IN PROGRESS)
       
     </span>
   </a>
@@ -1238,16 +1238,20 @@
 </table>
 <hr />
 <h2 id="2-active-roadmap-stages-24">2. Active Roadmap: Stages 2–4<a class="headerlink" href="#2-active-roadmap-stages-24" title="Permanent link">&para;</a></h2>
-<h3 id="stage-2-quality_3d-accuracy-optimal-compiled-engine-ready-to-implement"><strong>Stage 2 — <code>quality_3d</code>: Accuracy-Optimal Compiled Engine (READY TO IMPLEMENT)</strong><a class="headerlink" href="#stage-2-quality_3d-accuracy-optimal-compiled-engine-ready-to-implement" title="Permanent link">&para;</a></h3>
+<h3 id="stage-2-quality_3d-accuracy-optimal-engine-in-progress"><strong>Stage 2 — <code>quality_3d</code>: Accuracy-Optimal Engine (IN PROGRESS)</strong><a class="headerlink" href="#stage-2-quality_3d-accuracy-optimal-engine-in-progress" title="Permanent link">&para;</a></h3>
 <ul>
-<li>[x] <strong>2a. Multi-Frame Prediction (Constant-Acceleration Kalman Filter)</strong>: Implemented in <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_kalman.py"><code>src/openptv2/tracking_kalman.py</code></a> (<code>ConstantAccelerationKF3D</code>).</li>
-<li>Per-track 9D state ($[x, y, z, v_x, v_y, v_z, a_x, a_y, a_z]$) with $9 \times 9$ covariance matrix.</li>
-<li>$O(1)$ per track prediction &amp; update, batch predictions across active tracks.</li>
-<li>Dynamic innovation ellipsoid gates ($S = H P H^T + R$) replace fixed search boxes and scale radius adaptively.</li>
-<li>Fall back to wide isotropic gate for unseeded cold start tracks ($&lt; 2$ history points).</li>
-<li><strong>2b. Multi-Term Cost Matrix</strong>:</li>
-<li>Inline distance + velocity continuity + acceleration cost terms with weights $w = (1.0, 0.6, 0.3)$ to suppress ghost captures.</li>
-<li><strong>2c. Cluster-Local Graph Decomposition &amp; Optimal Assignment</strong>:</li>
+<li>[x] <strong>2a. Multi-Frame Prediction (Constant-Acceleration Kalman Filter)</strong>: Implemented in <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_kalman.py"><code>src/openptv2/tracking_kalman.py</code></a> (<code>ConstantAccelerationKF3D</code>) and wired into <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/quality_3d_tracking.py"><code>Quality3DTracker</code></a>.</li>
+<li>Per-track 9D state ($[x, y, z, v_x, v_y, v_z, a_x, a_y, a_z]$) with $9 \times 9$ covariance matrix and Joseph-form update.</li>
+<li>$O(1)$ per track prediction &amp; update, vectorized batch prediction across active tracks.</li>
+<li>Multi-term cost function combining position displacement, velocity continuity, and acceleration penalty.</li>
+<li>Cluster-local Hungarian/greedy assignment for candidate matching.</li>
+<li><strong>Benchmark Verification (<code>scripts/bench_trackers.py</code> real dataset output):</strong><ul>
+<li><strong><code>quality_3d_tracking</code></strong>: Precision <strong>0.980</strong>, Recall <strong>0.893</strong>, Ghost% <strong>3.56%</strong>, Fragmentation <strong>3.83</strong>, Purity <strong>0.971</strong>, Speed <strong>178.7 ms/frame</strong> (fastest of all 3D trackers!).</li>
+</ul>
+</li>
+<li><strong>2b. Multi-Term Cost Matrix Tuning &amp; Cython Kernels</strong>:</li>
+<li>Fine-tune distance, velocity continuity, and acceleration penalty weights to optimize high-noise regimes.</li>
+<li><strong>2c. Cluster-Local Graph Decomposition &amp; Optimal Assignment in Cython</strong>:</li>
 <li>Port bipartite graph component decomposition from <code>src/openptv2/plugins/_assignment.py</code> to Cython.</li>
 <li>Solve size 1 components in bulk, components $\le 8$ with small Hungarian solver, components $&gt; 8$ with cost-ordered greedy fallback.</li>
 <li><strong>2d. Backward Pass &amp; Reciprocity Verification</strong>:</li>
