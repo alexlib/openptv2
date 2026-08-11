@@ -8,7 +8,47 @@ and experiment configuration for PyPTV.
 import shutil
 from pathlib import Path
 
-from traits.api import HasTraits, Instance, List, Str
+try:
+    from traits.api import HasTraits, Instance, List, Str
+except ModuleNotFoundError:
+    # Traits is optional for the headless runtime. Batch/YAML workflows only need
+    # these classes as lightweight containers, so provide a tiny fallback when
+    # the GUI stack is not installed.
+    class _TraitField:
+        def __init__(self, *, default=None, factory=None):
+            self.default = default
+            self.factory = factory
+            self.name = ""
+
+        def __set_name__(self, owner, name):
+            self.name = name
+
+        def __get__(self, instance, owner):
+            if instance is None:
+                return self
+            if self.name not in instance.__dict__:
+                if self.factory is not None:
+                    instance.__dict__[self.name] = self.factory()
+                else:
+                    instance.__dict__[self.name] = self.default
+            return instance.__dict__[self.name]
+
+        def __set__(self, instance, value):
+            instance.__dict__[self.name] = value
+
+    class HasTraits:
+        def __init__(self, **traits):
+            for name, value in traits.items():
+                setattr(self, name, value)
+
+    def Instance(_klass):
+        return _TraitField()
+
+    def List(_item_trait=None):
+        return _TraitField(factory=list)
+
+    def Str(default=""):
+        return _TraitField(default=default)
 
 from .parameter_manager import ParameterManager
 
