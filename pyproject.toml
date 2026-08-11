@@ -35,8 +35,8 @@ classifiers = [
 # Default install (`pip install openptv2`) = the headless batch runtime: the
 # minimum to `import openptv2`, run the algorithms/API, and the openptv2-batch
 # sequence + tracking pipeline. `cython` is required by the interpreted
-# fallback of the algorithms/ modules (they `import cython`); `traits` and
-# `scikit-image` are pulled in by the batch pipeline. No Qt/chaco here.
+# fallback of the algorithms/ modules (they `import cython`); `scikit-image`
+# is pulled in by the batch pipeline. No Traits/Qt/chaco here.
 dependencies = [
     "cython>=3.0.0,<4",
     "h5py>=3.8.0",
@@ -46,7 +46,6 @@ dependencies = [
     "pyyaml>=6.0",
     "scikit-image>=0.20.0",
     "scipy>=1.10.0",
-    "traits>=6.4.0",
     "zarr>=2.16.0",
 ]
 
@@ -57,6 +56,7 @@ dependencies = [
 # `rembg` extra below — it is only used by the optional
 # openptv2.plugins.rembg_* plugins.)
 gui = [
+    "traits>=6.4.0",
     "traitsui>=7.4.0",
     "enable>=6.1.0",
     "chaco>=6.1.0",
