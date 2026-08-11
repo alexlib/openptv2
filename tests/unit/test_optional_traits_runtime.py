@@ -13,7 +13,9 @@ def test_experiment_imports_without_traits(monkeypatch):
             raise ModuleNotFoundError("No module named 'traits'")
         return real_import(name, globals, locals, fromlist, level)
 
-    monkeypatch.delitem(sys.modules, "openptv2.gui.experiment", raising=False)
+    for name in list(sys.modules):
+        if name == "openptv2.gui" or name.startswith("openptv2.gui."):
+            monkeypatch.delitem(sys.modules, name, raising=False)
     monkeypatch.setattr(builtins, "__import__", guarded_import)
 
     experiment = importlib.import_module("openptv2.gui.experiment")
@@ -34,5 +36,5 @@ def test_traits_is_gui_only_dependency():
     dependencies = data["project"]["dependencies"]
     gui_dependencies = data["project"]["optional-dependencies"]["gui"]
 
-    assert "traits>=6.4.0" not in dependencies
-    assert "traits>=6.4.0" in gui_dependencies
+    assert not any(dep.startswith("traits") for dep in dependencies)
+    assert any(dep.startswith("traits") for dep in gui_dependencies)
