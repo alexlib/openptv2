@@ -28,14 +28,14 @@ By rewriting core pipeline stages using PyTorch automatic differentiation and so
                                                   │
                                                   ▼ (Backprop Gradients ∂L / ∂Θ_1...5)
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                               Auto-Research Optimization Engine                                │
+│                   Auto-Research Optimization Engine (Local or Cloud GPU via MoLab)              │
 │     Adjusts 50+ Hyperparameters Across All Stages Simultaneously via Adam / Bayesian / CMA-ES │
 └─────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 4-Phase Actionable Implementation Plan
+## 5-Phase Actionable Implementation Plan
 
 ### Phase 1: JHTDB Data Ingestion & Synthetic Optical Image Simulator
 - **Goal**: Establish a ground-truth Direct Numerical Simulation (DNS) benchmark environment with end-to-end forward image rendering.
@@ -88,8 +88,21 @@ By rewriting core pipeline stages using PyTorch automatic differentiation and so
 
 ---
 
+### Phase 5: MoLab (`molab.marimo.io`) Cloud GPU Execution & Interactive Dashboard
+- **Goal**: Provide a zero-setup, zero-install, cloud GPU-accelerated Auto-Research interactive dashboard via `molab.marimo.io`.
+- **Module Location**: `notebooks/marimo_autoresearch_dashboard.py`
+- **Key Features**:
+  1. **Direct One-Click GitHub URL Execution**: Users launch the notebook instantly in their browser with zero local setup by opening:
+     `https://molab.marimo.io/github/alexlib/openptv2/blob/main/notebooks/marimo_autoresearch_dashboard.py`
+  2. **Free NVIDIA Cloud GPU Attachment**: Leverage CoreWeave-backed cloud GPUs on MoLab to run PyTorch backpropagation ($\nabla_{\mathbf{\Theta}} \mathcal{L}_{\text{physics}}$) and Sinkhorn optimal transport at high throughput ($N > 10,000$).
+  3. **High-Bandwidth JHTDB Cloud Stream**: Ingest JHTDB DNS datasets directly within the cloud datacenter without local network download delays.
+  4. **Reactive Real-Time Physics Dashboard**: Dragging UI sliders dynamically re-executes downstream cells to display live acceleration PDFs ($K_a$), velocity power spectra ($E_L(\omega)$), and interactive 3D particle trajectory plots (`wigglystuff`).
+
+---
+
 ## Verification & Validation Strategy
 
 1. **Unit Test Coverage**: `tests/unit/test_differentiable_*.py` verifying PyTorch operator gradient checks via `torch.autograd.gradcheck`.
 2. **Parity Tests**: Ensure that as soft-argmax temperature $\tau \to 0$ and Sinkhorn temperature $\tau \to 0$, OpenPTV³ differentiable outputs converge to legacy Cython OpenPTV2 outputs.
 3. **Physical Validation Benchmark**: Demonstrate that `openptv2-autotune` reduces acceleration kurtosis bias $\Delta K_a$ by $>80\%$ compared to default manual parameter tuning on JHTDB datasets.
+4. **MoLab Cloud Interoperability**: Validate one-click execution of `marimo_autoresearch_dashboard.py` on `molab.marimo.io` with GPU enabled.
