@@ -151,19 +151,20 @@ FULL_MULTIPASS_INFO = TrackerInfo(
     typical_datasets="Scientific studies requiring publication-quality trajectories, benchmark validation.",
 )
 
-FAST_INFO = TrackerInfo(
-    name="fast_3d",
-    display_name="Fast 3D-Only (Segment Mode)",
-    short_description="Single-pass forward tracking using 3D coordinates only — no 2D targets needed",
+PRIORITY_SEGMENT_3D_INFO = TrackerInfo(
+    name="priority_segment_3d",
+    display_name="3D Segment-Priority (Cython Engine - Default)",
+    short_description="Single-pass 3D tracking using 4-level acceleration-priority segment linking",
     algorithm_summary=(
-        "Links particles by 3D Euclidean proximity and acceleration consistency (second derivative). "
-        "Does not project to 2D camera images, does not add new particles mid-sequence, and does not "
-        "support backward tracking.  The simplest and fastest tracker in the suite."
+        "Links 3D particles using a 4-level cascade: Level 1 claims high-confidence particles "
+        "meeting an acceleration threshold (dacc) globally across all tracks in ascending cost order. "
+        "Level 2 uses local neighbor velocity averaging. Level 3 handles static/unseeded displacement. "
+        "Executed in single-pass compiled Cython for maximum throughput."
     ),
     algorithm_detail=(
-        "Calls track3d_loop per frame (compiled Cython).  The track_mode=1 flag disables the 2D "
-        "epipolar search and new-particle seeding.  Use for low-density, high-SNR data where "
-        "all particles are visible in every frame."
+        "Calls track3d_loop_fast in track_kernels_track3d.py (compiled Cython). "
+        "Global cost-ordered claiming within each level prevents index-order claim bias. "
+        "This is the authoritative default 3D tracking engine in OpenPTV2."
     ),
     supports_backward=False,
     supports_new_particles=False,
@@ -174,8 +175,8 @@ FAST_INFO = TrackerInfo(
     supports_splitter=False,
     supports_cost_weights=False,
     speed_ranking="fastest",
-    density_ranking="low",
-    accuracy_ranking="draft",
+    density_ranking="low_to_moderate",
+    accuracy_ranking="high",
     parameters=(
         ParameterGuide(
             name="dvxmin / dvxmax",
@@ -190,16 +191,67 @@ FAST_INFO = TrackerInfo(
             name="dacc",
             type="float",
             default="5.5",
-            description="Maximum acceleration (mm/frame²).",
+            description="Maximum acceleration bound (mm/frame²).",
             how_to_choose="Set just above max observed acceleration.",
             typical_range="0.5 – 50",
             unit="mm/frame²",
         ),
     ),
-    default_preset="fast_3d",
-    best_for="Quick sanity checks, algorithm debugging, previewing a dataset before committing to a full pipeline.",
-    avoid_when="Particles appear/disappear mid-sequence, high density, or when accurate trajectory completeness is required.",
-    typical_datasets="Synthetic-data verification, low-noise calibration-check runs.",
+    default_preset="priority_segment_3d",
+    best_for="Primary 3D particle tracking on sparse to moderate density flows.",
+    avoid_when="Particles appear/disappear frequently mid-sequence or extreme optical occlusions require multi-frame gap bridging.",
+    typical_datasets="3D PTV benchmark sequences, turbulent flow sequences.",
+)
+
+KALMAN_HUNGARIAN_3D_INFO = TrackerInfo(
+    name="kalman_hungarian_3d",
+    display_name="3D Kalman-Hungarian (Python Engine)",
+    short_description="Multi-frame Kalman predictor + cKDTree sparse graph Hungarian assignment",
+    algorithm_summary=(
+        "Uses a 9D Constant-Acceleration / Constant-Velocity Kalman Filter predictor with dynamic "
+        "innovation gating. Candidate matching is solved via cKDTree bipartite graph decomposition "
+        "and connected-component Hungarian assignment using multi-term physical cost matrices."
+    ),
+    algorithm_detail=(
+        "Uses ConstantAccelerationKF3D from openptv2.tracking_kalman and match_within_radius from "
+        "openptv2.plugins._assignment. Features two-tiered innovation search gating for high-density "
+        "particle stability and multi-frame gap bridging."
+    ),
+    supports_backward=False,
+    supports_new_particles=True,
+    supports_2d=False,
+    supports_postprocessing=False,
+    supports_gap_relinking=True,
+    supports_multimedia=False,
+    supports_splitter=False,
+    supports_cost_weights=True,
+    speed_ranking="fast",
+    density_ranking="high",
+    accuracy_ranking="highest",
+    parameters=(
+        ParameterGuide(
+            name="v_max",
+            type="float",
+            default="15.0",
+            description="Maximum baseline search radius for unseeded tracks (mm).",
+            how_to_choose="Set to max expected displacement.",
+            typical_range="1 – 50",
+            unit="mm",
+        ),
+        ParameterGuide(
+            name="a_max",
+            type="float",
+            default="6.0",
+            description="Maximum innovation gating radius for seeded tracks (mm).",
+            how_to_choose="Set based on expected acceleration fluctuation envelope.",
+            typical_range="1 – 20",
+            unit="mm",
+        ),
+    ),
+    default_preset="kalman_hungarian_3d",
+    best_for="High-density flows, data with missing frame dropouts, or where multi-term physical cost weights are needed.",
+    avoid_when="Simple low-density sequences where priority_segment_3d is sufficient.",
+    typical_datasets="High-density 3D particle sequences.",
 )
 
 STANDARD_FORWARD_INFO = TrackerInfo(
@@ -605,8 +657,9 @@ FAST_3D_SMOOTH_INFO = TrackerInfo(
 
 def _build_registry() -> None:
     entries: list[TrackerInfo] = [
+        PRIORITY_SEGMENT_3D_INFO,
+        KALMAN_HUNGARIAN_3D_INFO,
         FULL_MULTIPASS_INFO,
-        FAST_INFO,
         FAST_3D_SMOOTH_INFO,
         STANDARD_FORWARD_INFO,
         TWO_DIRECTIONAL_INFO,
@@ -618,12 +671,27 @@ def _build_registry() -> None:
     for info in entries:
         TRACKER_REGISTRY[info.name] = info
 
+    # Register legacy aliases
+    TRACKER_REGISTRY["fast_3d"] = PRIORITY_SEGMENT_3D_INFO
+    TRACKER_REGISTRY["fast"] = PRIORITY_SEGMENT_3D_INFO
+    TRACKER_REGISTRY["quality_3d_tracking"] = KALMAN_HUNGARIAN_3D_INFO
+
 
 _build_registry()
 
 
 def get_tracker_info(name: str) -> TrackerInfo | None:
-    return TRACKER_REGISTRY.get(name)
+    # Handle alias lookups
+    alias_map = {
+        "fast_3d": "priority_segment_3d",
+        "fast": "priority_segment_3d",
+        "quality_3d_tracking": "kalman_hungarian_3d",
+        "fast_3d_smooth": "fast_3d_smooth",
+        "myptv_3d_tracking": "myptv_3d_tracking",
+        "proptv_tracking": "proptv_tracking",
+    }
+    key = alias_map.get(name, name)
+    return TRACKER_REGISTRY.get(key)
 
 
 def list_trackers() -> list[TrackerInfo]:

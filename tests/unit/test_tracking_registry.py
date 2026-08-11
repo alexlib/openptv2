@@ -49,11 +49,11 @@ def test_every_tracker_has_required_fields():
 
 
 def test_get_tracker_info():
-    """Verify lookup by name works."""
+    """Verify lookup by name works for authoritative names and aliases."""
     info = get_tracker_info("fast_3d")
     assert info is not None
-    assert info.name == "fast_3d"
-    assert info.display_name == "Fast 3D-Only (Segment Mode)"
+    assert info.name == "priority_segment_3d"
+    assert "3D Segment-Priority" in info.display_name
 
 
 def test_get_tracker_info_unknown():

@@ -29,7 +29,7 @@ SRC = Path("test_data/synthetic_turbulent")
 FIRST = 10001
 N_FRAMES = 30
 LAST = FIRST + N_FRAMES - 1
-TRACKERS = ["fast_3d", "quality_3d_tracking", "fast_3d_smooth", "myptv_3d_tracking", "proptv_tracking"]
+TRACKERS = ["priority_segment_3d", "kalman_hungarian_3d", "sg_hungarian_3d", "nearest_hungarian_3d", "predictive_gmm_3d"]
 
 BASE_OVERRIDES = dict(dvxmax=6.0, dvxmin=-6.0, dvymax=6.0, dvymin=-6.0,
                       dvzmax=6.0, dvzmin=-6.0, dacc=6.0)

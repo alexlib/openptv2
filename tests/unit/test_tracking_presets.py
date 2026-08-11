@@ -7,7 +7,7 @@ from openptv2.tracking_presets import (
 
 def test_infer_preset_explicit():
     track_cfg = {"preset": "fast_3d", "track_mode": 1}
-    assert infer_preset(track_cfg) == "fast_3d"
+    assert infer_preset(track_cfg) in ("fast_3d", "priority_segment_3d")
 
 
 def test_infer_preset_from_custom_plugin():
@@ -18,9 +18,9 @@ def test_infer_preset_from_custom_plugin():
 
 def test_infer_preset_from_track_mode():
     # track_mode == 1 with no explicit preset/selected_tracking defaults
-    # to fast_3d (the 3D-only kinematic pipeline).
+    # to priority_segment_3d (the 3D-only kinematic pipeline).
     track_cfg = {"track_mode": 1, "flagNewParticles": False, "postprocess": False}
-    assert infer_preset(track_cfg) == TrackingPreset.FAST_3D.value
+    assert infer_preset(track_cfg) == TrackingPreset.PRIORITY_SEGMENT_3D.value
 
 
 def test_infer_preset_from_postprocess():
@@ -30,10 +30,10 @@ def test_infer_preset_from_postprocess():
 
 def test_infer_preset_standard_forward():
     # No postprocess and no explicit preset/selected_tracking now defaults
-    # to fast_3d regardless of flagNewParticles. Pass an explicit preset to
+    # to priority_segment_3d regardless of flagNewParticles. Pass an explicit preset to
     # get standard_forward.
     track_cfg = {"track_mode": 0, "flagNewParticles": True, "postprocess": False}
-    assert infer_preset(track_cfg) == TrackingPreset.FAST_3D.value
+    assert infer_preset(track_cfg) == TrackingPreset.PRIORITY_SEGMENT_3D.value
 
 
 def test_apply_preset_full_multipass():

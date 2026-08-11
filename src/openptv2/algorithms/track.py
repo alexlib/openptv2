@@ -1201,8 +1201,12 @@ def trackcorr_c_loop(run_info, step, num_threads=None):
 @cython.ccall
 def trackcorr_c_finish(run_info, step):
     range_val = run_info.seq_par.last - run_info.seq_par.first
-    npart = run_info.npart / range_val
-    nlinks = run_info.nlinks / range_val
+    if range_val > 0:
+        npart = run_info.npart / range_val
+        nlinks = run_info.nlinks / range_val
+    else:
+        npart = run_info.npart
+        nlinks = run_info.nlinks
     print(
         f"Average over sequence, particles: {npart:5.1f}, "
         f"links: {nlinks:5.1f}, lost: {npart - nlinks:5.1f}"
@@ -1344,8 +1348,10 @@ def trackback_c(run_info):
         if _bk_step > seq_par.first + 2:
             fb.read_frame_at_end(_bk_step - 3, read_links=True)
 
-    npart /= seq_par.last - seq_par.first - 1
-    nlinks /= seq_par.last - seq_par.first - 1
+    denom = seq_par.last - seq_par.first - 1
+    if denom > 0:
+        npart /= denom
+        nlinks /= denom
 
     print(
         f"Average over sequence, particles: {npart:5.1f}, "

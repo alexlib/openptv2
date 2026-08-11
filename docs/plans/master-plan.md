@@ -8,12 +8,15 @@
 
 ## 1. Executive Summary & Active Roadmap
 
-openptv2 previously shipped six overlapping tracking engines with inconsistent metrics. We are consolidating them into **two core compiled presets** plus Python reference implementations for parity testing:
+openptv2 previously shipped six overlapping tracking engines with confusing or misleading names. We have consolidated them into **authoritative algorithm-based names** with backward-compatible aliases:
 
-| Preset | Role | Operating Constraint |
-|---|---|---|
-| **`fast_3d`** | Throughput-optimal default | Cost-neutral speed; maintains 5k–20k particles/frame |
-| **`quality_3d`** | Accuracy-optimal engine | Multi-frame Kalman prediction + cluster-local Hungarian assignment + reciprocal pass |
+| Authoritative Name | Display Name | Legacy Alias | Algorithm Description |
+|---|---|---|---|
+| **`priority_segment_3d`** | **3D Segment-Priority (Cython Engine)** | `fast_3d` | 4-Level acceleration-priority segment linking in compiled Cython with 3D spatial cell grid indexing. **Default tracker**. |
+| **`kalman_hungarian_3d`** | **3D Kalman-Hungarian (Python Engine)** | `quality_3d_tracking` | 9D/6D Kalman prediction + cKDTree sparse graph decomposition + cluster-local Hungarian matching. |
+| **`sg_hungarian_3d`** | **3D Savitzky-Golay Hungarian** | `fast_3d_smooth` | Savitzky-Golay velocity history smoothing + Hungarian matching. |
+| **`nearest_hungarian_3d`** | **3D Nearest-Neighbor Hungarian** | `myptv_3d_tracking` | Polynomial velocity projection + distance cost Hungarian matching. |
+| **`predictive_gmm_3d`** | **3D Predictive GMM** | `proptv_tracking` | Gaussian Mixture Model probabilistic trajectory smoothing. |
 
 ---
 

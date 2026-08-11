@@ -37,6 +37,7 @@ class Tracking:
         if selected_tracking in (
             "fast",
             "fast_3d",
+            "priority_segment_3d",
             "standard_forward",
             "two_directional",
             "full_multipass",
@@ -47,7 +48,7 @@ class Tracking:
 
         force_3d = getattr(self.exp, "track3d", False)
 
-        if force_3d or active_pipeline in ("fast", "fast_3d"):
+        if force_3d or active_pipeline in ("fast", "fast_3d", "priority_segment_3d"):
             print("Running Fast 3D-Only Tracking (Segment Mode)...")
             tracker.full_forward_3d()
             # Postprocess is disk-level (reads/rewrites the linkage files

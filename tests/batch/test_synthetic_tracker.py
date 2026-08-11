@@ -127,7 +127,11 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
         "dacc": 5.5,
         "angle": 120.0,
         "flagNewParticles": 1,
-        "track_mode": 1,
+        "track_mode": 0,
+        "preset": "priority_segment_3d",
+    }
+    pm.parameters["plugins"] = {
+        "selected_tracking": "priority_segment_3d",
     }
     pm.parameters["sequence"] = {
         "base_name": [f"img/cam{i + 1}." for i in range(4)],
@@ -177,6 +181,8 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
         for i in range(4):
             targets_file = test_dir / "img" / f"cam{i + 1}.{f}_targets"
             target_arr = np.array(cam_targets[i])
+            # OpenPTV binary search expects targets sorted by y_pix (column 2)
+            target_arr = target_arr[np.argsort(target_arr[:, 2])]
             np.savetxt(
                 targets_file,
                 target_arr,

@@ -38,19 +38,24 @@ BUILTIN_SEQUENCE_PLUGINS = {
 
 BUILTIN_TRACKING_PLUGINS = {
     "default": "openptv2.plugins.default_tracking",
+    "priority_segment_3d": "openptv2.plugins.default_tracking",
     "fast": "openptv2.plugins.default_tracking",
     "fast_3d": "openptv2.plugins.default_tracking",
+    "kalman_hungarian_3d": "openptv2.plugins.quality_3d_tracking",
+    "quality_3d": "openptv2.plugins.quality_3d_tracking",
+    "quality_3d_tracking": "openptv2.plugins.quality_3d_tracking",
+    "sg_hungarian_3d": "openptv2.plugins.fast_3d_smooth_tracking",
+    "fast_3d_smooth": "openptv2.plugins.fast_3d_smooth_tracking",
+    "nearest_hungarian_3d": "openptv2.plugins.myptv_3d_tracking",
+    "myptv_3d_tracking": "openptv2.plugins.myptv_3d_tracking",
+    "myptv_2d_tracking": "openptv2.plugins.myptv_2d_tracking",
+    "predictive_gmm_3d": "openptv2.plugins.proptv_tracking",
+    "proptv_tracking": "openptv2.plugins.proptv_tracking",
+    "proptv": "openptv2.plugins.proptv_tracking",
     "full_multipass": "openptv2.plugins.default_tracking",
     "standard_forward": "openptv2.plugins.default_tracking",
     "two_directional": "openptv2.plugins.default_tracking",
     "splitter_tracking": "openptv2.plugins.splitter_tracking",
-    "myptv_3d_tracking": "openptv2.plugins.myptv_3d_tracking",
-    "myptv_2d_tracking": "openptv2.plugins.myptv_2d_tracking",
-    "proptv_tracking": "openptv2.plugins.proptv_tracking",
-    "proptv": "openptv2.plugins.proptv_tracking",
-    "fast_3d_smooth": "openptv2.plugins.fast_3d_smooth_tracking",
-    "quality_3d": "openptv2.plugins.quality_3d_tracking",
-    "quality_3d_tracking": "openptv2.plugins.quality_3d_tracking",
 }
 
 LEGACY_ALIASES = {
@@ -59,7 +64,10 @@ LEGACY_ALIASES = {
     "ext_sequence_contour": "contour_sequence",
     "ext_sequence_rembg": "rembg_sequence",
     "ext_sequence_rembg_contour": "rembg_contour_sequence",
-    "fast": "fast_3d",
+    "fast": "priority_segment_3d",
+    "fast_3d": "priority_segment_3d",
+    "quality_3d": "kalman_hungarian_3d",
+    "quality_3d_tracking": "kalman_hungarian_3d",
 }
 
 ENTRY_POINT_GROUP = "openptv2.plugins"

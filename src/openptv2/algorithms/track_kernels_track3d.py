@@ -4,9 +4,101 @@ import cython
 import numpy as np
 
 if cython.compiled:
-    from cython.cimports.libc.math import sqrt as c_sqrt
+    from cython.cimports.libc.math import floor as c_floor, sqrt as c_sqrt
 else:
-    from math import sqrt as c_sqrt
+    from math import floor as c_floor, sqrt as c_sqrt
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _find_closest_in_3d_grid(
+    path_x_2: cython.double[:, ::1],
+    np2: cython.int,
+    pred_x: cython.double,
+    pred_y: cython.double,
+    pred_z: cython.double,
+    dx: cython.double,
+    dy: cython.double,
+    dz: cython.double,
+    max_cands: cython.int,
+    cand_inds: cython.int[:],
+    cand_dists: cython.double[:],
+    grid_head: cython.int[:],
+    grid_next: cython.int[:],
+    min_x: cython.double,
+    min_y: cython.double,
+    min_z: cython.double,
+    cell_x: cython.double,
+    cell_y: cython.double,
+    cell_z: cython.double,
+    nx: cython.int,
+    ny: cython.int,
+    nz: cython.int,
+):
+    """Find up to max_cands closest candidates using 3D spatial grid cells."""
+    s: cython.int
+    k: cython.int
+    slot: cython.int
+    ddx: cython.double
+    ddy: cython.double
+    ddz: cython.double
+    d: cython.double
+    n_found = 0
+
+    if np2 < 32:
+        return _find_closest_in_3d(
+            path_x_2, np2, pred_x, pred_y, pred_z, dx, dy, dz, max_cands, cand_inds, cand_dists
+        )
+
+    for s in range(max_cands):
+        cand_inds[s] = -1
+        cand_dists[s] = 1e20
+
+    # Determine cell range covering [pred_x - dx, pred_x + dx], etc.
+    c_x_min = int(c_floor((pred_x - dx - min_x) / cell_x))
+    c_x_max = int(c_floor((pred_x + dx - min_x) / cell_x))
+    c_y_min = int(c_floor((pred_y - dy - min_y) / cell_y))
+    c_y_max = int(c_floor((pred_y + dy - min_y) / cell_y))
+    c_z_min = int(c_floor((pred_z - dz - min_z) / cell_z))
+    c_z_max = int(c_floor((pred_z + dz - min_z) / cell_z))
+
+    if c_x_min < 0: c_x_min = 0
+    if c_x_max >= nx: c_x_max = nx - 1
+    if c_y_min < 0: c_y_min = 0
+    if c_y_max >= ny: c_y_max = ny - 1
+    if c_z_min < 0: c_z_min = 0
+    if c_z_max >= nz: c_z_max = nz - 1
+
+    cx: cython.int
+    cy: cython.int
+    cz: cython.int
+    cell_idx: cython.int
+
+    for cx in range(c_x_min, c_x_max + 1):
+        for cy in range(c_y_min, c_y_max + 1):
+            for cz in range(c_z_min, c_z_max + 1):
+                cell_idx = (cx * ny + cy) * nz + cz
+                k = grid_head[cell_idx]
+                while k >= 0:
+                    ddx = path_x_2[k, 0] - pred_x
+                    ddy = path_x_2[k, 1] - pred_y
+                    ddz = path_x_2[k, 2] - pred_z
+                    if abs(ddx) < dx and abs(ddy) < dy and abs(ddz) < dz:
+                        d = c_sqrt(ddx * ddx + ddy * ddy + ddz * ddz)
+                        for slot in range(max_cands):
+                            if d < cand_dists[slot]:
+                                for s in range(max_cands - 1, slot, -1):
+                                    cand_inds[s] = cand_inds[s - 1]
+                                    cand_dists[s] = cand_dists[s - 1]
+                                cand_inds[slot] = k
+                                cand_dists[slot] = d
+                                break
+                    k = grid_next[k]
+
+    for s in range(max_cands):
+        if cand_inds[s] >= 0:
+            n_found += 1
+    return n_found
 
 
 @cython.boundscheck(False)
@@ -24,12 +116,7 @@ def _find_closest_in_3d(
     cand_inds: cython.int[:],
     cand_dists: cython.double[:],
 ):
-    """Find up to max_cands closest candidates by distance within a 3D box.
-
-    Maintains a running top-N by distance, matching candsearch_in_pix logic.
-    Writes into pre-allocated cand_inds/cand_dists arrays.
-    Returns the number of candidates found.
-    """
+    """Find up to max_cands closest candidates by distance within a 3D box."""
     s: cython.int
     k: cython.int
     slot: cython.int
@@ -159,6 +246,63 @@ def track3d_loop_fast(
     edge_i: cython.int[:] = _edge_i
     edge_k: cython.int[:] = _edge_k
 
+    # ===== Construct 3D Spatial Grid for Frame 2 Candidates =====
+    min_x: cython.double = 1e20
+    min_y: cython.double = 1e20
+    min_z: cython.double = 1e20
+    max_x: cython.double = -1e20
+    max_y: cython.double = -1e20
+    max_z: cython.double = -1e20
+
+    if np2 > 0:
+        for k in range(np2):
+            if path_x_2[k, 0] < min_x: min_x = path_x_2[k, 0]
+            if path_x_2[k, 0] > max_x: max_x = path_x_2[k, 0]
+            if path_x_2[k, 1] < min_y: min_y = path_x_2[k, 1]
+            if path_x_2[k, 1] > max_y: max_y = path_x_2[k, 1]
+            if path_x_2[k, 2] < min_z: min_z = path_x_2[k, 2]
+            if path_x_2[k, 2] > max_z: max_z = path_x_2[k, 2]
+    else:
+        min_x = 0.0; max_x = 1.0
+        min_y = 0.0; max_y = 1.0
+        min_z = 0.0; max_z = 1.0
+
+    cell_x: cython.double = ax if ax > 0.5 else dx
+    cell_y: cython.double = ay if ay > 0.5 else dy
+    cell_z: cython.double = az if az > 0.5 else dz
+    if cell_x < 0.1: cell_x = 1.0
+    if cell_y < 0.1: cell_y = 1.0
+    if cell_z < 0.1: cell_z = 1.0
+
+    nx: cython.int = int(c_floor((max_x - min_x) / cell_x)) + 1
+    ny: cython.int = int(c_floor((max_y - min_y) / cell_y)) + 1
+    nz: cython.int = int(c_floor((max_z - min_z) / cell_z)) + 1
+    grid_size: cython.int = nx * ny * nz
+
+    _grid_head = np.full(grid_size, -1, dtype=np.int32)
+    _grid_next = np.full(np2 if np2 > 0 else 1, -1, dtype=np.int32)
+    grid_head: cython.int[:] = _grid_head
+    grid_next: cython.int[:] = _grid_next
+
+    cx_k: cython.int
+    cy_k: cython.int
+    cz_k: cython.int
+    c_idx: cython.int
+
+    for k in range(np2):
+        cx_k = int(c_floor((path_x_2[k, 0] - min_x) / cell_x))
+        cy_k = int(c_floor((path_x_2[k, 1] - min_y) / cell_y))
+        cz_k = int(c_floor((path_x_2[k, 2] - min_z) / cell_z))
+        if cx_k < 0: cx_k = 0
+        if cx_k >= nx: cx_k = nx - 1
+        if cy_k < 0: cy_k = 0
+        if cy_k >= ny: cy_k = ny - 1
+        if cz_k < 0: cz_k = 0
+        if cz_k >= nz: cz_k = nz - 1
+        c_idx = (cx_k * ny + cy_k) * nz + cz_k
+        grid_next[k] = grid_head[c_idx]
+        grid_head[c_idx] = k
+
     # ===== Level 1: Particles with previous links =====
     n_edges = 0
     for i in range(orig_parts):
@@ -173,14 +317,13 @@ def track3d_loop_fast(
         pred_y = 2.0 * path_x_1[i, 1] - path_x_0[prev_idx, 1]
         pred_z = 2.0 * path_x_1[i, 2] - path_x_0[prev_idx, 2]
 
-        n_cands = _find_closest_in_3d(
+        n_cands = _find_closest_in_3d_grid(
             path_x_2, np2, pred_x, pred_y, pred_z, ax, ay, az,
             max_cands, cand_inds, cand_dists,
+            grid_head, grid_next, min_x, min_y, min_z, cell_x, cell_y, cell_z, nx, ny, nz
         )
         for ci in range(n_cands):
             k = cand_inds[ci]
-            # Acceleration residual X(t+1) - 2X(t) + X(t-1); equivalently the
-            # distance from the candidate to the constant-velocity prediction.
             d0 = path_x_2[k, 0] - 2.0 * path_x_1[i, 0] + path_x_0[prev_idx, 0]
             d1 = path_x_2[k, 1] - 2.0 * path_x_1[i, 1] + path_x_0[prev_idx, 1]
             d2 = path_x_2[k, 2] - 2.0 * path_x_1[i, 2] + path_x_0[prev_idx, 2]
@@ -240,14 +383,13 @@ def track3d_loop_fast(
         pred_y = cy + vel_y * inv_nvel
         pred_z = cz + vel_z * inv_nvel
 
-        n_cands = _find_closest_in_3d(
+        n_cands = _find_closest_in_3d_grid(
             path_x_2, np2, pred_x, pred_y, pred_z, ax, ay, az,
             max_cands, cand_inds, cand_dists,
+            grid_head, grid_next, min_x, min_y, min_z, cell_x, cell_y, cell_z, nx, ny, nz
         )
         for ci in range(n_cands):
             k = cand_inds[ci]
-            # pred already carries the neighbour-averaged velocity, so the
-            # residual to it is the acceleration.
             d0 = path_x_2[k, 0] - pred_x
             d1 = path_x_2[k, 1] - pred_y
             d2 = path_x_2[k, 2] - pred_z
@@ -280,9 +422,10 @@ def track3d_loop_fast(
         pred_y = path_x_1[i, 1]
         pred_z = path_x_1[i, 2]
 
-        n_cands = _find_closest_in_3d(
+        n_cands = _find_closest_in_3d_grid(
             path_x_2, np2, pred_x, pred_y, pred_z, dx, dy, dz,
             max_cands, cand_inds, cand_dists,
+            grid_head, grid_next, min_x, min_y, min_z, cell_x, cell_y, cell_z, nx, ny, nz
         )
         for ci in range(n_cands):
             k = cand_inds[ci]
