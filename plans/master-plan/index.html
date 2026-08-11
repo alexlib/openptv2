@@ -1214,25 +1214,46 @@
 <strong>Primary Goal:</strong> Consolidate tracking engines into two primary presets (<code>fast_3d</code> throughput-optimal and <code>quality_3d</code> accuracy-optimal), scale high-density 3D particle tracking (5k–20k particles/frame), and maintain a single authoritative roadmap.</p>
 <hr />
 <h2 id="1-executive-summary-active-roadmap">1. Executive Summary &amp; Active Roadmap<a class="headerlink" href="#1-executive-summary-active-roadmap" title="Permanent link">&para;</a></h2>
-<p>openptv2 previously shipped six overlapping tracking engines with inconsistent metrics. We are consolidating them into <strong>two core compiled presets</strong> plus Python reference implementations for parity testing:</p>
+<p>openptv2 previously shipped six overlapping tracking engines with confusing or misleading names. We have consolidated them into <strong>authoritative algorithm-based names</strong> with backward-compatible aliases:</p>
 <table>
 <thead>
 <tr>
-<th>Preset</th>
-<th>Role</th>
-<th>Operating Constraint</th>
+<th>Authoritative Name</th>
+<th>Display Name</th>
+<th>Legacy Alias</th>
+<th>Algorithm Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong><code>fast_3d</code></strong></td>
-<td>Throughput-optimal default</td>
-<td>Cost-neutral speed; maintains 5k–20k particles/frame</td>
+<td><strong><code>priority_segment_3d</code></strong></td>
+<td><strong>3D Segment-Priority (Cython Engine)</strong></td>
+<td><code>fast_3d</code></td>
+<td>4-Level acceleration-priority segment linking in compiled Cython with 3D spatial cell grid indexing. <strong>Default tracker</strong>.</td>
 </tr>
 <tr>
-<td><strong><code>quality_3d</code></strong></td>
-<td>Accuracy-optimal engine</td>
-<td>Multi-frame Kalman prediction + cluster-local Hungarian assignment + reciprocal pass</td>
+<td><strong><code>kalman_hungarian_3d</code></strong></td>
+<td><strong>3D Kalman-Hungarian (Python Engine)</strong></td>
+<td><code>quality_3d_tracking</code></td>
+<td>9D/6D Kalman prediction + cKDTree sparse graph decomposition + cluster-local Hungarian matching.</td>
+</tr>
+<tr>
+<td><strong><code>sg_hungarian_3d</code></strong></td>
+<td><strong>3D Savitzky-Golay Hungarian</strong></td>
+<td><code>fast_3d_smooth</code></td>
+<td>Savitzky-Golay velocity history smoothing + Hungarian matching.</td>
+</tr>
+<tr>
+<td><strong><code>nearest_hungarian_3d</code></strong></td>
+<td><strong>3D Nearest-Neighbor Hungarian</strong></td>
+<td><code>myptv_3d_tracking</code></td>
+<td>Polynomial velocity projection + distance cost Hungarian matching.</td>
+</tr>
+<tr>
+<td><strong><code>predictive_gmm_3d</code></strong></td>
+<td><strong>3D Predictive GMM</strong></td>
+<td><code>proptv_tracking</code></td>
+<td>Gaussian Mixture Model probabilistic trajectory smoothing.</td>
 </tr>
 </tbody>
 </table>

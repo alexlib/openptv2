@@ -1,0 +1,1553 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Comprehensive Tracker Benchmarking, Selection & Strategy Guide for OpenPTV2 - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#comprehensive-tracker-benchmarking-selection-strategy-guide-for-openptv2" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Comprehensive Tracker Benchmarking, Selection &amp; Strategy Guide for OpenPTV2
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary-key-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary &amp; Key Findings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-single-pass-engine-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Single-Pass Engine Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-hybrid-cascading-strategies-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Hybrid Cascading Strategies Benchmark
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Hybrid Cascading Strategies Benchmark">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategy-highlights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy Highlights
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-tracker-selection-decision-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tracker Selection Decision Matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Tracker Selection Decision Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#condition-by-condition-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Condition-by-Condition Guide
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-parameter-tuning-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Parameter Tuning Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Parameter Tuning Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-priority_segment_3d-cython-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. priority_segment_3d (Cython Engine)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-kalman_hungarian_3d-kalman-hungarian-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. kalman_hungarian_3d (Kalman-Hungarian Engine)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-nearest_hungarian_3d-myptv-kinematic-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. nearest_hungarian_3d (MyPTV Kinematic Engine)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cheat-sheet-execution-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cheat Sheet &amp; Execution Commands
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-future-verification-benchmarking-todo-backlog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Future Verification &amp; Benchmarking TODO Backlog
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="comprehensive-tracker-benchmarking-selection-strategy-guide-for-openptv2">Comprehensive Tracker Benchmarking, Selection &amp; Strategy Guide for OpenPTV2<a class="headerlink" href="#comprehensive-tracker-benchmarking-selection-strategy-guide-for-openptv2" title="Permanent link">&para;</a></h1>
+<h2 id="executive-summary-key-findings">Executive Summary &amp; Key Findings<a class="headerlink" href="#executive-summary-key-findings" title="Permanent link">&para;</a></h2>
+<p>OpenPTV2 features five 3D tracking engines, each engineered for distinct flow regimes, particle densities, and execution constraints. Based on empirical cross-tracker benchmarking on turbulent synthetic flow fields, <strong>there is no single "best" tracker for every flow</strong>, but rather an <strong>optimal tracker or hybrid pipeline</strong> depending on dataset characteristics.</p>
+<hr />
+<h2 id="1-single-pass-engine-benchmarks">1. Single-Pass Engine Benchmarks<a class="headerlink" href="#1-single-pass-engine-benchmarks" title="Permanent link">&para;</a></h2>
+<p><em>Evaluated on turbulent flow dataset (Mean $N \approx 220$ particles/frame, $v = 1.52\text{ mm/frame}, d_{\text{nn}} = 6.98\text{ mm}, M = 0.218$)</em>:</p>
+<table>
+<thead>
+<tr>
+<th>Tracker Engine</th>
+<th style="text-align: center;">Precision</th>
+<th style="text-align: center;">Recall / Yield</th>
+<th style="text-align: center;">Fragment Count ($F$)</th>
+<th style="text-align: center;">Track Purity</th>
+<th style="text-align: center;">Perfect Match %</th>
+<th style="text-align: center;">Speed (ms/frame)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>priority_segment_3d</code></strong> <em>(Default)</em></td>
+<td style="text-align: center;"><strong>0.974</strong></td>
+<td style="text-align: center;"><strong>0.901</strong></td>
+<td style="text-align: center;"><strong>3.56</strong></td>
+<td style="text-align: center;"><strong>0.970</strong></td>
+<td style="text-align: center;"><strong>73.7%</strong></td>
+<td style="text-align: center;"><strong>159.4 ms</strong></td>
+</tr>
+<tr>
+<td><strong><code>nearest_hungarian_3d</code></strong></td>
+<td style="text-align: center;"><strong>0.984</strong></td>
+<td style="text-align: center;"><strong>0.904</strong></td>
+<td style="text-align: center;"><strong>3.53</strong></td>
+<td style="text-align: center;"><strong>0.982</strong></td>
+<td style="text-align: center;"><strong>76.2%</strong></td>
+<td style="text-align: center;"><strong>150.6 ms</strong></td>
+</tr>
+<tr>
+<td><strong><code>kalman_hungarian_3d</code></strong></td>
+<td style="text-align: center;">0.906</td>
+<td style="text-align: center;">0.852</td>
+<td style="text-align: center;">3.37</td>
+<td style="text-align: center;">0.964</td>
+<td style="text-align: center;">72.5%</td>
+<td style="text-align: center;">556.9 ms</td>
+</tr>
+<tr>
+<td><strong><code>sg_hungarian_3d</code></strong></td>
+<td style="text-align: center;">0.966</td>
+<td style="text-align: center;">0.860</td>
+<td style="text-align: center;">4.64</td>
+<td style="text-align: center;">0.965</td>
+<td style="text-align: center;">77.6%</td>
+<td style="text-align: center;">174.2 ms</td>
+</tr>
+<tr>
+<td><strong><code>predictive_gmm_3d</code></strong></td>
+<td style="text-align: center;">0.959</td>
+<td style="text-align: center;">0.752</td>
+<td style="text-align: center;">7.53</td>
+<td style="text-align: center;">0.977</td>
+<td style="text-align: center;"><strong>86.0%</strong></td>
+<td style="text-align: center;">732.3 ms</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-hybrid-cascading-strategies-benchmark">2. Hybrid Cascading Strategies Benchmark<a class="headerlink" href="#2-hybrid-cascading-strategies-benchmark" title="Permanent link">&para;</a></h2>
+<p>To go beyond single-pass limits, OpenPTV2 supports multi-pass hybrid cascading workflows (<code>scripts/demo_hybrid_strategies.py</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Hybrid Strategy Pipeline</th>
+<th style="text-align: center;">Precision</th>
+<th style="text-align: center;">Recall / Yield</th>
+<th style="text-align: center;">Ghost %</th>
+<th style="text-align: center;">Fragment Count ($F$)</th>
+<th style="text-align: center;">Track Purity</th>
+<th style="text-align: center;">Perfect Match % (PMT)</th>
+<th style="text-align: center;">Speed (ms/frame)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Baseline (Single Pass <code>priority_segment_3d</code>)</strong></td>
+<td style="text-align: center;"><strong>0.974</strong></td>
+<td style="text-align: center;"><strong>0.901</strong></td>
+<td style="text-align: center;">3.56%</td>
+<td style="text-align: center;">3.56</td>
+<td style="text-align: center;"><strong>0.970</strong></td>
+<td style="text-align: center;">73.7%</td>
+<td style="text-align: center;"><strong>157.0 ms</strong></td>
+</tr>
+<tr>
+<td><strong>Strategy 1: Forward-Fast / Backward-Kalman</strong></td>
+<td style="text-align: center;"><strong>0.974</strong></td>
+<td style="text-align: center;"><strong>0.901</strong></td>
+<td style="text-align: center;"><strong>0.50%</strong></td>
+<td style="text-align: center;"><strong>3.15</strong></td>
+<td style="text-align: center;">0.965</td>
+<td style="text-align: center;"><strong>93.6%</strong></td>
+<td style="text-align: center;">689.9 ms</td>
+</tr>
+<tr>
+<td><strong>Strategy 2: Two-Scale Velocity Cascading</strong></td>
+<td style="text-align: center;">0.963</td>
+<td style="text-align: center;">0.888</td>
+<td style="text-align: center;"><strong>1.07%</strong></td>
+<td style="text-align: center;">3.67</td>
+<td style="text-align: center;">0.938</td>
+<td style="text-align: center;"><strong>87.0%</strong></td>
+<td style="text-align: center;">365.4 ms</td>
+</tr>
+</tbody>
+</table>
+<h3 id="strategy-highlights">Strategy Highlights<a class="headerlink" href="#strategy-highlights" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Strategy 1 (Forward Fast / Backward Kalman)</strong>: Increases <strong>Perfect Match Trajectory Percentage (PMT%) from 73.7% to 93.6%</strong> and reduces <strong>Ghost capture rate from 3.56% down to 0.50%</strong>.</li>
+<li><strong>Strategy 2 (Two-Scale Velocity Cascading)</strong>: Achieves <strong>87.0% PMT</strong> and reduces Ghost capture to <strong>1.07%</strong> at nearly <strong>double the speed</strong> of Strategy 1 (365.4 ms/frame).</li>
+</ul>
+<hr />
+<h2 id="3-tracker-selection-decision-matrix">3. Tracker Selection Decision Matrix<a class="headerlink" href="#3-tracker-selection-decision-matrix" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>                          [ What is your Flow Regime &amp; Density? ]
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                            │
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>           ┌────────────────────────────────┴────────────────────────────────┐
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>           ▼                                                                 ▼
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>[ High / Medium Density ]                                         [ Low Density / Sparse ]
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    (N &gt; 500 / frame)                                                (N &lt; 200 / frame)
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>           │                                                                 │
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>   ┌───────┴────────┐                                              ┌─────────┴─────────┐
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>   ▼                ▼                                              ▼                   ▼
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>[ Smooth Flow ]  [ Strong Turbulence ]                      [ Moderate Noise ]   [ High Noise / Missing ]
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>   │                │                                              │                   │
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>   ▼                ▼                                              ▼                   ▼
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>priority_segment_3d nearest_hungarian_3d                   kalman_hungarian_3d  predictive_gmm_3d
+</span></code></pre></div>
+<h3 id="condition-by-condition-guide">Condition-by-Condition Guide<a class="headerlink" href="#condition-by-condition-guide" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Flow Condition</th>
+<th>Recommended Engine / Hybrid</th>
+<th>Primary Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>High Density / Large Datasets</strong> ($N &gt; 1,000$)</td>
+<td><code>priority_segment_3d</code></td>
+<td>$O(N)$ spatial grid cell indexing provides 4x–10x faster runtime without precision loss.</td>
+</tr>
+<tr>
+<td><strong>High Velocity Turbulences &amp; Recirculation</strong></td>
+<td><code>nearest_hungarian_3d</code></td>
+<td>Global Hungarian bipartite matching prevents greedy assignment conflicts in dense eddies.</td>
+</tr>
+<tr>
+<td><strong>Noisy Data &amp; Occasional Occlusions</strong></td>
+<td><code>kalman_hungarian_3d</code></td>
+<td>Kalman state estimation filters measurement noise and propagates particle states across missing frames.</td>
+</tr>
+<tr>
+<td><strong>Curved &amp; Smooth Trajectories</strong></td>
+<td><code>sg_hungarian_3d</code></td>
+<td>Savitzky-Golay polynomial velocity smooths acceleration noise without overshooting turns.</td>
+</tr>
+<tr>
+<td><strong>Fragmented Tracks needing High Purity</strong></td>
+<td><strong>Strategy 1 Hybrid</strong></td>
+<td><strong>93.6% PMT</strong> with <strong>0.50% Ghost Capture rate</strong>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-parameter-tuning-reference">4. Parameter Tuning Reference<a class="headerlink" href="#4-parameter-tuning-reference" title="Permanent link">&para;</a></h2>
+<h3 id="a-priority_segment_3d-cython-engine">A. <code>priority_segment_3d</code> (Cython Engine)<a class="headerlink" href="#a-priority_segment_3d-cython-engine" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>dacc</code> (Maximum Acceleration Window, mm)</strong>:</li>
+<li><em>Default</em>: <code>5.5 mm</code></li>
+<li><em>Tuning</em>: Do <strong>not</strong> expand <code>dacc</code> arbitrarily! Expanding <code>dacc</code> from <code>5.5</code> to <code>50</code> drops precision from <strong>0.974</strong> to <strong>0.810</strong> due to enlarged candidate search bounds.</li>
+<li><strong><code>angle</code> (Maximum Turn Angle, deg)</strong>:</li>
+<li><em>Default</em>: <code>120.0 deg</code></li>
+<li><em>Tuning</em>: Decrease to <code>45.0–60.0 deg</code> for directed laminar flows to prune improbable sharp turns.</li>
+</ul>
+<h3 id="b-kalman_hungarian_3d-kalman-hungarian-engine">B. <code>kalman_hungarian_3d</code> (Kalman-Hungarian Engine)<a class="headerlink" href="#b-kalman_hungarian_3d-kalman-hungarian-engine" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>gate_threshold</code> (Mahalanobis Distance Cutoff)</strong>:</li>
+<li><em>Default</em>: <code>9.21</code> ($\chi^2$ 99% confidence for 3 DOF).</li>
+<li><em>Tuning</em>: Lower to <code>5.99</code> (95% confidence) in high-density cases to prevent false links; raise to <code>11.34</code> for high turbulent jitter.</li>
+<li><strong><code>process_noise_std</code> ($Q$ covariance)</strong>:</li>
+<li><em>Default</em>: <code>0.5 mm/frame</code></li>
+<li><em>Tuning</em>: Increase to <code>1.5–2.5 mm/frame</code> for turbulent fluid elements experiencing rapid velocity shifts.</li>
+</ul>
+<h3 id="c-nearest_hungarian_3d-myptv-kinematic-engine">C. <code>nearest_hungarian_3d</code> (MyPTV Kinematic Engine)<a class="headerlink" href="#c-nearest_hungarian_3d-myptv-kinematic-engine" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>search_radius</code> (Max Displacement Distance, mm)</strong>:</li>
+<li><em>Default</em>: Derived from <code>dvxmax</code> (<code>15.5 mm</code>).</li>
+<li><em>Tuning</em>: Set search radius to $1.5 \times v_{\max} \Delta t$. Setting radius too large ($&gt;3 \times v_{\max}$) degrades precision in dense regions.</li>
+</ul>
+<hr />
+<h2 id="5-cheat-sheet-execution-commands">5. Cheat Sheet &amp; Execution Commands<a class="headerlink" href="#5-cheat-sheet-execution-commands" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Target Objective</th>
+<th>Recommended Configuration / Strategy</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Default Fast Pass</strong></td>
+<td>Single Pass <code>priority_segment_3d</code></td>
+<td><code>uv run python scripts/bench_trackers.py</code></td>
+</tr>
+<tr>
+<td><strong>Maximum Trajectory Perfection (93.6% PMT)</strong></td>
+<td>Hybrid Strategy 1 (Forward Fast / Backward Kalman)</td>
+<td><code>uv run python scripts/demo_hybrid_strategies.py</code></td>
+</tr>
+<tr>
+<td><strong>Fast Multi-Scale Flow (87.0% PMT)</strong></td>
+<td>Hybrid Strategy 2 (Two-Scale Cascading)</td>
+<td><code>uv run python scripts/demo_hybrid_strategies.py</code></td>
+</tr>
+<tr>
+<td><strong>High Density / Large Scale</strong></td>
+<td>Spatial Grid Accelerated <code>priority_segment_3d</code></td>
+<td><code>uv run python scripts/bench_trackers.py --density 5000</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-future-verification-benchmarking-todo-backlog">6. Future Verification &amp; Benchmarking TODO Backlog<a class="headerlink" href="#6-future-verification-benchmarking-todo-backlog" title="Permanent link">&para;</a></h2>
+<p>To continuously validate and expand OpenPTV2 tracking strategies on experimental datasets, the following verification tasks are slated for future releases:</p>
+<ul>
+<li>[ ] <strong>Real Experimental Dataset Benchmarking</strong>: Validate Strategy 1 and Strategy 2 on physical wind tunnel / water channel multi-camera PTV datasets with ground truth or synthetic image projections.</li>
+<li>[ ] <strong>Adaptive Velocity Thresholding</strong>: Automatically infer <code>dvxmax</code>/<code>dvxmin</code> bounds per frame based on mean spatial displacement histograms prior to tracking.</li>
+<li>[ ] <strong>Ensemble Consensus Voting</strong>: Implement an $N$-tracker consensus ensemble where a candidate link is accepted only if at least $M$ out of $N$ trackers agree.</li>
+<li>[ ] <strong>GPU-Accelerated Bipartite Matching</strong>: Port global Hungarian cost matrix solvers to PyTorch/CuPy for $N &gt; 50,000$ ultra-dense particle tracking.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
