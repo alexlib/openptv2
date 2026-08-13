@@ -42,6 +42,7 @@ class DatasetStats:
     # Acceleration statistics
     max_acceleration: float = 0.0
     mean_acceleration: float = 0.0
+    percentile95_acceleration: float = 0.0
 
     # Spatial statistics
     domain_size: tuple[float, float, float] = (0.0, 0.0, 0.0)
@@ -154,6 +155,7 @@ def compute_dataset_stats(
     if len(arr_a) > 0:
         stats.max_acceleration = float(arr_a.max())
         stats.mean_acceleration = float(arr_a.mean())
+        stats.percentile95_acceleration = float(np.percentile(arr_a, 95))
 
     # Density category
     if stats.mean_interparticle_distance > 0 and stats.max_displacement > 0:
@@ -329,11 +331,27 @@ def _explain_score(info: TrackerInfo, stats: DatasetStats) -> list[str]:
 
 
 def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
+    """Suggest kinematic search bounds from this dataset's own displacement/
+    acceleration statistics.
+
+    Uses the 95th percentile, not the raw max, as the basis: max_displacement
+    / max_acceleration are nearest-neighbour estimates (no true correspondence
+    is known ahead of tracking), so at any real particle density a handful of
+    frames will have their nearest neighbour be the WRONG particle -- a
+    single such mismatch inflates the max to an outlier untethered from the
+    dataset's actual kinematics, which upstream feeds an unbounded search
+    cone straight into the tracker (observed: large enough to crash the C
+    tracker outright). The 95th percentile is still a generous bound, just
+    not dictated by the single worst mismatch in the dataset.
+    """
     params: dict[str, Any] = {}
 
-    if stats.max_displacement > 0:
+    p95_displacement = stats.percentiles_displacement[2] or stats.max_displacement
+    p95_acceleration = stats.percentile95_acceleration or stats.max_acceleration
+
+    if p95_displacement > 0:
         margin = 1.2  # 20% headroom
-        half_window = stats.max_displacement * margin
+        half_window = p95_displacement * margin
         params["dvxmin"] = -half_window
         params["dvxmax"] = half_window
         params["dvymin"] = -half_window
@@ -341,10 +359,10 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
         params["dvzmin"] = -half_window
         params["dvzmax"] = half_window
 
-    if stats.max_acceleration > 0:
-        params["dacc"] = stats.max_acceleration * 1.2
-    elif stats.max_displacement > 0:
-        params["dacc"] = stats.max_displacement * 0.3
+    if p95_acceleration > 0:
+        params["dacc"] = p95_acceleration * 1.2
+    elif p95_displacement > 0:
+        params["dacc"] = p95_displacement * 0.3
 
     if stats.mean_interparticle_distance > 0:
         if "dvxmax" in params and params["dvxmax"] > stats.mean_interparticle_distance * 0.8:
@@ -357,13 +375,13 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
 
     # Tracker-specific params
     if info.name == "nearest_hungarian_3d":
-        if stats.max_displacement > 0:
-            params["v_max"] = stats.max_displacement * 1.5
+        if p95_displacement > 0:
+            params["v_max"] = p95_displacement * 1.5
             params["a_max"] = params["v_max"] * 2.0
     elif info.name == "predictive_gmm_3d":
-        if stats.max_displacement > 0:
-            params["maxvel"] = stats.max_displacement * 1.5
-            params["epsR"] = max(1.0, stats.max_displacement * 0.5)
+        if p95_displacement > 0:
+            params["maxvel"] = p95_displacement * 1.5
+            params["epsR"] = max(1.0, p95_displacement * 0.5)
 
     return params
 
@@ -392,14 +410,14 @@ def recommend_from_files(
     from openptv2.algorithms.tracking_frame_buf import Frame
 
     rt_is_dir = Path(rt_is_dir)
+    corres_base = str(rt_is_dir / "rt_is")
     frame_particles: list[np.ndarray] = []
     for fn in range(first, last + 1):
-        fpath = rt_is_dir / f"rt_is.{fn}"
-        if not fpath.exists():
+        if not (rt_is_dir / f"rt_is.{fn}").exists():
             frame_particles.append(np.empty((0, 3)))
             continue
         frame = Frame(num_cams=4, max_targets=10000)
-        frame.read(str(fpath))
+        frame.read(corres_base, "", target_file_base="", frame_num=fn)
         frame_particles.append(frame.positions())
 
     stats = compute_dataset_stats(frame_particles)

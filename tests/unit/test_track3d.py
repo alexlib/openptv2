@@ -441,3 +441,114 @@ def test_track3d_burgers_parity_with_cython():
 
     finally:
         os.chdir(original)
+
+
+@pytest.mark.skipif(not _has_optv(), reason="optv (Cython bindings) not available")
+def test_trackcorr_burgers_parity_with_cython():
+    """Run the trackcorr engine (multi-camera 2D+3D epipolar search,
+    Tracker.full_forward()) on burgers data with both openptv2.tracker.Tracker
+    and liboptv's optv.tracker.Tracker, compare per-step linkage.
+
+    Companion to test_track3d_burgers_parity_with_cython above, which covers
+    the other liboptv-derived engine (full_forward_3d / priority_segment_3d).
+    Only burgers-scale data is used here: full_forward() on the denser
+    synthetic_turbulent fixture crashes liboptv outright (see
+    scripts/compare_trackers_vs_liboptv.py's docstring) -- a real
+    density-scaling limitation in the original C code, not something this
+    test should paper over by avoiding it silently.
+    """
+    original = os.getcwd()
+    try:
+        test_dir = os.path.join(os.path.dirname(__file__), "../../test_data/burgers")
+        os.chdir(test_dir)
+        first, last = 10001, 10005
+        naming = {"corres": "res/rt_is", "linkage": "res/ptv_is", "prio": "res/added"}
+
+        # --- C / Cython run ---
+        if os.path.exists("res"):
+            shutil.rmtree("res")
+        if os.path.exists("img"):
+            shutil.rmtree("img")
+        shutil.copytree("res_orig", "res")
+        shutil.copytree("img_orig", "img")
+
+        from optv.calibration import Calibration as CCalib
+        from optv.parameters import (
+            ControlParams,
+            SequenceParams,
+            TrackingParams,
+            VolumeParams,
+        )
+        from optv.tracker import Tracker as CTracker
+
+        cpar_c = ControlParams(4)
+        cpar_c.read_control_par("parameters/ptv.par")
+        vpar_c = VolumeParams()
+        vpar_c.read_volume_par("parameters/criteria.par")
+        tpar_c = TrackingParams()
+        tpar_c.read_track_par("parameters/track.par")
+        img_base = [f"img/cam{i + 1}." for i in range(4)]
+        spar_c = SequenceParams(
+            image_base=img_base,
+            frame_range=(first, last),
+        )
+        cal_c = []
+        for i in range(4):
+            c = CCalib()
+            c.from_file(
+                f"cal/cam{i + 1}.tif.ori",
+                f"cal/cam{i + 1}.tif.addpar",
+            )
+            cal_c.append(c)
+
+        tracker_c = CTracker(cpar_c, vpar_c, tpar_c, spar_c, cal_c, naming)
+        tracker_c.full_forward()
+
+        c_data = {}
+        for s in range(first, last):
+            c_data[s] = _parse_linkage_file(f"res/ptv_is.{s}")
+
+        # --- Python run ---
+        if os.path.exists("res"):
+            shutil.rmtree("res")
+        if os.path.exists("img"):
+            shutil.rmtree("img")
+        shutil.copytree("res_orig", "res")
+        shutil.copytree("img_orig", "img")
+
+        from openptv2.tracker import Tracker as PyTracker
+
+        cpar_py = ControlPar.from_yaml("parameters.yaml")
+        cal_py = read_all_calibration(cpar_py.num_cams, base_path=".")
+        tracker_py = PyTracker(
+            cpar_py,
+            VolumePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            SequencePar.from_yaml("parameters.yaml"),
+            cal_py,
+            naming,
+        )
+        tracker_py.full_forward()
+
+        # --- Compare every field ---
+        for s in range(first, last):
+            py_data = _parse_linkage_file(f"res/ptv_is.{s}")
+
+            assert len(c_data[s]) == len(py_data), (
+                f"Step {s}: particle count C={len(c_data[s])} vs Py={len(py_data)}"
+            )
+            for i, (c_p, py_p) in enumerate(zip(c_data[s], py_data)):
+                assert c_p["prev"] == py_p["prev"], (
+                    f"Step {s} particle {i}: prev C={c_p['prev']} Py={py_p['prev']}"
+                )
+                assert c_p["next"] == py_p["next"], (
+                    f"Step {s} particle {i}: next C={c_p['next']} Py={py_p['next']}"
+                )
+                np.testing.assert_allclose(
+                    [c_p["x"], c_p["y"], c_p["z"]],
+                    [py_p["x"], py_p["y"], py_p["z"]],
+                    atol=1e-4,
+                    err_msg=f"Step {s} particle {i} position mismatch",
+                )
+    finally:
+        os.chdir(original)

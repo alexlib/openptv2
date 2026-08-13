@@ -15,6 +15,7 @@ and the ground-truth trajectories.
 
 from __future__ import annotations
 
+import os
 import shutil
 import tempfile
 import time
@@ -29,10 +30,22 @@ SRC = Path("test_data/synthetic_turbulent")
 FIRST = 10001
 N_FRAMES = 30
 LAST = FIRST + N_FRAMES - 1
-TRACKERS = ["priority_segment_3d", "kalman_hungarian_3d", "sg_hungarian_3d", "nearest_hungarian_3d", "predictive_gmm_3d"]
+TRACKERS = ["priority_segment_3d", "trackcorr", "kalman_hungarian_3d", "sg_hungarian_3d", "nearest_hungarian_3d", "predictive_gmm_3d"]
 
 BASE_OVERRIDES = dict(dvxmax=6.0, dvxmin=-6.0, dvymax=6.0, dvymin=-6.0,
                       dvzmax=6.0, dvzmin=-6.0, dacc=6.0)
+
+
+def has_liboptv() -> bool:
+    """Whether the ``optv`` package (compiled Cython bindings to the
+    original C liboptv, https://github.com/alexlib/openptv, that this
+    project was translated from) is importable."""
+    try:
+        import optv.tracker  # noqa: F401
+
+        return True
+    except ImportError:
+        return False
 
 
 def read_gt_frames(
@@ -122,6 +135,157 @@ def run_single_tracker(
     pred0 = {k: [(f - first, x, y, z) for (f, x, y, z) in v]
              for k, v in pred.items()}
     return pred0, dt
+
+
+def run_liboptv_tracker(
+    mode: str = "fast3d",
+    track_overrides: dict | None = None,
+    src: Path = SRC,
+    first: int = FIRST,
+    n_frames: int = N_FRAMES,
+) -> tuple[dict, float]:
+    """Run the real liboptv C/Cython tracker (the ``optv`` package -- the
+    original openptv, https://github.com/alexlib/openptv, this project was
+    translated from) forward-only, on an isolated copy of ``src``.
+
+    ``mode``:
+      "fast3d"    -- Tracker.full_forward_3d(), liboptv's counterpart of our
+                     priority_segment_3d/kalman_hungarian_3d/
+                     nearest_hungarian_3d/predictive_gmm_3d (3D-only linking
+                     over already-triangulated rt_is.# points).
+      "trackcorr" -- Tracker.full_forward(), liboptv's counterpart of our
+                     trackcorr engine (multi-camera 2D+3D epipolar search).
+
+    Same return contract as run_single_tracker, so results drop straight
+    into the same comparison tables/metrics.
+    """
+    from optv.calibration import Calibration as CCalibration
+    from optv.parameters import ControlParams, SequenceParams, TrackingParams, VolumeParams
+    from optv.tracker import Tracker as CTracker
+
+    from openptv2.gui.parameter_manager import ParameterManager
+    from openptv2.gui.ptv import py_start_proc_c
+
+    run_dir, yaml_run = _isolate_run_dir(src)
+    overrides = track_overrides or {}
+    prev_cwd = Path.cwd()
+    os.chdir(run_dir)
+    try:
+        pm = ParameterManager()
+        pm.from_yaml(yaml_run.name)
+        num_cams = pm.num_cams
+        cpar_py, spar_py, vpar_py, track_py, _tpar_py, _cals_py, _epar = py_start_proc_c(pm)
+
+        cpar = ControlParams(num_cams)
+        cpar.set_image_size(cpar_py.get_image_size())
+        cpar.set_pixel_size(cpar_py.get_pixel_size())
+        cpar.set_hp_flag(cpar_py.get_hp_flag())
+        cpar.set_allCam_flag(cpar_py.get_allCam_flag())
+        cpar.set_tiff_flag(cpar_py.get_tiff_flag())
+        cpar.set_chfield(cpar_py.get_chfield())
+        mm_py = cpar_py.get_multimedia_params()
+        mm = cpar.get_multimedia_params()
+        mm.set_n1(mm_py.get_n1())
+        mm.set_layers(list(mm_py.get_n2()), list(mm_py.get_d()))
+        mm.set_n3(mm_py.get_n3())
+        cal_bases = []
+        for i in range(num_cams):
+            base = cpar_py.get_cal_img_base_name(i)
+            cpar.set_cal_img_base_name(i, base)
+            cal_bases.append(base)
+
+        spar = SequenceParams(num_cams=num_cams)
+        spar.set_first(spar_py.get_first())
+        spar.set_last(spar_py.get_last())
+        for i, short_name in enumerate(pm.get_target_filenames()):
+            spar.set_img_base_name(i, str(Path(short_name).resolve()) + ".")
+
+        vpar = VolumeParams()
+        vpar.set_X_lay(vpar_py.get_X_lay())
+        vpar.set_Zmin_lay(vpar_py.get_Zmin_lay())
+        vpar.set_Zmax_lay(vpar_py.get_Zmax_lay())
+        vpar.set_eps0(vpar_py.get_eps0())
+        vpar.set_cn(vpar_py.get_cn())
+        vpar.set_cnx(vpar_py.get_cnx())
+        vpar.set_cny(vpar_py.get_cny())
+        vpar.set_csumg(vpar_py.get_csumg())
+        vpar.set_corrmin(vpar_py.get_corrmin())
+
+        tpar = TrackingParams()
+        tpar.set_dvxmin(float(overrides.get("dvxmin", track_py.get_dvxmin())))
+        tpar.set_dvxmax(float(overrides.get("dvxmax", track_py.get_dvxmax())))
+        tpar.set_dvymin(float(overrides.get("dvymin", track_py.get_dvymin())))
+        tpar.set_dvymax(float(overrides.get("dvymax", track_py.get_dvymax())))
+        tpar.set_dvzmin(float(overrides.get("dvzmin", track_py.get_dvzmin())))
+        tpar.set_dvzmax(float(overrides.get("dvzmax", track_py.get_dvzmax())))
+        tpar.set_dangle(float(overrides.get("angle", track_py.get_dangle())))
+        tpar.set_dacc(float(overrides.get("dacc", track_py.get_dacc())))
+        tpar.set_add(int(overrides.get("flagNewParticles", track_py.get_add())))
+
+        cals = []
+        for base in cal_bases:
+            cc = CCalibration()
+            cc.from_file(f"{base}.ori", f"{base}.addpar")
+            cals.append(cc)
+
+        naming = {"corres": "res/rt_is", "linkage": "res/ptv_is", "prio": "res/added"}
+        tracker = CTracker(cpar, vpar, tpar, spar, cals, naming)
+
+        t0 = time.perf_counter()
+        if mode == "trackcorr":
+            tracker.full_forward()
+        else:
+            tracker.full_forward_3d()
+        dt = time.perf_counter() - t0
+
+        tracks = bm.read_trajectories(Path("res"), first, first + n_frames - 1, num_cams)
+    finally:
+        os.chdir(prev_cwd)
+
+    pred0 = {k: [(f - first, x, y, z) for (f, x, y, z) in v] for k, v in tracks.items()}
+    return pred0, dt
+
+
+def per_tracker_overrides(
+    trackers: list[str],
+    src: Path = SRC,
+    first: int = FIRST,
+    n_frames: int = N_FRAMES,
+    base: dict | None = None,
+) -> dict[str, dict]:
+    """Recommended kinematic-bound overrides per tracker, derived from this
+    dataset's own rt_is.# displacement/acceleration statistics via
+    openptv2.tracking_recommender -- one shared BASE_OVERRIDES dict applied
+    to every tracker hides real quality differences behind parameters that
+    were only tuned for one engine (e.g. myptv/proptv use different
+    parameter names/scales entirely -- see tracking_registry.py's
+    ParameterGuide per tracker).
+    """
+    from openptv2.tracking_recommender import _suggest_params, compute_dataset_stats
+    from openptv2.tracking_registry import TRACKER_REGISTRY
+
+    from openptv2.algorithms.tracking_frame_buf import Frame
+
+    frame_particles = []
+    res_dir = Path(src) / "res"
+    corres_base = str(res_dir / "rt_is")
+    for fn in range(first, first + n_frames):
+        if not (res_dir / f"rt_is.{fn}").exists():
+            frame_particles.append(np.empty((0, 3)))
+            continue
+        frame = Frame(num_cams=4, max_targets=20000)
+        frame.read(corres_base, "", target_file_base="", frame_num=fn)
+        frame_particles.append(frame.positions())
+
+    stats = compute_dataset_stats(frame_particles)
+    out = {}
+    for tr in trackers:
+        info = TRACKER_REGISTRY.get(tr)
+        overrides = dict(base or BASE_OVERRIDES)
+        if info is not None:
+            overrides.update(_suggest_params(info, stats))
+        out[tr] = overrides
+    return out
 
 
 def run_all_trackers(
