@@ -18,13 +18,17 @@ class TrackingPreset(str, Enum):
 PRESET_CHOICES = [
     (
         "priority_segment_3d",
-        "3D Segment-Priority Cython Engine (Default)",
+        "OpenPTV Fast 3D (Default - Cython Engine)",
     ),
-    ("fast_3d", "3D Segment-Priority (Alias)"),
-    ("fast", "3D Segment-Priority (Alias)"),
+    ("fast_3d", "OpenPTV Fast 3D (Alias)"),
+    ("fast", "OpenPTV Fast 3D (Alias)"),
     (
-        "kalman_hungarian_3d",
-        "3D Kalman-Hungarian Python Engine",
+        "cython_epipolar_tracking",
+        "OpenPTV Epipolar (Multi-Camera Cython)",
+    ),
+    (
+        "fast_3d_smooth",
+        "OpenPTV2 3D Smooth (SG Extrapolation + Hungarian)",
     ),
     (
         "full_multipass",
@@ -167,11 +171,13 @@ def apply_preset(
 # ---------------------------------------------------------------------------
 
 TRACKER_CHOICES = [
-    ("priority_segment_3d", "Default (Segment-Priority, Cython)"),
-    ("trackcorr", "TrackCorr (multi-camera 2D+3D)"),
-    ("kalman_hungarian_3d", "Kalman-Hungarian (high accuracy)"),
-    ("nearest_hungarian_3d", "MyPTV (nearest-neighbor Hungarian)"),
-    ("predictive_gmm_3d", "proPTV (predictive GMM)"),
+    ("priority_segment_3d", "OpenPTV Fast 3D (Default - Cython)"),
+    ("cython_epipolar_tracking", "OpenPTV Epipolar (Multi-Camera Cython)"),
+    ("trackcorr", "OpenPTV Epipolar (Multi-Camera 2D+3D)"),
+    ("nearest_hungarian_3d", "MyPTV 3D (Nearest-Neighbor Hungarian)"),
+    ("myptv_2d_tracking", "MyPTV 2D (Image-Space Assignment)"),
+    ("fast_3d_smooth", "OpenPTV2 3D Smooth (SG Extrapolation + Hungarian)"),
+    ("predictive_gmm_3d", "proPTV (Predictive GMM - Optional)"),
 ]
 
 DIRECTION_CHOICES = [

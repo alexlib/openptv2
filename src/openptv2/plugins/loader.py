@@ -37,17 +37,17 @@ BUILTIN_SEQUENCE_PLUGINS = {
 }
 
 BUILTIN_TRACKING_PLUGINS = {
-    "default": "openptv2.plugins.default_tracking",
-    "priority_segment_3d": "openptv2.plugins.default_tracking",
+    "default": "openptv2.plugins.cython_3d_tracking",
+    "priority_segment_3d": "openptv2.plugins.cython_3d_tracking",
+    "openptv_fast_3d": "openptv2.plugins.cython_3d_tracking",
     "cython_3d_tracking": "openptv2.plugins.cython_3d_tracking",
     "cython_3d": "openptv2.plugins.cython_3d_tracking",
+    "openptv_epipolar": "openptv2.plugins.cython_epipolar_tracking",
     "cython_epipolar_tracking": "openptv2.plugins.cython_epipolar_tracking",
     "cython_epipolar": "openptv2.plugins.cython_epipolar_tracking",
-    "fast": "openptv2.plugins.default_tracking",
-    "fast_3d": "openptv2.plugins.default_tracking",
-    "kalman_hungarian_3d": "openptv2.plugins.quality_3d_tracking",
-    "quality_3d": "openptv2.plugins.quality_3d_tracking",
-    "quality_3d_tracking": "openptv2.plugins.quality_3d_tracking",
+    "fast": "openptv2.plugins.cython_3d_tracking",
+    "fast_3d": "openptv2.plugins.cython_3d_tracking",
+    "openptv2_3d_smooth": "openptv2.plugins.fast_3d_smooth_tracking",
     "sg_hungarian_3d": "openptv2.plugins.fast_3d_smooth_tracking",
     "fast_3d_smooth": "openptv2.plugins.fast_3d_smooth_tracking",
     "nearest_hungarian_3d": "openptv2.plugins.nearest_hungarian_3d",
@@ -56,11 +56,11 @@ BUILTIN_TRACKING_PLUGINS = {
     "predictive_gmm_3d": "openptv2.plugins.predictive_gmm_3d",
     "proptv_tracking": "openptv2.plugins.proptv_tracking",
     "proptv": "openptv2.plugins.proptv_tracking",
-    "trackcorr": "openptv2.plugins.default_tracking",
-    "full_multipass": "openptv2.plugins.default_tracking",
-    "standard_forward": "openptv2.plugins.default_tracking",
-    "two_directional": "openptv2.plugins.default_tracking",
-    "splitter_tracking": "openptv2.plugins.default_tracking",
+    "trackcorr": "openptv2.plugins.cython_epipolar_tracking",
+    "full_multipass": "openptv2.plugins.cython_epipolar_tracking",
+    "standard_forward": "openptv2.plugins.cython_epipolar_tracking",
+    "two_directional": "openptv2.plugins.cython_epipolar_tracking",
+    "splitter_tracking": "openptv2.plugins.cython_3d_tracking",
 }
 
 LEGACY_ALIASES = {
