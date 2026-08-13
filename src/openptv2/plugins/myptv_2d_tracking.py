@@ -21,9 +21,40 @@ from openptv2.plugins._assignment import match_within_radius
 
 
 class MyPTV2DTracker:
-    def __init__(self, max_pixel_disp: float = 20.0, max_gap: int = 2):
+    def __init__(self, max_pixel_disp: float = 0.015, max_gap: int = 2, **kwargs):
         self.max_pixel_disp = max_pixel_disp
         self.max_gap = max_gap
+
+    def track_frames(self, frame_particles: list[np.ndarray]) -> list[dict]:
+        """Track 3D frame particle positions using 2D projection plane search bounds.
+
+        Parameters
+        ----------
+        frame_particles : list of np.ndarray
+            List of (N_i, 3) arrays containing 3D positions for frame i.
+
+        Returns
+        -------
+        trajectories : list of dict
+            List of reconstructed trajectories containing 'pos', 'indices', 'time', and 'id'.
+        """
+        frame_2d = [p[:, :2] if p.ndim == 2 and p.shape[1] >= 2 else p for p in frame_particles]
+        trajs_2d = self.track_2d_blobs(frame_2d)
+
+        trajectories = []
+        for tr in trajs_2d:
+            pos_3d = []
+            for t, idx in zip(tr["time"], tr["indices"]):
+                pos_3d.append(frame_particles[t][idx])
+            trajectories.append(
+                {
+                    "id": tr["id"],
+                    "indices": tr["indices"],
+                    "pos": np.array(pos_3d),
+                    "time": tr["time"],
+                }
+            )
+        return trajectories
 
     def track_2d_blobs(self, frame_blobs: list[np.ndarray]) -> list[dict]:
         """Track 2D target points across frames for a single camera.
