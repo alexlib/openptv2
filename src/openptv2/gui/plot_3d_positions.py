@@ -171,6 +171,13 @@ def build_3d_figure(points_xyz: np.ndarray, frame, bounds=None) -> Figure:
         ax.set_zlim(zlo - mz, zhi + mz)
         ax.legend(loc="upper left", fontsize=8)
 
+    # Equal physical aspect: without this mpl stretches each axis to fill the
+    # plot cube independently, which visually exaggerates z in shallow volumes.
+    xlo, xhi = ax.get_xlim()
+    ylo, yhi = ax.get_ylim()
+    zlo, zhi = ax.get_zlim()
+    ax.set_box_aspect((xhi - xlo or 1.0, yhi - ylo or 1.0, zhi - zlo or 1.0))
+
     ax.set_xlabel("x (mm)")
     ax.set_ylabel("y (mm)")
     ax.set_zlabel("z (mm)")
