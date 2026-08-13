@@ -11,7 +11,7 @@ track history — not proPTV's full 2D-image triangulation pipeline.
   - initialisation.py— Savitzky-Golay position/velocity/acceleration smoothing
 
 The 3D tracking loop, assignment, and file I/O are implemented natively in
-openptv2 (see ``openptv2.plugins.proptv_tracking``).
+openptv2 (see ``openptv2.plugins.predictive_gmm_3d``).
 """
 
 from . import prediction

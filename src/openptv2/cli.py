@@ -242,7 +242,7 @@ def main():
 
         p_sw = sub.add_parser("sweep", help="Sweep a tracking parameter for a tracker")
         p_sw.add_argument("out_dir")
-        p_sw.add_argument("--tracker", default="fast_3d")
+        p_sw.add_argument("--tracker", default="priority_segment_3d")
         p_sw.add_argument("--param", default="dvxmax",
                           choices=["dvxmax", "dvy", "dvz", "dacc", "angle"])
         p_sw.add_argument("--values", nargs="+", type=float,

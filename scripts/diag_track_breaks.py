@@ -8,7 +8,7 @@ Instead of scoring only aggregate metrics, walk each GT track and report:
   * break frames - list of (frame, gap, |step|max) for each disconnect
 
 Usage:
-  uv run python scripts/diag_track_breaks.py [--tracker fast_3d]
+  uv run python scripts/diag_track_breaks.py [--tracker priority_segment_3d]
         [--top N]
 """
 
@@ -80,7 +80,7 @@ def analyze_track(gtid, pts, match):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--tracker", default="fast_3d")
+    ap.add_argument("--tracker", default="priority_segment_3d")
     ap.add_argument("--top", type=int, default=12)
     args = ap.parse_args()
 

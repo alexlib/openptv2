@@ -83,7 +83,7 @@ Using our automated root-cause diagnostic script (`tests/diagnose_wrong_links.py
 ### **Configuration A: Maximum Trajectory Continuity (Recommended Default for Physical Experiments)**
 Use when tracking noisy, occluded experimental flows where long, unbroken trajectories are required:
 ```python
-from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
+from openptv2.plugins.nearest_hungarian_3d import MyPTV3DTracker
 from openptv2.tracking_cost import CostWeights
 
 tracker = MyPTV3DTracker(

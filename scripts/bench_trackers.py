@@ -10,7 +10,7 @@ one run (see benchmark_utils.combined_metrics).
 Usage:
     uv run python scripts/bench_trackers.py
     uv run python scripts/bench_trackers.py --density 1000,5000,20000
-    uv run python scripts/bench_trackers.py --trackers fast_3d,proptv_tracking
+    uv run python scripts/bench_trackers.py --trackers priority_segment_3d,predictive_gmm_3d
     uv run python scripts/bench_trackers.py --density 1000 --dacc-sweep
 
 The default (no --density) uses the checked-in test_data/synthetic_turbulent
@@ -105,8 +105,8 @@ def print_table(rows: list[dict]) -> None:
         )
 
 
-def dacc_sweep(trackers: tuple[str, ...] = ("fast_3d", "myptv_3d_tracking", "proptv_tracking")) -> None:
-    """Hypothesis check: does fast_3d only lose because dacc is a tight
+def dacc_sweep(trackers: tuple[str, ...] = ("priority_segment_3d", "nearest_hungarian_3d", "predictive_gmm_3d")) -> None:
+    """Hypothesis check: does priority_segment_3d only lose because dacc is a tight
     search window (not an acceleration bound), vs. myptv/proptv's generous
     radius + cost-based assignment? (folded in from benchmark_head_to_head.py)
     """
@@ -121,15 +121,15 @@ def dacc_sweep(trackers: tuple[str, ...] = ("fast_3d", "myptv_3d_tracking", "pro
     for dacc in (12, 24, 50):
         ov = dict(bu.BASE_OVERRIDES)
         ov["dacc"] = dacc
-        results = bu.run_all_trackers(["fast_3d"], track_overrides=ov, silent=True)
-        rows.append({"tracker": f"fast_3d dacc={dacc}", "density": "default",
-                      "ms_per_frame": 1000.0 * results["fast_3d"]["time_s"] / max(1, bu.N_FRAMES - 1),
-                      **results["fast_3d"]["row"]})
+        results = bu.run_all_trackers(["priority_segment_3d"], track_overrides=ov, silent=True)
+        rows.append({"tracker": f"priority_segment_3d dacc={dacc}", "density": "default",
+                      "ms_per_frame": 1000.0 * results["priority_segment_3d"]["time_s"] / max(1, bu.N_FRAMES - 1),
+                      **results["priority_segment_3d"]["row"]})
 
     for tr, ov in (
-        ("myptv_3d_tracking", dict(dvxmax=10, dvxmin=-10, dvymax=10, dvymin=-10,
+        ("nearest_hungarian_3d", dict(dvxmax=10, dvxmin=-10, dvymax=10, dvymin=-10,
                                    dvzmax=10, dvzmin=-10, dacc=50)),
-        ("proptv_tracking", dict(dvxmax=15.5, dvxmin=-15.5, dvymax=15.5, dvymin=-15.5,
+        ("predictive_gmm_3d", dict(dvxmax=15.5, dvxmin=-15.5, dvymax=15.5, dvymin=-15.5,
                                  dvzmax=15.5, dvzmin=-15.5, dacc=50)),
     ):
         results = bu.run_all_trackers([tr], track_overrides=ov, silent=True)
@@ -137,7 +137,7 @@ def dacc_sweep(trackers: tuple[str, ...] = ("fast_3d", "myptv_3d_tracking", "pro
                       "ms_per_frame": 1000.0 * results[tr]["time_s"] / max(1, bu.N_FRAMES - 1),
                       **results[tr]["row"]})
 
-    print("\n=== dacc-sweep (does fast_3d only lose to a tight search window?) ===")
+    print("\n=== dacc-sweep (does priority_segment_3d only lose to a tight search window?) ===")
     print_table(rows)
 
 
@@ -148,7 +148,7 @@ def main() -> None:
     ap.add_argument("--trackers", default=",".join(bu.TRACKERS),
                      help=f"comma-separated tracker names (default: {','.join(bu.TRACKERS)})")
     ap.add_argument("--dacc-sweep", action="store_true",
-                     help="also run the fast_3d-vs-myptv/proptv search-window hypothesis check")
+                     help="also run the priority_segment_3d-vs-myptv/proptv search-window hypothesis check")
     args = ap.parse_args()
 
     trackers = [t.strip() for t in args.trackers.split(",") if t.strip()]

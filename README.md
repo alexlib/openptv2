@@ -31,7 +31,7 @@ On top of that native engine, openptv2 ships **plugins** that bring in tracking
 concepts from two external open-source projects:
 
 - **[MyPTV](https://github.com/ronshnapp/MyPTV)** — MIT licensed
-  (© 2022 Ron Shnapp). openptv2's `myptv_2d_tracking` / `myptv_3d_tracking`
+  (© 2022 Ron Shnapp). openptv2's `myptv_2d_tracking` / `nearest_hungarian_3d`
   plugins adapt MyPTV's algorithm *ideas* (2D per-camera image-space tracking
   with multi-camera consensus, and 3D kinematic prediction + linear-assignment
   matching) onto openptv2's own data structures and assignment machinery.
@@ -40,7 +40,7 @@ concepts from two external open-source projects:
   (© 2023 DLR, Robin Barta). openptv2 **vendors** the small pure-numpy core of
   proPTV (`src/openptv2/plugins/proptv/`): the Gaussian-Mixture-Model / basis
   approximation and Savitzky-Golay smoothing routines used in proPTV's track
-  prediction. The `proptv_tracking` plugin wires those routines into openptv2's
+  prediction. The `predictive_gmm_3d` plugin wires those routines into openptv2's
   tracker.
 
 > **Important:** openptv2 incorporates and adapts *parts* of these projects as
@@ -387,6 +387,15 @@ Both styles are fully supported across all command-line scripts. Choose based on
 - [Algorithm Documentation](docs/algorithms/)
 - [Developer Guide](docs/developer_guide/)
 
+### OpenPTV³ Auto-Research Dashboard
+
+Live, zero-install demo of the differentiable PTV pipeline
+(`docs/plans/differentiable_ptv_nextgen_plan.md`): drag the Stage-1 intensity
+threshold and watch the gradient flow through to the Lagrangian physics loss,
+live acceleration PDF, and velocity power spectrum.
+
+[![Open in molab](https://marimo.io/molab-shield.svg)](https://molab.marimo.io/github/alexlib/openptv2/blob/main/notebooks/marimo_autoresearch_dashboard.py)
+
 ---
 
 ## Repository Structure
@@ -475,7 +484,7 @@ openptv2 includes and adapts tracking code from two MIT-licensed projects, in
 accordance with their licenses:
 
 - **MyPTV** (MIT, © 2022 Ron Shnapp) — algorithm concepts adapted into the
-  `myptv_2d_tracking` / `myptv_3d_tracking` plugins. Their MIT notice is
+  `myptv_2d_tracking` / `nearest_hungarian_3d` plugins. Their MIT notice is
   incorporated; see <https://github.com/ronshnapp/MyPTV>.
 - **proPTV** (MIT, © 2023 DLR / Robin Barta) — the GMM / Savitzky-Golay
   routines in `src/openptv2/plugins/proptv/` are **vendored** from proPTV.

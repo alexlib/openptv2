@@ -113,7 +113,7 @@ FULL_MULTIPASS_INFO = TrackerInfo(
             type="float",
             default="±10.0",
             description="Velocity search window in X (mm/frame).",
-            how_to_choose="Same parameter guidance as fast_3d (from probe data) — compute from probe data.",
+            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data) — compute from probe data.",
             typical_range="1 – 100",
             unit="mm/frame",
         ),
@@ -122,7 +122,7 @@ FULL_MULTIPASS_INFO = TrackerInfo(
             type="float",
             default="5.0",
             description="Maximum acceleration (mm/frame²).",
-            how_to_choose="Same parameter guidance as fast_3d (from probe data) — compute from probe data.",
+            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data) — compute from probe data.",
             typical_range="0.5 – 50",
             unit="mm/frame²",
         ),
@@ -131,7 +131,7 @@ FULL_MULTIPASS_INFO = TrackerInfo(
             type="float",
             default="120",
             description="Maximum angular deviation (gon).",
-            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
+            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
             typical_range="20 – 200",
             unit="gon",
         ),
@@ -286,7 +286,7 @@ STANDARD_FORWARD_INFO = TrackerInfo(
             type="float",
             default="±10.0",
             description="Velocity search window in X (mm/frame).",
-            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
+            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
             typical_range="1 – 100",
             unit="mm/frame",
         ),
@@ -295,7 +295,7 @@ STANDARD_FORWARD_INFO = TrackerInfo(
             type="float",
             default="5.0",
             description="Maximum acceleration (mm/frame²).",
-            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
+            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
             typical_range="0.5 – 50",
             unit="mm/frame²",
         ),
@@ -304,7 +304,7 @@ STANDARD_FORWARD_INFO = TrackerInfo(
             type="float",
             default="120",
             description="Maximum angular deviation (gon).",
-            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
+            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
             typical_range="20 – 200",
             unit="gon",
         ),
@@ -345,7 +345,7 @@ TWO_DIRECTIONAL_INFO = TrackerInfo(
             type="float",
             default="±10.0",
             description="Velocity search window in X (mm/frame).",
-            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
+            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
             typical_range="1 – 100",
             unit="mm/frame",
         ),
@@ -354,7 +354,7 @@ TWO_DIRECTIONAL_INFO = TrackerInfo(
             type="float",
             default="5.0",
             description="Maximum acceleration (mm/frame²).",
-            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
+            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
             typical_range="0.5 – 50",
             unit="mm/frame²",
         ),
@@ -363,7 +363,7 @@ TWO_DIRECTIONAL_INFO = TrackerInfo(
             type="float",
             default="120",
             description="Maximum angular deviation (gon).",
-            how_to_choose="Same parameter guidance as fast_3d (from probe data).",
+            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
             typical_range="20 – 200",
             unit="gon",
         ),
@@ -375,7 +375,7 @@ TWO_DIRECTIONAL_INFO = TrackerInfo(
 )
 
 MYPTV_3D_INFO = TrackerInfo(
-    name="myptv_3d_tracking",
+    name="nearest_hungarian_3d",
     display_name="MyPTV 3D Kinematic (Python)",
     short_description="Python implementation of MyPTV's 3D kinematic prediction + Hungarian assignment",
     algorithm_summary=(
@@ -502,12 +502,12 @@ SPLITTER_INFO = TrackerInfo(
     parameters=(),
     default_preset="",
     best_for="Datasets acquired with four-view image splitters on a single camera sensor.",
-    avoid_when="Standard multi-camera setups — use fast_3d or full_multipass instead.",
+    avoid_when="Standard multi-camera setups — use priority_segment_3d or full_multipass instead.",
     typical_datasets="Splitter-based tomo-PTV experiments.",
 )
 
 PROPTV_INFO = TrackerInfo(
-    name="proptv_tracking",
+    name="predictive_gmm_3d",
     display_name="proPTV Probabilistic (GMM)",
     short_description="Probabilistic PTV using Gaussian Mixture Model for smooth track approximation",
     algorithm_summary=(
@@ -605,7 +605,7 @@ FAST_3D_SMOOTH_INFO = TrackerInfo(
     display_name="Fast 3D Smooth (SG velocity)",
     short_description="Fast 3D-only tracking with a Savitzky-Golay smoothed velocity predictor",
     algorithm_summary=(
-        "fast_3d 2-point extrapolation upgraded to a Savitzky-Golay smoothed "
+        "priority_segment_3d 2-point extrapolation upgraded to a Savitzky-Golay smoothed "
         "velocity estimate over a short track history, with radius-limited "
         "Hungarian assignment instead of the order-dependent greedy scan."
     ),
@@ -649,7 +649,7 @@ FAST_3D_SMOOTH_INFO = TrackerInfo(
         ),
     ),
     default_preset="fast_3d_smooth",
-    best_for="Same as fast_3d but on data with moderate noise or brief crossings.",
+    best_for="Same as priority_segment_3d but on data with moderate noise or brief crossings.",
     avoid_when="Extremely high density or particles vanishing for 2+ frames.",
     typical_datasets="Synthetic verification, noisy first-pass 3D IS data, preview batches.",
 )
@@ -675,6 +675,8 @@ def _build_registry() -> None:
     TRACKER_REGISTRY["fast_3d"] = PRIORITY_SEGMENT_3D_INFO
     TRACKER_REGISTRY["fast"] = PRIORITY_SEGMENT_3D_INFO
     TRACKER_REGISTRY["quality_3d_tracking"] = KALMAN_HUNGARIAN_3D_INFO
+    TRACKER_REGISTRY["myptv_3d_tracking"] = MYPTV_3D_INFO
+    TRACKER_REGISTRY["proptv_tracking"] = PROPTV_INFO
 
 
 _build_registry()
@@ -687,8 +689,8 @@ def get_tracker_info(name: str) -> TrackerInfo | None:
         "fast": "priority_segment_3d",
         "quality_3d_tracking": "kalman_hungarian_3d",
         "fast_3d_smooth": "fast_3d_smooth",
-        "myptv_3d_tracking": "myptv_3d_tracking",
-        "proptv_tracking": "proptv_tracking",
+        "myptv_3d_tracking": "nearest_hungarian_3d",
+        "proptv_tracking": "predictive_gmm_3d",
     }
     key = alias_map.get(name, name)
     return TRACKER_REGISTRY.get(key)

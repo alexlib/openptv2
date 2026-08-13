@@ -1,12 +1,12 @@
-# OpenPTV2 `quality_3d` Tracking Engine & Mathematical Guide
+# OpenPTV2 `kalman_hungarian_3d` Tracking Engine & Mathematical Guide
 
-This document provides a comprehensive mathematical formulation, parameter selection guide, and benchmark verification instructions for the **`quality_3d`** particle tracking engine in OpenPTV2 ([`src/openptv2/plugins/quality_3d_tracking.py`](file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/quality_3d_tracking.py) and [`src/openptv2/tracking_kalman.py`](file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_kalman.py)).
+This document provides a comprehensive mathematical formulation, parameter selection guide, and benchmark verification instructions for the **`kalman_hungarian_3d`** particle tracking engine in OpenPTV2 ([`src/openptv2/plugins/kalman_hungarian_3d.py`](file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/kalman_hungarian_3d.py) and [`src/openptv2/tracking_kalman.py`](file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_kalman.py)).
 
 ---
 
 ## 1. Overview & Key Architecture
 
-`quality_3d` is OpenPTV2's high-accuracy 3D particle tracking algorithm designed for turbulent flows, high particle densities, and noisy 3D observations. It combines:
+`kalman_hungarian_3d` is OpenPTV2's high-accuracy 3D particle tracking algorithm designed for turbulent flows, high particle densities, and noisy 3D observations. It combines:
 
 1. **3D Constant-Acceleration Kalman Filter Prediction**: Maintains a full 9D kinematic state vector $(x, y, z, v_x, v_y, v_z, a_x, a_y, a_z)$ and error covariance $\mathbf{P}$ per trajectory.
 2. **Dynamic Innovation & Search Window Gating**: Adapts candidate search radius based on track history and kinematic velocity bounds ($v_{\text{max}}, a_{\text{max}}$).
@@ -96,13 +96,13 @@ Candidate matching is solved per spatial cluster via bipartite graph optimal ass
 
 ## 4. Parameter Settings & Configuration
 
-`quality_3d_tracking` parameters can be specified in `parameters.yaml` or when instantiating `Quality3DTracker`.
+`kalman_hungarian_3d` parameters can be specified in `parameters.yaml` or when instantiating `Quality3DTracker`.
 
 ### 4.1 Example `parameters.yaml` Configuration
 
 ```yaml
 track:
-  preset: "quality_3d"
+  preset: "kalman_hungarian_3d"
   v_max: 6.0             # Maximum expected velocity displacement [mm/frame]
   a_max: 6.0             # Maximum expected acceleration displacement [mm/frame^2]
   max_gap: 1             # Max missing frames bridged during occlusions
@@ -111,7 +111,7 @@ track:
   cost_weights: [1.0, 0.5, 0.2]  # Position, velocity, and acceleration weights
 
 plugins:
-  selected_tracking: "quality_3d_tracking"
+  selected_tracking: "kalman_hungarian_3d"
 ```
 
 ### 4.2 Parameter Selection Guide
@@ -143,7 +143,7 @@ uv run openptv benchmark-tracking --flow vortex --particles 1000 --frames 20 --n
 
 ### 5.2 Expected Quality Metrics
 
-When evaluating `quality_3d_tracking` on `test_data/synthetic_turbulent` (225 particles/frame, 30 frames), you should observe results matching or exceeding:
+When evaluating `kalman_hungarian_3d` on `test_data/synthetic_turbulent` (225 particles/frame, 30 frames), you should observe results matching or exceeding:
 
 | Metric | Target / Measured | Meaning & Physical Interpretation |
 | :--- | :---: | :--- |
@@ -161,7 +161,7 @@ When evaluating `quality_3d_tracking` on `test_data/synthetic_turbulent` (225 pa
 ## 6. Python API Usage Example
 
 ```python
-from openptv2.plugins.quality_3d_tracking import Quality3DTracker
+from openptv2.plugins.kalman_hungarian_3d import Quality3DTracker
 from openptv2.benchmarking.runner import read_trajectories
 from pathlib import Path
 

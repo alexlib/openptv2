@@ -290,7 +290,7 @@ def run_multi_tracker_benchmark(
     """
     import time
 
-    from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
+    from openptv2.plugins.nearest_hungarian_3d import MyPTV3DTracker
     from openptv2.tracking_cost import CostWeights
 
     frame_particle_arrays = [
@@ -344,7 +344,7 @@ def run_multi_tracker_benchmark(
 
     # 3. OpenPTV2 Quality3D (Kalman Filter + Cluster-Local Assignment)
     try:
-        from openptv2.plugins.quality_3d_tracking import Quality3DTracker
+        from openptv2.plugins.kalman_hungarian_3d import Quality3DTracker
 
         t0 = time.perf_counter()
         tracker_quality = Quality3DTracker(

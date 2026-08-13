@@ -77,14 +77,14 @@ def main():
 
     loose = dict(bu.BASE_OVERRIDES, dvxmax=16, dvxmin=-16, dvymax=16,
                  dvymin=-16, dvzmax=16, dvzmin=-16, dacc=50)
-    pred_myptv, _ = bu.run_single_tracker("myptv_3d_tracking", loose)
+    pred_myptv, _ = bu.run_single_tracker("nearest_hungarian_3d", loose)
 
     print("\n=== myPTV probe: raw tails (polluted by mislinks) ===")
     show("myptv raw", pred_myptv, prune=False)
     print("\n=== myPTV probe: MAD-pruned envelope ===")
     dl, dh, ah = show("myptv pruned", pred_myptv)
 
-    # Recommend a fast_3d / track3d window: symmetric half-width from
+    # Recommend a priority_segment_3d / track3d window: symmetric half-width from
     # pruned envelope, dacc from pruned |2nd-deriv| (clamped to the GT
     # value where available: GT p99 ≈ 3.6).
     half = (dh - dl) / 2
@@ -95,11 +95,11 @@ def main():
                          zip(("dvx", "dvy", "dvz"), (half[0], half[1], half[2])))
     print(f"  dv* half-widths: {half_str}  dacc ~ {acc_rec:.1f}")
 
-    # fast_3d parameter sweep at fixed dv=6, dacc in {1,2,3,4,5,6}
-    print("\n=== fast_3d: dacc sweep at dv=6 ===")
+    # priority_segment_3d parameter sweep at fixed dv=6, dacc in {1,2,3,4,5,6}
+    print("\n=== priority_segment_3d: dacc sweep at dv=6 ===")
     for dacc in (1.0, 2.0, 3.0, 4.0, 5.0, 6.0):
         ov = dict(bu.BASE_OVERRIDES, dacc=dacc)
-        pred, _ = bu.run_single_tracker("fast_3d", ov)
+        pred, _ = bu.run_single_tracker("priority_segment_3d", ov)
         m = bm.compute_identity_metrics(tt, pred, eps=1.0)
         print(f"  dacc={dacc:<4.0f} | pmt {m.pmt:5.1f}% | purity {m.purity:.3f} "
               f"| F {m.fragmentation:5.2f} | n {m.n_reconstructed:>4}")
@@ -110,7 +110,7 @@ def main():
     print(f"  recommended: dv* = +/-6.0 (envelope p1/p99), dacc = {acc_rec}")
     recommended = dict(dvxmax=6.0, dvxmin=-6.0, dvymax=6.0, dvymin=-6.0,
                        dvzmax=6.0, dvzmin=-6.0, dacc=acc_rec)
-    for tr in ("fast_3d", "myptv_3d_tracking", "proptv_tracking"):
+    for tr in ("priority_segment_3d", "nearest_hungarian_3d", "predictive_gmm_3d"):
         ov = dict(bu.BASE_OVERRIDES)
         ov.update({k: v for k, v in recommended.items()})
         pred, dt = bu.run_single_tracker(tr, ov)
@@ -120,7 +120,7 @@ def main():
               f"| n {m.n_reconstructed:>4} | {dt:5.1f}s")
 
     print("\n=== reference: myptv/proptv with their default params ===")
-    for tr in ("myptv_3d_tracking", "proptv_tracking"):
+    for tr in ("nearest_hungarian_3d", "predictive_gmm_3d"):
         pred, dt = bu.run_single_tracker(tr, bu.BASE_OVERRIDES)
         m = bm.compute_identity_metrics(tt, pred, eps=1.0)
         print(f"  {tr:<18} | pmt {m.pmt:5.1f}% | purity {m.purity:.3f} "

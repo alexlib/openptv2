@@ -8,7 +8,7 @@ This guide explains how to adapt and implement custom 2D or 3D particle tracking
 
 OpenPTV2 features a plugin architecture (`openptv2.plugins.loader`) that resolves custom algorithms at runtime. You can deliver custom tracking plugins in three ways:
 
-1. **Built-in Plugins**: Shipped inside `src/openptv2/plugins/` (e.g. `myptv_3d_tracking`, `myptv_2d_tracking`, `splitter_tracking`).
+1. **Built-in Plugins**: Shipped inside `src/openptv2/plugins/` (e.g. `nearest_hungarian_3d`, `myptv_2d_tracking`, `splitter_tracking`).
 2. **Experiment-Local Plugins**: Dropped directly into `<experiment>/plugins/my_tracker.py` for dataset-specific algorithms.
 3. **Third-Party Packages**: Distributed via `pyproject.toml` entry points (`openptv2.plugins`).
 
@@ -69,7 +69,7 @@ Instead of requiring heavy external dependencies (GUIs, pandas, custom file form
 
 ## 4. Step-by-Step Code Walkthrough (MyPTV Case Study)
 
-Below is a complete, annotated example based on our MyPTV 3D tracking plugin implementation ([`myptv_3d_tracking.py`](file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/myptv_3d_tracking.py)):
+Below is a complete, annotated example based on our MyPTV 3D tracking plugin implementation ([`nearest_hungarian_3d.py`](file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/nearest_hungarian_3d.py)):
 
 ### Step 1: Implement the Mathematical Core Engine
 

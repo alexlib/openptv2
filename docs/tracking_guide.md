@@ -47,7 +47,7 @@ Tracking configuration is stored under the `track:` section of your `parameters.
 
 ```yaml
 track:
-  preset: "full_multipass" # Preset: "fast_3d", "standard_forward", "full_multipass", or "custom_plugin"
+  preset: "full_multipass" # Preset: "priority_segment_3d", "standard_forward", "full_multipass", or "custom_plugin"
   dvxmin: -10.0      # Min velocity search step in X [mm/frame]
   dvxmax: 10.0       # Max velocity search step in X [mm/frame]
   dvymin: -10.0      # Min velocity search step in Y [mm/frame]
@@ -70,7 +70,7 @@ OpenPTV2 provides high-level preset profiles to simplify pipeline configuration:
 
 | Preset Key | Display Name | Pipeline Description | Recommended Use Case |
 | :--- | :--- | :--- | :--- |
-| **`fast_3d`** | Fast 3D-Only (No added particles) | Single-pass forward tracking (`track_mode=1`). Uses only 3D coordinates from `rt_is.#`. | Quick sanity checks, low density / low noise data. |
+| **`priority_segment_3d`** | Fast 3D-Only (No added particles) | Single-pass forward tracking (`track_mode=1`). Uses only 3D coordinates from `rt_is.#`. | Quick sanity checks, low density / low noise data. |
 | **`standard_forward`** | Fast Standard (Forward only, with added particles) | Single-pass forward tracking (`track_mode=0`, `flagNewParticles=true`). | Fast processing when backward tracking is not required. |
 | **`full_multipass`** | Standard 3-Pass (Forward + Backward + Post-process) | Full 3-pass pipeline: Forward $\rightarrow$ Backward $\rightarrow$ Pass 3 reciprocity pruning. | **Recommended for maximum accuracy & trajectory recovery.** |
 | **`custom_plugin`** | Custom Plugin / Splitter | Delegates pipeline execution to a user-specified plugin (e.g. `splitter_tracking`). | Quad-view splitters or specialized custom tracking algorithms. |
@@ -79,7 +79,7 @@ OpenPTV2 provides high-level preset profiles to simplify pipeline configuration:
 
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| **`preset`** | `str` | `"full_multipass"` | Active tracking strategy preset (`fast_3d`, `standard_forward`, `full_multipass`, `custom_plugin`). |
+| **`preset`** | `str` | `"full_multipass"` | Active tracking strategy preset (`priority_segment_3d`, `standard_forward`, `full_multipass`, `custom_plugin`). |
 | **`dvxmin` / `dvxmax`** | `float` | `-10.0` / `10.0` | Velocity search box along X axis in physical units [mm/frame]. Limits max displacement between frame $t$ and $t+1$. |
 | **`dvymin` / `dvymax`** | `float` | `-10.0` / `10.0` | Velocity search box along Y axis [mm/frame]. |
 | **`dvzmin` / `dvzmax`** | `float` | `-10.0` / `10.0` | Velocity search box along Z axis [mm/frame]. |
@@ -123,17 +123,17 @@ The tables below show typical trajectory recovery performance across the 3 main 
 
 | Tracking Preset | Algorithm / Passes | Total Links | Trajectories Count | OVERALL Mean Length | Max Length | Relative Time |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| **`fast_3d`** | Fast 3D-Only (`track_mode=1`) | 14,010 | 4,540 | **4.09 frames** | 10 | **1.0$\times$** (Fastest) |
+| **`priority_segment_3d`** | Fast 3D-Only (`track_mode=1`) | 14,010 | 4,540 | **4.09 frames** | 10 | **1.0$\times$** (Fastest) |
 | **`standard_forward`** | Fast Standard (Forward only) | 13,631 | 4,919 | **3.77 frames** | 10 | **1.2$\times$** |
 | **`full_multipass`** | Standard 3-Pass (Forward + Backward + Postprocess) | 13,667 | 4,883 | **3.80 frames** | 10 | **1.8$\times$** (Most Accurate) |
 
 #### Trajectory Seed Origin Breakdown (Frame 1 vs. Mid-Sequence Entry)
 
-To understand why `fast_3d` shows a higher raw *overall* mean length than multi-pass tracking, we must inspect trajectories by their **point of origin**:
+To understand why `priority_segment_3d` shows a higher raw *overall* mean length than multi-pass tracking, we must inspect trajectories by their **point of origin**:
 
 | Tracking Preset | Total Trajectories | Frame 1 Seeds Count | Frame 1 **Mean Length** | Mid-Entry Seeds Count | Mid-Entry **Mean Length** |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **`fast_3d`** | 4,540 | 1,846 | **6.80 frames** | 2,694 | 2.23 frames |
+| **`priority_segment_3d`** | 4,540 | 1,846 | **6.80 frames** | 2,694 | 2.23 frames |
 | **`standard_forward`** | 4,919 | 1,846 | **6.69 frames** | 3,073 | 2.02 frames |
 | **`full_multipass`** | 4,883 | 1,846 | **6.72 frames** | 3,037 | 2.03 frames |
 
@@ -145,8 +145,8 @@ To understand why `fast_3d` shows a higher raw *overall* mean length than multi-
    * Comparing long-term trajectories (Frame 1 seeds): `full_multipass` increases mean length from **6.69 to 6.72 frames** over forward-only tracking by repairing broken tracks during backward pass (`full_backward`).
 3. **Pass 3 Reciprocity Pruning**:
    * `full_multipass` severs **36 false unidirectional track fragments** (reducing mid-entry count from 3,073 to 3,037) while increasing valid total links (from 13,631 to 13,667).
-4. **Preventing 3D "Cross-Over" Jumps in `fast_3d`**:
-   * `fast_3d` tracks purely by 3D distance without 2D epipolar or candidate reciprocity checks. In dense regions, it can falsely "cross over" adjacent particles, artificially stitching two distinct tracks together. `full_multipass` enforces 2D+3D candidate reciprocity, ensuring 100% physical validity.
+4. **Preventing 3D "Cross-Over" Jumps in `priority_segment_3d`**:
+   * `priority_segment_3d` tracks purely by 3D distance without 2D epipolar or candidate reciprocity checks. In dense regions, it can falsely "cross over" adjacent particles, artificially stitching two distinct tracks together. `full_multipass` enforces 2D+3D candidate reciprocity, ensuring 100% physical validity.
 
 ---
 
@@ -154,8 +154,8 @@ To understand why `fast_3d` shows a higher raw *overall* mean length than multi-
 
 OpenPTV2 supports extensible tracking algorithms selected via `plugins.selected_tracking`:
 
-* **`quality_3d_tracking`** (`quality_3d`):
-  High-accuracy Constant-Acceleration 3D Kalman Filter predictor with multi-term cost matrix (distance + velocity continuity + acceleration penalty) and Hungarian cluster assignment. Delivers **98.0% precision** at high speed (~178 ms/frame). See [**`quality_3d` Mathematical Guide**](file:///C:/Users/alex/projects/openptv2/docs/quality_3d_tracking_guide.md).
+* **`kalman_hungarian_3d`** (`kalman_hungarian_3d`):
+  High-accuracy Constant-Acceleration 3D Kalman Filter predictor with multi-term cost matrix (distance + velocity continuity + acceleration penalty) and Hungarian cluster assignment. Delivers **98.0% precision** at high speed (~178 ms/frame). See [**`kalman_hungarian_3d` Mathematical Guide**](file:///C:/Users/alex/projects/openptv2/docs/kalman_hungarian_3d_guide.md).
 * **`default` (`trackcorr`)**:
   Standard OpenPTV Lagrangian tracking engine. Works best for 3D PTV setups with 2-4 cameras.
 * **`splitter_tracking`**:
@@ -234,19 +234,19 @@ OpenPTV2 provides built-in plugin wrappers for **MyPTV** particle tracking algor
 
 | Plugin Name | Tracking Level | Algorithm & Features |
 | :--- | :--- | :--- |
-| **`myptv_3d_tracking`** | 3D Physical Space | Uses MyPTV's 3D kinematic velocity and acceleration predictor ($\mathbf{X}_{\text{pred}} = \mathbf{X}_t + \mathbf{V}_t \Delta t + \frac{1}{2}\mathbf{A}_t \Delta t^2$) coupled with SciPy Hungarian bipartite assignment (`scipy.optimize.linear_sum_assignment`) for global collision-free candidate matching and gap recovery. |
+| **`nearest_hungarian_3d`** | 3D Physical Space | Uses MyPTV's 3D kinematic velocity and acceleration predictor ($\mathbf{X}_{\text{pred}} = \mathbf{X}_t + \mathbf{V}_t \Delta t + \frac{1}{2}\mathbf{A}_t \Delta t^2$) coupled with SciPy Hungarian bipartite assignment (`scipy.optimize.linear_sum_assignment`) for global collision-free candidate matching and gap recovery. |
 | **`myptv_2d_tracking`** | 2D Pixel Space | Performs 2D frame-to-frame particle trajectory tracking directly in camera image coordinates $(x_i, y_i)$ for each camera view independently. Useful for 2D-PTV or pre-triangulation 2D trajectory stereo matching. |
 
 ### How to Use
 
 #### 1. In the PyPTV GUI
-In the **Parameters** dialog under **Plugins**, select **`myptv_3d_tracking`** or **`myptv_2d_tracking`** from the **Tracking Plugin** (`track_alg`) dropdown menu.
+In the **Parameters** dialog under **Plugins**, select **`nearest_hungarian_3d`** or **`myptv_2d_tracking`** from the **Tracking Plugin** (`track_alg`) dropdown menu.
 
 #### 2. In `parameters.yaml`
 Specify the tracking plugin in your YAML configuration:
 ```yaml
 plugins:
-  selected_tracking: "myptv_3d_tracking"  # or "myptv_2d_tracking"
+  selected_tracking: "nearest_hungarian_3d"  # or "myptv_2d_tracking"
   selected_sequence: "default"
 ```
 
@@ -255,7 +255,7 @@ plugins:
 from openptv2.plugins import run_tracking_plugin
 
 # Run MyPTV 3D tracking plugin programmatically
-run_tracking_plugin("myptv_3d_tracking", experiment)
+run_tracking_plugin("nearest_hungarian_3d", experiment)
 ```
 
 ---

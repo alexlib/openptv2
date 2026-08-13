@@ -23,13 +23,13 @@ from openptv2.benchmarking.scenario import ScenarioSpec, generate_scenario
 
 # Recognised tracker names available for comparison.
 BENCHMARK_TRACKERS = [
-    "fast_3d",
+    "priority_segment_3d",
     "fast_3d_smooth",
     "full_multipass",
     "standard_forward",
     "two_directional",
-    "myptv_3d_tracking",
-    "proptv_tracking",
+    "nearest_hungarian_3d",
+    "predictive_gmm_3d",
 ]
 
 
@@ -105,7 +105,7 @@ def _remap_to_zero(pred: dict[int, list], first: int) -> dict:
 
 def cmd_sweep(
     out_dir: str | Path,
-    tracker: str = "fast_3d",
+    tracker: str = "priority_segment_3d",
     param: str = "dvxmax",
     values: list[float] | tuple[float, ...] = (1.0, 2.0, 4.0, 8.0),
     num_particles: int = 60,

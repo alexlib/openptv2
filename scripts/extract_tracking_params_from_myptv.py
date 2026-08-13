@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
+from openptv2.plugins.nearest_hungarian_3d import MyPTV3DTracker
 
 wp1_dir = Path(r"C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\wp1")
 wp1_res = wp1_dir / "res"
@@ -117,7 +117,7 @@ dacc_rec = (
     else 5.0
 )
 
-print("\n=== Recommended Empirical Parameters for track_3d / fast_3d ===")
+print("\n=== Recommended Empirical Parameters for track_3d / priority_segment_3d ===")
 print(f"  dvxmin: {dvxmin:.1f}")
 print(f"  dvxmax: {dvxmax:.1f}")
 print(f"  dvymin: {dvymin:.1f}")

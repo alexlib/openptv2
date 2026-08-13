@@ -242,7 +242,7 @@ def recommend_tracker(
     scored.sort(key=lambda x: (-x[0], x[1].speed_ranking))
     if not scored:
         return Recommendation(
-            tracker_name="fast_3d",
+            tracker_name="priority_segment_3d",
             confidence=0.0,
             rationale=["No suitable tracker found, falling back to default."],
         )
@@ -356,11 +356,11 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
             params["dvzmin"] = -stats.mean_interparticle_distance * 0.8
 
     # Tracker-specific params
-    if info.name == "myptv_3d_tracking":
+    if info.name == "nearest_hungarian_3d":
         if stats.max_displacement > 0:
             params["v_max"] = stats.max_displacement * 1.5
             params["a_max"] = params["v_max"] * 2.0
-    elif info.name == "proptv_tracking":
+    elif info.name == "predictive_gmm_3d":
         if stats.max_displacement > 0:
             params["maxvel"] = stats.max_displacement * 1.5
             params["epsR"] = max(1.0, stats.max_displacement * 0.5)
