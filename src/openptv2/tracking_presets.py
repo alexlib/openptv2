@@ -154,3 +154,123 @@ def apply_preset(
     track_params["preset"] = plugins_params.get("selected_tracking", "default")
 
     return track_params, plugins_params
+
+
+# ---------------------------------------------------------------------------
+# Unified tracker picker: (tracker, direction, postprocess) as three
+# orthogonal choices, replacing the old preset system's conflation of
+# engine + direction + postprocess into named presets (full_multipass /
+# standard_forward / two_directional all being the same "trackcorr" engine
+# at different direction/postprocess settings). Old preset/plugin names
+# above still work as inputs (infer_tracker/infer_direction understand
+# them), so previously-saved YAMLs keep loading and running unchanged.
+# ---------------------------------------------------------------------------
+
+TRACKER_CHOICES = [
+    ("priority_segment_3d", "Default (Segment-Priority, Cython)"),
+    ("trackcorr", "TrackCorr (multi-camera 2D+3D)"),
+    ("kalman_hungarian_3d", "Kalman-Hungarian (high accuracy)"),
+    ("nearest_hungarian_3d", "MyPTV (nearest-neighbor Hungarian)"),
+    ("predictive_gmm_3d", "proPTV (predictive GMM)"),
+]
+
+DIRECTION_CHOICES = [
+    ("forward", "Forward only"),
+    ("forward_backward", "Forward + Backward"),
+]
+
+# Trackers whose engine actually implements a backward pass (mirrors
+# tracking_registry.TRACKER_REGISTRY[...].supports_backward for these keys).
+TRACKER_SUPPORTS_BACKWARD: Dict[str, bool] = {
+    "priority_segment_3d": False,
+    "trackcorr": True,
+    "kalman_hungarian_3d": False,
+    "nearest_hungarian_3d": False,
+    "predictive_gmm_3d": True,
+}
+
+# Trackers whose do_tracking() reads track.postprocess at all (myptv/proptv/
+# kalman engines run their own self-contained pipeline and ignore it).
+TRACKER_SUPPORTS_POSTPROCESS = {"priority_segment_3d", "trackcorr"}
+
+_LEGACY_TRACKER_ALIASES = {
+    "default": "priority_segment_3d",
+    "fast": "priority_segment_3d",
+    "fast_3d": "priority_segment_3d",
+    "full_multipass": "trackcorr",
+    "standard_forward": "trackcorr",
+    "two_directional": "trackcorr",
+    "splitter_tracking": "trackcorr",
+    "quality_3d_tracking": "kalman_hungarian_3d",
+    "quality_3d": "kalman_hungarian_3d",
+    "myptv_3d_tracking": "nearest_hungarian_3d",
+    "proptv_tracking": "predictive_gmm_3d",
+    "proptv": "predictive_gmm_3d",
+}
+
+# Legacy preset names that ran forward+backward (used only when a saved
+# track section has no explicit "direction" key yet).
+_DIRECTION_BACKWARD_PRESETS = {"full_multipass", "two_directional"}
+
+
+def infer_tracker(plugins_params: Dict[str, Any] | None) -> str:
+    """Map any current or legacy ``selected_tracking`` value onto one of
+    the 5 canonical tracker keys. An unrecognised name (a custom
+    experiment-local plugin) passes through unchanged."""
+    selected = (plugins_params or {}).get("selected_tracking", "default")
+    return _LEGACY_TRACKER_ALIASES.get(selected, selected)
+
+
+def infer_direction(
+    track_params: Dict[str, Any], plugins_params: Dict[str, Any] | None = None
+) -> str:
+    """Forward-only vs forward+backward, from the explicit ``track.direction``
+    field, falling back to the legacy preset name for old saved YAMLs."""
+    if "direction" in track_params:
+        return track_params["direction"]
+    selected = (plugins_params or {}).get("selected_tracking", "default")
+    if selected in _DIRECTION_BACKWARD_PRESETS:
+        return "forward_backward"
+    return "forward"
+
+
+def apply_tracker(
+    tracker: str,
+    direction: str,
+    postprocess: bool,
+    track_params: Dict[str, Any],
+    plugins_params: Dict[str, Any] | None = None,
+    proptv_params: Dict[str, Any] | None = None,
+) -> tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any]]:
+    """Apply the (tracker, direction, postprocess) choice to the track /
+    plugins / proptv parameter dicts, preserving kinematic search bounds."""
+    track_params = dict(track_params)
+    plugins_params = dict(plugins_params) if plugins_params else {}
+    proptv_params = dict(proptv_params) if proptv_params else {}
+
+    if not TRACKER_SUPPORTS_BACKWARD.get(tracker, False):
+        direction = "forward"
+
+    if tracker == "priority_segment_3d":
+        track_params["track_mode"] = 1
+        track_params["flagNewParticles"] = False
+        track_params.pop("direction", None)
+    elif tracker == "trackcorr":
+        track_params["track_mode"] = 0
+        track_params["flagNewParticles"] = True
+        track_params["direction"] = direction
+    elif tracker == "predictive_gmm_3d":
+        track_params["track_mode"] = 1
+        track_params["flagNewParticles"] = True
+        track_params.pop("direction", None)
+        proptv_params["backtracking"] = direction == "forward_backward"
+    else:  # kalman_hungarian_3d, nearest_hungarian_3d
+        track_params["track_mode"] = 1
+        track_params["flagNewParticles"] = True
+        track_params.pop("direction", None)
+
+    track_params["postprocess"] = bool(postprocess)
+    plugins_params["selected_tracking"] = tracker
+    track_params["preset"] = tracker
+
+    return track_params, plugins_params, proptv_params

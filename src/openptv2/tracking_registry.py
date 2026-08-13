@@ -677,6 +677,7 @@ def _build_registry() -> None:
     TRACKER_REGISTRY["quality_3d_tracking"] = KALMAN_HUNGARIAN_3D_INFO
     TRACKER_REGISTRY["myptv_3d_tracking"] = MYPTV_3D_INFO
     TRACKER_REGISTRY["proptv_tracking"] = PROPTV_INFO
+    TRACKER_REGISTRY["trackcorr"] = FULL_MULTIPASS_INFO
 
 
 _build_registry()

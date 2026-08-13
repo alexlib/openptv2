@@ -52,10 +52,16 @@ BUILTIN_TRACKING_PLUGINS = {
     "predictive_gmm_3d": "openptv2.plugins.predictive_gmm_3d",
     "proptv_tracking": "openptv2.plugins.proptv_tracking",
     "proptv": "openptv2.plugins.proptv_tracking",
+    "trackcorr": "openptv2.plugins.default_tracking",
     "full_multipass": "openptv2.plugins.default_tracking",
     "standard_forward": "openptv2.plugins.default_tracking",
     "two_directional": "openptv2.plugins.default_tracking",
-    "splitter_tracking": "openptv2.plugins.splitter_tracking",
+    # Splitter mode isn't a distinct tracker: exp.target_filenames /
+    # exp.spar are already splitter-aware (see ParameterManager.
+    # get_target_filenames()), so the same trackcorr engine runs
+    # unmodified against splitter-derived per-view targets. Kept only so
+    # old saved YAMLs with selected_tracking: splitter_tracking still run.
+    "splitter_tracking": "openptv2.plugins.default_tracking",
 }
 
 LEGACY_ALIASES = {

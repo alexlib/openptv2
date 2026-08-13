@@ -778,10 +778,27 @@ def run_sequence_plugin(exp) -> None:
 
 
 def run_tracking_plugin(exp) -> None:
-    """Load and run the tracking plugin selected in ``exp.plugins.track_alg``."""
+    """Load and run the tracking plugin.
+
+    Prefers the persisted ``pm.parameters['plugins']['selected_tracking']``
+    (kept current by Tracking Parameters' TrackHandler on every save) over
+    ``exp.plugins.track_alg``, which is a cached trait on a Plugins dialog
+    instance that only refreshes when that dialog is reopened -- falling
+    back to it here means a choice made only in Tracking Parameters, without
+    ever opening the (now sequence-only) Plugins dialog, still takes effect
+    immediately.
+    """
     from openptv2.plugins import run_tracking_plugin as _run_tracking_plugin
 
-    _run_tracking_plugin(exp.plugins.track_alg, exp)
+    selected = None
+    pm = getattr(getattr(exp, "plugins", None), "experiment", None)
+    pm = getattr(pm, "pm", None)
+    if pm is not None:
+        selected = pm.parameters.get("plugins", {}).get("selected_tracking")
+    if not selected:
+        selected = exp.plugins.track_alg
+
+    _run_tracking_plugin(selected, exp)
 
 
 def _frame_image_name(base_name, frame: int) -> Path:

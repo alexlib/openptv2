@@ -12,10 +12,13 @@ from traitsui.api import (
 )
 
 from openptv2.tracking_presets import (
-    PRESET_CHOICES,
-    PRESET_CONFIGS,
-    apply_preset,
-    infer_preset,
+    DIRECTION_CHOICES,
+    TRACKER_CHOICES,
+    TRACKER_SUPPORTS_BACKWARD,
+    TRACKER_SUPPORTS_POSTPROCESS,
+    apply_tracker,
+    infer_direction,
+    infer_tracker,
 )
 
 from .experiment import Experiment
@@ -371,14 +374,13 @@ class TrackHandler(Handler):
                 experiment.pm.parameters["track"] = {}
             if "plugins" not in experiment.pm.parameters:
                 experiment.pm.parameters["plugins"] = {}
+            if "proptv" not in experiment.pm.parameters:
+                experiment.pm.parameters["proptv"] = {}
 
-            preset_key = track_params.preset
-            existing_plugin = experiment.pm.parameters.get("plugins", {}).get(
-                "selected_tracking"
-            )
-
-            t_dict, p_dict = apply_preset(
-                preset_key,
+            t_dict, p_dict, proptv_dict = apply_tracker(
+                track_params.tracker,
+                track_params.direction,
+                bool(track_params.postprocess),
                 {
                     "dvxmin": track_params.dvxmin,
                     "dvxmax": track_params.dvxmax,
@@ -388,27 +390,36 @@ class TrackHandler(Handler):
                     "dvzmax": track_params.dvzmax,
                     "angle": track_params.angle,
                     "dacc": track_params.dacc,
-                    "flagNewParticles": track_params.flagNewParticles,
-                    "track_mode": int(track_params.track_mode),
-                    "postprocess": bool(track_params.postprocess),
                 },
                 experiment.pm.parameters.get("plugins", {}),
-                custom_plugin_name=existing_plugin
-                if preset_key == "custom_plugin"
-                else None,
+                experiment.pm.parameters.get("proptv", {}),
             )
 
             experiment.pm.parameters["track"].update(t_dict)
-            if p_dict:
-                experiment.pm.parameters["plugins"].update(p_dict)
+            experiment.pm.parameters["plugins"].update(p_dict)
+            experiment.pm.parameters["proptv"].update(proptv_dict)
+
+            # Keep the live GUI plugin selector in sync immediately, so the
+            # next "Track" run picks up this choice without a detour
+            # through the (now sequence-only) Plugins dialog -- see
+            # ptv.run_tracking_plugin()'s persisted-selection preference,
+            # which makes this belt-and-suspenders rather than load-bearing.
+            live_plugins = getattr(experiment, "plugins", None)
+            if live_plugins is not None and hasattr(live_plugins, "track_alg"):
+                try:
+                    live_plugins.track_alg = p_dict["selected_tracking"]
+                except Exception:
+                    pass
 
             experiment.save_active()
             print("Tracking parameters saved successfully!")
 
 
 class Tracking_Params(HasTraits):
-    preset = Enum(*[key for key, label in PRESET_CHOICES])
-    active_plugin = Str("default")
+    tracker = Enum(*[key for key, label in TRACKER_CHOICES])
+    direction = Enum(*[key for key, label in DIRECTION_CHOICES])
+    direction_enabled = Bool(True)
+    postprocess_enabled = Bool(True)
     dvxmin = Float()
     dvxmax = Float()
     dvymin = Float()
@@ -417,8 +428,6 @@ class Tracking_Params(HasTraits):
     dvzmax = Float()
     angle = Float()
     dacc = Float()
-    flagNewParticles = Bool(True)
-    track_mode = Enum(0, 1)
     postprocess = Bool(True)
 
     def __init__(self, experiment: Experiment):
@@ -435,34 +444,43 @@ class Tracking_Params(HasTraits):
         self.dvzmax = float(tracking_params.get("dvzmax", 10.0))
         self.angle = float(tracking_params.get("angle", 120.0))
         self.dacc = float(tracking_params.get("dacc", 5.0))
-        self.flagNewParticles = bool(tracking_params.get("flagNewParticles", True))
-        self.track_mode = int(tracking_params.get("track_mode", 0))
         self.postprocess = bool(tracking_params.get("postprocess", True))
 
-        self.active_plugin = str(plugins_params.get("selected_tracking", "default"))
-        self.preset = infer_preset(tracking_params, plugins_params)
+        self.tracker = infer_tracker(plugins_params)
+        self.direction = infer_direction(tracking_params, plugins_params)
+        self._sync_enabled_state()
 
-    def _preset_changed(self, old, new):
-        if new in PRESET_CONFIGS:
-            cfg = PRESET_CONFIGS[new]
-            self.track_mode = cfg["track_mode"]
-            self.flagNewParticles = cfg["flagNewParticles"]
-            self.postprocess = cfg["postprocess"]
+    def _tracker_changed(self, old, new):
+        self._sync_enabled_state()
+        if not self.direction_enabled:
+            self.direction = "forward"
+        if not self.postprocess_enabled:
+            self.postprocess = False
+
+    def _sync_enabled_state(self):
+        self.direction_enabled = TRACKER_SUPPORTS_BACKWARD.get(self.tracker, False)
+        self.postprocess_enabled = self.tracker in TRACKER_SUPPORTS_POSTPROCESS
 
     Tracking_Params_View = View(
         VGroup(
             Item(
-                name="preset",
-                label="Tracking Strategy / Preset:",
-                editor=EnumEditor(values={key: label for key, label in PRESET_CHOICES}),
+                name="tracker",
+                label="Tracker:",
+                editor=EnumEditor(values={key: label for key, label in TRACKER_CHOICES}),
             ),
             Item(
-                name="active_plugin",
-                style="readonly",
-                label="Active Selected Plugin:",
+                name="direction",
+                label="Direction:",
+                editor=EnumEditor(values={key: label for key, label in DIRECTION_CHOICES}),
+                enabled_when="direction_enabled",
+            ),
+            Item(
+                name="postprocess",
+                label="Post-process (reciprocity + cold-start + gap-relink):",
+                enabled_when="postprocess_enabled",
             ),
             show_border=True,
-            label="Pipeline Strategy",
+            label="Pipeline",
         ),
         VGroup(
             HGroup(

@@ -19,7 +19,7 @@ from openptv2.algorithms.tracking_frame_buf import Frame
 
 # Tracker names recognised as presets by the default_tracking plugin.
 _CORE_PRESETS = {
-    "fast", "fast_3d", "priority_segment_3d",
+    "fast", "fast_3d", "priority_segment_3d", "trackcorr",
     "standard_forward", "two_directional", "full_multipass",
 }
 

@@ -1268,11 +1268,17 @@ tree_editor_exp = TreeEditor(
 
 # -------------------------------------------------------------------------
 class Plugins(HasTraits):
+    """Sequence-plugin picker only. Tracker selection now lives entirely in
+    Tracking Parameters (parameter_gui.Tracking_Params) -- one place for
+    tracker + direction + postprocess, instead of splitting it across this
+    dialog and Tracking Parameters. ``track_alg`` stays as the attribute
+    ptv.run_tracking_plugin() falls back to (and TrackHandler keeps it in
+    sync on every save), but it's no longer user-editable here."""
+
     track_alg = Enum("default")
     sequence_alg = Enum("default")
 
     view = View(
-        Item(name="track_alg", label="Tracking:"),
         Item(name="sequence_alg", label="Sequence:"),
         buttons=["OK"],
         title="Plugins",
