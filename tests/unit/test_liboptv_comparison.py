@@ -32,7 +32,11 @@ def test_all_trackers_run_and_clear_a_quality_floor():
     # reference modes without a multi-minute CI run.
     rows = cmp_mod.run_comparison(bu.SRC, bu.FIRST, n_frames=8)
 
-    assert {r["tracker"] for r in rows} == set(cmp_mod.TRACKERS)
+    # rows also includes synthesized "optv (liboptv, ...)" rows (liboptv
+    # itself, run with our trackcorr/fast3d parameters) alongside the 5
+    # canonical trackers -- check the 5 are all present as a subset rather
+    # than exact set equality.
+    assert set(cmp_mod.TRACKERS) <= {r["tracker"] for r in rows}
 
     for row in rows:
         assert "error" not in row, f"{row['tracker']} failed: {row.get('error')}"

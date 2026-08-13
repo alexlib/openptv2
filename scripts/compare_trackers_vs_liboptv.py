@@ -157,6 +157,10 @@ def run_comparison(src: Path, first: int, n_frames: int) -> list[dict]:
             for k, v in gt_row.items():
                 row[f"gt_{k}"] = v
 
+            shape = bu.trajectory_shape_stats(pred)
+            for k, v in shape.items():
+                row[f"shape_{k}"] = v
+
             if "error" not in ref:
                 # ref may be on a density-capped copy of src (see above) --
                 # run this tracker there too, so the link-agreement
@@ -200,7 +204,27 @@ def run_comparison(src: Path, first: int, n_frames: int) -> list[dict]:
         gt_row = bu.combined_metrics(gt_tt, trackcorr_ref["tracks"], eps=1.0, ghosts=gt_ghosts)
         for k, v in gt_row.items():
             optv_row[f"gt_{k}"] = v
+        shape = bu.trajectory_shape_stats(trackcorr_ref["tracks"])
+        for k, v in shape.items():
+            optv_row[f"shape_{k}"] = v
         rows.append(optv_row)
+
+        fast3d_ref = liboptv_cache.get("fast3d")
+        if fast3d_ref is not None and "error" not in fast3d_ref:
+            optv_fast_row = {
+                "tracker": "optv (liboptv, fast3d params)",
+                "liboptv_ref": "fast3d",
+                "params": overrides["priority_segment_3d"],
+                "time_s": fast3d_ref["time_s"],
+                "n_tracks": len(fast3d_ref["tracks"]),
+            }
+            gt_row = bu.combined_metrics(tt, fast3d_ref["tracks"], eps=1.0, ghosts=ghosts)
+            for k, v in gt_row.items():
+                optv_fast_row[f"gt_{k}"] = v
+            shape = bu.trajectory_shape_stats(fast3d_ref["tracks"])
+            for k, v in shape.items():
+                optv_fast_row[f"shape_{k}"] = v
+            rows.append(optv_fast_row)
 
     return rows
 
@@ -268,6 +292,34 @@ def format_report(rows: list[dict], src: Path, first: int, n_frames: int) -> str
             f"| {tracker_label} | {row['liboptv_ref']} | "
             f"{row['vs_liboptv_precision']:.3f} | {row['vs_liboptv_yield_recall']:.3f} | "
             f"{row['vs_liboptv_false_connection_rate']:.3f} |"
+        )
+
+    lines += [
+        "",
+        "## Trajectory shape (length, gaps, smoothness -- no ground truth needed)",
+        "",
+        "mean/median/max length in frames; frac_short = fraction of predicted "
+        "tracks shorter than 5 frames (fragments, not real trajectories -- "
+        "more gaps/fragmentation shows up as a higher fraction here and a "
+        "lower gt_purity/higher gt_fragmentation above); smoothness_deg = mean "
+        "angular deviation between consecutive velocity vectors along each "
+        "trajectory (0 = perfectly straight/constant-velocity, larger = more "
+        "frame-to-frame direction jitter -- either real curvature or a wrong "
+        "link).",
+        "",
+        "| Tracker | n_tracks | mean_len | median_len | max_len | frac_short | smoothness_deg |",
+        "|---|---:|---:|---:|---:|---:|---:|",
+    ]
+    for row in rows:
+        if "error" in row or "shape_n_tracks" not in row:
+            continue
+        smooth = row["shape_mean_smoothness_deg"]
+        smooth_str = f"{smooth:.1f}" if smooth == smooth else "n/a"  # NaN check
+        lines.append(
+            f"| {row['tracker']} | {row['shape_n_tracks']} | "
+            f"{row['shape_mean_length']:.1f} | {row['shape_median_length']:.1f} | "
+            f"{row['shape_max_length']} | {row['shape_frac_short_lived']:.2f} | "
+            f"{smooth_str} |"
         )
 
     lines += ["", "## Per-tracker parameters used", ""]

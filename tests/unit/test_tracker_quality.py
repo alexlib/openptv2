@@ -49,3 +49,34 @@ def test_fast_3d_quality_floor_at_1k_density():
     assert row["precision"] >= 0.80, row
     assert row["yield_recall"] >= 0.75, row
     assert row["ghost_capture_rate"] <= 0.10, row
+
+
+def test_trajectory_shape_stats_length_and_smoothness():
+    """No fixtures needed: pins the shape metrics used by
+    scripts/compare_trackers_vs_liboptv.py's trajectory-shape table
+    (length/gaps/smoothness comparison across trackers)."""
+    tracks = {
+        # Straight, constant-velocity: 0 deg smoothness.
+        0: [(0, 0.0, 0.0, 0.0), (1, 1.0, 0.0, 0.0), (2, 2.0, 0.0, 0.0), (3, 3.0, 0.0, 0.0)],
+        # A 90-degree turn at frame 2.
+        1: [(0, 0.0, 0.0, 0.0), (1, 1.0, 0.0, 0.0), (2, 1.0, 1.0, 0.0)],
+        # Short fragment (< 5 frames).
+        2: [(0, 5.0, 5.0, 0.0), (1, 5.1, 5.0, 0.0)],
+    }
+    stats = bu.trajectory_shape_stats(tracks)
+
+    assert stats["n_tracks"] == 3
+    assert stats["max_length"] == 4
+    assert stats["min_length"] == 2
+    assert stats["frac_short_lived"] == 1.0  # all three are < 5 frames
+    # Track 0 (4 points, 3 velocity vectors) contributes two 0-deg samples
+    # (collinear steps); track 1 (3 points) contributes one 90-deg sample
+    # (the direction break); track 2 is too short (< 3 points) to contribute.
+    assert stats["n_smoothness_samples"] == 3
+    assert 25.0 < stats["mean_smoothness_deg"] < 35.0  # (0 + 0 + 90) / 3 = 30
+
+
+def test_trajectory_shape_stats_empty():
+    stats = bu.trajectory_shape_stats({})
+    assert stats["n_tracks"] == 0
+    assert stats["mean_smoothness_deg"] != stats["mean_smoothness_deg"]  # NaN

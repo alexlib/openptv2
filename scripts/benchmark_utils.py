@@ -421,9 +421,58 @@ def remap_gt_to_tracker_space(tt, gt_ids_to_show=None):
     return {k: v for k, v in tt.items() if k in gt_ids_to_show}
 
 
+def trajectory_shape_stats(tracks: dict[int, list[tuple[int, float, float, float]]]) -> dict:
+    """Length and smoothness statistics computed directly from a predicted
+    trajectory set -- no ground truth needed, so this always runs even
+    where GT identity metrics don't apply (e.g. liboptv's own output).
+
+    Smoothness is the mean angular deviation (degrees) between consecutive
+    velocity vectors along each trajectory with >= 3 points: 0 deg is a
+    perfectly straight/constant-velocity path, larger values mean sharper
+    frame-to-frame direction changes (jitter, or genuinely tracking through
+    a spurious neighbour). Only trajectories long enough to have two
+    velocity vectors contribute.
+    """
+    lengths = [len(pts) for pts in tracks.values()]
+    if not lengths:
+        return {
+            "n_tracks": 0, "mean_length": 0.0, "median_length": 0.0,
+            "max_length": 0, "min_length": 0, "frac_short_lived": 0.0,
+            "mean_smoothness_deg": float("nan"), "n_smoothness_samples": 0,
+        }
+
+    lengths_arr = np.array(lengths, dtype=float)
+    short_thresh = 5  # frames; a trajectory this short is a fragment, not a real track
+    frac_short = float(np.mean(lengths_arr < short_thresh))
+
+    angle_devs = []
+    for pts in tracks.values():
+        if len(pts) < 3:
+            continue
+        xyz = np.array([(x, y, z) for _f, x, y, z in pts])
+        vels = np.diff(xyz, axis=0)
+        for k in range(len(vels) - 1):
+            v1, v2 = vels[k], vels[k + 1]
+            n1, n2 = np.linalg.norm(v1), np.linalg.norm(v2)
+            if n1 > 1e-9 and n2 > 1e-9:
+                cosang = np.clip(np.dot(v1, v2) / (n1 * n2), -1.0, 1.0)
+                angle_devs.append(np.degrees(np.arccos(cosang)))
+
+    return {
+        "n_tracks": len(lengths),
+        "mean_length": float(np.mean(lengths_arr)),
+        "median_length": float(np.median(lengths_arr)),
+        "max_length": int(np.max(lengths_arr)),
+        "min_length": int(np.min(lengths_arr)),
+        "frac_short_lived": frac_short,
+        "mean_smoothness_deg": float(np.mean(angle_devs)) if angle_devs else float("nan"),
+        "n_smoothness_samples": len(angle_devs),
+    }
+
+
 __all__ = [
     "SRC", "FIRST", "LAST", "N_FRAMES", "TRACKERS", "BASE_OVERRIDES",
     "read_gt_frames", "build_true_tracks", "build_ghost_frames",
     "combined_metrics", "run_single_tracker",
-    "run_all_trackers", "remap_gt_to_tracker_space",
+    "run_all_trackers", "remap_gt_to_tracker_space", "trajectory_shape_stats",
 ]
