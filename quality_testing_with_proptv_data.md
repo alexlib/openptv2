@@ -51,6 +51,19 @@ To test tracking continuity across longer time horizons, a 30-frame synthetic da
 | **3D Kalman-Hungarian** | `quality_3d_tracking.py` | **535** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **1,416.89 ms** | Constant-acceleration 9D Kalman filter with adaptive innovation ellipsoid gating. |
 | **proPTV (Predictive GMM)** | `proptv_tracking.py` | **507** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **54,754.07 ms** (~55 s) | Probabilistic Gaussian Mixture Model basis smoothing. |
 
+### 3. **Benchmark Tracking Parameters**
+
+The benchmark on the `500_30` Rayleigh-Bénard Convection dataset ($V = [0,1]^3$, 500 particles/frame) used the following physical parameter configurations across all plugins:
+
+| Tracker Plugin | Parameter | Configured Value | Description |
+| :--- | :--- | :---: | :--- |
+| **`Cython3DTracker`** (`cython_3d_tracking.py`) | `v_max`<br>`a_max`<br>`dt` | `0.015`<br>`0.010`<br>`1.0` | Max displacement per frame<br>Max acceleration vector magnitude<br>Time step delta |
+| **`CythonEpipolarTracker`** (`cython_epipolar_tracking.py`) | `dvc`<br>`dacc`<br>`alfa` | `0.015`<br>`0.010`<br>`0.1` | Velocity search threshold (mm)<br>Acceleration threshold (mm)<br>Acceleration penalty weight |
+| **`Fast3DSmoothTracker`** (`fast_3d_smooth_tracking.py`) | `v_max`<br>`dacc`<br>`smooth_window` | `0.015`<br>`0.010`<br>`5` | Max search radius<br>Max allowable acceleration fluctuation<br>Savitzky-Golay polynomial window size |
+| **`MyPTV3DTracker`** (`myptv_3d_tracking.py`) | `v_max`<br>`a_max`<br>`max_gap` | `0.015`<br>`0.010`<br>`2` | Candidate velocity gating<br>Acceleration threshold<br>Maximum frame gap bridging length |
+| **`Quality3DTracker`** (`quality_3d_tracking.py`) | `v_max`<br>`a_max`<br>`process_noise_acc`<br>`meas_noise_pos` | `0.015`<br>`0.010`<br>`1.0`<br>`1e-4` | Max displacement per frame<br>Max acceleration bound<br>Kalman Filter process noise variance $\sigma_a^2$<br>Kalman Filter position measurement noise $\sigma_r^2$ |
+| **`ProPTVTracker`** (`proptv_tracking.py`) | `maxvel`<br>`angle`<br>`t_init`<br>`Vmin`<br>`Vmax` | `0.015`<br>`60.0°`<br>`3`<br>`[0,0,0]`<br>`[1,1,1]` | Max velocity bound per step<br>Max turning angle trajectory divergence<br>Min trajectory length initialization<br>Domain lower bound box<br>Domain upper bound box |
+
 ---
 
 ## 🔍 Root Cause Analysis & Fix for 3D Kalman-Hungarian Tracker
