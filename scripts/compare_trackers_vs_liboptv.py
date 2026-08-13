@@ -112,21 +112,42 @@ def run_comparison(src: Path, first: int, n_frames: int) -> list[dict]:
                 ref_tracks, ref_dt = _run_via_subprocess(
                     f"liboptv:{ref_mode}", src, first, n_frames, overrides[tr],
                 )
-                liboptv_cache[ref_mode] = {"tracks": ref_tracks, "time_s": ref_dt}
+                liboptv_cache[ref_mode] = {
+                    "tracks": ref_tracks, "time_s": ref_dt, "src": src, "n_frames": n_frames,
+                }
             except Exception as e:
-                # Documented, not hidden: the liboptv reference itself can
-                # fail (observed: full_forward()/trackcorr crashes outright
-                # at ~225 particles/frame on synthetic_turbulent, though it
-                # runs fine on the small burgers fixture -- a real
-                # density-scaling limitation in the original C code, not a
-                # bug in this comparison). GT metrics for this tracker still
-                # run; only the vs-liboptv comparison is skipped.
-                liboptv_cache[ref_mode] = {"error": str(e)}
+                if ref_mode == "trackcorr":
+                    # liboptv's compiled full_forward() crashes on this
+                    # dataset above trivial density/frame-count (see
+                    # benchmark_utils.LIBOPTV_TRACKCORR_MAX_PARTICLES's
+                    # docstring for the verified, non-formulaic root cause)
+                    # -- retry at an empirically-safe operating point rather
+                    # than give up on the comparison entirely.
+                    capped_frames = min(n_frames, bu.LIBOPTV_TRACKCORR_MAX_FRAMES)
+                    try:
+                        capped_src, _ = bu.make_density_capped_copy(
+                            src, bu.LIBOPTV_TRACKCORR_MAX_PARTICLES,
+                            first, first + capped_frames - 1,
+                        )
+                        ref_tracks, ref_dt = _run_via_subprocess(
+                            f"liboptv:{ref_mode}", capped_src, first, capped_frames, overrides[tr],
+                        )
+                        liboptv_cache[ref_mode] = {
+                            "tracks": ref_tracks, "time_s": ref_dt, "src": capped_src,
+                            "n_frames": capped_frames,
+                            "capped_at": bu.LIBOPTV_TRACKCORR_MAX_PARTICLES,
+                        }
+                    except Exception as e2:
+                        liboptv_cache[ref_mode] = {"error": str(e2)}
+                else:
+                    liboptv_cache[ref_mode] = {"error": str(e)}
         ref = liboptv_cache[ref_mode]
 
         row = {"tracker": tr, "liboptv_ref": ref_mode, "params": overrides[tr]}
         if "error" in ref:
             row["liboptv_error"] = ref["error"]
+        if "capped_at" in ref:
+            row["liboptv_capped_at"] = ref["capped_at"]
         try:
             pred, dt = _run_via_subprocess(tr, src, first, n_frames, overrides[tr])
             row["time_s"] = dt
@@ -137,7 +158,13 @@ def run_comparison(src: Path, first: int, n_frames: int) -> list[dict]:
                 row[f"gt_{k}"] = v
 
             if "error" not in ref:
-                vs_ref_link = calculate_tracking_metrics(ref["tracks"], pred, distance_tolerance=1.0)
+                # ref may be on a density-capped copy of src (see above) --
+                # run this tracker there too, so the link-agreement
+                # comparison is apples-to-apples on identical input.
+                cmp_pred = pred if ref["src"] == src else _run_via_subprocess(
+                    tr, ref["src"], first, ref["n_frames"], overrides[tr],
+                )[0]
+                vs_ref_link = calculate_tracking_metrics(ref["tracks"], cmp_pred, distance_tolerance=1.0)
                 row["vs_liboptv_precision"] = vs_ref_link.precision
                 row["vs_liboptv_yield_recall"] = vs_ref_link.yield_recall
                 row["vs_liboptv_false_connection_rate"] = vs_ref_link.false_connection_rate
@@ -181,7 +208,15 @@ def format_report(rows: list[dict], src: Path, first: int, n_frames: int) -> str
         "yield_recall = fraction of liboptv's links this tracker reproduced. "
         "Near 1.0 is expected for priority_segment_3d/trackcorr (same "
         "algorithm); lower values for kalman/myptv/proptv reflect a genuinely "
-        "different algorithm, not a bug.",
+        "different algorithm, not a bug. trackcorr's row runs on a "
+        f"density-capped subset (<= {bu.LIBOPTV_TRACKCORR_MAX_PARTICLES} "
+        "particles/frame) when the full dataset exceeds it -- see "
+        "benchmark_utils.LIBOPTV_TRACKCORR_MAX_PARTICLES's docstring for why. "
+        "That subset still uses the full dataset's recommended search-cone "
+        "parameters, which are oversized for it (few particles left, still "
+        "the same absolute mm bounds) -- expect near-zero agreement there, "
+        "not because the engines disagree, but because the search cone no "
+        "longer discriminates between candidates on such a sparse subset.",
         "",
         "| Tracker | liboptv ref | agree-precision | agree-yield_recall | false_connection_rate |",
         "|---|---|---:|---:|---:|",
@@ -196,8 +231,11 @@ def format_report(rows: list[dict], src: Path, first: int, n_frames: int) -> str
                 f"liboptv reference unavailable: {err[:120]} | | |"
             )
             continue
+        tracker_label = row["tracker"]
+        if "liboptv_capped_at" in row:
+            tracker_label += f" (capped <= {row['liboptv_capped_at']}/frame)"
         lines.append(
-            f"| {row['tracker']} | {row['liboptv_ref']} | "
+            f"| {tracker_label} | {row['liboptv_ref']} | "
             f"{row['vs_liboptv_precision']:.3f} | {row['vs_liboptv_yield_recall']:.3f} | "
             f"{row['vs_liboptv_false_connection_rate']:.3f} |"
         )

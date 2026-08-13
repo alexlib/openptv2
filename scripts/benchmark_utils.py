@@ -121,6 +121,87 @@ def _isolate_run_dir(src: Path = SRC) -> tuple[Path, Path]:
     return run_dir, yaml_run
 
 
+# liboptv's compiled optv==0.3.2 Tracker.full_forward() (the trackcorr/2D+3D
+# engine) crashes on synthetic_turbulent above trivial density. Root cause,
+# confirmed by reading the generated Cython C: optv.tracker.Tracker.__init__
+# calls the underlying C tr_new(..., TR_BUFSPACE, MAX_TARGETS, ...) with
+# compile-time constants baked into the compiled wheel -- not something a
+# caller can configure, and not fixed in 0.3.2, the latest PyPI release.
+# full_forward_3d() (fast3d) does not go through this path and is unaffected
+# at any density tested (up to 225 particles/frame, full 30-frame range).
+#
+# The exact crash boundary is NOT a clean function of particle count or
+# frame count alone: e.g. (3 particles/frame, 5 frames) reliably succeeds,
+# but (3, 8), (4, 5), and (2, 10) all crash. Our density-capping (below)
+# truncates each frame to its first N rows independently, which breaks
+# temporal coherence between frames (frame-to-frame "particle 0" isn't the
+# same physical particle) -- real trajectory data's natural smoothness
+# normally keeps liboptv's internal candidate/correspondence buffers small;
+# arbitrary, temporally-incoherent points don't get that for free, and
+# appear to trigger the same overflow at much lower counts than real data
+# would. This is why the burgers fixture (~5 particles/frame, REAL coherent
+# trajectories) has always been safe for trackcorr parity testing, while an
+# artificially truncated slice of synthetic_turbulent at a similar particle
+# count is not reliably safe -- it is capturing the same bug, just via data
+# that doesn't have burgers' natural coherence protecting it.
+#
+# These two values are an empirically verified, but non-general, safe
+# operating point -- not a formula. Treat a crash even at these values as
+# expected on some frame ranges/datasets, not a bug in this module.
+LIBOPTV_TRACKCORR_MAX_PARTICLES = 3
+LIBOPTV_TRACKCORR_MAX_FRAMES = 5
+
+
+def make_density_capped_copy(
+    src: Path, max_particles: int, first: int, last: int,
+) -> tuple[Path, Path]:
+    """Isolated copy of `src` with every frame's rt_is.#/*_targets truncated
+    to at most `max_particles`, index-remapped consistently so every
+    rt_is<->target cross-reference stays valid. Needed to get liboptv's
+    full_forward() to run at all above LIBOPTV_TRACKCORR_MAX_PARTICLES (see
+    its docstring) -- both the openptv2 tracker and the liboptv reference
+    must run on the SAME capped copy for a trajectory-by-trajectory
+    comparison to mean anything.
+    """
+    run_dir, yaml_run = _isolate_run_dir(src)
+    num_cams = len(list((run_dir / "cal").glob("*.ori")))
+    for fn in range(first, last + 1):
+        rt_path = run_dir / "res" / f"rt_is.{fn}"
+        if not rt_path.exists():
+            continue
+        lines = rt_path.read_text().splitlines()
+        n = int(lines[0])
+        rows = [line.split() for line in lines[1 : 1 + n]][:max_particles]
+
+        cam_referenced_ids: list[dict[int, None]] = [{} for _ in range(num_cams)]
+        for row in rows:
+            for c in range(num_cams):
+                idx = int(row[4 + c])
+                if idx >= 0:
+                    cam_referenced_ids[c].setdefault(idx, None)
+
+        cam_id_maps: list[dict[int, int]] = []
+        for c in range(num_cams):
+            tpath = run_dir / "img" / f"cam{c + 1}.{fn}_targets"
+            tlines = tpath.read_text().splitlines()
+            old_ids = sorted(cam_referenced_ids[c])
+            id_map = {old: new for new, old in enumerate(old_ids)}
+            kept = [tlines[1 + old] for old in old_ids]
+            tpath.write_text(f"{len(kept)}\n" + "\n".join(kept) + ("\n" if kept else ""))
+            cam_id_maps.append(id_map)
+
+        new_rows = []
+        for row in rows:
+            new_row = list(row)
+            for c in range(num_cams):
+                idx = int(row[4 + c])
+                new_row[4 + c] = str(cam_id_maps[c][idx]) if idx >= 0 else "-1"
+            new_rows.append(" ".join(new_row))
+        rt_path.write_text(f"{len(new_rows)}\n" + "\n".join(new_rows) + ("\n" if new_rows else ""))
+
+    return run_dir, yaml_run
+
+
 def run_single_tracker(
     tracker: str,
     track_overrides: dict | None = None,
@@ -195,8 +276,8 @@ def run_liboptv_tracker(
             cal_bases.append(base)
 
         spar = SequenceParams(num_cams=num_cams)
-        spar.set_first(spar_py.get_first())
-        spar.set_last(spar_py.get_last())
+        spar.set_first(first)
+        spar.set_last(first + n_frames - 1)
         for i, short_name in enumerate(pm.get_target_filenames()):
             spar.set_img_base_name(i, str(Path(short_name).resolve()) + ".")
 
