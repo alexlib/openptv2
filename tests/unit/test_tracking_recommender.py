@@ -117,6 +117,35 @@ def test_recommend_suggests_params():
         assert rec.suggested_params["dvxmax"] > 0
 
 
+def test_suggest_params_margin_not_clamped_back_to_raw_p95():
+    """Regression for a real bug: the mean_interparticle_distance safety
+    clamp used to trigger at 0.8x spacing, which silently clamped the
+    margin-widened dvxmax right back down to roughly the raw (too-tight)
+    p95 displacement value -- on test_data/synthetic_turbulent this
+    left priority_segment_3d/kalman_hungarian_3d/nearest_hungarian_3d with
+    mean trajectory length as low as 1 frame despite the margin fix, because
+    the clamp fired every time. The clamp should only fire well above one
+    mean-spacing multiple, not routinely undo the margin.
+    """
+    from openptv2.tracking_recommender import DatasetStats, _suggest_params
+    from openptv2.tracking_registry import TRACKER_REGISTRY
+
+    stats = DatasetStats()
+    stats.percentiles_displacement = (1.0, 1.5, 1.858)  # p95 = 1.858, like synthetic_turbulent
+    stats.max_displacement = 1.858
+    stats.mean_interparticle_distance = 2.788  # also like synthetic_turbulent
+
+    params = _suggest_params(TRACKER_REGISTRY["priority_segment_3d"], stats)
+
+    # Old formula: 1.858 * 1.2 = 2.23, then clamped to 2.788 * 0.8 = 2.23
+    # (both land at ~2.23 -- the clamp masked the margin entirely).
+    # New formula: 1.858 * 3.0 = 5.57, clamped only above 2.788 * 2.5 = 6.97,
+    # so the margin actually takes effect here.
+    assert params["dvxmax"] > 4.0, params
+    assert params["dvxmax"] == pytest.approx(1.858 * 3.0, rel=1e-6)
+    assert params["dacc"] == params["dvxmax"]  # capped to the same bound, not a separate inflated value
+
+
 def test_print_recommendation():
     """Verify print_recommendation returns a formatted string."""
     rec = Recommendation(

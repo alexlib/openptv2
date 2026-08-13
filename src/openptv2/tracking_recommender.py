@@ -343,14 +343,25 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
     cone straight into the tracker (observed: large enough to crash the C
     tracker outright). The 95th percentile is still a generous bound, just
     not dictated by the single worst mismatch in the dataset.
+
+    Margin calibrated empirically (scripts/tune_tracker_params.py, a grid
+    sweep over dv/dacc/angle on test_data/synthetic_turbulent), not derived
+    analytically: the previous 1.2x displacement margin with a SEPARATE
+    p95_acceleration*1.2 dacc measurably starved priority_segment_3d,
+    kalman_hungarian_3d, and nearest_hungarian_3d of recall (mean trajectory
+    length as low as 1 frame on some trackers) -- the p95_acceleration
+    estimate in particular compounds nearest-neighbour-mismatch noise across
+    THREE frames (a second difference), so it runs even more inflated than
+    p95_displacement. Across all three trackers swept, capping dacc at the
+    SAME value as the (now wider) displacement bound outperformed the
+    separate, larger acceleration-derived value.
     """
     params: dict[str, Any] = {}
 
     p95_displacement = stats.percentiles_displacement[2] or stats.max_displacement
-    p95_acceleration = stats.percentile95_acceleration or stats.max_acceleration
 
     if p95_displacement > 0:
-        margin = 1.2  # 20% headroom
+        margin = 3.0  # empirically calibrated, see docstring
         half_window = p95_displacement * margin
         params["dvxmin"] = -half_window
         params["dvxmax"] = half_window
@@ -358,29 +369,41 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
         params["dvymax"] = half_window
         params["dvzmin"] = -half_window
         params["dvzmax"] = half_window
+        # Not derived from p95_acceleration -- see docstring.
+        params["dacc"] = half_window
 
-    if p95_acceleration > 0:
-        params["dacc"] = p95_acceleration * 1.2
-    elif p95_displacement > 0:
-        params["dacc"] = p95_displacement * 0.3
-
+    # Cap only against a genuinely extreme cone (several times the mean
+    # particle spacing), not "wider than a single mean spacing": the
+    # previous 0.8x cap was clamping DOWN into exactly the range the sweep
+    # (see this function's docstring) showed starved these trackers of
+    # recall -- assignment is cost/Hungarian-based, not raw nearest-
+    # neighbour, so ambiguity near typical spacing is exactly what the
+    # optimal assignment step is for, not something to avoid by shrinking
+    # the search cone first.
     if stats.mean_interparticle_distance > 0:
-        if "dvxmax" in params and params["dvxmax"] > stats.mean_interparticle_distance * 0.8:
-            params["dvxmax"] = stats.mean_interparticle_distance * 0.8
-            params["dvxmin"] = -stats.mean_interparticle_distance * 0.8
-            params["dvymax"] = stats.mean_interparticle_distance * 0.8
-            params["dvymin"] = -stats.mean_interparticle_distance * 0.8
-            params["dvzmax"] = stats.mean_interparticle_distance * 0.8
-            params["dvzmin"] = -stats.mean_interparticle_distance * 0.8
+        extreme_cap = stats.mean_interparticle_distance * 2.5
+        if "dvxmax" in params and params["dvxmax"] > extreme_cap:
+            params["dvxmax"] = extreme_cap
+            params["dvxmin"] = -extreme_cap
+            params["dvymax"] = extreme_cap
+            params["dvymin"] = -extreme_cap
+            params["dvzmax"] = extreme_cap
+            params["dvzmin"] = -extreme_cap
+            params["dacc"] = min(params["dacc"], extreme_cap)
 
     # Tracker-specific params
     if info.name == "nearest_hungarian_3d":
         if p95_displacement > 0:
-            params["v_max"] = p95_displacement * 1.5
-            params["a_max"] = params["v_max"] * 2.0
+            params["v_max"] = params["dvxmax"]
+            params["a_max"] = params["dacc"]
+        # This tracker's angle filter is a hard binary reject (not a soft
+        # cost term like kalman_hungarian_3d's), so an overly tight bound
+        # throws away good matches rather than just de-weighting them --
+        # swept best at effectively unrestricted (200 gon = 180 deg).
+        params["angle"] = 200.0
     elif info.name == "predictive_gmm_3d":
         if p95_displacement > 0:
-            params["maxvel"] = p95_displacement * 1.5
+            params["maxvel"] = params["dvxmax"]
 
     return params
 
