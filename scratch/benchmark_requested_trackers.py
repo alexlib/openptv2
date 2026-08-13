@@ -34,11 +34,11 @@ if os.path.exists(origin_hdf5_30):
 gt_p0 = np.array([tr[0, 1:4] for tr in gt_tracks])
 
 requested_trackers = {
-    "Cython Fast 3D": Cython3DTracker(v_max=0.015, a_max=0.010, dt=1.0),
-    "Cython Epipolar": CythonEpipolarTracker(dvxmin=-0.015, dvxmax=0.015, dacc=0.010, dt=1.0),
+    "OpenPTV Epipolar": CythonEpipolarTracker(dvxmin=-0.015, dvxmax=0.015, dacc=0.010, dt=1.0),
+    "OpenPTV Fast 3D": Cython3DTracker(v_max=0.015, a_max=0.010, dt=1.0),
     "MyPTV 3D": MyPTV3DTracker(v_max=0.015, a_max=0.010, max_gap=2, dt=1.0),
     "MyPTV 2D": MyPTV2DTracker(max_pixel_disp=0.015, max_gap=2),
-    "Fast 3D Smooth": Fast3DSmoothTracker(v_max=0.015, dacc=0.010, smooth_window=5, dt=1.0),
+    "OpenPTV2 3D Smooth": Fast3DSmoothTracker(v_max=0.015, dacc=0.010, smooth_window=5, dt=1.0),
 }
 
 results = {}
@@ -83,7 +83,7 @@ names = list(results.keys())
 pmps = [results[n]["pmp"] for n in names]
 times = [results[n]["time_ms"] for n in names]
 
-colors = ['#1f77b4', '#17becf', '#ff7f0e', '#bcbd22', '#2ca02c']
+colors = ['#17becf', '#1f77b4', '#ff7f0e', '#bcbd22', '#2ca02c']
 
 axes[0].barh(names, pmps, color=colors)
 axes[0].set_xlim(0, 105)

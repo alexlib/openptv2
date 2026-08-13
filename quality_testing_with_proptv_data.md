@@ -44,11 +44,11 @@ To test tracking performance across longer time horizons, the benchmark was eval
 
 | Tracker Plugin | Registered Module | Reconstructed Tracks | Matched % (PMP) | Mean 3D Error | Execution Time | Key Engine Characteristics |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Cython Epipolar** | `cython_epipolar_tracking.py` | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **81.08 ms** | **Fastest Engine!** Multi-camera epipolar forward correlation loop in compiled Cython. |
-| **Cython Fast 3D** | `cython_3d_tracking.py` | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **93.38 ms** | Compiled Cython C memoryview acceleration-priority segment cascade. |
-| **MyPTV 3D** | `myptv_3d_tracking.py` | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **117.57 ms** | Polynomial kinematic velocity prediction + distance/velocity C++ Hungarian matching. |
-| **MyPTV 2D** | `myptv_2d_tracking.py` | **502** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **187.83 ms** | 2D image-space displacement search bounds + linear sum assignment matching per camera. |
-| **Fast 3D Smooth** | `fast_3d_smooth_tracking.py` | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **921.94 ms** | Savitzky-Golay smoothed trajectory extrapolation + C++ Hungarian matching. |
+| **OpenPTV Epipolar** | `cython_epipolar_tracking.py` | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **116.01 ms** | Multi-camera epipolar forward correlation loop in compiled Cython. |
+| **OpenPTV Fast 3D** | `cython_3d_tracking.py` | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **88.54 ms** | **Fastest Engine!** Compiled Cython C memoryview acceleration-priority segment cascade. |
+| **MyPTV 3D** | `myptv_3d_tracking.py` | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **112.32 ms** | Polynomial kinematic velocity prediction + distance/velocity C++ Hungarian matching. |
+| **MyPTV 2D** | `myptv_2d_tracking.py` | **502** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **162.00 ms** | 2D image-space displacement search bounds + linear sum assignment matching per camera. |
+| **OpenPTV2 3D Smooth** | `fast_3d_smooth_tracking.py` | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **811.66 ms** | Savitzky-Golay smoothed trajectory extrapolation + C++ Hungarian matching. |
 | *(Optional)* **proPTV** | `proptv_tracking.py` | 507 / 500 | 100.00% | $0.0 \times 10^{-6}$ | ~55,000 ms | Optional probabilistic GMM basis smoothing (computationally heavy). |
 
 > [!NOTE]
@@ -60,11 +60,11 @@ To test tracking performance across longer time horizons, the benchmark was eval
 
 | Tracker Plugin | Parameter | Value Used | Description |
 | :--- | :--- | :---: | :--- |
-| **`Cython Fast 3D`** (`cython_3d_tracking.py`) | `v_max`<br>`a_max`<br>`dt` | `0.015`<br>`0.010`<br>`1.0` | Maximum particle displacement per frame<br>Maximum acceleration vector magnitude<br>Time step delta ($\Delta t$) |
-| **`Cython Epipolar`** (`cython_epipolar_tracking.py`) | `dvxmin`, `dvxmax`<br>`dvymin`, `dvymax`<br>`dvzmin`, `dvzmax`<br>`dacc`<br>`dt` | `[-0.015, 0.015]`<br>`[-0.015, 0.015]`<br>`[-0.015, 0.015]`<br>`0.010`<br>`1.0` | Velocity search range along X axis<br>Velocity search range along Y axis<br>Velocity search range along Z axis<br>Acceleration threshold bound<br>Time step delta |
-| **`MyPTV 3D`** (`myptv_3d_tracking.py`) | `v_max`<br>`a_max`<br>`max_gap`<br>`dt` | `0.015`<br>`0.010`<br>`2`<br>`1.0` | Candidate velocity gating threshold<br>Acceleration threshold bound<br>Maximum frame occlusion gap bridging length<br>Time step delta |
+| **`OpenPTV Fast 3D`** (`cython_3d_tracking.py`) | `v_max`<br>`a_max`<br>`dt` | `0.015`<br>`0.010`<br>`1.0` | Maximum particle displacement per frame<br>Maximum acceleration vector magnitude<br>Time step delta ($\Delta t$) |
+| **`OpenPTV Epipolar`** (`cython_epipolar_tracking.py`) | `dvxmin`, `dvxmax`<br>`dvymin`, `dvymax`<br>`dvzmin`, `dvzmax`<br>`dacc`<br>`dt` | `[-0.015, 0.015]`<br>`[-0.015, 0.015]`<br>`[-0.015, 0.015]`<br>`0.010`<br>`1.0` | Velocity search range along X axis<br>Velocity search range along Y axis<br>Velocity search range along Z axis<br>Acceleration threshold bound<br>Time step delta ($\Delta t$) |
+| **`MyPTV 3D`** (`myptv_3d_tracking.py`) | `v_max`<br>`a_max`<br>`max_gap`<br>`dt` | `0.015`<br>`0.010`<br>`2`<br>`1.0` | Candidate velocity gating threshold<br>Acceleration threshold bound<br>Maximum frame occlusion gap bridging length<br>Time step delta ($\Delta t$) |
 | **`MyPTV 2D`** (`myptv_2d_tracking.py`) | `max_pixel_disp`<br>`max_gap` | `0.015`<br>`2` | Maximum 2D image pixel displacement search bound<br>Maximum frame gap bridging length |
-| **`Fast 3D Smooth`** (`fast_3d_smooth_tracking.py`) | `v_max`<br>`dacc`<br>`smooth_window`<br>`dt` | `0.015`<br>`0.010`<br>`5`<br>`1.0` | Maximum search radius<br>Maximum allowable acceleration fluctuation<br>Savitzky-Golay polynomial window size<br>Time step delta |
+| **`OpenPTV2 3D Smooth`** (`fast_3d_smooth_tracking.py`) | `v_max`<br>`dacc`<br>`smooth_window`<br>`dt` | `0.015`<br>`0.010`<br>`5`<br>`1.0` | Maximum search radius<br>Maximum allowable acceleration fluctuation<br>Savitzky-Golay polynomial window size<br>Time step delta ($\Delta t$) |
 | *(Optional)* **`proPTV`** (`proptv_tracking.py`) | `maxvel`<br>`angle`<br>`t_init`<br>`Vmin`<br>`Vmax` | `0.015`<br>`60.0°`<br>`3`<br>`[0,0,0]`<br>`[1,1,1]` | Max velocity bound per step<br>Max turning angle trajectory divergence<br>Min trajectory length initialization<br>Domain lower bound box<br>Domain upper bound box |
 
 ---
