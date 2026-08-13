@@ -40,14 +40,16 @@ The figure below shows the simulated 3D flow field and thermal plume convective 
 
 To test tracking continuity across longer time horizons, a 30-frame synthetic dataset was generated from the proPTV DNS netCDF input series (`PARTICLE_00540000.nc` to `PARTICLE_00583500.nc`):
 
-![OpenPTV2 Multi-Tracker Benchmark 30 Frames](scratch/benchmark_30_frames.png)
+![OpenPTV2 Multi-Tracker Benchmark 30 Frames](scratch/all_modular_plugins_30_frames.png)
 
-| Tracker Engine | Reconstructed Tracks | Matched % (PMP) | Mean 3D Position Error | Execution Time |
-| :--- | :--- | :--- | :--- | :--- |
-| **MyPTV 3D Kinematic** | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **138.28 ms** |
-| **Fast 3D Smooth (SG)** | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **199.51 ms** |
-| **3D Kalman-Hungarian** | **535** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **1,878.14 ms** |
-| **proPTV (Predictive GMM)** | **507** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **60,454.31 ms** (~60 s) |
+| Tracker Engine | Registered Module / Plugin | Reconstructed Tracks | Matched % (PMP) | Mean 3D Position Error | Execution Time | Key Implementation Features |
+| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
+| **Cython 3D Segment Priority** | `cython_3d_tracking.py` | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **83.33 ms** | **Fastest Engine!** Compiled Cython `track3d_loop_fast` memoryview kernel with 4-level acceleration cascade. |
+| **Cython Epipolar Tracker** | `cython_epipolar_tracking.py` | — | — | — | — | **Multi-Camera Epipolar!** Wraps compiled Cython `trackcorr_c_loop` for multi-camera epipolar target correlation matching. |
+| **MyPTV 3D / Nearest Hungarian** | `myptv_3d_tracking.py` | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **136.69 ms** | Polynomial kinematic prediction + distance/velocity C++ Hungarian matching. |
+| **Fast 3D Smooth (SG)** | `fast_3d_smooth_tracking.py` | **500** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **169.36 ms** | Savitzky-Golay smoothed trajectory extrapolation + C++ Hungarian matching. |
+| **3D Kalman-Hungarian** | `quality_3d_tracking.py` | **535** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **1,416.89 ms** | Constant-acceleration 9D Kalman filter with adaptive innovation ellipsoid gating. |
+| **proPTV (Predictive GMM)** | `proptv_tracking.py` | **507** / 500 | **100.00%** | **$0.0 \times 10^{-6}$** | **54,754.07 ms** (~55 s) | Probabilistic Gaussian Mixture Model basis smoothing. |
 
 ---
 
