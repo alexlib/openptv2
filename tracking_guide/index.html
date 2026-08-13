@@ -1790,7 +1790,7 @@
 <h2 id="2-parameter-reference-parametersyaml">2. Parameter Reference (<code>parameters.yaml</code>)<a class="headerlink" href="#2-parameter-reference-parametersyaml" title="Permanent link">&para;</a></h2>
 <p>Tracking configuration is stored under the <code>track:</code> section of your <code>parameters.yaml</code> file (and in <code>plugins:</code> for algorithm selection).</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">track</span><span class="p">:</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;full_multipass&quot;</span><span class="w"> </span><span class="c1"># Preset: &quot;fast_3d&quot;, &quot;standard_forward&quot;, &quot;full_multipass&quot;, or &quot;custom_plugin&quot;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;full_multipass&quot;</span><span class="w"> </span><span class="c1"># Preset: &quot;priority_segment_3d&quot;, &quot;standard_forward&quot;, &quot;full_multipass&quot;, or &quot;custom_plugin&quot;</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">dvxmin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-10.0</span><span class="w">      </span><span class="c1"># Min velocity search step in X [mm/frame]</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">dvxmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span><span class="w">       </span><span class="c1"># Max velocity search step in X [mm/frame]</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">dvymin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-10.0</span><span class="w">      </span><span class="c1"># Min velocity search step in Y [mm/frame]</span>
@@ -1819,7 +1819,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><strong><code>fast_3d</code></strong></td>
+<td style="text-align: left;"><strong><code>priority_segment_3d</code></strong></td>
 <td style="text-align: left;">Fast 3D-Only (No added particles)</td>
 <td style="text-align: left;">Single-pass forward tracking (<code>track_mode=1</code>). Uses only 3D coordinates from <code>rt_is.#</code>.</td>
 <td style="text-align: left;">Quick sanity checks, low density / low noise data.</td>
@@ -1859,7 +1859,7 @@
 <td style="text-align: left;"><strong><code>preset</code></strong></td>
 <td style="text-align: left;"><code>str</code></td>
 <td style="text-align: left;"><code>"full_multipass"</code></td>
-<td style="text-align: left;">Active tracking strategy preset (<code>fast_3d</code>, <code>standard_forward</code>, <code>full_multipass</code>, <code>custom_plugin</code>).</td>
+<td style="text-align: left;">Active tracking strategy preset (<code>priority_segment_3d</code>, <code>standard_forward</code>, <code>full_multipass</code>, <code>custom_plugin</code>).</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong><code>dvxmin</code> / <code>dvxmax</code></strong></td>
@@ -1960,7 +1960,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><strong><code>fast_3d</code></strong></td>
+<td style="text-align: left;"><strong><code>priority_segment_3d</code></strong></td>
 <td style="text-align: left;">Fast 3D-Only (<code>track_mode=1</code>)</td>
 <td style="text-align: center;">14,010</td>
 <td style="text-align: center;">4,540</td>
@@ -1989,7 +1989,7 @@
 </tbody>
 </table>
 <h4 id="trajectory-seed-origin-breakdown-frame-1-vs-mid-sequence-entry">Trajectory Seed Origin Breakdown (Frame 1 vs. Mid-Sequence Entry)<a class="headerlink" href="#trajectory-seed-origin-breakdown-frame-1-vs-mid-sequence-entry" title="Permanent link">&para;</a></h4>
-<p>To understand why <code>fast_3d</code> shows a higher raw <em>overall</em> mean length than multi-pass tracking, we must inspect trajectories by their <strong>point of origin</strong>:</p>
+<p>To understand why <code>priority_segment_3d</code> shows a higher raw <em>overall</em> mean length than multi-pass tracking, we must inspect trajectories by their <strong>point of origin</strong>:</p>
 <table>
 <thead>
 <tr>
@@ -2003,7 +2003,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><strong><code>fast_3d</code></strong></td>
+<td style="text-align: left;"><strong><code>priority_segment_3d</code></strong></td>
 <td style="text-align: center;">4,540</td>
 <td style="text-align: center;">1,846</td>
 <td style="text-align: center;"><strong>6.80 frames</strong></td>
@@ -2037,15 +2037,15 @@
 <li>Comparing long-term trajectories (Frame 1 seeds): <code>full_multipass</code> increases mean length from <strong>6.69 to 6.72 frames</strong> over forward-only tracking by repairing broken tracks during backward pass (<code>full_backward</code>).</li>
 <li><strong>Pass 3 Reciprocity Pruning</strong>:</li>
 <li><code>full_multipass</code> severs <strong>36 false unidirectional track fragments</strong> (reducing mid-entry count from 3,073 to 3,037) while increasing valid total links (from 13,631 to 13,667).</li>
-<li><strong>Preventing 3D "Cross-Over" Jumps in <code>fast_3d</code></strong>:</li>
-<li><code>fast_3d</code> tracks purely by 3D distance without 2D epipolar or candidate reciprocity checks. In dense regions, it can falsely "cross over" adjacent particles, artificially stitching two distinct tracks together. <code>full_multipass</code> enforces 2D+3D candidate reciprocity, ensuring 100% physical validity.</li>
+<li><strong>Preventing 3D "Cross-Over" Jumps in <code>priority_segment_3d</code></strong>:</li>
+<li><code>priority_segment_3d</code> tracks purely by 3D distance without 2D epipolar or candidate reciprocity checks. In dense regions, it can falsely "cross over" adjacent particles, artificially stitching two distinct tracks together. <code>full_multipass</code> enforces 2D+3D candidate reciprocity, ensuring 100% physical validity.</li>
 </ol>
 <hr />
 <h2 id="4-tracking-algorithms-plugins">4. Tracking Algorithms &amp; Plugins<a class="headerlink" href="#4-tracking-algorithms-plugins" title="Permanent link">&para;</a></h2>
 <p>OpenPTV2 supports extensible tracking algorithms selected via <code>plugins.selected_tracking</code>:</p>
 <ul>
-<li><strong><code>quality_3d_tracking</code></strong> (<code>quality_3d</code>):
-  High-accuracy Constant-Acceleration 3D Kalman Filter predictor with multi-term cost matrix (distance + velocity continuity + acceleration penalty) and Hungarian cluster assignment. Delivers <strong>98.0% precision</strong> at high speed (~178 ms/frame). See <a href="file:///C:/Users/alex/projects/openptv2/docs/quality_3d_tracking_guide.md"><strong><code>quality_3d</code> Mathematical Guide</strong></a>.</li>
+<li><strong><code>kalman_hungarian_3d</code></strong> (<code>kalman_hungarian_3d</code>):
+  High-accuracy Constant-Acceleration 3D Kalman Filter predictor with multi-term cost matrix (distance + velocity continuity + acceleration penalty) and Hungarian cluster assignment. Delivers <strong>98.0% precision</strong> at high speed (~178 ms/frame). See <a href="file:///C:/Users/alex/projects/openptv2/docs/kalman_hungarian_3d_guide.md"><strong><code>kalman_hungarian_3d</code> Mathematical Guide</strong></a>.</li>
 <li><strong><code>default</code> (<code>trackcorr</code>)</strong>:
   Standard OpenPTV Lagrangian tracking engine. Works best for 3D PTV setups with 2-4 cameras.</li>
 <li><strong><code>splitter_tracking</code></strong>:
@@ -2120,7 +2120,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><strong><code>myptv_3d_tracking</code></strong></td>
+<td style="text-align: left;"><strong><code>nearest_hungarian_3d</code></strong></td>
 <td style="text-align: left;">3D Physical Space</td>
 <td style="text-align: left;">Uses MyPTV's 3D kinematic velocity and acceleration predictor ($\mathbf{X}_{\text{pred}} = \mathbf{X}_t + \mathbf{V}_t \Delta t + \frac{1}{2}\mathbf{A}_t \Delta t^2$) coupled with SciPy Hungarian bipartite assignment (<code>scipy.optimize.linear_sum_assignment</code>) for global collision-free candidate matching and gap recovery.</td>
 </tr>
@@ -2133,18 +2133,18 @@
 </table>
 <h3 id="how-to-use">How to Use<a class="headerlink" href="#how-to-use" title="Permanent link">&para;</a></h3>
 <h4 id="1-in-the-pyptv-gui">1. In the PyPTV GUI<a class="headerlink" href="#1-in-the-pyptv-gui" title="Permanent link">&para;</a></h4>
-<p>In the <strong>Parameters</strong> dialog under <strong>Plugins</strong>, select <strong><code>myptv_3d_tracking</code></strong> or <strong><code>myptv_2d_tracking</code></strong> from the <strong>Tracking Plugin</strong> (<code>track_alg</code>) dropdown menu.</p>
+<p>In the <strong>Parameters</strong> dialog under <strong>Plugins</strong>, select <strong><code>nearest_hungarian_3d</code></strong> or <strong><code>myptv_2d_tracking</code></strong> from the <strong>Tracking Plugin</strong> (<code>track_alg</code>) dropdown menu.</p>
 <h4 id="2-in-parametersyaml">2. In <code>parameters.yaml</code><a class="headerlink" href="#2-in-parametersyaml" title="Permanent link">&para;</a></h4>
 <p>Specify the tracking plugin in your YAML configuration:
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">plugins</span><span class="p">:</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">selected_tracking</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;myptv_3d_tracking&quot;</span><span class="w">  </span><span class="c1"># or &quot;myptv_2d_tracking&quot;</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">selected_tracking</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;nearest_hungarian_3d&quot;</span><span class="w">  </span><span class="c1"># or &quot;myptv_2d_tracking&quot;</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">selected_sequence</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;default&quot;</span>
 </span></code></pre></div></p>
 <h4 id="3-in-python-cli-batch-execution">3. In Python CLI / Batch Execution<a class="headerlink" href="#3-in-python-cli-batch-execution" title="Permanent link">&para;</a></h4>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_tracking_plugin</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Run MyPTV 3D tracking plugin programmatically</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">run_tracking_plugin</span><span class="p">(</span><span class="s2">&quot;myptv_3d_tracking&quot;</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">run_tracking_plugin</span><span class="p">(</span><span class="s2">&quot;nearest_hungarian_3d&quot;</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
 <h2 id="8-developing-custom-tracking-plugins">8. Developing Custom Tracking Plugins<a class="headerlink" href="#8-developing-custom-tracking-plugins" title="Permanent link">&para;</a></h2>

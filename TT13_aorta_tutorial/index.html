@@ -1168,10 +1168,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#deduced-fast_3d-parameters-parameters_yaml" class="md-nav__link">
+  <a href="#deduced-priority_segment_3d-parameters-parameters_yaml" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Deduced fast_3d Parameters (parameters_*.yaml)
+        Deduced priority_segment_3d Parameters (parameters_*.yaml)
       
     </span>
   </a>
@@ -1363,8 +1363,8 @@ This tutorial provides a comprehensive, step-by-step guide for performing end-to
     end
 
     subgraph Stage3 ["Stage 3: Parameter Selection via MyPTV"]
-        C1 --&gt; C2["myptv_3d_tracking -&gt; Extract 3D (v, a) Kinematic Envelopes"]
-        C2 --&gt; C3["Deduce Optimal Bounds for fast_3d: dvx=[-22,30], dvy=[-28,33], dvz=[-38,37], dacc=30"]
+        C1 --&gt; C2["nearest_hungarian_3d -&gt; Extract 3D (v, a) Kinematic Envelopes"]
+        C2 --&gt; C3["Deduce Optimal Bounds for priority_segment_3d: dvx=[-22,30], dvy=[-28,33], dvz=[-38,37], dacc=30"]
     end
 
     subgraph Stage4 ["Stage 4: Forward-Backward Reciprocity Check"]
@@ -1408,8 +1408,8 @@ This tutorial provides a comprehensive, step-by-step guide for performing end-to
 </ul>
 <hr />
 <h2 id="3-stage-3-scientific-parameter-selection-deduction-via-myptv">3. Stage 3: Scientific Parameter Selection &amp; Deduction via MyPTV<a class="headerlink" href="#3-stage-3-scientific-parameter-selection-deduction-via-myptv" title="Permanent link">&para;</a></h2>
-<p>To determine the exact physical velocity and acceleration bounds for high-speed tracking (<code>fast_3d</code>), we execute the <strong>MyPTV 3D Kinematic Prediction Tracker (<code>myptv_3d_tracking</code>)</strong> on a sample sequence to extract the empirical velocity and acceleration distributions $(\vec{v}, \vec{a})$:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.plugins.myptv_3d_tracking</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyPTV3DTracker</span><span class="p">,</span> <span class="n">Frame</span>
+<p>To determine the exact physical velocity and acceleration bounds for high-speed tracking (<code>priority_segment_3d</code>), we execute the <strong>MyPTV 3D Kinematic Prediction Tracker (<code>nearest_hungarian_3d</code>)</strong> on a sample sequence to extract the empirical velocity and acceleration distributions $(\vec{v}, \vec{a})$:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.plugins.nearest_hungarian_3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyPTV3DTracker</span><span class="p">,</span> <span class="n">Frame</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Track 3D particles using MyPTV linear assignment predictor</span>
@@ -1433,7 +1433,7 @@ This tutorial provides a comprehensive, step-by-step guide for performing end-to
 </span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>3D Accel.   | -11.3 mm/fr²   |  0.0  mm/fr²| +13.5 mm/fr²    |  29.0 mm/frame²
 </span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>==============================================================================
 </span></code></pre></div>
-<h3 id="deduced-fast_3d-parameters-parameters_yaml">Deduced <code>fast_3d</code> Parameters (<code>parameters_*.yaml</code>)<a class="headerlink" href="#deduced-fast_3d-parameters-parameters_yaml" title="Permanent link">&para;</a></h3>
+<h3 id="deduced-priority_segment_3d-parameters-parameters_yaml">Deduced <code>priority_segment_3d</code> Parameters (<code>parameters_*.yaml</code>)<a class="headerlink" href="#deduced-priority_segment_3d-parameters-parameters_yaml" title="Permanent link">&para;</a></h3>
 <p>Based on the empirical max envelope above, we configure the compiled Cython tracker parameters:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">track</span><span class="p">:</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">angle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">270.0</span>

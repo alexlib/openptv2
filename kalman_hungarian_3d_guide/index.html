@@ -23,7 +23,7 @@
     
     
       
-        <title>OpenPTV2 quality_3d Tracking Engine & Mathematical Guide - OpenPTV2 Documentation</title>
+        <title>OpenPTV2 kalman_hungarian_3d Tracking Engine & Mathematical Guide - OpenPTV2 Documentation</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#openptv2-quality_3d-tracking-engine-mathematical-guide" class="md-skip">
+        <a href="#openptv2-kalman_hungarian_3d-tracking-engine-mathematical-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              OpenPTV2 quality_3d Tracking Engine &amp; Mathematical Guide
+              OpenPTV2 kalman_hungarian_3d Tracking Engine &amp; Mathematical Guide
             
           </span>
         </div>
@@ -1297,11 +1297,11 @@
   
 
 
-<h1 id="openptv2-quality_3d-tracking-engine-mathematical-guide">OpenPTV2 <code>quality_3d</code> Tracking Engine &amp; Mathematical Guide<a class="headerlink" href="#openptv2-quality_3d-tracking-engine-mathematical-guide" title="Permanent link">&para;</a></h1>
-<p>This document provides a comprehensive mathematical formulation, parameter selection guide, and benchmark verification instructions for the <strong><code>quality_3d</code></strong> particle tracking engine in OpenPTV2 (<a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/quality_3d_tracking.py"><code>src/openptv2/plugins/quality_3d_tracking.py</code></a> and <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_kalman.py"><code>src/openptv2/tracking_kalman.py</code></a>).</p>
+<h1 id="openptv2-kalman_hungarian_3d-tracking-engine-mathematical-guide">OpenPTV2 <code>kalman_hungarian_3d</code> Tracking Engine &amp; Mathematical Guide<a class="headerlink" href="#openptv2-kalman_hungarian_3d-tracking-engine-mathematical-guide" title="Permanent link">&para;</a></h1>
+<p>This document provides a comprehensive mathematical formulation, parameter selection guide, and benchmark verification instructions for the <strong><code>kalman_hungarian_3d</code></strong> particle tracking engine in OpenPTV2 (<a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/kalman_hungarian_3d.py"><code>src/openptv2/plugins/kalman_hungarian_3d.py</code></a> and <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_kalman.py"><code>src/openptv2/tracking_kalman.py</code></a>).</p>
 <hr />
 <h2 id="1-overview-key-architecture">1. Overview &amp; Key Architecture<a class="headerlink" href="#1-overview-key-architecture" title="Permanent link">&para;</a></h2>
-<p><code>quality_3d</code> is OpenPTV2's high-accuracy 3D particle tracking algorithm designed for turbulent flows, high particle densities, and noisy 3D observations. It combines:</p>
+<p><code>kalman_hungarian_3d</code> is OpenPTV2's high-accuracy 3D particle tracking algorithm designed for turbulent flows, high particle densities, and noisy 3D observations. It combines:</p>
 <ol>
 <li><strong>3D Constant-Acceleration Kalman Filter Prediction</strong>: Maintains a full 9D kinematic state vector $(x, y, z, v_x, v_y, v_z, a_x, a_y, a_z)$ and error covariance $\mathbf{P}$ per trajectory.</li>
 <li><strong>Dynamic Innovation &amp; Search Window Gating</strong>: Adapts candidate search radius based on track history and kinematic velocity bounds ($v_{\text{max}}, a_{\text{max}}$).</li>
@@ -1357,10 +1357,10 @@
 <p>Candidate matching is solved per spatial cluster via bipartite graph optimal assignment (<code>scipy.optimize.linear_sum_assignment</code>), ensuring global minimum total cost and zero duplicate particle claims.</p>
 <hr />
 <h2 id="4-parameter-settings-configuration">4. Parameter Settings &amp; Configuration<a class="headerlink" href="#4-parameter-settings-configuration" title="Permanent link">&para;</a></h2>
-<p><code>quality_3d_tracking</code> parameters can be specified in <code>parameters.yaml</code> or when instantiating <code>Quality3DTracker</code>.</p>
+<p><code>kalman_hungarian_3d</code> parameters can be specified in <code>parameters.yaml</code> or when instantiating <code>Quality3DTracker</code>.</p>
 <h3 id="41-example-parametersyaml-configuration">4.1 Example <code>parameters.yaml</code> Configuration<a class="headerlink" href="#41-example-parametersyaml-configuration" title="Permanent link">&para;</a></h3>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">track</span><span class="p">:</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;quality_3d&quot;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;kalman_hungarian_3d&quot;</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">v_max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6.0</span><span class="w">             </span><span class="c1"># Maximum expected velocity displacement [mm/frame]</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">a_max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6.0</span><span class="w">             </span><span class="c1"># Maximum expected acceleration displacement [mm/frame^2]</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">max_gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w">             </span><span class="c1"># Max missing frames bridged during occlusions</span>
@@ -1369,7 +1369,7 @@
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="nt">cost_weights</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1.0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.5</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.2</span><span class="p p-Indicator">]</span><span class="w">  </span><span class="c1"># Position, velocity, and acceleration weights</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nt">plugins</span><span class="p">:</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">  </span><span class="nt">selected_tracking</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;quality_3d_tracking&quot;</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">  </span><span class="nt">selected_tracking</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;kalman_hungarian_3d&quot;</span>
 </span></code></pre></div>
 <h3 id="42-parameter-selection-guide">4.2 Parameter Selection Guide<a class="headerlink" href="#42-parameter-selection-guide" title="Permanent link">&para;</a></h3>
 <table>
@@ -1424,7 +1424,7 @@
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv<span class="w"> </span>benchmark-tracking<span class="w"> </span>--flow<span class="w"> </span>vortex<span class="w"> </span>--particles<span class="w"> </span><span class="m">1000</span><span class="w"> </span>--frames<span class="w"> </span><span class="m">20</span><span class="w"> </span>--noise<span class="w"> </span><span class="m">0</span>.05
 </span></code></pre></div>
 <h3 id="52-expected-quality-metrics">5.2 Expected Quality Metrics<a class="headerlink" href="#52-expected-quality-metrics" title="Permanent link">&para;</a></h3>
-<p>When evaluating <code>quality_3d_tracking</code> on <code>test_data/synthetic_turbulent</code> (225 particles/frame, 30 frames), you should observe results matching or exceeding:</p>
+<p>When evaluating <code>kalman_hungarian_3d</code> on <code>test_data/synthetic_turbulent</code> (225 particles/frame, 30 frames), you should observe results matching or exceeding:</p>
 <table>
 <thead>
 <tr>
@@ -1478,7 +1478,7 @@
 </table>
 <hr />
 <h2 id="6-python-api-usage-example">6. Python API Usage Example<a class="headerlink" href="#6-python-api-usage-example" title="Permanent link">&para;</a></h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.plugins.quality_3d_tracking</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quality3DTracker</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.plugins.kalman_hungarian_3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quality3DTracker</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.benchmarking.runner</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_trajectories</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>

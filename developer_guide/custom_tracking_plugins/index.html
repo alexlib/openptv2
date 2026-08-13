@@ -1314,7 +1314,7 @@
 <h2 id="1-overview-plugin-architecture">1. Overview &amp; Plugin Architecture<a class="headerlink" href="#1-overview-plugin-architecture" title="Permanent link">&para;</a></h2>
 <p>OpenPTV2 features a plugin architecture (<code>openptv2.plugins.loader</code>) that resolves custom algorithms at runtime. You can deliver custom tracking plugins in three ways:</p>
 <ol>
-<li><strong>Built-in Plugins</strong>: Shipped inside <code>src/openptv2/plugins/</code> (e.g. <code>myptv_3d_tracking</code>, <code>myptv_2d_tracking</code>, <code>splitter_tracking</code>).</li>
+<li><strong>Built-in Plugins</strong>: Shipped inside <code>src/openptv2/plugins/</code> (e.g. <code>nearest_hungarian_3d</code>, <code>myptv_2d_tracking</code>, <code>splitter_tracking</code>).</li>
 <li><strong>Experiment-Local Plugins</strong>: Dropped directly into <code>&lt;experiment&gt;/plugins/my_tracker.py</code> for dataset-specific algorithms.</li>
 <li><strong>Third-Party Packages</strong>: Distributed via <code>pyproject.toml</code> entry points (<code>openptv2.plugins</code>).</li>
 </ol>
@@ -1364,7 +1364,7 @@
 <p>Instead of requiring heavy external dependencies (GUIs, pandas, custom file formats), isolate the core mathematical logic (distance matrix calculation, kinematic prediction, bipartite matching) into pure NumPy/SciPy functions (<code>scipy.optimize.linear_sum_assignment</code>).</p>
 <hr />
 <h2 id="4-step-by-step-code-walkthrough-myptv-case-study">4. Step-by-Step Code Walkthrough (MyPTV Case Study)<a class="headerlink" href="#4-step-by-step-code-walkthrough-myptv-case-study" title="Permanent link">&para;</a></h2>
-<p>Below is a complete, annotated example based on our MyPTV 3D tracking plugin implementation (<a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/myptv_3d_tracking.py"><code>myptv_3d_tracking.py</code></a>):</p>
+<p>Below is a complete, annotated example based on our MyPTV 3D tracking plugin implementation (<a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/nearest_hungarian_3d.py"><code>nearest_hungarian_3d.py</code></a>):</p>
 <h3 id="step-1-implement-the-mathematical-core-engine">Step 1: Implement the Mathematical Core Engine<a class="headerlink" href="#step-1-implement-the-mathematical-core-engine" title="Permanent link">&para;</a></h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_sum_assignment</span>
