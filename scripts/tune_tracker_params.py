@@ -96,6 +96,81 @@ def sweep(
     return rows
 
 
+def adaptive_sweep(
+    tracker: str,
+    src: Path = bu.SRC,
+    first: int = bu.FIRST,
+    n_frames: int = bu.N_FRAMES,
+    start_dv: float = 1.0,
+    step_factor: float = 1.5,
+    max_steps: int = 12,
+    plateau_patience: int = 2,
+    plateau_tol: float = 0.01,
+    angle: float = 120.0,
+) -> list[dict]:
+    """Start low, step dv (and dacc = dv, the pairing the grid sweep found
+    works best -- see tracking_recommender._suggest_params's docstring) up
+    by step_factor each round, and stop once the score stops improving for
+    `plateau_patience` consecutive steps -- instead of grid-searching a wide
+    range and crashing into unexplored territory (e.g. dv=20/dacc=20, which
+    turned out to trigger a real out-of-bounds bug rather than just being a
+    bad parameter choice). Also stops immediately on the first error/crash
+    at any step, rather than continuing past it into a worse regime.
+    """
+    frames = bu.read_gt_frames(src, first, n_frames)
+    tt = bu.build_true_tracks(frames, first)
+    ghosts = bu.build_ghost_frames(frames, first)
+
+    rows: list[dict] = []
+    best_score = -1.0
+    plateau_count = 0
+    dv = start_dv
+
+    for _ in range(max_steps):
+        overrides = dict(
+            dvxmin=-dv, dvxmax=dv, dvymin=-dv, dvymax=dv,
+            dvzmin=-dv, dvzmax=dv, dacc=dv, angle=angle,
+        )
+        row = {"tracker": tracker, "dv": dv, "dacc": dv, "angle": angle}
+        try:
+            pred, dt = _run_via_subprocess(tracker, src, first, n_frames, overrides)
+            row["time_s"] = dt
+            m = bu.combined_metrics(tt, pred, eps=1.0, ghosts=ghosts)
+            shape = bu.trajectory_shape_stats(pred)
+            row.update({f"gt_{k}": v for k, v in m.items()})
+            row.update({f"shape_{k}": v for k, v in shape.items()})
+            row["score"] = (
+                row["gt_yield_recall"] * 0.5
+                + row["gt_purity"] * 0.3
+                + min(row["shape_mean_length"] / 10.0, 1.0) * 0.2
+            )
+        except Exception as e:
+            row["error"] = str(e)
+            row["score"] = -1.0
+            rows.append(row)
+            print(f"dv={dv:.2f}: ERROR ({str(e)[:100]}) -- stopping sweep here, not exploring further")
+            break
+
+        rows.append(row)
+        improvement = row["score"] - best_score
+        print(f"dv={dv:.2f} dacc={dv:.2f}: score={row['score']:.3f} "
+              f"(recall={row['gt_yield_recall']:.3f}, mean_len={row['shape_mean_length']:.2f}, "
+              f"{'+' if improvement >= 0 else ''}{improvement:.3f})")
+
+        if improvement > plateau_tol:
+            best_score = row["score"]
+            plateau_count = 0
+        else:
+            plateau_count += 1
+            if plateau_count >= plateau_patience:
+                print(f"Plateaued ({plateau_patience} steps with no improvement > {plateau_tol}) -- stopping.")
+                break
+
+        dv *= step_factor
+
+    return rows
+
+
 def print_table(rows: list[dict]) -> None:
     print(f"{'dv':>6} {'dacc':>6} {'angle':>6} | {'pmt%':>6} {'purity':>7} {'yield':>6} {'prec':>6} {'ghost':>6} "
           f"| {'mean_len':>8} {'frac_short':>10} | {'time_s':>7} {'score':>6}")
@@ -118,15 +193,30 @@ def main() -> None:
         "priority_segment_3d", "trackcorr", "kalman_hungarian_3d",
         "nearest_hungarian_3d", "predictive_gmm_3d",
     ])
-    ap.add_argument("--dv", type=float, nargs="+", default=[2.0, 4.0, 6.0, 10.0, 15.0])
-    ap.add_argument("--dacc", type=float, nargs="+", default=[3.0, 6.0, 10.0, 14.0])
-    ap.add_argument("--angle", type=float, nargs="+", default=[60.0, 120.0, 200.0])
+    ap.add_argument("--dv", type=float, nargs="+", default=[2.0, 4.0, 6.0, 10.0, 15.0],
+                     help="ignored with --adaptive")
+    ap.add_argument("--dacc", type=float, nargs="+", default=[3.0, 6.0, 10.0, 14.0],
+                     help="ignored with --adaptive")
+    ap.add_argument("--angle", type=float, nargs="+", default=[60.0, 120.0, 200.0],
+                     help="ignored with --adaptive (fixed value, use --start-angle)")
+    ap.add_argument("--adaptive", action="store_true",
+                     help="start low and step dv/dacc up together, stopping at the first "
+                          "plateau or error instead of grid-searching the full range")
+    ap.add_argument("--start-dv", type=float, default=1.0)
+    ap.add_argument("--step-factor", type=float, default=1.5)
+    ap.add_argument("--start-angle", type=float, default=120.0)
     ap.add_argument("--src", type=Path, default=bu.SRC)
     ap.add_argument("--first", type=int, default=bu.FIRST)
     ap.add_argument("--n-frames", type=int, default=bu.N_FRAMES)
     args = ap.parse_args()
 
-    rows = sweep(args.tracker, args.dv, args.dacc, args.angle, args.src, args.first, args.n_frames)
+    if args.adaptive:
+        rows = adaptive_sweep(
+            args.tracker, args.src, args.first, args.n_frames,
+            start_dv=args.start_dv, step_factor=args.step_factor, angle=args.start_angle,
+        )
+    else:
+        rows = sweep(args.tracker, args.dv, args.dacc, args.angle, args.src, args.first, args.n_frames)
     print_table(rows)
 
 
