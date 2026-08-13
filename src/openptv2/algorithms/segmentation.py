@@ -59,18 +59,35 @@ def _is_local_maximum(
     """Check if pixel at (i, j) is an 8-neighbor local maximum.
 
     Pure C pointer arithmetic when compiled — no Python overhead.
+
+    peak_fit's default xmin/ymin=1 keeps callers away from row/col 0, but an
+    explicit xmin=0/ymin=0 (or xmax/ymax at the far edge) reaches this with
+    i or j at the image boundary, where an out-of-range neighbour used to be
+    read unchecked (wraparound=False, so img[i, -1] is a literal invalid
+    index, not "last column"). A neighbour that falls off the image can't
+    exceed gv, so it's simply skipped -- the standard convention for
+    boundary pixels in local-maximum detection.
     """
+    imy: cython.int = img.shape[0]
+    imx: cython.int = img.shape[1]
     gv = img[i, j]
-    return (
-        gv >= img[i, j - 1]
-        and gv >= img[i, j + 1]
-        and gv >= img[i - 1, j]
-        and gv >= img[i + 1, j]
-        and gv >= img[i - 1, j - 1]
-        and gv >= img[i + 1, j - 1]
-        and gv >= img[i - 1, j + 1]
-        and gv >= img[i + 1, j + 1]
-    )
+    if j > 0 and gv < img[i, j - 1]:
+        return False
+    if j + 1 < imx and gv < img[i, j + 1]:
+        return False
+    if i > 0 and gv < img[i - 1, j]:
+        return False
+    if i + 1 < imy and gv < img[i + 1, j]:
+        return False
+    if i > 0 and j > 0 and gv < img[i - 1, j - 1]:
+        return False
+    if i + 1 < imy and j > 0 and gv < img[i + 1, j - 1]:
+        return False
+    if i > 0 and j + 1 < imx and gv < img[i - 1, j + 1]:
+        return False
+    if i + 1 < imy and j + 1 < imx and gv < img[i + 1, j + 1]:
+        return False
+    return True
 
 
 @cython.ccall

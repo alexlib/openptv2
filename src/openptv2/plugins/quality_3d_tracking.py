@@ -130,17 +130,17 @@ class Quality3DTracker:
                 count=num_active,
             )
 
-            # Tier 1 Tight radii: high-confidence innovation radius clamped to [1.2, min(a_max, 3.0)] for seeded tracks
+            # Tier 1 Tight radii: high-confidence innovation radius bounded by a_max
             tight_radii = np.where(
                 is_seeded,
-                np.clip(2.5 * sigmas, 1.2, np.minimum(self.a_max, 3.0)),
+                np.clip(2.5 * sigmas, 0.1 * self.a_max, self.a_max),
                 self.v_max,
             )
 
-            # Tier 2 Fallback radii: wider innovation radius clamped to [2.0, a_max]
+            # Tier 2 Fallback radii: wider innovation radius bounded by a_max
             fallback_radii = np.where(
                 is_seeded,
-                np.clip(4.0 * sigmas, 2.0, self.a_max),
+                np.clip(4.0 * sigmas, 0.2 * self.a_max, self.a_max),
                 self.v_max,
             )
 
@@ -223,7 +223,7 @@ class Quality3DTracker:
         for ts in active_kf_states:
             completed_tracks.append(self._export_track(ts))
 
-        return completed_tracks
+        return [tr for tr in completed_tracks if len(tr["pos"]) >= 2]
 
     def track_directory(self, work_dir: Path) -> None:
         """Run quality_3d tracking on an experiment directory reading rt_is.# and writing ptv_is.#."""

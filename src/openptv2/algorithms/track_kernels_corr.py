@@ -1434,6 +1434,17 @@ def trackcorr_loop_fast(
     for h in range(orig_parts_1):
         if path_inlist_1[h] > 0:
             next_h = path_next_1[h]
+            # next_h comes from path_linkdecis_1[h, 0] (Phase 1) -- normally
+            # a valid frame-2 candidate index, but a wide enough search cone
+            # (large dvxmax/dacc) was observed to leave it at the PT_UNUSED
+            # sentinel here, which -- unguarded -- indexed path_prev_2 out of
+            # bounds and crashed (segfault with boundscheck compiled out,
+            # confirmed as this exact line via a temporary boundscheck=True
+            # rebuild). Same defensive pattern already used a few lines up
+            # for cand_idx into targ_tnr_2.
+            if next_h == PT_UNUSED or not (0 <= next_h < path_prev_2.shape[0]):
+                path_next_1[h] = NEXT_NONE_K
+                continue
             if path_prev_2[next_h] == PREV_NONE_K:
                 path_prev_2[next_h] = h
             else:
