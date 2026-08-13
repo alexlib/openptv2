@@ -195,3 +195,42 @@ def test_metrics_wrong_link():
     m = bm.compute_identity_metrics(tt, pred, eps=0.5)
     assert m.purity < 0.6
     assert m.pmt < 100.0
+
+
+def test_synthetic_hit_trajectories_shape():
+    """Offline HIT stand-in produces the requested (particles, frames, 3) shape."""
+    traj = bm.synthetic_hit_trajectories(n_particles=8, n_frames=15, seed=3)
+    assert traj.shape == (8, 15, 3)
+    assert np.all(np.isfinite(traj))
+
+
+def test_fetch_hit_trajectories_falls_back_offline():
+    """An unreachable/invalid JHTDB token must fall back to the synthetic path."""
+    traj, source = bm.fetch_hit_trajectories(
+        token="invalid-token", n_particles=5, n_frames=10, seed=1
+    )
+    assert source == "synthetic"
+    assert traj.shape == (5, 10, 3)
+
+
+def test_render_frame_produces_per_camera_images():
+    """Rendering a frame yields one nonzero (imy, imx) image per camera."""
+    rig = bm.make_standard_rig(refract=False)
+    rng = np.random.default_rng(0)
+    pts = rng.uniform(-30, 30, size=(20, 3))
+    images = bm.render_frame(rig, pts, bm.RenderConfig(ghost_ratio=0.2, seed=0))
+    assert len(images) == 4
+    for img in images:
+        assert img.shape == (rig.cpar.imy, rig.cpar.imx)
+        assert img.max() > 0  # particles were actually splatted
+
+
+def test_render_frame_laser_sheet_attenuates_offplane_particles():
+    """A particle far from the laser sheet must render dimmer than one on it."""
+    rig = bm.make_standard_rig(refract=False)
+    on_sheet = np.array([[0.0, 0.0, 0.0]])
+    off_sheet = np.array([[0.0, 0.0, 100.0]])
+    cfg = bm.RenderConfig(sheet_center=0.0, sheet_sigma=5.0, noise_sigma=0.0, seed=0)
+    img_on = bm.render_frame(rig, on_sheet, cfg)[0]
+    img_off = bm.render_frame(rig, off_sheet, cfg)[0]
+    assert img_on.max() > img_off.max()

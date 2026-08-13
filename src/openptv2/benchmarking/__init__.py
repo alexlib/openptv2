@@ -19,6 +19,12 @@ metrics
     yield/precision/RMS set.
 runner
     Run a chosen tracker on a generated dataset and read trajectories back.
+jhtdb_client
+    Fetch (or synthesize) ground-truth Lagrangian HIT trajectories from the
+    Johns Hopkins Turbulence Database.
+synthetic_optical_projector
+    Render synthetic multi-camera PTV images (PSF, laser sheet, noise,
+    ghosts) from 3D particle positions through the real camera model.
 """
 
 from .camera_rig import (
@@ -31,6 +37,11 @@ from .camera_rig import (
 )
 from .datawriter import DatasetSpec, write_dataset
 from .experiment import write_experiment
+from .jhtdb_client import (
+    fetch_hit_trajectories,
+    get_hit_velocity,
+    synthetic_hit_trajectories,
+)
 from .metrics import (
     IdentityMetrics,
     compute_identity_metrics,
@@ -38,6 +49,7 @@ from .metrics import (
 )
 from .runner import read_trajectories, run_tracker
 from .scenario import CrossingSpec, ScenarioSpec, generate_scenario
+from .synthetic_optical_projector import RenderConfig, render_frame
 
 __all__ = [
     "CameraRig",
@@ -57,4 +69,9 @@ __all__ = [
     "IdentityMetrics",
     "compute_identity_metrics",
     "ghost_positions_from_frame_gt",
+    "fetch_hit_trajectories",
+    "get_hit_velocity",
+    "synthetic_hit_trajectories",
+    "RenderConfig",
+    "render_frame",
 ]

@@ -146,6 +146,46 @@ def test_track3d_level1_ranks_by_forward_acceleration_not_decoy_behind():
     assert next1[0] == 1, "linked to the decoy behind the particle, not the true continuation"
 
 
+def test_track3d_level1_nan_predicted_position_no_crash():
+    """Regression: a NaN track position must not crash the grid-accelerated
+    candidate search.
+
+    _find_closest_in_3d_grid only activates once a frame has >=32 particles
+    (below that, track3d_loop_fast falls back to the naturally NaN-safe
+    linear scan). With >=32 particles, a NaN predicted position used to
+    reach int(floor(NaN)) and raise "cannot convert float NaN to integer",
+    aborting the whole tracking run. It should now behave like the linear
+    scan: the NaN-driven particle finds no candidate, everyone else links
+    normally.
+    """
+    n = 32
+    px0 = _px([[float(i), 0.0, 0.0] for i in range(n)])
+    px1 = _px([[float(i) + 0.1, 0.0, 0.0] for i in range(n)])
+    px2 = _px([[float(i) + 0.2, 0.0, 0.0] for i in range(n)])
+
+    # Corrupt particle 0's frame-0 (prev) position with NaN, so its Level 1
+    # predicted position (2*curr - prev) is NaN.
+    px0[0, 0] = np.nan
+
+    prev0 = np.full(n, -1, dtype=np.int32)
+    prev1 = np.arange(n, dtype=np.int32)
+    next1 = np.full(n, -2, dtype=np.int32)
+    prev2 = np.full(n, -1, dtype=np.int32)
+    next2 = np.full(n, -2, dtype=np.int32)
+
+    count = track3d_loop_fast(
+        n,
+        px0, prev0, n,
+        px1, prev1, next1, n,
+        px2, prev2, next2, n,
+        0.5, 0.5, 0.5,
+        4,
+    )
+    assert count == n - 1, "NaN-position particle should be skipped, all others should link"
+    assert next1[0] == -1, "NaN-position particle must not claim a candidate"
+    assert all(next1[i] == i for i in range(1, n)), "unaffected particles should still link"
+
+
 def test_track3d_no_add():
     import os
 

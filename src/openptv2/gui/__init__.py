@@ -52,7 +52,14 @@ class LazySubmodule(types.ModuleType):
         self.__target = target
 
     def __getattr__(self, attr):
-        mod = importlib.import_module(self.__target)
+        try:
+            mod = importlib.import_module(self.__target)
+        except ImportError as e:
+            # __getattr__ must raise AttributeError, not propagate the import
+            # failure -- otherwise hasattr()/inspect on this shim (as torch's
+            # import-time introspection does when it walks sys.modules)
+            # crashes instead of getting a clean "no such attribute".
+            raise AttributeError(f"module {self.__name__!r} has no attribute {attr!r}") from e
         return getattr(mod, attr)
 
     def __dir__(self):

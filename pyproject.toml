@@ -80,11 +80,19 @@ viz = [
     "matplotlib>=3.7.0",
     "wigglystuff>=0.5.22",
 ]
+# OpenPTV3 differentiable pipeline (docs/plans/differentiable_ptv_nextgen_plan.md):
+# PyTorch soft-differentiable operators (centroiding, geometry, matching,
+# tracking) for end-to-end gradient flow from Stage-1 micro-parameters to
+# Stage-5 Lagrangian physics.
+differentiable = [
+    "torch>=2.0.0",
+]
 # Everything a contributor needs: the full GUI, test/lint/type tooling, the
 # marimo notebooks, and the docs toolchain.
 dev = [
     "openptv2[gui]",
     "openptv2[viz]",
+    "openptv2[differentiable]",
     "pytest>=8.0.0",
     "pytest-cov>=5.0.0",
     "mypy>=1.10.0",
@@ -106,6 +114,7 @@ openptv = "openptv2.cli:main"
 openptv2-gui = "openptv2.gui.pyptv_gui:main"
 openptv2-batch = "openptv2.batch.pyptv_batch:main_cli"
 openptv2-validate = "openptv2.validate:main"
+openptv2-autotune = "openptv2.autoresearch.cli_autotune:main"
 pyptv = "openptv2.gui.pyptv_gui:main"
 pyptv_gui = "openptv2.gui.pyptv_gui:main"
 pyptv_batch = "openptv2.batch.pyptv_batch:main_cli"
@@ -117,6 +126,8 @@ packages = [
     "openptv2.gui",
     "openptv2.batch",
     "openptv2.plugins",
+    "openptv2.differentiable",
+    "openptv2.autoresearch",
 ]
 include-package-data = true
 zip-safe = false

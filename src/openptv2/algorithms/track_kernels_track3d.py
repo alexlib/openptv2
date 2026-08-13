@@ -54,6 +54,13 @@ def _find_closest_in_3d_grid(
         cand_inds[s] = -1
         cand_dists[s] = 1e20
 
+    if pred_x != pred_x or pred_y != pred_y or pred_z != pred_z:
+        # NaN predicted position (a stored track position was NaN, e.g. from
+        # a degenerate upstream triangulation) -- int(floor(NaN)) below would
+        # raise. Match _find_closest_in_3d's behavior for the same input:
+        # no candidates found, rather than crashing the whole tracking run.
+        return 0
+
     # Determine cell range covering [pred_x - dx, pred_x + dx], etc.
     c_x_min = int(c_floor((pred_x - dx - min_x) / cell_x))
     c_x_max = int(c_floor((pred_x + dx - min_x) / cell_x))
