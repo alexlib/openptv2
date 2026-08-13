@@ -367,3 +367,31 @@ class Tracking:
             f"links: {avg_links:.1f}, lost: {avg_lost:.1f}"
         )
         print("Fast 3D Smooth Tracking completed successfully.")
+
+        # 5. Disk/Zarr-level post-pass (opt-in via track.postprocess: true) -
+        # the same tracker-agnostic cold-start/reciprocity/gap-relinking pass
+        # default_tracking.py's trackcorr/priority_segment_3d paths already
+        # offer, wired up here since this plugin builds its own Frame-based
+        # linkage instead of going through openptv2.tracker.Tracker.
+        if track_cfg.get("postprocess", False):
+            from openptv2.tracking_postprocess import (
+                count_links,
+                enforce_reciprocity,
+                relink_trajectory_gaps,
+                seed_cold_start,
+            )
+
+            max_gap_pp = int(track_cfg.get("postprocess_max_gap", max_gap))
+            links_before = count_links(linkage_base, first_frame, last_frame)
+            cold_start = seed_cold_start(linkage_base, first_frame, last_frame, dvxmax)
+            gap_relinking = relink_trajectory_gaps(
+                linkage_base, first_frame, last_frame,
+                max_gap=max_gap_pp, max_velocity_err=dvxmax,
+            )
+            reciprocity = enforce_reciprocity(linkage_base, first_frame, last_frame)
+            links_after = count_links(linkage_base, first_frame, last_frame)
+            print(
+                f"Post-process links: {links_before} -> {links_after} "
+                f"(cold_start={cold_start}, gap_relinking={gap_relinking}, "
+                f"reciprocity={reciprocity})"
+            )
