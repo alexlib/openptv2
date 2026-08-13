@@ -234,7 +234,13 @@ KALMAN_HUNGARIAN_3D_INFO = TrackerInfo(
             type="float",
             default="15.0",
             description="Maximum baseline search radius for unseeded tracks (mm).",
-            how_to_choose="Set to max expected displacement.",
+            how_to_choose=(
+                "Not a separate field in Tracking Parameters -- derived from the "
+                "same track.dvxmax/dvymax/dvzmax as every other tracker via "
+                "tracking_presets.unified_velocity_bound() (the largest of the "
+                "three, since this tracker searches an isotropic radius, not "
+                "trackcorr's per-axis box). Set to max expected displacement."
+            ),
             typical_range="1 – 50",
             unit="mm",
         ),
@@ -243,7 +249,13 @@ KALMAN_HUNGARIAN_3D_INFO = TrackerInfo(
             type="float",
             default="6.0",
             description="Maximum innovation gating radius for seeded tracks (mm).",
-            how_to_choose="Set based on expected acceleration fluctuation envelope.",
+            how_to_choose=(
+                "Same track.dacc field trackcorr/priority_segment_3d use "
+                "(mm/frame^2, but numerically a mm search radius since dt=1 "
+                "frame throughout openptv2). No angle parameter here: the "
+                "multi-term cost matrix already penalizes velocity-direction "
+                "changes continuously, so a hard angle cutoff isn't used."
+            ),
             typical_range="1 – 20",
             unit="mm",
         ),
@@ -407,7 +419,14 @@ MYPTV_3D_INFO = TrackerInfo(
             type="float",
             default="10.0",
             description="Maximum search radius for unseeded (new) tracks (mm).",
-            how_to_choose="Set to max expected inter-frame displacement + margin.",
+            how_to_choose=(
+                "Not a separate field -- derived from the same "
+                "track.dvxmax/dvymax/dvzmax as every other tracker via "
+                "tracking_presets.unified_velocity_bound() (largest of the "
+                "three; this tracker searches an isotropic radius, not "
+                "trackcorr's per-axis box). Set to max expected inter-frame "
+                "displacement + margin."
+            ),
             typical_range="1 – 100",
             unit="mm",
         ),
@@ -416,9 +435,28 @@ MYPTV_3D_INFO = TrackerInfo(
             type="float",
             default="50.0",
             description="Maximum search radius for seeded tracks with velocity history (mm).",
-            how_to_choose="Set to a_max = v_max + expected acceleration × dt.",
+            how_to_choose="Same track.dacc field trackcorr/priority_segment_3d use. Set to a_max = v_max + expected acceleration × dt.",
             typical_range="1 – 100",
             unit="mm",
+        ),
+        ParameterGuide(
+            name="angle",
+            type="float",
+            default="45",
+            description=(
+                "Cone-of-continuity filter for seeded tracks: rejects a candidate "
+                "whose implied velocity direction breaks continuity by more than "
+                "this angle from the track's established direction."
+            ),
+            how_to_choose=(
+                "track.angle, same field trackcorr/priority_segment_3d use, but "
+                "in GON there (400 gon = 360 deg) -- converted to degrees for "
+                "this tracker's own angle comparison via "
+                "tracking_presets.unified_angle_deg(). Lower for smooth/laminar "
+                "flow, higher for turbulent."
+            ),
+            typical_range="20 – 90",
+            unit="deg (source field is gon)",
         ),
         ParameterGuide(
             name="max_gap",
@@ -542,7 +580,13 @@ PROPTV_INFO = TrackerInfo(
             type="float",
             default="20.0",
             description="Maximum absolute velocity for a track (mm/frame).",
-            how_to_choose="Set based on max expected particle speed from a probe run.",
+            how_to_choose=(
+                "Defaults from the same track.dvxmax/dvymax/dvzmax as every "
+                "other tracker (tracking_presets.unified_velocity_bound()); "
+                "set proptv.maxvel explicitly only to override that default "
+                "for this tracker specifically. Set based on max expected "
+                "particle speed from a probe run."
+            ),
             typical_range="5 – 200",
             unit="mm/frame",
         ),
@@ -551,18 +595,16 @@ PROPTV_INFO = TrackerInfo(
             type="float",
             default="30",
             description="Maximum angle between successive velocity vectors (degrees).",
-            how_to_choose="Lower for laminar flow, higher for turbulent.",
+            how_to_choose=(
+                "Defaults from track.angle converted from GON to degrees "
+                "(tracking_presets.unified_angle_deg() -- trackcorr/"
+                "priority_segment_3d's angle field is in gon, 400 gon = 360 "
+                "deg; this tracker's own angle comparison is in degrees). Set "
+                "proptv.angle explicitly to override. Lower for laminar flow, "
+                "higher for turbulent."
+            ),
             typical_range="10 – 60",
-            unit="deg",
-        ),
-        ParameterGuide(
-            name="epsR",
-            type="float",
-            default="3.0",
-            description="Search radius in image pixels for candidate 2D points.",
-            how_to_choose="Set based on expected pixel displacement between frames.",
-            typical_range="1.0 – 10.0",
-            unit="px",
+            unit="deg (source field is gon)",
         ),
         ParameterGuide(
             name="t_init",

@@ -25,8 +25,6 @@ class ProPTVConfig:
         Number of nearest neighbours per linking step (for t_init-1 links).
     activeMatches_extend : int
         Minimum cameras for extending a track.
-    epsR : float
-        Search radius in pixels for candidate 2D points.
     backtracking : bool
         Enable backward tracking pass.
     gaptracking : bool
@@ -45,7 +43,6 @@ class ProPTVConfig:
     NN: list[int] = field(default_factory=lambda: [3, 3, 3])
 
     activeMatches_extend: int = 3
-    epsR: float = 3.0
 
     backtracking: bool = False
     gaptracking: bool = False

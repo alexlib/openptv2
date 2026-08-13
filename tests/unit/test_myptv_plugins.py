@@ -53,6 +53,23 @@ def test_myptv_3d_tracker_with_cost_weights():
     assert len(results[1]["pos"]) == 3
 
 
+def test_myptv_3d_tracker_max_angle_rejects_sharp_turn():
+    """A seeded track moving along +x must not jump to a candidate that
+    implies a 90-degree turn when max_angle_deg forbids it -- part of
+    unifying the "angle" parameter type across trackers (see
+    tracking_presets.unified_angle_deg)."""
+    frames = [
+        np.array([[0.0, 0.0, 0.0]]),
+        np.array([[1.0, 0.0, 0.0]]),  # seeds velocity (1, 0, 0)
+        np.array([[2.0, 0.0, 0.0], [1.0, 1.0, 0.0]]),  # straight vs. 90-deg turn
+    ]
+    tracker = MyPTV3DTracker(v_max=5.0, a_max=5.0, max_gap=0, dt=1.0, max_angle_deg=30.0)
+    results = tracker.track_frames(frames)
+
+    assert len(results) == 1
+    np.testing.assert_allclose(results[0]["pos"][-1], [2.0, 0.0, 0.0])
+
+
 def test_myptv_2d_tracker_synthetic_pixel_motion():
     tracker = MyPTV2DTracker(max_pixel_disp=15.0, max_gap=1)
 

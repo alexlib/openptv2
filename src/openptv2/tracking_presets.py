@@ -274,3 +274,40 @@ def apply_tracker(
     track_params["preset"] = tracker
 
     return track_params, plugins_params, proptv_params
+
+
+# ---------------------------------------------------------------------------
+# Unified parameter TYPES across all 5 trackers: dvxmin/dvxmax/dvymin/dvymax/
+# dvzmin/dvzmax/dacc/dangle, from the shared "track" YAML section, mm/frame
+# (dv*), mm/frame^2 (dacc), gon (angle) -- trackcorr/priority_segment_3d's
+# native units (dt is always 1 frame throughout openptv2, so mm/frame and
+# mm/frame^2 are numerically what the isotropic trackers below also expect
+# for their own v_max/a_max). kalman_hungarian_3d and nearest_hungarian_3d
+# search an isotropic sphere/radius rather than trackcorr's per-axis box, so
+# they need a single scalar bound; predictive_gmm_3d's own angle concept is
+# in degrees, not gon. These two helpers are the ONE place that derives
+# those isotropic/degree values from the shared per-axis/gon inputs, so
+# every tracker reads the same parameter types with the same meaning.
+# ---------------------------------------------------------------------------
+
+GON_TO_DEG = 0.9  # 400 gon = 360 deg (gon is trackcorr's legacy convention)
+
+
+def unified_velocity_bound(track_params: Dict[str, Any]) -> float:
+    """Isotropic velocity-bound scalar derived from the full per-axis
+    dvxmax/dvymax/dvzmax search box, for a tracker that searches a sphere
+    rather than trackcorr's per-axis box. Falls back to dvxmax alone when
+    the other axes aren't set (older saved parameter files)."""
+    dvxmax = float(track_params.get("dvxmax", 10.0))
+    dvymax = float(track_params.get("dvymax", dvxmax))
+    dvzmax = float(track_params.get("dvzmax", dvxmax))
+    return max(abs(dvxmax), abs(dvymax), abs(dvzmax))
+
+
+def unified_angle_deg(track_params: Dict[str, Any], default_deg: float = 30.0) -> float:
+    """track.angle is stored in gon (trackcorr/priority_segment_3d's legacy
+    photogrammetry convention) -- convert to degrees for a tracker whose own
+    algorithm compares against degrees directly."""
+    if "angle" not in track_params:
+        return default_deg
+    return float(track_params["angle"]) * GON_TO_DEG

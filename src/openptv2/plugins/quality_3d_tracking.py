@@ -318,7 +318,16 @@ class Tracking:
         track_cfg = pm.parameters.get("track", {}) if pm else {}
         work_dir = Path(getattr(self.exp, "active_dir", "."))
 
-        v_max = float(track_cfg.get("dvxmax", 15.0))
+        from openptv2.tracking_presets import unified_velocity_bound
+
+        # Isotropic bound from the full per-axis dv box (was dvxmax alone --
+        # silently ignored dvymax/dvzmax when set asymmetrically). No angle
+        # parameter here: unlike trackcorr's cone search, this tracker's
+        # multi-term cost matrix already penalizes velocity-direction
+        # changes continuously (see tracking_cost.py's cost_weights), so a
+        # hard angle cutoff on top would fight its own tuned cost weighting
+        # rather than add real behavior.
+        v_max = unified_velocity_bound(track_cfg)
         a_max = float(track_cfg.get("dacc", 10.0))
 
         tracker = Quality3DTracker(v_max=v_max, a_max=a_max)

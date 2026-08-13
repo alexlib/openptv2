@@ -338,9 +338,18 @@ class Tracking:
         track_cfg = pm.parameters.get("track", {}) if pm else {}
         proptv_cfg = pm.parameters.get("proptv", {}) if pm else {}
 
-        dvxmax = float(track_cfg.get("dvxmax", 15.5))
-        maxvel = float(proptv_cfg.get("maxvel", dvxmax))
-        angle = float(proptv_cfg.get("angle", 30.0))
+        from openptv2.tracking_presets import unified_angle_deg, unified_velocity_bound
+
+        # maxvel/angle default from the SAME unified per-axis dv box / gon
+        # angle every other tracker reads (unified_velocity_bound,
+        # unified_angle_deg -- angle in particular needs the gon->degrees
+        # conversion, since proptv's own angle concept, "max angle between
+        # successive velocity vectors", is in degrees while track.angle is
+        # trackcorr's gon convention). proptv.maxvel/proptv.angle remain a
+        # deliberate per-tracker override for when the unified default
+        # genuinely doesn't fit this engine.
+        maxvel = float(proptv_cfg.get("maxvel", unified_velocity_bound(track_cfg)))
+        angle = float(proptv_cfg.get("angle", unified_angle_deg(track_cfg, default_deg=30.0)))
         t_init = int(proptv_cfg.get("t_init", 4))
         gaptracking = bool(proptv_cfg.get("gaptracking", False))
 
@@ -349,7 +358,6 @@ class Tracking:
             maxvel=maxvel,
             angle=angle,
             activeMatches_extend=int(proptv_cfg.get("activeMatches_extend", 3)),
-            epsR=float(proptv_cfg.get("epsR", 3.0)),
             backtracking=bool(proptv_cfg.get("backtracking", False)),
             gaptracking=gaptracking,
         )

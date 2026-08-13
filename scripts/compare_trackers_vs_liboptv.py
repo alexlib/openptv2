@@ -172,6 +172,36 @@ def run_comparison(src: Path, first: int, n_frames: int) -> list[dict]:
             row["error"] = str(e)
         rows.append(row)
 
+    # liboptv itself as a row, run with the SAME parameters as our own
+    # trackcorr (its direct counterpart) -- reuses the already-cached run,
+    # no extra liboptv invocation. GT metrics are computed on whatever
+    # src/n_frames that run actually used (the full dataset, or the
+    # density-capped fallback -- see the "trackcorr" row's liboptv_ref
+    # entry above for which applied).
+    trackcorr_ref = liboptv_cache.get("trackcorr")
+    if trackcorr_ref is not None and "error" not in trackcorr_ref:
+        optv_row = {
+            "tracker": "optv (liboptv, trackcorr params)",
+            "liboptv_ref": "trackcorr",
+            "params": overrides["trackcorr"],
+            "time_s": trackcorr_ref["time_s"],
+            "n_tracks": len(trackcorr_ref["tracks"]),
+        }
+        if trackcorr_ref["src"] == src:
+            gt_tt, gt_ghosts = tt, ghosts
+        else:
+            ref_frames = bu.read_gt_frames(trackcorr_ref["src"], first, trackcorr_ref["n_frames"])
+            gt_tt = bu.build_true_tracks(ref_frames, first)
+            gt_ghosts = bu.build_ghost_frames(ref_frames, first)
+            cap = trackcorr_ref.get("capped_at")
+            optv_row["tracker"] += (
+                f" (capped <= {cap}/frame, {trackcorr_ref['n_frames']} frames)"
+            )
+        gt_row = bu.combined_metrics(gt_tt, trackcorr_ref["tracks"], eps=1.0, ghosts=gt_ghosts)
+        for k, v in gt_row.items():
+            optv_row[f"gt_{k}"] = v
+        rows.append(optv_row)
+
     return rows
 
 
@@ -222,7 +252,7 @@ def format_report(rows: list[dict], src: Path, first: int, n_frames: int) -> str
         "|---|---|---:|---:|---:|",
     ]
     for row in rows:
-        if "error" in row:
+        if "error" in row or row["tracker"].startswith("optv "):
             continue
         if "vs_liboptv_precision" not in row:
             err = " ".join(row.get("liboptv_error", "unknown error").split())

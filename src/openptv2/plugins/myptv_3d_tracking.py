@@ -27,12 +27,20 @@ class MyPTV3DTracker:
         max_gap: int = 2,
         dt: float = 0.1,
         cost_weights: CostWeights | None = None,
+        max_angle_deg: float | None = None,
     ):
         self.v_max = v_max
         self.a_max = a_max
         self.max_gap = max_gap
         self.dt = dt
         self.cost_weights = cost_weights
+        # Cone-of-continuity filter (degrees, applied only to seeded tracks
+        # with an established velocity -- a fresh track has no direction to
+        # compare against). Unlike trackcorr's cone search, this doesn't
+        # gate candidate generation itself; it forbids matches whose implied
+        # velocity direction breaks continuity beyond this angle, on top of
+        # the existing v_max/a_max distance radius.
+        self.max_angle_deg = max_angle_deg
 
     @staticmethod
     def _new_track(track_id: int, pos: np.ndarray, frame_idx: int) -> dict:
@@ -87,9 +95,33 @@ class MyPTV3DTracker:
         else:
             cost_mat = None
 
+        violates = None
+        if self.max_angle_deg is not None and np.any(seeded):
+            # disp[r, c] = candidate displacement from track r's last real
+            # position (not the extrapolated pred) to candidate c.
+            disp = cand_pts[None, :, :] - last_p[:, None, :]
+            disp_norm = np.linalg.norm(disp, axis=2)
+            v_norm = np.linalg.norm(last_v, axis=1)
+            with np.errstate(invalid="ignore", divide="ignore"):
+                cosang = np.sum(disp * last_v[:, None, :], axis=2) / (
+                    disp_norm * v_norm[:, None]
+                )
+            angle_deg = np.degrees(np.arccos(np.clip(cosang, -1.0, 1.0)))
+            # Only gates seeded tracks with a nonzero last velocity -- a
+            # stationary or fresh track has no direction to break.
+            gate = seeded[:, None] & (v_norm[:, None] > 1e-9) & (disp_norm > 1e-9)
+            violates = gate & (angle_deg > self.max_angle_deg)
+
         row_ind, col_ind = match_within_radius(
             pred, cand_pts, radius, cost_matrix=cost_mat
         )
+        if violates is not None and len(row_ind) > 0:
+            # match_within_radius's own in-radius check is purely spatial
+            # (raw Euclidean distance), so it doesn't know about the angle
+            # cone -- a violating pair could still be the least-bad option
+            # available and get returned. Drop those here instead.
+            keep = ~violates[row_ind, col_ind]
+            row_ind, col_ind = row_ind[keep], col_ind[keep]
 
         matched_cands = set()
         matched_tracks = set()
@@ -212,8 +244,15 @@ class Tracking:
 
         track_cfg = pm.parameters.get("track", {}) if pm else {}
 
-        dvxmax = float(track_cfg.get("dvxmax", 10.0))
+        from openptv2.tracking_presets import unified_angle_deg, unified_velocity_bound
+
+        # v_max: isotropic bound from the full per-axis dv box (was dvxmax
+        # alone -- silently ignored dvymax/dvzmax when a user set the axes
+        # asymmetrically). dacc stays as-is: same mm/frame^2 meaning here as
+        # everywhere else (used as the seeded-track search radius).
+        dvxmax = unified_velocity_bound(track_cfg)
         dacc = float(track_cfg.get("dacc", 50.0))
+        max_angle_deg = unified_angle_deg(track_cfg, default_deg=45.0)
 
         max_targets = 10000
         corres_base = str(res_dir / "rt_is")
@@ -239,7 +278,9 @@ class Tracking:
             frame_particles.append(frame.positions())
 
         # 2. Run MyPTV 3D Kinematic Tracking
-        tracker = MyPTV3DTracker(v_max=dvxmax, a_max=dacc, max_gap=1, dt=1.0)
+        tracker = MyPTV3DTracker(
+            v_max=dvxmax, a_max=dacc, max_gap=1, dt=1.0, max_angle_deg=max_angle_deg,
+        )
         trajectories = tracker.track_frames(frame_particles)
 
         # 3. Create link assignments on Frame objects

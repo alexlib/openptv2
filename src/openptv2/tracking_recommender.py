@@ -381,7 +381,6 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
     elif info.name == "predictive_gmm_3d":
         if p95_displacement > 0:
             params["maxvel"] = p95_displacement * 1.5
-            params["epsR"] = max(1.0, p95_displacement * 0.5)
 
     return params
 
