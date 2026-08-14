@@ -301,19 +301,34 @@ GON_TO_DEG = 0.9  # 400 gon = 360 deg (gon is trackcorr's legacy convention)
 
 def unified_velocity_bound(track_params: Dict[str, Any]) -> float:
     """Isotropic velocity-bound scalar derived from the full per-axis
-    dvxmax/dvymax/dvzmax search box, for a tracker that searches a sphere
-    rather than trackcorr's per-axis box. Falls back to dvxmax alone when
-    the other axes aren't set (older saved parameter files)."""
+    dvxmin/dvxmax, dvymin/dvymax, dvzmin/dvzmax search box, for a tracker that
+    searches a sphere (such as proPTV, MyPTV, Kalman-Hungarian) rather than
+    trackcorr's per-axis box."""
     dvxmax = float(track_params.get("dvxmax", 10.0))
+    dvxmin = float(track_params.get("dvxmin", -dvxmax))
     dvymax = float(track_params.get("dvymax", dvxmax))
+    dvymin = float(track_params.get("dvymin", -dvymax))
     dvzmax = float(track_params.get("dvzmax", dvxmax))
-    return max(abs(dvxmax), abs(dvymax), abs(dvzmax))
+    dvzmin = float(track_params.get("dvzmin", -dvzmax))
+
+    return max(
+        abs(dvxmax),
+        abs(dvxmin),
+        abs(dvymax),
+        abs(dvymin),
+        abs(dvzmax),
+        abs(dvzmin),
+    )
 
 
 def unified_angle_deg(track_params: Dict[str, Any], default_deg: float = 30.0) -> float:
-    """track.angle is stored in gon (trackcorr/priority_segment_3d's legacy
+    """track.angle (or dangle) is stored in gon (trackcorr/priority_segment_3d's legacy
     photogrammetry convention) -- convert to degrees for a tracker whose own
     algorithm compares against degrees directly."""
-    if "angle" not in track_params:
+    if "angle" in track_params:
+        angle_gon = float(track_params["angle"])
+    elif "dangle" in track_params:
+        angle_gon = float(track_params["dangle"])
+    else:
         return default_deg
-    return float(track_params["angle"]) * GON_TO_DEG
+    return angle_gon * GON_TO_DEG

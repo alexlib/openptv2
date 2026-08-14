@@ -229,10 +229,10 @@ class Tracking:
         pm = getattr(self.exp, "pm", None)
         if pm is None and hasattr(self.exp, "exp1"):
             pm = getattr(self.exp.exp1, "pm", None)
-        track_cfg = pm.parameters.get("track", {}) if pm else {}
+        from openptv2.tracking_presets import unified_velocity_bound
 
-        dvmx = float(track_cfg.get("dvmx", 20.0))
-        if dvmx < 5.0:
+        dvmx = float(track_cfg.get("dvmx", unified_velocity_bound(track_cfg)))
+        if dvmx < 1.0:
             dvmx = 20.0
 
         max_targets = 10000

@@ -277,10 +277,9 @@ class Tracking:
         if pm is None and hasattr(self.exp, "exp1"):
             pm = getattr(self.exp.exp1, "pm", None)
 
-        track_cfg = pm.parameters.get("track", {}) if pm else {}
-        smooth_cfg = pm.parameters.get("fast_3d_smooth", {}) if pm else {}
+        from openptv2.tracking_presets import unified_velocity_bound
 
-        dvxmax = float(track_cfg.get("dvxmax", 10.0))
+        dvxmax = unified_velocity_bound(track_cfg)
         dacc = float(track_cfg.get("dacc", 3.0))
         max_gap = int(smooth_cfg.get("max_gap", 1))
         smooth_window = int(smooth_cfg.get("smooth_window", _SG_MAX_WINDOW))

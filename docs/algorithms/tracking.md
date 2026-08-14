@@ -39,7 +39,8 @@ These tests demonstrate the full workflow and can be used as a template for your
 ---
 # Tracking Algorithms
 
-OpenPTV implements two tracking strategies for particle trajectory reconstruction:
+For guidance on selecting the best tracking algorithm for your dataset conditions (processing speed, particle density, $Z$-axis depth noise, missing frames), see:
+👉 [**Selecting the Right Tracker for Your Dataset**](../tracking_guide.md#4-how-to-choose-a-tracker-for-your-dataset)
 
 ## Case Study: Burgers Dataset Gap Relinking
 

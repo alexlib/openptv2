@@ -127,5 +127,31 @@ def test_proptv_config_defaults_are_sane():
     assert len(cfg.NN) == 3
 
 
+def test_unified_velocity_bound_max_all_axes():
+    from openptv2.tracking_presets import unified_velocity_bound
+
+    params = {
+        "dvxmin": -15.0,
+        "dvxmax": 10.0,
+        "dvymin": -8.0,
+        "dvymax": 12.0,
+        "dvzmin": -5.0,
+        "dvzmax": 6.0,
+    }
+    # Expected max is max(10, 15, 12, 8, 6, 5) = 15.0
+    assert unified_velocity_bound(params) == 15.0
+
+
+def test_unified_angle_deg_conversion():
+    from openptv2.tracking_presets import unified_angle_deg
+
+    # 100 gon = 90 degrees
+    assert unified_angle_deg({"angle": 100.0}) == 90.0
+    # 20 gon = 18 degrees (using dangle key)
+    assert unified_angle_deg({"dangle": 20.0}) == 18.0
+    # default fallback
+    assert unified_angle_deg({}, default_deg=30.0) == 30.0
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
