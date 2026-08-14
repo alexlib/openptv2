@@ -77,6 +77,71 @@ def _sync_soa_to_aos(frm):
             frm.targets[cam][j].tnr = int(tnr_arr[j])
 
 
+def estimate_level1_dist_weight(pos_a, pos_b, w_min=0.1, w_max=2.0, r0=0.3):
+    """Data-driven Level 1 distance-tiebreak weight (see LEVEL1_DIST_WEIGHT
+    in track_kernels_track3d.py) from two frames of raw 3D positions.
+
+    The right balance between "trust proximity" and "trust the velocity
+    prediction" depends on one ratio: how far particles actually move
+    between frames (R = median displacement) relative to how close together
+    they sit (S = median nearest-neighbor spacing). When true motion is tiny
+    compared to spacing (R/S << 1, e.g. a slow flow densely seeded -- this
+    is what test_cavity turned out to be), the velocity prediction carries
+    almost no disambiguating power: its own noise floor (from finite
+    z-reconstruction precision) is comparable to the true signal, so a
+    distant candidate can align with it by chance as easily as the true one
+    -- proximity is the more reliable cue, and the distance term should
+    dominate. When true motion is a meaningful fraction of the spacing
+    (R/S ~ 1, a fast or sparsely-seeded flow -- the regime
+    test_track3d_level1_ranks_by_forward_acceleration_not_decoy_behind
+    exercises), only the velocity-informed prediction can tell a real
+    continuation from a nearer-but-wrong neighbor, so the distance term
+    should stay small and let acceleration dominate as it does today.
+
+    Estimating displacement uses the 10th percentile (not the median) of
+    each frame-a point's distance to its nearest frame-b neighbor. This
+    matters for real correspondence data (unlike a clean synthetic test):
+    raw rt_is includes 2-camera "pair" correspondences that are often
+    spurious epipolar accidents, not real particles (on test_cavity,
+    measured up to 64% ghost rate for pairs vs 16% for 4-camera
+    correspondences -- see docs/plans/two-subrig-calibration.md). A ghost
+    has no real match next frame, so it contributes a large, noisy
+    nearest-neighbor distance; genuine matches cluster tightly near the
+    true (small) displacement. The median is dominated by ghost noise (on
+    test_cavity: median match distance 2.9mm vs the PIV-verified true
+    motion of ~0.2-0.3mm); the 10th percentile isolates the tight cluster
+    of genuine matches and recovers ~0.4mm -- close to ground truth -- while
+    still separating cleanly from a genuinely fast flow in synthetic tests
+    with no ghost contamination at all.
+
+    Returns a weight in [w_min, w_max], smoothly decreasing in R/S:
+    w_max at R/S -> 0, the R/S == r0 midpoint at R/S == r0, w_min as
+    R/S -> infinity. Falls back to 1.0 (today's fixed default) when there
+    isn't enough data to estimate R or S reliably.
+    """
+    import numpy as np
+    from scipy.spatial import cKDTree
+
+    pos_a = np.asarray(pos_a, dtype=float)
+    pos_b = np.asarray(pos_b, dtype=float)
+    if len(pos_a) < 5 or len(pos_b) < 5:
+        return 1.0
+
+    tree_a = cKDTree(pos_a)
+    spacing_d, _ = tree_a.query(pos_a, k=2)
+    spacing = float(np.median(spacing_d[:, 1]))
+    if spacing <= 0:
+        return 1.0
+
+    tree_b = cKDTree(pos_b)
+    nearest_d, _ = tree_b.query(pos_a, k=1)
+    displacement = float(np.percentile(nearest_d, 10))
+
+    r = displacement / spacing
+    weight = w_min + (w_max - w_min) / (1.0 + r / r0)
+    return float(np.clip(weight, w_min, w_max))
+
+
 @cython.ccall
 def track3d_loop(run_info, step):
     """
@@ -99,6 +164,22 @@ def track3d_loop(run_info, step):
     fb.buf[1]._sync_path_to_soa()
     fb.buf[2]._sync_path_to_soa()
 
+    dist_weight = getattr(run_info, "_level1_dist_weight", None)
+    if dist_weight is None:
+        # buf[0] ("previous frame") is empty on the very first step of a
+        # forward run -- there is no frame before the first one. buf[1] and
+        # buf[2] (the actual first real frame pair) are always populated by
+        # the time this runs, and are the pair Level 1 will condition its
+        # very next prediction on anyway.
+        try:
+            dist_weight = estimate_level1_dist_weight(
+                fb.buf[1].path_x[: fb.buf[1].num_parts],
+                fb.buf[2].path_x[: fb.buf[2].num_parts],
+            )
+        except Exception:
+            dist_weight = 1.0
+        run_info._level1_dist_weight = dist_weight
+
     count1 = _track3d_loop_fast(
         orig_parts,
         fb.buf[0].path_x,
@@ -117,6 +198,7 @@ def track3d_loop(run_info, step):
         dz,
         MAX_CANDS,
         dacc,
+        dist_weight,
     )
 
     _sync_soa_to_aos(fb.buf[1])

@@ -5,13 +5,23 @@ import numpy as np
 
 from openptv2.algorithms.constants import NEXT_NONE
 
-# Level 1 candidate cost = acceleration_residual + LEVEL1_DIST_WEIGHT *
-# |candidate - current_position|. Must stay well below 1.0 so a genuine
-# accelerating/curving continuation (large acceleration gap vs a
-# near-but-wrong decoy) still wins on acceleration alone -- see
+# Level 1 candidate cost = acceleration_residual + dist_weight *
+# |candidate - current_position| (see track3d_loop_fast's dist_weight
+# parameter). It exists purely to break near-ties in acceleration residual
+# toward the physically smaller jump -- it must stay low enough that a
+# genuine accelerating/curving continuation (large acceleration gap vs a
+# near-but-wrong decoy) still wins on acceleration alone; see
 # test_track3d_level1_ranks_by_forward_acceleration_not_decoy_behind, whose
-# fixture requires this weight to stay under 3.0. It exists purely to break
-# near-ties in acceleration residual toward the physically smaller jump.
+# fixture requires this weight to stay under 3.0.
+#
+# LEVEL1_DIST_WEIGHT is the static fallback for callers that don't supply
+# their own dist_weight. track3d_loop (the driver used by the default
+# tracker) instead estimates a per-dataset value from the first two frames
+# via track3d.estimate_level1_dist_weight: the right balance depends on how
+# large true motion is relative to particle spacing, which is measurable
+# before any acceleration assumption is made and varies a lot between
+# datasets (a slow, densely-seeded flow wants a much higher weight than a
+# fast, sparse one -- a single fixed constant can't serve both).
 LEVEL1_DIST_WEIGHT = 1.0
 
 if cython.compiled:
@@ -186,6 +196,7 @@ def track3d_loop_fast(
     dz: cython.double,
     max_cands: cython.int,
     dacc: cython.double = 0.0,
+    dist_weight: cython.double = LEVEL1_DIST_WEIGHT,
 ):
     """Full track3d loop (3 levels) — single compiled entry.
 
@@ -356,7 +367,7 @@ def track3d_loop_fast(
             dc1 = path_x_2[k, 1] - path_x_1[i, 1]
             dc2 = path_x_2[k, 2] - path_x_1[i, 2]
             dist_from_curr = c_sqrt(dc0 * dc0 + dc1 * dc1 + dc2 * dc2)
-            edge_cost[n_edges] = acc + LEVEL1_DIST_WEIGHT * dist_from_curr
+            edge_cost[n_edges] = acc + dist_weight * dist_from_curr
             edge_i[n_edges] = i
             edge_k[n_edges] = k
             n_edges += 1
