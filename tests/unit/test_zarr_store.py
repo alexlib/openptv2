@@ -158,13 +158,17 @@ def test_zarr_store_export_frame_text(tmp_path):
     assert "78.9012" in text_out
 
 
-def test_py_sequence_loop_zarr_mode(tmp_path):
-    """Verify that setting OPENPTV_STORAGE=zarr causes py_sequence_loop to write directly to Zarr."""
+def test_py_sequence_loop_writes_through_run_store(tmp_path):
+    """py_sequence_loop unconditionally dual-writes into the unified RunStore
+    (Phase B: OPENPTV_STORAGE was retired in favor of an explicit store
+    parameter threaded from _open_run_store(exp); no env var toggles this
+    anymore)."""
     import os
     import shutil
 
     from openptv2.gui import ptv
     from openptv2.gui.experiment import Experiment
+    from openptv2.storage import RunStore
 
     cavity_src = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
     if not cavity_src.exists():
@@ -193,19 +197,17 @@ def test_py_sequence_loop_zarr_mode(tmp_path):
         spar.set_first(10000)
         spar.set_last(10001)
 
-        os.environ["OPENPTV_STORAGE"] = "zarr"
         ptv.py_sequence_loop(exp)
 
         zarr_path = temp_dir / "res" / "run.zarr"
         assert zarr_path.exists()
 
-        store = ZarrFrameStore(zarr_path, mode="r")
-        assert store.has_targets(cam_idx=0, frame=10000)
+        store = RunStore(zarr_path, mode="r")
+        assert store.has_targets(cam=0, frame=10000)
 
         pos_3d, cam_ids = store.read_correspondences(10000)
         assert len(pos_3d) > 0
     finally:
-        os.environ.pop("OPENPTV_STORAGE", None)
         os.chdir(old_cwd)
 
 

@@ -147,6 +147,30 @@ def _ensure_directory_writable(directory: Union[str, Path], label: str) -> Path:
     return directory
 
 
+def _resolve_exp_path(exp) -> str:
+    """The experiment root directory, tolerating mocks in tests. Shared by
+    every entry point that needs to open a RunStore for the current run."""
+    exp_path = getattr(exp, "exp_path", None)
+    if not isinstance(exp_path, (str, Path)) or hasattr(exp_path, "_mock_return_value"):
+        exp_path = getattr(exp, "exp_dir", ".")
+    if not isinstance(exp_path, (str, Path)) or hasattr(exp_path, "_mock_return_value"):
+        exp_path = "."
+    return str(exp_path)
+
+
+def _open_run_store(exp):
+    """Open (or create) the unified RunStore for this experiment's run.
+
+    One store per run, opened once at each entry point (py_sequence_loop,
+    py_trackcorr_init, py_determination_proc_c, the sequence plugins) and
+    threaded down explicitly -- replacing the old OPENPTV_STORAGE env var and
+    its four divergent guessed-path candidate lists.
+    """
+    from openptv2.storage import RunStore
+
+    return RunStore.open(_resolve_exp_path(exp), mode="a")
+
+
 def _ensure_target_output_writable(short_file_bases: List[str]) -> None:
     """Check target output directories before the first target file write."""
     checked_dirs = set()
@@ -718,8 +742,13 @@ def py_determination_proc_c(
     vpar: VolumeParams,
     cals: List[Calibration],
     frame: int = DEFAULT_FRAME_NUM,
+    store=None,
 ) -> None:
-    """Calculate 3D positions from 2D correspondences and save to file."""
+    """Calculate 3D positions from 2D correspondences and save to file.
+
+    ``store``: an openptv2.storage.RunStore, or None -- pass
+    ``_open_run_store(exp)`` from a caller that has the experiment object.
+    """
     np.concatenate(sorted_pos, axis=1)
     concatenated_corresp = np.concatenate(sorted_corresp, axis=1)
 
@@ -738,36 +767,18 @@ def py_determination_proc_c(
     else:
         print_corresp = concatenated_corresp
 
-    storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
-    if storage_mode in ("zarr", "zarr_only"):
-        from openptv2.storage import ZarrFrameStore
-
-        zarr_path = Path("res/run.zarr")
-        zarr_path.parent.mkdir(parents=True, exist_ok=True)
-        store = ZarrFrameStore(zarr_path, mode="a")
-        store.write_correspondences(
-            frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
-        )
-        print(f"Saved 3D correspondences for frame {frame} to Zarr store {zarr_path}")
-
-    if storage_mode == "zarr_only":
-        return
-
     output_path = _prepare_output_path(
         f"{_safe_decode(default_naming['corres'])}.{frame}"
     )
 
     print(f"Prepared {output_path} to write positions")
+    _write_rt_is_file(output_path, pos, print_corresp)
 
-    try:
-        with open(output_path, "w", encoding="utf-8") as rt_is:
-            print(f"Opened {output_path}")
-            rt_is.write(f"{pos.shape[0]}\n")
-            for pix, pt in enumerate(pos):
-                pt_args = (pix + 1,) + tuple(pt) + tuple(print_corresp[:, pix])
-                rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
-    except OSError as exc:
-        _raise_output_write_error(output_path, exc)
+    if store is not None:
+        store.write_correspondences(
+            frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
+        )
+        print(f"Saved 3D correspondences for frame {frame} to {store.store_path}")
 
 
 def run_sequence_plugin(exp) -> None:
@@ -926,13 +937,15 @@ def read_frame_images(pm, img_base_names, num_cams, frame) -> List[np.ndarray]:
 
 
 def _write_rt_is_file(output_path: Path, pos, print_corresp) -> None:
-    """Write the rt_is.<frame> 3D-position + correspondence-index file."""
+    """Write the rt_is.<frame> 3D-position + correspondence-index file.
+
+    ``print_corresp`` is (4, N) cam-major, matching the callers here; the
+    canonical writer wants (N, 4) particle-major.
+    """
+    from openptv2.algorithms.tracking_frame_buf import write_rt_is as _write_rt_is
+
     try:
-        with open(output_path, "w", encoding="utf8") as rt_is:
-            rt_is.write(f"{pos.shape[0]}\n")
-            for pix, pt in enumerate(pos):
-                pt_args = (pix + 1,) + tuple(pt) + tuple(print_corresp[:, pix])
-                rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
+        _write_rt_is(output_path, pos, print_corresp.T)
     except OSError as exc:
         _raise_output_write_error(output_path, exc)
 
@@ -998,22 +1011,10 @@ def py_sequence_loop(exp) -> None:
     if not parallel_preprocess and isinstance(ptv_params_dict, dict):
         parallel_preprocess = ptv_params_dict.get("parallel_preprocess", False)
 
-    storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
-    zarr_store_path = None
-    if storage_mode in ("zarr", "zarr_only"):
-        exp_path = getattr(exp, "exp_path", None)
-        if not isinstance(exp_path, (str, Path)) or hasattr(
-            exp_path, "_mock_return_value"
-        ):
-            exp_path = getattr(exp, "exp_dir", ".")
-        if not isinstance(exp_path, (str, Path)) or hasattr(
-            exp_path, "_mock_return_value"
-        ):
-            exp_path = "."
-        zarr_store_path = str(Path(exp_path) / "res" / "run.zarr")
+    store = _open_run_store(exp)
 
     if parallel_preprocess and not existing_target:
-        preprocess_and_detect_all_parallel(exp, zarr_store_path=zarr_store_path)
+        preprocess_and_detect_all_parallel(exp, zarr_store_path=str(store.store_path))
         existing_target = True
 
     first_frame = spar.get_first()
@@ -1030,13 +1031,7 @@ def py_sequence_loop(exp) -> None:
             frame_images = read_frame_images(pm, img_base_names, num_cams, frame)
         for i_cam in range(num_cams):
             if existing_target:
-                if storage_mode in ("zarr", "zarr_only") and zarr_store_path:
-                    from openptv2.storage import ZarrFrameStore
-
-                    store = ZarrFrameStore(zarr_store_path, mode="r")
-                    targs = store.read_targets(i_cam, frame)
-                else:
-                    targs = read_targets(short_file_bases[i_cam], frame)
+                targs = read_targets(short_file_bases[i_cam], frame, store=store)
             else:
                 high_pass = simple_highpass(
                     frame_images[i_cam],
@@ -1057,16 +1052,8 @@ def py_sequence_loop(exp) -> None:
         sorted_pos, sorted_corresp, _ = correspondences(
             detections, corrected, cals, vpar, cpar
         )
-        if storage_mode in ("zarr", "zarr_only") and zarr_store_path:
-            from openptv2.storage import ZarrFrameStore
-
-            store = ZarrFrameStore(zarr_store_path, mode="a")
-            for i_cam in range(num_cams):
-                store.write_targets(i_cam, frame, detections[i_cam])
-
-        if storage_mode != "zarr_only":
-            for i_cam in range(num_cams):
-                write_targets(detections[i_cam], short_file_bases[i_cam], frame)
+        for i_cam in range(num_cams):
+            write_targets(detections[i_cam], short_file_bases[i_cam], frame, store=store)
 
         print(
             "Frame "
@@ -1090,19 +1077,13 @@ def py_sequence_loop(exp) -> None:
         else:
             print_corresp = sorted_corresp
 
-        if storage_mode in ("zarr", "zarr_only") and zarr_store_path:
-            from openptv2.storage import ZarrFrameStore
-
-            store = ZarrFrameStore(zarr_store_path, mode="a")
-            store.write_correspondences(
-                frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
-            )
-
-        if storage_mode != "zarr_only":
-            output_path = _prepare_output_path(
-                f"{_safe_decode(default_naming['corres'])}.{frame}"
-            )
-            _write_rt_is_file(output_path, pos, print_corresp)
+        output_path = _prepare_output_path(
+            f"{_safe_decode(default_naming['corres'])}.{frame}"
+        )
+        _write_rt_is_file(output_path, pos, print_corresp)
+        store.write_correspondences(
+            frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
+        )
 
 
 def _convert_optv_params_for_python_engine(cpar, vpar, tpar, cals, num_cams):
@@ -1272,7 +1253,9 @@ def py_sequence_loop_python(exp) -> None:
     from openptv2.correspondences import MatchedCoords as AlgMatchedCoords
     from openptv2.segmentation import target_recognition as alg_target_recognition
     from openptv2.tracker import default_naming as alg_default_naming
-    from openptv2.tracking_framebuf import Frame, read_targets
+    from openptv2.tracking_framebuf import Frame, read_targets, write_targets as _write_targets_canonical
+
+    store = _open_run_store(exp)
 
     pm, num_cams, cpar, spar, vpar, tpar, cals = _resolve_experiment_params(exp)
 
@@ -1316,7 +1299,16 @@ def py_sequence_loop_python(exp) -> None:
         corrected = []
         for i_cam in range(num_cams):
             if existing_target:
-                targs = read_targets(short_file_bases[i_cam], frame)
+                # short_file_bases has no trailing dot (ParameterManager's
+                # get_target_filenames convention), but the canonical
+                # read_targets (imported above from tracking_framebuf, which
+                # is what this name resolves to in this function) requires
+                # one -- previously missing here, silently producing the
+                # wrong filename (see docs/plans/2026-08-14-storage-formats-as-built.md,
+                # "one real bug found" in the approved Phase B plan).
+                targs = read_targets(
+                    f"{short_file_bases[i_cam]}.", frame, cam_idx=i_cam, store=store
+                )
             else:
                 imname = Path(img_base_names[i_cam] % frame)
                 if not imname.exists():
@@ -1415,31 +1407,27 @@ def py_sequence_loop_python(exp) -> None:
             sorted_corresp = [np.zeros((num_cams, 0), dtype=int)]
             sorted_pos = [np.zeros((3, 0))]
 
-        # Write targets
+        # Write targets -- through the canonical writer (see docstring import)
+        # so this path stops duplicating the target ASCII format, and now also
+        # dual-writes into the RunStore (previously this function had no
+        # store branch at all).
         for i_cam in range(num_cams):
-            targs = detections[i_cam]
-            output_path = _prepare_output_path(
-                f"{short_file_bases[i_cam]}.{frame:04d}_targets"
+            native_targs = [
+                t._target if hasattr(t, "_target") else t for t in detections[i_cam]
+            ]
+            ok = _write_targets_canonical(
+                native_targs,
+                len(native_targs),
+                f"{short_file_bases[i_cam]}.",
+                frame,
+                store=store,
+                cam_idx=i_cam,
             )
-            try:
-                with open(output_path, "w", encoding="utf8") as f:
-                    f.write(f"{len(targs)}\n")
-                    for t in targs:
-                        t_native = t._target if hasattr(t, "_target") else t
-                        pnr = t_native.pnr
-                        x = t_native.x
-                        y = t_native.y
-                        n = t_native.n
-                        nx = t_native.nx
-                        ny = t_native.ny
-                        sumg = t_native.sumg
-                        tnr = t_native.tnr
-                        f.write(
-                            f"{pnr:4d} {x:9.4f} {y:9.4f} {n:5d} {nx:5d} "
-                            f"{ny:5d} {sumg:5d} {tnr:5d}\n"
-                        )
-            except OSError as exc:
-                _raise_output_write_error(output_path, exc)
+            if not ok:
+                output_path = _prepare_output_path(
+                    f"{short_file_bases[i_cam]}.{frame:04d}_targets"
+                )
+                _raise_output_write_error(output_path, OSError("write_targets failed"))
 
         concatenated_corresp = np.concatenate(sorted_corresp, axis=1)
         np.concatenate(sorted_pos, axis=1)
@@ -1467,6 +1455,9 @@ def py_sequence_loop_python(exp) -> None:
         corres_path = alg_default_naming["corres"]
         output_path = _prepare_output_path(f"{corres_path}.{frame}")
         _write_rt_is_file(output_path, pos, print_corresp)
+        store.write_correspondences(
+            frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
+        )
 
         print(
             "Frame "
@@ -1524,9 +1515,8 @@ def py_trackcorr_init(exp):
 
     print("[ENGINE] Using single Cython 3 tracker runtime")
 
-    tracker = Tracker(cpar, vpar, track_par, spar, cals, default_naming)
-    return tracker
-
+    store = _open_run_store(exp)
+    tracker = Tracker(cpar, vpar, track_par, spar, cals, default_naming, store=store)
     return tracker
 
 
@@ -1567,8 +1557,18 @@ def py_calibration(selection, exp):
         return ptv_calibration.calib_particles(exp)
 
 
-def write_targets(targets: TargetArray, short_file_base: str, frame: int) -> bool:
-    """Write targets to a file."""
+def write_targets(
+    targets: TargetArray, short_file_base: str, frame: int, store=None, cam_idx=None
+) -> bool:
+    """Write targets to a file, and -- when ``store`` is given -- also into
+    the unified RunStore (unconditional dual-write; see the approved Phase B
+    plan). This keeps its own ASCII implementation (byte-identical to, but
+    structurally separate from, algorithms.tracking_frame_buf.write_targets)
+    because tests/gui/test_ptv_file_io.py mocks ``np.savetxt`` directly to
+    exercise the write-failure paths; unifying the two would break that
+    contract for no behavioral gain, since the two are already provably
+    byte-identical (see docs/plans/2026-08-14-storage-formats-as-built.md).
+    """
     output_path = _prepare_output_path(f"{short_file_base}.{frame:04d}_targets")
     num_targets = len(targets)
     success = False
@@ -1578,6 +1578,14 @@ def write_targets(targets: TargetArray, short_file_base: str, frame: int) -> boo
                 file.write("0\n")
         except OSError as exc:
             _raise_output_write_error(output_path, exc)
+        if store is not None:
+            from openptv2.algorithms.tracking_frame_buf import _guess_cam_idx
+
+            store.write_targets(
+                cam_idx if cam_idx is not None else _guess_cam_idx(output_path),
+                frame,
+                targets,
+            )
         return True  # No targets to write, but file created successfully
 
     try:
@@ -1597,15 +1605,33 @@ def write_targets(targets: TargetArray, short_file_base: str, frame: int) -> boo
         success = True
     except OSError as exc:
         _raise_output_write_error(output_path, exc)
+
+    if success and store is not None:
+        from openptv2.algorithms.tracking_frame_buf import _guess_cam_idx
+
+        store.write_targets(
+            cam_idx if cam_idx is not None else _guess_cam_idx(output_path),
+            frame,
+            targets,
+        )
     return success
 
 
-def read_targets(short_file_base: str, frame: int) -> TargetArray:
-    """Read targets from a file."""
+def read_targets(short_file_base: str, frame: int, store=None, cam_idx=None) -> TargetArray:
+    """Read targets from a file. ASCII is tried first; on a miss, and only
+    when ``store`` is given, the same data is read from the unified RunStore
+    instead. With no store (the default), the missing-file behavior is
+    unchanged: raises FileNotFoundError, matching every existing caller."""
     filename = f"{short_file_base}.{frame:04d}_targets"
     print(f" Reading targets from: filename: {filename}")
 
     if not os.path.exists(filename):
+        if store is not None:
+            from openptv2.algorithms.tracking_frame_buf import _guess_cam_idx
+
+            idx = cam_idx if cam_idx is not None else _guess_cam_idx(filename)
+            if store.has_targets(idx, frame):
+                return store.read_targets(idx, frame)
         raise FileNotFoundError(f"Targets file does not exist: {filename}")
 
     try:

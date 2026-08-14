@@ -26,6 +26,10 @@ class TrackingRun:
     ymax: float = field(init=False)
     npart: int = 0
     nlinks: int = 0
+    # An openptv2.storage.RunStore, or None. Threaded down to FrameBuf so every
+    # frame written/read during tracking also goes through the unified store,
+    # replacing the old OPENPTV_STORAGE env var.
+    store: object = None
 
     def __post_init__(self):
         self.fb = FrameBuf(
@@ -36,6 +40,7 @@ class TrackingRun:
             self.linkage_file_base,
             self.prio_file_base,
             self.seq_par.img_base_name,
+            store=self.store,
         )
 
         self.lmax = np.linalg.norm(

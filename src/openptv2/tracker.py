@@ -26,7 +26,9 @@ class Tracker:
     wrapped in a class-based interface matching optv.Tracker.
     """
 
-    def __init__(self, cpar, vpar, tpar, spar, cals, naming=None, flatten_tol=0.0001):
+    def __init__(
+        self, cpar, vpar, tpar, spar, cals, naming=None, flatten_tol=0.0001, store=None
+    ):
         """
         Initialize Tracker.
 
@@ -38,6 +40,9 @@ class Tracker:
             cals: List of Calibration instances
             naming: Dict with 'corres', 'linkage', 'prio' file base names
             flatten_tol: Flatness tolerance for epipolar matching
+            store: An openptv2.storage.RunStore, or None. When given, every
+                frame written/read during tracking also goes through the
+                unified store (unconditional dual-write with ASCII).
         """
         self._cpar = cpar
         self._vpar = vpar
@@ -45,6 +50,7 @@ class Tracker:
         self._spar = spar
         self._cals = cals
         self._flatten_tol = flatten_tol
+        self._store = store
 
         # File naming
         if naming is None:
@@ -81,6 +87,7 @@ class Tracker:
             prio_file_base=self._naming["prio"],
             cal=self._cals_algo,
             flatten_tol=self._flatten_tol,
+            store=self._store,
         )
 
         # Initialize forward tracking

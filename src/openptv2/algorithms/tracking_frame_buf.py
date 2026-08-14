@@ -3,7 +3,6 @@
 Translation of lib/src/tracking_frame_buf.c and lib/include/tracking_frame_buf.h.
 """
 
-import os
 from pathlib import Path
 
 import cython
@@ -162,8 +161,28 @@ def _resolve_file_base(file_base, frame_num):
     return f"{file_base_str}_targets"
 
 
+def _guess_cam_idx(fname) -> int:
+    """Best-effort camera index from a target filename, for callers that
+    don't know which camera they're on. Prefer passing cam_idx explicitly."""
+    import re
+
+    name = Path(fname).name
+    cam_match = re.search(
+        r"(?:cam|_c|c)(\d+)(?:\d{4})?_targets$", name, re.IGNORECASE
+    ) or re.search(r"(?:cam|_c|c)(\d+)", name, re.IGNORECASE)
+    return int(cam_match.group(1)) - 1 if cam_match else 0
+
+
 @cython.ccall
-def read_targets(file_base, frame_num, cam_idx=None):
+def read_targets(file_base, frame_num, cam_idx=None, store=None):
+    """Read one camera/frame's 2D targets.
+
+    ``store``: an ``openptv2.storage.RunStore``, or ``None``. ASCII is tried
+    first; on a miss, and only when ``store`` is given, the same data is read
+    from the store instead -- replacing the old ``OPENPTV_STORAGE``-gated
+    3-candidate guessed-path fallback (see
+    docs/plans/2026-08-14-storage-formats-as-built.md).
+    """
     fname = _resolve_file_base(file_base, frame_num)
 
     try:
@@ -188,31 +207,22 @@ def read_targets(file_base, frame_num, cam_idx=None):
                 )
             return targets
     except FileNotFoundError:
-        p = Path(fname)
+        if store is None:
+            return []
         if cam_idx is None:
-            import re
-            # Match camera pattern e.g. c1_0001, c10001, cam1, _c1
-            cam_match = re.search(r"(?:cam|_c|c)(\d+)(?:\d{4})?_targets$", p.name, re.IGNORECASE) or re.search(r"(?:cam|_c|c)(\d+)", p.name, re.IGNORECASE)
-            cam_idx = int(cam_match.group(1)) - 1 if cam_match else 0
-        zarr_candidates = [
-            p.parent / "run.zarr",
-            p.parent / "targets.zarr",
-            p.parent.parent / "res" / "run.zarr",
-        ]
-        for zpath in zarr_candidates:
-            if zpath.exists():
-                from openptv2.storage import ZarrFrameStore
-                try:
-                    store = ZarrFrameStore(zpath, mode="r")
-                    if store.has_targets(cam_idx, frame_num):
-                        return list(store.read_targets(cam_idx, frame_num))
-                except Exception:
-                    pass
+            cam_idx = _guess_cam_idx(fname)
+        if store.has_targets(cam_idx, frame_num):
+            return list(store.read_targets(cam_idx, frame_num))
         return []
 
 
 @cython.ccall
-def write_targets(tbuf, num_targets, file_base, frame_num):
+def write_targets(tbuf, num_targets, file_base, frame_num, store=None, cam_idx=None):
+    """Write one camera/frame's 2D targets to ASCII, and -- when ``store`` is
+    given -- also into the unified RunStore (unconditional dual-write; see
+    the approved Phase B plan). A store-write failure raises rather than being
+    swallowed: a partially-written store must not report success.
+    """
     fname = _resolve_file_base(file_base, frame_num)
 
     try:
@@ -224,9 +234,15 @@ def write_targets(tbuf, num_targets, file_base, frame_num):
                     f"{t.pnr:4d} {t.x:9.4f} {t.y:9.4f} "
                     f"{t.n:5d} {t.nx:5d} {t.ny:5d} {t.sumg:5d} {t.tnr:5d}\n"
                 )
-        return True
     except IOError:
         return False
+
+    if store is not None:
+        if cam_idx is None:
+            cam_idx = _guess_cam_idx(fname)
+        store.write_targets(cam_idx, frame_num, tbuf[:num_targets])
+
+    return True
 
 
 @cython.cclass
@@ -353,62 +369,46 @@ def reset_links(path):
 
 
 @cython.ccall
-def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_num):
-    storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
+def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_num, store=None):
+    """Read one frame's correspondences + tracking linkage (+ prio).
+
+    ``store``: an ``openptv2.storage.RunStore``, or ``None``. ASCII is tried
+    first; on a miss, and only when ``store`` is given, the same data is read
+    from the store instead. Replaces the old ``OPENPTV_STORAGE``-gated
+    3-candidate guessed-path fallback.
+    """
     fname = f"{corres_file_base}.{frame_num}"
     p = Path(fname)
-    if storage_mode == "zarr_only" or not p.exists() or p.stat().st_size == 0:
-        zarr_candidates = [
-            p.parent / "run.zarr",
-            p.parent / "targets.zarr",
-            p.parent.parent / "res" / "run.zarr",
-        ]
-        for zpath in zarr_candidates:
-            if zpath.exists():
-                from openptv2.storage import ZarrFrameStore
-
-                try:
-                    try:
-                        store = ZarrFrameStore(zpath, mode="r")
-                    except Exception:
-                        store = ZarrFrameStore(zpath, mode="a")
-                    pos_3d, cam_ids = store.read_correspondences(frame_num)
-
-                    link_name = (
-                        Path(linkage_file_base).name if linkage_file_base else "ptv_is"
-                    )
-                    if store.has_linkage(frame_num, link_name):
-                        prevs, nexts, _ = store.read_linkage(frame_num, link_name)
-                    else:
-                        prevs = np.full(len(pos_3d), PREV_NONE, dtype=np.int32)
-                        nexts = np.full(len(pos_3d), NEXT_NONE, dtype=np.int32)
-
-                    cor_buf = []
-                    path_buf = []
-                    for idx, (pt, c, pr, nx) in enumerate(
-                        zip(pos_3d, cam_ids, prevs, nexts)
-                    ):
-                        cor = Corres(nr=idx + 1, p=np.array(c, dtype=np.int32))
-                        path = Pathinfo(
-                            x=np.array(pt, dtype=np.float64),
-                            prev=int(pr),
-                            next_idx=int(nx),
-                            prio=4,
-                            finaldecis=1000000.0,
-                            inlist=0,
-                        )
-                        cor_buf.append(cor)
-                        path_buf.append(path)
-                    return cor_buf, path_buf
-                except (KeyError, FileNotFoundError):
-                    return [], []
-                except Exception as e:
-                    if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
-                        raise RuntimeError(f"Failed to read correspondences for frame {frame_num} from {zpath}: {e}") from e
-                    pass
-        if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
+    if store is not None and (not p.exists() or p.stat().st_size == 0):
+        try:
+            pos_3d, cam_ids = store.read_correspondences(frame_num)
+        except Exception:
             return [], []
-        return [], []
+
+        link_name = Path(linkage_file_base).name if linkage_file_base else "ptv_is"
+        if store.has_linkage(frame_num, link_name):
+            prevs, nexts, _ = store.read_linkage(frame_num, link_name)
+            prio_arr = store.read_prio(frame_num, link_name)
+        else:
+            prevs = np.full(len(pos_3d), PREV_NONE, dtype=np.int32)
+            nexts = np.full(len(pos_3d), NEXT_NONE, dtype=np.int32)
+            prio_arr = None
+
+        cor_buf = []
+        path_buf = []
+        for idx, (pt, c, pr, nx) in enumerate(zip(pos_3d, cam_ids, prevs, nexts)):
+            cor = Corres(nr=idx + 1, p=np.array(c, dtype=np.int32))
+            path = Pathinfo(
+                x=np.array(pt, dtype=np.float64),
+                prev=int(pr),
+                next_idx=int(nx),
+                prio=int(prio_arr[idx]) if prio_arr is not None else 4,
+                finaldecis=1000000.0,
+                inlist=0,
+            )
+            cor_buf.append(cor)
+            path_buf.append(path)
+        return cor_buf, path_buf
 
     try:
         corres_file = open(fname, "r")
@@ -518,6 +518,28 @@ def _corres_p_at(cor_buf, pix):
     return cor_buf[pix].p if hasattr(cor_buf[pix], "p") else np.zeros(4, dtype=np.int32)
 
 
+def _format_rt_is_line(idx, x, y, z, c0, c1, c2, c3) -> str:
+    # Cam ids arrive as float when a caller pads with np.ones() (float64
+    # dtype) for num_cams < 4; %d-style formatting used to truncate that
+    # silently, f-string :d does not accept float, so cast explicitly.
+    return (
+        f"{idx:4d} {x:9.3f} {y:9.3f} {z:9.3f} "
+        f"{int(c0):4d} {int(c1):4d} {int(c2):4d} {int(c3):4d}\n"
+    )
+
+
+def write_rt_is(path, pos, cam_ids) -> None:
+    """Write a res/rt_is.<frame> file: count, then one line per 3D point with
+    its per-camera 2D target ids. The single implementation shared by
+    write_path_frame's inline corres write and every other rt_is writer in
+    the codebase (previously duplicated independently in gui/ptv.py, three
+    sequence plugins, and storage/legacy.py)."""
+    with open(path, "w") as f:
+        f.write(f"{len(pos)}\n")
+        for i, (p, ids) in enumerate(zip(pos, cam_ids)):
+            f.write(_format_rt_is_line(i + 1, p[0], p[1], p[2], ids[0], ids[1], ids[2], ids[3]))
+
+
 @cython.ccall
 def write_path_frame(
     cor_buf,
@@ -527,7 +549,15 @@ def write_path_frame(
     linkage_file_base,
     prio_file_base,
     frame_num,
+    store=None,
 ):
+    """Write one frame's correspondences (rt_is) + tracking linkage (ptv_is)
+    + prio (added), to ASCII and -- when ``store`` is given -- also into the
+    unified RunStore (unconditional dual-write). A store-write failure raises
+    rather than being swallowed: a partially-written store must not report
+    success (see docs/plans/2026-08-14-storage-formats-as-built.md, defect
+    "storage writes wrapped in except: pass").
+    """
     corres_fname = f"{corres_file_base}.{frame_num}"
     linkage_fname = f"{linkage_file_base}.{frame_num}" if linkage_file_base else None
 
@@ -572,8 +602,7 @@ def write_path_frame(
             )
 
         corres_file.write(
-            f"{pix + 1:4d} {p.x[0]:9.3f} {p.x[1]:9.3f} {p.x[2]:9.3f} "
-            f"{c_p[0]:4d} {c_p[1]:4d} {c_p[2]:4d} {c_p[3]:4d}\n"
+            _format_rt_is_line(pix + 1, p.x[0], p.x[1], p.x[2], c_p[0], c_p[1], c_p[2], c_p[3])
         )
 
         if prio_file:
@@ -581,47 +610,37 @@ def write_path_frame(
                 f"{p.prev:4d} {p.next_idx:4d} {p.x[0]:10.3f} {p.x[1]:10.3f} {p.x[2]:10.3f} {p.prio:d}\n"
             )
 
-    storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
-    if storage_mode in ("zarr", "zarr_only"):
-        from openptv2.storage import ZarrFrameStore
-
-        zarr_path = Path("res/run.zarr")
-        if linkage_file_base:
-            zarr_path = Path(linkage_file_base).parent / "run.zarr"
-        zarr_path.parent.mkdir(parents=True, exist_ok=True)
-
-        try:
-            store = ZarrFrameStore(zarr_path, mode="a")
-            prevs = np.array([path_buf[pix].prev for pix in range(num_parts)], dtype=np.int32)
-            nexts = np.array([path_buf[pix].next_idx for pix in range(num_parts)], dtype=np.int32)
-            pos_3d = np.array([path_buf[pix].x for pix in range(num_parts)], dtype=np.float64)
-
-            if linkage_file_base:
-                link_name = Path(linkage_file_base).name
-                store.write_linkage(frame=frame_num, prev_ids=prevs, next_ids=nexts, pos_3d=pos_3d, linkage_name=link_name)
-
-            # Also extract camera IDs for correspondences
-            cam_ids = [_corres_p_at(cor_buf, pix) for pix in range(num_parts)]
-
-            store.write_correspondences(frame=frame_num, pos_3d=pos_3d, cam_target_ids=np.array(cam_ids, dtype=np.int32))
-        except Exception:
-            pass
-
     corres_file.close()
     if linkage_file:
         linkage_file.close()
     if prio_file:
         prio_file.close()
 
-    if storage_mode == "zarr_only":
-        prio_fname = f"{prio_file_base}.{frame_num}" if prio_file_base else None
-        for fn in (corres_fname, linkage_fname, prio_fname):
-            if fn and os.path.exists(fn):
-                try:
-                    os.remove(fn)
-                except Exception:
-                    pass
-        return True
+    if store is not None:
+        prevs = np.array([path_buf[pix].prev for pix in range(num_parts)], dtype=np.int32)
+        nexts = np.array([path_buf[pix].next_idx for pix in range(num_parts)], dtype=np.int32)
+        pos_3d = np.array([path_buf[pix].x for pix in range(num_parts)], dtype=np.float64)
+        cam_ids = np.array(
+            [_corres_p_at(cor_buf, pix) for pix in range(num_parts)], dtype=np.int32
+        )
+
+        store.write_correspondences(frame=frame_num, pos_3d=pos_3d, cam_target_ids=cam_ids)
+
+        if linkage_file_base:
+            link_name = Path(linkage_file_base).name
+            prio_arr = (
+                np.array([path_buf[pix].prio for pix in range(num_parts)], dtype=np.int32)
+                if prio_file_base
+                else None
+            )
+            store.write_linkage(
+                frame=frame_num,
+                prev_ids=prevs,
+                next_ids=nexts,
+                pos_3d=pos_3d,
+                name=link_name,
+                prio=prio_arr,
+            )
 
     return True
 
@@ -845,9 +864,9 @@ class Frame:
                 frame_num = remaining_args.pop(0)
 
         # Execute read using resolved parameters
-        storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
+        store = kwargs.get("store")
         fname = f"{corres_file_base}.{frame_num}"
-        if storage_mode != "zarr_only" and not Path(fname).exists():
+        if store is None and not Path(fname).exists():
             return False
 
         cor_list, path_list = read_path_frame(
@@ -855,6 +874,7 @@ class Frame:
             linkage_file_base if linkage_file_base else "",
             prio_file_base if prio_file_base else "",
             frame_num,
+            store=store,
         )
 
         self.num_parts = len(cor_list)
@@ -878,6 +898,7 @@ class Frame:
                 else target_file_base,
                 frame_num,
                 cam_idx=cam,
+                store=store,
             )
             self.num_targets[cam] = len(targets)
             if self.num_targets[cam] > self.max_targets:
@@ -904,6 +925,7 @@ class Frame:
         prio_file_base,
         target_file_base,
         frame_num,
+        store=None,
     ):
         ok = write_path_frame(
             self.correspond,
@@ -913,6 +935,7 @@ class Frame:
             linkage_file_base,
             prio_file_base if prio_file_base else None,
             frame_num,
+            store=store,
         )
         if not ok:
             return False
@@ -925,6 +948,8 @@ class Frame:
                         self.num_targets[cam],
                         target_file_base[cam],
                         frame_num,
+                        store=store,
+                        cam_idx=cam,
                     )
                     if not ok:
                         return False
@@ -942,6 +967,7 @@ class FrameBuf:
     linkage_file_base: object = cython.declare(object, visibility="public")
     prio_file_base: object = cython.declare(object, visibility="public")
     target_file_base: object = cython.declare(object, visibility="public")
+    store: object = cython.declare(object, visibility="public")
 
     def __init__(
         self,
@@ -952,6 +978,7 @@ class FrameBuf:
         linkage_file_base,
         prio_file_base,
         target_file_base,
+        store=None,
     ):
         self.buf_len = buf_len
         self.num_cams = num_cams
@@ -962,6 +989,7 @@ class FrameBuf:
         self.linkage_file_base = linkage_file_base
         self.prio_file_base = prio_file_base
         self.target_file_base = target_file_base
+        self.store = store
 
     @property
     def _buf_start(self):
@@ -978,7 +1006,12 @@ class FrameBuf:
         linkage = self.linkage_file_base if read_links else ""
         prio = self.prio_file_base if read_links else ""
         return frame.read(
-            self.corres_file_base, linkage, prio, self.target_file_base, frame_num
+            self.corres_file_base,
+            linkage,
+            prio,
+            self.target_file_base,
+            frame_num,
+            store=self.store,
         )
 
     def write_frame_from_start(self, frame_num):
@@ -989,6 +1022,7 @@ class FrameBuf:
             self.prio_file_base,
             self.target_file_base,
             frame_num,
+            store=self.store,
         )
 
 

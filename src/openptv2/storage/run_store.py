@@ -23,11 +23,30 @@ reads the sealed ``trajectories/`` / ``traj/`` groups it produces.
 
 from __future__ import annotations
 
+import time
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 import zarr
+
+
+def _require_group(parent: Any, name: str) -> Any:
+    """Get-or-create a subgroup, retrying through the race where two
+    parallel worker processes create the same group for the first time
+    concurrently -- observed on Windows as a bare PermissionError on
+    ``zarr.json`` (POSIX rename is atomic here; Windows file creation is
+    not). Per-frame groups are the permanent write path (see module
+    docstring), so this contention is expected, not exceptional."""
+    for attempt in range(10):
+        try:
+            if name in parent:
+                return parent[name]
+            return parent.create_group(name)
+        except Exception:
+            if attempt == 9:
+                return parent[name]
+            time.sleep(0.02 * (attempt + 1))
 
 from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
 
@@ -93,22 +112,45 @@ class RunStore:
         self.store_path = Path(store_path)
         try:
             self.root = zarr.open_group(str(self.store_path), mode=mode)
-        except Exception as exc:  # zarr's own open-mode/group-exists errors
-            raise RunStoreError(
-                f"Failed to open run store at {self.store_path!s} (mode={mode!r}): {exc}"
-            ) from exc
+        except Exception as exc:
+            # Two parallel worker processes racing to create the same store
+            # in mode="a"/"w" both see it absent and both try to create the
+            # root group: the loser gets "a group exists ... at path ''",
+            # not a real failure -- the store is there, just re-open it.
+            if mode in ("a", "w", "r+"):
+                try:
+                    self.root = zarr.open_group(str(self.store_path), mode="r+")
+                except Exception:
+                    raise RunStoreError(
+                        f"Failed to open run store at {self.store_path!s} "
+                        f"(mode={mode!r}): {exc}"
+                    ) from exc
+            else:
+                raise RunStoreError(
+                    f"Failed to open run store at {self.store_path!s} (mode={mode!r}): {exc}"
+                ) from exc
 
         if mode in ("w", "w-", "a", "r+"):
             for name in self._GROUPS:
-                if name not in self.root:
-                    self.root.create_group(name)
+                _require_group(self.root, name)
             meta = self.root["meta"]
             if "schema_version" not in meta.attrs:
-                meta.attrs["schema_version"] = 1
-                meta.attrs["sealed"] = False
-                meta.attrs["source_hash"] = None
-                meta.attrs["raw_units"] = "mm"  # matches legacy ASCII (rt_is/ptv_is)
-                meta.attrs["trajectories_units"] = "m"  # matches flowtracks
+                # Two parallel workers can both see the attrs as unset and
+                # race the same rename-into-place zarr.json write; on
+                # Windows that raises WinError 5 (not POSIX-atomic here).
+                # The attrs are idempotent, so retry-and-ignore is correct.
+                for attempt in range(10):
+                    try:
+                        meta.attrs["schema_version"] = 1
+                        meta.attrs["sealed"] = False
+                        meta.attrs["source_hash"] = None
+                        meta.attrs["raw_units"] = "mm"  # matches legacy ASCII (rt_is/ptv_is)
+                        meta.attrs["trajectories_units"] = "m"  # matches flowtracks
+                        break
+                    except Exception:
+                        if attempt == 9:
+                            raise
+                        time.sleep(0.02 * (attempt + 1))
 
     @classmethod
     def open(cls, experiment_root: Union[str, Path], mode: str = "a") -> "RunStore":
@@ -125,9 +167,23 @@ class RunStore:
         return bool(self.root["meta"].attrs.get("sealed", False))
 
     def _mark_unsealed(self) -> None:
-        """Any write to targets/correspondences/linkage invalidates the seal."""
-        if self.root["meta"].attrs.get("sealed"):
-            self.root["meta"].attrs["sealed"] = False
+        """Any write to targets/correspondences/linkage invalidates the seal.
+
+        Called on every write, so under parallel workers this is the
+        hottest path racing on meta/zarr.json -- retry like
+        :func:`_require_group`, not just the one-time init write.
+        """
+        meta = self.root["meta"]
+        if not meta.attrs.get("sealed"):
+            return
+        for attempt in range(10):
+            try:
+                meta.attrs["sealed"] = False
+                return
+            except Exception:
+                if attempt == 9:
+                    raise
+                time.sleep(0.02 * (attempt + 1))
 
     # -- targets ----------------------------------------------------------
 
@@ -152,7 +208,7 @@ class RunStore:
         ndarray of ``[pnr, x, y, n, nx, ny, sumg, tnr]``.
         """
         arr = self._targets_to_array(targets)
-        cam_group = self.root["targets"].require_group(f"cam_{cam}")
+        cam_group = _require_group(self.root["targets"], f"cam_{cam}")
         try:
             cam_group.create_array(_frame_key(frame), data=arr, overwrite=True)
         except Exception as exc:
@@ -243,7 +299,9 @@ class RunStore:
                 f"prev={prev_ids.shape[0]} next={next_ids.shape[0]} pos={n}"
             )
         try:
-            fg = self.root["linkage"].require_group(name).require_group(_frame_key(frame))
+            fg = _require_group(
+                _require_group(self.root["linkage"], name), _frame_key(frame)
+            )
             fg.create_array("prev", data=prev_ids, overwrite=True)
             fg.create_array("next", data=next_ids, overwrite=True)
             fg.create_array("pos", data=pos_3d, overwrite=True)
@@ -422,7 +480,7 @@ class RunStore:
         n_links: int,
         wall_ms: Optional[float] = None,
     ) -> None:
-        fg = self.root["stats"].require_group(_frame_key(frame))
+        fg = _require_group(self.root["stats"], _frame_key(frame))
         fg.create_array(
             "n_targets", data=np.asarray(n_targets, dtype=np.int32), overwrite=True
         )

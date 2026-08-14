@@ -867,6 +867,7 @@ class TreeMenuHandler(Handler):
             mainGui.vpar,
             mainGui.cals,
             frame=frame,
+            store=ptv._open_run_store(mainGui),
         )
 
     def visualize_3d_positions(self, info):

@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 import numpy as np
@@ -6,6 +5,7 @@ from imageio.v3 import imread
 from skimage import img_as_ubyte
 from skimage.color import rgb2gray
 
+from openptv2.algorithms.tracking_frame_buf import write_rt_is
 from openptv2.correspondences import MatchedCoords, correspondences
 from openptv2.orientation import point_positions
 from openptv2.tracker import default_naming
@@ -72,6 +72,8 @@ class Sequence:
         last_frame = spar.get_last()
         print(f" From {first_frame = } to {last_frame = }")
 
+        store = self.ptv._open_run_store(self.exp)
+
         for frame in range(first_frame, last_frame + 1):
             detections = []
             corrected = []
@@ -97,7 +99,9 @@ class Sequence:
             # Save targets only after they've been modified:
             for i_cam in range(num_cams):
                 base_name = self.exp.target_filenames[i_cam]
-                self.ptv.write_targets(detections[i_cam], base_name, frame)
+                self.ptv.write_targets(
+                    detections[i_cam], base_name, frame, store=store, cam_idx=i_cam
+                )
 
             print(
                 "Frame "
@@ -122,25 +126,10 @@ class Sequence:
             else:
                 print_corresp = sorted_corresp
 
-            storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
-            if storage_mode in ("zarr", "zarr_only"):
-                from openptv2.storage import ZarrFrameStore
-
-                zarr_path = Path("res/run.zarr")
-                zarr_path.parent.mkdir(parents=True, exist_ok=True)
-                store = ZarrFrameStore(zarr_path, mode="a")
-                store.write_correspondences(
-                    frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
-                )
-
-            if storage_mode != "zarr_only":
-                # Save rt_is
-                rt_is_filename = default_naming["corres"]
-                if isinstance(rt_is_filename, bytes):
-                    rt_is_filename = rt_is_filename.decode("utf-8")
-                rt_is_filename = f"{rt_is_filename}.{frame}"
-                with open(rt_is_filename, "w", encoding="utf8") as rt_is:
-                    rt_is.write(str(pos.shape[0]) + "\n")
-                    for pix, pt in enumerate(pos):
-                        pt_args = (pix + 1,) + tuple(pt) + tuple(print_corresp[:, pix])
-                        rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
+            rt_is_filename = default_naming["corres"]
+            if isinstance(rt_is_filename, bytes):
+                rt_is_filename = rt_is_filename.decode("utf-8")
+            write_rt_is(f"{rt_is_filename}.{frame}", pos, print_corresp.T)
+            store.write_correspondences(
+                frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
+            )
