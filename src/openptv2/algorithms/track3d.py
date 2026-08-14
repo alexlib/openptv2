@@ -120,23 +120,13 @@ def estimate_level1_dist_weight(pos_a, pos_b, w_min=0.1, w_max=2.0, r0=0.3):
     isn't enough data to estimate R or S reliably.
     """
     import numpy as np
-    from scipy.spatial import cKDTree
 
-    pos_a = np.asarray(pos_a, dtype=float)
-    pos_b = np.asarray(pos_b, dtype=float)
-    if len(pos_a) < 5 or len(pos_b) < 5:
+    from openptv2.tracking_feasibility import measure_motion_scale
+
+    scale = measure_motion_scale(pos_a, pos_b)
+    if scale is None:
         return 1.0
-
-    tree_a = cKDTree(pos_a)
-    spacing_d, _ = tree_a.query(pos_a, k=2)
-    spacing = float(np.median(spacing_d[:, 1]))
-    if spacing <= 0:
-        return 1.0
-
-    tree_b = cKDTree(pos_b)
-    nearest_d, _ = tree_b.query(pos_a, k=1)
-    displacement = float(np.percentile(nearest_d, 10))
-
+    displacement, spacing = scale
     r = displacement / spacing
     weight = w_min + (w_max - w_min) / (1.0 + r / r0)
     return float(np.clip(weight, w_min, w_max))
