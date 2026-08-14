@@ -1525,7 +1525,30 @@ def py_trackcorr_init(exp):
     print("[ENGINE] Using single Cython 3 tracker runtime")
 
     tracker = Tracker(cpar, vpar, track_par, spar, cals, default_naming)
-    return tracker
+
+    # Opt-in per-step tracking parameters (transient/periodic flows). Absent
+    # `track.dynamic_tracking` key -> unchanged static behavior.
+    pm = getattr(exp, "pm", None)
+    if pm is None and hasattr(exp, "exp1"):
+        pm = getattr(exp.exp1, "pm", None)
+    track_cfg = pm.parameters.get("track", {}) if pm else {}
+    if track_cfg.get("dynamic_tracking", False):
+        from openptv2.dynamic_tracking import (
+            DynamicTrackParams,
+            resolve_dynamic_params_path,
+        )
+
+        yaml_path = getattr(pm, "yaml_path", None) if pm else None
+        yaml_dir = Path(yaml_path).parent if yaml_path else Path(".")
+        dyn_path = resolve_dynamic_params_path(track_cfg, yaml_dir)
+        if dyn_path.exists():
+            tracker.set_dynamic_params(DynamicTrackParams.from_yaml(dyn_path, track_par))
+            print(f"[dynamic tracking] per-step overrides loaded from {dyn_path}")
+        else:
+            print(
+                f"[dynamic tracking] enabled but {dyn_path} not found -- "
+                "using static parameters for every step"
+            )
 
     return tracker
 

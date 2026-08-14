@@ -64,6 +64,18 @@ class Tracker:
         self._current_step = None
         self._is_initialized = False
 
+        # Optional per-step parameter overrides (openptv2.dynamic_tracking).
+        # None (default) => static tracking, unchanged behavior.
+        self._dynamic_params = None
+
+    def set_dynamic_params(self, dynamic_params) -> None:
+        """Enable per-step tracking-parameter overrides.
+
+        ``dynamic_params`` is a ``DynamicTrackParams`` (see
+        ``openptv2.dynamic_tracking``); pass ``None`` to revert to static.
+        """
+        self._dynamic_params = dynamic_params
+
     def restart(self):
         """
         Initialize tracking run (prepare for forward tracking).
@@ -104,6 +116,11 @@ class Tracker:
         # valid step is (last - 1). Mirrors step_forward_3d / range(first, last).
         if self._current_step >= self._spar.get_last():
             return False
+
+        if self._dynamic_params is not None:
+            self._run.tpar = convert_track_par_to_tuple(
+                self._dynamic_params.get(self._current_step)
+            )
 
         # Process current frame
         trackcorr_c_loop(self._run, self._current_step)
@@ -202,6 +219,11 @@ class Tracker:
         # Check if we've reached the end (mirrors range(first, last))
         if self._current_step >= self._spar.get_last():
             return False
+
+        if self._dynamic_params is not None:
+            self._run.tpar = convert_track_par_to_tuple(
+                self._dynamic_params.get(self._current_step)
+            )
 
         # Process current frame
         track3d_loop(self._run, self._current_step)

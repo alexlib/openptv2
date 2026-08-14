@@ -28,6 +28,10 @@ def print_help():
     print("  gui                 Launch the interactive 3D-PTV GUI")
     print("  list-trackers       List all available trackers with capabilities")
     print("  recommend           Analyse a dataset and recommend a tracker & parameters")
+    print(
+        "  tune-dynamic        Static tracking pass -> flag under-linked steps -> "
+        "write per-step overrides"
+    )
     print("  benchmark           Generate datasets, sweep params, compare trackers")
     print()
     print("For help on any specific command, run:")
@@ -354,6 +358,97 @@ def main():
 
         except Exception as e:
             print(f"Recommendation failed: {e}")
+            sys.exit(1)
+
+    elif command == "tune-dynamic":
+        try:
+            import argparse
+            from pathlib import Path
+
+            parser = argparse.ArgumentParser(prog="openptv tune-dynamic")
+            parser.add_argument("yaml_file", help="Experiment YAML (rt_is.# must already exist)")
+            parser.add_argument(
+                "--window",
+                type=int,
+                default=5,
+                help="Frames each side of a flagged step used for its local bounds (default: 5)",
+            )
+            parser.add_argument(
+                "--threshold",
+                type=float,
+                default=None,
+                help="Link-rate cutoff below which a step is flagged (default: auto, mean - 1 std)",
+            )
+            parser.add_argument(
+                "--out",
+                default=None,
+                help="Output overrides YAML (default: dynamic_track.yaml next to yaml_file, "
+                "or track.dynamic_params_file if set)",
+            )
+            args, _ = parser.parse_known_args(sys.argv[2:])
+
+            from openptv2.batch.pyptv_batch import main as batch_main
+            from openptv2.dynamic_tracking import (
+                flag_low_quality_steps,
+                per_frame_link_rate,
+                resolve_dynamic_params_path,
+                suggest_step_overrides,
+                write_dynamic_params_yaml,
+            )
+            from openptv2.gui.parameter_manager import ParameterManager
+
+            yaml_file = Path(args.yaml_file).resolve()
+            exp_path = yaml_file.parent
+
+            pm = ParameterManager()
+            pm.from_yaml(yaml_file)
+            seq_cfg = pm.parameters.get("sequence", {})
+            first, last = int(seq_cfg.get("first", 0)), int(seq_cfg.get("last", 0))
+            track_cfg = pm.parameters.get("track", {})
+            num_cams = int(pm.num_cams or 4)
+
+            print(f"Step 1/2: running static tracking pass on {yaml_file} ...")
+            batch_main(yaml_file, first, last, mode="tracking")
+
+            linkage_base = exp_path / "res" / "ptv_is"
+            rates = per_frame_link_rate(linkage_base, first, last)
+            flagged = flag_low_quality_steps(rates, threshold=args.threshold)
+
+            if not flagged:
+                print(
+                    "No steps fell below the link-rate threshold -- static "
+                    "parameters look sufficient across the whole run."
+                )
+                sys.exit(0)
+
+            print(f"Step 2/2: {len(flagged)} step(s) flagged as under-linked: {flagged}")
+            overrides = suggest_step_overrides(
+                exp_path / "res",
+                flagged,
+                first,
+                last,
+                num_cams=num_cams,
+                window=args.window,
+            )
+
+            out_path = (
+                Path(args.out) if args.out else resolve_dynamic_params_path(track_cfg, exp_path)
+            )
+            write_dynamic_params_yaml(out_path, overrides)
+            print(f"Wrote per-step overrides for {len(overrides)} step(s) to {out_path}")
+            print(
+                "Review/edit it, then set `track.dynamic_tracking: true` "
+                f"in {yaml_file.name}"
+                + (
+                    f" (and `track.dynamic_params_file: {args.out}`)"
+                    if args.out
+                    else ""
+                )
+                + ", and re-run tracking."
+            )
+
+        except Exception as e:
+            print(f"tune-dynamic command failed: {e}")
             sys.exit(1)
 
     else:
