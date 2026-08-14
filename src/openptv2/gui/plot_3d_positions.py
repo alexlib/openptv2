@@ -206,21 +206,17 @@ def _read_positions(rt_is_path: Path, frame: Optional[int] = None) -> np.ndarray
     (0, 3) array. Missing/unreadable files propagate their OSError.
     """
     if not rt_is_path.exists():
-        # Fallback to Zarr store in experiment or res folder
-        zarr_candidates = [
-            rt_is_path.parent / "run.zarr",
-            rt_is_path.parent / "targets.zarr",
-            rt_is_path.parent.parent / "targets.zarr",
-            rt_is_path.parent.parent / "targets_test.zarr",
-        ]
-        for zpath in zarr_candidates:
-            if zpath.exists() and frame is not None:
-                from openptv2.storage import ZarrFrameStore
+        # Fallback to the unified RunStore for this run.
+        if frame is not None:
+            from openptv2.storage import RunStore, resolve_store_path
 
+            zarr_path = resolve_store_path(rt_is_path.parent)
+            if zarr_path.exists():
                 try:
-                    store = ZarrFrameStore(zpath, mode="r")
-                    pos_3d, _ = store.read_correspondences(frame)
-                    return pos_3d
+                    store = RunStore(zarr_path, mode="r")
+                    if store.has_correspondences(frame):
+                        pos_3d, _ = store.read_correspondences(frame)
+                        return pos_3d
                 except Exception:
                     pass
 

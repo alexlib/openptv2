@@ -204,6 +204,35 @@ def test_traj_index_matches_legacy_reader_after_singleton_filter(cavity_ascii_on
     assert sum(mine_lengths) == sum(legacy_lengths)
 
 
+def test_to_flowtracks_trajectories_matches_legacy_reader(cavity_ascii_only):
+    """RunStore.to_flowtracks_trajectories (Phase D's GUI display read path)
+    must return the same trajectories as the legacy read_zarr_trajectories
+    linkage-walk, and must seal on demand rather than requiring the caller
+    to remember to."""
+    from openptv2.storage.zarr_store import read_zarr_trajectories
+
+    store = import_run(cavity_ascii_only)
+    assert not store.sealed
+
+    result = store.to_flowtracks_trajectories()
+    assert store.sealed  # sealed itself as a side effect
+
+    legacy = read_zarr_trajectories(cavity_ascii_only / "res" / "run.zarr")
+    assert sorted(len(t) for t in result) == sorted(len(t) for t in legacy)
+    assert sum(len(t) for t in result) == sum(len(t) for t in legacy)
+    # metres, not mm
+    assert max(abs(t.pos()).max() for t in result) < 1.0
+
+
+def test_to_flowtracks_trajectories_frame_range_filter(cavity_ascii_only):
+    store = import_run(cavity_ascii_only)
+    all_trajs = store.to_flowtracks_trajectories()
+    narrow = store.to_flowtracks_trajectories(first=10001, last=10002, traj_min_len=2)
+    assert len(narrow) <= len(all_trajs)
+    for t in narrow:
+        assert t.time().max() <= 10002
+
+
 def test_write_targets_rejects_bad_input(tmp_path):
     store = RunStore(tmp_path / "run.zarr", mode="w")
     with pytest.raises(RunStoreError):

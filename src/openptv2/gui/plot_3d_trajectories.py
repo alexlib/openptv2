@@ -207,10 +207,11 @@ def create_3d_trajectories_panel(
     zarr_store = Path(exp_path) / "res" / "run.zarr"
     if zarr_store.exists():
         try:
-            from openptv2.storage import read_zarr_trajectories
+            from openptv2.storage import RunStore
 
-            trajectories = read_zarr_trajectories(
-                zarr_store, first=first_frame, last=effective_last
+            store = RunStore(zarr_store, mode="a")
+            trajectories = store.to_flowtracks_trajectories(
+                first=first_frame, last=effective_last, traj_min_len=traj_min_len
             )
         except Exception:
             trajectories = []

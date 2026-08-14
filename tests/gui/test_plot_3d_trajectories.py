@@ -153,16 +153,22 @@ def test_extract_xyz_mm_scaling():
 
 
 def test_create_3d_trajectories_panel_zarr(tmp_path):
+    """Phase D: create_3d_trajectories_panel reads through
+    RunStore.to_flowtracks_trajectories (the sealed-store cache), not the
+    legacy read_zarr_trajectories linkage-walk."""
     res_dir = tmp_path / "res"
     res_dir.mkdir()
     zarr_dir = res_dir / "run.zarr"
 
     traj = _make_dummy_trajectory(np.array([[10.0, 20.0, 30.0], [11.0, 21.0, 31.0]]))
 
-    with patch("openptv2.storage.read_zarr_trajectories", return_value=[traj]) as mock_read_zarr:
+    with patch(
+        "openptv2.storage.run_store.RunStore.to_flowtracks_trajectories",
+        return_value=[traj],
+    ) as mock_read_store:
         zarr_dir.mkdir()
         panel = create_3d_trajectories_panel(tmp_path, first_frame=1, last_frame=10)
-        mock_read_zarr.assert_called_once()
+        mock_read_store.assert_called_once()
         ax = panel.figure.axes[0]
         assert len(ax.lines) == 1
 

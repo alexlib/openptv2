@@ -466,6 +466,54 @@ class RunStore:
         grp = self.root["trajectories"]
         return {k: np.asarray(grp[k]) for k in ("pos", "vel", "accel", "time", "trajid")}
 
+    def to_flowtracks_trajectories(
+        self,
+        first: Optional[int] = None,
+        last: Optional[int] = None,
+        traj_min_len: int = 2,
+    ) -> list:
+        """Sealed-store trajectories as flowtracks ``Trajectory`` objects
+        (positions in metres, matching flowtracks' own convention).
+
+        Seals the store first if the linkage has changed since the last seal
+        (``needs_reseal``) -- callers don't need to remember to call
+        :func:`openptv2.storage.seal.seal` themselves. This is the GUI
+        display read path (Phase D): it replaces the legacy
+        ``read_zarr_trajectories`` walk-the-linkage-at-read-time fallback
+        chain with one read of the sealed, source-hash-verified cache.
+        """
+        from flowtracks.trajectory import Trajectory
+
+        from .seal import needs_reseal, seal
+
+        if self.frames() and needs_reseal(self):
+            seal(self)
+        if not self.sealed:
+            return []
+
+        data = self.trajectories()
+        pos, vel, accel = data["pos"], data["vel"], data["accel"]
+        time, trajid = data["time"], data["trajid"]
+
+        mask = np.ones(len(time), dtype=bool)
+        if first is not None:
+            mask &= time >= first
+        if last is not None:
+            mask &= time <= last
+        pos, vel, accel, time, trajid = pos[mask], vel[mask], accel[mask], time[mask], trajid[mask]
+
+        trajects = []
+        for tid in np.unique(trajid):
+            idx = np.where(trajid == tid)[0]
+            if len(idx) < traj_min_len:
+                continue
+            order = np.argsort(time[idx])
+            idx = idx[order]
+            trajects.append(
+                Trajectory(pos[idx], vel[idx], time[idx], int(tid), accel=accel[idx])
+            )
+        return trajects
+
     # -- stats ------------------------------------------------------------
 
     def write_stats(

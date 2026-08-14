@@ -887,7 +887,8 @@ class TreeMenuHandler(Handler):
             frame = ptv._extract_frame_num(ptv_params["img_name"][0])
 
         rt_is_path = Path(mainGui.exp_path) / "res" / f"rt_is.{frame}"
-        if not rt_is_path.exists():
+        zarr_store = Path(mainGui.exp_path) / "res" / "run.zarr"
+        if not rt_is_path.exists() and not zarr_store.exists():
             warning(
                 info.ui.control,
                 f"No 3D positions found for frame {frame}.\n\n"

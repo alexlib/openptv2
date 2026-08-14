@@ -22,9 +22,12 @@ def compute_flowtracks_trajectories_from_guiobj(guiobj):
     zarr_store = Path(exp_path) / "res" / "run.zarr" if exp_path else Path("res/run.zarr")
     if zarr_store.exists():
         try:
-            from openptv2.storage import read_zarr_trajectories
+            from openptv2.storage import RunStore
 
-            dataset = read_zarr_trajectories(zarr_store, first=seq_first, last=seq_last)
+            store = RunStore(zarr_store, mode="a")
+            dataset = store.to_flowtracks_trajectories(
+                first=seq_first, last=seq_last, traj_min_len=3
+            )
         except Exception:
             dataset = []
 
@@ -89,9 +92,10 @@ def export_ptv_is_to_paraview(
     zarr_store = Path(output_dir) / "run.zarr"
     if zarr_store.exists():
         try:
-            from openptv2.storage import read_zarr_trajectories
+            from openptv2.storage import RunStore
 
-            dataset = read_zarr_trajectories(zarr_store)
+            store = RunStore(zarr_store, mode="a")
+            dataset = store.to_flowtracks_trajectories()
         except Exception:
             dataset = []
 
