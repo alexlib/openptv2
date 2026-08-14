@@ -129,3 +129,40 @@ def test_visualize_3d_trajectories_success(tmp_path):
     ):
         handler.visualize_3d_trajectories(mock_info)
         mock_config.assert_called_once()
+
+
+def test_extract_xyz_mm_scaling():
+    from openptv2.gui.plot_3d_trajectories import _extract_xyz_mm
+
+    # Trajectory 1 with position < 100 mm (e.g. 50 mm)
+    t1 = _make_dummy_trajectory(np.array([[10.0, 20.0, 50.0], [12.0, 22.0, 52.0]]))
+    # Trajectory 2 with position > 100 mm (e.g. 150 mm)
+    t2 = _make_dummy_trajectory(np.array([[10.0, 20.0, 150.0], [12.0, 22.0, 152.0]]))
+
+    ext1 = _extract_xyz_mm(t1)
+    ext2 = _extract_xyz_mm(t2)
+
+    # Both must be in mm (50 mm and 150 mm)
+    np.testing.assert_allclose(ext1[0], [10.0, 20.0, 50.0])
+    np.testing.assert_allclose(ext2[0], [10.0, 20.0, 150.0])
+
+    # Raw mm numpy array
+    raw = np.array([[10.0, 20.0, 50.0]])
+    ext_raw = _extract_xyz_mm(raw)
+    np.testing.assert_allclose(ext_raw[0], [10.0, 20.0, 50.0])
+
+
+def test_create_3d_trajectories_panel_zarr(tmp_path):
+    res_dir = tmp_path / "res"
+    res_dir.mkdir()
+    zarr_dir = res_dir / "run.zarr"
+
+    traj = _make_dummy_trajectory(np.array([[10.0, 20.0, 30.0], [11.0, 21.0, 31.0]]))
+
+    with patch("openptv2.storage.read_zarr_trajectories", return_value=[traj]) as mock_read_zarr:
+        zarr_dir.mkdir()
+        panel = create_3d_trajectories_panel(tmp_path, first_frame=1, last_frame=10)
+        mock_read_zarr.assert_called_once()
+        ax = panel.figure.axes[0]
+        assert len(ax.lines) == 1
+

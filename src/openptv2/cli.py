@@ -24,6 +24,7 @@ def print_help():
     print(
         "  validate            Validate the single Cython runtime on bundled test data"
     )
+    print("  self-check          Run comprehensive system self-checks & diagnostics")
     print("  gui                 Launch the interactive 3D-PTV GUI")
     print("  list-trackers       List all available trackers with capabilities")
     print("  recommend           Analyse a dataset and recommend a tracker & parameters")
@@ -182,6 +183,17 @@ def main():
 
         except Exception as e:
             print(f"Validation command failed: {e}")
+            sys.exit(1)
+
+    elif command in ("self-check", "selfcheck", "check"):
+        # System self-check and diagnostic suite
+        try:
+            from openptv2.self_check import main as self_check_main
+
+            sys.exit(self_check_main(sys.argv[2:]))
+
+        except Exception as e:
+            print(f"Self-check command failed: {e}")
             sys.exit(1)
 
     elif command == "gui":
