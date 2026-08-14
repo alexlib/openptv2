@@ -178,10 +178,11 @@ class Tracker:
 
         base = self._naming["linkage"]
         first, last = self._spar.get_first(), self._spar.get_last()
-        stats = {"links_before": count_links(base, first, last)}
+        store = self._store
+        stats = {"links_before": count_links(base, first, last, store=store)}
         if cold_start:
             stats["cold_start"] = seed_cold_start(
-                base, first, last, float(self._tpar_algo.dvxmax)
+                base, first, last, float(self._tpar_algo.dvxmax), store=store
             )
         if gap_relinking:
             stats["gap_relinking"] = relink_trajectory_gaps(
@@ -190,10 +191,11 @@ class Tracker:
                 last,
                 max_gap=max_gap,
                 max_velocity_err=float(self._tpar_algo.dvxmax),
+                store=store,
             )
         if reciprocity:
-            stats["reciprocity"] = enforce_reciprocity(base, first, last)
-        stats["links_after"] = count_links(base, first, last)
+            stats["reciprocity"] = enforce_reciprocity(base, first, last, store=store)
+        stats["links_after"] = count_links(base, first, last, store=store)
         return stats
 
     def step_forward_3d(self):

@@ -35,28 +35,23 @@ def _path(base: str, frame: int) -> str:
     return f"{base}.{frame}"
 
 
-def read_linkage(linkage_base: str, frame: int):
-    """Return (prev, next, xyz) arrays for a frame, or None if the file/Zarr entry is absent
-    or empty. ``prev``/``next`` are int32; ``xyz`` is (n, 3) float64."""
-    base_path = Path(linkage_base)
-    zarr_dir = base_path.parent / "run.zarr"
-    if zarr_dir.exists():
-        try:
-            import zarr
+def read_linkage(linkage_base: str, frame: int, store=None):
+    """Return (prev, next, xyz) arrays for a frame, or None if the file/store
+    entry is absent or empty. ``prev``/``next`` are int32; ``xyz`` is (n, 3)
+    float64.
 
-            try:
-                root = zarr.open_group(str(zarr_dir), mode="r")
-            except Exception:
-                root = zarr.open_group(str(zarr_dir), mode="a")
-            key = f"linkage/{base_path.name}/frame_{frame:05d}"
-            if key in root:
-                fg = root[key]
-                prev = np.asarray(fg["prev"], dtype=np.int32)
-                nxt = np.asarray(fg["next"], dtype=np.int32)
-                xyz = np.ascontiguousarray(fg["pos"], dtype=np.float64)
-                return prev, nxt, xyz
-        except Exception as e:
-            print(f"[read_linkage] Zarr read warning frame {frame}: {e}")
+    ``store``: an ``openptv2.storage.RunStore``, or None. When given, reads
+    through it (its own frame-key convention) instead of guessing a
+    ``run.zarr`` path with a hand-built, differently-padded key -- the two
+    conventions collided silently before this (see
+    docs/plans/2026-08-14-storage-formats-as-built.md).
+    """
+    base_path = Path(linkage_base)
+    if store is not None:
+        name = base_path.name
+        if store.has_linkage(frame, name):
+            prev, nxt, xyz = store.read_linkage(frame, name)
+            return prev, nxt, xyz
 
     p = _path(linkage_base, frame)
     if not os.path.exists(p) or os.path.getsize(p) == 0:
@@ -73,31 +68,11 @@ def read_linkage(linkage_base: str, frame: int):
     return prev, nxt, xyz
 
 
-def write_linkage(linkage_base: str, frame: int, prev, nxt, xyz) -> None:
-    """Rewrite a linkage file or Zarr store entry, preserving the tracker's column format."""
+def write_linkage(linkage_base: str, frame: int, prev, nxt, xyz, store=None) -> None:
+    """Rewrite a linkage file, and -- when ``store`` is given -- also the
+    matching RunStore entry (unconditional dual-write, same as every other
+    writer in the unified store; a failed store write raises)."""
     base_path = Path(linkage_base)
-    zarr_dir = base_path.parent / "run.zarr"
-    if zarr_dir.exists():
-        try:
-            import zarr
-
-            root = zarr.open_group(str(zarr_dir), mode="r+")
-            key = f"linkage/{base_path.name}/frame_{frame:05d}"
-            if key in root:
-                fg = root[key]
-                fg.create_array(
-                    "prev", data=np.asarray(prev, dtype=np.int32), overwrite=True
-                )
-                fg.create_array(
-                    "next", data=np.asarray(nxt, dtype=np.int32), overwrite=True
-                )
-                fg.create_array(
-                    "pos", data=np.asarray(xyz, dtype=np.float64), overwrite=True
-                )
-                return
-        except Exception:
-            pass
-
     p = _path(linkage_base, frame)
     n = len(prev)
     with open(p, "w", encoding="utf-8") as f:
@@ -108,19 +83,22 @@ def write_linkage(linkage_base: str, frame: int, prev, nxt, xyz) -> None:
                 f"{xyz[i, 0]:10.3f} {xyz[i, 1]:10.3f} {xyz[i, 2]:10.3f}\n"
             )
 
+    if store is not None:
+        store.write_linkage(frame, prev, nxt, xyz, name=base_path.name)
 
-def count_links(linkage_base: str, first: int, last: int) -> int:
+
+def count_links(linkage_base: str, first: int, last: int, store=None) -> int:
     """Total forward links across the sequence (particles with next >= 0)."""
     total = 0
     for k in range(first, last + 1):
-        r = read_linkage(linkage_base, k)
+        r = read_linkage(linkage_base, k, store=store)
         if r is None:
             continue
         total += int((r[1] >= 0).sum())
     return total
 
 
-def enforce_reciprocity(linkage_base: str, first: int, last: int):
+def enforce_reciprocity(linkage_base: str, first: int, last: int, store=None):
     """Forward-backward consistency guard: keep only bidirectional links.
 
     A link between frame-k particle ``i`` and frame-(k+1) particle ``j`` is kept
@@ -133,7 +111,7 @@ def enforce_reciprocity(linkage_base: str, first: int, last: int):
     """
     frames = {}
     for k in range(first, last + 1):
-        r = read_linkage(linkage_base, k)
+        r = read_linkage(linkage_base, k, store=store)
         if r is not None:
             frames[k] = r
 
@@ -165,7 +143,7 @@ def enforce_reciprocity(linkage_base: str, first: int, last: int):
 
     for k in dirty:
         prev, nxt, xyz = frames[k]
-        write_linkage(linkage_base, k, prev, nxt, xyz)
+        write_linkage(linkage_base, k, prev, nxt, xyz, store=store)
 
     return {"severed_next": severed_next, "severed_prev": severed_prev}
 
@@ -176,6 +154,7 @@ def seed_cold_start(
     last: int,
     dv_max: float,
     accept_frac: float = 0.5,
+    store=None,
 ):
     """Velocity-seeded recovery of the cold-start (first) transition.
 
@@ -190,9 +169,9 @@ def seed_cold_start(
     Only creates *bidirectional* links (sets both next and prev), so the result
     stays reciprocal. Returns a stats dict.
     """
-    r0 = read_linkage(linkage_base, first)
-    r1 = read_linkage(linkage_base, first + 1)
-    r2 = read_linkage(linkage_base, first + 2)
+    r0 = read_linkage(linkage_base, first, store=store)
+    r1 = read_linkage(linkage_base, first + 1, store=store)
+    r2 = read_linkage(linkage_base, first + 2, store=store)
     if r0 is None or r1 is None or r2 is None:
         return {"added": 0, "reason": "missing frames"}
 
@@ -236,8 +215,8 @@ def seed_cold_start(
         added += 1
 
     if added:
-        write_linkage(linkage_base, first, prev0, next0, xyz0)
-        write_linkage(linkage_base, first + 1, prev1, next1, xyz1)
+        write_linkage(linkage_base, first, prev0, next0, xyz0, store=store)
+        write_linkage(linkage_base, first + 1, prev1, next1, xyz1, store=store)
     return {"added": added, "candidates": int((prev1 < 0).sum()), "tol": tol}
 
 
@@ -247,6 +226,7 @@ def relink_trajectory_gaps(
     last: int,
     max_gap: int = 2,
     max_velocity_err: float = 5.0,
+    store=None,
 ) -> dict[str, int]:
     """
     Multi-pass post-processing gap relinking across linkage files.
@@ -261,7 +241,7 @@ def relink_trajectory_gaps(
     bridged = 0
     frames = {}
     for k in range(first, last + 1):
-        r = read_linkage(linkage_base, k)
+        r = read_linkage(linkage_base, k, store=store)
         if r is not None:
             frames[k] = r
 
@@ -302,9 +282,14 @@ def relink_trajectory_gaps(
                     prev_target[target_idx] = end_idx
                     bridged += 1
 
-                    write_linkage(linkage_base, k, prev_k, next_k, xyz_k)
+                    write_linkage(linkage_base, k, prev_k, next_k, xyz_k, store=store)
                     write_linkage(
-                        linkage_base, k + gap + 1, prev_target, next_target, xyz_target
+                        linkage_base,
+                        k + gap + 1,
+                        prev_target,
+                        next_target,
+                        xyz_target,
+                        store=store,
                     )
 
     return {"bridged_gaps": bridged}

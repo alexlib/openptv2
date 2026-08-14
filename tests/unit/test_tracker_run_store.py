@@ -99,6 +99,42 @@ def test_tracker_full_forward_3d_writes_through_store(cavity_orig_workdir, monke
     assert store_pos2.shape == ascii_pos2.shape
 
 
+def test_tracker_postprocess_writes_through_store(cavity_orig_workdir, monkeypatch):
+    """Tracker.postprocess() (tracking_postprocess.py's enforce_reciprocity/
+    seed_cold_start/relink_trajectory_gaps) used to bypass RunStore entirely
+    with a raw zarr.open_group call using a differently-padded frame key
+    (frame_NNNNN vs RunStore's frame_NNNNNN) -- silently a no-op against a
+    RunStore-backed run. Now threaded through the same store parameter as
+    everything else; this proves it actually reads/writes the store, not a
+    stale/incompatible zarr layout."""
+    monkeypatch.chdir(cavity_orig_workdir)
+
+    cpar = ControlPar.from_yaml("parameters.yaml")
+    cals = _read_calibrations(cpar, cavity_orig_workdir)
+    store = RunStore("res/run.zarr", mode="w")
+
+    tracker = Tracker(
+        cpar,
+        VolumePar.from_yaml("parameters.yaml"),
+        TrackPar.from_yaml("parameters.yaml"),
+        SequencePar.from_yaml("parameters.yaml"),
+        cals,
+        store=store,
+    )
+    tracker.full_forward_3d()
+    stats = tracker.postprocess()
+
+    assert stats["links_before"] == tracker.nlinks
+    assert stats["links_after"] >= 0
+
+    # ASCII and store still agree after postprocess ran (it may have
+    # rewritten some frames in place).
+    ascii_prev, ascii_next, _ = _load_linkage(cavity_orig_workdir / "res" / "ptv_is.10001")
+    store_prev, store_next, _ = store.read_linkage(10001, "ptv_is")
+    assert (store_prev == ascii_prev).all()
+    assert (store_next == ascii_next).all()
+
+
 def _load_rt_is(path: Path):
     import numpy as np
 
