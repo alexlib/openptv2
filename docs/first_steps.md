@@ -113,7 +113,7 @@ The modern OpenPTV2 GUI provides interactive visual parameter configuration, tar
 Run the command-line shortcut in your terminal (with activated virtual environment or prepended by `uv run`):
 
 ```bash
-# Launch the main Tkinter/ttkbootstrap interface
+# Launch the main TraitsUI/Chaco interface
 uv run openptv2-gui -w ./test_data/test_cavity
 ```
 

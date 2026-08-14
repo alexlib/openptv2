@@ -11,9 +11,6 @@ with app.setup:
     import marimo as mo
     import matplotlib.pyplot as plt
     import numpy as np
-    from openptv2.gui.pyptv import ptv
-    from openptv2.gui.pyptv.experiment import Experiment
-    from openptv2.gui.pyptv.parameter_manager import ParameterManager
 
     from openptv2 import (
         Calibration,
@@ -22,6 +19,9 @@ with app.setup:
         epipolar_curve,
         target_recognition,
     )
+    from openptv2.gui import ptv
+    from openptv2.gui.experiment import Experiment
+    from openptv2.gui.parameter_manager import ParameterManager
 
 
 @app.cell
