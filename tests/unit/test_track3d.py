@@ -239,7 +239,14 @@ def track3d_test_cavity():
         # order, so some links that only existed because an earlier-index
         # particle grabbed a candidate first no longer form -- the fewer,
         # remaining links are the ones cost-ordering actually prefers.
-        assert run.nlinks == 1736
+        # 1736 -> 1748 after adding a raw-displacement tie-breaker to the
+        # Level 1 cost (acc_residual + LEVEL1_DIST_WEIGHT * |cand - curr|):
+        # pure acceleration-residual ranking picked a farther candidate over
+        # a closer available one in ~51% of links on a loosely-gated dataset
+        # (a large-volume prediction can align with a distant candidate by
+        # chance); a few previously-blocked links now form because the
+        # tie-break changes which candidate wins a multi-claimant contest.
+        assert run.nlinks == 1748
 
     finally:
         os.chdir(original)
@@ -284,8 +291,8 @@ def test_tracker_full_forward_3d_test_cavity():
         tracker.full_forward_3d()
 
         assert tracker.npart == 2082
-        # See the matching note in track3d_test_cavity above: 1765 -> 1753 -> 1736.
-        assert tracker.nlinks == 1736
+        # See the matching note in track3d_test_cavity above: 1765 -> 1753 -> 1736 -> 1748.
+        assert tracker.nlinks == 1748
     finally:
         os.chdir(original)
 

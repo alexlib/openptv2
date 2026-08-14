@@ -5,6 +5,15 @@ import numpy as np
 
 from openptv2.algorithms.constants import NEXT_NONE
 
+# Level 1 candidate cost = acceleration_residual + LEVEL1_DIST_WEIGHT *
+# |candidate - current_position|. Must stay well below 1.0 so a genuine
+# accelerating/curving continuation (large acceleration gap vs a
+# near-but-wrong decoy) still wins on acceleration alone -- see
+# test_track3d_level1_ranks_by_forward_acceleration_not_decoy_behind, whose
+# fixture requires this weight to stay under 3.0. It exists purely to break
+# near-ties in acceleration residual toward the physically smaller jump.
+LEVEL1_DIST_WEIGHT = 1.0
+
 if cython.compiled:
     from cython.cimports.libc.math import floor as c_floor, sqrt as c_sqrt
 else:
@@ -330,7 +339,24 @@ def track3d_loop_fast(
             d1 = path_x_2[k, 1] - 2.0 * path_x_1[i, 1] + path_x_0[prev_idx, 1]
             d2 = path_x_2[k, 2] - 2.0 * path_x_1[i, 2] + path_x_0[prev_idx, 2]
             acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
-            edge_cost[n_edges] = acc
+            # Acceleration residual alone ranks by fit to the (possibly
+            # noisy) constant-velocity extrapolation, with no penalty for
+            # how far the candidate actually sits from the particle's last
+            # known position -- so once the gate is wider than the true
+            # particle spacing, a distant candidate that happens to align
+            # with a noisy prediction outranks a much closer, physically
+            # plausible one (observed: a farther candidate beat a closer
+            # available one in ~51% of links on a loosely-gated dataset).
+            # Add a raw-displacement term, weighted below the acceleration
+            # term (LEVEL1_DIST_WEIGHT < 1) so the existing decoy-vs-true-
+            # continuation ordering (large acceleration gap) still wins --
+            # this only breaks near-ties in acceleration toward the smaller
+            # jump.
+            dc0 = path_x_2[k, 0] - path_x_1[i, 0]
+            dc1 = path_x_2[k, 1] - path_x_1[i, 1]
+            dc2 = path_x_2[k, 2] - path_x_1[i, 2]
+            dist_from_curr = c_sqrt(dc0 * dc0 + dc1 * dc1 + dc2 * dc2)
+            edge_cost[n_edges] = acc + LEVEL1_DIST_WEIGHT * dist_from_curr
             edge_i[n_edges] = i
             edge_k[n_edges] = k
             n_edges += 1
