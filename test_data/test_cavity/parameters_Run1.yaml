@@ -138,7 +138,7 @@ sortgrid:
   radius: 20
 targ_rec:
   cr_sz: 2
-  disco: 100
+  disco: 15
   gvthres:
   - 9
   - 9
@@ -153,13 +153,13 @@ targ_rec:
   sumg_min: 150
 track:
   angle: 120.0
-  dacc: 5.5
-  dvxmax: 15.5
-  dvxmin: -15.5
-  dvymax: 15.5
-  dvymin: -15.5
-  dvzmax: 15.5
-  dvzmin: -15.5
+  dacc: 0.24
+  dvxmax: 0.6
+  dvxmin: -0.6
+  dvymax: 0.6
+  dvymin: -0.6
+  dvzmax: 0.6
+  dvzmin: -0.6
   flagNewParticles: true
   track_mode: 0
 man_ori_coordinates:

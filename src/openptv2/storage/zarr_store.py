@@ -535,5 +535,165 @@ def main_cli():
         )
 
 
+def read_zarr_trajectories(
+    zarr_path: Union[str, Path],
+    first: Optional[int] = None,
+    last: Optional[int] = None,
+    group: str = "trajectories",
+) -> List[Any]:
+    """Extract all trajectories from a Zarr store directory as Flowtracks Trajectory objects.
+
+    Arguments:
+        zarr_path: Path to the .zarr directory or Zarr group.
+        first, last: Inclusive range of frame numbers to read.
+        group: Sub-group name inside the Zarr store ('trajectories' or 'linkage').
+
+    Returns:
+        List of flowtracks Trajectory instances (with positions in meters).
+    """
+    import zarr
+    from flowtracks.trajectory import Trajectory
+
+    root = zarr.open_group(str(zarr_path), mode="r")
+    target_group = root[group] if group in root else root
+
+    # The tracker's linkage is the source of truth; /trajectories is a derived
+    # cache written by post-processing (openptv_cloud.post.convert). A re-track
+    # does not refresh it, so preferring it silently replays a stale result --
+    # observed as trajectories jumping tens of mm/frame, far past the tracker's
+    # own velocity bound. Read it only when there is no linkage to walk.
+    has_linkage = "linkage" in root and len(list(root["linkage"].keys())) > 0
+
+    # Case 1: Structured dataset in /trajectories (arrays: pos, vel, accel, time/frame, trajid)
+    if "trajid" in target_group and not has_linkage:
+        trajid_arr = np.asarray(target_group["trajid"])
+        time_key = "time" if "time" in target_group else "frame"
+        time_arr = np.asarray(target_group[time_key])
+        pos_arr = np.asarray(target_group["pos"]) / 1000.0  # mm to meters for Flowtracks standard
+
+        vel_arr = np.asarray(target_group["vel"]) / 1000.0 if "vel" in target_group else None
+        accel_arr = np.asarray(target_group["accel"]) / 1000.0 if "accel" in target_group else None
+
+        mask = np.ones(len(time_arr), dtype=bool)
+        if first is not None:
+            mask &= time_arr >= first
+        if last is not None:
+            mask &= time_arr <= last
+
+        trajid_arr = trajid_arr[mask]
+        time_arr = time_arr[mask]
+        pos_arr = pos_arr[mask]
+        if vel_arr is not None:
+            vel_arr = vel_arr[mask]
+        if accel_arr is not None:
+            accel_arr = accel_arr[mask]
+
+        unique_trids = np.unique(trajid_arr)
+        unique_trids = unique_trids[unique_trids > 0]  # trajid 0 is the unlinked particle bucket
+        trajects = []
+
+        for trid in unique_trids:
+            idx = np.where(trajid_arr == trid)[0]
+            if len(idx) == 0:
+                continue
+            order = np.argsort(time_arr[idx])
+            idx = idx[order]
+            vel_val = vel_arr[idx] if vel_arr is not None else np.zeros_like(pos_arr[idx])
+            kws = {}
+            if accel_arr is not None:
+                kws["accel"] = accel_arr[idx]
+
+            trajects.append(Trajectory(pos_arr[idx], vel_val, time_arr[idx], int(trid), **kws))
+
+        return trajects
+
+
+    # Case 2: Walk tracker linkage (linkage/<name>/frame_NNNNN)
+    elif "linkage" in root:
+        link_root = root["linkage"]
+        linkage_name = "ptv_is" if "ptv_is" in link_root else next(iter(link_root.keys()), None)
+        link_group = link_root[linkage_name] if linkage_name else None
+        frame_keys = (
+            sorted(
+                [k for k in link_group.keys() if k.startswith("frame_")],
+                key=lambda k: int(k.split("_")[1]),
+            )
+            if link_group is not None
+            else []
+        )
+        if first is not None:
+            frame_keys = [k for k in frame_keys if int(k.split("_")[1]) >= first]
+        if last is not None:
+            frame_keys = [k for k in frame_keys if int(k.split("_")[1]) <= last]
+
+        pos_l, time_l, trajid_l = [], [], []
+        prev_trajids = None
+        prev_frame_num = None
+        next_trajid = 0
+        for fkey in frame_keys:
+            frame_num = int(fkey.split("_")[1])
+            fg = link_group[fkey]
+            prev_ids = np.asarray(fg["prev"])
+            pos = np.asarray(fg["pos"]) / 1000.0  # mm to meters for Flowtracks standard
+            n = len(pos)
+            trajids = np.empty(n, dtype=np.int64)
+            if prev_trajids is not None and prev_frame_num != frame_num - 1:
+                # A gap in the stored frames: `prev` indexes the frame before
+                # this one, which we do not have, so the indices address the
+                # wrong particles. Break every chain across the gap.
+                prev_trajids = None
+            if prev_trajids is not None and prev_ids.size and prev_ids.max() >= len(
+                prev_trajids
+            ):
+                # Row counts disagree with the linkage (e.g. frames left over
+                # from an earlier run in an appended store) -- same hazard.
+                prev_trajids = None
+            if prev_trajids is None:
+                trajids[:] = np.arange(next_trajid, next_trajid + n)
+                next_trajid += n
+            else:
+                # Disambiguate multi-claim linkages
+                claimed, claim_counts = np.unique(
+                    prev_ids[prev_ids >= 0], return_counts=True
+                )
+                ambiguous = set(claimed[claim_counts > 1].tolist())
+                linked = np.array(
+                    [p >= 0 and p not in ambiguous for p in prev_ids]
+                )
+                trajids[linked] = prev_trajids[prev_ids[linked]]
+                n_new = int((~linked).sum())
+                trajids[~linked] = np.arange(next_trajid, next_trajid + n_new)
+                next_trajid += n_new
+
+            pos_l.append(pos)
+            time_l.append(np.full(n, frame_num, dtype=np.int64))
+            trajid_l.append(trajids)
+            prev_trajids = trajids
+            prev_frame_num = frame_num
+
+        if not pos_l:
+            return []
+
+        pos_all = np.concatenate(pos_l)
+        time_all = np.concatenate(time_l)
+        trajid_all = np.concatenate(trajid_l)
+
+        trajects = []
+        for trid in np.unique(trajid_all):
+            idx = np.where(trajid_all == trid)[0]
+            if len(idx) < 2:
+                continue
+            idx = idx[np.argsort(time_all[idx])]
+            p_pos = pos_all[idx]
+            p_time = time_all[idx]
+            p_vel = np.zeros_like(p_pos)
+            trajects.append(Trajectory(p_pos, p_vel, p_time, int(trid)))
+
+        return trajects
+
+    return []
+
+
 if __name__ == "__main__":
     main_cli()
+

@@ -26,11 +26,12 @@ def _extract_xyz_mm(traj) -> np.ndarray:
         if callable(p):
             p = p()
         arr = np.asarray(p, dtype=float).reshape(-1, 3)
-        # flowtracks Trajectory positions are stored in meters, convert to mm
-        if arr.size > 0 and np.max(np.abs(arr)) < 100.0:
+        # flowtracks Trajectory objects store positions in meters -> convert to mm
+        if arr.size > 0 and np.max(np.abs(arr)) < 20.0:
             arr = arr * 1000.0
         return arr
     else:
+        # Raw position array input is in mm (OpenPTV2 standard)
         arr = np.asarray(traj, dtype=float).reshape(-1, 3)
         return arr
 
@@ -41,6 +42,7 @@ def build_3d_trajectories_figure(
     first_frame: int | None = None,
     last_frame: int | None = None,
     total_frames_requested: int | None = None,
+    max_step: float = 50.0,
 ) -> Figure:
     """Build a 3D line plot Figure for particle trajectories.
 
@@ -66,21 +68,68 @@ def build_3d_trajectories_figure(
     except AttributeError:
         cmap = plt.cm.get_cmap("tab20")
 
-    if num_trajs > 0:
-        for idx, traj in enumerate(trajectories):
+    valid_trajs = []
+    for traj in trajectories:
+        tid = getattr(traj, "trajid", lambda: 1)() if hasattr(traj, "trajid") else 1
+        if callable(tid):
+            try:
+                tid = tid()
+            except Exception:
+                tid = 1
+        if tid > 0:
+            valid_trajs.append(traj)
+
+    if len(valid_trajs) > 0:
+        for idx, traj in enumerate(valid_trajs):
             pos = _extract_xyz_mm(traj)
             if pos.shape[0] > 0:
+                t = None
+                if hasattr(traj, "time"):
+                    try:
+                        t = traj.time()
+                        if callable(t):
+                            t = t()
+                        t = np.asarray(t)
+                        if len(t) == pos.shape[0]:
+                            order = np.argsort(t)
+                            pos = pos[order]
+                            t = t[order]
+                    except Exception:
+                        t = None
+
+                # Break into continuous physical segments (dt == 1, step <= 10.0 mm)
+                segments = []
+                if pos.shape[0] == 1 or t is None or len(t) != pos.shape[0]:
+                    segments = [pos]
+                else:
+                    curr_seg = [pos[0]]
+                    for i in range(len(t) - 1):
+                        dt = t[i + 1] - t[i]
+                        dp = np.linalg.norm(pos[i + 1] - pos[i])
+                        if dt == 1 and dp <= max_step:
+                            curr_seg.append(pos[i + 1])
+                        else:
+                            if len(curr_seg) > 0:
+                                segments.append(np.array(curr_seg))
+                            curr_seg = [pos[i + 1]]
+                    if len(curr_seg) > 0:
+                        segments.append(np.array(curr_seg))
+
                 color = cmap(idx % 20)
-                ax.plot(
-                    pos[:, 0],
-                    pos[:, 1],
-                    pos[:, 2],
-                    marker="o",
-                    markersize=3,
-                    linewidth=1.5,
-                    color=color,
-                    alpha=0.8,
-                )
+                for seg in segments:
+                    if seg.shape[0] > 0:
+                        ax.plot(
+                            seg[:, 0],
+                            seg[:, 1],
+                            seg[:, 2],
+                            marker="o",
+                            markersize=3,
+                            linewidth=1.5,
+                            color=color,
+                            alpha=0.8,
+                        )
+
+
 
     if bounds is not None:
         (xlo, xhi), (ylo, yhi), (zlo, zhi) = bounds
@@ -145,7 +194,7 @@ def create_3d_trajectories_panel(
     xuap: bool = False,
     traj_min_len: int = 2,
 ) -> Plot3DTrajectories:
-    """Read ptv_is files using flowtracks and return Plot3DTrajectories window.
+    """Read ptv_is files or Zarr store using flowtracks and return Plot3DTrajectories window.
 
     If total frames (last_frame - first_frame + 1) > 50, loads only the first 50 frames.
     """
@@ -154,20 +203,32 @@ def create_3d_trajectories_panel(
     if total_frames > 50:
         effective_last = first_frame + 49
 
-    ptv_is_pattern = str(Path(exp_path) / "res" / "ptv_is.%d")
+    trajectories = []
+    zarr_store = Path(exp_path) / "res" / "run.zarr"
+    if zarr_store.exists():
+        try:
+            from openptv2.storage import read_zarr_trajectories
 
-    try:
-        from flowtracks.io import trajectories_ptvis
+            trajectories = read_zarr_trajectories(
+                zarr_store, first=first_frame, last=effective_last
+            )
+        except Exception:
+            trajectories = []
 
-        trajectories = trajectories_ptvis(
-            ptv_is_pattern,
-            first=first_frame,
-            last=effective_last,
-            xuap=xuap,
-            traj_min_len=traj_min_len,
-        )
-    except Exception:
-        trajectories = []
+    if not trajectories:
+        ptv_is_pattern = str(Path(exp_path) / "res" / "ptv_is.%d")
+        try:
+            from flowtracks.io import trajectories_ptvis
+
+            trajectories = trajectories_ptvis(
+                ptv_is_pattern,
+                first=first_frame,
+                last=effective_last,
+                xuap=xuap,
+                traj_min_len=traj_min_len,
+            )
+        except Exception:
+            trajectories = []
 
     fig = build_3d_trajectories_figure(
         trajectories,
@@ -177,3 +238,4 @@ def create_3d_trajectories_panel(
         total_frames_requested=total_frames,
     )
     return Plot3DTrajectories(figure=fig)
+

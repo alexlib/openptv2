@@ -207,3 +207,32 @@ def test_py_sequence_loop_zarr_mode(tmp_path):
     finally:
         os.environ.pop("OPENPTV_STORAGE", None)
         os.chdir(old_cwd)
+
+
+def test_read_zarr_trajectories(tmp_path):
+    """Test read_zarr_trajectories on both linkage and trajectories groups."""
+    from openptv2.storage import ZarrFrameStore, read_zarr_trajectories
+
+    zarr_path = tmp_path / "test_traj.zarr"
+    store = ZarrFrameStore(zarr_path, mode="w")
+
+    # Write linkage for two frames
+    # Frame 1: 2 particles
+    p1_pos = np.array([[10.0, 20.0, 30.0], [100.0, 200.0, 300.0]])  # mm
+    prev1 = np.array([-1, -1])
+    next1 = np.array([0, 1])
+    store.write_linkage(frame=1, prev_ids=prev1, next_ids=next1, pos_3d=p1_pos)
+
+    # Frame 2: 2 particles
+    p2_pos = np.array([[12.0, 22.0, 32.0], [102.0, 202.0, 302.0]])  # mm
+    prev2 = np.array([0, 1])
+    next2 = np.array([-1, -1])
+    store.write_linkage(frame=2, prev_ids=prev2, next_ids=next2, pos_3d=p2_pos)
+
+    trajs = read_zarr_trajectories(zarr_path)
+    assert len(trajs) == 2
+    # Check positions in flowtracks Trajectory objects are in meters
+    p0 = trajs[0].pos()
+    np.testing.assert_allclose(p0[0], [0.010, 0.020, 0.030])
+    np.testing.assert_allclose(p0[1], [0.012, 0.022, 0.032])
+

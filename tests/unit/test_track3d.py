@@ -552,3 +552,34 @@ def test_trackcorr_burgers_parity_with_cython():
                 )
     finally:
         os.chdir(original)
+
+
+def test_track3d_unlinked_particle_keeps_the_next_none_sentinel():
+    """An unlinked particle must be left at NEXT_NONE (-2), not -1.
+
+    -1 is PREV_NONE; the ptv_is contract (and flowtracks'
+    trajectories_ptvis, which detects the end of a trajectory by next ==
+    -2) treats -1 in a `next` column as "not a terminated trajectory", so
+    writing it there silently drops those trajectories on read.
+    """
+    from openptv2.algorithms.constants import NEXT_NONE
+
+    px0 = _px([[0.0, 0.0, 0.0]])
+    px1 = _px([[0.1, 0.0, 0.0]])
+    px2 = _px([[9.0, 9.0, 9.0]])  # far outside the search box: no link possible
+    prev0 = np.array([-1], dtype=np.int32)
+    prev1 = np.array([0], dtype=np.int32)
+    next1 = np.full(1, NEXT_NONE, dtype=np.int32)
+    prev2 = np.full(1, -1, dtype=np.int32)
+    next2 = np.full(1, NEXT_NONE, dtype=np.int32)
+
+    count = track3d_loop_fast(
+        1,
+        px0, prev0, 1,
+        px1, prev1, next1, 1,
+        px2, prev2, next2, 1,
+        0.5, 0.5, 0.5,
+        4,
+    )
+    assert count == 0
+    assert next1[0] == NEXT_NONE

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 from flowtracks.io import trajectories_ptvis  # Expose for testing/monkeypatching
 
@@ -15,13 +17,23 @@ def compute_flowtracks_trajectories_from_guiobj(guiobj):
     seq_last = seq_params["last"]
     seq_params["base_name"]
 
-    # Optionally: guiobj.overlay_set_images(base_names, seq_first, seq_last) # GUI should handle display
+    dataset = []
+    exp_path = getattr(guiobj, "exp_path", ".")
+    zarr_store = Path(exp_path) / "res" / "run.zarr" if exp_path else Path("res/run.zarr")
+    if zarr_store.exists():
+        try:
+            from openptv2.storage import read_zarr_trajectories
 
-    from flowtracks.io import trajectories_ptvis
+            dataset = read_zarr_trajectories(zarr_store, first=seq_first, last=seq_last)
+        except Exception:
+            dataset = []
 
-    dataset = trajectories_ptvis(
-        "res/ptv_is.%d", first=seq_first, last=seq_last, xuap=False, traj_min_len=3
-    )
+    if not dataset:
+        from flowtracks.io import trajectories_ptvis
+
+        dataset = trajectories_ptvis(
+            "res/ptv_is.%d", first=seq_first, last=seq_last, xuap=False, traj_min_len=3
+        )
     cals = guiobj.cals
     cpar = guiobj.cpar
     num_cams = guiobj.num_cams
@@ -67,13 +79,26 @@ def export_ptv_is_to_paraview(
     ptv_is_pattern="res/ptv_is.%d", output_dir="./res", xuap=False
 ):
     """
-    Reads ptv_is.# files and exports per-frame CSVs for Paraview visualization.
+    Reads ptv_is.# files or Zarr store and exports per-frame CSVs for Paraview visualization.
     Each output file is named ptv_<frame>.txt and contains columns:
     particle, x, y, z, dx, dy, dz
     """
     import pandas as pd
 
-    dataset = trajectories_ptvis(ptv_is_pattern, xuap=xuap)
+    dataset = []
+    zarr_store = Path(output_dir) / "run.zarr"
+    if zarr_store.exists():
+        try:
+            from openptv2.storage import read_zarr_trajectories
+
+            dataset = read_zarr_trajectories(zarr_store)
+        except Exception:
+            dataset = []
+
+    if not dataset:
+        dataset = trajectories_ptvis(ptv_is_pattern, xuap=xuap)
+
+
     dataframes = []
     for traj in dataset:
         dataframes.append(
@@ -99,3 +124,4 @@ def export_ptv_is_to_paraview(
     print(
         f"Saving trajectories to Paraview finished. {len(df_grouped)} frames exported."
     )
+

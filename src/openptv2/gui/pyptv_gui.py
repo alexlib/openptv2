@@ -926,13 +926,15 @@ class TreeMenuHandler(Handler):
 
         res_dir = Path(mainGui.exp_path) / "res"
         ptv_is_files = list(res_dir.glob("ptv_is.*"))
-        if not ptv_is_files:
+        zarr_store = res_dir / "run.zarr"
+        if not ptv_is_files and not zarr_store.exists():
             warning(
                 info.ui.control,
-                f"No 3D trajectory files (ptv_is.*) found in {res_dir}.\n\n"
+                f"No 3D trajectory files (ptv_is.* or run.zarr) found in {res_dir}.\n\n"
                 f"Run tracking first to generate trajectories.",
             )
             return
+
 
         bounds = None
         try:

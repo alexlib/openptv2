@@ -3,6 +3,8 @@
 import cython
 import numpy as np
 
+from openptv2.algorithms.constants import NEXT_NONE
+
 if cython.compiled:
     from cython.cimports.libc.math import floor as c_floor, sqrt as c_sqrt
 else:
@@ -311,7 +313,7 @@ def track3d_loop_fast(
         prev_idx = path_prev_1[i]
         if prev_idx < 0 or prev_idx >= num_parts_0:
             continue
-        path_next_1[i] = -1  # default; a claim below may overwrite this
+        path_next_1[i] = NEXT_NONE  # default; a claim below may overwrite this
 
         pred_x = 2.0 * path_x_1[i, 0] - path_x_0[prev_idx, 0]
         pred_y = 2.0 * path_x_1[i, 1] - path_x_0[prev_idx, 1]
@@ -377,7 +379,7 @@ def track3d_loop_fast(
         if nvel == 0:
             continue
 
-        path_next_1[i] = -1  # default; a claim below may overwrite this
+        path_next_1[i] = NEXT_NONE  # default; a claim below may overwrite this
         inv_nvel = 1.0 / nvel
         pred_x = cx + vel_x * inv_nvel
         pred_y = cy + vel_y * inv_nvel
@@ -416,7 +418,7 @@ def track3d_loop_fast(
     for i in range(orig_parts):
         if path_prev_1[i] >= 0 or path_next_1[i] >= 0:
             continue
-        path_next_1[i] = -1  # default; a claim below may overwrite this
+        path_next_1[i] = NEXT_NONE  # default; a claim below may overwrite this
 
         pred_x = path_x_1[i, 0]
         pred_y = path_x_1[i, 1]
