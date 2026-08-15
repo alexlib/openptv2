@@ -267,19 +267,37 @@ the tested scope — the pass appends one row and rewires one pointer per claim,
 frame, but wasn't stress-tested against concurrent/other postprocess passes touching the same
 frame in the same run).
 
-## Stage 3 — Better in-tracker cost (independent, ~1 week)
+## Stage 3 — Better in-tracker cost — INVESTIGATED, deferred (2026-08-15)
 
-All inside `track_kernels_corr.py`, using data already in the 4-frame buffer:
-- **Per-track adaptive search radius**: with history ≥ 3, scale the dv box per particle from
-  local velocity + k·(recent velocity variance) instead of the global box.
-- **Multi-frame residual term**: proPTV-style polynomial-fit residual over the buffered X[0..3]
-  added to the `rr` cost (currently `dl/lmax + acc/dacc + angle/dangle`, divided by camera-vote
-  count `quali`).
-- **In-tracker 1-frame coast** for detection dropouts — but FIRST measure whether
-  `relink_trajectory_gaps` / the Stage 2 pass already recovers these; skip if so (YAGNI).
+All three sub-items were evaluated before writing any code (same discipline as every prior
+stage); one is resolved, two are deliberately deferred rather than rushed into the riskiest code
+path this plan touches.
 
-**Success:** at ≥ 5k particles/frame on the dense benchmark, recall up with precision ≥ baseline
-(target 0.30 → ≥ 0.5).
+- **In-tracker 1-frame coast for detection dropouts — SKIPPED (YAGNI), confirmed redundant.** The
+  plan itself said to check `relink_trajectory_gaps` first. It already handles exactly this case:
+  `tests/unit/test_tracking_postprocess.py::test_relink_trajectory_gaps_bridges_missing_frame`
+  builds a particle undetected for one whole frame (not just missing from correspondence — no 2D
+  targets either) and confirms the gap gets bridged by constant-velocity extrapolation. Already
+  wired into Stage 2's corrective pass. Nothing to build.
+- **Per-track adaptive search radius** and **multi-frame residual term — deferred, not
+  implemented.** Both require modifying `track_kernels_corr.py`'s compiled nogil decision logic —
+  the exact code Stage 0 found and fixed a real, subtle bug in (the backward-pass acceptance
+  guard), and the code every pinned-link-count regression test in the suite depends on for its
+  exact candidate tie-breaking. A rushed change here risks silently regressing dozens of already-
+  validated tests in ways that are easy to miss without dedicated, focused verification time this
+  stage did not get. User decision (2026-08-15): defer both to a dedicated follow-up session
+  rather than compress them into the tail of this one.
+  - The *concept* behind the adaptive-radius item already exists as reusable code:
+    `src/openptv2/tracking_cost.py::compute_velocity_aligned_search_radius` (velocity-aligned
+    anisotropic search ellipsoids), already used by the Hungarian/assignment-based tracker family
+    (`kalman_hungarian_3d` etc.). The gap is specifically that trackcorr's compiled kernel doesn't
+    use it — extending it there needs new per-particle velocity-history state threaded through
+    `TrackingRun`/`FrameBuf`, which is the actual size of the remaining work, not a green-field
+    design problem.
+
+**Not measured** (no code changed, no baseline shift expected): recall at ≥ 5k particles/frame on
+the dense benchmark remains at the Stage 0-era numbers documented in `master-plan.md`'s density
+sweep.
 
 ## Stage 4 — Capacity + performance (1–2 days, mechanical, parallel to Stage 2)
 
