@@ -51,6 +51,7 @@ BUILTIN_TRACKING_PLUGINS = {
     "sg_hungarian_3d": "openptv2.plugins.fast_3d_smooth_tracking",
     "fast_3d_smooth": "openptv2.plugins.fast_3d_smooth_tracking",
     "nearest_hungarian_3d": "openptv2.plugins.nearest_hungarian_3d",
+    "kalman_hungarian_3d": "openptv2.plugins.kalman_hungarian_3d",
     "myptv_3d_tracking": "openptv2.plugins.myptv_3d_tracking",
     "myptv_2d_tracking": "openptv2.plugins.myptv_2d_tracking",
     "predictive_gmm_3d": "openptv2.plugins.predictive_gmm_3d",

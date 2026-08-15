@@ -50,7 +50,14 @@ class Cython3DTracker:
         self.exp = exp
 
     def do_tracking(self) -> None:
-        """Execute experiment-level tracking via OpenPTV2 full_forward_3d()."""
+        """Execute experiment-level tracking via OpenPTV2 full_forward_3d().
+
+        Postprocess (seed_cold_start -> relink_trajectory_gaps ->
+        enforce_reciprocity) is opt-in via track.postprocess in the YAML,
+        same as it was in the now-orphaned default_tracking.py plugin this
+        module replaced -- defaults OFF, since it is not cost-neutral (see
+        docs/plans/master-plan.md, Stage 1c).
+        """
         if self.exp is None:
             raise ValueError("No experiment object provided")
 
@@ -58,6 +65,17 @@ class Cython3DTracker:
             tracker = self.ptv.py_trackcorr_init(self.exp)
             self.exp.tracker = tracker
             tracker.full_forward_3d()
+
+            pm = getattr(self.exp, "pm", None)
+            if pm is None and hasattr(self.exp, "exp1"):
+                pm = getattr(self.exp.exp1, "pm", None)
+            track_cfg = pm.parameters.get("track", {}) if pm else {}
+            if track_cfg.get("postprocess", False):
+                stats = tracker.postprocess()
+                log.info(
+                    "Post-process links: %s -> %s",
+                    stats.get("links_before", 0), stats.get("links_after", 0),
+                )
 
     def track_frames(self, frame_particles: list[np.ndarray]) -> list[dict]:
         """Track 3D particle coordinate arrays across time frames.

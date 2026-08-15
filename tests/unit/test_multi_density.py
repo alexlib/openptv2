@@ -8,18 +8,23 @@ from openptv2.tracking_presets import PRESET_CHOICES, TrackingPreset, infer_pres
 
 
 def test_default_tracker_is_priority_segment_3d():
-    """Verify priority_segment_3d is the primary default tracking plugin."""
-    assert BUILTIN_TRACKING_PLUGINS["default"] == "openptv2.plugins.default_tracking"
-    assert BUILTIN_TRACKING_PLUGINS["fast"] == "openptv2.plugins.default_tracking"
-    assert BUILTIN_TRACKING_PLUGINS["fast_3d"] == "openptv2.plugins.default_tracking"
-    assert BUILTIN_TRACKING_PLUGINS["priority_segment_3d"] == "openptv2.plugins.default_tracking"
+    """Verify priority_segment_3d is the primary default tracking plugin.
+
+    Since "feat: Make OpenPTV Fast 3D the default tracker" (31c5ad5), the
+    compiled Cython3DTracker plugin serves these aliases directly --
+    default_tracking.py is orphaned (no registry entry points to it).
+    """
+    assert BUILTIN_TRACKING_PLUGINS["default"] == "openptv2.plugins.cython_3d_tracking"
+    assert BUILTIN_TRACKING_PLUGINS["fast"] == "openptv2.plugins.cython_3d_tracking"
+    assert BUILTIN_TRACKING_PLUGINS["fast_3d"] == "openptv2.plugins.cython_3d_tracking"
+    assert BUILTIN_TRACKING_PLUGINS["priority_segment_3d"] == "openptv2.plugins.cython_3d_tracking"
 
 
 def test_fast_alias_mapping():
     """Verify fast is registered as an alias to priority_segment_3d."""
     assert LEGACY_ALIASES["fast"] == "priority_segment_3d"
-    assert BUILTIN_TRACKING_PLUGINS["fast"] == "openptv2.plugins.default_tracking"
-    assert BUILTIN_TRACKING_PLUGINS["fast_3d"] == "openptv2.plugins.default_tracking"
+    assert BUILTIN_TRACKING_PLUGINS["fast"] == "openptv2.plugins.cython_3d_tracking"
+    assert BUILTIN_TRACKING_PLUGINS["fast_3d"] == "openptv2.plugins.cython_3d_tracking"
 
 
 def test_preset_order():
