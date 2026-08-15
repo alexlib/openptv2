@@ -19,6 +19,7 @@ import numpy as np
 import pytest
 
 from openptv2.batch import pyptv_batch
+from openptv2.storage import RunStore, resolve_store_path
 
 # ── frame / camera constants ──────────────────────────────────────────────────
 FRAMES = list(range(10001, 10005))
@@ -36,45 +37,43 @@ GT_TRANSIENT = 25
 # ═════════════════════════════════════════════════════════════════════════════
 
 
-def _read_rt_is(path: Path) -> list[dict]:
-    """Return list of {label, x, y, z, t1, t2, t3, t4} from an rt_is.* file."""
-    lines = path.read_text().strip().splitlines()
-    n = int(lines[0])
-    rows = []
-    for line in lines[1 : n + 1]:
-        p = line.split()
-        rows.append(
-            dict(
-                label=int(p[0]),
-                x=float(p[1]),
-                y=float(p[2]),
-                z=float(p[3]),
-                t1=int(p[4]),
-                t2=int(p[5]),
-                t3=int(p[6]),
-                t4=int(p[7]),
-            )
-        )
-    return rows
+def _open_res_store(res_dir: Path) -> RunStore:
+    return RunStore(resolve_store_path(res_dir), mode="r")
 
 
-def _read_ptv_is(path: Path) -> list[dict]:
-    """Return list of {prev, next, x, y, z} from a ptv_is.* file."""
-    lines = path.read_text().strip().splitlines()
-    n = int(lines[0])
-    rows = []
-    for line in lines[1 : n + 1]:
-        p = line.split()
-        rows.append(
-            dict(
-                prev=int(p[0]),
-                next=int(p[1]),
-                x=float(p[2]),
-                y=float(p[3]),
-                z=float(p[4]),
-            )
-        )
-    return rows
+def _rt_is_exists(res_dir: Path, frame: int) -> bool:
+    return _open_res_store(res_dir).has_correspondences(frame)
+
+
+def _read_rt_is(res_dir: Path, frame: int) -> list[dict]:
+    """Return list of {label, x, y, z, t1, t2, t3, t4} for one frame, read
+    from the RunStore -- pipeline runs are store-only now (no rt_is.* ASCII),
+    see docs/plans/2026-08-15-zarr-only-transition-plan.md."""
+    store = _open_res_store(res_dir)
+    if not store.has_correspondences(frame):
+        return []
+    pos, cam_ids = store.read_correspondences(frame)
+    return [
+        dict(label=i + 1, x=p[0], y=p[1], z=p[2], t1=c[0], t2=c[1], t3=c[2], t4=c[3])
+        for i, (p, c) in enumerate(zip(pos, cam_ids))
+    ]
+
+
+def _ptv_is_exists(res_dir: Path, frame: int) -> bool:
+    return _open_res_store(res_dir).has_linkage(frame, "ptv_is")
+
+
+def _read_ptv_is(res_dir: Path, frame: int) -> list[dict]:
+    """Return list of {prev, next, x, y, z} for one frame, read from the
+    RunStore (ptv_is.* is no longer written to ASCII for a store-backed run)."""
+    store = _open_res_store(res_dir)
+    if not store.has_linkage(frame, "ptv_is"):
+        return []
+    prev, nxt, pos = store.read_linkage(frame, "ptv_is")
+    return [
+        dict(prev=int(p), next=int(n), x=xyz[0], y=xyz[1], z=xyz[2])
+        for p, n, xyz in zip(prev, nxt, pos)
+    ]
 
 
 def _load_gt_trajectories(gt_dir: Path) -> list[dict]:
@@ -154,9 +153,8 @@ def test_sequence_detection_and_correspondence(small_dir, small_yaml):
     _print_separator("rt_is results")
     counts = {}
     for frame in ALL_FRAMES:
-        f = res_dir / f"rt_is.{frame}"
-        assert f.exists(), f"rt_is.{frame} missing"
-        rows = _read_rt_is(f)
+        assert _rt_is_exists(res_dir, frame), f"rt_is.{frame} missing"
+        rows = _read_rt_is(res_dir, frame)
         counts[frame] = len(rows)
         _print_rt_is_summary(frame, rows)
 
@@ -210,7 +208,7 @@ def test_rt_is_positions_vs_ground_truth(small_dir, small_yaml):
     frame_stats: dict[int, dict] = {}
 
     for frame in FRAMES:
-        rt_rows = _read_rt_is(res_dir / f"rt_is.{frame}")
+        rt_rows = _read_rt_is(res_dir, frame)
         gt_pos = np.array(gt_by_frame.get(frame, []))
         rt_pos = (
             np.array([[r["x"], r["y"], r["z"]] for r in rt_rows])
@@ -339,9 +337,8 @@ def test_full_tracking_link_counts(small_dir, small_yaml):
     _print_separator("ptv_is file summary")
     frame_links: dict[int, int] = {}
     for frame in ALL_FRAMES[:-1]:  # last frame has no next
-        p = res_dir / f"ptv_is.{frame}"
-        assert p.exists(), f"ptv_is.{frame} missing"
-        rows = _read_ptv_is(p)
+        assert _ptv_is_exists(res_dir, frame), f"ptv_is.{frame} missing"
+        rows = _read_ptv_is(res_dir, frame)
         linked = sum(1 for r in rows if r["next"] >= 0)
         frame_links[frame] = linked
         _print_ptv_is_summary(frame, rows)
@@ -360,7 +357,7 @@ def test_full_tracking_link_counts(small_dir, small_yaml):
 
     # Minimum sanity: pipeline ran and produced some output (even if calibration is off)
     assert total_links >= 0, "Link count is negative — something is very wrong"
-    assert (res_dir / "ptv_is.10001").exists(), "ptv_is.10001 not created"
+    assert _ptv_is_exists(res_dir, 10001), "ptv_is.10001 not created"
     print("\n  PASS (calibration diagnostic — see WARNING above if links < 10)")
 
 
@@ -402,8 +399,9 @@ def test_tracking_trajectories_vs_ground_truth(small_dir, small_yaml):
     # Build frame → [row_list]; row index = particle index within frame
     frame_rows: dict[int, list[dict]] = {}
     for frame in ALL_FRAMES:
-        p = res_dir / f"ptv_is.{frame}"
-        frame_rows[frame] = _read_ptv_is(p) if p.exists() else []
+        frame_rows[frame] = (
+            _read_ptv_is(res_dir, frame) if _ptv_is_exists(res_dir, frame) else []
+        )
 
     # Walk chains forward starting from frame 10001
     # Each particle in frame 10001 that has no predecessor seeds a trajectory
@@ -484,9 +482,8 @@ def test_single_step_sequence_smoke(small_dir, small_yaml):
     pyptv_batch.main(small_yaml, 10000, 10000, mode="sequence")
     print("  Done.\n")
 
-    f = res_dir / "rt_is.10000"
-    assert f.exists(), "rt_is.10000 not created"
-    rows = _read_rt_is(f)
+    assert _rt_is_exists(res_dir, 10000), "rt_is.10000 not created"
+    rows = _read_rt_is(res_dir, 10000)
     print(
         f"  rt_is.10000: {len(rows)} particles  (ground truth has no 3D data for frame 10000, but sequence may still find correspondences)"
     )
@@ -513,9 +510,9 @@ def test_sequence_idempotent(small_dir, small_yaml):
         print(f"  run {run}: pyptv_batch.main(mode='sequence') ...")
         pyptv_batch.main(small_yaml, ALL_FRAMES[0], ALL_FRAMES[-1], mode="sequence")
         c = {
-            frame: len(_read_rt_is(res_dir / f"rt_is.{frame}"))
+            frame: len(_read_rt_is(res_dir, frame))
             for frame in ALL_FRAMES
-            if (res_dir / f"rt_is.{frame}").exists()
+            if _rt_is_exists(res_dir, frame)
         }
         print(f"    counts: {c}")
         counts.append(c)

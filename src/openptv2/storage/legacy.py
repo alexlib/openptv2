@@ -208,8 +208,20 @@ def export_run(store: RunStore, experiment_root: Union[str, Path]) -> None:
             pos, cam_ids = store.read_correspondences(frame)
             _write_rt_is_ascii(res_dir / f"rt_is.{frame}", pos, cam_ids)
 
-        for name in ("ptv_is", "added"):
-            if store.has_linkage(frame, name):
-                prev, nxt, pos = store.read_linkage(frame, name)
-                prio = store.read_prio(frame, name)
-                _write_linkage_ascii(res_dir / f"{name}.{frame}", prev, nxt, pos, prio)
+        if store.has_linkage(frame, "ptv_is"):
+            prev, nxt, pos = store.read_linkage(frame, "ptv_is")
+            # ptv_is.<frame> never carries a prio column in the legacy
+            # format, even though the live pipeline's own "ptv_is" store
+            # group does (write_path_frame embeds prio there directly,
+            # since added.* is just that same data plus a prio column --
+            # see write_linkage's docstring).
+            _write_linkage_ascii(res_dir / f"ptv_is.{frame}", prev, nxt, pos, prio=None)
+
+            if store.has_linkage(frame, "added"):
+                a_prev, a_nxt, a_pos = store.read_linkage(frame, "added")
+                a_prio = store.read_prio(frame, "added")
+                _write_linkage_ascii(res_dir / f"added.{frame}", a_prev, a_nxt, a_pos, a_prio)
+            else:
+                prio = store.read_prio(frame, "ptv_is")
+                if prio is not None:
+                    _write_linkage_ascii(res_dir / f"added.{frame}", prev, nxt, pos, prio)

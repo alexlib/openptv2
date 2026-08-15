@@ -27,8 +27,12 @@ CAVITY_DIR = TEST_DATA_ROOT / "test_cavity"
 @pytest.fixture
 def cavity_ascii_only(tmp_path):
     """A private, freshly-generated run: raw calibration/images copied from
-    test_cavity into tmp_path, then the real detection/correspondence/
-    tracking pipeline run against that copy to produce ASCII output.
+    test_cavity into tmp_path, the real detection/correspondence/tracking
+    pipeline run against that copy (store-only output, per
+    docs/plans/2026-08-15-zarr-only-transition-plan.md), then ``export_run``
+    regenerates the legacy ASCII files from that store -- this is now the
+    only way to get ASCII output, on demand, since the pipeline itself no
+    longer writes it.
 
     ``test_data/**/res/`` (and every ``*_targets`` file) is gitignored --
     regenerated locally, not checked in -- and other tests in this suite
@@ -37,8 +41,6 @@ def cavity_ascii_only(tmp_path):
     absent, so this fixture does not read it; it produces its own private,
     deterministic copy via the same ``pyptv_batch.main`` entry point the
     batch tests use."""
-    import os
-
     from openptv2.batch import pyptv_batch
 
     dst = tmp_path / "run"
@@ -47,20 +49,13 @@ def cavity_ascii_only(tmp_path):
         dst,
         ignore=shutil.ignore_patterns("*_targets", "res", "run.zarr", "tmp*.yaml", "tmp*.txt"),
     )
-    # OPENPTV_STORAGE=legacy: keep the pipeline's own legacy Zarr mirror out
-    # of res/run.zarr, so import_run below is not opening the same store path
-    # the pipeline already dual-wrote into with its own (unpadded) frame-key
-    # convention -- that collision produced duplicate frame_* entries under
-    # both key shapes when this fixture first tried "zarr" (the default).
-    prior = os.environ.get("OPENPTV_STORAGE")
-    os.environ["OPENPTV_STORAGE"] = "legacy"
-    try:
-        pyptv_batch.main(dst / "parameters_Run1.yaml", 10001, 10004)
-    finally:
-        if prior is None:
-            os.environ.pop("OPENPTV_STORAGE", None)
-        else:
-            os.environ["OPENPTV_STORAGE"] = prior
+    pyptv_batch.main(dst / "parameters_Run1.yaml", 10001, 10004)
+    store = RunStore(resolve_store_path(dst), mode="r")
+    export_run(store, dst)
+    # Tests reuse this fixture's directory with their own fresh import_run()
+    # call; leaving the pipeline's own store behind would make that reopen
+    # (not recreate) this store, appending on top of it (e.g. stale prio left
+    # on the "ptv_is" linkage group from the live-pipeline write).
     shutil.rmtree(dst / "res" / "run.zarr", ignore_errors=True)
     return dst
 

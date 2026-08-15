@@ -3,10 +3,8 @@ from pathlib import Path
 import numpy as np
 from imageio.v3 import imread
 
-from openptv2.algorithms.tracking_frame_buf import write_rt_is
 from openptv2.correspondences import MatchedCoords, correspondences
 from openptv2.orientation import point_positions
-from openptv2.tracker import default_naming
 
 # rembg (and its ONNX model download) is only imported on first actual use —
 # not a core dependency, install with `openptv2[rembg]`.
@@ -180,10 +178,6 @@ class Sequence:
             else:
                 print_corresp = sorted_corresp
 
-            rt_is_filename = default_naming["corres"]
-            if isinstance(rt_is_filename, bytes):
-                rt_is_filename = rt_is_filename.decode("utf-8")
-            write_rt_is(f"{rt_is_filename}.{frame}", pos, print_corresp.T)
             store.write_correspondences(
                 frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
             )

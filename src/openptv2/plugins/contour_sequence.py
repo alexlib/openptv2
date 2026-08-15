@@ -6,10 +6,8 @@ from skimage import filters, img_as_ubyte, measure, morphology
 from skimage.color import label2rgb, rgb2gray
 from skimage.morphology import binary_dilation, binary_erosion, disk
 
-from openptv2.algorithms.tracking_frame_buf import write_rt_is
 from openptv2.correspondences import MatchedCoords, correspondences
 from openptv2.orientation import point_positions
-from openptv2.tracker import default_naming
 
 
 def mask_image(imname: Path, display: bool = False) -> np.ndarray:
@@ -242,10 +240,6 @@ class Sequence:
             else:
                 print_corresp = sorted_corresp
 
-            rt_is_filename = default_naming["corres"]
-            if isinstance(rt_is_filename, bytes):
-                rt_is_filename = rt_is_filename.decode("utf-8")
-            write_rt_is(f"{rt_is_filename}.{frame}", pos, print_corresp.T)
             store.write_correspondences(
                 frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
             )

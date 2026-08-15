@@ -21,12 +21,9 @@ from skimage.color import rgb2gray
 from skimage.util import img_as_ubyte
 
 from openptv2.batch import pyptv_batch
+from openptv2.storage import RunStore, resolve_store_path
 
 FRAME = 10001  # a frame with real 3D structure in test_cavity_small
-
-
-def _rt_is_count(path) -> int:
-    return int(path.read_text().strip().splitlines()[0])
 
 
 def _single_frame_reference(small_dir, small_yaml, frame):
@@ -75,13 +72,20 @@ def _single_frame_reference(small_dir, small_yaml, frame):
 
 
 def test_sequence_matches_single_frame(small_dir, small_yaml):
+    import shutil
+
     ref_total = _single_frame_reference(small_dir, small_yaml, FRAME)
 
     res = small_dir / "res"
-    for f in res.glob(f"rt_is.{FRAME}"):
-        f.unlink()
+    # small_dir is the shared, session-scoped repo dataset -- clear the
+    # whole store, not just the ASCII rt_is (a stale run.zarr from another
+    # test using the same dir would otherwise mask the run below).
+    if res.exists():
+        shutil.rmtree(res)
     pyptv_batch.main(small_yaml, FRAME, FRAME, mode="sequence")
-    seq_total = _rt_is_count(res / f"rt_is.{FRAME}")
+    store = RunStore(resolve_store_path(res), mode="r")
+    pos, _ = store.read_correspondences(FRAME)
+    seq_total = len(pos)
 
     assert ref_total > 0, "single-frame reference produced no correspondences"
     assert seq_total == ref_total, (

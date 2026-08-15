@@ -77,26 +77,23 @@ def test_tracker_full_forward_3d_writes_through_store(cavity_orig_workdir, monke
     assert tracker.npart == 2082
     assert tracker.nlinks == 1748
 
-    # ASCII output still produced (unconditional dual-write).
-    assert (cavity_orig_workdir / "res" / "ptv_is.10001").exists()
-    assert (cavity_orig_workdir / "res" / "rt_is.10001").exists()
+    # Store-only output (no ASCII -- see
+    # docs/plans/2026-08-15-zarr-only-transition-plan.md): ptv_is is the
+    # tracker's own output and must not be (re)written to disk for a
+    # store-backed run. rt_is.10001 is res_orig fixture input, copied in
+    # above, not written by the tracker -- its presence says nothing here.
+    assert not (cavity_orig_workdir / "res" / "ptv_is.10001").exists()
 
-    # And the same data landed in the store.
     frames = store.frames()
     assert frames == [10001, 10002, 10003, 10004]
     assert store.linkage_names() == ["ptv_is"]
     assert store.target_cameras() == [0, 1, 2, 3]
 
-    ascii_pos, ascii_cam_ids = _load_rt_is(cavity_orig_workdir / "res" / "rt_is.10001")
     store_pos, store_cam_ids = store.read_correspondences(10001)
-    assert store_pos.shape == ascii_pos.shape
-    assert (store_cam_ids == ascii_cam_ids).all()
+    assert store_pos.shape[0] == store_cam_ids.shape[0]
 
-    ascii_prev, ascii_next, ascii_pos2 = _load_linkage(cavity_orig_workdir / "res" / "ptv_is.10001")
     store_prev, store_next, store_pos2 = store.read_linkage(10001, "ptv_is")
-    assert (store_prev == ascii_prev).all()
-    assert (store_next == ascii_next).all()
-    assert store_pos2.shape == ascii_pos2.shape
+    assert store_prev.shape == store_next.shape == (store_pos2.shape[0],)
 
 
 def test_tracker_postprocess_writes_through_store(cavity_orig_workdir, monkeypatch):
@@ -127,23 +124,7 @@ def test_tracker_postprocess_writes_through_store(cavity_orig_workdir, monkeypat
     assert stats["links_before"] == tracker.nlinks
     assert stats["links_after"] >= 0
 
-    # ASCII and store still agree after postprocess ran (it may have
-    # rewritten some frames in place).
-    ascii_prev, ascii_next, _ = _load_linkage(cavity_orig_workdir / "res" / "ptv_is.10001")
-    store_prev, store_next, _ = store.read_linkage(10001, "ptv_is")
-    assert (store_prev == ascii_prev).all()
-    assert (store_next == ascii_next).all()
-
-
-def _load_rt_is(path: Path):
-    import numpy as np
-
-    data = np.loadtxt(path, skiprows=1, ndmin=2)
-    return data[:, 1:4], data[:, 4:].astype(np.int32)
-
-
-def _load_linkage(path: Path):
-    import numpy as np
-
-    data = np.loadtxt(path, skiprows=1, ndmin=2)
-    return data[:, 0].astype(np.int32), data[:, 1].astype(np.int32), data[:, 2:5]
+    # postprocess() rewrote the store's linkage in place -- prove it's still
+    # readable and shaped consistently, not a stale/incompatible layout.
+    store_prev, store_next, store_pos = store.read_linkage(10001, "ptv_is")
+    assert store_prev.shape == store_next.shape == (store_pos.shape[0],)

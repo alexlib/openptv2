@@ -31,6 +31,7 @@ from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
 from openptv2.batch import pyptv_batch
 from openptv2.correspondences import MatchedCoords, correspondences
 from openptv2.orientation import point_positions
+from openptv2.storage import RunStore, resolve_store_path
 
 # ═════════════════════════════════════════════════════════════════════════════
 # Constants
@@ -48,65 +49,165 @@ GT_EXIT = 1  # trajectories exiting early
 # ═════════════════════════════════════════════════════════════════════════════
 
 
+def _frame_from_name(path: Path) -> int:
+    return int(path.name.rsplit(".", 1)[-1])
+
+
+def _rt_is_exists(path: Path) -> bool:
+    """True if rt_is.<frame> exists on disk, or -- pipeline runs are
+    store-only now, no ASCII (see
+    docs/plans/2026-08-15-zarr-only-transition-plan.md) -- in the RunStore."""
+    if path.exists():
+        return True
+    store = RunStore(resolve_store_path(path.parent), mode="r")
+    return store.has_correspondences(_frame_from_name(path))
+
+
 def _read_rt_is(path: Path) -> list[dict]:
-    lines = path.read_text().strip().splitlines()
-    n = int(lines[0])
-    rows = []
-    for line in lines[1 : n + 1]:
-        p = line.split()
-        rows.append(
-            dict(
-                label=int(p[0]),
-                x=float(p[1]),
-                y=float(p[2]),
-                z=float(p[3]),
-                t1=int(p[4]),
-                t2=int(p[5]),
-                t3=int(p[6]),
-                t4=int(p[7]),
+    """Return list of {label, x, y, z, t1, t2, t3, t4} -- from ASCII if
+    present, else from the RunStore."""
+    if path.exists():
+        lines = path.read_text().strip().splitlines()
+        n = int(lines[0])
+        rows = []
+        for line in lines[1 : n + 1]:
+            p = line.split()
+            rows.append(
+                dict(
+                    label=int(p[0]),
+                    x=float(p[1]),
+                    y=float(p[2]),
+                    z=float(p[3]),
+                    t1=int(p[4]),
+                    t2=int(p[5]),
+                    t3=int(p[6]),
+                    t4=int(p[7]),
+                )
             )
-        )
-    return rows
+        return rows
+
+    store = RunStore(resolve_store_path(path.parent), mode="r")
+    frame = _frame_from_name(path)
+    if not store.has_correspondences(frame):
+        return []
+    pos, cam_ids = store.read_correspondences(frame)
+    return [
+        dict(label=i + 1, x=p[0], y=p[1], z=p[2], t1=c[0], t2=c[1], t3=c[2], t4=c[3])
+        for i, (p, c) in enumerate(zip(pos, cam_ids))
+    ]
+
+
+def _linkage_name_from_path(path: Path) -> str:
+    return path.name.rsplit(".", 1)[0]
+
+
+def _ptv_is_exists(path: Path) -> bool:
+    """True for ptv_is.<frame> or added.<frame>, on disk or in the
+    RunStore -- "added" is the tracker's prio output, stored as an extra
+    column on the "ptv_is" linkage group rather than a separate group (see
+    RunStore.write_linkage's docstring), so a live-pipeline store answers
+    "added" from "ptv_is" when there's no separate "added" group."""
+    if path.exists():
+        return True
+    store = RunStore(resolve_store_path(path.parent), mode="r")
+    frame = _frame_from_name(path)
+    name = _linkage_name_from_path(path)
+    if store.has_linkage(frame, name):
+        return True
+    return name == "added" and store.has_linkage(frame, "ptv_is")
 
 
 def _read_ptv_is(path: Path) -> list[dict]:
-    lines = path.read_text().strip().splitlines()
-    n = int(lines[0])
-    rows = []
-    for line in lines[1 : n + 1]:
-        p = line.split()
-        rows.append(
-            dict(
-                prev=int(p[0]),
-                next=int(p[1]),
-                x=float(p[2]),
-                y=float(p[3]),
-                z=float(p[4]),
+    """Return list of {prev, next, x, y, z} for ptv_is.<frame> or
+    added.<frame> -- from ASCII if present, else from the RunStore."""
+    if path.exists():
+        lines = path.read_text().strip().splitlines()
+        n = int(lines[0])
+        rows = []
+        for line in lines[1 : n + 1]:
+            p = line.split()
+            rows.append(
+                dict(
+                    prev=int(p[0]),
+                    next=int(p[1]),
+                    x=float(p[2]),
+                    y=float(p[3]),
+                    z=float(p[4]),
+                )
             )
-        )
-    return rows
+        return rows
+
+    store = RunStore(resolve_store_path(path.parent), mode="r")
+    frame = _frame_from_name(path)
+    name = _linkage_name_from_path(path)
+    if not store.has_linkage(frame, name):
+        if name != "added" or not store.has_linkage(frame, "ptv_is"):
+            return []
+        name = "ptv_is"
+    prev, nxt, pos = store.read_linkage(frame, name)
+    return [
+        dict(prev=int(p), next=int(n), x=xyz[0], y=xyz[1], z=xyz[2])
+        for p, n, xyz in zip(prev, nxt, pos)
+    ]
+
+
+def _targets_exist(path: Path) -> bool:
+    if path.exists():
+        return True
+    m = re.search(r"cam(\d+)\.(\d+)_targets$", path.name)
+    if not m:
+        return False
+    res_dir = path.parent.parent.parent / "res"
+    store = RunStore(resolve_store_path(res_dir), mode="r")
+    return store.has_targets(int(m.group(1)) - 1, int(m.group(2)))
 
 
 def _read_targets(path: Path) -> list[dict]:
-    """Read a _targets file. Returns list of {pnr, x, y, n, nx, ny, sumg, tnr}."""
-    lines = path.read_text().strip().splitlines()
-    n = int(lines[0])
-    rows = []
-    for line in lines[1 : n + 1]:
-        p = line.split()
-        rows.append(
-            dict(
-                pnr=int(p[0]),
-                x=float(p[1]),
-                y=float(p[2]),
-                n=int(p[3]),
-                nx=int(p[4]),
-                ny=int(p[5]),
-                sumg=int(p[6]),
-                tnr=int(p[7]),
+    """Read a _targets file. Returns list of {pnr, x, y, n, nx, ny, sumg, tnr}
+    -- from ASCII if present, else from the RunStore (img/camN/camN.<frame>_targets
+    -> res/run.zarr, up two directories from the target path)."""
+    if path.exists():
+        lines = path.read_text().strip().splitlines()
+        n = int(lines[0])
+        rows = []
+        for line in lines[1 : n + 1]:
+            p = line.split()
+            rows.append(
+                dict(
+                    pnr=int(p[0]),
+                    x=float(p[1]),
+                    y=float(p[2]),
+                    n=int(p[3]),
+                    nx=int(p[4]),
+                    ny=int(p[5]),
+                    sumg=int(p[6]),
+                    tnr=int(p[7]),
+                )
             )
+        return rows
+
+    m = re.search(r"cam(\d+)\.(\d+)_targets$", path.name)
+    if not m:
+        return []
+    cam_idx, frame = int(m.group(1)) - 1, int(m.group(2))
+    res_dir = path.parent.parent.parent / "res"
+    store = RunStore(resolve_store_path(res_dir), mode="r")
+    if not store.has_targets(cam_idx, frame):
+        return []
+    targs = store.read_targets(cam_idx, frame)
+    return [
+        dict(
+            pnr=t.pnr(),
+            x=t.pos()[0],
+            y=t.pos()[1],
+            n=t.count_pixels()[0],
+            nx=t.count_pixels()[1],
+            ny=t.count_pixels()[2],
+            sumg=t.sum_grey_value(),
+            tnr=t.tnr(),
         )
-    return rows
+        for t in targs
+    ]
 
 
 def _load_gt_trajectories(gt_dir: Path) -> list[dict]:
@@ -314,7 +415,7 @@ def test_step2_target_detection(rembg_small_dir):
             tpath = (
                 rembg_small_dir / f"img/cam{cam + 1}/cam{cam + 1}.{frame:04d}_targets"
             )
-            assert tpath.exists(), f"Missing {tpath}"
+            assert _targets_exist(tpath), f"Missing {tpath}"
             targets = _read_targets(tpath)
             total_targets += len(targets)
             for t in targets:
@@ -668,7 +769,7 @@ def test_step6_sequence_pipeline(rembg_small_dir, rembg_small_yaml):
     counts = {}
     for frame in FRAMES:
         f = res_dir / f"rt_is.{frame}"
-        assert f.exists(), f"rt_is.{frame} not created"
+        assert _rt_is_exists(f), f"rt_is.{frame} not created"
         rows = _read_rt_is(f)
         counts[frame] = len(rows)
         _print_rt_is(rows, frame)
@@ -813,7 +914,10 @@ def test_step8_full_pipeline(rembg_small_dir, rembg_small_yaml):
     for frame in FRAMES:
         for prefix in ("rt_is", "ptv_is", "added"):
             p = res_dir / f"{prefix}.{frame}"
-            assert p.exists(), f"{prefix}.{frame} missing"
+            if prefix == "rt_is":
+                assert _rt_is_exists(p), f"{prefix}.{frame} missing"
+            else:
+                assert _ptv_is_exists(p), f"{prefix}.{frame} missing"
             if prefix == "rt_is":
                 rows = _read_rt_is(p)
                 _print_rt_is(rows, frame)
@@ -990,7 +1094,7 @@ def test_step10_trajectories_vs_ground_truth(rembg_small_dir, rembg_small_yaml):
     frame_rows: dict[int, list[dict]] = {}
     for frame in FRAMES:
         p = res_dir / f"ptv_is.{frame}"
-        frame_rows[frame] = _read_ptv_is(p) if p.exists() else []
+        frame_rows[frame] = _read_ptv_is(p) if _ptv_is_exists(p) else []
 
     # Walk chains forward
     visited: dict[int, set[int]] = {f: set() for f in FRAMES}

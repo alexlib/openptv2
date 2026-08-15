@@ -7,6 +7,7 @@ from openptv2.batch import pyptv_batch
 from openptv2.calibration import Calibration
 from openptv2.gui.parameter_manager import ParameterManager
 from openptv2.parameters import ControlParams, MultimediaParams
+from openptv2.storage import RunStore, resolve_store_path
 
 
 def _write_ori_file(path: Path, pos, angles, focal_len=100.0):
@@ -205,25 +206,24 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
     print("\n--- Running Tracking on Symmetric Synthetic Dataset ---")
     pyptv_batch.main(str(yaml_file), 10001, 10005, mode="tracking")
 
-    # 5. Read output ptv_is linkage files and verify 100% Correct Trajectory Matching
-    # In PTV tracking with a 3-frame buffer, a 5-frame sequence (10001-10005)
-    # produces tracking linkages for frames 10001, 10002, and 10003.
+    # 5. Read output ptv_is linkage (RunStore -- tracking output is
+    # store-only now, see docs/plans/2026-08-15-zarr-only-transition-plan.md)
+    # and verify 100% Correct Trajectory Matching. In PTV tracking with a
+    # 3-frame buffer, a 5-frame sequence (10001-10005) produces tracking
+    # linkages for frames 10001, 10002, and 10003.
     tracked_frames = [10001, 10002, 10003]
     reconstructed = []
+    store = RunStore(resolve_store_path(test_dir / "res"), mode="r")
 
     for f in tracked_frames:
-        ptv_file = test_dir / "res" / f"ptv_is.{f}"
-        assert ptv_file.exists(), f"Tracking output {ptv_file.name} was not created!"
-        lines = ptv_file.read_text().strip().splitlines()
-        n = int(lines[0])
+        assert store.has_linkage(f, "ptv_is"), f"Tracking output for frame {f} was not created!"
+        prev, nxt, _ = store.read_linkage(f, "ptv_is")
+        n = len(prev)
         assert n == num_particles, (
             f"Expected {num_particles} tracked particles in frame {f}, but got {n}"
         )
 
-        frame_links = []
-        for line in lines[1:]:
-            parts = line.split()
-            frame_links.append((int(parts[0]), int(parts[1])))
+        frame_links = list(zip(prev.tolist(), nxt.tolist()))
         reconstructed.append(frame_links)
 
     # Verify that each trajectory matches perfectly

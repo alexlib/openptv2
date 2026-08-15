@@ -13,10 +13,7 @@ import numpy as np
 from imageio.v3 import imread
 
 from openptv2.batch import pyptv_batch
-
-
-def _rt_is_count(path) -> int:
-    return int(path.read_text().strip().splitlines()[0])
+from openptv2.storage import RunStore, resolve_store_path
 
 
 def test_sequence_runs_without_parameters_dir(small_dir, small_yaml, tmp_path):
@@ -33,9 +30,10 @@ def test_sequence_runs_without_parameters_dir(small_dir, small_yaml, tmp_path):
     frame = 10001
     pyptv_batch.main(work / "parameters_Run1.yaml", frame, frame, mode="sequence")
 
-    rt_is = work / "res" / f"rt_is.{frame}"
-    assert rt_is.exists(), "sequence must produce rt_is from YAML alone"
-    assert _rt_is_count(rt_is) > 0, "YAML-only sequence found no correspondences"
+    store = RunStore(resolve_store_path(work / "res"), mode="r")
+    assert store.has_correspondences(frame), "sequence must produce correspondences from YAML alone"
+    pos, _ = store.read_correspondences(frame)
+    assert len(pos) > 0, "YAML-only sequence found no correspondences"
 
 
 def test_highpass_size_is_honored(small_dir, small_yaml):

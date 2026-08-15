@@ -218,12 +218,20 @@ def read_targets(file_base, frame_num, cam_idx=None, store=None):
 
 @cython.ccall
 def write_targets(tbuf, num_targets, file_base, frame_num, store=None, cam_idx=None):
-    """Write one camera/frame's 2D targets to ASCII, and -- when ``store`` is
-    given -- also into the unified RunStore (unconditional dual-write; see
-    the approved Phase B plan). A store-write failure raises rather than being
-    swallowed: a partially-written store must not report success.
+    """Write one camera/frame's 2D targets: to the unified RunStore when
+    ``store`` is given, otherwise to ASCII (``_targets`` files are no longer
+    written for store-backed runs; see
+    docs/plans/2026-08-15-zarr-only-transition-plan.md). A store-write
+    failure raises rather than being swallowed: a partially-written store
+    must not report success.
     """
     fname = _resolve_file_base(file_base, frame_num)
+
+    if store is not None:
+        if cam_idx is None:
+            cam_idx = _guess_cam_idx(fname)
+        store.write_targets(cam_idx, frame_num, tbuf[:num_targets])
+        return True
 
     try:
         with open(fname, "w") as f:
@@ -236,11 +244,6 @@ def write_targets(tbuf, num_targets, file_base, frame_num, store=None, cam_idx=N
                 )
     except IOError:
         return False
-
-    if store is not None:
-        if cam_idx is None:
-            cam_idx = _guess_cam_idx(fname)
-        store.write_targets(cam_idx, frame_num, tbuf[:num_targets])
 
     return True
 
@@ -552,12 +555,41 @@ def write_path_frame(
     store=None,
 ):
     """Write one frame's correspondences (rt_is) + tracking linkage (ptv_is)
-    + prio (added), to ASCII and -- when ``store`` is given -- also into the
-    unified RunStore (unconditional dual-write). A store-write failure raises
-    rather than being swallowed: a partially-written store must not report
-    success (see docs/plans/2026-08-14-storage-formats-as-built.md, defect
-    "storage writes wrapped in except: pass").
+    + prio (added): to the unified RunStore when ``store`` is given,
+    otherwise to ASCII (rt_is/ptv_is/added are no longer written for
+    store-backed runs; see
+    docs/plans/2026-08-15-zarr-only-transition-plan.md). A store-write
+    failure raises rather than being swallowed: a partially-written store
+    must not report success.
     """
+    if store is not None:
+        prevs = np.array([path_buf[pix].prev for pix in range(num_parts)], dtype=np.int32)
+        nexts = np.array([path_buf[pix].next_idx for pix in range(num_parts)], dtype=np.int32)
+        pos_3d = np.array([path_buf[pix].x for pix in range(num_parts)], dtype=np.float64)
+        cam_ids = np.array(
+            [_corres_p_at(cor_buf, pix) for pix in range(num_parts)], dtype=np.int32
+        )
+
+        store.write_correspondences(frame=frame_num, pos_3d=pos_3d, cam_target_ids=cam_ids)
+
+        if linkage_file_base:
+            link_name = Path(linkage_file_base).name
+            prio_arr = (
+                np.array([path_buf[pix].prio for pix in range(num_parts)], dtype=np.int32)
+                if prio_file_base
+                else None
+            )
+            store.write_linkage(
+                frame=frame_num,
+                prev_ids=prevs,
+                next_ids=nexts,
+                pos_3d=pos_3d,
+                name=link_name,
+                prio=prio_arr,
+            )
+
+        return True
+
     corres_fname = f"{corres_file_base}.{frame_num}"
     linkage_fname = f"{linkage_file_base}.{frame_num}" if linkage_file_base else None
 
@@ -615,32 +647,6 @@ def write_path_frame(
         linkage_file.close()
     if prio_file:
         prio_file.close()
-
-    if store is not None:
-        prevs = np.array([path_buf[pix].prev for pix in range(num_parts)], dtype=np.int32)
-        nexts = np.array([path_buf[pix].next_idx for pix in range(num_parts)], dtype=np.int32)
-        pos_3d = np.array([path_buf[pix].x for pix in range(num_parts)], dtype=np.float64)
-        cam_ids = np.array(
-            [_corres_p_at(cor_buf, pix) for pix in range(num_parts)], dtype=np.int32
-        )
-
-        store.write_correspondences(frame=frame_num, pos_3d=pos_3d, cam_target_ids=cam_ids)
-
-        if linkage_file_base:
-            link_name = Path(linkage_file_base).name
-            prio_arr = (
-                np.array([path_buf[pix].prio for pix in range(num_parts)], dtype=np.int32)
-                if prio_file_base
-                else None
-            )
-            store.write_linkage(
-                frame=frame_num,
-                prev_ids=prevs,
-                next_ids=nexts,
-                pos_3d=pos_3d,
-                name=link_name,
-                prio=prio_arr,
-            )
 
     return True
 

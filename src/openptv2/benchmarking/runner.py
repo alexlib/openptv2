@@ -27,29 +27,57 @@ _CORE_PRESETS = {
 def _read_path_info(res_dir: str | Path, first: int, last: int, num_cams: int):
     """Read linkage (ptv_is) frames and return per-frame path arrays.
 
+    The RunStore is tried first when it has an entry for a frame --
+    py_trackcorr_init's tracking path is store-only now (see
+    docs/plans/2026-08-15-zarr-only-transition-plan.md), and ASCII
+    ptv_is.<frame> files can be stale scaffolding pre-written by
+    write_experiment ("initially unlinked") rather than real tracker output.
+    ASCII is the fallback, for callers with no store at all (e.g.
+    Quality3DTracker.track_directory, which writes real ptv_is.<frame> with
+    store=None).
+
     Returns
     -------
     list of dicts with keys 'prev' (list) and 'next' (list) aligning to each
     particle slot in that frame, plus 'x' (N,3) positions.
     """
+    from openptv2.storage import RunStore, RunStoreError, resolve_store_path
+
+    store = None
+    try:
+        store_path = resolve_store_path(res_dir)
+        if store_path.exists():
+            store = RunStore(store_path, mode="r")
+    except RunStoreError:
+        store = None
+
     frames = []
     for fn in range(first, last + 1):
-        fpath = Path(res_dir) / f"ptv_is.{fn}"
-        if not fpath.exists():
-            frames.append(None)
+        if store is not None and store.has_linkage(fn, "ptv_is"):
+            prev, nxt, x = store.read_linkage(fn, "ptv_is")
+            frames.append({
+                "prev": [int(p) for p in prev],
+                "next": [int(n) for n in nxt],
+                "x": np.asarray(x, dtype=np.float64),
+            })
             continue
-        with open(fpath) as fh:
-            n = int(fh.readline().strip())
-            prev = []
-            nxt = []
-            x = np.empty((n, 3))
-            for i in range(n):
-                parts = fh.readline().split()
-                p, nx = int(parts[0]), int(parts[1])
-                prev.append(p if p >= 0 else -1)
-                nxt.append(nx if nx >= 0 else -1)
-                x[i] = (float(parts[2]), float(parts[3]), float(parts[4]))
-        frames.append({"prev": prev, "next": nxt, "x": x})
+
+        fpath = Path(res_dir) / f"ptv_is.{fn}"
+        if fpath.exists():
+            with open(fpath) as fh:
+                n = int(fh.readline().strip())
+                prev = []
+                nxt = []
+                x = np.empty((n, 3))
+                for i in range(n):
+                    parts = fh.readline().split()
+                    p, nx = int(parts[0]), int(parts[1])
+                    prev.append(p if p >= 0 else -1)
+                    nxt.append(nx if nx >= 0 else -1)
+                    x[i] = (float(parts[2]), float(parts[3]), float(parts[4]))
+            frames.append({"prev": prev, "next": nxt, "x": x})
+        else:
+            frames.append(None)
     return frames
 
 

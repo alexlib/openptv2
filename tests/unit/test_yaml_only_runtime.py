@@ -12,12 +12,9 @@ from pathlib import Path
 import pytest
 
 from openptv2.batch import pyptv_batch
+from openptv2.storage import RunStore, resolve_store_path
 
 DATASET = Path("test_data/test_cavity")
-
-
-def _read_count(rt_is: Path) -> int:
-    return int(rt_is.read_text().splitlines()[0])
 
 
 @pytest.mark.integration
@@ -39,7 +36,10 @@ def test_batch_runs_without_any_par_files(tmp_path):
     # Run the batch sequence purely from YAML.
     pyptv_batch.main(str(ds / "parameters_Run1.yaml"), 10000, 10001, mode="sequence")
 
+    store = RunStore(resolve_store_path(ds / "res"), mode="r")
     for frame in (10000, 10001):
-        rt = ds / "res" / f"rt_is.{frame}"
-        assert rt.exists(), f"rt_is.{frame} not produced from YAML-only run"
-        assert _read_count(rt) > 0, f"rt_is.{frame} empty — YAML-only run degenerate"
+        assert store.has_correspondences(frame), (
+            f"correspondences for frame {frame} not produced from YAML-only run"
+        )
+        pos, _ = store.read_correspondences(frame)
+        assert len(pos) > 0, f"frame {frame} empty — YAML-only run degenerate"

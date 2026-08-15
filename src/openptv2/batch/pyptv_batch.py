@@ -152,12 +152,12 @@ def _warn_if_tracking_poorly_conditioned(proc_exp, seq_first: int, seq_last: int
     if seq_last <= seq_first:
         return
     try:
-        import numpy as np
-
+        from openptv2.gui.ptv import _open_run_store
         from openptv2.tracking_feasibility import assess_tracking_conditioning
 
-        pos_a = np.loadtxt(f"res/rt_is.{seq_first}", skiprows=1, ndmin=2)[:, 1:4]
-        pos_b = np.loadtxt(f"res/rt_is.{seq_first + 1}", skiprows=1, ndmin=2)[:, 1:4]
+        store = _open_run_store(proc_exp)
+        pos_a, _ = store.read_correspondences(seq_first)
+        pos_b, _ = store.read_correspondences(seq_first + 1)
         report = assess_tracking_conditioning(pos_a, pos_b, proc_exp.cals, proc_exp.cpar)
         if report is not None and report.verdict != "well-conditioned":
             print(f"[WARNING] {report.message}")

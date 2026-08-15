@@ -10,6 +10,18 @@ import pytest
 import yaml
 
 from openptv2.batch import pyptv_batch
+from openptv2.storage import RunStore, resolve_store_path
+
+
+def _read_correspondences(res_dir: Path, frame: int):
+    """(pos, cam_ids) for one frame, read from the RunStore -- pipeline runs
+    are store-only now (no rt_is.* ASCII), see
+    docs/plans/2026-08-15-zarr-only-transition-plan.md. Returns (None, None)
+    if nothing was written for this frame."""
+    store = RunStore(resolve_store_path(res_dir), mode="r")
+    if not store.has_correspondences(frame):
+        return None, None
+    return store.read_correspondences(frame)
 
 
 def _get_env_with_pythonpath() -> dict:
@@ -56,21 +68,16 @@ def test_pyptv_batch(test_data_dir):
 
     assert res_dir.exists(), "Results directory should be created"
 
-    # Robust check: validate correspondence files with forward links
+    # Robust check: validate correspondences with forward links
     for frame in range(start_frame, end_frame):
-        corres_file = res_dir / f"rt_is.{frame}"
-        assert corres_file.exists(), f"Correspondence file {corres_file} should exist"
-        content = corres_file.read_text()
-        lines = content.strip().split("\n")
-        assert len(lines) > 1, (
-            f"Correspondence file {corres_file} should have more than just the count line"
-        )
-        num_points = int(lines[0])
+        pos, cam_ids = _read_correspondences(res_dir, frame)
+        assert pos is not None, f"Correspondences for frame {frame} should exist"
+        num_points = len(pos)
         assert num_points > 0, (
             f"Frame {frame} should have detected correspondences, got {num_points}"
         )
-        assert num_points == len(lines) - 1, (
-            f"Number of points should match number of data lines in {corres_file}"
+        assert cam_ids.shape[0] == num_points, (
+            f"Number of cam-id rows should match number of points for frame {frame}"
         )
 
     print(
@@ -102,25 +109,19 @@ def test_pyptv_batch_full_tracking_links(test_data_dir):
 
     assert res_dir.exists(), "Results directory should be created"
 
-    # 1. Parse final post-processed link counts saved on disk in ptv_is.* files:
+    # 1. Parse final post-processed link counts from the RunStore's linkage
+    #    (ptv_is is no longer written to ASCII for a store-backed run):
+    store = RunStore(resolve_store_path(res_dir), mode="r")
     step_links = {}
     for frame in range(start_frame, end_frame):
-        ptv_file = res_dir / f"ptv_is.{frame}"
-        assert ptv_file.exists(), f"Tracking linkage file {ptv_file} should exist"
-        content = ptv_file.read_text().strip().split("\n")
-        frame_links = 0
-        if len(content) > 1:
-            for line in content[1:]:
-                parts = line.split()
-                if len(parts) >= 2:
-                    # Index 1 is the next frame's particle index, >= 0 means linked
-                    next_idx = int(parts[1])
-                    if next_idx >= 0:
-                        frame_links += 1
-        step_links[frame] = frame_links
+        assert store.has_linkage(frame, "ptv_is"), (
+            f"Tracking linkage for frame {frame} should exist"
+        )
+        _, nxt, _ = store.read_linkage(frame, "ptv_is")
+        step_links[frame] = int((nxt >= 0).sum())
 
     total_links = sum(step_links.values())
-    print(f"Disk ptv_is tracking links per frame: {step_links} (Total: {total_links})")
+    print(f"Store ptv_is tracking links per frame: {step_links} (Total: {total_links})")
 
     # Diagnostic: tracking should produce some links to confirm the pipeline works.
     # No hardcoded expected values — they vary with algorithm improvements.
@@ -184,22 +185,14 @@ def test_pyptv_batch_produces_results(test_data_dir):
     # Check that result files were created
     assert res_dir.exists(), "Results directory should be created"
 
-    # Check for correspondence files
-    corres_file = res_dir / f"rt_is.{start_frame}"
-    assert corres_file.exists(), f"Correspondence file {corres_file} should exist"
+    # Check for correspondences
+    pos, cam_ids = _read_correspondences(res_dir, start_frame)
+    assert pos is not None, f"Correspondences for frame {start_frame} should exist"
 
-    # Check that correspondence file has content (more than just "0\n")
-    content = corres_file.read_text()
-    lines = content.strip().split("\n")
-    assert len(lines) > 1, (
-        "Correspondence file should have more than just the count line"
-    )
-
-    # First line should be the number of points
-    num_points = int(lines[0])
+    num_points = len(pos)
     assert num_points > 0, f"Should have detected correspondences, got {num_points}"
-    assert num_points == len(lines) - 1, (
-        "Number of points should match number of data lines"
+    assert cam_ids.shape[0] == num_points, (
+        "Number of cam-id rows should match number of points"
     )
 
     print(f"Successfully detected {num_points} correspondences in frame {start_frame}")
@@ -220,18 +213,14 @@ def test_pyptv_batch_tracking_results(test_data_dir):
         shutil.rmtree(res_dir)
     pyptv_batch.main(yaml_file, start_frame, end_frame)
     for frame in range(start_frame, end_frame):
-        corres_file = res_dir / f"rt_is.{frame}"
-        assert corres_file.exists(), (
-            f"Correspondence file for frame {frame} should exist"
-        )
-        content = corres_file.read_text()
-        lines = content.strip().split("\n")
-        num_points = int(lines[0])
+        pos, cam_ids = _read_correspondences(res_dir, frame)
+        assert pos is not None, f"Correspondences for frame {frame} should exist"
+        num_points = len(pos)
         assert num_points > 0, (
             f"Frame {frame} should have correspondences, got {num_points}"
         )
-        assert num_points == len(lines) - 1, (
-            f"Number of points should match number of data lines in {corres_file}"
+        assert cam_ids.shape[0] == num_points, (
+            f"Number of cam-id rows should match number of points for frame {frame}"
         )
     print(f"Successfully processed frames {start_frame} to {end_frame} with tracking")
 

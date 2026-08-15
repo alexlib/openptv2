@@ -767,18 +767,19 @@ def py_determination_proc_c(
     else:
         print_corresp = concatenated_corresp
 
+    if store is not None:
+        store.write_correspondences(
+            frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
+        )
+        print(f"Saved 3D correspondences for frame {frame} to {store.store_path}")
+        return
+
     output_path = _prepare_output_path(
         f"{_safe_decode(default_naming['corres'])}.{frame}"
     )
 
     print(f"Prepared {output_path} to write positions")
     _write_rt_is_file(output_path, pos, print_corresp)
-
-    if store is not None:
-        store.write_correspondences(
-            frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
-        )
-        print(f"Saved 3D correspondences for frame {frame} to {store.store_path}")
 
 
 def run_sequence_plugin(exp) -> None:
@@ -1077,10 +1078,6 @@ def py_sequence_loop(exp) -> None:
         else:
             print_corresp = sorted_corresp
 
-        output_path = _prepare_output_path(
-            f"{_safe_decode(default_naming['corres'])}.{frame}"
-        )
-        _write_rt_is_file(output_path, pos, print_corresp)
         store.write_correspondences(
             frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
         )
@@ -1252,7 +1249,6 @@ def py_sequence_loop_python(exp) -> None:
     from openptv2.algorithms.orientation import point_positions as alg_point_positions
     from openptv2.correspondences import MatchedCoords as AlgMatchedCoords
     from openptv2.segmentation import target_recognition as alg_target_recognition
-    from openptv2.tracker import default_naming as alg_default_naming
     from openptv2.tracking_framebuf import Frame, read_targets, write_targets as _write_targets_canonical
 
     store = _open_run_store(exp)
@@ -1452,9 +1448,6 @@ def py_sequence_loop_python(exp) -> None:
         else:
             print_corresp = concatenated_corresp
 
-        corres_path = alg_default_naming["corres"]
-        output_path = _prepare_output_path(f"{corres_path}.{frame}")
-        _write_rt_is_file(output_path, pos, print_corresp)
         store.write_correspondences(
             frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
         )
@@ -1560,32 +1553,36 @@ def py_calibration(selection, exp):
 def write_targets(
     targets: TargetArray, short_file_base: str, frame: int, store=None, cam_idx=None
 ) -> bool:
-    """Write targets to a file, and -- when ``store`` is given -- also into
-    the unified RunStore (unconditional dual-write; see the approved Phase B
-    plan). This keeps its own ASCII implementation (byte-identical to, but
-    structurally separate from, algorithms.tracking_frame_buf.write_targets)
-    because tests/gui/test_ptv_file_io.py mocks ``np.savetxt`` directly to
-    exercise the write-failure paths; unifying the two would break that
-    contract for no behavioral gain, since the two are already provably
-    byte-identical (see docs/plans/2026-08-14-storage-formats-as-built.md).
+    """Write targets: to the unified RunStore when ``store`` is given,
+    otherwise to ASCII (``_targets`` files are no longer written for
+    store-backed runs; see
+    docs/plans/2026-08-15-zarr-only-transition-plan.md). This keeps its own
+    ASCII implementation (byte-identical to, but structurally separate from,
+    algorithms.tracking_frame_buf.write_targets) because
+    tests/gui/test_ptv_file_io.py mocks ``np.savetxt`` directly to exercise
+    the write-failure paths; unifying the two would break that contract for
+    no behavioral gain, since the two are already provably byte-identical
+    (see docs/plans/2026-08-14-storage-formats-as-built.md).
     """
     output_path = _prepare_output_path(f"{short_file_base}.{frame:04d}_targets")
     num_targets = len(targets)
-    success = False
+
+    if store is not None:
+        from openptv2.algorithms.tracking_frame_buf import _guess_cam_idx
+
+        store.write_targets(
+            cam_idx if cam_idx is not None else _guess_cam_idx(output_path),
+            frame,
+            targets,
+        )
+        return True
+
     if num_targets == 0:
         try:
             with open(output_path, "w", encoding="utf-8") as file:
                 file.write("0\n")
         except OSError as exc:
             _raise_output_write_error(output_path, exc)
-        if store is not None:
-            from openptv2.algorithms.tracking_frame_buf import _guess_cam_idx
-
-            store.write_targets(
-                cam_idx if cam_idx is not None else _guess_cam_idx(output_path),
-                frame,
-                targets,
-            )
         return True  # No targets to write, but file created successfully
 
     try:
@@ -1602,19 +1599,11 @@ def write_targets(
             header=f"{num_targets}",
             comments="",
         )
-        success = True
     except OSError as exc:
         _raise_output_write_error(output_path, exc)
+        return False
 
-    if success and store is not None:
-        from openptv2.algorithms.tracking_frame_buf import _guess_cam_idx
-
-        store.write_targets(
-            cam_idx if cam_idx is not None else _guess_cam_idx(output_path),
-            frame,
-            targets,
-        )
-    return success
+    return True
 
 
 def read_targets(short_file_base: str, frame: int, store=None, cam_idx=None) -> TargetArray:
