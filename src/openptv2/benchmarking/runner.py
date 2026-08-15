@@ -21,6 +21,7 @@ from openptv2.algorithms.tracking_frame_buf import Frame
 _CORE_PRESETS = {
     "fast", "fast_3d", "priority_segment_3d", "trackcorr",
     "standard_forward", "two_directional", "full_multipass",
+    "cython_epipolar_tracking", "openptv_epipolar",
 }
 
 

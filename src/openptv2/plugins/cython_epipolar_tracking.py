@@ -7,7 +7,7 @@ for high-performance 2D+3D trajectory reconstruction across multi-camera setups.
 from __future__ import annotations
 
 import logging
-from pathlib import Path
+
 import numpy as np
 
 from openptv2.tracker import Tracker
@@ -58,14 +58,28 @@ class CythonEpipolarTracker:
         self.exp = exp
 
     def do_tracking(self) -> None:
-        """Execute experiment-level tracking via OpenPTV2 full_forward()."""
+        """Execute experiment-level tracking, honoring the resolved
+        direction (forward-only vs forward+backward) and postprocess/
+        corrective-pass config -- delegates to default_tracking.Tracking,
+        which every preset mapped to this plugin module (trackcorr,
+        full_multipass, standard_forward, two_directional, plus this
+        plugin's own cython_epipolar_tracking/openptv_epipolar keys) shares.
+
+        Previously this called tracker.full_forward() unconditionally,
+        regardless of preset -- so "full_multipass"/"two_directional"
+        (meant to run forward+backward, see tracking_presets.
+        _DIRECTION_BACKWARD_PRESETS) silently ran forward-only too, same as
+        every other preset here. Confirmed directly: benchmarking full_
+        multipass against trackcorr produced byte-identical metrics and
+        full_multipass was not even slower, both symptoms of running the
+        exact same code path.
+        """
         if self.exp is None:
             raise ValueError("No experiment object provided")
 
-        if self.ptv is not None:
-            tracker = self.ptv.py_trackcorr_init(self.exp)
-            self.exp.tracker = tracker
-            tracker.full_forward()
+        from openptv2.plugins.default_tracking import Tracking as _DefaultTracking
+
+        _DefaultTracking(ptv=self.ptv, exp=self.exp).do_tracking()
 
     def track_sequence(
         self,
