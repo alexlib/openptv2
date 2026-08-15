@@ -16,6 +16,24 @@ def _write(base, frame, prev, nxt, xyz):
     write_linkage(base, frame, np.array(prev), np.array(nxt), np.array(xyz, float))
 
 
+def test_write_linkage_with_store_skips_ascii(tmp_path):
+    """Regression test: when a store is given, write_linkage must not also
+    try to write the ASCII file -- linkage_base can be a store-only scratch
+    namespace (e.g. warmup's "warmup/cycle1") with no real on-disk directory,
+    so an unconditional ASCII write raises FileNotFoundError. See
+    tracking_warmup._forward_backward_agreement, which hit exactly this."""
+    from openptv2.storage import RunStore
+
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    base = "warmup/cycle1"  # deliberately not a real directory on disk
+
+    write_linkage(base, 1, np.array([-1]), np.array([-2]), np.array([[0.0, 0.0, 0.0]]), store=store)
+
+    prev, nxt, xyz = read_linkage(base, 1, store=store)
+    assert list(prev) == [-1]
+    assert list(nxt) == [-2]
+
+
 def test_enforce_reciprocity_noop_on_symmetric_links(tmp_path):
     base = str(tmp_path / "ptv_is")
     # frame0: i0->j0, i1->j1 ; frame1: j0.prev=i0, j1.prev=i1  (fully reciprocal)

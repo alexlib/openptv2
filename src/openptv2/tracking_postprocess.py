@@ -69,10 +69,18 @@ def read_linkage(linkage_base: str, frame: int, store=None):
 
 
 def write_linkage(linkage_base: str, frame: int, prev, nxt, xyz, store=None) -> None:
-    """Rewrite a linkage file, and -- when ``store`` is given -- also the
-    matching RunStore entry (unconditional dual-write, same as every other
-    writer in the unified store; a failed store write raises)."""
+    """Write a frame's linkage to the unified RunStore when ``store`` is
+    given, otherwise to ASCII (store-backed runs no longer write ASCII --
+    see docs/plans/2026-08-15-zarr-only-transition-plan.md and
+    ``write_path_frame``'s identical store-vs-ASCII split). ``linkage_base``
+    may be a store-only namespace (e.g. warmup's ``"warmup/cycle1"`` scratch
+    group) with no real on-disk directory, so falling through to ASCII when
+    a store is given would raise FileNotFoundError."""
     base_path = Path(linkage_base)
+    if store is not None:
+        store.write_linkage(frame, prev, nxt, xyz, name=base_path.name)
+        return
+
     p = _path(linkage_base, frame)
     n = len(prev)
     with open(p, "w", encoding="utf-8") as f:
@@ -82,9 +90,6 @@ def write_linkage(linkage_base: str, frame: int, prev, nxt, xyz, store=None) -> 
                 f"{int(prev[i]):4d} {int(nxt[i]):4d} "
                 f"{xyz[i, 0]:10.3f} {xyz[i, 1]:10.3f} {xyz[i, 2]:10.3f}\n"
             )
-
-    if store is not None:
-        store.write_linkage(frame, prev, nxt, xyz, name=base_path.name)
 
 
 def count_links(linkage_base: str, first: int, last: int, store=None) -> int:

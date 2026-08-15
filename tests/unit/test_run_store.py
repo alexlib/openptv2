@@ -240,3 +240,20 @@ def test_linkage_row_count_mismatch_raises(tmp_path):
         store.write_linkage(
             1, prev_ids=[0, 1], next_ids=[0], pos_3d=np.zeros((2, 3)), name="ptv_is"
         )
+
+
+def test_read_correspondences_handles_flat_zero_particle_array(tmp_path):
+    """Regression test: a zero-particle frame can be stored as a flat (0,)
+    array rather than the usual (0, 3+C) shape -- observed on real data with
+    a particle-count ramp-up at the sequence start (a caller elsewhere wrote
+    np.empty(0) instead of np.empty((0, 3 + num_cams))). read_correspondences
+    used to crash with "too many indices for array" on this shape instead of
+    reporting zero particles."""
+    from openptv2.storage.run_store import _frame_key
+
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    store.root["correspondences"].create_array(_frame_key(1), data=np.empty(0))
+
+    pos, cam_ids = store.read_correspondences(1)
+    assert pos.shape == (0, 3)
+    assert cam_ids.shape[0] == 0

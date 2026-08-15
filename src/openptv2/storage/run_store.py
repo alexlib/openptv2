@@ -267,6 +267,15 @@ class RunStore:
         if key not in self.root:
             raise RunStoreError(f"No correspondences stored for frame {frame}")
         data = np.asarray(self.root[key])
+        if data.ndim == 1:
+            # A zero-particle frame stored as a flat (0,) array (e.g. by a
+            # caller that wrote np.empty(0) instead of np.empty((0, 3 + C)) --
+            # observed on real data with a particle-count ramp-up at the
+            # sequence start) instead of the usual (N, 3+C) shape. There are
+            # no rows to slice into pos/cam_ids either way; cam_ids' column
+            # count (num_cams) is unrecoverable from an empty array, but N=0
+            # means no caller actually iterates its columns.
+            return np.empty((0, 3)), np.empty((0, 0), dtype=np.int32)
         return data[:, :3], data[:, 3:].astype(np.int32)
 
     def has_correspondences(self, frame: int) -> bool:
