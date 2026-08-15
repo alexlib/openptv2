@@ -257,3 +257,21 @@ def test_read_correspondences_handles_flat_zero_particle_array(tmp_path):
     pos, cam_ids = store.read_correspondences(1)
     assert pos.shape == (0, 3)
     assert cam_ids.shape[0] == 0
+
+
+def test_clear_linkage_removes_all_frames(tmp_path):
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    store.write_linkage(1, prev_ids=[-1], next_ids=[-2], pos_3d=np.zeros((1, 3)), name="ptv_is")
+    store.write_linkage(2, prev_ids=[-1], next_ids=[-2], pos_3d=np.zeros((1, 3)), name="ptv_is")
+    assert store.has_linkage(1, "ptv_is")
+    assert store.has_linkage(2, "ptv_is")
+
+    store.clear_linkage("ptv_is")
+
+    assert not store.has_linkage(1, "ptv_is")
+    assert not store.has_linkage(2, "ptv_is")
+
+
+def test_clear_linkage_noop_when_absent(tmp_path):
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    store.clear_linkage("nonexistent")  # must not raise

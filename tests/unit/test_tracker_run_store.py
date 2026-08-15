@@ -96,6 +96,56 @@ def test_tracker_full_forward_3d_writes_through_store(cavity_orig_workdir, monke
     assert store_prev.shape == store_next.shape == (store_pos2.shape[0],)
 
 
+def test_tracker_restart_clears_stale_linkage(cavity_orig_workdir, monkeypatch):
+    """Regression test: re-running full_forward_3d() on a store that already
+    has linkage from a PRIOR run (different params, or the same run
+    re-triggered -- e.g. from repeated manual parameter tuning in the GUI)
+    used to leave that stale prev/next in place. read_path_frame correctly
+    prefers the store when present, so track3d's velocity-gated 3-level
+    cascade (track_kernels_track3d.py) then misread stale prev/next as
+    "already linked, has real velocity history" on what should be a fresh
+    first frame -- routing particles into its tight dacc-sized box instead
+    of the wide dv* box and starving frame 1's link count. restart() must
+    clear the target linkage name before a fresh forward pass so results
+    are identical regardless of what a prior run left behind."""
+    monkeypatch.chdir(cavity_orig_workdir)
+
+    cpar = ControlPar.from_yaml("parameters.yaml")
+    cals = _read_calibrations(cpar, cavity_orig_workdir)
+    store = RunStore("res/run.zarr", mode="w")
+
+    def _new_tracker():
+        return Tracker(
+            cpar,
+            VolumePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            SequencePar.from_yaml("parameters.yaml"),
+            cals,
+            store=store,
+        )
+
+    _new_tracker().full_forward_3d()
+
+    # Corrupt the stored linkage the way a stale prior run would: garbage
+    # prev/next on every particle of the first frame.
+    import numpy as np
+
+    prev, nxt, pos = store.read_linkage(10001, "ptv_is")
+    store.write_linkage(
+        10001,
+        prev_ids=np.zeros_like(prev),
+        next_ids=np.zeros_like(nxt),
+        pos_3d=pos,
+        name="ptv_is",
+    )
+
+    tracker2 = _new_tracker()
+    tracker2.full_forward_3d()
+
+    assert tracker2.npart == 2082
+    assert tracker2.nlinks == 1748
+
+
 def test_tracker_postprocess_writes_through_store(cavity_orig_workdir, monkeypatch):
     """Tracker.postprocess() (tracking_postprocess.py's enforce_reciprocity/
     seed_cold_start/relink_trajectory_gaps) used to bypass RunStore entirely

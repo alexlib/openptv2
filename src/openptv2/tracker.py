@@ -1,5 +1,7 @@
 """Streamlined particle tracking control class."""
 
+from pathlib import Path
+
 from openptv2.algorithms.parameters import convert_track_par_to_tuple
 from openptv2.algorithms.track import (
     track_forward_start,
@@ -117,6 +119,9 @@ class Tracker:
         """
         Initialize tracking run (prepare for forward tracking).
         """
+        if self._store is not None and self._naming.get("linkage"):
+            self._store.clear_linkage(Path(self._naming["linkage"]).name)
+
         max_targets = _estimate_max_targets(self._spar, self._naming, self._store)
 
         # Create TrackingRun

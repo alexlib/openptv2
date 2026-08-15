@@ -355,6 +355,22 @@ class RunStore:
     def linkage_names(self) -> list[str]:
         return sorted(self.root["linkage"].keys())
 
+    def clear_linkage(self, name: str = "ptv_is") -> None:
+        """Delete every frame's linkage under ``name``, if any exists.
+
+        Call before a fresh forward tracking pass writing to this name: a
+        stale entry left by a prior run (different parameters, or the same
+        run re-triggered) would otherwise be read back by read_path_frame
+        and misread as "this particle is already linked" -- prev/next
+        contamination that visibly starves track3d's velocity-gated search
+        cascade and silently masks trackcorr's link count with old data
+        instead of freshly computed links. No-op if the group is absent.
+        """
+        key = f"linkage/{name}"
+        if key in self.root:
+            del self.root[key]
+            self._mark_unsealed()
+
     def frames(self, source: Optional[str] = None) -> list[int]:
         """Sorted frame numbers present in the store.
 
