@@ -1620,27 +1620,59 @@ class MainGUI(HasTraits):
 
     def _measure_click(self):
         i = self.current_camera
-        x = self.camera_list[i]._click_tool.x
-        y = self.camera_list[i]._click_tool.y
-        self.camera_list[i].rclicked = 0
+        point = np.array(
+            [self.camera_list[i]._click_tool.x, self.camera_list[i]._click_tool.y],
+            dtype="float64",
+        )
 
+        # Snap to the nearest actual detected/correspondence point, same 5px
+        # rule the epipolar tool uses -- a raw click is rarely dead-center on
+        # the particle, and triangulation quality depends on precise pixels.
+        if hasattr(self, "sorted_pos") and self.sorted_pos is not None:
+            for pos_type in self.sorted_pos:  # quadruplet, triplet, pair
+                distances = np.linalg.norm(pos_type[i] - point, axis=1)
+                if len(distances) > 0 and np.min(distances) < 5:
+                    point = pos_type[i][np.argmin(distances)]
+
+        x, y = float(point[0]), float(point[1])
+        dot_num = len(self._measure_dots) + 1
         self._measure_pixels[i] = (x, y)
         self.camera_list[i].drawcross(
-            "measure_x", "measure_y", x, y, "yellow", 4, marker="circle"
+            f"measure_x{i}_{dot_num}", f"measure_y{i}_{dot_num}",
+            x, y, "yellow", 4, marker="circle",
         )
-        dot_num = len(self._measure_dots) + 1
         print(
             f"[Measure] point {dot_num}/2: camera {i + 1} = ({x:.1f}, {y:.1f}) px "
             f"[{len(self._measure_pixels)}/{self.num_cams} cameras clicked]"
         )
-        if len(self._measure_pixels) < self.num_cams:
-            return
 
         from openptv2.gui import ptv
+
+        cpar = ptv._populate_cpar(self.exp1.pm.get_section("ptv"), self.num_cams)
+
+        if len(self._measure_pixels) < self.num_cams:
+            # Draw an epipolar guide line into every camera not yet clicked
+            # for this point, so the user knows where along each remaining
+            # view to look for the SAME particle -- as more cameras get
+            # clicked, the still-unclicked ones accumulate one guide line
+            # per already-clicked camera, and their intersection pinpoints
+            # the match (the same epipolar_curve already used elsewhere).
+            vpar = ptv._populate_vpar(self.exp1.pm.get_section("criteria"))
+            for j in range(self.num_cams):
+                if j == i or j in self._measure_pixels:
+                    continue
+                pts = epipolar_curve(point, self.cals[i], self.cals[j], 2, cpar, vpar)
+                if len(pts) > 1:
+                    self.camera_list[j].drawline(
+                        f"measure_epi_x{i}_{dot_num}", f"measure_epi_y{i}_{dot_num}",
+                        pts[0, 0], pts[0, 1], pts[-1, 0], pts[-1, 1],
+                        self.camera_list[i].cam_color,
+                    )
+            return
+
         from openptv2.orientation import multi_cam_point_positions
         from openptv2.transforms import convert_arr_pixel_to_metric
 
-        cpar = ptv._populate_cpar(self.exp1.pm.get_section("ptv"), self.num_cams)
         pixels = np.array(
             [self._measure_pixels[c] for c in range(self.num_cams)], dtype=np.float64
         )
@@ -1654,6 +1686,11 @@ class MainGUI(HasTraits):
             f"({pos[0]:.3f}, {pos[1]:.3f}, {pos[2]:.3f}) mm "
             f"(ray convergence {rcm[0]:.4f} mm)"
         )
+        if rcm[0] > 1.0:
+            print(
+                f"[Measure] WARNING: ray convergence {rcm[0]:.3f} mm is large -- "
+                "the clicks may not all be on the same particle. Consider retrying."
+            )
         self._measure_dots.append(pos)
         self._measure_pixels = {}
 
