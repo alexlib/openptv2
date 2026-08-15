@@ -299,15 +299,30 @@ path this plan touches.
 the dense benchmark remains at the Stage 0-era numbers documented in `master-plan.md`'s density
 sweep.
 
-## Stage 4 — Capacity + performance (1–2 days, mechanical, parallel to Stage 2)
+## Stage 4 — Capacity + performance — DONE (2026-08-15, reduced scope)
 
-- Replace fixed `max_targets=10000`, `POSI_K=80`, `MAX_CANDS=32`
-  (`src/openptv2/algorithms/constants.py` and kernel buffer allocations) with sizes computed from
-  actual frame target counts at `TrackingRun` setup (`src/openptv2/algorithms/tracking_run.py`).
-  Buffers are allocated per run, so this is parameter plumbing, not algorithm change.
+`src/openptv2/tracker.py::_estimate_max_targets` replaces `Tracker.restart()`'s hardcoded
+`max_targets=10000` with a value computed from the actual correspondence counts across the run's
+frames (peeked via the attached `RunStore` if present, else the `rt_is` ASCII line counts),
+floored at the old 10000 default and margined ×1.5 over the observed maximum. Only `max_targets`
+needed fixing, not `POSI_K`/`MAX_CANDS` (`algorithms/constants.py`) as the plan's bullet also
+named: those bound the number of *candidates considered per particle* (camera-geometry/consensus
+limited, not particle-count limited — `path_decis_1[h, inlist]` is sized `(max_targets, POSI_K)`,
+so `max_targets` already governs the dimension that actually scales with density), confirmed by
+reproducing the real failure and checking it disappears with only the `max_targets` fix.
 
-**Success:** 20k particles/frame synthetic run completes without overflow; 1k results
-bitwise-identical to baseline.
+**Verified, not just claimed:** reproduced the exact pre-fix failure at 20k particles/frame —
+`Tracker`/`TrackingRun` with the old hardcoded `max_targets=10000` raises
+`ValueError: frame 10001: 20000 particles exceeds max_targets=10000` (a clean, pre-existing
+defensive check in `Frame.read`, not silent corruption — better than the plan's "overflow"
+framing implied). With the new dynamic sizing (`_estimate_max_targets` → 30000 for this dataset),
+the same 20k-particle, 3-frame run completes cleanly (60000 total particles, 39961 links, no
+error). All 291 existing tests, including every exact pinned-link-count regression, still pass
+unchanged — confirms the 1k-and-below baseline is bitwise-identical (the estimator never returns
+less than the old 10000 floor).
+
+**Success (met):** 20k particles/frame synthetic run completes without overflow; 1k results
+bitwise-identical to baseline (all existing pinned-count tests unchanged).
 
 ## Stage 5 (contingent) — Physics validation + optional online merge
 

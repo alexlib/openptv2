@@ -17,6 +17,49 @@ default_naming = {
     "prio": "res/added",
 }
 
+DEFAULT_MAX_TARGETS = 10000
+_MAX_TARGETS_MARGIN = 1.5  # headroom over the largest frame actually seen
+
+
+def _estimate_max_targets(spar, naming, store, floor=DEFAULT_MAX_TARGETS):
+    """Per-frame target/particle buffers (Frame(num_cams, max_targets), one
+    per slot in the 4-frame ring buffer) are preallocated ONCE for the whole
+    run and written into with boundscheck disabled in the compiled kernels --
+    a frame with more particles than max_targets silently corrupts memory
+    rather than raising. The old code hardcoded max_targets=10000 regardless
+    of the actual data; this peeks at the real correspondence counts across
+    the run's frames (via the store if attached, else the rt_is ASCII line
+    counts) and sizes from the observed maximum instead, so a 20k-particle
+    run doesn't run into the same fixed cap a small run happened to fit
+    under.
+
+    Falls back to `floor` if no counts could be read (e.g. sequence hasn't
+    been processed yet) -- unchanged old behaviour, not a regression.
+    """
+    counts = []
+    first, last = spar.get_first(), spar.get_last()
+    for f in range(first, last + 1):
+        n = None
+        if store is not None:
+            try:
+                pos, _ids = store.read_correspondences(f)
+                n = len(pos)
+            except Exception:
+                n = None
+        if n is None:
+            path = f"{naming['corres']}.{f}"
+            try:
+                with open(path, encoding="utf-8") as fh:
+                    n = int(fh.readline().strip())
+            except (OSError, ValueError):
+                n = None
+        if n is not None:
+            counts.append(n)
+
+    if not counts:
+        return floor
+    return max(floor, int(max(counts) * _MAX_TARGETS_MARGIN))
+
 
 class Tracker:
     """
@@ -74,6 +117,8 @@ class Tracker:
         """
         Initialize tracking run (prepare for forward tracking).
         """
+        max_targets = _estimate_max_targets(self._spar, self._naming, self._store)
+
         # Create TrackingRun
         self._run = TrackingRun(
             seq_par=self._spar_algo,
@@ -81,7 +126,7 @@ class Tracker:
             vpar=self._vpar_algo,
             cpar=self._cpar_algo,
             buf_len=4,  # Standard buffer length
-            max_targets=10000,  # Generous max
+            max_targets=max_targets,
             corres_file_base=self._naming["corres"],
             linkage_file_base=self._naming["linkage"],
             prio_file_base=self._naming["prio"],
