@@ -1194,10 +1194,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#stage-4-capacity-performance-12-days-mechanical-parallel-to-stage-2" class="md-nav__link">
+  <a href="#stage-4-capacity-performance-done-2026-08-15-reduced-scope" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stage 4 — Capacity + performance (1–2 days, mechanical, parallel to Stage 2)
+        Stage 4 — Capacity + performance — DONE (2026-08-15, reduced scope)
       
     </span>
   </a>
@@ -1567,15 +1567,27 @@ path this plan touches.</p>
 <p><strong>Not measured</strong> (no code changed, no baseline shift expected): recall at ≥ 5k particles/frame on
 the dense benchmark remains at the Stage 0-era numbers documented in <code>master-plan.md</code>'s density
 sweep.</p>
-<h2 id="stage-4-capacity-performance-12-days-mechanical-parallel-to-stage-2">Stage 4 — Capacity + performance (1–2 days, mechanical, parallel to Stage 2)<a class="headerlink" href="#stage-4-capacity-performance-12-days-mechanical-parallel-to-stage-2" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Replace fixed <code>max_targets=10000</code>, <code>POSI_K=80</code>, <code>MAX_CANDS=32</code>
-  (<code>src/openptv2/algorithms/constants.py</code> and kernel buffer allocations) with sizes computed from
-  actual frame target counts at <code>TrackingRun</code> setup (<code>src/openptv2/algorithms/tracking_run.py</code>).
-  Buffers are allocated per run, so this is parameter plumbing, not algorithm change.</li>
-</ul>
-<p><strong>Success:</strong> 20k particles/frame synthetic run completes without overflow; 1k results
-bitwise-identical to baseline.</p>
+<h2 id="stage-4-capacity-performance-done-2026-08-15-reduced-scope">Stage 4 — Capacity + performance — DONE (2026-08-15, reduced scope)<a class="headerlink" href="#stage-4-capacity-performance-done-2026-08-15-reduced-scope" title="Permanent link">&para;</a></h2>
+<p><code>src/openptv2/tracker.py::_estimate_max_targets</code> replaces <code>Tracker.restart()</code>'s hardcoded
+<code>max_targets=10000</code> with a value computed from the actual correspondence counts across the run's
+frames (peeked via the attached <code>RunStore</code> if present, else the <code>rt_is</code> ASCII line counts),
+floored at the old 10000 default and margined ×1.5 over the observed maximum. Only <code>max_targets</code>
+needed fixing, not <code>POSI_K</code>/<code>MAX_CANDS</code> (<code>algorithms/constants.py</code>) as the plan's bullet also
+named: those bound the number of <em>candidates considered per particle</em> (camera-geometry/consensus
+limited, not particle-count limited — <code>path_decis_1[h, inlist]</code> is sized <code>(max_targets, POSI_K)</code>,
+so <code>max_targets</code> already governs the dimension that actually scales with density), confirmed by
+reproducing the real failure and checking it disappears with only the <code>max_targets</code> fix.</p>
+<p><strong>Verified, not just claimed:</strong> reproduced the exact pre-fix failure at 20k particles/frame —
+<code>Tracker</code>/<code>TrackingRun</code> with the old hardcoded <code>max_targets=10000</code> raises
+<code>ValueError: frame 10001: 20000 particles exceeds max_targets=10000</code> (a clean, pre-existing
+defensive check in <code>Frame.read</code>, not silent corruption — better than the plan's "overflow"
+framing implied). With the new dynamic sizing (<code>_estimate_max_targets</code> → 30000 for this dataset),
+the same 20k-particle, 3-frame run completes cleanly (60000 total particles, 39961 links, no
+error). All 291 existing tests, including every exact pinned-link-count regression, still pass
+unchanged — confirms the 1k-and-below baseline is bitwise-identical (the estimator never returns
+less than the old 10000 floor).</p>
+<p><strong>Success (met):</strong> 20k particles/frame synthetic run completes without overflow; 1k results
+bitwise-identical to baseline (all existing pinned-count tests unchanged).</p>
 <h2 id="stage-5-contingent-physics-validation-optional-online-merge">Stage 5 (contingent) — Physics validation + optional online merge<a class="headerlink" href="#stage-5-contingent-physics-validation-optional-online-merge" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Implement track-lifetime distribution + acceleration-PDF kurtosis from
