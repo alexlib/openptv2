@@ -1183,10 +1183,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#stage-3-better-in-tracker-cost-independent-1-week" class="md-nav__link">
+  <a href="#stage-3-better-in-tracker-cost-investigated-deferred-2026-08-15" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Stage 3 — Better in-tracker cost (independent, ~1 week)
+        Stage 3 — Better in-tracker cost — INVESTIGATED, deferred (2026-08-15)
       
     </span>
   </a>
@@ -1537,17 +1537,36 @@ correspondences invalidates prior linkage assumptions elsewhere in the same fram
 the tested scope — the pass appends one row and rewires one pointer per claim, atomically per
 frame, but wasn't stress-tested against concurrent/other postprocess passes touching the same
 frame in the same run).</p>
-<h2 id="stage-3-better-in-tracker-cost-independent-1-week">Stage 3 — Better in-tracker cost (independent, ~1 week)<a class="headerlink" href="#stage-3-better-in-tracker-cost-independent-1-week" title="Permanent link">&para;</a></h2>
-<p>All inside <code>track_kernels_corr.py</code>, using data already in the 4-frame buffer:
-- <strong>Per-track adaptive search radius</strong>: with history ≥ 3, scale the dv box per particle from
-  local velocity + k·(recent velocity variance) instead of the global box.
-- <strong>Multi-frame residual term</strong>: proPTV-style polynomial-fit residual over the buffered X[0..3]
-  added to the <code>rr</code> cost (currently <code>dl/lmax + acc/dacc + angle/dangle</code>, divided by camera-vote
-  count <code>quali</code>).
-- <strong>In-tracker 1-frame coast</strong> for detection dropouts — but FIRST measure whether
-  <code>relink_trajectory_gaps</code> / the Stage 2 pass already recovers these; skip if so (YAGNI).</p>
-<p><strong>Success:</strong> at ≥ 5k particles/frame on the dense benchmark, recall up with precision ≥ baseline
-(target 0.30 → ≥ 0.5).</p>
+<h2 id="stage-3-better-in-tracker-cost-investigated-deferred-2026-08-15">Stage 3 — Better in-tracker cost — INVESTIGATED, deferred (2026-08-15)<a class="headerlink" href="#stage-3-better-in-tracker-cost-investigated-deferred-2026-08-15" title="Permanent link">&para;</a></h2>
+<p>All three sub-items were evaluated before writing any code (same discipline as every prior
+stage); one is resolved, two are deliberately deferred rather than rushed into the riskiest code
+path this plan touches.</p>
+<ul>
+<li><strong>In-tracker 1-frame coast for detection dropouts — SKIPPED (YAGNI), confirmed redundant.</strong> The
+  plan itself said to check <code>relink_trajectory_gaps</code> first. It already handles exactly this case:
+  <code>tests/unit/test_tracking_postprocess.py::test_relink_trajectory_gaps_bridges_missing_frame</code>
+  builds a particle undetected for one whole frame (not just missing from correspondence — no 2D
+  targets either) and confirms the gap gets bridged by constant-velocity extrapolation. Already
+  wired into Stage 2's corrective pass. Nothing to build.</li>
+<li><strong>Per-track adaptive search radius</strong> and <strong>multi-frame residual term — deferred, not
+  implemented.</strong> Both require modifying <code>track_kernels_corr.py</code>'s compiled nogil decision logic —
+  the exact code Stage 0 found and fixed a real, subtle bug in (the backward-pass acceptance
+  guard), and the code every pinned-link-count regression test in the suite depends on for its
+  exact candidate tie-breaking. A rushed change here risks silently regressing dozens of already-
+  validated tests in ways that are easy to miss without dedicated, focused verification time this
+  stage did not get. User decision (2026-08-15): defer both to a dedicated follow-up session
+  rather than compress them into the tail of this one.</li>
+<li>The <em>concept</em> behind the adaptive-radius item already exists as reusable code:
+    <code>src/openptv2/tracking_cost.py::compute_velocity_aligned_search_radius</code> (velocity-aligned
+    anisotropic search ellipsoids), already used by the Hungarian/assignment-based tracker family
+    (<code>kalman_hungarian_3d</code> etc.). The gap is specifically that trackcorr's compiled kernel doesn't
+    use it — extending it there needs new per-particle velocity-history state threaded through
+    <code>TrackingRun</code>/<code>FrameBuf</code>, which is the actual size of the remaining work, not a green-field
+    design problem.</li>
+</ul>
+<p><strong>Not measured</strong> (no code changed, no baseline shift expected): recall at ≥ 5k particles/frame on
+the dense benchmark remains at the Stage 0-era numbers documented in <code>master-plan.md</code>'s density
+sweep.</p>
 <h2 id="stage-4-capacity-performance-12-days-mechanical-parallel-to-stage-2">Stage 4 — Capacity + performance (1–2 days, mechanical, parallel to Stage 2)<a class="headerlink" href="#stage-4-capacity-performance-12-days-mechanical-parallel-to-stage-2" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Replace fixed <code>max_targets=10000</code>, <code>POSI_K=80</code>, <code>MAX_CANDS=32</code>
