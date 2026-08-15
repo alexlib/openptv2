@@ -13,6 +13,7 @@ Welcome to the openptv2 documentation.
 ### User Documentation
 
 - [Tracking Pipeline & Results Guide](tracking_guide.md) - Pipeline workflow, parameter guide, multi-pass tracking, and ptv_is.# output format
+- [Auto-Calibration with `openptv warmup`](tutorials/warmup_tutorial.md) - Standalone parameter/engine auto-tuning before tracking
 - [Quality 3D Tracking & Kalman Guide](kalman_hungarian_3d_guide.md) - Constant-acceleration Kalman filter state estimation, parameters, formulas, and benchmark results
 - [Command-Line Batch Processing](tutorials/batch_processing.md) - Running `openptv2-batch` headlessly
 - [Sequence & Tracking Plugins](tutorials/plugins.md) - Built-in plugins, selecting one, writing your own
