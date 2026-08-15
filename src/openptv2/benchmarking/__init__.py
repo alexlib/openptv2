@@ -33,8 +33,12 @@ from .datawriter import DatasetSpec, write_dataset
 from .experiment import write_experiment
 from .metrics import (
     IdentityMetrics,
+    PhysicsMetrics,
+    acceleration_kurtosis,
     compute_identity_metrics,
+    compute_physics_metrics,
     ghost_positions_from_frame_gt,
+    track_lifetime_distribution,
 )
 from .runner import read_trajectories, run_tracker
 from .scenario import CrossingSpec, ScenarioSpec, generate_scenario
@@ -57,4 +61,8 @@ __all__ = [
     "IdentityMetrics",
     "compute_identity_metrics",
     "ghost_positions_from_frame_gt",
+    "PhysicsMetrics",
+    "compute_physics_metrics",
+    "track_lifetime_distribution",
+    "acceleration_kurtosis",
 ]

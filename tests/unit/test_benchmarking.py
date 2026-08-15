@@ -195,3 +195,64 @@ def test_metrics_wrong_link():
     m = bm.compute_identity_metrics(tt, pred, eps=0.5)
     assert m.purity < 0.6
     assert m.pmt < 100.0
+
+
+def test_track_lifetime_distribution():
+    tracks = {
+        0: [(f, float(f), 0.0, 0.0) for f in range(40)],  # long
+        1: [(f, 0.0, float(f), 0.0) for f in range(15)],  # medium
+        2: [(0, 0.0, 0.0, 0.0), (1, 1.0, 0.0, 0.0)],  # short
+    }
+    d = bm.track_lifetime_distribution(tracks)
+    assert d["n_tracks"] == 3
+    assert d["mean_track_length"] == pytest.approx((40 + 15 + 2) / 3)
+    assert d["frac_tracks_over_10"] == pytest.approx(2 / 3)
+    assert d["frac_tracks_over_30"] == pytest.approx(1 / 3)
+
+
+def test_track_lifetime_distribution_empty():
+    d = bm.track_lifetime_distribution({})
+    assert d["n_tracks"] == 0
+    assert d["mean_track_length"] == 0.0
+
+
+def test_acceleration_kurtosis_zero_for_straight_line():
+    """Constant velocity -> zero acceleration everywhere -> undefined (NaN)
+    kurtosis, not a division-by-zero crash."""
+    tracks = {0: [(f, float(f), 0.0, 0.0) for f in range(20)]}
+    k, n = bm.acceleration_kurtosis(tracks)
+    assert n > 0
+    assert np.isnan(k)
+
+
+def test_acceleration_kurtosis_detects_a_single_outlier():
+    """A false-link-style single acceleration spike in an otherwise smooth
+    track must inflate K_a well above the Gaussian value of 3 -- this is
+    the whole point of the metric (docs/lagrangian_turbulence_quality_guide.md
+    section B): precision can look fine while K_a exposes the outlier."""
+    pts = [(f, float(f) + (5.0 if f == 20 else 0.0), 0.0, 0.0) for f in range(40)]
+    k, n = bm.acceleration_kurtosis({0: pts})
+    assert n > 0
+    assert k > 10.0
+
+
+def test_acceleration_kurtosis_skips_gap_bridged_triples():
+    """A finite-difference triple spanning a bridged gap (frames 0,1,3 --
+    not consecutive) must not be treated as a real acceleration sample."""
+    tracks = {0: [(0, 0.0, 0.0, 0.0), (1, 1.0, 0.0, 0.0), (3, 10.0, 0.0, 0.0)]}
+    k, n = bm.acceleration_kurtosis(tracks)
+    assert n == 0
+    assert np.isnan(k)
+
+
+def test_compute_physics_metrics_bundles_both():
+    tracks = {0: [(f, float(f), 0.0, 0.0) for f in range(15)]}
+    m = bm.compute_physics_metrics(tracks)
+    assert isinstance(m, bm.PhysicsMetrics)
+    assert m.n_tracks == 1
+    assert m.mean_track_length == 15.0
+    d = m.to_dict()
+    assert set(d) == {
+        "mean_track_length", "frac_tracks_over_10", "frac_tracks_over_30",
+        "n_tracks", "acceleration_kurtosis", "n_acceleration_samples",
+    }

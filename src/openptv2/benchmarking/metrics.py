@@ -249,8 +249,126 @@ def ghost_positions_from_frame_gt(
     return out
 
 
+@dataclass
+class PhysicsMetrics:
+    """Lagrangian-turbulence physics quality signals (Stage 5 part 1,
+    docs/plans/2026-08-15-tracking-quality-overhaul.md), from
+    docs/lagrangian_turbulence_quality_guide.md sections A and B. Catch
+    ghost contamination that link-level precision/recall can miss: a
+    tracker can score well on precision while still corrupting the
+    acceleration statistics turbulence research actually needs, because a
+    handful of wrong links produce outlier accelerations regardless of how
+    rare they are.
+    """
+
+    mean_track_length: float = 0.0
+    frac_tracks_over_10: float = 0.0
+    frac_tracks_over_30: float = 0.0
+    n_tracks: int = 0
+    acceleration_kurtosis: float = float("nan")
+    n_acceleration_samples: int = 0
+
+    def to_dict(self) -> dict:
+        return {
+            "mean_track_length": self.mean_track_length,
+            "frac_tracks_over_10": self.frac_tracks_over_10,
+            "frac_tracks_over_30": self.frac_tracks_over_30,
+            "n_tracks": self.n_tracks,
+            "acceleration_kurtosis": self.acceleration_kurtosis,
+            "n_acceleration_samples": self.n_acceleration_samples,
+        }
+
+
+def track_lifetime_distribution(
+    tracks: Dict[int, List[Tuple[int, float, float, float]]],
+) -> dict:
+    """Section A: mean track duration and the fraction of tracks spanning
+    more than 10 / 30 frames. Splitting one long physical trajectory into
+    many short fragments (a real failure mode -- see
+    docs/plans/2026-08-15-tracking-quality-overhaul.md's ghost-inclusive
+    benchmark) doesn't show up in precision/recall but destroys these
+    fractions."""
+    lengths = np.array([len(pts) for pts in tracks.values()], dtype=float)
+    if lengths.size == 0:
+        return {
+            "mean_track_length": 0.0, "frac_tracks_over_10": 0.0,
+            "frac_tracks_over_30": 0.0, "n_tracks": 0,
+        }
+    return {
+        "mean_track_length": float(np.mean(lengths)),
+        "frac_tracks_over_10": float(np.mean(lengths > 10)),
+        "frac_tracks_over_30": float(np.mean(lengths > 30)),
+        "n_tracks": int(lengths.size),
+    }
+
+
+def acceleration_kurtosis(
+    tracks: Dict[int, List[Tuple[int, float, float, float]]], dt: float = 1.0,
+) -> tuple[float, int]:
+    """Section B: K_a = <a^4> / <a^2>^2, the flatness factor of the
+    acceleration PDF, pooled over every velocity COMPONENT of every track
+    with >= 3 points (the standard turbulence-literature statistic, not a
+    per-vector-magnitude one -- isotropic turbulence treats x/y/z
+    components as statistically equivalent, so pooling them is standard
+    practice, not an approximation).
+
+    A single false link produces an acceleration outlier regardless of how
+    rare the link error is (a ~= 1/dt^2 jump), which the 4th-moment-driven
+    K_a is specifically sensitive to (Gaussian K_a = 3; real turbulence
+    K_a ~= 10-50; spurious swaps inflate it further). Returns (K_a, n
+    samples) -- NaN when there's not enough data (< 2 acceleration
+    samples), matching the guide's "kurtosis needs a real sample" caveat
+    rather than reporting a meaningless number from a handful of points.
+    """
+    accs = []
+    for pts in tracks.values():
+        if len(pts) < 3:
+            continue
+        sorted_pts = sorted(pts, key=lambda p: p[0])
+        pos = np.array([[x, y, z] for _f, x, y, z in sorted_pts])
+        frames = np.array([f for f, _x, _y, _z in sorted_pts])
+        # only consecutive-frame triples give a valid finite-difference
+        # acceleration -- a gap-bridged jump would fake an outlier.
+        consecutive = (frames[2:] - frames[:-2]) == 2
+        a = (pos[2:] - 2 * pos[1:-1] + pos[:-2]) / (dt * dt)
+        accs.append(a[consecutive])
+
+    if not accs:
+        return float("nan"), 0
+    a = np.concatenate(accs).ravel()  # pool x, y, z components together
+    if a.size < 2:
+        return float("nan"), 0
+    m2 = float(np.mean(a**2))
+    if m2 <= 0:
+        return float("nan"), int(a.size)
+    m4 = float(np.mean(a**4))
+    return m4 / (m2 * m2), int(a.size)
+
+
+def compute_physics_metrics(
+    tracks: Dict[int, List[Tuple[int, float, float, float]]], dt: float = 1.0,
+) -> PhysicsMetrics:
+    """Convenience wrapper bundling track_lifetime_distribution and
+    acceleration_kurtosis into one PhysicsMetrics result, matching this
+    module's IdentityMetrics/compute_identity_metrics pattern."""
+    lifetime = track_lifetime_distribution(tracks)
+    k_a, n_a = acceleration_kurtosis(tracks, dt=dt)
+    return PhysicsMetrics(
+        mean_track_length=lifetime["mean_track_length"],
+        frac_tracks_over_10=lifetime["frac_tracks_over_10"],
+        frac_tracks_over_30=lifetime["frac_tracks_over_30"],
+        n_tracks=lifetime["n_tracks"],
+        acceleration_kurtosis=k_a,
+        n_acceleration_samples=n_a,
+    )
+
+
 __all__ = [
     "IdentityMetrics",
+    "PhysicsMetrics",
     "compute_identity_metrics",
     "ghost_positions_from_frame_gt",
+    "track_lifetime_distribution",
+    "acceleration_kurtosis",
+    "compute_physics_metrics",
 ]
