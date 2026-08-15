@@ -198,6 +198,20 @@ def run_density(out_dir: Path, num_particles: int, num_frames: int, seed: int):
         )
         print(f"  (warmup picked engine={warm.tracker}, agreement={warm.agreement_rate:.1%}, "
               f"noise~{warm.noise_estimate_mm:.3f}mm, dvxmax {tpar_default.dvxmax:.1f}->{tpar_tuned.dvxmax:.2f})")
+        print(
+            f"  PARAMS|{num_particles}|{engine}|default|"
+            f"dvxmin={tpar_default.dvxmin:.3f}|dvxmax={tpar_default.dvxmax:.3f}|"
+            f"dvymin={tpar_default.dvymin:.3f}|dvymax={tpar_default.dvymax:.3f}|"
+            f"dvzmin={tpar_default.dvzmin:.3f}|dvzmax={tpar_default.dvzmax:.3f}|"
+            f"dangle={tpar_default.dangle:.3f}|dacc={tpar_default.dacc:.3f}"
+        )
+        print(
+            f"  PARAMS|{num_particles}|{engine}|warmup|"
+            f"dvxmin={tpar_tuned.dvxmin:.3f}|dvxmax={tpar_tuned.dvxmax:.3f}|"
+            f"dvymin={tpar_tuned.dvymin:.3f}|dvymax={tpar_tuned.dvymax:.3f}|"
+            f"dvzmin={tpar_tuned.dvzmin:.3f}|dvzmax={tpar_tuned.dvzmax:.3f}|"
+            f"dangle={tpar_tuned.dangle:.3f}|dacc={tpar_tuned.dacc:.3f}"
+        )
 
         r = _run_condition(cpar, vpar, tpar_tuned, spar, cals, store, engine, f"warm_{engine}", corrective=False)
         _print_row("WARMUP-tuned", _score(r["tracks"], tt, ghosts), r["time_s"])
