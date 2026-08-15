@@ -281,3 +281,58 @@ def test_reset_links():
     assert p.prev == PREV_NONE
     assert p.next_idx == NEXT_NONE
     assert p.prio == 2  # PRIO_DEFAULT
+
+
+def test_read_path_frame_prefers_store_linkage_over_unrelated_ascii_correspondence_file(tmp_path):
+    """Regression test for a real bug found while benchmarking Stage 1/2
+    (docs/plans/2026-08-15-tracking-quality-overhaul.md): read_path_frame
+    used to decide store-vs-ascii by checking whether the CORRESPONDENCE
+    ascii file existed, not whether the STORE had data. A correspondence
+    ascii file can exist for reasons unrelated to whether the store holds
+    this frame's (already-tracked) linkage -- e.g. it was fixture input, or
+    written by an earlier, non-store-backed step. Store-backed tracking
+    writes linkage ONLY to the store, never ascii, so once the correspondence
+    file's mere existence wrongly skipped the store branch, the linkage
+    ascii open failed and the frame silently read back as fully unlinked --
+    which trackback_c's buffer-priming re-write then persisted as real data,
+    wiping out an already-tracked frame's links (full_forward() correctly
+    links a store-backed run; full_backward() immediately afterward read
+    every frame back as unlinked and overwrote the store with zeros).
+    """
+    from openptv2.storage import RunStore
+
+    corres_base = str(tmp_path / "rt_is")
+    linkage_base = str(tmp_path / "ptv_is")
+    frame = 1
+
+    # An ascii correspondence file exists for this frame (fixture input /
+    # legacy sequence-step output) -- but no ascii linkage file was ever
+    # written, matching a store-backed tracking run.
+    with open(f"{corres_base}.{frame}", "w") as fh:
+        fh.write("2\n")
+        fh.write("1    0.000    0.000    0.000    0   0   0   0\n")
+        fh.write("2    1.000    0.000    0.000    1   1   1   1\n")
+
+    store = RunStore(str(tmp_path / "run.zarr"), mode="w")
+    pos = np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]])
+    cam_ids = np.array([[0, 0, 0, 0], [1, 1, 1, 1]], dtype=np.int32)
+    store.write_correspondences(frame, pos, cam_ids)
+    # Real, already-tracked linkage: particle 0 -> particle 1.
+    store.write_linkage(
+        frame,
+        prev_ids=np.array([-1, 0], dtype=np.int32),
+        next_ids=np.array([1, -2], dtype=np.int32),
+        pos_3d=pos,
+        name="ptv_is",
+    )
+
+    cor_buf, path_buf = read_path_frame(corres_base, linkage_base, "", frame, store=store)
+
+    assert len(path_buf) == 2
+    assert path_buf[0].prev == -1
+    assert path_buf[0].next_idx == 1, (
+        "read_path_frame ignored the store's real linkage and fell back to "
+        "the (nonexistent) ascii linkage file, reading the frame as unlinked"
+    )
+    assert path_buf[1].prev == 0
+    assert path_buf[1].next_idx == -2

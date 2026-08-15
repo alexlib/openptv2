@@ -375,18 +375,37 @@ def reset_links(path):
 def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_num, store=None):
     """Read one frame's correspondences + tracking linkage (+ prio).
 
-    ``store``: an ``openptv2.storage.RunStore``, or ``None``. ASCII is tried
-    first; on a miss, and only when ``store`` is given, the same data is read
-    from the store instead. Replaces the old ``OPENPTV_STORAGE``-gated
-    3-candidate guessed-path fallback.
+    ``store``: an ``openptv2.storage.RunStore``, or ``None``. zarr is the
+    database of record now -- there is no more ASCII-only tracking (see
+    docs/plans/2026-08-15-zarr-only-transition-plan.md) -- so whenever the
+    STORE ITSELF has correspondences for this frame, it wins. ASCII is used
+    when the store has nothing for this frame yet (e.g. a prior sequence
+    step wrote ascii rt_is and this is the first store-backed read of it --
+    see tests/unit/test_tracker_run_store.py's
+    ``test_tracker_full_forward_3d_writes_through_store``, which relies on
+    exactly this: ascii input, store output) or when no store is given.
+
+    This used to gate the store read on the CORRESPONDENCE ascii FILE's
+    existence (``corres_file_base.frame_num``) rather than on whether the
+    STORE has data, on the theory that the file's absence meant "nothing
+    written yet, fall back to store". That is wrong whenever a
+    correspondence ascii file exists for some OTHER reason (e.g. committed
+    fixture input) while the LINKAGE ascii file does not -- store-backed
+    tracking writes linkage ONLY to the store, never ascii. The
+    correspondence-FILE check then incorrectly skipped the store branch even
+    though the store legitimately held this frame's (already-tracked)
+    linkage, the subsequent ascii linkage open hit FileNotFoundError, and
+    the frame silently read back as fully unlinked -- which a caller that
+    then re-writes the frame (trackback_c's buffer priming does exactly
+    this) persists as real data, wiping out already-tracked links.
+    Reproduced directly: full_forward() correctly links a store-backed run,
+    full_backward() immediately afterward reads every frame back as
+    unlinked and overwrites the store with zeros. Checking the store's OWN
+    data (``store.has_correspondences``) instead of the unrelated ascii
+    file fixes that case while preserving the ascii-input/store-output one.
     """
-    fname = f"{corres_file_base}.{frame_num}"
-    p = Path(fname)
-    if store is not None and (not p.exists() or p.stat().st_size == 0):
-        try:
-            pos_3d, cam_ids = store.read_correspondences(frame_num)
-        except Exception:
-            return [], []
+    if store is not None and store.has_correspondences(frame_num):
+        pos_3d, cam_ids = store.read_correspondences(frame_num)
 
         link_name = Path(linkage_file_base).name if linkage_file_base else "ptv_is"
         if store.has_linkage(frame_num, link_name):
@@ -413,6 +432,7 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_n
             path_buf.append(path)
         return cor_buf, path_buf
 
+    fname = f"{corres_file_base}.{frame_num}"
     try:
         corres_file = open(fname, "r")
     except FileNotFoundError:
