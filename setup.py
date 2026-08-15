@@ -68,6 +68,7 @@ ALGORITHMS_MODULES = [
     "tracking_run",
     "track",
     "track3d",
+    "track4be",
     "track_kernels",  # shim re-exporting sub-modules below
     "track_kernels_geom",  # multimedia + pixel_projection + angle
     "track_kernels_search",  # candidate search

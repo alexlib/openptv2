@@ -37,6 +37,7 @@ else:
     from math import floor as c_floor, sqrt as c_sqrt
 
 
+@cython.cfunc
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def _find_closest_in_3d_grid(
@@ -62,8 +63,14 @@ def _find_closest_in_3d_grid(
     nx: cython.int,
     ny: cython.int,
     nz: cython.int,
-):
-    """Find up to max_cands closest candidates using 3D spatial grid cells."""
+) -> cython.int:
+    """Find up to max_cands closest candidates using 3D spatial grid cells.
+
+    Declared @cython.cfunc: this is module-internal and sits on the hottest
+    path in the file -- 4BE calls it once per particle for candidates plus
+    once per candidate for n+2 support, so a Python calling convention here
+    would dominate its runtime.
+    """
     s: cython.int
     k: cython.int
     slot: cython.int
@@ -71,7 +78,7 @@ def _find_closest_in_3d_grid(
     ddy: cython.double
     ddz: cython.double
     d: cython.double
-    n_found = 0
+    n_found: cython.int = 0
 
     if np2 < 32:
         return _find_closest_in_3d(
@@ -129,6 +136,7 @@ def _find_closest_in_3d_grid(
     return n_found
 
 
+@cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def _find_closest_in_3d(
@@ -143,8 +151,13 @@ def _find_closest_in_3d(
     max_cands: cython.int,
     cand_inds: cython.int[:],
     cand_dists: cython.double[:],
-):
-    """Find up to max_cands closest candidates by distance within a 3D box."""
+) -> cython.int:
+    """Find up to max_cands closest candidates by distance within a 3D box.
+
+    @cython.ccall rather than @cython.cfunc: track_kernels_tracking re-exports
+    this one, so it has to stay importable from Python while still being
+    C-callable from _find_closest_in_3d_grid's small-frame fallback.
+    """
     s: cython.int
     k: cython.int
     slot: cython.int
@@ -152,7 +165,7 @@ def _find_closest_in_3d(
     ddy: cython.double
     ddz: cython.double
     d: cython.double
-    n_found = 0
+    n_found: cython.int = 0
     for s in range(max_cands):
         cand_inds[s] = -1
         cand_dists[s] = 1e20
@@ -533,8 +546,9 @@ def track3d_loop_fast(
 # involved in a conflict.
 
 
-def _build_grid3d(px, np_pts, cell_x: cython.double, cell_y: cython.double,
-                  cell_z: cython.double):
+@cython.cfunc
+def _build_grid3d(px, np_pts: cython.int, cell_x: cython.double,
+                  cell_y: cython.double, cell_z: cython.double):
     """Uniform-cell spatial hash over one frame's 3D positions.
 
     Returns (grid_head, grid_next, min_x, min_y, min_z, nx, ny, nz), the
