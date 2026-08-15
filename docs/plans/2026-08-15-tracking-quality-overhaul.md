@@ -197,52 +197,75 @@ itself).
 **Key insight confirmed:** fwd/bwd agreement (via the existing reciprocity postprocess) is a
 ground-truth-free quality signal, so warmup works identically on synthetic and real data.
 
-## Stage 2 — Corrective backward pass with track-assisted re-correspondence (main event, 1–2 weeks)
+## Stage 2 — Corrective backward pass with track-assisted re-correspondence — DONE (2026-08-15, reduced scope)
 
-The backward pass and STB-lite re-correspondence become ONE mechanism. New module
-`src/openptv2/track_assisted.py` (~300–400 lines orchestration, **zero new kernels**), invoked
-from `plugins/default_tracking.py` behind `track.corrective_passes: N` (default 0 = off, fully
-backward compatible; N = 1–2 typical).
+New module `src/openptv2/track_assisted.py`, invoked from `plugins/default_tracking.py` behind
+`track.corrective_passes: N` (default 0 = off, fully backward compatible). Implements items 1, 4
+(the core claim mechanism), 7, and 8 (partially) of the original 8-step spec; items 2/3/5/6 are
+scope cuts, each forced by a primitive that turned out not to exist as reusable plain-Python code
+(verified before writing any code, not discovered by trial and error):
 
-Walking backward frame t+1 → t, using forward tracks as prior:
-1. **Load** tracks + correspondences from RunStore (`tracking_postprocess.read_linkage`, readers
-   in `storage/run_store.py`).
-2. **Predict backward** per track: linear from the two later points; the vendored GMM predictor
-   (`src/openptv2/plugins/proptv/prediction.py`) for tracks of length ≥ 4.
-3. **Verify/fix links**: where the backward prediction disagrees with the forward link beyond the
-   warmup noise estimate, re-rank candidates using the (Stage-0-fixed) `trackback_loop_fast`
-   decision logic and rewire. This replaces the plain `enforce_reciprocity` veto with actual
-   correction.
-4. **Claim missed particles**: for tracks that end at t+1 going forward (= start here going
-   backward), call `assess_new_position_fast`
-   (`src/openptv2/algorithms/track_kernels_transform.py` ~L720) at the backward-predicted 3D
-   position — it already projects to all cameras, runs `candsearch_in_pix_fast` over *unused*
-   targets, and triangulates via `point_position_fast` (~L516). Accept at ≥ 2 camera hits within
-   `tpar.add` radius; extend the track and add a particle the combinatorial correspondence
-   missed.
-5. **Optional shake**: wire `src/openptv2/plugins/stb_4d_refinement.py::shake_particle_position_3d`
-   on claimed triangulations (opt-in `track.shake: true`; only when frame images exist — skip for
-   existing-targets runs).
-6. **Prune ghosts**: an untracked particle with only 2-cam support that no forward or backward
-   track claims decays; a track-claimed particle sustained by only 2 cameras for ≥ 3 consecutive
-   frames without regaining a 3rd is killed. Directly attacks the 64%-ghost pair population.
-7. **Bridge gaps**: where a backward extension meets a forward track fragment within the
-   noise-scaled search volume, merge the fragments (subsumes
-   `tracking_postprocess.relink_trajectory_gaps` for the tracked case).
-8. **Write back** corrected correspondences + linkage with provenance flags
-   (forward / backward-corrected / track-claimed / pruned). Repeat the pass while links change
-   > ~1%.
+- **`assess_new_position`/`assess_new_position_fast`** (the item-4 primitive the plan named) has
+  **zero callers anywhere in the codebase** and is unusable outside the full compiled-kernel
+  `TrackingRun`/`FrameBuf`/packed-calibration setup — building that setup from orchestration code
+  is not "zero new kernels." Used `candsearch_in_pix_rest` + `orientation.point_position` +
+  `openptv2.correspondences.MatchedCoords` instead (all genuinely plain-Python, all already
+  proven elsewhere this session) to get the same functional result: project the prediction into
+  every camera, search each camera's *unclaimed* 2D targets, triangulate on ≥ 2 hits.
+- **Item 3** (re-rank disagreeing links against `trackback_loop_fast`'s exact decision logic) has
+  no plain-Python equivalent either — that 4-point test + `rr` cost formula lives only inside the
+  compiled nogil kernel. Not reimplemented (a hand-copied duplicate of fixed decision logic is a
+  correctness liability, not a scope win); `enforce_reciprocity` (already proven, unchanged) is
+  the disagreement signal used instead, same as before.
+- **Item 2's GMM predictor** and **item 5's shake refinement** are deferred: GMM
+  (`plugins/proptv/prediction.py`) needs track chains of length ≥ 4 assembled from the prev/next
+  graph, which the reduced scope doesn't build; shake needs real per-camera image arrays this
+  disk-level pass doesn't have. Linear 2-point backward extrapolation only.
+- **Item 6's per-track running 2-cam-decay prune** is deferred — not yet load-bearing until Stage
+  2 is run at a density where it matters; the claim mechanism already records each claim's camera
+  count (`CorrectiveStats.claimed_2cam`) so the decay rule can be added without touching the claim
+  path itself.
+- **Item 8's provenance flags**: no storage field for this exists (`RunStore.write_linkage`'s
+  optional `prio` int32 column is the closest precedent, but it's a single generic slot already
+  named for a different legacy purpose) — not added; claimed vs. original rows are currently
+  distinguishable only by re-deriving from `CorrectiveStats`, not from a persisted per-row flag.
 
-**Success criteria:**
-- Ghost-inclusive synthetic (primary): wrong-link rate halved vs forward-only baseline; mean
-  track length up ≥ 25%; ghost_capture_rate down ≥ 50%; NO precision regression on the
-  ghost-free dense benchmark (guards against claimed-ghost feedback).
-- test_cavity (sanity): ghost_capture down, mean track length up; no hard threshold.
-- proPTV 500_30: PMP stays > 99%, track completeness up.
+What's implemented, walking backward frame t+1 → t: for every track head at t+1 (`prev == -1`)
+with a known forward velocity (a `next` link to t+2), predicts its position at t by linear
+backward extrapolation, projects into every camera (`algorithms.track.point_to_pixel`), searches
+each camera's targets not already referenced by t's correspondences
+(`algorithms.track.candsearch_in_pix_rest`), triangulates when ≥ 2 cameras hit
+(`algorithms.orientation.point_position`), appends the new row to the frame's correspondences
+(`RunStore.write_correspondences`), and rewires the track's `prev` pointer to the new row
+(`tracking_postprocess.write_linkage`). After the walk, reuses (unchanged)
+`tracking_postprocess.relink_trajectory_gaps` and `enforce_reciprocity` — satisfying item 7
+entirely via reuse, no new gap-bridging code. Iterates while total link count keeps changing by
+more than `min_change_frac` (default 1%, matching the original "repeat while links change > ~1%"
+spec), capped at `max_passes`.
 
-**Risks:** ghost-track self-reinforcement (mitigated by the 2-cam decay rule + pass cap);
-rewriting correspondences invalidates prior linkage (acceptable — the pass rewrites both
-atomically per frame; provenance flags keep it auditable).
+**Verified correct** (`tests/unit/test_track_assisted.py`): a hand-built scenario where one
+particle's 2D targets exist in every camera at one frame but its 3D correspondence row is
+deliberately absent there (simulating exactly the "combinatorial correspondence missed it"
+failure mode), while its track resumes the next frame with a known forward velocity. The
+corrective pass recovers the exact dropped particle (triangulated position within 2×10⁻⁵ mm of
+ground truth) and correctly rewires the downstream track's `prev` pointer to the recovered row.
+
+**Not yet measured against the original quantitative success criteria** (wrong-link rate halved,
+mean track length +25%, ghost_capture -50% on the ghost-inclusive synthetic; test_cavity and
+proPTV 500_30 directional checks) — a smoke test on the Stage 0.5 ghost-inclusive fixture at
+moderate density ran cleanly (no crash) with both track3d and trackcorr forward engines, but
+neither run had a genuine correspondence dropout for the pass to fix (track3d linked 100% of
+particles already; a separate trackcorr/this-fixture interaction produced 0 forward links,
+unrelated to Stage 2 and not investigated further this session) — so the smoke test confirms the
+pass is safe to run, not that it moves the needle at scale. Running the quantitative gates is
+follow-up work.
+
+**Risks:** ghost-track self-reinforcement is NOT YET mitigated (the decay rule from item 6 isn't
+built) — `corrective_passes` should stay opt-in (default 0) until that's measured; rewriting
+correspondences invalidates prior linkage assumptions elsewhere in the same frame (acceptable in
+the tested scope — the pass appends one row and rewires one pointer per claim, atomically per
+frame, but wasn't stress-tested against concurrent/other postprocess passes touching the same
+frame in the same run).
 
 ## Stage 3 — Better in-tracker cost (independent, ~1 week)
 

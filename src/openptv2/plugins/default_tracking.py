@@ -5,6 +5,8 @@ Tracking contract as every other plugin, so callers never special-case
 "default" — running the algorithm *is* running the plugin named "default".
 """
 
+from pathlib import Path
+
 from openptv2.tracking_presets import infer_direction, infer_tracker
 
 
@@ -70,3 +72,28 @@ class Tracking:
             else:
                 print("Running TrackCorr Tracking (Forward only)...")
                 tracker.full_forward()
+
+        corrective_passes = int(track_cfg.get("corrective_passes", 0))
+        if corrective_passes > 0:
+            store = getattr(tracker, "_store", None)
+            if store is None:
+                print(
+                    "Corrective pass requested (track.corrective_passes) but the "
+                    "tracker has no RunStore attached -- skipping (needs "
+                    "per-camera 2D targets and correspondences, ASCII-only runs "
+                    "cannot provide those to this pass)."
+                )
+            else:
+                from openptv2.track_assisted import run_corrective_pass
+
+                linkage_name = Path(tracker._naming["linkage"]).name
+                stats = run_corrective_pass(
+                    self.exp.cpar, self.exp.vpar, self.exp.track_par, self.exp.spar,
+                    self.exp.cals, store, linkage_name=linkage_name,
+                    max_passes=corrective_passes,
+                )
+                print(
+                    f"Corrective pass: claimed {stats.claimed_total} particle(s) "
+                    f"({stats.claimed_2cam} 2-camera-only) over {stats.passes_run} "
+                    f"pass(es); links {stats.links_before} -> {stats.links_after}"
+                )
