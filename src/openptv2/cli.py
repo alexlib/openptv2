@@ -28,6 +28,7 @@ def print_help():
     print("  gui                 Launch the interactive 3D-PTV GUI")
     print("  list-trackers       List all available trackers with capabilities")
     print("  recommend           Analyse a dataset and recommend a tracker & parameters")
+    print("  warmup              Auto-calibrate tracker/params on a frame window before tracking")
     print("  benchmark           Generate datasets, sweep params, compare trackers")
     print()
     print("For help on any specific command, run:")
@@ -354,6 +355,61 @@ def main():
 
         except Exception as e:
             print(f"Recommendation failed: {e}")
+            sys.exit(1)
+
+    elif command == "warmup":
+        try:
+            import argparse
+            from pathlib import Path
+
+            parser = argparse.ArgumentParser(prog="openptv warmup")
+            parser.add_argument("yaml_file", help="Experiment parameters YAML")
+            parser.add_argument(
+                "--frames", type=int, default=25,
+                help="Window size in frames, starting at the sequence's first frame (default: 25)",
+            )
+            parser.add_argument(
+                "--max-cycles", type=int, default=3, help="Max tuning cycles (default: 3)"
+            )
+            parser.add_argument(
+                "--write", action="store_true",
+                help="Write the chosen tracker/params back into the YAML "
+                "(otherwise this is a dry run: report only)",
+            )
+            args, _ = parser.parse_known_args(sys.argv[2:])
+
+            from openptv2.algorithms.parameters import SequencePar
+            from openptv2.batch.pyptv_batch import build_processing_experiment
+            from openptv2.gui.ptv import _open_run_store
+            from openptv2.tracking_warmup import run_warmup, write_result_to_yaml
+
+            yaml_file = Path(args.yaml_file)
+            seq_bounds = SequencePar.from_yaml(str(yaml_file))
+            exp = build_processing_experiment(yaml_file, seq_bounds.first, seq_bounds.last)
+            store = _open_run_store(exp)
+
+            result = run_warmup(
+                exp.cpar, exp.vpar, exp.track_par, exp.spar, exp.cals, store,
+                frames=args.frames, max_cycles=args.max_cycles,
+            )
+
+            print(f"Warmup window: frames {result.frames[0]}-{result.frames[1]} "
+                  f"({result.cycles} cycle(s))")
+            print(f"Chosen tracker: {result.tracker}  "
+                  f"(engine scores: {result.engine_scores})")
+            print(f"Forward/backward agreement: {result.agreement_rate:.1%}")
+            print(f"Empirical noise estimate: {result.noise_estimate_mm:.3f} mm")
+            print("Tuned track params:")
+            for k, v in result.track_par.items():
+                print(f"  {k}: {v}")
+
+            if args.write:
+                write_result_to_yaml(result, yaml_file)
+                print(f"\nWritten back to {yaml_file}")
+            else:
+                print("\nDry run (pass --write to persist into the YAML)")
+        except Exception as e:
+            print(f"Warmup failed: {e}")
             sys.exit(1)
 
     else:

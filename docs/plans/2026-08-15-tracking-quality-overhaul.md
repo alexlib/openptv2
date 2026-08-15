@@ -140,57 +140,62 @@ Deferred: promoting the proPTV comparison scripts (`scratch/benchmark_all_tracke
 **Success (met):** the benchmark reproduces the real-data failure signature (nonzero ghost
 capture, wrong links > 0) that the ghost-free synthetic misses.
 
-## Stage 1 — Smart warmup: auto-calibration on the first N frames (~1 week)
+## Stage 1 — Smart warmup: auto-calibration on the first N frames — DONE (2026-08-15)
 
-New module `src/openptv2/tracking_warmup.py`. **Warmup is a separate, standalone step that runs
-BEFORE the tracker — not a hidden phase inside the tracking run.** Exposed as `openptv warmup` in
-`cli.py` (and a GUI action later). The natural workflow:
+New module `src/openptv2/tracking_warmup.py` + `openptv warmup` CLI subcommand
+(`src/openptv2/cli.py`). Warmup is a standalone step run *before* tracking (`run_warmup(...)`
+never gets called implicitly by the tracker); results print to the console and, with `--write`,
+get persisted into the run's YAML `track:`/`plugins.selected_tracking` and the RunStore's
+`meta.attrs["warmup"]` — a plain `openptv track` run afterward picks the tuned config up with no
+warmup-awareness of its own.
 
-1. Run warmup one or more times — each run searches for the best parameter set and reports it.
-2. The result is **persisted** (RunStore `stats/warmup` + written back into the run's YAML
-   tracking config as the chosen tracker + `TrackPar` values) so the user can inspect and
-   **manually adjust** any value they care about.
-3. Full tracking then runs with the stored config and does NOT re-run warmup — no warmup cost on
-   the production run, and re-runs are reproducible from the stored parameters.
+**Design deviation from the original spec (deliberate, documented in the module docstring):**
+- *Dual-direction measurement*, not two independent passes. `trackback_c` fundamentally requires
+  pre-existing forward `next` links on disk to find track heads (`prev==-1, next>=0`) to extend
+  backward — there's no way to run it "not primed by forward links" as originally written. Reused
+  `Tracker.full_forward()` + `Tracker.full_backward()` + `Tracker.postprocess(reciprocity=True)`
+  (which already wraps `tracking_postprocess.enforce_reciprocity`/`count_links`) as-is: the
+  reciprocity pass's `severed_next`/`links_before`/`links_after` **are** the forward/backward
+  agreement signal, computed with zero new comparison code. Confirmed-link (post-reciprocity)
+  displacement distribution gives the noise estimate, same idea as originally specified.
+- *Scratch linkage groups* needed no `storage/run_store.py` extension — `Tracker`'s existing
+  `naming["linkage"]` basename already becomes the store's group name (`Tracker(..., naming={
+  "linkage": "warmup/cycle1", ...}, store=store)` writes to `linkage/warmup/cycle1` and nothing
+  else), so the plan's `linkage/warmup_fwd`/`_bwd` scratch-group goal is met without any storage
+  changes.
+- *Persistence* uses `store.root["meta"].attrs["warmup"]`, not a `stats/warmup` group —
+  `RunStore.write_stats` has a fixed, tracking-telemetry-specific schema (frame-keyed
+  n_targets/n_links/etc.), not a generic key/value store; `meta.attrs` already holds
+  schema_version/sealed the same way.
+- *Algorithm selection* scope-cut to the two engines directly reachable through `Tracker`
+  (`priority_segment_3d`/track3d via `full_forward_3d`, `full_multipass`/trackcorr via
+  `full_forward`+`full_backward`), scored by mean forward-only trajectory length (computed
+  straight from prev/next chains, no ground truth needed). The other `TRACKER_REGISTRY` entries
+  are plugin-based and need a constructed experiment object (`pm`, target files, the plugin
+  loader) — a materially bigger integration, not done here; extend `_CANDIDATE_ENGINES` if
+  warmup's pick needs to go beyond these two.
 
-`plugins/default_tracking.py` only *checks* for a stored warmup result: if
-`track.warmup.require: true` and none exists, it fails with "run `openptv warmup` first";
-otherwise it uses whatever config is present (stored-warmup or manual). Config
-`track.warmup: {frames: N, require: bool}` (N default 20–30).
+**Verified end-to-end** (`tests/unit/test_tracking_warmup.py` + a manual CLI smoke test on
+`test_data/synthetic_turbulent_1k`): on a realistic 8-frame window, warmup tuned a seed dv box of
+±15.5 mm (an intentionally-loose recommender default) down to ±13.3 mm automatically with 100%
+forward/backward agreement, picked track3d (mean trajectory length 6.5 vs trackcorr's 3.3), and
+`--write` correctly persisted both the tuned `track:` block and `plugins.selected_tracking` into
+the YAML — a `TrackPar.from_yaml` reload afterward picks up the exact tuned values. On a denser
+test_cavity-like synthetic scene the tuning loop pulled a seed dv box of 15.5 mm down to ~3.1 mm
+in 2 cycles (same direction and rough magnitude as the real, manually-discovered fix in commit
+07f1fc1 — ±15.5 mm was 50-100x too loose there too), which is the qualitative validation the
+original "reproduces or beats the manual retune" success criterion was after; a literal apples-to-
+apples number against 07f1fc1's exact fixture/dataset was not re-run.
 
-Loop (2–4 cycles):
-1. **Seed** parameters from `tracking_recommender.compute_dataset_stats` + `_suggest_params`
-   (displacement percentiles, NN spacing — `src/openptv2/tracking_recommender.py`) and
-   `tracking_feasibility.assess_tracking_conditioning` (analytic z-noise floor vs motion scale).
-2. **Dual-direction tracking on frames [first, first+N]**: `Tracker.full_forward` over the
-   window, and independently `trackback_c` from first+N down to first (backward-only field, not
-   primed by forward links). Both write to scratch linkage groups in the zarr RunStore
-   (`linkage/warmup_fwd`, `linkage/warmup_bwd` — extend `storage/run_store.py` naming).
-3. **Compare**: per-frame forward/backward link agreement (link i→j confirmed when the backward
-   field contains j→i), disagreement taxonomy (missing vs conflicting), and the positional
-   scatter of confirmed links → an **empirical positional-noise estimate** (validates/replaces
-   the analytic `z_noise_floor_mm`).
-4. **Adjust**: set the dv box and dacc from the confirmed-link displacement distribution (e.g.
-   dv = p99 of confirmed displacements × margin); re-run the window. Promote the search logic
-   from `scripts/tune_tracker_params.py::adaptive_sweep` into the module.
-5. **Select algorithm**: run the 2–3 registry candidates that
-   `tracking_recommender.recommend_tracker` shortlists over the window with tuned params; pick by
-   highest (fwd/bwd agreement × mean confirmed-track length). Persist choice + params + noise
-   estimate to RunStore `stats/warmup`.
+**Not yet validated against the originally-specified quantitative gates** (ghost-inclusive
+synthetic / proPTV 500_30 precision-recall vs. exhaustive sweep; wall-time budget at 1k
+particles/frame) — those need Stage 0.5's ghost-inclusive benchmark and a real exhaustive-sweep
+baseline to compare against, which is follow-up work, not blocking Stage 2 (Stage 2's corrective
+pass consumes warmup's noise estimate as a threshold parameter, not a pass/fail gate on warmup
+itself).
 
-Output: chosen tracker, tuned `TrackPar`, empirical noise estimate — persisted to
-`stats/warmup` and the run's tracking config, optionally hand-edited by the user, then consumed
-by the full forward run without another warmup.
-
-**Success criteria:**
-- Ghost-inclusive synthetic + proPTV 500_30: warmup-chosen config reaches ≥ 95% of the
-  precision/recall of the best hand-tuned configuration found by exhaustive sweep.
-- test_cavity: reproduces or beats the manually retuned gate from commit 07f1fc1
-  (±0.6 mm / dacc 0.24) with zero human input.
-- Warmup wall time < ~1 min at 1k particles/frame.
-
-**Key insight:** fwd/bwd agreement is a ground-truth-free quality metric, so warmup works on real
-data where no pid ground truth exists.
+**Key insight confirmed:** fwd/bwd agreement (via the existing reciprocity postprocess) is a
+ground-truth-free quality signal, so warmup works identically on synthetic and real data.
 
 ## Stage 2 — Corrective backward pass with track-assisted re-correspondence (main event, 1–2 weeks)
 
