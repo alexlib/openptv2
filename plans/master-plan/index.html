@@ -1089,15 +1089,26 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-active-roadmap-stages-24" class="md-nav__link">
+  <a href="#2-alignment-with-issue-13-speed-robustness-modernization" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Active Roadmap: Stages 2–4
+        2. Alignment with issue #13 ("Speed &amp; Robustness Modernization")
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Active Roadmap: Stages 2–4">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-active-roadmap-stages-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Active Roadmap: Stages 2–4
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Active Roadmap: Stages 2–4">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1139,15 +1150,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-completed-milestones-log" class="md-nav__link">
+  <a href="#4-completed-milestones-log" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Completed Milestones Log
+        4. Completed Milestones Log
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Completed Milestones Log">
+    <nav class="md-nav" aria-label="4. Completed Milestones Log">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1178,10 +1189,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-verification-testing-commands" class="md-nav__link">
+  <a href="#5-verification-testing-commands" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Verification &amp; Testing Commands
+        5. Verification &amp; Testing Commands
       
     </span>
   </a>
@@ -1258,7 +1269,58 @@
 </tbody>
 </table>
 <hr />
-<h2 id="2-active-roadmap-stages-24">2. Active Roadmap: Stages 2–4<a class="headerlink" href="#2-active-roadmap-stages-24" title="Permanent link">&para;</a></h2>
+<h2 id="2-alignment-with-issue-13-speed-robustness-modernization">2. Alignment with issue #13 ("Speed &amp; Robustness Modernization")<a class="headerlink" href="#2-alignment-with-issue-13-speed-robustness-modernization" title="Permanent link">&para;</a></h2>
+<p>Issue #13 proposed several calibration, segmentation, and tracking upgrades inspired by
+MyPTV/proPTV. After comparing that proposal against the current <code>main</code> branch, the plan
+below is updated to reflect what is already shipped, what exists in lighter form, and
+what is still genuinely future work.</p>
+<table>
+<thead>
+<tr>
+<th>Issue #13 item</th>
+<th>Status on <code>main</code></th>
+<th>Plan update</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Analytical inversion of the Soloff model</td>
+<td><strong>Not part of openptv2</strong></td>
+<td>Keep this as an external integration idea, not an in-repo near-term task. The current README explicitly documents Soloff calibration as a proPTV feature that is <strong>not</strong> shipped inside openptv2.</td>
+</tr>
+<tr>
+<td>Extended Soloff calibration / no-initial-guess setup</td>
+<td><strong>Not shipped</strong></td>
+<td>Keep as future work only if we decide to adopt a Soloff-based calibration path. The current calibration bootstrap is still manual-orientation seeding / existing <code>.ori</code> reuse plus the RCM-driven bundle-adjustment pipeline already shipped in <code>autocalibration.py</code>.</td>
+</tr>
+<tr>
+<td>Time-aware stereo matching / "particle marching"</td>
+<td><strong>Partially shipped</strong></td>
+<td>Reframe this from "new capability" to "extend existing track-guided matching." <code>track_assisted.py</code> already performs a corrective backward pass with track-assisted re-correspondence, and <code>quality_3d_tracking.py</code> already prioritizes established tracks with two-tier gating. What is still missing is a first-class forward stereo-matching stage that removes claimed particles before general matching.</td>
+</tr>
+<tr>
+<td>Automated dynamic background subtraction</td>
+<td><strong>Not shipped in the proposed sliding-minimum form</strong></td>
+<td>Keep as future preprocessing work. Today the codebase has high-pass preprocessing and optional mask/rembg-based sequence plugins, but no temporal sliding-minimum background model in the core segmentation loop.</td>
+</tr>
+<tr>
+<td>Track repair &amp; stitching</td>
+<td><strong>Partially shipped</strong></td>
+<td>Reframe this as an extension of the existing post-processing path. <code>tracking_postprocess.py</code> already ships <code>seed_cold_start</code>, <code>relink_trajectory_gaps</code>, and <code>enforce_reciprocity</code>; future work is a more general long-gap / spatio-temporal stitcher rather than introducing repair from scratch.</td>
+</tr>
+<tr>
+<td>Backtracking extension</td>
+<td><strong>Shipped in lightweight form</strong></td>
+<td>Reduce this to iterative quality improvements. <code>default_tracking.py</code> already supports forward+backward tracking, <code>proptv_tracking.py</code> exposes optional backtracking, and <code>track_assisted.py</code> adds a corrective backward sweep; the remaining work is to recover more early-entry frames, not to add the first backward pass.</td>
+</tr>
+</tbody>
+</table>
+<p>This also means the calibration part of the roadmap should continue to build on the
+<strong>already shipped</strong> RCM reporting, joint plate bundle adjustment, distortion shaking,
+and tracer self-calibration stack rather than restarting around a separate Soloff-only
+track.</p>
+<hr />
+<h2 id="3-active-roadmap-stages-24">3. Active Roadmap: Stages 2–4<a class="headerlink" href="#3-active-roadmap-stages-24" title="Permanent link">&para;</a></h2>
 <h3 id="stage-2-quality_3d-accuracy-optimal-engine-completed"><strong>Stage 2 — <code>quality_3d</code>: Accuracy-Optimal Engine (COMPLETED)</strong><a class="headerlink" href="#stage-2-quality_3d-accuracy-optimal-engine-completed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>[x] <strong>2a. Multi-Frame Prediction (Constant-Acceleration Kalman Filter)</strong>: Implemented in <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/tracking_kalman.py"><code>src/openptv2/tracking_kalman.py</code></a> (<code>ConstantAccelerationKF3D</code>) and wired into <a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/quality_3d_tracking.py"><code>Quality3DTracker</code></a>.</li>
@@ -1419,7 +1481,7 @@
 <li>Update <code>docs/tracking-benchmark-results.md</code> with current measured benchmarks.</li>
 </ul>
 <hr />
-<h2 id="3-completed-milestones-log">3. Completed Milestones Log<a class="headerlink" href="#3-completed-milestones-log" title="Permanent link">&para;</a></h2>
+<h2 id="4-completed-milestones-log">4. Completed Milestones Log<a class="headerlink" href="#4-completed-milestones-log" title="Permanent link">&para;</a></h2>
 <h3 id="august-2026-tracking-metrics-bug-fixes-ground-truth-harness-stages-a-0-1"><strong>August 2026: Tracking Metrics, Bug Fixes &amp; Ground Truth Harness (Stages A, 0, 1)</strong><a class="headerlink" href="#august-2026-tracking-metrics-bug-fixes-ground-truth-harness-stages-a-0-1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>[x] <strong>Stage A (Acceleration Residual Ranking Bug Fix)</strong>: Fixed sign error in <code>fast_3d</code> Level 1/2 candidate ranking (<code>track_kernels_track3d.py</code>). Particles are now correctly ranked by forward velocity continuity rather than points behind the particle.</li>
@@ -1446,7 +1508,7 @@
 <li>[x] <strong>Track Kernels Submodule Split</strong>: Split monolithic <code>track_kernels_tracking.py</code> into focused Cython/Python modules (<code>track_kernels_corr.py</code>, <code>track_kernels_track3d.py</code>, <code>track_kernels_search.py</code>).</li>
 </ul>
 <hr />
-<h2 id="4-verification-testing-commands">4. Verification &amp; Testing Commands<a class="headerlink" href="#4-verification-testing-commands" title="Permanent link">&para;</a></h2>
+<h2 id="5-verification-testing-commands">5. Verification &amp; Testing Commands<a class="headerlink" href="#5-verification-testing-commands" title="Permanent link">&para;</a></h2>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\a</span>lex<span class="se">\p</span>rojects<span class="se">\o</span>penptv2
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Rebuild Cython extensions after C/Cython changes</span>
