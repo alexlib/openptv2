@@ -1,0 +1,1581 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Tracking work — state and next steps (2026-08-16) - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tracking-work-state-and-next-steps-2026-08-16" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tracking work — state and next steps (2026-08-16)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-landed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What landed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-corrections-read-this-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Corrections — read this first
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-next-steps-in-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Next steps, in order
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Next steps, in order">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-revert-placeholder-gap-bridging-restore-cross-frame-gap-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Revert placeholder gap bridging; restore cross-frame gap links
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-max_velocity_err-is-the-wrong-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 max_velocity_err is the wrong parameter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-c-gate-fidelity-for-track3d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 C gate fidelity for track3d
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-4be-follow-ups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 4BE follow-ups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-where-the-speed-actually-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Where the speed actually is
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-deferred-unchanged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Deferred / unchanged
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-verification-snippets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Verification snippets
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tracking-work-state-and-next-steps-2026-08-16">Tracking work — state and next steps (2026-08-16)<a class="headerlink" href="#tracking-work-state-and-next-steps-2026-08-16" title="Permanent link">&para;</a></h1>
+<p>Continues <code>2026-08-15-tracking-quality-overhaul.md</code>. That document's Stage 1
+(warmup) and Stage 2 (corrective pass) conclusions still stand; this one
+records what changed on 2026-08-15/16 and what to do next.</p>
+<p>Read the <strong>Corrections</strong> section before trusting any number in the older
+plan docs — two metrics were being read wrongly, and some earlier
+conclusions were built on them.</p>
+<hr />
+<h2 id="1-what-landed">1. What landed<a class="headerlink" href="#1-what-landed" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>commit</th>
+<th>change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ca06720</code></td>
+<td><code>read_correspondences</code> on flat zero-particle frames; <code>write_linkage</code> no longer writes ASCII when a store is attached</td>
+</tr>
+<tr>
+<td><code>0e55c4f</code> → <code>c3a30ff</code></td>
+<td>GUI "Measure distances" (later removed)</td>
+</tr>
+<tr>
+<td><code>34dbf3f</code></td>
+<td>Removed Measure distances; added <strong>Tracking → Visualize 3D positions</strong> (interactive multi-frame 3D scatter, hover to identify, click to measure displacement/velocity/acceleration)</td>
+</tr>
+<tr>
+<td><code>4bd4473</code></td>
+<td>Right-click handling no longer sticks after an early return (<code>rclicked</code> reset moved to the top of <code>right_click_process</code>)</td>
+</tr>
+<tr>
+<td><code>433c5f6</code></td>
+<td><code>Tracker.restart()</code> clears stale linkage via new <code>RunStore.clear_linkage()</code>; removed 11 dead test files</td>
+</tr>
+<tr>
+<td><code>6a081e0</code></td>
+<td>Epipolar plugin honoured its preset's direction; <code>_CORE_PRESETS</code> gained the epipolar keys</td>
+</tr>
+<tr>
+<td><code>bfccfa9</code></td>
+<td><strong><code>relink_trajectory_gaps</code> placeholder bridging — to be reverted, see §3.1</strong></td>
+</tr>
+<tr>
+<td><code>cb7d113</code></td>
+<td><strong>New <code>4be</code> tracker</strong> (Ouellette four-frame best estimate), stereo-3D only</td>
+</tr>
+<tr>
+<td><code>a3a44e2</code></td>
+<td>4BE: 3MA fallback for candidates unsupported at n+2 (default; <code>strict_support=1</code> restores the literal paper rule)</td>
+</tr>
+<tr>
+<td><code>b6ed53b</code></td>
+<td>Compiled the 4BE wrapper (was interpreted); <code>_find_closest_in_3d_grid</code> → <code>@cython.cfunc</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-corrections-read-this-first">2. Corrections — read this first<a class="headerlink" href="#2-corrections-read-this-first" title="Permanent link">&para;</a></h2>
+<p><strong>2.1 <code>pmt</code> is not a track-quality rate.</strong> <code>benchmarking/metrics.py:206-223</code> computes
+it over <em>predicted</em> tracks: the fraction whose points are ≥2/3 one true
+particle, divided by the number of predicted tracks. A 2-point fragment
+scores "correct" automatically, so a fragmenting tracker inflates it.
+<code>E_track = 1 - pmt</code> is <strong>wrong</strong> and was used in earlier reports.</p>
+<p>Use Ouellette's definition instead — fraction of <strong>true</strong> tracks not
+reproduced perfectly (no spurious points, same start frame). Reference
+implementation: <code>scripts/</code> has none yet; the throwaway used during the
+investigation is reproduced in §5 and should be promoted into
+<code>openptv2/benchmarking/metrics.py</code> as <code>e_track()</code>.</p>
+<p><strong>2.2 The synthetic ground truth contains gaps.</strong> 5796 step-1 links, but
+476 links of step 2-4, and <strong>214 of 236 tracks (91%) contain at least one
+gap</strong>. Any comparison that assumes contiguous truth is wrong.</p>
+<p><strong>2.3 track3d diverges from the C original.</strong> The C (<code>track3d.c</code>) passes
+<code>dvxmax/dvymax/dvzmax</code> to <code>find_candidates_in_3d</code> at <strong>all three levels</strong> and
+never uses <code>dacc</code> as a gate. The Cython port substitutes <code>ax = dacc if
+dacc &gt; 0</code> at levels 1 and 2 (<code>track_kernels_track3d.py:251</code>). The port also
+<em>fixed</em> a C cost bug: C computes <code>curr - 2*next + prev</code>, the port computes
+<code>next - 2*curr + prev</code>, which is the true residual from the prediction.</p>
+<p><strong>2.4 The tracking pipeline is I/O-bound.</strong> Kernel cost in isolation is
+0.213 ms/step (3MA) and 1.573 ms/step (4BE), against ~270 ms/frame end to
+end. <strong>The kernel is under 1% of runtime.</strong> Optimising kernels will not make
+tracking faster; frame read/write, the zarr store and the SoA↔AoS sync are
+where the time goes.</p>
+<hr />
+<h2 id="3-next-steps-in-order">3. Next steps, in order<a class="headerlink" href="#3-next-steps-in-order" title="Permanent link">&para;</a></h2>
+<h3 id="31-revert-placeholder-gap-bridging-restore-cross-frame-gap-links">3.1 Revert placeholder gap bridging; restore cross-frame gap links<a class="headerlink" href="#31-revert-placeholder-gap-bridging-restore-cross-frame-gap-links" title="Permanent link">&para;</a></h3>
+<p><code>bfccfa9</code> made <code>relink_trajectory_gaps</code> fill a bridged gap with an
+<em>interpolated placeholder particle</em> per skipped frame. This is wrong on two
+counts:</p>
+<ul>
+<li>It fabricates a measurement at a frame where the particle was never
+  observed. Those points then enter Lagrangian velocity/acceleration
+  statistics, which is this project's actual output.</li>
+<li>Ground truth (and <code>calculate_tracking_metrics</code>' <code>gap_recovery_rate</code>
+  machinery) represents a gap as a <strong>link with step &gt; 1</strong>. The placeholder
+  form emits <code>(k,k+1)+(k+1,k+2)</code> where truth has <code>(k,k+2)</code>, so 589 of 593
+  bridge links scored as wrong — precision fell 0.967 → 0.878 for a bridging
+  pass that was 97% correct about <em>which particle</em> to join.</li>
+</ul>
+<p><strong>Do:</strong> restore the cross-frame <code>next</code> pointer, and make the three consumers
+that assume <code>next[k][i]</code> indexes frame <code>k+1</code> gap-aware:</p>
+<ol>
+<li><code>tracking_postprocess.enforce_reciprocity</code> — currently compares <code>next_k</code>
+   against frame <code>k+1</code> only, so it severs every bridge it sees.</li>
+<li><code>benchmarking/runner.py::read_trajectories</code> — walks with an unconditional
+   <code>cur_frame += 1</code>.</li>
+<li><code>storage/seal.py</code> — carries <code>prev_trajids</code> only from the immediately
+   previous frame (guard 1, ~line 100), so a bridged particle starts a new
+   trajectory id.</li>
+</ol>
+<p>The linkage format cannot express "which frame does this index point into".
+Resolve it <strong>without a format change</strong> by searching for the reciprocal:
+accept the smallest step <code>s</code> in <code>1..max_gap+1</code> where <code>prev[k+s][j] == i</code>.
+Relink already sets that reciprocal pointer, so it is well-defined; take the
+smallest <code>s</code> so a genuine step-1 link always wins.</p>
+<p><strong>Success:</strong> <code>postprocess</code> on <code>priority_segment_3d</code> raises links without
+lowering precision; <code>test_relink_trajectory_gaps_bridges_missing_frame</code> is
+rewritten to assert a cross-frame link (not a placeholder); no new points
+appear in any trajectory.</p>
+<h3 id="32-max_velocity_err-is-the-wrong-parameter">3.2 <code>max_velocity_err</code> is the wrong parameter<a class="headerlink" href="#32-max_velocity_err-is-the-wrong-parameter" title="Permanent link">&para;</a></h3>
+<p><code>Tracker.postprocess</code> passes <code>max_velocity_err=float(tpar.dvxmax)</code>. The
+tolerance is applied to a position that has <strong>already been
+velocity-extrapolated</strong>, so the residual is acceleration-scale, not
+velocity-scale. It only looks sane on the synthetic set because
+<code>dvxmax == dacc == 6.0</code> there.</p>
+<p>This is a live hazard: warmup suggested <code>dvxmax ≈ 52 mm</code> on the JHU data,
+against ~9 mm particle spacing. Relink would accept 52 mm bridges.</p>
+<p>Measured sweep (bridge correctness scored against ground-truth identity,
+independent of representation):</p>
+<table>
+<thead>
+<tr>
+<th>mve</th>
+<th>bridges</th>
+<th>%correct</th>
+<th>true gaps recovered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.0</td>
+<td>48</td>
+<td>100%</td>
+<td>10.1%</td>
+</tr>
+<tr>
+<td>3.0</td>
+<td>112</td>
+<td>99.1%</td>
+<td>22.9%</td>
+</tr>
+<tr>
+<td>4.0</td>
+<td>188</td>
+<td>98.9%</td>
+<td>38.7%</td>
+</tr>
+<tr>
+<td><strong>6.0</strong></td>
+<td>286</td>
+<td>97.2%</td>
+<td>57.8%</td>
+</tr>
+<tr>
+<td>8.0</td>
+<td>314</td>
+<td>95.2%</td>
+<td>62.0%</td>
+</tr>
+<tr>
+<td>12.0</td>
+<td>336</td>
+<td>91.1%</td>
+<td>63.0%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Do:</strong> derive the tolerance from <code>dacc</code> and the gap length (about
+<code>dacc·(gap+1)²/2</code>), not from <code>dvxmax</code>. Knee is at 6-8 mm on this dataset,
+which such a formula should roughly reproduce for <code>dacc = 6</code>.</p>
+<h3 id="33-c-gate-fidelity-for-track3d">3.3 C gate fidelity for track3d<a class="headerlink" href="#33-c-gate-fidelity-for-track3d" title="Permanent link">&para;</a></h3>
+<p>Restore the C behaviour (<code>dvx/dvy/dvz</code> gate at all levels) or make the choice
+explicit in config. Measured impact is modest, so this is fidelity work, not
+a quality fix:</p>
+<table>
+<thead>
+<tr>
+<th>gate</th>
+<th>tracks</th>
+<th>mean len</th>
+<th>precision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dacc</code>=5.5 (current port)</td>
+<td>915</td>
+<td>7.37</td>
+<td>0.960</td>
+</tr>
+<tr>
+<td><code>dvxmax</code>=10 (C-equivalent)</td>
+<td>817</td>
+<td>8.26</td>
+<td>0.943</td>
+</tr>
+</tbody>
+</table>
+<p>Whatever is decided, document that in the current port <strong><code>dacc</code> is the knob
+that controls seeded-step search</strong> — a user carrying C-era intuition will
+tune <code>dvxmax</code> and change nothing for particles already being tracked.</p>
+<h3 id="34-4be-follow-ups">3.4 4BE follow-ups<a class="headerlink" href="#34-4be-follow-ups" title="Permanent link">&para;</a></h3>
+<p>4BE is markedly more accurate but more fragmented than 3MA:</p>
+<table>
+<thead>
+<tr>
+<th>tracker</th>
+<th>tracks</th>
+<th>mean len</th>
+<th>perfect/236</th>
+<th>E_track</th>
+<th>precision</th>
+<th>yield</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>priority_segment_3d</code> (3MA)</td>
+<td>946</td>
+<td>7.13</td>
+<td>158</td>
+<td>0.331</td>
+<td>0.967</td>
+<td>0.894</td>
+</tr>
+<tr>
+<td><code>4be</code></td>
+<td>1573</td>
+<td>4.29</td>
+<td>225</td>
+<td><strong>0.047</strong></td>
+<td>0.985</td>
+<td>0.813</td>
+</tr>
+</tbody>
+</table>
+<p>Worth separating the two remaining causes of its fragmentation:</p>
+<ul>
+<li><strong>Give-up-on-conflict.</strong> The paper prefers it (Munkres degraded every
+  heuristic but NN), but it does end tracks. Try cost-ordered greedy claiming
+  (what track3d does) as a variant and measure.</li>
+<li><strong>Real gaps.</strong> 4BE cannot bridge a missing frame at all. §3.1 is the fix,
+  and 4BE's clean-but-short output is the ideal input for gap bridging —
+  bridging is only safe when the fragments being joined are correct.</li>
+</ul>
+<p>Also: 4BE has <strong>no dedicated tests</strong>. It needs at least a kernel-level test
+pinning the eq. 12 estimate (<code>x̃ = 2q − x1</code>) and the give-up-on-conflict rule.</p>
+<h3 id="35-where-the-speed-actually-is">3.5 Where the speed actually is<a class="headerlink" href="#35-where-the-speed-actually-is" title="Permanent link">&para;</a></h3>
+<p>Per §2.4 the kernel is &lt;1% of runtime. If tracking speed matters, profile
+<code>fb.write_frame_from_start</code> / <code>read_frame_at_end</code>, the zarr store write path,
+and <code>_sync_soa_to_aos</code> — not the tracking kernels.</p>
+<hr />
+<h2 id="4-deferred-unchanged">4. Deferred / unchanged<a class="headerlink" href="#4-deferred-unchanged" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Warmup's <code>p99 × 3.0</code> margin still overshoots (see the 2026-08-15 plan,
+  Stage 5 part 2 item 1). Its tuned <code>dvxmax</code>/<code>dacc</code> degraded precision on
+  every measured synthetic condition. Keep recommending dry-run + compare.</li>
+<li>proPTV 500_25/500_30 comparison still needs a format adapter.</li>
+<li>Hungarian-based trackers (<code>nearest_hungarian_3d</code>, <code>kalman_hungarian_3d</code>,
+  <code>fast_3d_smooth</code>) are working against Ouellette's conflict-breaking result;
+  keep them deprioritised.</li>
+</ul>
+<hr />
+<h2 id="5-verification-snippets">5. Verification snippets<a class="headerlink" href="#5-verification-snippets" title="Permanent link">&para;</a></h2>
+<p>Ouellette E_track, to be promoted into <code>benchmarking/metrics.py</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># a true track is &quot;perfect&quot; if some predicted track matches only it and</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># starts on the same frame; E_track = 1 - perfect / n_true</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">perfect</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">for</span> <span class="n">pid</span><span class="p">,</span> <span class="n">pts</span> <span class="ow">in</span> <span class="n">pred</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">pts</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">match</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pts</span><span class="p">}</span>   <span class="c1"># nearest true id, tol 1.0</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        <span class="k">continue</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">tid</span> <span class="o">=</span> <span class="n">ids</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="k">if</span> <span class="n">tid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pts</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">true_start</span><span class="p">[</span><span class="n">tid</span><span class="p">]:</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        <span class="n">perfect</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">e_track</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">perfect</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">true_tracks</span><span class="p">)</span>
+</span></code></pre></div>
+<p>Commands:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>build_ext<span class="w"> </span>--inplace<span class="w">      </span><span class="c1"># after any algorithms/*.py change</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_track3d.py<span class="w"> </span>tests/unit/test_track.py<span class="w"> </span>-q
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_tracking_postprocess.py<span class="w"> </span>tests/unit/test_run_store.py<span class="w"> </span>-q
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/benchmark_all_gui_trackers.py
+</span></code></pre></div>
+<p>Dataset used throughout: <code>test_data/synthetic_turbulent</code>, frames
+10001-10030, 220 particles/frame, 236 true trajectories, mean spacing
+9.18 mm, mean displacement 2.0 mm/frame (ξ = 0.218 — the hard end of
+Ouellette Fig. 9).</p>
+<p>Reference: Ouellette, Xu &amp; Bodenschatz, <em>A quantitative study of
+three-dimensional Lagrangian particle tracking algorithms</em>, Exp. Fluids
+40:301-313 (2006).</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
