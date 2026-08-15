@@ -172,6 +172,7 @@ def apply_preset(
 
 TRACKER_CHOICES = [
     ("priority_segment_3d", "OpenPTV Fast 3D (Default - Cython)"),
+    ("4be", "OpenPTV 4BE (Four-Frame Best Estimate)"),
     ("cython_epipolar_tracking", "OpenPTV Epipolar (Multi-Camera Cython)"),
     ("trackcorr", "OpenPTV Epipolar (Multi-Camera 2D+3D)"),
     ("nearest_hungarian_3d", "MyPTV 3D (Nearest-Neighbor Hungarian)"),

@@ -22,6 +22,7 @@ _CORE_PRESETS = {
     "fast", "fast_3d", "priority_segment_3d", "trackcorr",
     "standard_forward", "two_directional", "full_multipass",
     "cython_epipolar_tracking", "openptv_epipolar",
+    "4be", "four_be",
 }
 
 

@@ -10,6 +10,7 @@ from openptv2.algorithms.track import (
     trackcorr_c_loop,
 )
 from openptv2.algorithms.track3d import track3d_loop
+from openptv2.algorithms.track4be import track4be_loop
 from openptv2.algorithms.tracking_run import TrackingRun
 
 # Default file naming (matches optv)
@@ -269,6 +270,27 @@ class Tracker:
         self._current_step += 1
 
         return self._current_step < self._spar.get_last()
+
+    def step_forward_4be(self):
+        """Process one frame of 4BE tracking. Returns True while frames remain."""
+        if not self._is_initialized:
+            raise RuntimeError("Tracker not initialized. Call restart() first.")
+
+        if self._current_step >= self._spar.get_last():
+            return False
+
+        track4be_loop(self._run, self._current_step)
+        self._current_step += 1
+        return self._current_step < self._spar.get_last()
+
+    def full_forward_4be(self):
+        """Run complete 4BE forward tracking (Ouellette et al. four-frame
+        best estimate) -- same stereo-3D input as full_forward_3d, different
+        candidate cost. See openptv2.algorithms.track4be."""
+        self.restart()
+        while self.step_forward_4be():
+            pass
+        trackcorr_c_finish(self._run, self._spar.get_last())
 
     def full_forward_3d(self):
         """

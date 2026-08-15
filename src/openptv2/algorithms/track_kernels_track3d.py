@@ -496,3 +496,283 @@ def track3d_loop_fast(
 # ============================================================
 # Batch kernels for standalone API acceleration
 # ============================================================
+
+
+# ============================================================
+# 4BE - Four-Frame Best Estimate (Ouellette, Xu & Bodenschatz,
+# Exp. Fluids 40:301-313, 2006, eqs. 10, 12, 14)
+# ============================================================
+#
+# Where 3MA (track3d_loop_fast above) scores a candidate by the
+# acceleration it implies, 4BE scores it by how well it PREDICTS a real
+# particle one further frame ahead:
+#
+#   search centre in n+1   x^n + v*dt              = 2*q1 - x0     (eq. 10)
+#   estimate for n+2       x^n + v*2dt + a*(2dt)^2 = 2*q - x1      (eq. 12)
+#   cost                   || x^{n+2}_k - estimate ||              (eq. 14)
+#
+# Eq. 12 collapses to 2*q - x1 because the paper defines acceleration as
+# (q - 2*x1 + x0)/(2*dt^2) (their eq. 11), so the x0 terms cancel exactly.
+# That is precisely why 4BE "makes no attempt to estimate the third time
+# derivative", and why it beats the change-in-acceleration heuristics on
+# noisy data. For reference, Willneff's trackcorr predictor
+# 0.5*(5q - 4*x1 + x0) is the mean of this constant-velocity estimate and
+# the full constant-acceleration one (3q - 3*x1 + x0) -- a half-damped
+# version of the same idea.
+#
+# Conflicts are resolved by giving up, not by global assignment: the paper
+# measured Munkres/Hungarian conflict-breaking as DEGRADING every heuristic
+# it tested except nearest-neighbour, and recommends stopping every track
+# involved in a conflict.
+
+
+def _build_grid3d(px, np_pts, cell_x: cython.double, cell_y: cython.double,
+                  cell_z: cython.double):
+    """Uniform-cell spatial hash over one frame's 3D positions.
+
+    Returns (grid_head, grid_next, min_x, min_y, min_z, nx, ny, nz), the
+    arguments _find_closest_in_3d_grid expects. Called twice per tracking
+    step (frame n+1 for candidates, n+2 for their support), so the tuple
+    return is not on any hot path.
+    """
+    k: cython.int
+    cx: cython.int
+    cy: cython.int
+    cz: cython.int
+    c_idx: cython.int
+    min_x: cython.double = 1e20
+    min_y: cython.double = 1e20
+    min_z: cython.double = 1e20
+    max_x: cython.double = -1e20
+    max_y: cython.double = -1e20
+    max_z: cython.double = -1e20
+
+    if np_pts > 0:
+        for k in range(np_pts):
+            if px[k, 0] < min_x:
+                min_x = px[k, 0]
+            if px[k, 0] > max_x:
+                max_x = px[k, 0]
+            if px[k, 1] < min_y:
+                min_y = px[k, 1]
+            if px[k, 1] > max_y:
+                max_y = px[k, 1]
+            if px[k, 2] < min_z:
+                min_z = px[k, 2]
+            if px[k, 2] > max_z:
+                max_z = px[k, 2]
+    else:
+        min_x = 0.0
+        max_x = 1.0
+        min_y = 0.0
+        max_y = 1.0
+        min_z = 0.0
+        max_z = 1.0
+
+    if cell_x < 0.1:
+        cell_x = 1.0
+    if cell_y < 0.1:
+        cell_y = 1.0
+    if cell_z < 0.1:
+        cell_z = 1.0
+
+    nx: cython.int = int(c_floor((max_x - min_x) / cell_x)) + 1
+    ny: cython.int = int(c_floor((max_y - min_y) / cell_y)) + 1
+    nz: cython.int = int(c_floor((max_z - min_z) / cell_z)) + 1
+
+    _grid_head = np.full(nx * ny * nz, -1, dtype=np.int32)
+    _grid_next = np.full(np_pts if np_pts > 0 else 1, -1, dtype=np.int32)
+    grid_head: cython.int[:] = _grid_head
+    grid_next: cython.int[:] = _grid_next
+
+    for k in range(np_pts):
+        cx = int(c_floor((px[k, 0] - min_x) / cell_x))
+        cy = int(c_floor((px[k, 1] - min_y) / cell_y))
+        cz = int(c_floor((px[k, 2] - min_z) / cell_z))
+        if cx < 0:
+            cx = 0
+        if cx >= nx:
+            cx = nx - 1
+        if cy < 0:
+            cy = 0
+        if cy >= ny:
+            cy = ny - 1
+        if cz < 0:
+            cz = 0
+        if cz >= nz:
+            cz = nz - 1
+        c_idx = (cx * ny + cy) * nz + cz
+        grid_next[k] = grid_head[c_idx]
+        grid_head[c_idx] = k
+
+    return _grid_head, _grid_next, min_x, min_y, min_z, nx, ny, nz
+
+
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def track4be_loop_fast(
+    orig_parts: cython.int,
+    path_x_0: cython.double[:, ::1],
+    path_prev_0: cython.int[:],
+    num_parts_0: cython.int,
+    path_x_1: cython.double[:, ::1],
+    path_prev_1: cython.int[:],
+    path_next_1: cython.int[:],
+    num_parts_1: cython.int,
+    path_x_2: cython.double[:, ::1],
+    path_prev_2: cython.int[:],
+    path_next_2: cython.int[:],
+    num_parts_2: cython.int,
+    path_x_3: cython.double[:, ::1],
+    num_parts_3: cython.int,
+    dx: cython.double,
+    dy: cython.double,
+    dz: cython.double,
+    max_cands: cython.int,
+):
+    """Four-frame best-estimate linking of frame n to frame n+1.
+
+    Pure 3D: consumes only stereo-matched particle positions, never 2D
+    targets or camera models. Seeded particles (those with a previous link)
+    are scored by 4BE; unseeded ones fall back to nearest neighbour, which
+    is what the paper specifies for joining the first two points of a track.
+
+    When frame n+2 is unavailable (the tail of a sequence), seeded scoring
+    degrades to the 3MA acceleration residual so the last steps still link.
+
+    Returns the number of links established.
+    """
+    i: cython.int
+    k: cython.int
+    ci: cython.int
+    prev_idx: cython.int
+    n_cands: cython.int
+    n_sup: cython.int
+    count1: cython.int = 0
+    np2: cython.int = num_parts_2
+    np3: cython.int = num_parts_3
+    have_f3: cython.int = 1 if num_parts_3 > 0 else 0
+
+    pred_x: cython.double
+    pred_y: cython.double
+    pred_z: cython.double
+    est_x: cython.double
+    est_y: cython.double
+    est_z: cython.double
+    cost: cython.double
+    best_cost: cython.double
+    d0: cython.double
+    d1: cython.double
+    d2: cython.double
+    best: cython.int
+
+    _cand_inds = np.empty(max_cands, dtype=np.int32)
+    _cand_dists = np.empty(max_cands, dtype=np.float64)
+    cand_inds: cython.int[:] = _cand_inds
+    cand_dists: cython.double[:] = _cand_dists
+
+    _sup_inds = np.empty(1, dtype=np.int32)
+    _sup_dists = np.empty(1, dtype=np.float64)
+    sup_inds: cython.int[:] = _sup_inds
+    sup_dists: cython.double[:] = _sup_dists
+
+    _best_k = np.full(orig_parts if orig_parts > 0 else 1, -1, dtype=np.int32)
+    best_k: cython.int[:] = _best_k
+    _claims = np.zeros(np2 if np2 > 0 else 1, dtype=np.int32)
+    claims: cython.int[:] = _claims
+
+    g2 = _build_grid3d(path_x_2, np2, dx, dy, dz)
+    grid2_head: cython.int[:] = g2[0]
+    grid2_next: cython.int[:] = g2[1]
+    g2_min_x: cython.double = g2[2]
+    g2_min_y: cython.double = g2[3]
+    g2_min_z: cython.double = g2[4]
+    g2_nx: cython.int = g2[5]
+    g2_ny: cython.int = g2[6]
+    g2_nz: cython.int = g2[7]
+
+    g3 = _build_grid3d(path_x_3, np3, dx, dy, dz)
+    grid3_head: cython.int[:] = g3[0]
+    grid3_next: cython.int[:] = g3[1]
+    g3_min_x: cython.double = g3[2]
+    g3_min_y: cython.double = g3[3]
+    g3_min_z: cython.double = g3[4]
+    g3_nx: cython.int = g3[5]
+    g3_ny: cython.int = g3[6]
+    g3_nz: cython.int = g3[7]
+
+    for i in range(orig_parts):
+        path_next_1[i] = NEXT_NONE
+        best = -1
+        best_cost = 1e20
+        prev_idx = path_prev_1[i]
+
+        if prev_idx >= 0 and prev_idx < num_parts_0:
+            # eq. 10 -- constant-velocity search centre in frame n+1
+            pred_x = 2.0 * path_x_1[i, 0] - path_x_0[prev_idx, 0]
+            pred_y = 2.0 * path_x_1[i, 1] - path_x_0[prev_idx, 1]
+            pred_z = 2.0 * path_x_1[i, 2] - path_x_0[prev_idx, 2]
+
+            n_cands = _find_closest_in_3d_grid(
+                path_x_2, np2, pred_x, pred_y, pred_z, dx, dy, dz,
+                max_cands, cand_inds, cand_dists,
+                grid2_head, grid2_next, g2_min_x, g2_min_y, g2_min_z,
+                dx, dy, dz, g2_nx, g2_ny, g2_nz
+            )
+
+            for ci in range(n_cands):
+                k = cand_inds[ci]
+                if have_f3 == 1:
+                    # eq. 12 -- estimated position two frames ahead
+                    est_x = 2.0 * path_x_2[k, 0] - path_x_1[i, 0]
+                    est_y = 2.0 * path_x_2[k, 1] - path_x_1[i, 1]
+                    est_z = 2.0 * path_x_2[k, 2] - path_x_1[i, 2]
+                    n_sup = _find_closest_in_3d_grid(
+                        path_x_3, np3, est_x, est_y, est_z, dx, dy, dz,
+                        1, sup_inds, sup_dists,
+                        grid3_head, grid3_next, g3_min_x, g3_min_y, g3_min_z,
+                        dx, dy, dz, g3_nx, g3_ny, g3_nz
+                    )
+                    if n_sup <= 0:
+                        # Nothing real near the estimate: this candidate is
+                        # unsupported two frames out, so 4BE rejects it.
+                        continue
+                    cost = sup_dists[0]  # eq. 14
+                else:
+                    d0 = path_x_2[k, 0] - 2.0 * path_x_1[i, 0] + path_x_0[prev_idx, 0]
+                    d1 = path_x_2[k, 1] - 2.0 * path_x_1[i, 1] + path_x_0[prev_idx, 1]
+                    d2 = path_x_2[k, 2] - 2.0 * path_x_1[i, 2] + path_x_0[prev_idx, 2]
+                    cost = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
+
+                if cost < best_cost:
+                    best_cost = cost
+                    best = k
+        else:
+            # First two points of a track are joined by nearest neighbour.
+            n_cands = _find_closest_in_3d_grid(
+                path_x_2, np2,
+                path_x_1[i, 0], path_x_1[i, 1], path_x_1[i, 2], dx, dy, dz,
+                1, sup_inds, sup_dists,
+                grid2_head, grid2_next, g2_min_x, g2_min_y, g2_min_z,
+                dx, dy, dz, g2_nx, g2_ny, g2_nz
+            )
+            if n_cands > 0:
+                best = sup_inds[0]
+                best_cost = sup_dists[0]
+
+        if best >= 0 and path_prev_2[best] < 0:
+            best_k[i] = best
+            claims[best] += 1
+
+    # Conflict handling: a frame n+1 particle claimed by more than one
+    # particle in frame n links to none of them -- every track involved
+    # stops here and a new track begins at n+1.
+    for i in range(orig_parts):
+        k = best_k[i]
+        if k >= 0 and claims[k] == 1:
+            path_next_1[i] = k
+            path_prev_2[k] = i
+            count1 += 1
+
+    return count1

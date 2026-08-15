@@ -117,6 +117,7 @@ from .track_kernels_search import (  # noqa: E402, F401
 )
 from .track_kernels_tracking import (  # noqa: E402, F401
     track3d_loop_fast,
+    track4be_loop_fast,
     trackback_loop_fast,
     trackcorr_loop_fast,
 )

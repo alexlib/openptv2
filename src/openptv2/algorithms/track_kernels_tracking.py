@@ -31,4 +31,8 @@ from .track_kernels_position import (  # noqa: F401
     _point_position_out,
     assess_new_position_fast_nogil,
 )
-from .track_kernels_track3d import _find_closest_in_3d, track3d_loop_fast  # noqa: F401
+from .track_kernels_track3d import (  # noqa: F401
+    _find_closest_in_3d,
+    track3d_loop_fast,
+    track4be_loop_fast,
+)
