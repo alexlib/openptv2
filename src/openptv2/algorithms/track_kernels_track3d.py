@@ -24,6 +24,13 @@ from openptv2.algorithms.constants import NEXT_NONE
 # fast, sparse one -- a single fixed constant can't serve both).
 LEVEL1_DIST_WEIGHT = 1.0
 
+# Cost offset applied to a 4BE candidate that has no real particle near its
+# two-frames-ahead estimate (see track4be_loop_fast). It only has to exceed
+# the largest possible supported cost, which is bounded by the search box
+# diagonal, so any round number far above millimetre scale keeps the two
+# tiers strictly ordered.
+UNSUPPORTED_PENALTY = 1e6
+
 if cython.compiled:
     from cython.cimports.libc.math import floor as c_floor, sqrt as c_sqrt
 else:
@@ -630,6 +637,7 @@ def track4be_loop_fast(
     dy: cython.double,
     dz: cython.double,
     max_cands: cython.int,
+    strict_support: cython.int = 0,
 ):
     """Four-frame best-estimate linking of frame n to frame n+1.
 
@@ -640,6 +648,12 @@ def track4be_loop_fast(
 
     When frame n+2 is unavailable (the tail of a sequence), seeded scoring
     degrades to the 3MA acceleration residual so the last steps still link.
+
+    ``strict_support``: 1 reproduces the paper literally -- a candidate with
+    no real particle near its n+2 estimate is discarded. 0 (the default)
+    keeps such candidates as a penalised 3MA fallback, which recovers the
+    yield lost to genuine detection gaps without disturbing 4BE's ordering
+    among supported candidates.
 
     Returns the number of links established.
     """
@@ -734,11 +748,27 @@ def track4be_loop_fast(
                         grid3_head, grid3_next, g3_min_x, g3_min_y, g3_min_z,
                         dx, dy, dz, g3_nx, g3_ny, g3_nz
                     )
-                    if n_sup <= 0:
-                        # Nothing real near the estimate: this candidate is
-                        # unsupported two frames out, so 4BE rejects it.
+                    if n_sup > 0:
+                        cost = sup_dists[0]  # eq. 14
+                    elif strict_support == 1:
+                        # Nothing real near the estimate: strict 4BE treats
+                        # the candidate as unsupported and rejects it.
                         continue
-                    cost = sup_dists[0]  # eq. 14
+                    else:
+                        # Unsupported two frames out. Rejecting outright is
+                        # expensive on real data, where the particle is
+                        # genuinely missing from n+2 far more often than one
+                        # would like (7.6% of ground-truth links on the
+                        # synthetic set are gaps of 2+ frames). Fall back to
+                        # the 3MA acceleration residual, offset so that ANY
+                        # supported candidate still outranks EVERY
+                        # unsupported one -- 4BE's ordering is preserved
+                        # wherever the evidence for it exists, and only the
+                        # otherwise-dead candidates compete on 3MA.
+                        d0 = path_x_2[k, 0] - 2.0 * path_x_1[i, 0] + path_x_0[prev_idx, 0]
+                        d1 = path_x_2[k, 1] - 2.0 * path_x_1[i, 1] + path_x_0[prev_idx, 1]
+                        d2 = path_x_2[k, 2] - 2.0 * path_x_1[i, 2] + path_x_0[prev_idx, 2]
+                        cost = UNSUPPORTED_PENALTY + c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
                 else:
                     d0 = path_x_2[k, 0] - 2.0 * path_x_1[i, 0] + path_x_0[prev_idx, 0]
                     d1 = path_x_2[k, 1] - 2.0 * path_x_1[i, 1] + path_x_0[prev_idx, 1]
