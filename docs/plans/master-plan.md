@@ -20,7 +20,30 @@ openptv2 previously shipped six overlapping tracking engines with confusing or m
 
 ---
 
-## 2. Active Roadmap: Stages 2–4
+## 2. Alignment with issue #13 ("Speed & Robustness Modernization")
+
+Issue #13 proposed several calibration, segmentation, and tracking upgrades inspired by
+MyPTV/proPTV. After comparing that proposal against the current `main` branch, the plan
+below is updated to reflect what is already shipped, what exists in lighter form, and
+what is still genuinely future work.
+
+| Issue #13 item | Status on `main` | Plan update |
+|---|---|---|
+| Analytical inversion of the Soloff model | **Not part of openptv2** | Keep this as an external integration idea, not an in-repo near-term task. The current README explicitly documents Soloff calibration as a proPTV feature that is **not** shipped inside openptv2. |
+| Extended Soloff calibration / no-initial-guess setup | **Not shipped** | Keep as future work only if we decide to adopt a Soloff-based calibration path. The current calibration bootstrap is still manual-orientation seeding / existing `.ori` reuse plus the RCM-driven bundle-adjustment pipeline already shipped in `autocalibration.py`. |
+| Time-aware stereo matching / "particle marching" | **Partially shipped** | Reframe this from "new capability" to "extend existing track-guided matching." `track_assisted.py` already performs a corrective backward pass with track-assisted re-correspondence, and `quality_3d_tracking.py` already prioritizes established tracks with two-tier gating. What is still missing is a first-class forward stereo-matching stage that removes claimed particles before general matching. |
+| Automated dynamic background subtraction | **Not shipped in the proposed sliding-minimum form** | Keep as future preprocessing work. Today the codebase has high-pass preprocessing and optional mask/rembg-based sequence plugins, but no temporal sliding-minimum background model in the core segmentation loop. |
+| Track repair & stitching | **Partially shipped** | Reframe this as an extension of the existing post-processing path. `tracking_postprocess.py` already ships `seed_cold_start`, `relink_trajectory_gaps`, and `enforce_reciprocity`; future work is a more general long-gap / spatio-temporal stitcher rather than introducing repair from scratch. |
+| Backtracking extension | **Shipped in lightweight form** | Reduce this to iterative quality improvements. `default_tracking.py` already supports forward+backward tracking, `proptv_tracking.py` exposes optional backtracking, and `track_assisted.py` adds a corrective backward sweep; the remaining work is to recover more early-entry frames, not to add the first backward pass. |
+
+This also means the calibration part of the roadmap should continue to build on the
+**already shipped** RCM reporting, joint plate bundle adjustment, distortion shaking,
+and tracer self-calibration stack rather than restarting around a separate Soloff-only
+track.
+
+---
+
+## 3. Active Roadmap: Stages 2–4
 
 ### **Stage 2 — `quality_3d`: Accuracy-Optimal Engine (COMPLETED)**
 
@@ -78,7 +101,7 @@ openptv2 previously shipped six overlapping tracking engines with confusing or m
 
 ---
 
-## 3. Completed Milestones Log
+## 4. Completed Milestones Log
 
 ### **August 2026: Tracking Metrics, Bug Fixes & Ground Truth Harness (Stages A, 0, 1)**
 - [x] **Stage A (Acceleration Residual Ranking Bug Fix)**: Fixed sign error in `fast_3d` Level 1/2 candidate ranking (`track_kernels_track3d.py`). Particles are now correctly ranked by forward velocity continuity rather than points behind the particle.
@@ -105,7 +128,7 @@ openptv2 previously shipped six overlapping tracking engines with confusing or m
 
 ---
 
-## 4. Verification & Testing Commands
+## 5. Verification & Testing Commands
 
 ```bash
 cd C:\Users\alex\projects\openptv2
