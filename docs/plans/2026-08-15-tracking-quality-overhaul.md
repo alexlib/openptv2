@@ -92,20 +92,47 @@ Stage 5 — only if the corrective-pass iteration measurably saturates.
 **Success:** backward-pass precision ≥ forward precision on synthetic_turbulent_1k (pre-fix it
 should be worse); reciprocity postprocess stops deleting correct forward links.
 
-## Stage 0.5 — Ghost-inclusive primary benchmark (1–2 days)
+## Stage 0.5 — Ghost-inclusive primary benchmark — DONE (2026-08-15)
 
-- Extend `test_data/tracking_synthetic_dense/generate.py`: instead of triangulating known
-  matches, run the *real* correspondence code (`src/openptv2/algorithms/correspondences.py`) on
-  the projected 2D targets so 2-cam-pair ghosts arise exactly as on real rigs. Preserve
-  ground-truth pids for identity metrics (`src/openptv2/benchmarking/metrics.py`: purity,
-  `ghost_capture_rate`).
-- Promote the proPTV comparison scripts (`scratch/benchmark_all_trackers_500_25.py` / `_30.py`)
-  into a repeatable `scripts/` harness with recorded baselines, reusing
-  `scripts/benchmark_utils.py` (`combined_metrics`, `run_all_trackers`,
-  `trajectory_shape_stats`).
+`test_data/tracking_synthetic_dense/generate.py::build_fixture_with_correspondence` (new,
+alongside the untouched ghost-free `build_fixture`) runs the *real* combinatorial correspondence
+matcher (`src/openptv2/algorithms/correspondences.py`) on noisy projected 2D targets instead of
+writing `rt_is` from known identity, so ghosts arise from genuine epipolar ambiguity as density
+increases — no injected false detections needed. Returns `row_gt: frame -> [true_pid_or_-1]`
+since row index no longer equals particle id once real matching runs. New
+`tests/unit/test_tracking_synthetic_dense_ghosts.py`: confirms the fixture produces ghosts at
+test_cavity-like density, and that track3d tracking on it produces measurable wrong links
+(30 wrong / 511 correct in the checked-in regression) — the ghost-free fixture cannot show this
+by construction.
 
-**Success:** the benchmark reproduces the real-data failure signature (nonzero ghost capture,
-wrong links > 0) that the current ghost-free synthetic misses.
+**Significant finding along the way (flagged, not fixed — out of scope for this plan):**
+`algorithms/correspondences.py`'s `four_camera_matching`/`three_camera_matching` cross-reference
+one camera pair's adjacency table using another pair's candidate `pnr` value *as an array index*
+(e.g. `p2_arr[1, 2, p2]` where `p2` came from the (0,1) pair's `find_candidate` output). That
+table's row dimension is actually built from each target's **x-sorted position** in
+`corrected[cam]`, not its `pnr`. The two only coincide when `pnr` happens to already be assigned
+in x-sorted-rank order — true of the existing `test_correspondences.py` grid fixture (with its
+odd-camera index reversal) purely by construction, but false in general, and false for the
+y-sorted `pnr` convention the *tracker* requires (`candsearch_in_pix`'s binary search). Assigning
+`pnr` in any other order (e.g. y-sorted, or real detection order) was measured to collapse
+correspondence matching to near-total ghosts *regardless of true particle separation* — verified
+directly: even 2 widely-separated random points fail to match; switching only the `pnr` order to
+x-sorted-rank fixed it to 100% correct at every density tested (2 to 100 particles, both the
+`tracking_synthetic` sub-rig calibration and `openptv2.benchmarking`'s standard rig). This
+generator works around it internally (matches on an x-sorted-`pnr` `Frame`, translates results
+back to the on-disk y-sorted `pnr` the tracker needs). **Not fixed here**: whether the real
+production pipeline (`gui/ptv.py::py_correspondences_proc_c` → `MatchedCoords`) is also exposed
+depends on whatever order real target detection assigns `pnr` in, which needs its own
+investigation — this could be a material, previously-undocumented contributor to real-data ghost
+rates (e.g. test_cavity's measured 64%/38%/16% ghost rates) independent of rig conditioning.
+Recommended as a dedicated Stage 0.5b or early Stage 2 investigation before trusting ghost-rate
+numbers as purely a rig-conditioning signal.
+
+Deferred: promoting the proPTV comparison scripts (`scratch/benchmark_all_trackers_500_25.py` /
+`_30.py`) into a repeatable `scripts/` harness — lower-priority sub-bullet, not blocking Stage 1.
+
+**Success (met):** the benchmark reproduces the real-data failure signature (nonzero ghost
+capture, wrong links > 0) that the ghost-free synthetic misses.
 
 ## Stage 1 — Smart warmup: auto-calibration on the first N frames (~1 week)
 
