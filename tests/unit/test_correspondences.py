@@ -304,6 +304,204 @@ class TestFullCorrespondences:
         assert match_counts[3] == 16
 
 
+class TestNTupelIdentityTranslation:
+    """NTupel.p[cam] is an INDEX into corrected[cam] (x-sorted) for every
+    camera, not a pnr -- despite find_candidate's cand_pnr output/docstring
+    suggesting otherwise. The only existing correspondence test above checks
+    match COUNTS, never per-camera IDENTITY, so it cannot catch a caller that
+    treats NTupel.p as an already-correct pnr: match_counts stays right
+    either way, only which particles get matched together changes.
+
+    These tests build a random (non-grid) scatter of particles with pnr
+    assigned in Y-SORTED order -- what real detection actually produces
+    (gui/ptv.py's _detect calls targs.sort_y() before MatchedCoords assigns
+    pnr) -- and verify every camera's component of every matched NTupel
+    identifies the SAME true particle once correctly translated via
+    corrected[cam][p[cam]].pnr. This is the exact scenario a partial/wrong
+    translation (e.g. only translating camera 0) silently gets wrong: it
+    still finds the right NUMBER of quads, just pairs up the wrong
+    particles across cameras.
+    """
+
+    NUM_CAMS = 4
+
+    def _random_scatter_frame(self, cals, cpar, n=40, seed=0):
+        """n random 3D points, each camera's targets pnr-assigned in
+        y-sorted order (the real-detection convention), returns
+        (frm, true_pid_by_pnr) where true_pid_by_pnr[cam][pnr] is the
+        ground-truth particle id of that camera's pnr-th target."""
+        rng = np.random.default_rng(seed)
+        positions = rng.uniform(-21.0, 21.0, (n, 3))
+
+        frm = Frame(cpar.num_cams, n)
+        true_pid_by_pnr = [dict() for _ in range(cpar.num_cams)]
+        for cam in range(cpar.num_cams):
+            frm.num_targets[cam] = n
+            proj = []
+            for pid in range(n):
+                mx, my = img_coord(positions[pid], cals[cam], cpar.mm)
+                x, y = metric_to_pixel(mx, my, cpar)
+                proj.append((pid, x, y))
+            proj.sort(key=lambda t: t[2])  # y-sort, matching targs.sort_y()
+            for pnr, (pid, x, y) in enumerate(proj):
+                targ = frm.targets[cam][pnr]
+                targ.pnr = pnr
+                targ.x = x
+                targ.y = y
+                targ.n = 100
+                targ.nx = 10
+                targ.ny = 10
+                targ.sumg = 1000
+                true_pid_by_pnr[cam][pnr] = pid
+        return frm, true_pid_by_pnr
+
+    def test_quad_p_translates_to_one_consistent_particle_per_camera(self):
+        cpar = ControlPar.from_yaml("test_data/tracking_synthetic/parameters_Run1.yaml")
+        vpar = VolumePar.from_yaml("test_data/tracking_synthetic/parameters_Run1.yaml")
+        calib = [
+            Calibration.from_file(
+                f"test_data/tracking_synthetic/cal/cam{c + 1}.tif.ori",
+                f"test_data/tracking_synthetic/cal/cam{c + 1}.tif.addpar",
+            )
+            for c in range(self.NUM_CAMS)
+        ]
+
+        frm, true_pid_by_pnr = self._random_scatter_frame(calib, cpar, n=40, seed=0)
+        corrected = correct_frame(frm, calib, cpar, 0.0001)
+        con, match_counts = correspondences(frm, corrected, vpar, cpar, calib)
+
+        assert match_counts[0] > 0, "expected at least some quads on a well-separated scatter"
+
+        n_checked = 0
+        for tup in con[: match_counts[0]]:  # quads are listed first
+            pids = []
+            for cam in range(self.NUM_CAMS):
+                idx = tup.p[cam]
+                assert idx >= 0, "a quad must have all four cameras populated"
+                # THE fix under test: idx is a corrected[cam] INDEX, not a pnr.
+                pnr = corrected[cam][idx].pnr
+                pids.append(true_pid_by_pnr[cam][pnr])
+            assert len(set(pids)) == 1, (
+                f"quad cameras disagree on particle identity: {pids} "
+                f"(raw NTupel.p={list(tup.p)}) -- NTupel.p[cam] was used "
+                f"as a pnr directly instead of translated via "
+                f"corrected[cam][p[cam]].pnr"
+            )
+            n_checked += 1
+        assert n_checked == match_counts[0]
+
+    def test_naive_pnr_usage_would_have_failed_this_scatter(self):
+        """Documents the footgun this class guards against: using
+        NTupel.p[cam] directly as a pnr (skipping the corrected[cam][idx].pnr
+        translation) scrambles identities on a real (non-grid) scatter, even
+        though match_counts alone looks identical either way."""
+        cpar = ControlPar.from_yaml("test_data/tracking_synthetic/parameters_Run1.yaml")
+        vpar = VolumePar.from_yaml("test_data/tracking_synthetic/parameters_Run1.yaml")
+        calib = [
+            Calibration.from_file(
+                f"test_data/tracking_synthetic/cal/cam{c + 1}.tif.ori",
+                f"test_data/tracking_synthetic/cal/cam{c + 1}.tif.addpar",
+            )
+            for c in range(self.NUM_CAMS)
+        ]
+
+        frm, true_pid_by_pnr = self._random_scatter_frame(calib, cpar, n=40, seed=0)
+        corrected = correct_frame(frm, calib, cpar, 0.0001)
+        con, match_counts = correspondences(frm, corrected, vpar, cpar, calib)
+        assert match_counts[0] > 0
+
+        naive_correct = 0
+        for tup in con[: match_counts[0]]:
+            pids = [
+                true_pid_by_pnr[cam].get(tup.p[cam])  # WRONG: no translation
+                for cam in range(self.NUM_CAMS)
+            ]
+            if len(set(pids)) == 1:
+                naive_correct += 1
+
+        assert naive_correct < match_counts[0], (
+            "expected the untranslated interpretation to disagree on at "
+            "least some quads on a random scatter -- if this starts "
+            "passing, NTupel.p's semantics may have changed and this "
+            "guard (and its docstring) should be revisited"
+        )
+
+
+class TestProductionCorrespondencesWrapperIdentity:
+    """openptv2.correspondences.correspondences() (NOT
+    openptv2.algorithms.correspondences.correspondences -- this is the
+    higher-level wrapper gui/ptv.py's real sequence loop actually calls) is
+    the production path a real experiment runs. It performs the
+    corrected[cam][geo_id].pnr translation internally for every camera, so
+    it should NOT exhibit the raw-NTupel.p footgun TestNTupelIdentityTranslation
+    guards against at the low level. This is the end-to-end regression proof
+    for that: real detection order (y-sorted -> pnr = i), a random 3D
+    scatter, checked against ground truth.
+    """
+
+    def test_wrapper_translates_every_camera_correctly(self):
+        from openptv2.algorithms.tracking_frame_buf import Target as AlgoTarget
+        from openptv2.correspondences import MatchedCoords
+        from openptv2.correspondences import correspondences as prod_correspondences
+
+        num_cams = 4
+        cpar = ControlPar.from_yaml("test_data/tracking_synthetic/parameters_Run1.yaml")
+        vpar = VolumePar.from_yaml("test_data/tracking_synthetic/parameters_Run1.yaml")
+        calib = [
+            Calibration.from_file(
+                f"test_data/tracking_synthetic/cal/cam{c + 1}.tif.ori",
+                f"test_data/tracking_synthetic/cal/cam{c + 1}.tif.addpar",
+            )
+            for c in range(num_cams)
+        ]
+
+        rng = np.random.default_rng(1)
+        n = 40
+        positions = rng.uniform(-21.0, 21.0, (n, 3))
+
+        # Mimic real detection: per-camera list, y-sorted, THEN MatchedCoords
+        # assigns pnr = i in that (y-sorted) order -- see gui/ptv.py's
+        # _detect (targs.sort_y()) followed by MatchedCoords(reset_numbers=True).
+        img_pts = []
+        true_pid_by_pnr = []
+        for cam in range(num_cams):
+            proj = []
+            for pid in range(n):
+                mx, my = img_coord(positions[pid], calib[cam], cpar.mm)
+                x, y = metric_to_pixel(mx, my, cpar)
+                proj.append((pid, x, y))
+            proj.sort(key=lambda t: t[2])
+            targs = [
+                AlgoTarget(pnr=0, x=x, y=y, n=100, nx=10, ny=10, sumg=1000, tnr=0)
+                for pid, x, y in proj
+            ]
+            img_pts.append(targs)
+            true_pid_by_pnr.append([pid for pid, x, y in proj])
+
+        flat_coords = [
+            MatchedCoords(targs, cpar, calib[cam]) for cam, targs in enumerate(img_pts)
+        ]
+
+        sorted_pos, sorted_corresp, num_targs = prod_correspondences(
+            img_pts, flat_coords, calib, vpar, cpar
+        )
+
+        quad_corresp = sorted_corresp[0]  # clique_type 0 == quads
+        total = quad_corresp.shape[1]
+        assert total > 0, "expected at least some quads on a well-separated scatter"
+
+        for i in range(total):
+            pids = []
+            for cam in range(num_cams):
+                pnr = int(quad_corresp[cam, i])
+                assert pnr >= 0, "a quad must have all four cameras populated"
+                pids.append(true_pid_by_pnr[cam][pnr])
+            assert len(set(pids)) == 1, (
+                f"production wrapper quad disagrees on particle identity: "
+                f"{pids} (quad {i})"
+            )
+
+
 def test_get_by_pnrs_uses_coord_unused_sentinel():
     """Missing pnrs must be filled with COORD_UNUSED (-1e10), the sentinel
     point_position triangulation skips — NOT PT_UNUSED (-999), which would be

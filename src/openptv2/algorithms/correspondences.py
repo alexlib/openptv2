@@ -29,7 +29,15 @@ PT_UNUSED = -999
 
 @cython.cclass
 class NTupel:
-    """A correspondence match across multiple cameras."""
+    """A correspondence match across multiple cameras.
+
+    ``p[cam]`` is an INDEX into that camera's x-sorted ``corrected[cam]``
+    list (from ``correct_frame``), for every camera -- not a pnr, despite
+    ``find_candidate``'s per-candidate output being loosely called "pnr"
+    elsewhere. Translate to the real particle identity with
+    ``corrected[cam][p[cam]].pnr`` (see ``openptv2.correspondences.
+    correspondences``, which does this uniformly for all cameras).
+    """
 
     p: list = cython.declare(object, visibility="public")
     corr: cython.double = cython.declare(cython.double, visibility="public")

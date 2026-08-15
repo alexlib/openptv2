@@ -319,7 +319,7 @@ def find_candidate(
     nx: cython.int,
     ny: cython.int,
     sumg: cython.int,
-    cand_pnr: cython.int[:],  # output: candidate pnr indices
+    cand_pnr: cython.int[:],  # output: candidate INDEX into crd (x-sorted), NOT a pnr
     cand_tol: cython.double[:],  # output: candidate tolerances
     cand_corr: cython.double[:],  # output: candidate correlations
     vpar,
@@ -331,6 +331,14 @@ def find_candidate(
     Writes candidate data into pre-allocated arrays cand_pnr/cand_tol/cand_corr
     instead of appending Python objects to a list.  Returns the number of
     candidates found (≤ MAXCAND).
+
+    Despite its name, cand_pnr holds each candidate's INDEX into ``crd``
+    (the x-sorted list), not its pnr -- ``cand_pnr[k] = j`` where ``j`` is
+    the loop index over ``crd``, not ``p2 = crd[j].pnr`` (computed and used
+    only for the internal ``pix[p2]`` quality-ratio lookup below). Callers
+    that need the real particle identity must translate via
+    ``crd[cand_pnr[k]].pnr`` -- see openptv2.correspondences.correspondences,
+    which does this for every camera when converting NTupel.p into pnr.
 
     Args:
         crd: x-sorted Coord2d list of detected points (flat-image coords).

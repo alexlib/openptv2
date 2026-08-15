@@ -105,28 +105,34 @@ test_cavity-like density, and that track3d tracking on it produces measurable wr
 (30 wrong / 511 correct in the checked-in regression) — the ghost-free fixture cannot show this
 by construction.
 
-**Significant finding along the way (flagged, not fixed — out of scope for this plan):**
-`algorithms/correspondences.py`'s `four_camera_matching`/`three_camera_matching` cross-reference
-one camera pair's adjacency table using another pair's candidate `pnr` value *as an array index*
-(e.g. `p2_arr[1, 2, p2]` where `p2` came from the (0,1) pair's `find_candidate` output). That
-table's row dimension is actually built from each target's **x-sorted position** in
-`corrected[cam]`, not its `pnr`. The two only coincide when `pnr` happens to already be assigned
-in x-sorted-rank order — true of the existing `test_correspondences.py` grid fixture (with its
-odd-camera index reversal) purely by construction, but false in general, and false for the
-y-sorted `pnr` convention the *tracker* requires (`candsearch_in_pix`'s binary search). Assigning
-`pnr` in any other order (e.g. y-sorted, or real detection order) was measured to collapse
-correspondence matching to near-total ghosts *regardless of true particle separation* — verified
-directly: even 2 widely-separated random points fail to match; switching only the `pnr` order to
-x-sorted-rank fixed it to 100% correct at every density tested (2 to 100 particles, both the
-`tracking_synthetic` sub-rig calibration and `openptv2.benchmarking`'s standard rig). This
-generator works around it internally (matches on an x-sorted-`pnr` `Frame`, translates results
-back to the on-disk y-sorted `pnr` the tracker needs). **Not fixed here**: whether the real
-production pipeline (`gui/ptv.py::py_correspondences_proc_c` → `MatchedCoords`) is also exposed
-depends on whatever order real target detection assigns `pnr` in, which needs its own
-investigation — this could be a material, previously-undocumented contributor to real-data ghost
-rates (e.g. test_cavity's measured 64%/38%/16% ghost rates) independent of rig conditioning.
-Recommended as a dedicated Stage 0.5b or early Stage 2 investigation before trusting ghost-rate
-numbers as purely a rig-conditioning signal.
+**Docstring/footgun found and fixed along the way (verified NOT a production bug):**
+`algorithms/epi.py::find_candidate` writes each candidate's **index into the x-sorted `crd`
+list** into its `cand_pnr` output array — not the particle's `pnr` (`p2 = crd[j].pnr` is computed
+and used only for an internal quality-ratio lookup; the value actually stored is `j`, the loop
+index). That output flows straight through `algorithms/correspondences.py`'s adjacency tables into
+`NTupel.p[cam]`, so **every** camera's component of a `NTupel` — not just camera 0 — is an
+x-sorted index, never a `pnr`. `find_candidate`'s docstring/parameter comment and `NTupel`'s own
+docstring were wrong (or misleadingly named) about this; both are fixed now to say so explicitly,
+and point at the correct translation.
+
+This was initially misdiagnosed as a live production bug (assigning `pnr` in y-sorted order
+appeared to collapse correspondence matching to near-total ghosts regardless of separation). That
+diagnosis was wrong: the code path used to reach that conclusion called the raw `NTupel.p[cam]`
+values directly as if they were already `pnr` for cameras 1–3 (only camera 0 was translated). The
+**real** production entry point, `openptv2.correspondences.correspondences()` (what
+`gui/ptv.py::py_correspondences_proc_c` actually calls) already performs
+`corrected[cam][geo_id].pnr` for **every** camera before using the result — verified directly: run
+end-to-end through this exact wrapper with y-sorted `pnr` (matching real detection: `gui/ptv.py`'s
+`_detect` calls `targs.sort_y()` before `MatchedCoords` assigns `pnr = i`), 100% correct
+quads at every density tested (2–200 particles, multiple seeds, two different calibrations). New
+`tests/unit/test_correspondences.py::TestNTupelIdentityTranslation` /
+`TestProductionCorrespondencesWrapperIdentity` lock this in: one test proves the untranslated
+low-level interpretation genuinely scrambles identities on a random scatter (the footgun), the
+other proves the actual production wrapper does not. **No live bug, no effect on test_cavity's
+measured ghost rates** — those remain purely a rig-conditioning signal, as originally documented
+in `docs/plans/two-subrig-calibration.md`. `test_data/tracking_synthetic_dense/generate.py`'s
+generator now uses the same (correct, uniform-per-camera) translation as the production wrapper,
+which simplified it considerably — the earlier two-numbering-scheme workaround was unnecessary.
 
 Deferred: promoting the proPTV comparison scripts (`scratch/benchmark_all_trackers_500_25.py` /
 `_30.py`) into a repeatable `scripts/` harness — lower-priority sub-bullet, not blocking Stage 1.

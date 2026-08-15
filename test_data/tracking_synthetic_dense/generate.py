@@ -255,70 +255,50 @@ def build_fixture_with_correspondence(
                 pix[c, p] = (px, py)
         pix += rng.normal(0.0, noise_px, pix.shape)
 
-        # Two DIFFERENT pnr numberings are needed here, matching two
-        # different consumers:
-        #   - Target FILES on disk (read later by the tracker) must be
-        #     y-sorted (candsearch_in_pix does a binary search + early
-        #     termination on y -- see test_synthetic_tracking.py).
-        #   - The Frame used HERE, only in memory, to run the real
-        #     correspondence matcher must have each camera's pnr assigned
-        #     in X-SORTED rank order. algorithms.correspondences'
-        #     four_camera_matching/three_camera_matching cross-reference
-        #     one camera pair's adjacency table using another pair's
-        #     candidate pnr AS an array index (e.g. p2_arr[1, 2, p2] where
-        #     p2 came from the (0,1) pair's find_candidate output) -- that
-        #     table's row dimension is actually built from the x-sorted
-        #     position in corrected[cam], not pnr. The two only coincide
-        #     when pnr happens to already be x-sorted-rank; any other pnr
-        #     order (e.g. the y-sorted order the tracker needs) makes
-        #     nearly every camera pair's cross-check compare unrelated
-        #     targets, collapsing correspondence to near-total ghosts
-        #     regardless of true particle separation (verified: even 2
-        #     widely-separated random particles fail to match). This is a
-        #     real property of the current matcher, not modeled physical
-        #     ambiguity -- flagged for a follow-up fix in
-        #     algorithms/correspondences.py; this generator works around it
-        #     by matching on an x-sorted-pnr Frame and translating results
-        #     back to the on-disk y-sorted pnr afterward.
-        frm_match = Frame(num_cams=NCAM, max_targets=n)
-        pid_to_disk_pnr = [dict() for _ in range(NCAM)]
-        pnr_to_pid_match = [dict() for _ in range(NCAM)]
+        # Targets are y-sorted for pnr assignment (candsearch_in_pix does a
+        # binary search + early termination on y -- see
+        # test_synthetic_tracking.py), matching what real detection does
+        # (gui/ptv.py's _detect calls targs.sort_y() before pnr gets
+        # assigned). This is also what the target FILES on disk need, since
+        # the tracker reads them later.
+        frm = Frame(num_cams=NCAM, max_targets=n)
+        pnr_to_pid = [dict() for _ in range(NCAM)]
         for c in range(NCAM):
-            y_order = np.argsort(pix[c, :, 1], kind="stable")
-            x_order = np.argsort(pix[c, :, 0], kind="stable")
-            frm_match.num_targets[c] = n
+            order = np.argsort(pix[c, :, 1], kind="stable")
+            frm.num_targets[c] = n
             with open(f"{outdir}/img_orig/cam{c + 1}.{fr}_targets", "w") as f:
                 f.write(f"{n}\n")
-                for pnr, p in enumerate(y_order):
+                for pnr, p in enumerate(order):
                     x, y = pix[c, p]
-                    pid_to_disk_pnr[c][int(p)] = pnr
+                    frm.targets[c][pnr] = Target(
+                        pnr=pnr, x=x, y=y, n=100, nx=10, ny=10, sumg=1000, tnr=TR_UNUSED
+                    )
+                    pnr_to_pid[c][pnr] = int(p)
                     f.write(
                         "%4d %9.4f %9.4f %5d %5d %5d %5d %5d\n"
                         % (pnr, x, y, 100, 10, 10, 1000, TR_UNUSED)
                     )
-            for pnr, p in enumerate(x_order):
-                x, y = pix[c, p]
-                frm_match.targets[c][pnr] = Target(
-                    pnr=pnr, x=x, y=y, n=100, nx=10, ny=10, sumg=1000, tnr=TR_UNUSED
-                )
-                pnr_to_pid_match[c][pnr] = int(p)
 
-        corrected = correct_frame(frm_match, cals, cpar, 0.0001)
+        corrected = correct_frame(frm, cals, cpar, 0.0001)
         by_pnr = [{c2d.pnr: (c2d.x, c2d.y) for c2d in corrected[c]} for c in range(NCAM)]
-        con, _match_counts = _correspondences(frm_match, corrected, vpar, cpar, cals)
+        con, _match_counts = _correspondences(frm, corrected, vpar, cpar, cals)
 
         rows_pid = []
         rows_pos = []
         rows_p = []
         for tup in con:
-            # p[0] is an index into corrected[0] (the x-sorted list for
-            # camera 0), not a pnr -- unlike p[1..3], which genuinely are
-            # pnr values written by find_candidate.
-            p = list(tup.p)
-            if p[0] >= 0:
-                p[0] = corrected[0][p[0]].pnr
+            # NTupel.p[cam] is an INDEX into corrected[cam] (x-sorted) for
+            # every camera, not a pnr -- translate via corrected[cam][idx].pnr
+            # before using it as a key, matching what
+            # openptv2.correspondences.correspondences does for every camera
+            # (verified against it directly: this is the convention that
+            # gives 100% correct matches, not just some).
+            p = [
+                corrected[c][tup.p[c]].pnr if tup.p[c] >= 0 else -1
+                for c in range(NCAM)
+            ]
 
-            cam_pids = [pnr_to_pid_match[c].get(p[c]) for c in range(NCAM) if p[c] >= 0]
+            cam_pids = [pnr_to_pid[c][p[c]] for c in range(NCAM) if p[c] >= 0]
             true_pid = cam_pids[0] if cam_pids and all(x == cam_pids[0] for x in cam_pids) else -1
 
             targets_metric = np.full((NCAM, 2), COORD_UNUSED)
@@ -327,22 +307,9 @@ def build_fixture_with_correspondence(
                     targets_metric[c] = by_pnr[c][p[c]]
             pos, _dist = point_position(targets_metric, NCAM, mm, cals)
 
-            # Translate each camera's match-space pnr to the on-disk
-            # (y-sorted) pnr the target files and the tracker actually use --
-            # by looking up which true particle it was (per-camera, so a
-            # ghost row with mismatched cams still gets a valid disk pnr per
-            # camera, just not a shared one).
-            disk_p = []
-            for c in range(NCAM):
-                if p[c] < 0:
-                    disk_p.append(-1)
-                    continue
-                pid_c = pnr_to_pid_match[c][p[c]]
-                disk_p.append(pid_to_disk_pnr[c].get(pid_c, -1))
-
             rows_pid.append(true_pid)
             rows_pos.append(pos)
-            rows_p.append(disk_p)
+            rows_p.append(p)
 
         row_gt[fr] = rows_pid
         with open(f"{outdir}/res_orig/rt_is.{fr}", "w") as f:
