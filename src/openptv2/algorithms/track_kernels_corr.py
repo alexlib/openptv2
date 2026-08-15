@@ -1721,25 +1721,25 @@ def trackback_loop_fast(
                     acc = _pp_mv[1]
 
                     if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
+                        quali = _freq_buf[i]
                         d13 = c_sqrt(
                             (X[1, 0] - X[3, 0]) ** 2
                             + (X[1, 1] - X[3, 1]) ** 2
                             + (X[1, 2] - X[3, 2]) ** 2
                         )
-                    d01 = c_sqrt(
-                        (X[0, 0] - X[1, 0]) ** 2
-                        + (X[0, 1] - X[1, 1]) ** 2
-                        + (X[0, 2] - X[1, 2]) ** 2
-                    )
-                    dl = (d13 + d01) * 0.5
-                    quali = _freq_buf[i]
-                    rr = (dl / lmax + acc / dacc + angle / dangle) / quali
+                        d01 = c_sqrt(
+                            (X[0, 0] - X[1, 0]) ** 2
+                            + (X[0, 1] - X[1, 1]) ** 2
+                            + (X[0, 2] - X[1, 2]) ** 2
+                        )
+                        dl = (d13 + d01) * 0.5
+                        rr = (dl / lmax + acc / dacc + angle / dangle) / quali
 
-                    inlist = path_inlist_1[h]
-                    if inlist < POSI_K:
-                        path_decis_1[h, inlist] = rr
-                        path_linkdecis_1[h, inlist] = ftnr_i
-                        path_inlist_1[h] = inlist + 1
+                        inlist = path_inlist_1[h]
+                        if inlist < POSI_K:
+                            path_decis_1[h, inlist] = rr
+                            path_linkdecis_1[h, inlist] = ftnr_i
+                            path_inlist_1[h] = inlist + 1
 
                 i += 1
 

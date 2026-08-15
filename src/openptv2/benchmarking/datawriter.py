@@ -21,6 +21,7 @@ from pathlib import Path
 
 import numpy as np
 
+from openptv2.algorithms.constants import TR_UNUSED
 from openptv2.benchmarking.camera_rig import CameraRig, project_to_pixels
 
 
@@ -114,7 +115,18 @@ def write_dataset(
                 fh.write(f"{len(entries)}\n")
                 for targ_pnr, (slot, pxv, pyv) in enumerate(entries):
                     pid = particles[slot][0]
-                    tnr = pid if pid >= 0 else -999  # ghost -> unused
+                    # tnr is consumed directly as an index into that frame's
+                    # path_x/corres array (see track_kernels_search.py's
+                    # ftnr_out[...] = targ_tnr[cam, idx], then
+                    # path_x_2[ftnr_i] in track_kernels_corr.py) -- it must
+                    # be the particle's row index within THIS frame's
+                    # rt_is/particles list (== slot), not its ground-truth
+                    # pid. The two coincide only while every frame holds a
+                    # dense 0..n-1 pid range; entering/leaving particles
+                    # break that, which silently starved trackcorr/
+                    # full_multipass of nearly all links on every dataset
+                    # this writer produced with entry/exit turbulence.
+                    tnr = slot if pid >= 0 else TR_UNUSED
                     fh.write(
                         f"{targ_pnr:4d} {pxv:9.4f} {pyv:9.4f} "
                         f"  100    10    10  1000 {tnr:5d}\n"

@@ -25,6 +25,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 import benchmark_utils as bu  # noqa: E402
 from create_synthetic_turbulent import make_dataset  # noqa: E402
+from tune_tracker_params import _run_via_subprocess  # noqa: E402
 
 DATASET = Path(__file__).resolve().parents[2] / "test_data" / "synthetic_turbulent_1k"
 
@@ -49,6 +50,89 @@ def test_fast_3d_quality_floor_at_1k_density():
     assert row["precision"] >= 0.80, row
     assert row["yield_recall"] >= 0.75, row
     assert row["ghost_capture_rate"] <= 0.10, row
+
+
+# ---------------------------------------------------------------------------
+# Stage 0b (docs/plans/2026-08-15-tracking-quality-overhaul.md): ratchet
+# quality floors for every tracker registered in tracking_registry.py, not
+# just fast_3d. Each tracker gets its own kinematic-bound overrides via
+# scripts/benchmark_utils.per_tracker_overrides (one shared parameter set
+# hides real per-engine differences -- see that function's docstring).
+#
+# These are ratchet floors, not aspirational targets: measured baseline
+# minus a small margin (2 percentage points on precision/yield_recall, plus
+# 2pp of headroom on ghost_capture_rate). A drop below them without an
+# intentional algorithm change is a regression; raise them when a later
+# stage measurably improves a tracker.
+#
+# Building this floor surfaced (and fixed) a real bug: trackcorr/
+# full_multipass initially measured near-zero yield_recall (~0.0003) here.
+# Root cause was in the dataset generator, not the tracker or this harness:
+# openptv2.benchmarking.datawriter.write_dataset wrote each 2D target's
+# ``tnr`` field as the particle's ground-truth pid. trackcorr's Cython
+# kernels use ``tnr`` as a direct row index into that frame's 3D-particle
+# array (track_kernels_search.py: ``ftnr_out[...] = targ_tnr[cam, idx]``,
+# then track_kernels_corr.py: ``path_x_2[ftnr_i]``) -- it must be the
+# particle's *slot* in that frame's rt_is list, not its pid. The two only
+# coincide while every frame holds a dense 0..n-1 pid range; this dataset's
+# entering/leaving particles break that immediately, so nearly every
+# candidate ftnr pointed at the wrong (or an out-of-range) 3D position and
+# got rejected by the angle/acc test. track3d-based trackers (everything
+# else in this table) never touch target tnr, so they were unaffected.
+# Fixed in datawriter.py (tnr = slot, ghosts = TR_UNUSED); see that file's
+# comment. Baseline below is measured post-fix.
+#
+# Baseline measured on synthetic_turbulent_1k (30 frames, ~1000
+# particles/frame), 2026-08-15, after the Stage 0a trackback_loop_fast fix
+# and the datawriter.py tnr fix:
+#   priority_segment_3d: precision 0.904, yield_recall 0.864, ghost 0.038
+#   trackcorr:           precision 0.930, yield_recall 0.759, ghost 0.038
+#   kalman_hungarian_3d: precision 0.856, yield_recall 0.763, ghost 0.038
+#   sg_hungarian_3d:     precision 0.650, yield_recall 0.577, ghost 0.038
+#   nearest_hungarian_3d:precision 0.634, yield_recall 0.603, ghost 0.038
+#   predictive_gmm_3d:   precision 0.690, yield_recall 0.693, ghost 0.034
+_STAGE0B_FLOORS = {
+    "priority_segment_3d": {"precision": 0.88, "yield_recall": 0.84, "ghost_capture_rate": 0.06},
+    "trackcorr": {"precision": 0.91, "yield_recall": 0.74, "ghost_capture_rate": 0.06},
+    "kalman_hungarian_3d": {"precision": 0.83, "yield_recall": 0.74, "ghost_capture_rate": 0.06},
+    "sg_hungarian_3d": {"precision": 0.63, "yield_recall": 0.56, "ghost_capture_rate": 0.06},
+    "nearest_hungarian_3d": {"precision": 0.61, "yield_recall": 0.58, "ghost_capture_rate": 0.06},
+    "predictive_gmm_3d": {"precision": 0.67, "yield_recall": 0.67, "ghost_capture_rate": 0.05},
+}
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("tracker", sorted(_STAGE0B_FLOORS))
+def test_registered_tracker_quality_floor_at_1k_density(tracker):
+    if not (DATASET / "res").exists():
+        make_dataset(DATASET, num_particles=1000, num_frames=bu.N_FRAMES, seed=2026)
+
+    overrides = bu.per_tracker_overrides(
+        [tracker], src=DATASET, first=bu.FIRST, n_frames=bu.N_FRAMES,
+    )[tracker]
+
+    # Subprocess-isolated (see scripts/tune_tracker_params.py docstring):
+    # openptv2's compiled Cython tracking extensions have been observed to
+    # corrupt each other's memory (segfault) when several different
+    # trackers run back-to-back in one process -- exactly what a
+    # parametrized sweep over all registered trackers does.
+    pred0, _dt = _run_via_subprocess(
+        tracker, DATASET, bu.FIRST, bu.N_FRAMES, overrides,
+    )
+
+    frames = bu.read_gt_frames(DATASET, bu.FIRST, bu.N_FRAMES)
+    tt = bu.build_true_tracks(frames, bu.FIRST)
+    ghosts = bu.build_ghost_frames(frames, bu.FIRST)
+    m = bu.bm.compute_identity_metrics(tt, pred0, eps=1.0, ghost_pos_by_frame=ghosts)
+    row = {
+        **m.to_dict(),
+        **bu.calculate_tracking_metrics(tt, pred0, distance_tolerance=1.0).to_dict(),
+    }
+
+    floor = _STAGE0B_FLOORS[tracker]
+    assert row["precision"] >= floor["precision"], row
+    assert row["yield_recall"] >= floor["yield_recall"], row
+    assert row["ghost_capture_rate"] <= floor["ghost_capture_rate"], row
 
 
 def test_trajectory_shape_stats_length_and_smoothness():

@@ -905,3 +905,91 @@ class TestSyntheticForwardBackwardForward:
 
         finally:
             os.chdir(original)
+
+
+class TestTrackbackCandidateGuard:
+    """Regression test for the trackback_loop_fast acceptance-guard bug.
+
+    track_kernels_corr.py's backward pass previously de-dented the
+    ``(acc < dacc and angle < dangle) or acc < dacc * 0.1`` check so every
+    candidate inside the velocity box was registered as a link candidate
+    regardless of whether it passed the acceleration/angle test, using a
+    stale distance value for ranking. Tightening dacc while keeping the
+    velocity box wide forces multiple in-box, kinematically-wrong
+    candidates at the crossing trajectories (particles 8-9, near frame
+    10005) -- exactly the case the buggy guard would leak through.
+    """
+
+    def test_backward_prev_links_respect_acc_angle_guard(self, synthetic_data):
+        original = os.getcwd()
+        try:
+            os.chdir(TEST_DIR)
+            _setup_working_copy()
+            cpar = ControlPar.from_yaml("parameters.yaml")
+            cals = [
+                Calibration.from_file(
+                    f"cal/cam{i + 1}.tif.ori", f"cal/cam{i + 1}.tif.addpar"
+                )
+                for i in range(cpar.num_cams)
+            ]
+
+            run = tr_new(
+                SequencePar.from_yaml("parameters.yaml"),
+                TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"),
+                ControlPar.from_yaml("parameters.yaml"),
+                4,
+                20000,
+                "res/rt_is",
+                "res/ptv_is",
+                "res/added",
+                cals,
+                0.0001,
+            )
+            # Tight acceleration/angle gate, wide velocity box: candidates
+            # near the crossing trajectories fall inside the box but most
+            # fail acc/angle. Only the fix keeps them out of the link list.
+            run.tpar = run.tpar._replace(dacc=0.02, dangle=15.0)
+
+            track_forward_start(run)
+            for step in range(run.seq_par.first, run.seq_par.last):
+                trackcorr_c_loop(run, step)
+            trackcorr_c_finish(run, run.seq_par.last)
+
+            trackback_c(run)
+
+            frames = synthetic_data["frames"]
+            gt_prev = synthetic_data["gt_prev"]
+            slot_to_pid = synthetic_data["slot_to_pid"]
+
+            sorted_frames = sorted(frames.keys())
+            n_wrong = 0
+            errors = []
+            for fi, f_num in enumerate(sorted_frames):
+                if fi == 0:
+                    continue  # first frame has no "prev"
+                path = TEST_DIR / f"res/ptv_is.{f_num}"
+                if not path.exists():
+                    continue
+                linkage = _parse_linkage(path)
+                for slot, entry in enumerate(linkage):
+                    expected_prev = gt_prev.get((f_num, slot), -1)
+                    actual_prev = entry["prev"]
+                    if actual_prev >= 0 and actual_prev != expected_prev:
+                        n_wrong += 1
+                        prev_frame = sorted_frames[fi - 1]
+                        actual_pid = slot_to_pid.get((prev_frame, actual_prev), "?")
+                        expected_pid = slot_to_pid.get((f_num, slot), "?")
+                        errors.append(
+                            f"  frame {f_num} slot {slot} (pid={expected_pid}): "
+                            f"prev={actual_prev} (pid={actual_pid}) "
+                            f"expected={expected_prev}"
+                        )
+
+            assert n_wrong == 0, (
+                "trackback accepted a candidate that fails the acc/angle "
+                "guard:\n" + "\n".join(errors)
+            )
+
+        finally:
+            os.chdir(original)
