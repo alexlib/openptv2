@@ -1,6 +1,7 @@
 """Tests for disk-level tracking post-processes (FB-consistency + cold-start)."""
 
 import numpy as np
+import pytest
 
 from openptv2.tracking_postprocess import (
     count_links,
@@ -104,9 +105,18 @@ def test_relink_trajectory_gaps_bridges_missing_frame(tmp_path):
         base, first=0, last=4, max_gap=2, max_velocity_err=1.0
     )
     assert stats["bridged_gaps"] == 1
-    assert (
-        read_linkage(base, 1)[1][0] == 0
-    )  # frame 1 particle now links to frame 3 particle 0!
-    assert (
-        read_linkage(base, 3)[0][0] == 0
-    )  # frame 3 particle points back to frame 1 particle 0!
+
+    # A bridged gap fills the skipped frame with one interpolated placeholder
+    # particle, linked consecutively frame-to-frame (never a next pointer
+    # that skips straight from frame 1 to frame 3) -- every other prev/next
+    # consumer (enforce_reciprocity, trajectory walkers) assumes next[k][i]
+    # always indexes into frame k+1, so a cross-frame-skip pointer is
+    # silently misread/severed by them. See relink_trajectory_gaps' docstring.
+    prev1, next1, _ = read_linkage(base, 1)
+    prev2, next2, xyz2 = read_linkage(base, 2)
+    prev3, next3, _ = read_linkage(base, 3)
+
+    assert next1[0] == 0  # frame 1 particle links to frame 2's new placeholder (slot 0)
+    assert prev2[0] == 0 and next2[0] == 0  # placeholder links back to frame 1, forward to frame 3
+    assert xyz2[0] == pytest.approx([4.0, 0.0, 0.0])  # interpolated midpoint (2 -> 6)
+    assert prev3[0] == 0  # frame 3 particle links back to frame 2's placeholder

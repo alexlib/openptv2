@@ -240,8 +240,21 @@ def relink_trajectory_gaps(
     extrapolating particle positions using constant velocity to recover occluded
     particles over missing-frame gaps.
 
+    A bridged gap is filled with one interpolated placeholder particle per
+    skipped frame (constant-velocity interpolation between the two real
+    endpoints), linked consecutively frame-to-frame -- NOT a single `next`
+    pointer skipping straight from frame k to frame k+gap+1. Every other
+    reader of prev/next (enforce_reciprocity, trajectory walkers) assumes
+    next[k][i] always indexes into frame k+1; a cross-frame-skip pointer
+    silently violates that and is actively incompatible with
+    enforce_reciprocity specifically: it compares next_k against frame k+1
+    (not k+gap+1), so it never recognizes the bridge as reciprocal and
+    severs it right back out -- observed directly (286 bridged, 286 severed,
+    net zero change) benchmarking Fast 3D with postprocess enabled.
+
     Returns:
-        dict with count of recovered links: {'bridged_gaps': N}
+        dict with count of recovered gaps (bridge chains, not individual
+        hops): {'bridged_gaps': N}
     """
     bridged = 0
     frames = {}
@@ -249,6 +262,17 @@ def relink_trajectory_gaps(
         r = read_linkage(linkage_base, k, store=store)
         if r is not None:
             frames[k] = r
+
+    dirty = set()
+
+    def _frame(m):
+        if m not in frames:
+            frames[m] = (
+                np.empty(0, dtype=np.int32),
+                np.empty(0, dtype=np.int32),
+                np.empty((0, 3), dtype=np.float64),
+            )
+        return frames[m]
 
     for gap in range(1, max_gap + 1):
         for k in range(first, last - gap):
@@ -281,20 +305,52 @@ def relink_trajectory_gaps(
                 dists = np.linalg.norm(cand_xyz - pred_pos, axis=1)
                 best_cand = np.argmin(dists)
 
-                if dists[best_cand] <= max_velocity_err:
-                    target_idx = starts_target[best_cand]
-                    next_k[end_idx] = target_idx
-                    prev_target[target_idx] = end_idx
-                    bridged += 1
+                if dists[best_cand] > max_velocity_err:
+                    continue
+                target_idx = starts_target[best_cand]
 
-                    write_linkage(linkage_base, k, prev_k, next_k, xyz_k, store=store)
-                    write_linkage(
-                        linkage_base,
-                        k + gap + 1,
-                        prev_target,
-                        next_target,
-                        xyz_target,
-                        store=store,
-                    )
+                # Chain: end_idx (frame k) -> placeholder(s) in k+1..k+gap -> target_idx (frame k+gap+1)
+                start_xyz = xyz_k[end_idx]
+                end_xyz = xyz_target[target_idx]
+                prev_link_frame, prev_link_idx = k, int(end_idx)
+                for step, m in enumerate(range(k + 1, k + gap + 1), start=1):
+                    m_prev, m_next, m_xyz = _frame(m)
+                    frac = step / (gap + 1)
+                    placeholder_pos = start_xyz + (end_xyz - start_xyz) * frac
+                    new_idx = len(m_next)
+                    m_prev = np.append(m_prev, PREV_NONE).astype(np.int32)
+                    m_next = np.append(m_next, NEXT_NONE).astype(np.int32)
+                    m_xyz = np.vstack([m_xyz, placeholder_pos])
+                    frames[m] = (m_prev, m_next, m_xyz)
+                    dirty.add(m)
+
+                    # Link the previous hop in the chain forward to this placeholder.
+                    pf_prev, pf_next, pf_xyz = frames[prev_link_frame]
+                    pf_next = pf_next.copy()
+                    pf_next[prev_link_idx] = new_idx
+                    frames[prev_link_frame] = (pf_prev, pf_next, pf_xyz)
+                    dirty.add(prev_link_frame)
+
+                    m_prev[new_idx] = prev_link_idx
+                    prev_link_frame, prev_link_idx = m, new_idx
+
+                # Final hop: last placeholder (or end_idx itself if gap's loop never ran,
+                # i.e. unreachable here since gap >= 1) -> target_idx in frame k+gap+1.
+                pf_prev, pf_next, pf_xyz = frames[prev_link_frame]
+                pf_next = pf_next.copy()
+                pf_next[prev_link_idx] = target_idx
+                frames[prev_link_frame] = (pf_prev, pf_next, pf_xyz)
+                dirty.add(prev_link_frame)
+
+                prev_target = prev_target.copy()
+                prev_target[target_idx] = prev_link_idx
+                frames[k + gap + 1] = (prev_target, next_target, xyz_target)
+                dirty.add(k + gap + 1)
+
+                bridged += 1
+
+    for m in dirty:
+        prev_m, next_m, xyz_m = frames[m]
+        write_linkage(linkage_base, m, prev_m, next_m, xyz_m, store=store)
 
     return {"bridged_gaps": bridged}
