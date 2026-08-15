@@ -1513,6 +1513,15 @@ class MainGUI(HasTraits):
     def right_click_process(self):
         """Shows a line in camera color code corresponding to a point on another camera's view plane"""
 
+        # Reset unconditionally, before any branch below can return early --
+        # every branch used to reset this only on its own success path, so
+        # any early return (no sorted_pos yet, no close match, degenerate
+        # point) left rclicked stuck at 1. Traits' on_trait_change does not
+        # fire for a same-value reassignment (1 -> 1), so the next right
+        # click in that camera pane was then silently swallowed until some
+        # other code path happened to reset it back to 0.
+        self.camera_list[self.current_camera].rclicked = 0
+
         if getattr(self, "_measure_mode", False):
             self._measure_click()
             return
