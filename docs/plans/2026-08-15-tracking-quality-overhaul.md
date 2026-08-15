@@ -140,6 +140,40 @@ Deferred: promoting the proPTV comparison scripts (`scratch/benchmark_all_tracke
 **Success (met):** the benchmark reproduces the real-data failure signature (nonzero ghost
 capture, wrong links > 0) that the ghost-free synthetic misses.
 
+## Critical fix found while benchmarking: store-backed backward tracking wiped linkage (2026-08-15)
+
+Building the quantitative benchmark this plan's success criteria depend on (see Stage 1/2 below)
+surfaced a serious, previously-undiscovered bug, live-breaking on the current zarr-only storage
+architecture (no more ASCII-only tracking): **`full_backward()` on a store-backed run wiped every
+frame's linkage back to fully unlinked**, overwriting the forward pass's real results with zeros.
+
+Root cause (`algorithms/tracking_frame_buf.py::read_path_frame`): the function decided whether to
+read a frame via the store or via ASCII by checking whether the **correspondence** ASCII file
+existed on disk — not whether the **store** had data. A correspondence ASCII file can exist for
+reasons unrelated to the store's linkage state (fixture input, a prior non-store-backed step),
+while store-backed tracking writes **linkage** only to the store, never ASCII. Whenever both held
+at once, the correspondence-file check incorrectly skipped the store branch, the subsequent ASCII
+linkage open hit `FileNotFoundError`, and the frame silently read back as fully unlinked —
+persisted as real data the moment a caller re-wrote the frame, which `trackback_c`'s buffer-priming
+step does on every backward pass. Fixed by gating on `store.has_correspondences(frame_num)` instead.
+
+**Why this matters retroactively:** Stage 1's warmup tuning loop and Stage 2's corrective pass both
+run `full_forward()` + `full_backward()` internally on a store, for every measurement. Before this
+fix, every "forward/backward agreement" reading either of them produced was likely **vacuous** —
+backward wiping everything to unlinked trivially "agrees" with nothing, since there's nothing left
+to disagree about. The dv-box tuning demo cited in Stage 1's original write-up (±15.5mm → ~±3.1mm,
+"same direction as commit 07f1fc1") remains a real, valid result — that dataset's default `dvxmax`
+genuinely was that loose — but the **agreement percentage** reported alongside it, and every
+"100% agreement" reading from CLI smoke tests on denser data, cannot be trusted as evidence of
+anything; they may have reflected this corruption rather than genuine confirmation. This is now
+fixed and the Stage 1/2 sections below report results re-measured after the fix, not before.
+
+Verified via `tests/unit/test_tracking_frame_buf.py::
+test_read_path_frame_prefers_store_linkage_over_unrelated_ascii_correspondence_file` (reproduces
+the exact scenario) and by direct reproduction on three independent datasets before/after (12/12
+links → 0/12 on `test_data/tracking_synthetic`; 191/223 → 0/223 on a 220-particle synthetic
+turbulent scene — both fixed to preserve the real count). Full unit suite (899 tests) passes.
+
 ## Stage 1 — Smart warmup: auto-calibration on the first N frames — DONE (2026-08-15)
 
 New module `src/openptv2/tracking_warmup.py` + `openptv warmup` CLI subcommand
@@ -187,15 +221,51 @@ in 2 cycles (same direction and rough magnitude as the real, manually-discovered
 original "reproduces or beats the manual retune" success criterion was after; a literal apples-to-
 apples number against 07f1fc1's exact fixture/dataset was not re-run.
 
-**Not yet validated against the originally-specified quantitative gates** (ghost-inclusive
-synthetic / proPTV 500_30 precision-recall vs. exhaustive sweep; wall-time budget at 1k
-particles/frame) — those need Stage 0.5's ghost-inclusive benchmark and a real exhaustive-sweep
-baseline to compare against, which is follow-up work, not blocking Stage 2 (Stage 2's corrective
-pass consumes warmup's noise estimate as a threshold parameter, not a pass/fail gate on warmup
-itself).
+**Re-measured after the store-backed backward-tracking fix above, against ground truth
+(`scripts/benchmark_stage_improvements.py`), the honest result is: warmup currently HURTS quality
+on these datasets, not helps.** Two densities (`create_synthetic_turbulent`, 220 and 1000
+particles/frame, `priority_segment_3d` and `full_multipass` engines), scored against known ground
+truth:
+
+| density | engine | condition | precision | yield | mean track len | K_a |
+|---|---|---|---|---|---|---|
+| 220 | priority_segment_3d | baseline | 0.949 | 0.894 | 6.3 | 4.68 |
+| 220 | priority_segment_3d | warmup-tuned | 0.888 | 0.889 | 9.6 | 16.43 |
+| 220 | full_multipass | baseline | 0.973 | 0.869 | 5.0 | 4.00 |
+| 220 | full_multipass | warmup-tuned | 0.902 | 0.815 | 5.2 | 39.50 |
+| 1000 | priority_segment_3d | baseline | 0.879 | 0.848 | 7.2 | 9.45 |
+| 1000 | priority_segment_3d | warmup-tuned | 0.850 | 0.859 | 10.2 | 16.02 |
+| 1000 | full_multipass | baseline | 0.878 | 0.741 | 4.1 | 13.95 |
+| 1000 | full_multipass | warmup-tuned | 0.755 | 0.652 | 4.4 | 26.01 |
+
+In every one of the 4 (density × engine) cells, warmup **lowers precision** and **roughly doubles
+to 10x's the acceleration kurtosis** — the physics metric (Stage 5 part 1, below) directly confirms
+this isn't a benign precision/recall trade-off, it's genuinely worse trajectories (more spurious
+link swaps). Root cause: `tracking_warmup._tune_from_displacements` sets the dv box from
+`p99(confirmed-link displacements) × 3.0` — a margin calibrated for the ORIGINAL scenario this
+stage was validated against (a deliberately under-tuned seed, `dvxmax` 50-100x too loose, matching
+commit 07f1fc1's real bug). On these datasets the DEFAULT seed was already reasonably close, and a
+3x margin over the p99 overshoots, widening the search cone into more crossing-candidate ambiguity
+than it resolves. The `agreement_rate` warmup reports stays "100%" throughout — now a genuine
+reading post-fix, not vacuous, but it is measuring forward/backward **self-consistency**, not
+**ground-truth correctness**, and a wider box can raise self-consistency while lowering correctness
+(more wrong links that both directions independently agree on).
+
+**Not validated**: the originally-specified quantitative gates (ghost-inclusive synthetic / proPTV
+500_30 precision-recall vs. an exhaustive parameter sweep) — what's measured above is warmup vs.
+the dataset's own hand-set default, not vs. the best achievable tuning, so it doesn't yet show
+whether warmup at least beats a NAIVE default even where it doesn't beat a good one.
+
+**Follow-up (flagged, not fixed here):** the tuning margin needs revisiting — either a smaller
+factor, a scheme that only widens when the seed demonstrably under-performs (compare seed vs. p99
+result before committing to the wider box), or supplementing `agreement_rate` with a
+ground-truth-free correctness proxy less foolable by a wider box (e.g. the K_a metric itself,
+now available). See the Stage 5 Part 2 plan below for where this fits alongside the other
+follow-up work.
 
 **Key insight confirmed:** fwd/bwd agreement (via the existing reciprocity postprocess) is a
-ground-truth-free quality signal, so warmup works identically on synthetic and real data.
+ground-truth-free quality signal that now measures something real post-fix — but it is a
+self-consistency signal, not a correctness one, and the results above show those can diverge.
 
 ## Stage 2 — Corrective backward pass with track-assisted re-correspondence — DONE (2026-08-15, reduced scope)
 
@@ -250,15 +320,37 @@ failure mode), while its track resumes the next frame with a known forward veloc
 corrective pass recovers the exact dropped particle (triangulated position within 2×10⁻⁵ mm of
 ground truth) and correctly rewires the downstream track's `prev` pointer to the recovered row.
 
-**Not yet measured against the original quantitative success criteria** (wrong-link rate halved,
-mean track length +25%, ghost_capture -50% on the ghost-inclusive synthetic; test_cavity and
-proPTV 500_30 directional checks) — a smoke test on the Stage 0.5 ghost-inclusive fixture at
-moderate density ran cleanly (no crash) with both track3d and trackcorr forward engines, but
-neither run had a genuine correspondence dropout for the pass to fix (track3d linked 100% of
-particles already; a separate trackcorr/this-fixture interaction produced 0 forward links,
-unrelated to Stage 2 and not investigated further this session) — so the smoke test confirms the
-pass is safe to run, not that it moves the needle at scale. Running the quantitative gates is
-follow-up work.
+**Re-measured after the store-backed backward-tracking fix**, via
+`scripts/benchmark_stage_improvements.py`, across the same 4 (density × engine) cells as Stage 1
+above, plus test_cavity real data: **the corrective pass changed nothing measurable on the two
+synthetic densities** (identical precision/yield/track-length/K_a with and without it, in all 4
+cells) and made a small, genuine positive difference on real data —
+
+| dataset | condition | links | mean track len | K_a |
+|---|---|---|---|---|
+| test_cavity | before corrective | 1748 | 2.70 | 3.33 |
+| test_cavity | after corrective | 1752 | 2.71 | 3.35 |
+
++4 links, +0.01 mean track length. Real, in the right direction, but small, and it came at a real
+cost: on the 1000-particle/frame synthetic scene the corrective pass added ~184s of wall time to a
+~11s `full_multipass` run (7 minutes → several seconds' worth of tracking became ~3.5 minutes) for
+zero measured improvement there. The synthetic scenes apparently don't contain the specific failure
+mode this pass targets in meaningful quantity (a particle with real 2D targets in ≥ 2 cameras but
+missing from that frame's correspondence row) — consistent with the earlier Stage 2 smoke test's
+finding that track3d had already linked ~100% of particles on similar data, leaving nothing to
+claim. This does NOT contradict the unit test's proof that the mechanism itself works correctly
+(`tests/unit/test_track_assisted.py`, verified to 2×10⁻⁵ mm precision on a hand-built dropout) — it
+means these particular benchmark scenes don't exercise that failure mode much, and the pass's
+current backward-walk-per-frame implementation has real overhead when it finds nothing to do.
+
+**Follow-up (flagged, not fixed here):** (1) cheapen the no-op case — skip the per-frame backward
+walk's camera/target search entirely for frames where every particle already has `prev >= 0` (a
+one-line early-out, not implemented yet); (2) find or construct a benchmark scene with a
+higher genuine correspondence-dropout rate to actually exercise the claimed 25%/50% quantitative
+targets, since the current synthetic generator doesn't naturally produce many dropouts of this
+specific kind at the densities tested. The original quantitative gates (wrong-link rate halved,
+mean track length +25%, ghost_capture -50%; proPTV 500_30 directional) remain unmeasured pending
+that scene.
 
 **Risks:** ghost-track self-reinforcement is NOT YET mitigated (the decay rule from item 6 isn't
 built) — `corrective_passes` should stay opt-in (default 0) until that's measured; rewriting
@@ -324,15 +416,97 @@ less than the old 10000 floor).
 **Success (met):** 20k particles/frame synthetic run completes without overflow; 1k results
 bitwise-identical to baseline (all existing pinned-count tests unchanged).
 
-## Stage 5 (contingent) — Physics validation + optional online merge
+## Stage 5 part 1 — Physics validation metrics — DONE (2026-08-15)
 
-- Implement track-lifetime distribution + acceleration-PDF kurtosis from
-  `docs/lagrangian_turbulence_quality_guide.md` into `src/openptv2/benchmarking/metrics.py`; run
-  per stage — these catch ghost contamination that precision alone misses.
-- Online sequence+tracking merge (restructure `src/openptv2/gui/ptv.py::py_sequence_loop`,
-  ~L980): ONLY if the corrective-pass iteration measurably saturates below target. Big lift
-  (touches ptv.py, Tracker/framebuf lifecycle, GUI, batch); explicitly deferred.
-- When the new well-conditioned real dataset arrives, promote it to the real-data gate.
+`src/openptv2/benchmarking/metrics.py::PhysicsMetrics`/`compute_physics_metrics`/
+`track_lifetime_distribution`/`acceleration_kurtosis`, implementing sections A and B of
+`docs/lagrangian_turbulence_quality_guide.md`. Used throughout the re-measurement of Stages 1 and
+2 above, where it did exactly what it was built for: caught that warmup's wider search box was
+producing genuinely worse trajectories (K_a 4-10x higher), a degradation link-level precision/
+recall alone made visible but the physics metric quantified and confirmed wasn't just a benign
+trade-off. See the commit for the acceleration-outlier detection proof (a single simulated
+wrong-link-style spike in an otherwise smooth 40-point track raises K_a from Gaussian-ballpark to
+~57).
+
+## Stage 5 part 2 — Next round: explicit follow-up plan (2026-08-15)
+
+Benchmarking Stages 1 and 2 against real ground truth (`scripts/benchmark_stage_improvements.py`)
+surfaced a critical storage-layer bug (fixed, see above) and several concrete, now-measured
+follow-up items. This is the plan for the next round, in priority order — each item is scoped
+enough to start directly, not a restatement of "investigate this."
+
+### 1. Fix warmup's tuning margin (highest priority — warmup currently makes things worse)
+
+**Problem, measured:** `tracking_warmup._tune_from_displacements` sets the dv box to
+`p99(confirmed-link displacements) × 3.0`. On 4 measured (density × engine) cells, this widened an
+already-reasonable default and dropped precision 5-15 points while roughly doubling to 10x-ing
+acceleration kurtosis (see Stage 1's table above). The margin was calibrated against a single
+scenario (a seed 50-100x too loose, matching commit 07f1fc1) and has not been validated against a
+well-conditioned seed.
+
+**Concrete fix options, cheapest first:**
+- (a) Compare the SEED config's own measured agreement/K_a against the tuned config's, inside the
+  warmup loop; keep whichever is better instead of always taking the last cycle's tuned value.
+  Small change to `run_warmup`'s loop in `tracking_warmup.py`, no new primitives.
+- (b) Reduce the margin (try 1.5x-2x instead of 3.0x) and re-run the same 4-cell benchmark to see
+  if it closes the gap without re-introducing the original 07f1fc1-style under-tuning on a
+  deliberately-loose seed (keep that scenario as a regression check when tuning the margin).
+- (c) Longer-term: replace the pure-displacement-driven box with a two-signal check (agreement
+  rate AND `acceleration_kurtosis` on the confirmed-link set) so a wider box that raises
+  self-consistency while degrading K_a is rejected rather than accepted. Needs
+  `compute_physics_metrics` wired into `tracking_warmup.py`'s loop (straightforward, the function
+  already exists from part 1) plus a decision rule for "better."
+
+**Verification:** re-run `scripts/benchmark_stage_improvements.py`'s 4-cell table; success is
+warmup-tuned precision ≥ baseline precision in all 4 cells (not just non-negative recall gain),
+plus K_a not measurably worse than baseline.
+
+### 2. Cheapen Stage 2's no-op case + find a benchmark scene that exercises it
+
+**Problem, measured:** the corrective pass changed nothing on 2 synthetic densities (nothing to
+claim) but cost 7-19x the base tracking time (26s → 195s at 1000 particles/frame,
+`full_multipass`) doing a per-frame backward walk that finds zero eligible track heads.
+
+- (a) Early-out: in `track_assisted._backward_walk`, skip a frame's camera/target search entirely
+  when every particle already has `prev >= 0` (a cheap prev-array check before the per-particle
+  loop) — bounds the worst case without changing the claim logic at all.
+- (b) The current synthetic generators (`create_synthetic_turbulent`, Stage 0.5's
+  `tracking_synthetic_dense`) don't produce much of the specific failure mode Stage 2 targets (2D
+  targets present in ≥2 cameras, correspondence row absent) at the densities tested — construct or
+  find a scene with a higher genuine dropout rate (e.g. deliberately drop a controlled fraction of
+  correspondence rows while keeping targets, similar to `tests/unit/test_track_assisted.py`'s
+  hand-built case but at scale) to actually measure the originally-specified wrong-link/track-
+  length/ghost_capture gates instead of a null result.
+
+### 3. Stage 3's deferred kernel work (per the earlier user decision, dedicated session)
+
+Per-track adaptive search radius and the multi-frame residual cost term
+(`track_kernels_corr.py`) — unchanged scope from Stage 3's write-up above; still needs its own
+focused session given the compiled-kernel risk profile.
+
+### 4. Online sequence+tracking merge (the original Stage 5 part 2, contingent)
+
+Restructure `src/openptv2/gui/ptv.py::py_sequence_loop` (~L980) to run detection/correspondence
+and tracking frame-by-frame together, so a track's prediction can disambiguate a frame's
+correspondence as it happens rather than after the fact (a stronger version of Stage 2's
+after-the-fact backward claim). Touches `ptv.py`, `Tracker`/`FrameBuf` lifecycle, GUI, and batch —
+the biggest lift in this entire plan.
+
+**Trigger condition (unchanged, now assessable):** only pursue this once item 2 above has produced
+a benchmark scene that actually exercises Stage 2's corrective pass, and iterating that pass is
+shown to saturate below the target quality — i.e. the after-the-fact approach demonstrably hits a
+ceiling the online approach could break through. No such evidence exists yet (Stage 2 hasn't been
+measured on a scene where it has real work to do). Do not start this before item 2.
+
+### 5. proPTV comparison adapter (raised by the user's "can we compete with proPTV/myPTV" question)
+
+`C:/Users/alex/Github/proPTV/data/500_25` and `500_30` exist locally but use proPTV's own native
+format (an `input`/`origin` directory layout distinct from openptv2's `rt_is`/`parameters.yaml`
+convention). No converter exists yet. Building one (read proPTV's format, project through
+openptv2's calibration convention or directly compare 3D positions) would let
+`scripts/benchmark_stage_improvements.py` add a genuine third-party comparison row instead of
+only synthetic self-comparison — the only way to make an evidence-backed "we beat proPTV on
+quality" claim, which this session explicitly declined to assert without that evidence.
 
 **Skipped deliberately:** a standalone reciprocity-only backward feature (Stage 2 subsumes it);
 Kalman/Hungarian retreads (shown information-limited, commit b367c5d).
@@ -344,25 +518,38 @@ measure → Stage 3 → Stage 5 metrics throughout. Every stage gates on the rat
 `test_tracker_quality.py` floors plus its own criterion. Warmup lands before the corrective pass
 because its noise estimate parametrizes the corrective pass's disagreement thresholds.
 
-## Critical files
+## Critical files (as actually built, not the original design)
 
-- `src/openptv2/algorithms/track_kernels_corr.py` — bug fix L1723–1742; backward decision logic
-  reused in Stage 2; Stage 3 cost changes (Cython rebuild after each edit)
-- `src/openptv2/algorithms/track_kernels_transform.py` — `assess_new_position_fast` (~L720),
-  `point_position_fast` (~L516): the Stage 2 claim primitive, reused as-is
-- `src/openptv2/algorithms/correspondences.py` — real correspondence run for Stage 0.5 generator
-- `src/openptv2/tracking_warmup.py` — NEW, Stage 1 (reuses `tracking_recommender.py`,
-  `tracking_feasibility.py`, `scripts/tune_tracker_params.py::adaptive_sweep`)
-- `src/openptv2/track_assisted.py` — NEW, Stage 2 corrective backward pass
-- `src/openptv2/plugins/default_tracking.py` — integration point: reads stored warmup config
-  (never runs warmup itself) → full forward → corrective passes
-- `src/openptv2/cli.py` — new `warmup` subcommand (standalone pre-tracking step)
-- `src/openptv2/tracking_postprocess.py` — linkage read/write (Stage 0 verification, Stage 2
-  orchestration; reciprocity/gap-relink subsumed by Stage 2 for tracked particles)
-- `src/openptv2/storage/run_store.py` — scratch linkage groups (`linkage/warmup_fwd`/`_bwd`),
-  `stats/warmup`, provenance flags
+- `src/openptv2/algorithms/track_kernels_corr.py` — Stage 0 backward-guard bug fix L1723–1742;
+  Stage 3 cost changes deferred here (not yet touched)
+- `src/openptv2/algorithms/tracking_frame_buf.py` — `read_path_frame`'s store-vs-ASCII fix (the
+  critical fix above); everything downstream of store-backed tracking depends on this
+- `src/openptv2/algorithms/track.py` — `candsearch_in_pix_rest`, `point_to_pixel`: the Stage 2
+  claim primitives actually used (NOT `assess_new_position_fast`, which turned out to have zero
+  callers and to be unusable without the full compiled-kernel setup — see Stage 2's write-up)
+- `src/openptv2/algorithms/orientation.py::point_position` — Stage 2's triangulation step
+- `src/openptv2/correspondences.py::MatchedCoords` — Stage 2's pixel→metric flattening for claims
+- `src/openptv2/tracking_warmup.py` — Stage 1; reuses `tracking_recommender.py`,
+  `Tracker.postprocess(reciprocity=True)` (not a from-scratch fwd/bwd comparison)
+- `src/openptv2/track_assisted.py` — Stage 2 corrective backward pass
+- `src/openptv2/plugins/default_tracking.py` — integration point: `track.corrective_passes: N`
+  after either engine finishes
+- `src/openptv2/cli.py` — `warmup` subcommand (standalone pre-tracking step, `--write` to persist)
+- `src/openptv2/tracking_postprocess.py` — `relink_trajectory_gaps`/`enforce_reciprocity`, reused
+  unchanged by Stage 2 rather than reimplemented
+- `src/openptv2/benchmarking/metrics.py` — Stage 5 part 1 physics metrics
+  (`compute_physics_metrics`, `track_lifetime_distribution`, `acceleration_kurtosis`)
+- `scripts/benchmark_stage_improvements.py` — NEW: the warmup/corrective-pass vs. ground-truth
+  benchmark that produced every measured result in this doc from Stage 1 onward
 - `test_data/tracking_synthetic_dense/generate.py` — ghost injection (Stage 0.5)
 - `tests/unit/test_tracker_quality.py` — parametrized ratchet floors (Stage 0b)
+- `tests/unit/test_tracking_frame_buf.py` — the store-vs-ASCII regression guard (critical fix)
+
+No `storage/run_store.py` changes were needed anywhere in this plan (Stages 1, 2, and the critical
+fix all reuse its existing API); the original design's `linkage/warmup_fwd`/`_bwd` scratch groups
+and `stats/warmup`/provenance-flag storage were superseded by simpler mechanisms during
+implementation (`Tracker`'s existing flexible `naming["linkage"]` basename; `meta.attrs` for
+warmup persistence) — see each stage's own write-up for why.
 
 ## Verification
 
