@@ -1212,6 +1212,11 @@ menu_bar = MenuBar(
             action="visualize_3d_trajectories",
             enabled_when="pass_init",
         ),
+        Action(
+            name="Measure distances",
+            action="measure_distances_action",
+            enabled_when="pass_init",
+        ),
         name="Tracking",
     ),
     Menu(Action(name="Select plugin", action="plugin_action"), name="Plugins"),
@@ -1508,6 +1513,10 @@ class MainGUI(HasTraits):
     def right_click_process(self):
         """Shows a line in camera color code corresponding to a point on another camera's view plane"""
 
+        if getattr(self, "_measure_mode", False):
+            self._measure_click()
+            return
+
         if hasattr(self, "_tracking_debug_active") and self._tracking_debug_active:
             self._tracking_debug_click()
             return
@@ -1581,6 +1590,94 @@ class MainGUI(HasTraits):
                         )
 
                 self.camera_list[i].rclicked = 0
+
+    def measure_distances_action(self, info):
+        """Start "Measure distances": right-click the same particle in every
+        camera view (select each camera pane, then right-click the dot) to
+        triangulate it; repeat for a second particle to get their 3D
+        distance and a suggested track.dv*/dacc starting point."""
+        if not hasattr(self, "cals") or not self.cals:
+            print("[Measure] No calibrations available. Run Init first.")
+            return
+        self._measure_mode = True
+        self._measure_dots = []
+        self._measure_pixels = {}
+        print(
+            f"[Measure] Measure distances: select each camera pane and right-click "
+            f"the same particle in all {self.num_cams} views. Once triangulated, "
+            f"repeat on the same particle one frame later (again in all "
+            f"{self.num_cams} views) for the 3D displacement + suggested params."
+        )
+
+    def _measure_click(self):
+        i = self.current_camera
+        x = self.camera_list[i]._click_tool.x
+        y = self.camera_list[i]._click_tool.y
+        self.camera_list[i].rclicked = 0
+
+        self._measure_pixels[i] = (x, y)
+        self.camera_list[i].drawcross(
+            "measure_x", "measure_y", x, y, "yellow", 4, marker="circle"
+        )
+        dot_num = len(self._measure_dots) + 1
+        print(
+            f"[Measure] point {dot_num}/2: camera {i + 1} = ({x:.1f}, {y:.1f}) px "
+            f"[{len(self._measure_pixels)}/{self.num_cams} cameras clicked]"
+        )
+        if len(self._measure_pixels) < self.num_cams:
+            return
+
+        from openptv2.gui import ptv
+        from openptv2.orientation import multi_cam_point_positions
+        from openptv2.transforms import convert_arr_pixel_to_metric
+
+        cpar = ptv._populate_cpar(self.exp1.pm.get_section("ptv"), self.num_cams)
+        pixels = np.array(
+            [self._measure_pixels[c] for c in range(self.num_cams)], dtype=np.float64
+        )
+        metric = convert_arr_pixel_to_metric(pixels, cpar)
+        xyz, rcm = multi_cam_point_positions(
+            metric.reshape(1, self.num_cams, 2), cpar, self.cals
+        )
+        pos = xyz[0]
+        print(
+            f"[Measure] point {dot_num} triangulated at "
+            f"({pos[0]:.3f}, {pos[1]:.3f}, {pos[2]:.3f}) mm "
+            f"(ray convergence {rcm[0]:.4f} mm)"
+        )
+        self._measure_dots.append(pos)
+        self._measure_pixels = {}
+
+        if len(self._measure_dots) < 2:
+            print(
+                "[Measure] Now click the SAME particle one frame later, in all "
+                f"{self.num_cams} camera views, to measure its displacement."
+            )
+            return
+
+        self._finish_measure()
+
+    def _finish_measure(self):
+        p1, p2 = self._measure_dots
+        dist = float(np.linalg.norm(np.asarray(p2) - np.asarray(p1)))
+        margin = 1.4  # modest safety margin -- see docs/tutorials/warmup_tutorial.md's
+        # note on warmup's own 3.0x margin overshooting an already-reasonable box.
+        half = dist * margin
+        print(f"\n[Measure] 3D distance between the two points: {dist:.4f} mm\n")
+        print("Suggested track.* starting point in parameters.yaml:")
+        print(f"  dvxmin: {-half:.3f}   dvxmax: {half:.3f}")
+        print(f"  dvymin: {-half:.3f}   dvymax: {half:.3f}")
+        print(f"  dvzmin: {-half:.3f}   dvzmax: {half:.3f}")
+        print(f"  dacc:   {half * 0.5:.3f}")
+        print("  dangle: 60.0  (widen if the flow direction varies a lot frame-to-frame)")
+        print(
+            "These come from ONE measured particle -- repeat on a few different, "
+            "ideally fast-looking particles and use the largest distance as your "
+            "basis for a more reliable estimate.\n"
+        )
+        self._measure_mode = False
+        self._measure_dots = []
+        self._measure_pixels = {}
 
     def _tracking_debug_click(self):
         """Handle right-click in tracking debug mode.
