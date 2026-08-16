@@ -22,6 +22,12 @@ import cython
 from .track3d import MAX_CANDS, _sync_soa_to_aos
 from .track_kernels import track4be_loop_fast as _track4be_loop_fast
 
+#: Kernel variants, exposed here so a benchmark can A/B them without
+#: threading a parameter through the plugin/preset/YAML stack. Both default
+#: to the paper's behaviour; see ``track4be_loop_fast``'s docstring.
+STRICT_SUPPORT = 0
+GREEDY_CONFLICTS = 0
+
 
 @cython.ccall
 def track4be_loop(run_info, step):
@@ -61,6 +67,8 @@ def track4be_loop(run_info, step):
         dy,
         dz,
         MAX_CANDS,
+        STRICT_SUPPORT,
+        GREEDY_CONFLICTS,
     )
 
     _sync_soa_to_aos(fb.buf[1])

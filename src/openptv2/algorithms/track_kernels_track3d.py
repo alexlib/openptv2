@@ -687,6 +687,7 @@ def track4be_loop_fast(
     dz: cython.double,
     max_cands: cython.int,
     strict_support: cython.int = 0,
+    greedy_conflicts: cython.int = 0,
 ):
     """Four-frame best-estimate linking of frame n to frame n+1.
 
@@ -703,6 +704,15 @@ def track4be_loop_fast(
     keeps such candidates as a penalised 3MA fallback, which recovers the
     yield lost to genuine detection gaps without disturbing 4BE's ordering
     among supported candidates.
+
+    ``greedy_conflicts``: 0 (the default) is the paper's give-up-on-conflict
+    rule -- a frame n+1 particle claimed by more than one frame-n particle
+    links to none of them. 1 switches to the cost-ordered greedy claiming
+    ``_track3d_full_loop`` uses: every (particle, candidate) pair becomes an
+    edge, edges are claimed in ascending cost across the whole frame, and a
+    particle that loses its first choice may still take a later one. Ouellette
+    reports that conflict-breaking degraded every heuristic but NN, so 0
+    remains the default; 1 exists to measure that on this data.
 
     Returns the number of links established.
     """
@@ -744,6 +754,22 @@ def track4be_loop_fast(
     best_k: cython.int[:] = _best_k
     _claims = np.zeros(np2 if np2 > 0 else 1, dtype=np.int32)
     claims: cython.int[:] = _claims
+
+    # Edge buffer, only used when greedy_conflicts == 1.
+    n_edges: cython.int = 0
+    max_edges: cython.int
+    oi: cython.int
+    e: cython.int
+    order: cython.int[:]
+    max_edges = (orig_parts * max_cands) if greedy_conflicts == 1 else 1
+    if max_edges < 1:
+        max_edges = 1
+    _edge_cost = np.empty(max_edges, dtype=np.float64)
+    _edge_i = np.empty(max_edges, dtype=np.int32)
+    _edge_k = np.empty(max_edges, dtype=np.int32)
+    edge_cost: cython.double[:] = _edge_cost
+    edge_i: cython.int[:] = _edge_i
+    edge_k: cython.int[:] = _edge_k
 
     g2 = _build_grid3d(path_x_2, np2, dx, dy, dz)
     grid2_head: cython.int[:] = g2[0]
@@ -824,6 +850,12 @@ def track4be_loop_fast(
                     d2 = path_x_2[k, 2] - 2.0 * path_x_1[i, 2] + path_x_0[prev_idx, 2]
                     cost = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
 
+                if greedy_conflicts == 1 and path_prev_2[k] < 0:
+                    edge_cost[n_edges] = cost
+                    edge_i[n_edges] = i
+                    edge_k[n_edges] = k
+                    n_edges += 1
+
                 if cost < best_cost:
                     best_cost = cost
                     best = k
@@ -839,10 +871,32 @@ def track4be_loop_fast(
             if n_cands > 0:
                 best = sup_inds[0]
                 best_cost = sup_dists[0]
+                if greedy_conflicts == 1 and path_prev_2[best] < 0:
+                    edge_cost[n_edges] = best_cost
+                    edge_i[n_edges] = i
+                    edge_k[n_edges] = best
+                    n_edges += 1
 
         if best >= 0 and path_prev_2[best] < 0:
             best_k[i] = best
             claims[best] += 1
+
+    if greedy_conflicts == 1:
+        # Cost-ordered greedy claiming across the whole frame, as
+        # _track3d_full_loop does: a particle that loses its first choice may
+        # still take a later one.
+        if n_edges > 0:
+            _order = np.argsort(_edge_cost[:n_edges]).astype(np.int32)
+            order = _order
+            for oi in range(n_edges):
+                e = order[oi]
+                i = edge_i[e]
+                k = edge_k[e]
+                if path_next_1[i] < 0 and path_prev_2[k] < 0:
+                    path_next_1[i] = k
+                    path_prev_2[k] = i
+                    count1 += 1
+        return count1
 
     # Conflict handling: a frame n+1 particle claimed by more than one
     # particle in frame n links to none of them -- every track involved

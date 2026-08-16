@@ -256,7 +256,59 @@ Whatever is decided, document that in the current port **`dacc` is the knob
 that controls seeded-step search** — a user carrying C-era intuition will
 tune `dvxmax` and change nothing for particles already being tracked.
 
-### 3.4 4BE follow-ups
+### 3.4 4BE follow-ups — DONE
+
+**Tests landed.** `tests/unit/test_track4be.py`, 11 kernel-level tests
+covering eq. 12, `strict_support`, both conflict rules, the NN fallback for
+unseeded particles, the 3MA degradation when n+2 is missing, and empty
+frames. The eq. 12 test was verified by mutating the kernel to
+`q + (x1 - x0)`: the obvious one-candidate scene passes under that mutant
+(with a wide velocity window the wrong estimate still finds support), so the
+test uses two candidates whose costs invert between the two formulas.
+
+**A silent bug found while measuring:** `four_be_tracking.py` never called
+`tracker.postprocess()`, so `track.postprocess` was a no-op for 4BE and the
+"4BE + gap bridging" measurement below was impossible. Fixed with the same
+opt-in hook `default_tracking`'s priority_segment_3d branch has.
+
+**Measured** (both ground-truth sets, `BASE_OVERRIDES`):
+
+| run | 220/f tracks | prec | yield | 970/f tracks | prec | yield |
+|---|---|---|---|---|---|---|
+| 3MA | 946 | 0.9667 | 0.8943 | 3553 | 0.9157 | 0.8670 |
+| **3MA + bridging** | 637 | 0.9596 | **0.9362** | 2635 | **0.9059** | **0.8890** |
+| 4BE paper (give-up) | 1573 | **0.9851** | 0.8128 | 10130 | 0.9412 | 0.6616 |
+| 4BE greedy conflicts | 1007 | 0.9700 | 0.8879 | 4215 | 0.8533 | 0.7870 |
+| 4BE paper + bridging | 1115 | 0.9335 | 0.8371 | 6733 | 0.8147 | 0.6758 |
+| 4BE greedy + bridging | 701 | 0.9625 | 0.9281 | 3212 | 0.8367 | 0.8034 |
+
+**1. Cost-ordered greedy claiming: rejected as a default, kept as a flag.**
+It buys a lot of yield (0.813 → 0.888 at 220/f; 0.662 → 0.787 at 970/f) but
+pays in precision, and the price scales with density: -1.5 pp at 220/f,
+**-8.8 pp** at 970/f. Ouellette's result (conflict-breaking degrades every
+heuristic but NN) holds. Available as
+`track4be_loop_fast(greedy_conflicts=1)` / `track4be.GREEDY_CONFLICTS`.
+
+**2. "4BE's clean-but-short output is the ideal input for gap bridging" —
+refuted.** Bridging *4BE paper* output costs 5.2 pp precision at 220/f and
+12.7 pp at 970/f, far worse than bridging 3MA output (-0.7 / -1.0 pp).
+
+The mechanism is visible in the last row. 4BE-paper fragments end at two
+different kinds of place: genuine detection gaps, and *conflicts it
+deliberately declined*. `relink_trajectory_gaps` looks for an unlinked end
+facing an unlinked start — which is exactly what a declined conflict looks
+like — so it re-creates the very links 4BE refused, on the evidence 4BE
+judged too ambiguous. Resolving conflicts inside the tracker first
+(`greedy + bridging`) leaves only detection gaps for the bridger, and
+precision recovers (0.9335 → 0.9625 at 220/f). Give-up-on-conflict and gap
+bridging are working against each other; do not pair them naively.
+
+**3. `priority_segment_3d` + gap bridging remains the best default** at both
+densities. 4BE's edge is precision without bridging at moderate density
+(0.9851 at yield 0.813) — a "few but trustworthy tracks" operating point. It
+degrades badly with density (mean length 2.87, yield 0.66 at 970/f).
+
+Original write-up follows.
 
 4BE is markedly more accurate but more fragmented than 3MA:
 
