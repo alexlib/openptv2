@@ -6,6 +6,7 @@ import pytest
 from openptv2.tracking_postprocess import (
     count_links,
     enforce_reciprocity,
+    link_step,
     read_linkage,
     relink_trajectory_gaps,
     seed_cold_start,
@@ -106,17 +107,38 @@ def test_relink_trajectory_gaps_bridges_missing_frame(tmp_path):
     )
     assert stats["bridged_gaps"] == 1
 
-    # A bridged gap fills the skipped frame with one interpolated placeholder
-    # particle, linked consecutively frame-to-frame (never a next pointer
-    # that skips straight from frame 1 to frame 3) -- every other prev/next
-    # consumer (enforce_reciprocity, trajectory walkers) assumes next[k][i]
-    # always indexes into frame k+1, so a cross-frame-skip pointer is
-    # silently misread/severed by them. See relink_trajectory_gaps' docstring.
-    prev1, next1, _ = read_linkage(base, 1)
-    prev2, next2, xyz2 = read_linkage(base, 2)
-    prev3, next3, _ = read_linkage(base, 3)
+    # A bridged gap is a single cross-frame link (frame 1 -> frame 3), not a
+    # fabricated measurement at the skipped frame: no point is invented where
+    # the particle was never observed, and it matches how ground truth
+    # represents a gap (a link of step > 1). Consumers recover the step via
+    # link_step()/back_link_step().
+    _prev1, next1, _ = read_linkage(base, 1)
+    prev3, _next3, _ = read_linkage(base, 3)
 
-    assert next1[0] == 0  # frame 1 particle links to frame 2's new placeholder (slot 0)
-    assert prev2[0] == 0 and next2[0] == 0  # placeholder links back to frame 1, forward to frame 3
-    assert xyz2[0] == pytest.approx([4.0, 0.0, 0.0])  # interpolated midpoint (2 -> 6)
-    assert prev3[0] == 0  # frame 3 particle links back to frame 2's placeholder
+    assert next1[0] == 0  # points straight into frame 3
+    assert prev3[0] == 0
+    assert read_linkage(base, 2) is None  # skipped frame left empty
+
+    frames = {k: read_linkage(base, k) for k in range(5)}
+    frames = {k: v for k, v in frames.items() if v is not None}
+    assert link_step(lambda m: frames[m][0] if m in frames else None, 1, 0, 0) == 2
+
+
+def test_enforce_reciprocity_keeps_gap_bridged_cross_frame_link(tmp_path):
+    """A bridge written by relink_trajectory_gaps (next pointing 2 frames
+    ahead) must survive reciprocity -- it used to be severed right back out."""
+    base = str(tmp_path / "ptv_is")
+    _write(base, 0, [-1], [0], [[0, 0, 0]])
+    _write(base, 1, [0], [-2], [[2, 0, 0]])
+    _write(base, 2, [], [], np.zeros((0, 3)))
+    _write(base, 3, [-1], [0], [[6, 0, 0]])
+    _write(base, 4, [0], [-2], [[8, 0, 0]])
+
+    assert relink_trajectory_gaps(
+        base, first=0, last=4, max_gap=2, max_velocity_err=1.0
+    )["bridged_gaps"] == 1
+    stats = enforce_reciprocity(base, 0, 4)
+
+    assert stats == {"severed_next": 0, "severed_prev": 0}
+    assert read_linkage(base, 1)[1][0] == 0  # bridge intact
+    assert read_linkage(base, 3)[0][0] == 0

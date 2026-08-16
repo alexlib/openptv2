@@ -275,3 +275,23 @@ def test_clear_linkage_removes_all_frames(tmp_path):
 def test_clear_linkage_noop_when_absent(tmp_path):
     store = RunStore(tmp_path / "run.zarr", mode="w")
     store.clear_linkage("nonexistent")  # must not raise
+
+
+def test_seal_carries_trajid_across_a_bridged_gap(tmp_path):
+    """relink_trajectory_gaps writes a cross-frame link (next pointing past
+    the skipped frame). Seal must recognise it as a continuation instead of
+    starting a fresh trajectory id at every bridge."""
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    # frame 0 -> frame 1 (step 1), frame 1 -> frame 3 (step 2, bridged gap)
+    store.write_linkage(0, np.array([-1], np.int32), np.array([0], np.int32),
+                        np.array([[0.0, 0.0, 0.0]]))
+    store.write_linkage(1, np.array([0], np.int32), np.array([0], np.int32),
+                        np.array([[2.0, 0.0, 0.0]]))
+    store.write_linkage(2, np.zeros(0, np.int32), np.zeros(0, np.int32),
+                        np.zeros((0, 3)))
+    store.write_linkage(3, np.array([0], np.int32), np.array([-2], np.int32),
+                        np.array([[6.0, 0.0, 0.0]]))
+
+    summary = seal(store)
+    assert summary["n_trajectories"] == 1  # one trajectory, not two
+    assert list(store.traj_index()["length"]) == [3]

@@ -16,6 +16,7 @@ from pathlib import Path
 import numpy as np
 
 from openptv2.algorithms.tracking_frame_buf import Frame
+from openptv2.tracking_postprocess import link_step
 
 # Tracker names recognised as presets by the default_tracking plugin.
 _CORE_PRESETS = {
@@ -83,6 +84,17 @@ def _read_path_info(res_dir: str | Path, first: int, last: int, num_cams: int):
     return frames
 
 
+def _link_step(frames, fi: int, slot: int, nx: int) -> int:
+    """Frame step of the forward link ``next[fi][slot] == nx`` (see
+    ``tracking_postprocess.link_step``); 0 when nothing reciprocates it."""
+    return link_step(
+        lambda m: frames[m]["prev"] if 0 <= m < len(frames) and frames[m] else None,
+        fi,
+        slot,
+        nx,
+    )
+
+
 def read_trajectories(
     res_dir: str | Path, first: int, last: int, num_cams: int = 4
 ) -> dict[int, list[tuple[int, float, float, float]]]:
@@ -112,12 +124,18 @@ def read_trajectories(
                 cur_slot = slot
                 while True:
                     nx = frames[cur_frame]["next"][cur_slot]
-                    if nx < 0 or cur_frame + 1 >= len(frames):
+                    if nx < 0:
                         break
-                    nxt_fr = frames[cur_frame + 1]
+                    # A gap-bridged link points >1 frame ahead; recover the step
+                    # from the reciprocal `prev`. Fall back to 1 so non-reciprocal
+                    # links (no postprocess pass) walk as they always did.
+                    step = _link_step(frames, cur_frame, cur_slot, nx) or 1
+                    if cur_frame + step >= len(frames):
+                        break
+                    nxt_fr = frames[cur_frame + step]
                     if nxt_fr is None:
                         break
-                    cur_frame += 1
+                    cur_frame += step
                     cur_slot = nx
                     if cur_slot >= len(nxt_fr["next"]):
                         break

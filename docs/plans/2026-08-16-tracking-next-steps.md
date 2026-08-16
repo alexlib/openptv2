@@ -62,7 +62,30 @@ where the time goes.
 
 ## 3. Next steps, in order
 
-### 3.1 Revert placeholder gap bridging; restore cross-frame gap links
+### 3.1 Revert placeholder gap bridging; restore cross-frame gap links — DONE
+
+Landed. `relink_trajectory_gaps` writes a single cross-frame link again; the
+step is recovered by the reciprocal-pointer search below, exposed as
+`tracking_postprocess.link_step` / `back_link_step` (cap `MAX_LINK_STEP = 3`).
+All three consumers are gap-aware: `enforce_reciprocity` (searches
+`1..max_step` instead of comparing k against k+1 only), `benchmarking/runner.py
+::read_trajectories`, and `storage/seal.py` (keeps a 3-frame trajid/next
+history). The two walkers fall back to step 1 when nothing reciprocates, so
+non-reciprocal linkage (no postprocess pass) behaves exactly as before.
+
+Measured, `priority_segment_3d` on `synthetic_turbulent`:
+
+| postprocess | tracks | points | links | precision | yield | mean len |
+|---|---|---|---|---|---|---|
+| off | 946 | 6748 | 5802 | 0.9667 | 0.894 | 7.13 |
+| on | 660 | 6756 | 6096 | 0.9642 | 0.937 | 10.24 |
+
+Links up 294, yield up, precision flat (it was 0.878 with placeholders). The
++8 points come from `enforce_reciprocity`/`seed_cold_start` changing
+reachability, not from fabricated particles — relink now writes no particles
+at all.
+
+Original write-up follows.
 
 `bfccfa9` made `relink_trajectory_gaps` fill a bridged gap with an
 *interpolated placeholder particle* per skipped frame. This is wrong on two

@@ -13,6 +13,7 @@ the effect.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 import numpy as np
 
@@ -25,10 +26,19 @@ __all__ = [
     "enforce_reciprocity",
     "seed_cold_start",
     "relink_trajectory_gaps",
+    "MAX_LINK_STEP",
+    "link_step",
+    "back_link_step",
 ]
 
-
-from pathlib import Path
+#: Largest frame step a forward/backward link may span. ``relink_trajectory_gaps``
+#: bridges a gap by pointing ``next_k[i]`` straight into frame ``k + gap + 1``
+#: (no fabricated measurement at the skipped frames -- those points would end up
+#: in the Lagrangian velocity/acceleration statistics that are this project's
+#: actual output). The linkage format cannot say *which* frame an index points
+#: into, so consumers recover the step by looking for the reciprocal pointer;
+#: this caps that search. Matches the default ``max_gap=2`` (=> steps 1..3).
+MAX_LINK_STEP = 3
 
 
 def _path(base: str, frame: int) -> str:
@@ -103,14 +113,51 @@ def count_links(linkage_base: str, first: int, last: int, store=None) -> int:
     return total
 
 
-def enforce_reciprocity(linkage_base: str, first: int, last: int, store=None):
+def link_step(prev_of, k: int, i: int, j: int, max_step: int = MAX_LINK_STEP) -> int:
+    """Frame step spanned by the forward link ``next_k[i] == j``.
+
+    Returns the smallest ``s`` in ``1..max_step`` with ``prev[k+s][j] == i``,
+    or 0 when no frame reciprocates (a one-sided link). Smallest-first, so a
+    genuine step-1 link always beats a coincidental match further out.
+
+    ``prev_of(frame)`` returns that frame's ``prev`` array, or None if absent.
+    """
+    for s in range(1, max_step + 1):
+        p = prev_of(k + s)
+        if p is not None and 0 <= j < len(p) and p[j] == i:
+            return s
+    return 0
+
+
+def back_link_step(next_of, k: int, j: int, i: int, max_step: int = MAX_LINK_STEP) -> int:
+    """Mirror of :func:`link_step` for the backward link ``prev_k[j] == i``:
+    smallest ``s`` with ``next[k-s][i] == j``, else 0."""
+    for s in range(1, max_step + 1):
+        n = next_of(k - s)
+        if n is not None and 0 <= i < len(n) and n[i] == j:
+            return s
+    return 0
+
+
+def enforce_reciprocity(
+    linkage_base: str,
+    first: int,
+    last: int,
+    store=None,
+    max_step: int = MAX_LINK_STEP,
+):
     """Forward-backward consistency guard: keep only bidirectional links.
 
-    A link between frame-k particle ``i`` and frame-(k+1) particle ``j`` is kept
-    only if ``next_k[i] == j`` AND ``prev_{k+1}[j] == i``. One-sided links (which
-    arise when the forward and backward passes disagree on dense/noisy data) are
-    severed on both ends. On clean data where the tracker already produces
-    reciprocal links this is a no-op; it is a precision guard for the hard cases.
+    A link between frame-k particle ``i`` and particle ``j`` some ``s`` frames
+    later is kept only if ``next_k[i] == j`` AND ``prev_{k+s}[j] == i``.
+    One-sided links (which arise when the forward and backward passes disagree
+    on dense/noisy data) are severed on both ends. On clean data where the
+    tracker already produces reciprocal links this is a no-op; it is a
+    precision guard for the hard cases.
+
+    ``s`` is searched over ``1..max_step`` rather than fixed at 1, so the
+    cross-frame links ``relink_trajectory_gaps`` writes over a bridged gap are
+    recognised as reciprocal instead of being severed straight back out.
 
     Returns a stats dict with the number of severed forward/backward links.
     """
@@ -124,27 +171,36 @@ def enforce_reciprocity(linkage_base: str, first: int, last: int, store=None):
     severed_prev = 0
     dirty = set()
 
-    for k in range(first, last):
-        if k not in frames or (k + 1) not in frames:
+    def prev_of(m):
+        return frames[m][0] if m in frames else None
+
+    def next_of(m):
+        return frames[m][1] if m in frames else None
+
+    for k in range(first, last + 1):
+        if k not in frames:
             continue
-        _p0, n0, _x0 = frames[k]
-        p1, _n1, _x1 = frames[k + 1]
-        for i in range(len(n0)):
-            j = n0[i]
-            if j < 0:
-                continue
-            if not (0 <= j < len(p1) and p1[j] == i):
-                n0[i] = NEXT_NONE  # forward link not reciprocated
-                severed_next += 1
-                dirty.add(k)
-        for j in range(len(p1)):
-            i = p1[j]
-            if i < 0:
-                continue
-            if not (0 <= i < len(n0) and n0[i] == j):
-                p1[j] = PREV_NONE  # backward link not reciprocated
-                severed_prev += 1
-                dirty.add(k + 1)
+        p0, n0, _x0 = frames[k]
+        # Links at the sequence edges point outside it and are left alone
+        # (as they always were: the old loop ran k in [first, last)).
+        if k < last:
+            for i in range(len(n0)):
+                j = n0[i]
+                if j < 0:
+                    continue
+                if not link_step(prev_of, k, i, j, max_step):
+                    n0[i] = NEXT_NONE  # forward link not reciprocated
+                    severed_next += 1
+                    dirty.add(k)
+        if k > first:
+            for j in range(len(p0)):
+                i = p0[j]
+                if i < 0:
+                    continue
+                if not back_link_step(next_of, k, j, i, max_step):
+                    p0[j] = PREV_NONE  # backward link not reciprocated
+                    severed_prev += 1
+                    dirty.add(k)
 
     for k in dirty:
         prev, nxt, xyz = frames[k]
@@ -240,21 +296,15 @@ def relink_trajectory_gaps(
     extrapolating particle positions using constant velocity to recover occluded
     particles over missing-frame gaps.
 
-    A bridged gap is filled with one interpolated placeholder particle per
-    skipped frame (constant-velocity interpolation between the two real
-    endpoints), linked consecutively frame-to-frame -- NOT a single `next`
-    pointer skipping straight from frame k to frame k+gap+1. Every other
-    reader of prev/next (enforce_reciprocity, trajectory walkers) assumes
-    next[k][i] always indexes into frame k+1; a cross-frame-skip pointer
-    silently violates that and is actively incompatible with
-    enforce_reciprocity specifically: it compares next_k against frame k+1
-    (not k+gap+1), so it never recognizes the bridge as reciprocal and
-    severs it right back out -- observed directly (286 bridged, 286 severed,
-    net zero change) benchmarking Fast 3D with postprocess enabled.
+    A bridged gap is a *single* cross-frame link: ``next_k[i]`` points straight
+    into frame ``k+gap+1`` and ``prev_{k+gap+1}[j]`` points back, with nothing
+    written at the skipped frames. No measurement is fabricated where the
+    particle was never observed, and the representation matches ground truth
+    (a gap is a link of step > 1). Consumers recover the step via
+    :func:`link_step` / :func:`back_link_step`.
 
     Returns:
-        dict with count of recovered gaps (bridge chains, not individual
-        hops): {'bridged_gaps': N}
+        dict with count of recovered links: {'bridged_gaps': N}
     """
     bridged = 0
     frames = {}
@@ -264,15 +314,6 @@ def relink_trajectory_gaps(
             frames[k] = r
 
     dirty = set()
-
-    def _frame(m):
-        if m not in frames:
-            frames[m] = (
-                np.empty(0, dtype=np.int32),
-                np.empty(0, dtype=np.int32),
-                np.empty((0, 3), dtype=np.float64),
-            )
-        return frames[m]
 
     for gap in range(1, max_gap + 1):
         for k in range(first, last - gap):
@@ -308,46 +349,14 @@ def relink_trajectory_gaps(
                 if dists[best_cand] > max_velocity_err:
                     continue
                 target_idx = starts_target[best_cand]
+                if prev_target[target_idx] >= 0:
+                    continue  # claimed by an earlier end this pass
 
-                # Chain: end_idx (frame k) -> placeholder(s) in k+1..k+gap -> target_idx (frame k+gap+1)
-                start_xyz = xyz_k[end_idx]
-                end_xyz = xyz_target[target_idx]
-                prev_link_frame, prev_link_idx = k, int(end_idx)
-                for step, m in enumerate(range(k + 1, k + gap + 1), start=1):
-                    m_prev, m_next, m_xyz = _frame(m)
-                    frac = step / (gap + 1)
-                    placeholder_pos = start_xyz + (end_xyz - start_xyz) * frac
-                    new_idx = len(m_next)
-                    m_prev = np.append(m_prev, PREV_NONE).astype(np.int32)
-                    m_next = np.append(m_next, NEXT_NONE).astype(np.int32)
-                    m_xyz = np.vstack([m_xyz, placeholder_pos])
-                    frames[m] = (m_prev, m_next, m_xyz)
-                    dirty.add(m)
-
-                    # Link the previous hop in the chain forward to this placeholder.
-                    pf_prev, pf_next, pf_xyz = frames[prev_link_frame]
-                    pf_next = pf_next.copy()
-                    pf_next[prev_link_idx] = new_idx
-                    frames[prev_link_frame] = (pf_prev, pf_next, pf_xyz)
-                    dirty.add(prev_link_frame)
-
-                    m_prev[new_idx] = prev_link_idx
-                    prev_link_frame, prev_link_idx = m, new_idx
-
-                # Final hop: last placeholder (or end_idx itself if gap's loop never ran,
-                # i.e. unreachable here since gap >= 1) -> target_idx in frame k+gap+1.
-                pf_prev, pf_next, pf_xyz = frames[prev_link_frame]
-                pf_next = pf_next.copy()
-                pf_next[prev_link_idx] = target_idx
-                frames[prev_link_frame] = (pf_prev, pf_next, pf_xyz)
-                dirty.add(prev_link_frame)
-
-                prev_target = prev_target.copy()
-                prev_target[target_idx] = prev_link_idx
-                frames[k + gap + 1] = (prev_target, next_target, xyz_target)
-                dirty.add(k + gap + 1)
-
+                next_k[end_idx] = target_idx
+                prev_target[target_idx] = end_idx
                 bridged += 1
+                dirty.add(k)
+                dirty.add(k + gap + 1)
 
     for m in dirty:
         prev_m, next_m, xyz_m = frames[m]

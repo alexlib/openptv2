@@ -44,6 +44,7 @@ import hashlib
 
 import numpy as np
 
+from ..tracking_postprocess import MAX_LINK_STEP
 from .run_store import RunStore, RunStoreError, _frame_num
 
 MM_TO_M = 1.0 / 1000.0
@@ -87,8 +88,10 @@ def seal(store: RunStore, name: str = "ptv_is", force: bool = False) -> dict:
 
     pos_l, time_l, trajid_l = [], [], []
     per_frame_trajid: dict[int, np.ndarray] = {}
-    prev_trajids = None
-    prev_frame = None
+    # frame -> (trajids, next_ids) for the last MAX_LINK_STEP frames. A
+    # gap-bridged `prev` points more than one frame back, so a one-frame
+    # window would start a new trajectory id at every bridge.
+    history: dict[int, tuple[np.ndarray, np.ndarray]] = {}
     next_trajid = 0
 
     for frame in frames:
@@ -96,40 +99,56 @@ def seal(store: RunStore, name: str = "ptv_is", force: bool = False) -> dict:
         n = len(pos)
         trajids = np.empty(n, dtype=np.int32)
 
-        # Guard 1: a gap in the stored frames -- `prev` addresses a frame we
-        # don't have, so its indices mean nothing here.
-        if prev_trajids is not None and prev_frame != frame - 1:
-            prev_trajids = None
-        # Guard 2: row-count mismatch (e.g. leftover frames from an earlier
-        # run appended to the same store) -- same hazard.
-        if (
-            prev_trajids is not None
-            and prev_ids.size
-            and prev_ids.max() >= len(prev_trajids)
-        ):
-            prev_trajids = None
+        # Resolve each `prev` to the frame it actually addresses: the nearest
+        # earlier frame whose `next` points back here. Guards 1 (missing
+        # frame) and 2 (row-count mismatch, e.g. leftover frames from an
+        # earlier run) fall out of that check.
+        src = np.full(n, -1, dtype=np.int64)  # inherited trajid, -1 = none
+        for s in range(1, MAX_LINK_STEP + 1):
+            h = history.get(frame - s)
+            if h is None:
+                continue
+            h_traj, h_next = h
+            cand = np.where((prev_ids >= 0) & (src < 0))[0]
+            if cand.size == 0:
+                break
+            i = prev_ids[cand].astype(np.int64)
+            ok = i < len(h_next)
+            cand, i = cand[ok], i[ok]
+            hit = h_next[i] == cand
+            src[cand[hit]] = h_traj[i[hit]]
 
-        if prev_trajids is None:
-            trajids[:] = np.arange(next_trajid, next_trajid + n)
-            next_trajid += n
-        else:
-            # Guard 3: disambiguate multi-claim linkages -- more than one
-            # particle in this frame claiming the same `prev` index is not a
-            # valid chain continuation for either claimant.
-            claimed, claim_counts = np.unique(prev_ids[prev_ids >= 0], return_counts=True)
-            ambiguous = set(claimed[claim_counts > 1].tolist())
-            linked = np.array([p >= 0 and p not in ambiguous for p in prev_ids])
-            trajids[linked] = prev_trajids[prev_ids[linked]]
-            n_new = int((~linked).sum())
-            trajids[~linked] = np.arange(next_trajid, next_trajid + n_new)
-            next_trajid += n_new
+        # Fallback for a non-reciprocal `prev` (linkage that never went
+        # through enforce_reciprocity): treat it as the step-1 link it
+        # claims to be, as this pass always has.
+        h = history.get(frame - 1)
+        if h is not None:
+            h_traj, _ = h
+            cand = np.where((prev_ids >= 0) & (src < 0))[0]
+            i = prev_ids[cand].astype(np.int64)
+            ok = i < len(h_traj)
+            src[cand[ok]] = h_traj[i[ok]]
+
+        # Guard 3: disambiguate multi-claim linkages -- more than one particle
+        # in this frame inheriting the same trajid is not a valid chain
+        # continuation for either claimant.
+        claimed, claim_counts = np.unique(src[src >= 0], return_counts=True)
+        if claimed.size:
+            src[np.isin(src, claimed[claim_counts > 1])] = -1
+
+        linked = src >= 0
+        trajids[linked] = src[linked]
+        n_new = int((~linked).sum())
+        trajids[~linked] = np.arange(next_trajid, next_trajid + n_new)
+        next_trajid += n_new
 
         per_frame_trajid[frame] = trajids
         pos_l.append(pos)
         time_l.append(np.full(n, frame, dtype=np.int64))
         trajid_l.append(trajids.astype(np.int64))
-        prev_trajids = trajids
-        prev_frame = frame
+        history[frame] = (trajids, next_ids)
+        for old in [f for f in history if f <= frame - MAX_LINK_STEP]:
+            del history[old]
 
     # Write the labelling back onto each linkage frame group.
     for frame, trajids in per_frame_trajid.items():
