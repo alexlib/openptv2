@@ -329,7 +329,58 @@ Worth separating the two remaining causes of its fragmentation:
 Also: 4BE has **no dedicated tests**. It needs at least a kernel-level test
 pinning the eq. 12 estimate (`x̃ = 2q − x1`) and the give-up-on-conflict rule.
 
-### 3.5 Where the speed actually is
+### 3.5 Where the speed actually is — PROFILED
+
+Measured, not inferred. `priority_segment_3d`, `synthetic_turbulent`,
+30 frames, 225 particles/frame, postprocess off; store methods wrapped
+directly rather than read off a profiler's inclusive times (zarr's async
+bridge double-counts those).
+
+| component | calls | total | ms/call | % wall |
+|---|---|---|---|---|
+| `store.write_targets` | 120 | 1.520 s | 12.67 | 26.3% |
+| `store.write_linkage` | 30 | 1.327 s | 44.23 | 23.0% |
+| `store.read_linkage` | 30 | 0.428 s | 14.26 | 7.4% |
+| `store.write_correspondences` | 30 | 0.294 s | 9.79 | 5.1% |
+| `_sync_soa_to_aos` | 58 | 0.023 s | 0.40 | **0.4%** |
+| `store.read_correspondences` | 30 | 0.020 s | 0.67 | 0.4% |
+
+**1. `_sync_soa_to_aos` is not a suspect.** §3.5 named it alongside the
+frame read/write; it is 0.4% of wall. Drop it from the list.
+
+**2. The unit cost is zarr *array creation*, ~11-12 ms each.** It is
+strikingly stable — `write_targets` creates 1 array (12.67 ms/call),
+`write_linkage` creates 4 (prev/next/pos/prio; 44.23 ms/call ≈ 11 ms each),
+`write_correspondences` creates 1 (9.79 ms). The same ~12 ms/array shows up
+on `test_cavity_small` through `pyptv_batch`. Each creation is a directory,
+a `zarr.json`, and a chunk file, behind zarr v3's sync-over-async bridge.
+
+**3. Nothing is redundantly re-created.** Instrumenting `create_array`:
+270 calls, **100% new**, 0 re-creations of an existing same-shape array
+(`Tracker.restart()` clears linkage by design, per `433c5f6`). So array
+reuse / write-in-place buys nothing here.
+
+**4. Correction — the benchmark path overstates tracking I/O.** That 26%
+`write_targets` row is an artefact of `benchmarking/runner.run_tracker`,
+which skips the sequence stage, so the frame buffer imports ASCII targets
+into a fresh store *during tracking*. Instrumenting a real
+`pyptv_batch` sequence→tracking run: the tracking phase issues **zero**
+`write_targets` calls (they all happen in sequence, via `gui/ptv.py:249`).
+Profile `pyptv_batch`, not `run_tracker`, for anything speed-related.
+
+**What would actually help** — both change the on-disk format, so neither is
+a drive-by fix, and both need a `docs/releases/` runbook:
+
+- Pack `prev`/`next`/`pos`/`prio` into one array per frame instead of four:
+  4x fewer creations, ~33 ms/frame off `write_linkage`.
+- Go further and store one array per *stream* for the whole run plus an
+  offset index — the layout `seal` already builds for `trajectories/` —
+  making creations O(1) in frames rather than O(frames).
+
+Not implemented here: §3.5 asks for the profile, and the payoff is gated on a
+format decision rather than on a local optimisation.
+
+Original write-up follows.
 
 Per §2.4 the kernel is <1% of runtime. If tracking speed matters, profile
 `fb.write_frame_from_start` / `read_frame_at_end`, the zarr store write path,
