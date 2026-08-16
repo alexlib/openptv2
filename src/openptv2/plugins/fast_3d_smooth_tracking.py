@@ -386,7 +386,7 @@ class Tracking:
             cold_start = seed_cold_start(linkage_base, first_frame, last_frame, dvxmax)
             gap_relinking = relink_trajectory_gaps(
                 linkage_base, first_frame, last_frame,
-                max_gap=max_gap_pp, max_velocity_err=dvxmax,
+                max_gap=max_gap_pp, max_accel_err=dacc,
             )
             reciprocity = enforce_reciprocity(linkage_base, first_frame, last_frame)
             links_after = count_links(linkage_base, first_frame, last_frame)

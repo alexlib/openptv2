@@ -241,7 +241,7 @@ class Tracker:
                 first,
                 last,
                 max_gap=max_gap,
-                max_velocity_err=float(self._tpar_algo.dvxmax),
+                max_accel_err=float(self._tpar_algo.dacc),
                 store=store,
             )
         if reciprocity:

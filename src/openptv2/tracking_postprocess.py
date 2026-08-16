@@ -286,7 +286,7 @@ def relink_trajectory_gaps(
     first: int,
     last: int,
     max_gap: int = 2,
-    max_velocity_err: float = 5.0,
+    max_accel_err: float = 5.0,
     store=None,
 ) -> dict[str, int]:
     """
@@ -295,6 +295,36 @@ def relink_trajectory_gaps(
     Identifies terminated tracks at frame k and unlinked track starts at frame k+gap+1,
     extrapolating particle positions using constant velocity to recover occluded
     particles over missing-frame gaps.
+
+    ``max_accel_err`` is an **acceleration** tolerance (mm/frame^2), not a
+    velocity one: the candidate is compared against a position that has
+    already been velocity-extrapolated, so what is left is the acceleration
+    residual. The accepted distance is ``0.5 * max_accel_err * (gap+1)**2 / 2``
+    -- it grows with the gap, because a longer extrapolation accumulates more
+    of it. Pass ``dacc``.
+
+    Passing ``dvxmax`` here (as every caller used to) is a live hazard: warmup
+    suggests ``dvxmax ~ 52 mm`` on the JHU data against ~9 mm particle
+    spacing, which would accept 52 mm bridges. It only looked sane on the
+    synthetic set, where ``dvxmax == dacc == 6``.
+
+    The 0.5 is measured, not assumed -- ``dacc`` gates the *maximum*
+    acceleration, so the typical residual is well inside it. Bridges scored
+    against ground-truth identity on ``test_data/synthetic_turbulent``
+    (``dacc = 6``, so gap-1 tolerance = ``2 * max_accel_err``):
+
+    ======  =============  =======  =========  ==================
+    accel   tol at gap 1   bridges  % correct  true gaps recovered
+    ======  =============  =======  =========  ==================
+    1.5     3.0            137      92.0       26.5
+    2.0     4.0            219      92.7       42.6
+    3.0     6.0            309      92.6       60.1
+    4.0     8.0            330      90.9       63.0
+    6.0     12.0           347      85.6       62.4
+    ======  =============  =======  =========  ==================
+
+    Correctness holds until the gap-1 tolerance passes ~6 mm and recovery
+    stops improving past it, which ``0.5 * dacc * 4 / 2 = dacc`` lands on.
 
     A bridged gap is a *single* cross-frame link: ``next_k[i]`` points straight
     into frame ``k+gap+1`` and ``prev_{k+gap+1}[j]`` points back, with nothing
@@ -315,7 +345,14 @@ def relink_trajectory_gaps(
 
     dirty = set()
 
+    def next_of(m):
+        return frames[m][1] if m in frames else None
+
     for gap in range(1, max_gap + 1):
+        # Kinematic residual over dt = gap+1 frames is a*dt^2/2. ``dacc`` gates
+        # the *maximum* acceleration, so the effective residual scale is about
+        # half of it -- hence the 0.5 (measured, see the docstring).
+        tol = 0.5 * max_accel_err * (gap + 1) ** 2 / 2.0
         for k in range(first, last - gap):
             if k not in frames or (k + gap + 1) not in frames:
                 continue
@@ -333,20 +370,28 @@ def relink_trajectory_gaps(
 
             for end_idx in ends_k:
                 p_prev_idx = prev_k[end_idx]
-                if p_prev_idx < 0 or (k - 1) not in frames:
+                if p_prev_idx < 0:
                     continue
-                _, _, xyz_prev = frames[k - 1]
+                # The incoming link may itself be a bridge (step > 1) from an
+                # earlier pass, so find the frame it really comes from and
+                # divide the displacement by that step.
+                back = back_link_step(next_of, k, int(end_idx), int(p_prev_idx))
+                if back == 0:
+                    back = 1  # non-reciprocal: take it at face value, as before
+                if (k - back) not in frames:
+                    continue
+                _, _, xyz_prev = frames[k - back]
                 if p_prev_idx >= len(xyz_prev):
                     continue
 
-                v_est = xyz_k[end_idx] - xyz_prev[p_prev_idx]
+                v_est = (xyz_k[end_idx] - xyz_prev[p_prev_idx]) / back
                 pred_pos = xyz_k[end_idx] + v_est * (gap + 1)
 
                 cand_xyz = xyz_target[starts_target]
                 dists = np.linalg.norm(cand_xyz - pred_pos, axis=1)
                 best_cand = np.argmin(dists)
 
-                if dists[best_cand] > max_velocity_err:
+                if dists[best_cand] > tol:
                     continue
                 target_idx = starts_target[best_cand]
                 if prev_target[target_idx] >= 0:

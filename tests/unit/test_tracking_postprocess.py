@@ -103,7 +103,7 @@ def test_relink_trajectory_gaps_bridges_missing_frame(tmp_path):
     _write(base, 4, [0], [-2], [[8, 0, 0]])
 
     stats = relink_trajectory_gaps(
-        base, first=0, last=4, max_gap=2, max_velocity_err=1.0
+        base, first=0, last=4, max_gap=2, max_accel_err=1.0
     )
     assert stats["bridged_gaps"] == 1
 
@@ -135,7 +135,7 @@ def test_enforce_reciprocity_keeps_gap_bridged_cross_frame_link(tmp_path):
     _write(base, 4, [0], [-2], [[8, 0, 0]])
 
     assert relink_trajectory_gaps(
-        base, first=0, last=4, max_gap=2, max_velocity_err=1.0
+        base, first=0, last=4, max_gap=2, max_accel_err=1.0
     )["bridged_gaps"] == 1
     stats = enforce_reciprocity(base, 0, 4)
 

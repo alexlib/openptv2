@@ -222,7 +222,7 @@ def run_corrective_pass(
 
         stats.gaps_bridged[f"pass{p}"] = relink_trajectory_gaps(
             linkage_name, first, last, max_gap=2,
-            max_velocity_err=float(tpar.dvxmax), store=store,
+            max_accel_err=float(tpar.dacc), store=store,
         )
         stats.reciprocity[f"pass{p}"] = enforce_reciprocity(
             linkage_name, first, last, store=store,

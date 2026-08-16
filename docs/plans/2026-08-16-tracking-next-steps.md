@@ -122,7 +122,37 @@ lowering precision; `test_relink_trajectory_gaps_bridges_missing_frame` is
 rewritten to assert a cross-frame link (not a placeholder); no new points
 appear in any trajectory.
 
-### 3.2 `max_velocity_err` is the wrong parameter
+### 3.2 `max_velocity_err` is the wrong parameter — DONE
+
+Landed. `relink_trajectory_gaps`' `max_velocity_err` is now `max_accel_err`,
+the tolerance is gap-scaled as `0.5 · max_accel_err · (gap+1)²/2`, and all
+three callers (`tracker.py`, `track_assisted.py`,
+`fast_3d_smooth_tracking.py`) pass `dacc` instead of `dvxmax`.
+
+The extra 0.5 is measured, not assumed — the plan's literal `dacc·(gap+1)²/2`
+puts the gap-1 tolerance at 12 mm for `dacc=6`, past the knee. Bridges scored
+against ground-truth identity (this is the sweep re-run on the restored
+cross-frame representation, so the numbers differ slightly from §3.2's
+original table):
+
+| max_accel_err | tol @ gap 1 | bridges | % correct | true gaps recovered |
+|---|---|---|---|---|
+| 1.5 | 3.0 | 137 | 92.0% | 26.5% |
+| 2.0 | 4.0 | 219 | 92.7% | 42.6% |
+| **3.0** | **6.0** | **309** | **92.6%** | **60.1%** |
+| 4.0 | 8.0 | 330 | 90.9% | 63.0% |
+| 6.0 | 12.0 | 347 | 85.6% | 62.4% |
+
+`0.5·dacc·4/2 = dacc` lands the gap-1 tolerance on the knee. End to end
+(`priority_segment_3d`): 946 → 637 tracks, links 5802 → 6119, precision
+0.9667 → 0.9596, yield 0.894 → 0.936, mean length 7.13 → 10.61.
+
+Also fixed in passing: the velocity estimate read `frames[k-1]`
+unconditionally, which is the wrong frame when the incoming link is itself a
+bridge from an earlier pass. It now resolves the real source frame with
+`back_link_step` and divides the displacement by that step.
+
+Original write-up follows.
 
 `Tracker.postprocess` passes `max_velocity_err=float(tpar.dvxmax)`. The
 tolerance is applied to a position that has **already been
