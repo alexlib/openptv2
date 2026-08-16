@@ -1,5 +1,5 @@
-# Lagrangian accuracy first: reduce ten trackers to the few that measure
-# physics correctly (2026-08-17)
+# Lagrangian accuracy and trajectory length: reduce ten trackers to the few
+# that measure physics correctly (2026-08-17)
 
 Goal, in the user's words: keep the minimum number of the best trackers.
 Decide what matters for **fluid mechanics and turbulence, not numerical
@@ -7,16 +7,44 @@ exercise**; evaluate it properly, slowly and carefully; understand what in
 each algorithm produces the better outcome; then reinvent a simple thing that
 takes the winning parts.
 
-The value function is explicit and it is **not** track length:
+The value function has **two** objectives, ranked but not exclusive:
 
 > We value most the accuracy — correct velocity, correct acceleration in the
 > Lagrangian sense, then time correlations, distance correlations and other
 > things that require long trajectories. Long we can achieve later by
 > smoothing and stitching; the correct ones we could not get by
 > post-processing wrong trajectories.
+>
+> The value function is not *only* track length — track length is another
+> important factor, but for a specific type of question. So we should be able
+> to choose parameters that improve track length **without sacrificing
+> quality**.
 
-That ordering is the whole design constraint. Length is recoverable, and
-§3.1/§3.2 of the 2026-08-16 plan just made it recoverable. Correctness is not.
+Read precisely, that is a **constrained multi-objective** problem, not a
+priority ordering that discards length:
+
+- **Accuracy is the constraint.** It is never traded away, because a wrong
+  link cannot be repaired downstream.
+- **Length is a genuine second objective**, not a nice-to-have. Lagrangian
+  time correlations, the integral timescale, pair dispersion and long-lag
+  structure functions are simply not computable from short fragments — those
+  questions need length, and they are real questions.
+- **The target is the Pareto frontier of (accuracy, length)**, and
+  specifically the configurations that buy length *for free*. Where a
+  parameter improves length at no accuracy cost, take it; only refuse the
+  trade when length costs accuracy.
+
+Length being recoverable later (§3.1/§3.2 of the 2026-08-16 plan made gap
+bridging work) is a reason not to *panic* about length, not a reason to stop
+measuring it — and stitching is itself only safe on correct fragments, so the
+two objectives are coupled rather than independent.
+
+**There is already direct evidence such free length exists.** In the §0 table
+below, `dacc=3.6` + bridging beats `dacc=6` (the shipped default) on
+acceleration accuracy *and* precision *and* yield simultaneously — a strict
+improvement on both axes, not a trade. That single observation is the
+strongest argument that the current defaults sit off the frontier, and
+finding the frontier deliberately is Phase 1's second deliverable.
 
 ---
 
@@ -161,10 +189,31 @@ wrong links; it should also weigh them by the kinematic error they inject.
 Something as simple as the rms spurious acceleration per wrong link would
 have ranked these six configurations correctly where precision did not.
 
+**1e. Report both objectives together, and find the frontier.** Every
+evaluation from here on reports an **accuracy axis** and a **length axis**
+side by side, never one alone:
+
+| axis | statistics |
+|---|---|
+| accuracy | `a_rms` error vs truth, `K_a` vs truth, >5σ contamination rate, per-point velocity/acceleration error, damage-weighted link error (1d) |
+| length | mean track length, fraction > 10 and > 30 frames, `e_track` `n_perfect`, and — the one that actually matters for the physics — **span in units of the Lagrangian integral time τ_L**, since "long" is only meaningful relative to the flow's own timescale |
+
+Then sweep the parameters that plausibly move both (`dacc` / seeded search
+box, gap-bridging `max_gap` and its accel tolerance, conflict rule) and
+compute the **Pareto frontier** explicitly: a configuration is kept only if
+nothing else is at least as good on accuracy *and* at least as long.
+Deliverable is the frontier plus a recommended default sitting on it — the
+existing `dacc=3.6` observation says the shipped default is not on it.
+
+This also gives the honest way to expose the trade to a user: not one blessed
+setting, but a small number of frontier points labelled by the question they
+serve ("acceleration statistics" vs "time correlations / dispersion"), since
+the right point genuinely differs between those.
+
 **Phase 1 exit criterion:** re-run the §0 table on data with realistic
-intermittency and realistic noise, and have the ranking be *stable and
-explicable*. If the ranking still contradicts precision, that is the real
-result and Phase 2 proceeds on the new metric.
+intermittency and realistic noise, reporting both axes, and have the ranking
+and the frontier be *stable and explicable*. If the ranking still contradicts
+precision, that is the real result and Phase 2 proceeds on the new metric.
 
 ### Phase 2 — evaluate the ten trackers properly
 
@@ -189,10 +238,13 @@ tracker it happens to suit), and each tracker gets its own best operating
 point rather than one shared `BASE_OVERRIDES`.
 
 **Deliverable:** a keep / merge / delete decision per engine, with the
-evidence attached. The expectation — to be tested, not assumed — is that this
-collapses to about three: one cost-based sequential tracker, one
-best-estimate/4-frame tracker, and one global-assignment tracker as a
-control.
+evidence attached, each engine represented by its own frontier (§1e) rather
+than by a single operating point — an engine must not be deleted because it
+was measured at a badly chosen `dacc`.
+
+The expectation — to be tested, not assumed — is that this collapses to about
+three: one cost-based sequential tracker, one best-estimate/4-frame tracker,
+and one global-assignment tracker as a control.
 
 ### Phase 3 — dissect the winners, then build the simple one
 
@@ -215,19 +267,34 @@ mechanisms already visible in this codebase:
 The synthesis the user anticipates — "from 3–5 best trackers, a simple idea
 that also will be the best" — has a concrete shape suggested by §0: a
 tracker that **uses future support to accept a link (4BE's discriminating
-power) while keeping the search box tight enough that any mistake it does
-make is kinematically small (the `dacc` finding), and declines rather than
-guesses under conflict (4BE's rule), leaving length entirely to a later
-stitching pass.** That is a hypothesis for Phase 3 to test, not a conclusion.
+power), keeps the search box tight enough that any mistake it does make is
+kinematically small (the `dacc` finding), and declines rather than guesses
+under conflict (4BE's rule)** — then recovers length by a stitching pass that
+runs only on fragments it has reason to trust.
+
+Note the coupling that §3.4 of the 2026-08-16 plan already exposed, because
+it constrains this design: give-up-on-conflict and naive gap bridging fight
+each other. A declined conflict looks exactly like a gap to the bridger, so
+it re-creates the link the tracker refused (K_a 4.33 → 343). **Whatever
+declines a link must record *why*, so the stitcher can distinguish "particle
+was not detected here" from "I refused to guess here" and bridge only the
+former.** That is the concrete mechanism by which length gets recovered
+without spending accuracy, and it does not exist in any current tracker.
 
 ---
 
 ## 3. What NOT to do, and why
 
-- **Do not tune for track length, `pmt`, or mean trajectory duration.** They
-  are the metrics that look best when a tracker guesses, and guessing is
-  precisely what the value function forbids. `pmt` is additionally broken as
-  a quality rate (2026-08-16 §2.1).
+- **Do not tune for track length *alone*.** Length is a real objective and
+  must be reported and optimised — but only along the accuracy axis, never
+  instead of it. The failure mode to avoid is a metric that rewards guessing:
+  a tracker that links optimistically scores better on mean duration while
+  destroying the acceleration statistics. Length is safe to pursue when it
+  comes free (an accuracy-neutral parameter change, or stitching applied to
+  fragments already known to be correct) and unsafe when it is bought by
+  loosening a gate. `pmt` is separately unusable as a quality rate — it is
+  computed over predicted tracks and *rises* with fragmentation (2026-08-16
+  §2.1) — so it is not a length metric either.
 - **Do not turn on gap bridging for 4BE.** K_a 4.33 → 343.
 - **Do not read the 2026-08-16 §3.3/§3.4 rankings as final.** They rank on
   precision and yield, which §0 shows is the wrong ordering. Their
@@ -241,8 +308,17 @@ stitching pass.** That is a hypothesis for Phase 3 to test, not a conclusion.
 2. Is there a real experiment whose parameters should define the noise sweep
    and the dt/τ_η ratio, or do we take those from the literature?
 3. Does the acceleration-accuracy target have a number attached — e.g. "a_rms
-   within 5% and K_a within 10% of truth" — or is it "best available"?
-4. `test_cavity` is 4 frames and poorly conditioned. Is a well-conditioned
+   within 5% and K_a within 10% of truth" — or is it "best available"? This
+   matters more than it looks: an explicit accuracy floor turns the
+   two-objective problem into "maximise length subject to the floor", which
+   is a much easier thing to optimise and to defend than picking a point on
+   a frontier by taste.
+4. Which questions actually need the long trajectories, and how long is long
+   — expressed in τ_L, not frames? An integral timescale needs a few τ_L; a
+   Richardson-dispersion measurement needs far more. That number sets how
+   hard the length objective should be pushed, and nothing in this repo
+   currently states it.
+5. `test_cavity` is 4 frames and poorly conditioned. Is a well-conditioned
    real dataset obtainable? It is now the binding constraint on every
    tracker conclusion in this repo.
 
