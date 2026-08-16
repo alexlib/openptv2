@@ -36,10 +36,25 @@ scores "correct" automatically, so a fragmenting tracker inflates it.
 `E_track = 1 - pmt` is **wrong** and was used in earlier reports.
 
 Use Ouellette's definition instead — fraction of **true** tracks not
-reproduced perfectly (no spurious points, same start frame). Reference
-implementation: `scripts/` has none yet; the throwaway used during the
-investigation is reproduced in §5 and should be promoted into
-`openptv2/benchmarking/metrics.py` as `e_track()`.
+reproduced perfectly. **DONE:** promoted as
+`openptv2.benchmarking.metrics.e_track()`, wired into
+`scripts/benchmark_utils.combined_metrics`, with
+`tests/unit/test_e_track.py`.
+
+Note the parenthetical above ("no spurious points, same start frame") is
+itself incomplete, and §5's snippet implemented exactly that — it never
+checks the predicted track *covers* the true one, so a 2-point fragment
+scores as a perfect reproduction of a 30-point trajectory. That is the same
+inflation this section identifies in `pmt`. The shipped `e_track` requires
+all three conditions: one fragment, nothing foreign or unmatched in it, and
+exactly the true track's frames. Six of the ten tests fail against the
+`(one id + same start frame)` form, verified by mutating the implementation
+back to it.
+
+It is a strict, all-or-nothing measure, so it returns a failure breakdown
+(`n_fragmented` / `n_contaminated` / `n_incomplete` / `n_missed`) alongside
+the scalar, and it is only informative with **gap bridging enabled** — see
+§3.6.
 
 **2.2 The synthetic ground truth contains gaps.** 5796 step-1 links, but
 476 links of step 2-4, and **214 of 236 tracks (91%) contain at least one
@@ -329,6 +344,38 @@ Worth separating the two remaining causes of its fragmentation:
 Also: 4BE has **no dedicated tests**. It needs at least a kernel-level test
 pinning the eq. 12 estimate (`x̃ = 2q − x1`) and the give-up-on-conflict rule.
 
+### 3.6 Track-level results, once E_track works
+
+With the corrected `e_track` and gap bridging on, the metric discriminates
+(0.67–0.99, versus pinned at 0.94–0.99 with bridging off):
+
+| run | E_track 220/f | perfect | E_track 970/f | perfect |
+|---|---|---|---|---|
+| 3MA `dacc=6` no bridging | 0.9407 | 14 | 0.9626 | 38 |
+| 3MA `dacc=6` + bridging | 0.6907 | 73 | 0.8819 | 120 |
+| 3MA `dacc=3.6` + bridging | 0.7754 | 53 | **0.8189** | **184** |
+| 4BE paper + bridging | 0.9153 | 20 | 0.9911 | 9 |
+| 4BE greedy + bridging | **0.6737** | **77** | 0.9429 | 58 |
+
+Three things this shows that the link-level metrics could not:
+
+1. **Gap bridging is a far bigger win than yield suggested.** Perfectly
+   reproduced trajectories go 14 → 73 (5.2x) at 220/frame and 38 → 120
+   (3.2x) at 970/frame. Yield moved 4 points; whole trajectories multiplied.
+   This is the real justification for turning it on by default.
+2. **The `dacc = 0.6 x dvxmax` change is confirmed where it matters and is a
+   genuine trade elsewhere** — at 970/frame it is the best row by a wide
+   margin (184 vs 120 perfect), at 220/frame it is worse on E_track (53 vs
+   73) while better on precision. Same density dependence the §3.3 sweep
+   found; the single constant favours the dense case.
+3. **Essentially all remaining failure is fragmentation, not wrong links.**
+   Across every row: `n_fragmented` is 156–1006 while `n_contaminated` is
+   1–15 and `n_incomplete`/`n_missed` are ~0. The trackers are producing
+   *correct but split* trajectories. Precision is already ~0.96; chasing it
+   further is chasing the wrong number. The remaining quality is in
+   stitching — which is what master-plan's "Track repair & stitching" row
+   already anticipates as a long-gap / spatio-temporal stitcher.
+
 ### 3.5 Where the speed actually is — PROFILED
 
 Measured, not inferred. `priority_segment_3d`, `synthetic_turbulent`,
@@ -402,22 +449,19 @@ and `_sync_soa_to_aos` — not the tracking kernels.
 
 ## 5. Verification snippets
 
-Ouellette E_track, to be promoted into `benchmarking/metrics.py`:
+Ouellette E_track: **shipped** as
+`openptv2.benchmarking.metrics.e_track(true_tracks, pred_tracks, eps)`, and
+included in `scripts/benchmark_utils.combined_metrics`. Use that; do not
+re-derive it.
 
-```python
-# a true track is "perfect" if some predicted track matches only it and
-# starts on the same frame; E_track = 1 - perfect / n_true
-perfect = set()
-for pid, pts in pred.items():
-    pts = sorted(pts, key=lambda p: p[0])
-    ids = {match(f, (x, y, z)) for (f, x, y, z) in pts}   # nearest true id, tol 1.0
-    if len(ids) != 1:
-        continue
-    tid = ids.pop()
-    if tid is not None and pts[0][0] == true_start[tid]:
-        perfect.add(tid)
-e_track = 1.0 - len(perfect) / len(true_tracks)
-```
+> The snippet that used to sit here was wrong and is deleted rather than
+> corrected in place, because it was copied once already. It checked only
+> "every point maps to one true id" plus "same start frame", with no
+> coverage check, so a 2-point fragment counted as a perfect reproduction of
+> a 30-point trajectory — the same inflation §2.1 identifies in `pmt`, which
+> is exactly what it was introduced to avoid. It ranked a configuration
+> producing 3054 tracks for 236 true ones as the best of its sweep, at a link
+> yield of 0.55. See §2.1 and §3.6.
 
 Commands:
 

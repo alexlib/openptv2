@@ -24,6 +24,7 @@ from pathlib import Path
 import numpy as np
 
 import openptv2.benchmarking as bm
+from openptv2.benchmarking.metrics import e_track
 from openptv2.tracking_metrics import calculate_tracking_metrics
 
 SRC = Path("test_data/synthetic_turbulent")
@@ -100,16 +101,25 @@ def combined_metrics(
     eps: float = 1.0,
     ghosts: dict[int, np.ndarray] | None = None,
 ) -> dict:
-    """One flat row merging the two independent metric systems computed
+    """One flat row merging the three independent metric systems computed
     from the same run: proPTV-style identity metrics (F/C/purity/pmt/ghost
-    capture, position-matched) and link-level metrics (yield/precision/FCR/
-    gap-recovery, matched on both endpoints of a link). Field names do not
-    collide between the two, so this is a plain dict merge -- no new metric
-    is invented here.
+    capture, position-matched), link-level metrics (yield/precision/FCR/
+    gap-recovery, matched on both endpoints of a link), and Ouellette's
+    track-level ``e_track`` with its failure breakdown. This is a plain dict
+    merge -- no new metric is invented here. The only overlapping key is
+    ``n_true_tracks``, which both systems define as ``len(tt)``, so which one
+    wins the merge does not matter.
+
+    Note ``pmt`` and ``e_track`` are not two views of the same thing and must
+    not be substituted for one another: ``pmt`` is computed over PREDICTED
+    tracks and rises when a tracker fragments, ``e_track`` is computed over
+    TRUE tracks and requires each to be reproduced exactly. ``e_track`` is
+    only informative with gap bridging enabled -- see its docstring.
     """
     identity = bm.compute_identity_metrics(tt, pred0, eps=eps, ghost_pos_by_frame=ghosts)
     link = calculate_tracking_metrics(tt, pred0, distance_tolerance=eps)
-    return {**identity.to_dict(), **link.to_dict()}
+    track = e_track(tt, pred0, eps=eps)
+    return {**identity.to_dict(), **link.to_dict(), **track.to_dict()}
 
 
 def _isolate_run_dir(src: Path = SRC) -> tuple[Path, Path]:

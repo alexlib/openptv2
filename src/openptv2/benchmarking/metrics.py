@@ -12,6 +12,13 @@ the multi-object-tracking metrics used by proPTV (after Chenouard et al.,
          that really belong to the true particle (false-link measure).
   * pmt— percentage of correct tracks: a track is correct if at least ~2/3
          of its points map to one and the same true particle (majority ID).
+
+``pmt`` is **not** a track-quality rate, despite the name. It is computed
+over *predicted* tracks, and a 2-point fragment satisfies the 2/3 majority
+automatically, so a tracker that fragments more scores higher. ``1 - pmt`` is
+not an error rate and must not be read as one. For a track-level measure use
+:func:`e_track` (Ouellette), which is defined over *true* tracks and requires
+each one to be reproduced exactly.
 """
 
 from __future__ import annotations
@@ -235,6 +242,163 @@ def compute_identity_metrics(
     )
 
 
+@dataclass
+class TrackErrorMetrics:
+    """Ouellette-style track-level error, plus why the failures failed.
+
+    ``e_track`` alone saturates near 1.0 on data whose ground truth contains
+    detection gaps, so the breakdown is part of the result rather than an
+    optional extra -- without it the metric reports "almost nothing is
+    perfect" and gives no way to tell an improving tracker from a stuck one.
+    The four failure counts partition the non-perfect true tracks.
+    """
+
+    e_track: float = 1.0          # fraction of true tracks NOT reproduced exactly
+    n_true_tracks: int = 0
+    n_perfect: int = 0
+    # Failure breakdown; these four sum to n_true_tracks - n_perfect.
+    n_fragmented: int = 0         # covered by >1 predicted track
+    n_contaminated: int = 0       # its one fragment also holds foreign/unmatched points
+    n_incomplete: int = 0         # clean single fragment, but missing frames
+    n_missed: int = 0             # no predicted track matched it at all
+
+    def to_dict(self) -> dict:
+        return {
+            "e_track": self.e_track,
+            "n_true_tracks": self.n_true_tracks,
+            "n_perfect": self.n_perfect,
+            "n_fragmented": self.n_fragmented,
+            "n_contaminated": self.n_contaminated,
+            "n_incomplete": self.n_incomplete,
+            "n_missed": self.n_missed,
+        }
+
+
+def e_track(
+    true_tracks: Dict[int, List[Tuple[int, float, float, float]]],
+    pred_tracks: Dict[int, List[Tuple[int, float, float, float]]],
+    eps: float,
+) -> TrackErrorMetrics:
+    """Ouellette's track-level error: the fraction of TRUE trajectories not
+    reproduced perfectly.
+
+    Reference: Ouellette, Xu & Bodenschatz, *A quantitative study of
+    three-dimensional Lagrangian particle tracking algorithms*, Exp. Fluids
+    40:301-313 (2006).
+
+    A true track counts as reproduced perfectly only when exactly one
+    predicted track matches it, that predicted track contains **no** other
+    points (neither points belonging to another particle nor points matching
+    nothing), and it spans **exactly** the true track's frames -- no missing
+    points and none added.
+
+    Why all three conditions matter
+    -------------------------------
+    Dropping the coverage condition -- checking only "every point maps to one
+    true particle, and the start frame agrees", which is the form this metric
+    was first written in -- makes a 2-point fragment score as a perfect
+    reproduction of a 30-point trajectory. That is the same inflation that
+    makes ``pmt`` unusable as a track-quality rate (a fragmenting tracker
+    scores *better*), and it is not a theoretical worry: on
+    ``test_data/synthetic_turbulent`` the loose form ranked a configuration
+    producing 3054 tracks for 236 true ones as the best of its sweep, at a
+    link yield of 0.55.
+
+    Interpreting the result
+    -----------------------
+    This is a strict, all-or-nothing measure, so read ``e_track`` together
+    with the failure breakdown. In particular, evaluate it with **gap
+    bridging enabled**: where ground truth contains detection gaps (91% of
+    trajectories in ``synthetic_turbulent`` contain at least one), a tracker
+    that cannot bridge a gap can never reproduce those trajectories whole, so
+    ``e_track`` pins near 1.0 for every configuration and discriminates
+    nothing. The breakdown still does.
+
+    Parameters
+    ----------
+    true_tracks, pred_tracks : dict[int, list[(frame, x, y, z)]]
+    eps : float
+        Spatial matching tolerance, in the same units as the coordinates.
+        Deliberately has no default -- the sibling
+        :func:`compute_identity_metrics` defaults to 0.10 while callers in
+        this repo use 1.0, and silently inheriting the wrong one would
+        change the result without any visible signal.
+
+    Returns
+    -------
+    TrackErrorMetrics
+    """
+    if not true_tracks:
+        return TrackErrorMetrics(e_track=1.0, n_true_tracks=0)
+
+    true_frames = _true_frame_lookup(true_tracks)
+    pred_frames = _pred_frame_lookup(pred_tracks)
+
+    # {frame: {pred_id: true_id}}, one-to-one within each frame.
+    frame_match: Dict[int, Dict[int, int]] = {}
+    for frame in set(true_frames) | set(pred_frames):
+        frame_match[frame] = _match_frame(
+            true_frames.get(frame, {}), pred_frames.get(frame, {}), eps
+        )
+
+    # Per predicted track: which true ids it touches, how many of its points
+    # matched nothing, and which frames it spans.
+    pred_true_ids: Dict[int, set] = {}
+    pred_unmatched: Dict[int, int] = {}
+    pred_frame_set: Dict[int, set] = {}
+    for pid, pts in pred_tracks.items():
+        ids = set()
+        unmatched = 0
+        frames = set()
+        for frame, _x, _y, _z in pts:
+            frames.add(frame)
+            tidv = frame_match.get(frame, {}).get(pid)
+            if tidv is None:
+                unmatched += 1
+            else:
+                ids.add(tidv)
+        pred_true_ids[pid] = ids
+        pred_unmatched[pid] = unmatched
+        pred_frame_set[pid] = frames
+
+    # Which predicted tracks touch each true track.
+    fragments_of: Dict[int, set] = {tid: set() for tid in true_tracks}
+    for pid, ids in pred_true_ids.items():
+        for tid in ids:
+            if tid in fragments_of:
+                fragments_of[tid].add(pid)
+
+    n_perfect = n_fragmented = n_contaminated = n_incomplete = n_missed = 0
+    for tid, pts in true_tracks.items():
+        frags = fragments_of[tid]
+        if not frags:
+            n_missed += 1
+            continue
+        if len(frags) > 1:
+            n_fragmented += 1
+            continue
+        pid = next(iter(frags))
+        clean = pred_true_ids[pid] == {tid} and pred_unmatched[pid] == 0
+        if not clean:
+            n_contaminated += 1
+            continue
+        if pred_frame_set[pid] != {f for f, _x, _y, _z in pts}:
+            n_incomplete += 1
+            continue
+        n_perfect += 1
+
+    n_true = len(true_tracks)
+    return TrackErrorMetrics(
+        e_track=1.0 - n_perfect / n_true,
+        n_true_tracks=n_true,
+        n_perfect=n_perfect,
+        n_fragmented=n_fragmented,
+        n_contaminated=n_contaminated,
+        n_incomplete=n_incomplete,
+        n_missed=n_missed,
+    )
+
+
 def ghost_positions_from_frame_gt(
     frame_gt: Dict[int, List[Tuple[int, float, float, float]]],
 ) -> Dict[int, np.ndarray]:
@@ -366,7 +530,9 @@ def compute_physics_metrics(
 __all__ = [
     "IdentityMetrics",
     "PhysicsMetrics",
+    "TrackErrorMetrics",
     "compute_identity_metrics",
+    "e_track",
     "ghost_positions_from_frame_gt",
     "track_lifetime_distribution",
     "acceleration_kurtosis",
