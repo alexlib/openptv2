@@ -355,6 +355,13 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
     p95_displacement. Across all three trackers swept, capping dacc at the
     SAME value as the (now wider) displacement bound outperformed the
     separate, larger acceleration-derived value.
+
+    That earlier sweep only ever compared dacc values *at or above*
+    half_window, so it established which of those was best, not that
+    half_window itself was. A later sweep going *below* it (see the inline
+    table at the ``dacc`` assignment) shows dacc == half_window is never the
+    best choice and is the worst for every tracker at high density; dacc is
+    now 0.6 * half_window.
     """
     params: dict[str, Any] = {}
 
@@ -369,8 +376,37 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
         params["dvymax"] = half_window
         params["dvzmin"] = -half_window
         params["dvzmax"] = half_window
-        # Not derived from p95_acceleration -- see docstring.
-        params["dacc"] = half_window
+        # Not derived from p95_acceleration -- see docstring -- but no longer
+        # equal to half_window either. dacc is the SEEDED-STEP search box
+        # (track_kernels_track3d._track3d_full_loop levels 1-2), a position
+        # tolerance around a velocity prediction, so it should be tighter
+        # than the raw displacement window. At dacc == half_window the port
+        # is bit-identical to the C original, which throws away the one thing
+        # the port does better (docs/plans/2026-08-16-tracking-next-steps.md
+        # §3.3).
+        #
+        # 0.6 is measured, at dvxmax = 6 on both ground-truth synthetic sets,
+        # precision / yield, postprocess off:
+        #
+        #   dacc/dvxmax                0.4            0.6            1.0
+        #   --- 220 particles/frame ---
+        #   priority_segment_3d   .978 / .850    .975 / .891    .967 / .894
+        #   nearest_hungarian_3d  .980 / .778    .987 / .882    .984 / .890
+        #   kalman_hungarian_3d   .968 / .679    .978 / .825    .974 / .874
+        #   --- 970 particles/frame ---
+        #   priority_segment_3d   .950 / .873    .938 / .872    .916 / .867
+        #   nearest_hungarian_3d  .960 / .860    .946 / .853    .848 / .765
+        #   kalman_hungarian_3d   .938 / .798    .936 / .839    .875 / .783
+        #
+        # 1.0 is never the best column and is the worst for every tracker at
+        # the higher density. 0.6 takes large gains where results are poor
+        # (dense: up to +9.8 points of precision and +8.8 of yield) against
+        # small losses where they are already good (sparse: kalman gives up
+        # 4.9 points of yield, the worst case). The optimum is genuinely
+        # density-dependent -- 0.8 wins at 220/frame, 0.4 at 970/frame -- so
+        # a future refinement could scale it by
+        # stats.mean_interparticle_distance rather than use one constant.
+        params["dacc"] = half_window * 0.6
 
     # Cap only against a genuinely extreme cone (several times the mean
     # particle spacing), not "wider than a single mean spacing": the

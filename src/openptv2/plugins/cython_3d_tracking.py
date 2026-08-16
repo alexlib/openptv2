@@ -53,10 +53,21 @@ class Cython3DTracker:
         """Execute experiment-level tracking via OpenPTV2 full_forward_3d().
 
         Postprocess (seed_cold_start -> relink_trajectory_gaps ->
-        enforce_reciprocity) is opt-in via track.postprocess in the YAML,
-        same as it was in the now-orphaned default_tracking.py plugin this
-        module replaced -- defaults OFF, since it is not cost-neutral (see
-        docs/plans/master-plan.md, Stage 1c).
+        enforce_reciprocity) runs by default; set ``track.postprocess: false``
+        in the YAML to opt out.
+
+        It used to default OFF because it was not cost-neutral. It still is
+        not free (~20-40% wall), but it is now a clear quality win, which it
+        previously was not: gap bridging was self-defeating (its cross-frame
+        links were severed by the reciprocity pass immediately after) and was
+        handed ``dvxmax``, a velocity gate, as an acceleration-scale
+        tolerance. Both fixed -- see
+        docs/plans/2026-08-16-tracking-next-steps.md §3.1/§3.2 and the
+        measured table in ``tracking_presets.PRESET_CONFIGS``: mean
+        trajectory length +49% at 220 particles/frame (7.13 -> 10.61) and
+        +35% at 970 (8.18 -> 11.04), for under a point of precision.
+        Trajectory length is what determines the quality of the Lagrangian
+        velocity/acceleration statistics this project produces.
         """
         if self.exp is None:
             raise ValueError("No experiment object provided")
@@ -70,7 +81,7 @@ class Cython3DTracker:
             if pm is None and hasattr(self.exp, "exp1"):
                 pm = getattr(self.exp.exp1, "pm", None)
             track_cfg = pm.parameters.get("track", {}) if pm else {}
-            if track_cfg.get("postprocess", False):
+            if track_cfg.get("postprocess", True):
                 stats = tracker.postprocess()
                 log.info(
                     "Post-process links: %s -> %s",

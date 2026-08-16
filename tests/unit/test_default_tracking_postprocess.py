@@ -1,16 +1,25 @@
-"""fast_3d's postprocess wiring is opt-in, gated by track.postprocess.
+"""fast_3d's postprocess wiring is gated by track.postprocess, and now
+defaults ON.
 
-Regression for Stage 1c of the tracker consolidation roadmap
-(docs/plans/master-plan.md): plugins/
-default_tracking.py's fast_3d branch can now run Tracker.postprocess()
-(seed_cold_start -> relink_trajectory_gaps -> enforce_reciprocity) after
-full_forward_3d(), same as the full_multipass path already does. It
-defaults OFF (matching tracking_presets.PRESET_CONFIGS["fast_3d"]
-["postprocess"] == False) since it measurably is NOT cost-neutral on the
-synthetic_turbulent benchmark: postprocess added a net 0-1 links while
-costing 5-13x the tracking time (see the roadmap doc / bench_trackers.py
---dacc-sweep-style runs). This test only pins the wiring (the flag
-actually gates the call); it does not assert a quality effect.
+This test only pins the wiring (the flag actually gates the call); it does
+not assert a quality effect.
+
+History, because the default flipped: it used to default OFF, and the
+recorded reason was that postprocess "added a net 0-1 links while costing
+5-13x the tracking time". That was not a property of post-processing -- it
+was the bug in it. ``relink_trajectory_gaps`` wrote a cross-frame link to
+bridge a gap, and ``enforce_reciprocity``, running immediately after,
+compared frame k only against k+1, so it severed every bridge right back out
+(286 bridged, 286 severed, net zero). On top of that the bridging tolerance
+was handed ``dvxmax`` -- a velocity gate -- for what is an
+acceleration-scale residual.
+
+Both are fixed (docs/plans/2026-08-16-tracking-next-steps.md §3.1, §3.2), and
+the pass is now a measured win on both ground-truth synthetic sets: mean
+trajectory length 7.13 -> 10.61 at 220 particles/frame and 8.18 -> 11.04 at
+970, for under a point of precision. It is still not free (~20-40% wall);
+set ``track.postprocess: false`` to opt out. See the table in
+``tracking_presets.PRESET_CONFIGS``.
 """
 
 from __future__ import annotations
@@ -44,10 +53,25 @@ def test_postprocess_runs_when_flag_is_true(monkeypatch):
     assert calls == [1]
 
 
-def test_postprocess_does_not_run_by_default(monkeypatch):
+def test_postprocess_runs_by_default(monkeypatch):
+    calls = []
+    original = Tracker.postprocess
+
+    def spy(self, *a, **kw):
+        calls.append(1)
+        return original(self, *a, **kw)
+
+    monkeypatch.setattr(Tracker, "postprocess", spy)
+
+    yaml_path = _tiny_yaml(Path(tempfile.mkdtemp()))
+    bm.run_tracker(yaml_path, "fast_3d")
+    assert calls == [1]
+
+
+def test_postprocess_can_be_disabled(monkeypatch):
     calls = []
     monkeypatch.setattr(Tracker, "postprocess", lambda self, *a, **kw: calls.append(1))
 
     yaml_path = _tiny_yaml(Path(tempfile.mkdtemp()))
-    bm.run_tracker(yaml_path, "fast_3d")
+    bm.run_tracker(yaml_path, "fast_3d", track_overrides={"postprocess": False})
     assert calls == []

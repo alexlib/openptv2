@@ -42,23 +42,43 @@ PRESET_CHOICES = [
 PRESET_MAP = dict(PRESET_CHOICES)
 REVERSE_PRESET_MAP = {v: k for k, v in PRESET_CHOICES}
 
+# ``postprocess`` on the three priority_segment_3d aliases below is ON. It
+# used to be off, correctly: gap bridging was self-defeating (its cross-frame
+# links were severed by the reciprocity pass that runs right after it) and it
+# was handed ``dvxmax``, a velocity gate, as an acceleration-scale tolerance.
+# Both are fixed (docs/plans/2026-08-16-tracking-next-steps.md §3.1, §3.2), and
+# the pass is now a measured win on both ground-truth synthetic sets:
+#
+#   220 p/frame   yield 0.894 -> 0.936, mean track length  7.13 -> 10.61,
+#                 precision 0.9667 -> 0.9596, wall 6.2s -> 7.5s
+#   970 p/frame   yield 0.867 -> 0.889, mean track length  8.18 -> 11.04,
+#                 precision 0.9157 -> 0.9059, wall 7.0s -> 9.9s
+#
+# The ~20-40% wall cost buys ~50% longer trajectories, which is what actually
+# determines the quality of the Lagrangian velocity/acceleration statistics
+# this project exists to produce; the <1 point of precision is a good trade
+# for that. Set ``track.postprocess: false`` to opt out.
+#
+# NOT flipped for the 4BE preset: bridging *hurts* 4BE (§3.4) -- its fragments
+# end at conflicts it deliberately declined, and the bridger re-creates
+# exactly those links.
 PRESET_CONFIGS: Dict[str, Dict[str, Any]] = {
     "priority_segment_3d": {
         "track_mode": 1,
         "flagNewParticles": False,
-        "postprocess": False,
+        "postprocess": True,
         "selected_tracking": "priority_segment_3d",
     },
     "fast": {
         "track_mode": 1,
         "flagNewParticles": False,
-        "postprocess": False,
+        "postprocess": True,
         "selected_tracking": "priority_segment_3d",
     },
     "fast_3d": {
         "track_mode": 1,
         "flagNewParticles": False,
-        "postprocess": False,
+        "postprocess": True,
         "selected_tracking": "priority_segment_3d",
     },
     "kalman_hungarian_3d": {

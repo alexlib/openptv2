@@ -55,7 +55,9 @@ def test_apply_preset_fast_3d():
     assert t_out["preset"] == "fast_3d"
     assert t_out["track_mode"] == 1
     assert t_out["flagNewParticles"] is False
-    assert t_out["postprocess"] is False
+    # ON since gap bridging became a measured win -- see PRESET_CONFIGS'
+    # comment and docs/plans/2026-08-16-tracking-next-steps.md §3.1/§3.2.
+    assert t_out["postprocess"] is True
     assert t_out["dvxmin"] == -5.0
     assert p_out["selected_tracking"] == "fast_3d"
 

@@ -191,10 +191,24 @@ PRIORITY_SEGMENT_3D_INFO = TrackerInfo(
             name="dacc",
             type="float",
             default="5.5",
-            description="Maximum acceleration bound (mm/frame²).",
-            how_to_choose="Set just above max observed acceleration.",
+            description=(
+                "Seeded-step search box (mm): the radius searched around the "
+                "velocity-extrapolated prediction for a particle that is "
+                "already being tracked. Named for an acceleration bound, but "
+                "it is used as a position tolerance."
+            ),
+            how_to_choose=(
+                "About 0.6 x dvxmax -- NOT 'just above max observed "
+                "acceleration', and not equal to dvxmax. This is the knob "
+                "that controls tracking of particles that already have a "
+                "velocity; dvxmax only widens the cold search for particles "
+                "that do not. Setting dacc = dvxmax makes the tracker "
+                "bit-identical to the C original and measures worst of every "
+                "value tried at high seeding density. Lower it further "
+                "(~0.4 x) when densely seeded, raise it (~0.8 x) when sparse."
+            ),
             typical_range="0.5 – 50",
-            unit="mm/frame²",
+            unit="mm (position tolerance, despite the name)",
         ),
     ),
     default_preset="priority_segment_3d",

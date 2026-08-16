@@ -43,11 +43,11 @@ class Tracking:
             tracker.full_forward_3d()
             # Postprocess is disk-level (reads/rewrites the linkage files
             # tracker.full_forward_3d() just wrote) and tracker-agnostic --
-            # same call the forward+backward path below makes. Off by
-            # default here, matching apply_tracker()'s priority_segment_3d
-            # default (its whole point is minimal overhead) -- set
-            # track.postprocess: true to opt in.
-            if track_cfg.get("postprocess", False):
+            # same call the forward+backward path below makes. ON by default,
+            # matching PRESET_CONFIGS' priority_segment_3d entry (see the
+            # measured tradeoff in its comment: ~50% longer trajectories for
+            # ~20-40% wall time) -- set track.postprocess: false to opt out.
+            if track_cfg.get("postprocess", True):
                 stats = tracker.postprocess()
                 print(
                     f"Post-process links: {stats.get('links_before', 0)} -> "

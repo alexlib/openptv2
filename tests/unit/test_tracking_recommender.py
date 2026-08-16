@@ -143,7 +143,11 @@ def test_suggest_params_margin_not_clamped_back_to_raw_p95():
     # so the margin actually takes effect here.
     assert params["dvxmax"] > 4.0, params
     assert params["dvxmax"] == pytest.approx(1.858 * 3.0, rel=1e-6)
-    assert params["dacc"] == params["dvxmax"]  # capped to the same bound, not a separate inflated value
+    # dacc is the seeded-step search box, deliberately tighter than the
+    # displacement window: dacc == dvxmax is bit-identical to the C original
+    # and measured worst of every value tried at high density. See the table
+    # at the dacc assignment in tracking_recommender.
+    assert params["dacc"] == pytest.approx(params["dvxmax"] * 0.6, rel=1e-6)
 
 
 def test_print_recommendation():
