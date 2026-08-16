@@ -224,6 +224,41 @@ def track3d_loop_fast(
     Level 2: no prev link — average velocity from neighbors (search box = dacc).
     Level 3: no prev link, no neighbor info — use current position (search box = dx,dy,dz).
 
+    **``dacc`` is the knob that controls seeded-step search.** This is where
+    the port deliberately diverges from ``track3d.c``, which passes
+    ``dvxmax/dvymax/dvzmax`` at all three levels and never uses ``dacc`` as a
+    gate. ``dacc = 0`` restores that C behaviour exactly (``ax = dx`` below),
+    and ``dacc`` feeds nothing else here, so the two are the same code path
+    whenever ``dacc == dvxmax``.
+
+    Carrying C-era intuition here is a trap: tuning ``dvxmax`` changes
+    *nothing* for particles that are already being tracked — it only widens
+    level 3, the cold search for particles with no velocity history.
+
+    Measured on the two ground-truth synthetic sets (``priority_segment_3d``,
+    postprocess off). Link precision / yield — both endpoints matched, so
+    neither is inflated by fragmentation the way ``pmt`` is:
+
+    ===========================  ===============  ===============
+    config                       220/frame        970/frame
+    ===========================  ===============  ===============
+    port ``dacc=3  dvxmax=6``    0.977 / 0.885    0.944 / 0.874
+    port ``dacc=4  dvxmax=6``    0.975 / 0.895    0.935 / 0.871
+    C    ``dacc=0  dvxmax=4``    0.977 / 0.867    0.945 / 0.877
+    C    ``dacc=0  dvxmax=6``    0.967 / 0.894    0.916 / 0.867
+    C    ``dacc=0  dvxmax=10``   0.943 / 0.891    0.876 / 0.862
+    ===========================  ===============  ===============
+
+    What actually drives quality is the *size* of the seeded box, not which
+    parameter names it: the wide-box C configs (``dvxmax`` 6 and 10) are the
+    worst rows at both densities. The port's advantage is that it can tighten
+    level 1 without also starving level 3's cold search — worth ~3 points of
+    yield at 220/frame (0.895 vs 0.867 at equal precision), and roughly
+    parity at 970/frame. Modest, but it costs nothing.
+
+    Note mean track length moves *against* quality here: ``dvxmax=10`` gives
+    the longest tracks and the worst precision. Longer but wronger.
+
     Within each level, candidates are claimed in ascending cost order across
     ALL of that level's particles at once (one sort per level), not
     particle-by-particle in index order: otherwise particle 0 always wins a

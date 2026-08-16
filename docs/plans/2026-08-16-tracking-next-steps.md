@@ -179,7 +179,69 @@ independent of representation):
 `dacc·(gap+1)²/2`), not from `dvxmax`. Knee is at 6-8 mm on this dataset,
 which such a formula should roughly reproduce for `dacc = 6`.
 
-### 3.3 C gate fidelity for track3d
+### 3.3 C gate fidelity for track3d — RESOLVED: keep the port, don't restore C
+
+The framing below ("restore the C behaviour or make the choice explicit") was
+a false choice, on two counts.
+
+**1. `dacc = 0` already IS the C behaviour**, today, with no code change:
+`track_kernels_track3d.py`'s `ax = dacc if dacc > 0.0 else dx` falls back to
+`dx/dy/dz` at levels 1 and 2, and `dacc` feeds nothing else in that kernel
+(only `ax/ay/az` and the grid cell size). So the two are the *same code path*
+whenever `dacc == dvxmax` — measured bit-identical:
+
+| config | tracks | prec | yield |
+|---|---|---|---|
+| port `dacc=6 dvxmax=6` | 946 | 0.9667 | 0.8943 |
+| C `dacc=0 dvxmax=6` | 946 | 0.9667 | 0.8943 |
+
+That is why the divergence was invisible on this dataset.
+
+**2. The port is a strict superset, and modestly better.** It decouples the
+seeded-step box (levels 1-2) from the unseeded box (level 3); C forces them
+equal. Link precision / yield (both endpoints matched — see the metric
+warning below for why E_track is *not* used here), `priority_segment_3d`,
+postprocess off:
+
+| config | 220/f prec | 220/f yield | 970/f prec | 970/f yield |
+|---|---|---|---|---|
+| port `dacc=3 dvxmax=6` | 0.9766 | 0.8852 | 0.9443 | 0.8738 |
+| **port `dacc=4 dvxmax=6`** | 0.9748 | **0.8949** | 0.9346 | 0.8708 |
+| C `dacc=0 dvxmax=4` | 0.9770 | 0.8665 | 0.9448 | 0.8765 |
+| C `dacc=0 dvxmax=6` | 0.9667 | 0.8943 | 0.9157 | 0.8670 |
+| C `dacc=0 dvxmax=10` | 0.9427 | 0.8914 | 0.8764 | 0.8622 |
+
+What drives quality is the *size* of the seeded box, not which parameter
+names it — the wide-box C rows are the worst at both densities. The port's
+edge is that it can tighten level 1 without starving level 3's cold search:
+worth ~3 points of yield at 220/frame (0.895 vs 0.867 at equal precision),
+and roughly parity at 970/frame. Modest, but free.
+
+**Metric warning — §5's `e_track` snippet is wrong, do not promote it as
+written.** It checks "all points map to one true id" + "same start frame" but
+never checks that the predicted track *covers* the true one, so a 2-point
+fragment starting on the right frame scores as a perfect reproduction. This
+is the same inflation §2.1 identifies in `pmt`, and it is not theoretical: on
+this data it ranks `dacc=1` best (E=0.068, 220 of 236 "perfect") at
+yield 0.55 with 3054 predicted tracks for 236 true ones. Adding the coverage
+check (same end frame and same point count) makes E_track saturate at
+0.94-0.99 for *every* config, because 91% of true tracks contain a gap (§2.2)
+and a gap is unbridgeable with postprocess off — so it stops discriminating
+instead. Before promoting `e_track()` into `benchmarking/metrics.py`: add the
+coverage check, and evaluate it only with gap bridging enabled.
+
+Caveats on the evidence: **no real-data discrimination was possible.**
+`test_cavity` is 4 frames (mean track length 1.1, 415 links) — far too short,
+consistent with this repo's own "directional checks only" note; the real-data
+gate still awaits a well-conditioned experiment. And mean track length moves
+*against* quality: `dvxmax=10` gives the longest tracks and the worst
+precision.
+
+**Done:** the required documentation ("`dacc` is the knob that controls
+seeded-step search") is now in `_track3d_full_loop`'s docstring with these
+numbers.
+
+Original write-up follows.
 
 Restore the C behaviour (`dvx/dvy/dvz` gate at all levels) or make the choice
 explicit in config. Measured impact is modest, so this is fidelity work, not
