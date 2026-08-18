@@ -1166,8 +1166,8 @@ source tree is not needed at runtime:</p>
 <p>This pulls <strong>18 packages</strong> (numpy, scipy, scikit-image, pydantic, pyyaml,
 imageio, traits, cython + deps) and compiles the extensions in ~7 s. No Qt,
 chaco, PySide6, or matplotlib. Verify:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>/opt/venv/bin/python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import openptv2; print(openptv2.get_runtime_info())&quot;</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1"># {&quot;engine&quot;: &quot;cython3-pure-python&quot;, &quot;compiled&quot;: true, &quot;package&quot;: &quot;openptv2&quot;}</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>/opt/venv/bin/python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import openptv2; print(openptv2.get_runtime_info())"</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1"># {"engine": "cython3-pure-python", "compiled": true, "package": "openptv2"}</span>
 </span></code></pre></div>
 <h2 id="run-a-batch">Run a batch<a class="headerlink" href="#run-a-batch" title="Permanent link">&para;</a></h2>
 <p><code>openptv2-batch</code> takes a YAML parameter file (frames default to its <code>sequence</code>
@@ -1252,17 +1252,17 @@ plugin support ships in this image with no extra data):</p>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># zero-data smoke test on the baked demo (default pipeline):</span>
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>openptv2-cloud<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="s2">&quot;cp -r /demo/test_cavity /tmp/c &amp;&amp; cd /tmp/c &amp;&amp; \</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="s2">   openptv2-batch parameters_Run1.yaml 10001 10004&quot;</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="s2">"cp -r /demo/test_cavity /tmp/c &amp;&amp; cd /tmp/c &amp;&amp; \</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="s2">   openptv2-batch parameters_Run1.yaml 10001 10004"</span>
 </span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
 </span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c1"># zero-data smoke test of a non-default plugin (image-splitter dataset):</span>
 </span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>openptv2-cloud<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="s2">&quot;cp -r /demo/test_splitter /tmp/s &amp;&amp; cd /tmp/s &amp;&amp; \</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="s2">"cp -r /demo/test_splitter /tmp/s &amp;&amp; cd /tmp/s &amp;&amp; \</span>
 </span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="s2">   openptv2-batch parameters_Run1.yaml 1000001 1000002 \</span>
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="s2">   --sequence-plugin splitter_sequence --tracking-plugin splitter_tracking&quot;</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="s2">   --sequence-plugin splitter_sequence --tracking-plugin splitter_tracking"</span>
 </span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
 </span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="c1"># your own data (mounted at /data):</span>
-</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">:/data&quot;</span><span class="w"> </span>openptv2-cloud<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">:/data"</span><span class="w"> </span>openptv2-cloud<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">  </span>openptv2-batch<span class="w"> </span>/data/&lt;exp&gt;/parameters_Run1.yaml<span class="w"> </span>&lt;first&gt;<span class="w"> </span>&lt;last&gt;
 </span></code></pre></div>
 <p>The image leaves the GIL enabled by default. Add <code>-e PYTHON_GIL=0</code> to force it

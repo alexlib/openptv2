@@ -1112,10 +1112,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#31-revert-placeholder-gap-bridging-restore-cross-frame-gap-links" class="md-nav__link">
+  <a href="#31-revert-placeholder-gap-bridging-restore-cross-frame-gap-links-done" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.1 Revert placeholder gap bridging; restore cross-frame gap links
+        3.1 Revert placeholder gap bridging; restore cross-frame gap links — DONE
       
     </span>
   </a>
@@ -1123,10 +1123,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-max_velocity_err-is-the-wrong-parameter" class="md-nav__link">
+  <a href="#32-max_velocity_err-is-the-wrong-parameter-done" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 max_velocity_err is the wrong parameter
+        3.2 max_velocity_err is the wrong parameter — DONE
       
     </span>
   </a>
@@ -1134,10 +1134,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#33-c-gate-fidelity-for-track3d" class="md-nav__link">
+  <a href="#33-c-gate-fidelity-for-track3d-resolved-keep-the-port-dont-restore-c" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.3 C gate fidelity for track3d
+        3.3 C gate fidelity for track3d — RESOLVED: keep the port, don't restore C
       
     </span>
   </a>
@@ -1145,10 +1145,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#34-4be-follow-ups" class="md-nav__link">
+  <a href="#34-4be-follow-ups-done" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.4 4BE follow-ups
+        3.4 4BE follow-ups — DONE
       
     </span>
   </a>
@@ -1156,10 +1156,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#35-where-the-speed-actually-is" class="md-nav__link">
+  <a href="#36-track-level-results-once-e_track-works" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.5 Where the speed actually is
+        3.6 Track-level results, once E_track works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-where-the-speed-actually-is-profiled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Where the speed actually is — PROFILED
       
     </span>
   </a>
@@ -1280,10 +1291,23 @@ particle, divided by the number of predicted tracks. A 2-point fragment
 scores "correct" automatically, so a fragmenting tracker inflates it.
 <code>E_track = 1 - pmt</code> is <strong>wrong</strong> and was used in earlier reports.</p>
 <p>Use Ouellette's definition instead — fraction of <strong>true</strong> tracks not
-reproduced perfectly (no spurious points, same start frame). Reference
-implementation: <code>scripts/</code> has none yet; the throwaway used during the
-investigation is reproduced in §5 and should be promoted into
-<code>openptv2/benchmarking/metrics.py</code> as <code>e_track()</code>.</p>
+reproduced perfectly. <strong>DONE:</strong> promoted as
+<code>openptv2.benchmarking.metrics.e_track()</code>, wired into
+<code>scripts/benchmark_utils.combined_metrics</code>, with
+<code>tests/unit/test_e_track.py</code>.</p>
+<p>Note the parenthetical above ("no spurious points, same start frame") is
+itself incomplete, and §5's snippet implemented exactly that — it never
+checks the predicted track <em>covers</em> the true one, so a 2-point fragment
+scores as a perfect reproduction of a 30-point trajectory. That is the same
+inflation this section identifies in <code>pmt</code>. The shipped <code>e_track</code> requires
+all three conditions: one fragment, nothing foreign or unmatched in it, and
+exactly the true track's frames. Six of the ten tests fail against the
+<code>(one id + same start frame)</code> form, verified by mutating the implementation
+back to it.</p>
+<p>It is a strict, all-or-nothing measure, so it returns a failure breakdown
+(<code>n_fragmented</code> / <code>n_contaminated</code> / <code>n_incomplete</code> / <code>n_missed</code>) alongside
+the scalar, and it is only informative with <strong>gap bridging enabled</strong> — see
+§3.6.</p>
 <p><strong>2.2 The synthetic ground truth contains gaps.</strong> 5796 step-1 links, but
 476 links of step 2-4, and <strong>214 of 236 tracks (91%) contain at least one
 gap</strong>. Any comparison that assumes contiguous truth is wrong.</p>
@@ -1300,7 +1324,54 @@ tracking faster; frame read/write, the zarr store and the SoA↔AoS sync are
 where the time goes.</p>
 <hr />
 <h2 id="3-next-steps-in-order">3. Next steps, in order<a class="headerlink" href="#3-next-steps-in-order" title="Permanent link">&para;</a></h2>
-<h3 id="31-revert-placeholder-gap-bridging-restore-cross-frame-gap-links">3.1 Revert placeholder gap bridging; restore cross-frame gap links<a class="headerlink" href="#31-revert-placeholder-gap-bridging-restore-cross-frame-gap-links" title="Permanent link">&para;</a></h3>
+<h3 id="31-revert-placeholder-gap-bridging-restore-cross-frame-gap-links-done">3.1 Revert placeholder gap bridging; restore cross-frame gap links — DONE<a class="headerlink" href="#31-revert-placeholder-gap-bridging-restore-cross-frame-gap-links-done" title="Permanent link">&para;</a></h3>
+<p>Landed. <code>relink_trajectory_gaps</code> writes a single cross-frame link again; the
+step is recovered by the reciprocal-pointer search below, exposed as
+<code>tracking_postprocess.link_step</code> / <code>back_link_step</code> (cap <code>MAX_LINK_STEP = 3</code>).
+All three consumers are gap-aware: <code>enforce_reciprocity</code> (searches
+<code>1..max_step</code> instead of comparing k against k+1 only), <code>benchmarking/runner.py
+::read_trajectories</code>, and <code>storage/seal.py</code> (keeps a 3-frame trajid/next
+history). The two walkers fall back to step 1 when nothing reciprocates, so
+non-reciprocal linkage (no postprocess pass) behaves exactly as before.</p>
+<p>Measured, <code>priority_segment_3d</code> on <code>synthetic_turbulent</code>:</p>
+<table>
+<thead>
+<tr>
+<th>postprocess</th>
+<th>tracks</th>
+<th>points</th>
+<th>links</th>
+<th>precision</th>
+<th>yield</th>
+<th>mean len</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>off</td>
+<td>946</td>
+<td>6748</td>
+<td>5802</td>
+<td>0.9667</td>
+<td>0.894</td>
+<td>7.13</td>
+</tr>
+<tr>
+<td>on</td>
+<td>660</td>
+<td>6756</td>
+<td>6096</td>
+<td>0.9642</td>
+<td>0.937</td>
+<td>10.24</td>
+</tr>
+</tbody>
+</table>
+<p>Links up 294, yield up, precision flat (it was 0.878 with placeholders). The
++8 points come from <code>enforce_reciprocity</code>/<code>seed_cold_start</code> changing
+reachability, not from fabricated particles — relink now writes no particles
+at all.</p>
+<p>Original write-up follows.</p>
 <p><code>bfccfa9</code> made <code>relink_trajectory_gaps</code> fill a bridged gap with an
 <em>interpolated placeholder particle</em> per skipped frame. This is wrong on two
 counts:</p>
@@ -1334,7 +1405,72 @@ smallest <code>s</code> so a genuine step-1 link always wins.</p>
 lowering precision; <code>test_relink_trajectory_gaps_bridges_missing_frame</code> is
 rewritten to assert a cross-frame link (not a placeholder); no new points
 appear in any trajectory.</p>
-<h3 id="32-max_velocity_err-is-the-wrong-parameter">3.2 <code>max_velocity_err</code> is the wrong parameter<a class="headerlink" href="#32-max_velocity_err-is-the-wrong-parameter" title="Permanent link">&para;</a></h3>
+<h3 id="32-max_velocity_err-is-the-wrong-parameter-done">3.2 <code>max_velocity_err</code> is the wrong parameter — DONE<a class="headerlink" href="#32-max_velocity_err-is-the-wrong-parameter-done" title="Permanent link">&para;</a></h3>
+<p>Landed. <code>relink_trajectory_gaps</code>' <code>max_velocity_err</code> is now <code>max_accel_err</code>,
+the tolerance is gap-scaled as <code>0.5 · max_accel_err · (gap+1)²/2</code>, and all
+three callers (<code>tracker.py</code>, <code>track_assisted.py</code>,
+<code>fast_3d_smooth_tracking.py</code>) pass <code>dacc</code> instead of <code>dvxmax</code>.</p>
+<p>The extra 0.5 is measured, not assumed — the plan's literal <code>dacc·(gap+1)²/2</code>
+puts the gap-1 tolerance at 12 mm for <code>dacc=6</code>, past the knee. Bridges scored
+against ground-truth identity (this is the sweep re-run on the restored
+cross-frame representation, so the numbers differ slightly from §3.2's
+original table):</p>
+<table>
+<thead>
+<tr>
+<th>max_accel_err</th>
+<th>tol @ gap 1</th>
+<th>bridges</th>
+<th>% correct</th>
+<th>true gaps recovered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.5</td>
+<td>3.0</td>
+<td>137</td>
+<td>92.0%</td>
+<td>26.5%</td>
+</tr>
+<tr>
+<td>2.0</td>
+<td>4.0</td>
+<td>219</td>
+<td>92.7%</td>
+<td>42.6%</td>
+</tr>
+<tr>
+<td><strong>3.0</strong></td>
+<td><strong>6.0</strong></td>
+<td><strong>309</strong></td>
+<td><strong>92.6%</strong></td>
+<td><strong>60.1%</strong></td>
+</tr>
+<tr>
+<td>4.0</td>
+<td>8.0</td>
+<td>330</td>
+<td>90.9%</td>
+<td>63.0%</td>
+</tr>
+<tr>
+<td>6.0</td>
+<td>12.0</td>
+<td>347</td>
+<td>85.6%</td>
+<td>62.4%</td>
+</tr>
+</tbody>
+</table>
+<p><code>0.5·dacc·4/2 = dacc</code> lands the gap-1 tolerance on the knee. End to end
+(<code>priority_segment_3d</code>): 946 → 637 tracks, links 5802 → 6119, precision
+0.9667 → 0.9596, yield 0.894 → 0.936, mean length 7.13 → 10.61.</p>
+<p>Also fixed in passing: the velocity estimate read <code>frames[k-1]</code>
+unconditionally, which is the wrong frame when the incoming link is itself a
+bridge from an earlier pass. It now resolves the real source frame with
+<code>back_link_step</code> and divides the displacement by that step.</p>
+<p>Original write-up follows.</p>
 <p><code>Tracker.postprocess</code> passes <code>max_velocity_err=float(tpar.dvxmax)</code>. The
 tolerance is applied to a position that has <strong>already been
 velocity-extrapolated</strong>, so the residual is acceleration-scale, not
@@ -1395,7 +1531,119 @@ independent of representation):</p>
 <p><strong>Do:</strong> derive the tolerance from <code>dacc</code> and the gap length (about
 <code>dacc·(gap+1)²/2</code>), not from <code>dvxmax</code>. Knee is at 6-8 mm on this dataset,
 which such a formula should roughly reproduce for <code>dacc = 6</code>.</p>
-<h3 id="33-c-gate-fidelity-for-track3d">3.3 C gate fidelity for track3d<a class="headerlink" href="#33-c-gate-fidelity-for-track3d" title="Permanent link">&para;</a></h3>
+<h3 id="33-c-gate-fidelity-for-track3d-resolved-keep-the-port-dont-restore-c">3.3 C gate fidelity for track3d — RESOLVED: keep the port, don't restore C<a class="headerlink" href="#33-c-gate-fidelity-for-track3d-resolved-keep-the-port-dont-restore-c" title="Permanent link">&para;</a></h3>
+<p>The framing below ("restore the C behaviour or make the choice explicit") was
+a false choice, on two counts.</p>
+<p><strong>1. <code>dacc = 0</code> already IS the C behaviour</strong>, today, with no code change:
+<code>track_kernels_track3d.py</code>'s <code>ax = dacc if dacc &gt; 0.0 else dx</code> falls back to
+<code>dx/dy/dz</code> at levels 1 and 2, and <code>dacc</code> feeds nothing else in that kernel
+(only <code>ax/ay/az</code> and the grid cell size). So the two are the <em>same code path</em>
+whenever <code>dacc == dvxmax</code> — measured bit-identical:</p>
+<table>
+<thead>
+<tr>
+<th>config</th>
+<th>tracks</th>
+<th>prec</th>
+<th>yield</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>port <code>dacc=6 dvxmax=6</code></td>
+<td>946</td>
+<td>0.9667</td>
+<td>0.8943</td>
+</tr>
+<tr>
+<td>C <code>dacc=0 dvxmax=6</code></td>
+<td>946</td>
+<td>0.9667</td>
+<td>0.8943</td>
+</tr>
+</tbody>
+</table>
+<p>That is why the divergence was invisible on this dataset.</p>
+<p><strong>2. The port is a strict superset, and modestly better.</strong> It decouples the
+seeded-step box (levels 1-2) from the unseeded box (level 3); C forces them
+equal. Link precision / yield (both endpoints matched — see the metric
+warning below for why E_track is <em>not</em> used here), <code>priority_segment_3d</code>,
+postprocess off:</p>
+<table>
+<thead>
+<tr>
+<th>config</th>
+<th>220/f prec</th>
+<th>220/f yield</th>
+<th>970/f prec</th>
+<th>970/f yield</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>port <code>dacc=3 dvxmax=6</code></td>
+<td>0.9766</td>
+<td>0.8852</td>
+<td>0.9443</td>
+<td>0.8738</td>
+</tr>
+<tr>
+<td><strong>port <code>dacc=4 dvxmax=6</code></strong></td>
+<td>0.9748</td>
+<td><strong>0.8949</strong></td>
+<td>0.9346</td>
+<td>0.8708</td>
+</tr>
+<tr>
+<td>C <code>dacc=0 dvxmax=4</code></td>
+<td>0.9770</td>
+<td>0.8665</td>
+<td>0.9448</td>
+<td>0.8765</td>
+</tr>
+<tr>
+<td>C <code>dacc=0 dvxmax=6</code></td>
+<td>0.9667</td>
+<td>0.8943</td>
+<td>0.9157</td>
+<td>0.8670</td>
+</tr>
+<tr>
+<td>C <code>dacc=0 dvxmax=10</code></td>
+<td>0.9427</td>
+<td>0.8914</td>
+<td>0.8764</td>
+<td>0.8622</td>
+</tr>
+</tbody>
+</table>
+<p>What drives quality is the <em>size</em> of the seeded box, not which parameter
+names it — the wide-box C rows are the worst at both densities. The port's
+edge is that it can tighten level 1 without starving level 3's cold search:
+worth ~3 points of yield at 220/frame (0.895 vs 0.867 at equal precision),
+and roughly parity at 970/frame. Modest, but free.</p>
+<p><strong>Metric warning — §5's <code>e_track</code> snippet is wrong, do not promote it as
+written.</strong> It checks "all points map to one true id" + "same start frame" but
+never checks that the predicted track <em>covers</em> the true one, so a 2-point
+fragment starting on the right frame scores as a perfect reproduction. This
+is the same inflation §2.1 identifies in <code>pmt</code>, and it is not theoretical: on
+this data it ranks <code>dacc=1</code> best (E=0.068, 220 of 236 "perfect") at
+yield 0.55 with 3054 predicted tracks for 236 true ones. Adding the coverage
+check (same end frame and same point count) makes E_track saturate at
+0.94-0.99 for <em>every</em> config, because 91% of true tracks contain a gap (§2.2)
+and a gap is unbridgeable with postprocess off — so it stops discriminating
+instead. Before promoting <code>e_track()</code> into <code>benchmarking/metrics.py</code>: add the
+coverage check, and evaluate it only with gap bridging enabled.</p>
+<p>Caveats on the evidence: <strong>no real-data discrimination was possible.</strong>
+<code>test_cavity</code> is 4 frames (mean track length 1.1, 415 links) — far too short,
+consistent with this repo's own "directional checks only" note; the real-data
+gate still awaits a well-conditioned experiment. And mean track length moves
+<em>against</em> quality: <code>dvxmax=10</code> gives the longest tracks and the worst
+precision.</p>
+<p><strong>Done:</strong> the required documentation ("<code>dacc</code> is the knob that controls
+seeded-step search") is now in <code>_track3d_full_loop</code>'s docstring with these
+numbers.</p>
+<p>Original write-up follows.</p>
 <p>Restore the C behaviour (<code>dvx/dvy/dvz</code> gate at all levels) or make the choice
 explicit in config. Measured impact is modest, so this is fidelity work, not
 a quality fix:</p>
@@ -1426,7 +1674,111 @@ a quality fix:</p>
 <p>Whatever is decided, document that in the current port <strong><code>dacc</code> is the knob
 that controls seeded-step search</strong> — a user carrying C-era intuition will
 tune <code>dvxmax</code> and change nothing for particles already being tracked.</p>
-<h3 id="34-4be-follow-ups">3.4 4BE follow-ups<a class="headerlink" href="#34-4be-follow-ups" title="Permanent link">&para;</a></h3>
+<h3 id="34-4be-follow-ups-done">3.4 4BE follow-ups — DONE<a class="headerlink" href="#34-4be-follow-ups-done" title="Permanent link">&para;</a></h3>
+<p><strong>Tests landed.</strong> <code>tests/unit/test_track4be.py</code>, 11 kernel-level tests
+covering eq. 12, <code>strict_support</code>, both conflict rules, the NN fallback for
+unseeded particles, the 3MA degradation when n+2 is missing, and empty
+frames. The eq. 12 test was verified by mutating the kernel to
+<code>q + (x1 - x0)</code>: the obvious one-candidate scene passes under that mutant
+(with a wide velocity window the wrong estimate still finds support), so the
+test uses two candidates whose costs invert between the two formulas.</p>
+<p><strong>A silent bug found while measuring:</strong> <code>four_be_tracking.py</code> never called
+<code>tracker.postprocess()</code>, so <code>track.postprocess</code> was a no-op for 4BE and the
+"4BE + gap bridging" measurement below was impossible. Fixed with the same
+opt-in hook <code>default_tracking</code>'s priority_segment_3d branch has.</p>
+<p><strong>Measured</strong> (both ground-truth sets, <code>BASE_OVERRIDES</code>):</p>
+<table>
+<thead>
+<tr>
+<th>run</th>
+<th>220/f tracks</th>
+<th>prec</th>
+<th>yield</th>
+<th>970/f tracks</th>
+<th>prec</th>
+<th>yield</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3MA</td>
+<td>946</td>
+<td>0.9667</td>
+<td>0.8943</td>
+<td>3553</td>
+<td>0.9157</td>
+<td>0.8670</td>
+</tr>
+<tr>
+<td><strong>3MA + bridging</strong></td>
+<td>637</td>
+<td>0.9596</td>
+<td><strong>0.9362</strong></td>
+<td>2635</td>
+<td><strong>0.9059</strong></td>
+<td><strong>0.8890</strong></td>
+</tr>
+<tr>
+<td>4BE paper (give-up)</td>
+<td>1573</td>
+<td><strong>0.9851</strong></td>
+<td>0.8128</td>
+<td>10130</td>
+<td>0.9412</td>
+<td>0.6616</td>
+</tr>
+<tr>
+<td>4BE greedy conflicts</td>
+<td>1007</td>
+<td>0.9700</td>
+<td>0.8879</td>
+<td>4215</td>
+<td>0.8533</td>
+<td>0.7870</td>
+</tr>
+<tr>
+<td>4BE paper + bridging</td>
+<td>1115</td>
+<td>0.9335</td>
+<td>0.8371</td>
+<td>6733</td>
+<td>0.8147</td>
+<td>0.6758</td>
+</tr>
+<tr>
+<td>4BE greedy + bridging</td>
+<td>701</td>
+<td>0.9625</td>
+<td>0.9281</td>
+<td>3212</td>
+<td>0.8367</td>
+<td>0.8034</td>
+</tr>
+</tbody>
+</table>
+<p><strong>1. Cost-ordered greedy claiming: rejected as a default, kept as a flag.</strong>
+It buys a lot of yield (0.813 → 0.888 at 220/f; 0.662 → 0.787 at 970/f) but
+pays in precision, and the price scales with density: -1.5 pp at 220/f,
+<strong>-8.8 pp</strong> at 970/f. Ouellette's result (conflict-breaking degrades every
+heuristic but NN) holds. Available as
+<code>track4be_loop_fast(greedy_conflicts=1)</code> / <code>track4be.GREEDY_CONFLICTS</code>.</p>
+<p><strong>2. "4BE's clean-but-short output is the ideal input for gap bridging" —
+refuted.</strong> Bridging <em>4BE paper</em> output costs 5.2 pp precision at 220/f and
+12.7 pp at 970/f, far worse than bridging 3MA output (-0.7 / -1.0 pp).</p>
+<p>The mechanism is visible in the last row. 4BE-paper fragments end at two
+different kinds of place: genuine detection gaps, and <em>conflicts it
+deliberately declined</em>. <code>relink_trajectory_gaps</code> looks for an unlinked end
+facing an unlinked start — which is exactly what a declined conflict looks
+like — so it re-creates the very links 4BE refused, on the evidence 4BE
+judged too ambiguous. Resolving conflicts inside the tracker first
+(<code>greedy + bridging</code>) leaves only detection gaps for the bridger, and
+precision recovers (0.9335 → 0.9625 at 220/f). Give-up-on-conflict and gap
+bridging are working against each other; do not pair them naively.</p>
+<p><strong>3. <code>priority_segment_3d</code> + gap bridging remains the best default</strong> at both
+densities. 4BE's edge is precision without bridging at moderate density
+(0.9851 at yield 0.813) — a "few but trustworthy tracks" operating point. It
+degrades badly with density (mean length 2.87, yield 0.66 at 970/f).</p>
+<p>Original write-up follows.</p>
 <p>4BE is markedly more accurate but more fragmented than 3MA:</p>
 <table>
 <thead>
@@ -1472,7 +1824,167 @@ tune <code>dvxmax</code> and change nothing for particles already being tracked.
 </ul>
 <p>Also: 4BE has <strong>no dedicated tests</strong>. It needs at least a kernel-level test
 pinning the eq. 12 estimate (<code>x̃ = 2q − x1</code>) and the give-up-on-conflict rule.</p>
-<h3 id="35-where-the-speed-actually-is">3.5 Where the speed actually is<a class="headerlink" href="#35-where-the-speed-actually-is" title="Permanent link">&para;</a></h3>
+<h3 id="36-track-level-results-once-e_track-works">3.6 Track-level results, once E_track works<a class="headerlink" href="#36-track-level-results-once-e_track-works" title="Permanent link">&para;</a></h3>
+<p>With the corrected <code>e_track</code> and gap bridging on, the metric discriminates
+(0.67–0.99, versus pinned at 0.94–0.99 with bridging off):</p>
+<table>
+<thead>
+<tr>
+<th>run</th>
+<th>E_track 220/f</th>
+<th>perfect</th>
+<th>E_track 970/f</th>
+<th>perfect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3MA <code>dacc=6</code> no bridging</td>
+<td>0.9407</td>
+<td>14</td>
+<td>0.9626</td>
+<td>38</td>
+</tr>
+<tr>
+<td>3MA <code>dacc=6</code> + bridging</td>
+<td>0.6907</td>
+<td>73</td>
+<td>0.8819</td>
+<td>120</td>
+</tr>
+<tr>
+<td>3MA <code>dacc=3.6</code> + bridging</td>
+<td>0.7754</td>
+<td>53</td>
+<td><strong>0.8189</strong></td>
+<td><strong>184</strong></td>
+</tr>
+<tr>
+<td>4BE paper + bridging</td>
+<td>0.9153</td>
+<td>20</td>
+<td>0.9911</td>
+<td>9</td>
+</tr>
+<tr>
+<td>4BE greedy + bridging</td>
+<td><strong>0.6737</strong></td>
+<td><strong>77</strong></td>
+<td>0.9429</td>
+<td>58</td>
+</tr>
+</tbody>
+</table>
+<p>Three things this shows that the link-level metrics could not:</p>
+<ol>
+<li><strong>Gap bridging is a far bigger win than yield suggested.</strong> Perfectly
+   reproduced trajectories go 14 → 73 (5.2x) at 220/frame and 38 → 120
+   (3.2x) at 970/frame. Yield moved 4 points; whole trajectories multiplied.
+   This is the real justification for turning it on by default.</li>
+<li><strong>The <code>dacc = 0.6 x dvxmax</code> change is confirmed where it matters and is a
+   genuine trade elsewhere</strong> — at 970/frame it is the best row by a wide
+   margin (184 vs 120 perfect), at 220/frame it is worse on E_track (53 vs
+   73) while better on precision. Same density dependence the §3.3 sweep
+   found; the single constant favours the dense case.</li>
+<li><strong>Essentially all remaining failure is fragmentation, not wrong links.</strong>
+   Across every row: <code>n_fragmented</code> is 156–1006 while <code>n_contaminated</code> is
+   1–15 and <code>n_incomplete</code>/<code>n_missed</code> are ~0. The trackers are producing
+   <em>correct but split</em> trajectories. Precision is already ~0.96; chasing it
+   further is chasing the wrong number. The remaining quality is in
+   stitching — which is what master-plan's "Track repair &amp; stitching" row
+   already anticipates as a long-gap / spatio-temporal stitcher.</li>
+</ol>
+<h3 id="35-where-the-speed-actually-is-profiled">3.5 Where the speed actually is — PROFILED<a class="headerlink" href="#35-where-the-speed-actually-is-profiled" title="Permanent link">&para;</a></h3>
+<p>Measured, not inferred. <code>priority_segment_3d</code>, <code>synthetic_turbulent</code>,
+30 frames, 225 particles/frame, postprocess off; store methods wrapped
+directly rather than read off a profiler's inclusive times (zarr's async
+bridge double-counts those).</p>
+<table>
+<thead>
+<tr>
+<th>component</th>
+<th>calls</th>
+<th>total</th>
+<th>ms/call</th>
+<th>% wall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>store.write_targets</code></td>
+<td>120</td>
+<td>1.520 s</td>
+<td>12.67</td>
+<td>26.3%</td>
+</tr>
+<tr>
+<td><code>store.write_linkage</code></td>
+<td>30</td>
+<td>1.327 s</td>
+<td>44.23</td>
+<td>23.0%</td>
+</tr>
+<tr>
+<td><code>store.read_linkage</code></td>
+<td>30</td>
+<td>0.428 s</td>
+<td>14.26</td>
+<td>7.4%</td>
+</tr>
+<tr>
+<td><code>store.write_correspondences</code></td>
+<td>30</td>
+<td>0.294 s</td>
+<td>9.79</td>
+<td>5.1%</td>
+</tr>
+<tr>
+<td><code>_sync_soa_to_aos</code></td>
+<td>58</td>
+<td>0.023 s</td>
+<td>0.40</td>
+<td><strong>0.4%</strong></td>
+</tr>
+<tr>
+<td><code>store.read_correspondences</code></td>
+<td>30</td>
+<td>0.020 s</td>
+<td>0.67</td>
+<td>0.4%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>1. <code>_sync_soa_to_aos</code> is not a suspect.</strong> §3.5 named it alongside the
+frame read/write; it is 0.4% of wall. Drop it from the list.</p>
+<p><strong>2. The unit cost is zarr <em>array creation</em>, ~11-12 ms each.</strong> It is
+strikingly stable — <code>write_targets</code> creates 1 array (12.67 ms/call),
+<code>write_linkage</code> creates 4 (prev/next/pos/prio; 44.23 ms/call ≈ 11 ms each),
+<code>write_correspondences</code> creates 1 (9.79 ms). The same ~12 ms/array shows up
+on <code>test_cavity_small</code> through <code>pyptv_batch</code>. Each creation is a directory,
+a <code>zarr.json</code>, and a chunk file, behind zarr v3's sync-over-async bridge.</p>
+<p><strong>3. Nothing is redundantly re-created.</strong> Instrumenting <code>create_array</code>:
+270 calls, <strong>100% new</strong>, 0 re-creations of an existing same-shape array
+(<code>Tracker.restart()</code> clears linkage by design, per <code>433c5f6</code>). So array
+reuse / write-in-place buys nothing here.</p>
+<p><strong>4. Correction — the benchmark path overstates tracking I/O.</strong> That 26%
+<code>write_targets</code> row is an artefact of <code>benchmarking/runner.run_tracker</code>,
+which skips the sequence stage, so the frame buffer imports ASCII targets
+into a fresh store <em>during tracking</em>. Instrumenting a real
+<code>pyptv_batch</code> sequence→tracking run: the tracking phase issues <strong>zero</strong>
+<code>write_targets</code> calls (they all happen in sequence, via <code>gui/ptv.py:249</code>).
+Profile <code>pyptv_batch</code>, not <code>run_tracker</code>, for anything speed-related.</p>
+<p><strong>What would actually help</strong> — both change the on-disk format, so neither is
+a drive-by fix, and both need a <code>docs/releases/</code> runbook:</p>
+<ul>
+<li>Pack <code>prev</code>/<code>next</code>/<code>pos</code>/<code>prio</code> into one array per frame instead of four:
+  4x fewer creations, ~33 ms/frame off <code>write_linkage</code>.</li>
+<li>Go further and store one array per <em>stream</em> for the whole run plus an
+  offset index — the layout <code>seal</code> already builds for <code>trajectories/</code> —
+  making creations O(1) in frames rather than O(frames).</li>
+</ul>
+<p>Not implemented here: §3.5 asks for the profile, and the payoff is gated on a
+format decision rather than on a local optimisation.</p>
+<p>Original write-up follows.</p>
 <p>Per §2.4 the kernel is &lt;1% of runtime. If tracking speed matters, profile
 <code>fb.write_frame_from_start</code> / <code>read_frame_at_end</code>, the zarr store write path,
 and <code>_sync_soa_to_aos</code> — not the tracking kernels.</p>
@@ -1489,25 +2001,25 @@ and <code>_sync_soa_to_aos</code> — not the tracking kernels.</p>
 </ul>
 <hr />
 <h2 id="5-verification-snippets">5. Verification snippets<a class="headerlink" href="#5-verification-snippets" title="Permanent link">&para;</a></h2>
-<p>Ouellette E_track, to be promoted into <code>benchmarking/metrics.py</code>:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># a true track is &quot;perfect&quot; if some predicted track matches only it and</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># starts on the same frame; E_track = 1 - perfect / n_true</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">perfect</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">for</span> <span class="n">pid</span><span class="p">,</span> <span class="n">pts</span> <span class="ow">in</span> <span class="n">pred</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">pts</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">match</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pts</span><span class="p">}</span>   <span class="c1"># nearest true id, tol 1.0</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        <span class="k">continue</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">tid</span> <span class="o">=</span> <span class="n">ids</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="k">if</span> <span class="n">tid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pts</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">true_start</span><span class="p">[</span><span class="n">tid</span><span class="p">]:</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        <span class="n">perfect</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">e_track</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">perfect</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">true_tracks</span><span class="p">)</span>
-</span></code></pre></div>
+<p>Ouellette E_track: <strong>shipped</strong> as
+<code>openptv2.benchmarking.metrics.e_track(true_tracks, pred_tracks, eps)</code>, and
+included in <code>scripts/benchmark_utils.combined_metrics</code>. Use that; do not
+re-derive it.</p>
+<blockquote>
+<p>The snippet that used to sit here was wrong and is deleted rather than
+corrected in place, because it was copied once already. It checked only
+"every point maps to one true id" plus "same start frame", with no
+coverage check, so a 2-point fragment counted as a perfect reproduction of
+a 30-point trajectory — the same inflation §2.1 identifies in <code>pmt</code>, which
+is exactly what it was introduced to avoid. It ranked a configuration
+producing 3054 tracks for 236 true ones as the best of its sweep, at a link
+yield of 0.55. See §2.1 and §3.6.</p>
+</blockquote>
 <p>Commands:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>build_ext<span class="w"> </span>--inplace<span class="w">      </span><span class="c1"># after any algorithms/*.py change</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_track3d.py<span class="w"> </span>tests/unit/test_track.py<span class="w"> </span>-q
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_tracking_postprocess.py<span class="w"> </span>tests/unit/test_run_store.py<span class="w"> </span>-q
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/benchmark_all_gui_trackers.py
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>build_ext<span class="w"> </span>--inplace<span class="w">      </span><span class="c1"># after any algorithms/*.py change</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_track3d.py<span class="w"> </span>tests/unit/test_track.py<span class="w"> </span>-q
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_tracking_postprocess.py<span class="w"> </span>tests/unit/test_run_store.py<span class="w"> </span>-q
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/benchmark_all_gui_trackers.py
 </span></code></pre></div>
 <p>Dataset used throughout: <code>test_data/synthetic_turbulent</code>, frames
 10001-10030, 220 particles/frame, 236 true trajectories, mean spacing

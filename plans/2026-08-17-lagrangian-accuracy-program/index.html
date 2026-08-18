@@ -1,0 +1,2332 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Lagrangian accuracy and trajectory length: reduce ten trackers to the few - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lagrangian-accuracy-and-trajectory-length-reduce-ten-trackers-to-the-few" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Lagrangian accuracy and trajectory length: reduce ten trackers to the few
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="lagrangian-accuracy-and-trajectory-length-reduce-ten-trackers-to-the-few">Lagrangian accuracy and trajectory length: reduce ten trackers to the few<a class="headerlink" href="#lagrangian-accuracy-and-trajectory-length-reduce-ten-trackers-to-the-few" title="Permanent link">&para;</a></h1>
+<h1 id="that-measure-physics-correctly-2026-08-17">that measure physics correctly (2026-08-17)<a class="headerlink" href="#that-measure-physics-correctly-2026-08-17" title="Permanent link">&para;</a></h1>
+<p>Goal, in the user's words: keep the minimum number of the best trackers.
+Decide what matters for <strong>fluid mechanics and turbulence, not numerical
+exercise</strong>; evaluate it properly, slowly and carefully; understand what in
+each algorithm produces the better outcome; then reinvent a simple thing that
+takes the winning parts.</p>
+<p>The value function has <strong>two</strong> objectives, ranked but not exclusive:</p>
+<blockquote>
+<p>We value most the accuracy — correct velocity, correct acceleration in the
+Lagrangian sense, then time correlations, distance correlations and other
+things that require long trajectories. Long we can achieve later by
+smoothing and stitching; the correct ones we could not get by
+post-processing wrong trajectories.</p>
+<p>The value function is not <em>only</em> track length — track length is another
+important factor, but for a specific type of question. So we should be able
+to choose parameters that improve track length <strong>without sacrificing
+quality</strong>.</p>
+</blockquote>
+<p>Read precisely, that is a <strong>constrained multi-objective</strong> problem, not a
+priority ordering that discards length:</p>
+<ul>
+<li><strong>Accuracy is the constraint.</strong> It is never traded away, because a wrong
+  link cannot be repaired downstream.</li>
+<li><strong>Length is a genuine second objective</strong>, not a nice-to-have. Lagrangian
+  time correlations, the integral timescale, pair dispersion and long-lag
+  structure functions are simply not computable from short fragments — those
+  questions need length, and they are real questions.</li>
+<li><strong>The target is the Pareto frontier of (accuracy, length)</strong>, and
+  specifically the configurations that buy length <em>for free</em>. Where a
+  parameter improves length at no accuracy cost, take it; only refuse the
+  trade when length costs accuracy.</li>
+</ul>
+<p>Length being recoverable later (§3.1/§3.2 of the 2026-08-16 plan made gap
+bridging work) is a reason not to <em>panic</em> about length, not a reason to stop
+measuring it — and stitching is itself only safe on correct fragments, so the
+two objectives are coupled rather than independent.</p>
+<p><strong>There is already direct evidence such free length exists.</strong> In the §0 table
+below, <code>dacc=3.6</code> + bridging beats <code>dacc=6</code> (the shipped default) on
+acceleration accuracy <em>and</em> precision <em>and</em> yield simultaneously — a strict
+improvement on both axes, not a trade. That single observation is the
+strongest argument that the current defaults sit off the frontier, and
+finding the frontier deliberately is Phase 1's second deliverable.</p>
+<hr />
+<h2 id="0-the-finding-that-reframes-the-work">0. The finding that reframes the work<a class="headerlink" href="#0-the-finding-that-reframes-the-work" title="Permanent link">&para;</a></h2>
+<p><strong>Nothing this project currently measures ranks trackers the way the value
+function above does.</strong> Measured 2026-08-17 (details in §1): the tracker with
+the <em>best link precision</em> is not the tracker with the <em>best acceleration
+statistics</em>, and the gap is not small.</p>
+<p><code>test_data/synthetic_turbulent</code>, 220 particles/frame, component-wise
+acceleration by second difference, against the ground truth's own:</p>
+<table>
+<thead>
+<tr>
+<th>config</th>
+<th>precision</th>
+<th>yield</th>
+<th>a_rms error</th>
+<th>K_a (truth 3.14)</th>
+<th>|a| &gt; 5σ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ground truth</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>3.14</td>
+<td>0.000%</td>
+</tr>
+<tr>
+<td><strong>3MA <code>dacc=3.6</code> + bridging</strong></td>
+<td>0.9709</td>
+<td>0.9187</td>
+<td><strong>+2.1%</strong></td>
+<td><strong>3.20</strong></td>
+<td><strong>0.000%</strong></td>
+</tr>
+<tr>
+<td>4BE paper</td>
+<td><strong>0.9851</strong></td>
+<td>0.8128</td>
+<td>+5.0%</td>
+<td>4.33</td>
+<td>0.126%</td>
+</tr>
+<tr>
+<td>3MA <code>dacc=6</code></td>
+<td>0.9667</td>
+<td>0.8943</td>
+<td>+11.9%</td>
+<td>5.15</td>
+<td>0.271%</td>
+</tr>
+<tr>
+<td>3MA <code>dacc=6</code> + bridging</td>
+<td>0.9596</td>
+<td>0.9362</td>
+<td>+11.9%</td>
+<td>5.15</td>
+<td>0.271%</td>
+</tr>
+<tr>
+<td>4BE greedy</td>
+<td>0.9700</td>
+<td>0.8879</td>
+<td>+14.5%</td>
+<td>5.78</td>
+<td>0.418%</td>
+</tr>
+<tr>
+<td>4BE paper + bridging</td>
+<td>0.9335</td>
+<td>0.8371</td>
+<td>+50.3%</td>
+<td><strong>343.5</strong></td>
+<td>0.221%</td>
+</tr>
+</tbody>
+</table>
+<p>Three things fall out immediately.</p>
+<p><strong>1. Precision is not a proxy for kinematic accuracy.</strong> 4BE-paper has the
+best precision of any configuration and the second-worst acceleration
+kurtosis of the sane ones. <code>dacc=3.6</code> has <em>lower</em> precision and reproduces
+the acceleration PDF almost exactly. Ranking on precision — which is what
+every benchmark in this repo does — would pick the wrong tracker.</p>
+<p><strong>2. What matters is the <em>magnitude</em> of a wrong link, not its rate.</strong> That is
+the mechanism behind (1): a tight seeded-search box (<code>dacc=3.6</code>) cannot make
+a large mistake, only a small one, and a small mistake barely perturbs a
+second difference. A loose box makes rarer but kinematically catastrophic
+mistakes. <strong>Design rule: bound the kinematic damage of a wrong link, not just
+its probability.</strong> No existing metric expresses this.</p>
+<p><strong>3. The user's hypothesis is confirmed, and sharper than stated.</strong> Bridging
+4BE's output drives K_a from 4.33 to 343 — post-processing did not merely
+fail to fix bad links, it <em>manufactured</em> them (§3.4 of the 2026-08-16 plan
+explains why: the bridger re-creates exactly the conflicts 4BE declined).
+Correctness genuinely cannot be added afterwards.</p>
+<p><strong>Confirmed independently on real (non-Gaussian) ground truth, 2026-08-17.</strong>
+<code>scripts/adapt_proptv_dataset.py</code> converts proPTV's <code>500_25</code>/<code>500_30</code> into an
+openptv2 benchmark dataset (mechanics: §1a and the script's own docstring);
+<code>scripts/bench_proptv_kinematics.py</code> ran every available engine at its own
+auto-recommended parameters (<code>benchmark_utils.per_tracker_overrides</code>) on
+<code>500_30</code> (30 frames, 500 particles, truth <code>K_a</code> <strong>19.8</strong>, real intermittency,
+still zero injected noise):</p>
+<table>
+<thead>
+<tr>
+<th>tracker</th>
+<th><code>a_rms</code> error</th>
+<th><code>K_a</code></th>
+<th>|a|&gt;5σ</th>
+<th>precision/yield</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>priority_segment_3d</code> (3MA)</strong></td>
+<td><strong>+0.0%</strong></td>
+<td><strong>19.80</strong></td>
+<td>0.31%</td>
+<td>1.00 / 1.00</td>
+</tr>
+<tr>
+<td><code>kalman_hungarian_3d</code>, <code>sg_hungarian_3d</code>, <code>nearest_hungarian_3d</code>, <code>predictive_gmm_3d</code>, <code>myptv_3d_tracking</code>, <code>proptv_tracking</code></td>
+<td>+177%</td>
+<td>2.62</td>
+<td>1.88%</td>
+<td>~1.00 / ~1.00</td>
+</tr>
+<tr>
+<td><code>4be</code></td>
+<td>+2962%</td>
+<td>677</td>
+<td>0.74%</td>
+<td>0.996 / 0.978</td>
+</tr>
+<tr>
+<td><code>trackcorr</code></td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>failed: needs real camera-target ids, which this adapter omits (§ below)</td>
+</tr>
+</tbody>
+</table>
+<p>Same conclusion as the table above, on an independent dataset: 3MA
+reproduces the truth almost exactly while the highest-precision engine (4be)
+has the worst kinematics. It also exposes a <strong>second, distinct failure
+mode</strong> the first table didn't separate: 4BE's few catastrophic wrong links
+blow up the <em>tails</em> (<code>K_a</code> 677, still centered near the true <code>a_rms</code>); the
+six Hungarian/nearest-neighbour-family engines instead make many small,
+chronic mismatches that inflate <code>a_rms</code> broadly <em>and</em> smooth <code>K_a</code> down to
+2.62 — below Gaussian, i.e. real intermittent spikes are averaged away
+entirely. Both destroy the physics, by opposite mechanisms — this sharpens
+Phase 3's mechanism dissection (§2's ablation list should treat "damage
+concentrated in few links" vs "damage spread across many links" as separate
+axes, not one).</p>
+<p><strong>Two things flagged about this table — (a) now resolved, (b) still open:</strong></p>
+<p>(a) <strong>Checked, and corrected 2026-08-17 — the six names are not six
+implementations.</strong> <code>src/openptv2/plugins/nearest_hungarian_3d.py</code> and
+<code>predictive_gmm_3d.py</code> are both 5-line files that <code>import</code> their classes
+straight from <code>myptv_3d_tracking.py</code> / <code>proptv_tracking.py</code> — i.e.
+<code>nearest_hungarian_3d</code> <strong>is</strong> <code>myptv_3d_tracking</code>'s code and
+<code>predictive_gmm_3d</code> <strong>is</strong> <code>proptv_tracking</code>'s code, by design (confirmed
+directly by the user's question and a source diff). <code>kalman_hungarian_3d.py</code>
+is <em>also</em> a 5-line alias, but of a third, different module
+(<code>quality_3d_tracking.py</code>). Only <code>fast_3d_smooth_tracking.py</code>
+(<code>sg_hungarian_3d</code>) is a genuinely separate, non-aliased implementation. So
+the six names in the table above represent <strong>four distinct implementations</strong>
+(MyPTV/nearest, proPTV-GMM/predictive-GMM, Kalman, Savitzky-Golay), not six —
+and all four still produced byte-identical output. That is a <em>stronger</em>
+result than originally stated, not a weaker one: four structurally different
+prediction models (Kalman filter, SG smoothing, plain Hungarian, GMM)
+converging to the same link decisions is real evidence this operating point
+(mean NN spacing ~0.07, well above the noise floor) makes the nearest true
+neighbour unambiguous almost everywhere — <strong>this density cannot discriminate
+among the Hungarian/NN-family engines</strong>, independent of which one; it takes
+the higher-density case or Phase 1b noise to separate them. It also confirms
+<code>per_tracker_overrides</code> was not the cause of the apparent convergence
+(<code>sg_hungarian_3d</code>'s missing scaled-parameter rule, noted below, still stands
+as a separate minor gap, unrelated to this). And it settles that the Phase 2
+survivor decision is sound: <code>myptv_3d_tracking</code>/<code>proptv_tracking</code> are each
+other's <em>only</em> alias pair among the survivors, run their own authoritative
+code, and are not secretly running a deleted engine's implementation.</p>
+<p>(b)
+<code>trackcorr</code> needs real per-camera target ids and this adapter deliberately
+doesn't synthesize them (see §1a) — it and any other 2D+3D-dependent engine
+are structurally excluded from proPTV-adapted data until that's addressed,
+which matters for Phase 2's inventory (<code>cython_epipolar_tracking</code>'s aliases).</p>
+<p>And at higher density the situation is worse than "ranking is wrong" —
+<strong>every tracker is currently unusable for acceleration statistics.</strong>
+<code>synthetic_turbulent_1k</code>, 970 particles/frame, true <code>a_rms</code> 0.643, true
+K_a 3.00:</p>
+<table>
+<thead>
+<tr>
+<th>config</th>
+<th>a_rms error</th>
+<th>K_a</th>
+<th>|a| &gt; 5σ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3MA <code>dacc=3.6</code> + bridging</td>
+<td>+50.3%</td>
+<td>1956</td>
+<td>0.278%</td>
+</tr>
+<tr>
+<td>3MA <code>dacc=6</code></td>
+<td>+67.8%</td>
+<td>11.1</td>
+<td>2.804%</td>
+</tr>
+<tr>
+<td>4BE paper</td>
+<td>+60.7%</td>
+<td>12.7</td>
+<td>2.613%</td>
+</tr>
+<tr>
+<td>4BE greedy</td>
+<td>+142.0%</td>
+<td>7.4</td>
+<td>8.090%</td>
+</tr>
+</tbody>
+</table>
+<p>Acceleration rms inflated by 50–142% and K_a between 7 and 1956 against a
+true value of 3.0. Any turbulence conclusion drawn from these trajectories at
+this seeding density would be an artefact. This is the headline number for
+the whole program.</p>
+<hr />
+<h2 id="1-why-the-current-benchmark-cannot-answer-the-question">1. Why the current benchmark cannot answer the question<a class="headerlink" href="#1-why-the-current-benchmark-cannot-answer-the-question" title="Permanent link">&para;</a></h2>
+<p>Before building trackers, note what the evaluation can and cannot see.
+Measured on both synthetic sets:</p>
+<table>
+<thead>
+<tr>
+<th>property</th>
+<th>measured</th>
+<th>consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ground-truth acceleration kurtosis <code>K_a</code></td>
+<td><strong>3.14 / 3.00</strong> (Gaussian)</td>
+<td>Real turbulence is 10–60. There is <strong>no intermittency in the ground truth</strong>, so no tracker can be scored on preserving it. Criterion B of <code>docs/lagrangian_turbulence_quality_guide.md</code> is untestable here.</td>
+</tr>
+<tr>
+<td>stereo position noise, per component</td>
+<td><strong>0.0003 / 0.0073 mm</strong></td>
+<td>Effectively noise-free. Noise-induced acceleration / true acceleration = <strong>0.00 / 0.03</strong>. Real PTV is 0.01–0.5 mm (<code>test_cavity</code>'s z-noise is 0.415 mm), where acceleration is <em>noise-dominated</em>.</td>
+</tr>
+<tr>
+<td>Lagrangian velocity autocorrelation</td>
+<td>0.62, 0.36, 0.17, 0.04 at lags 1–4</td>
+<td>τ_L ≈ 1.7 frames. Velocity decorrelates in ~4 frames, i.e. <strong>dt is comparable to the flow's own timescale</strong>. Real acceleration measurement needs dt ≪ τ_η — La Porta/Voth sample at ~70 kHz precisely for this.</td>
+</tr>
+<tr>
+<td>sequence length</td>
+<td>30 frames</td>
+<td>~17 τ_L. Usable for time correlations, marginal for anything longer.</td>
+</tr>
+<tr>
+<td>pair statistics</td>
+<td>not evaluated</td>
+<td>Criterion D (Richardson dispersion) has no harness at all.</td>
+</tr>
+</tbody>
+</table>
+<p>So on this data "accuracy" degenerates into "correct links" — and since
+precision is already 0.92–0.98, every tracker looks similar and the visible
+differences are all fragmentation. <strong>That is an artefact of the test bed, not
+a fact about the trackers.</strong></p>
+<p>The framework for the right metrics already exists
+(<code>docs/lagrangian_turbulence_quality_guide.md</code>, criteria A–E, and
+<code>benchmarking/metrics.py::compute_physics_metrics</code>), but the implemented
+statistics are <strong>self-consistency only</strong> — <code>acceleration_kurtosis</code> reports
+the tracker's own PDF and never compares it against a truth. That is why a
+K_a of 343 was sitting there unnoticed.</p>
+<hr />
+<h2 id="2-program">2. Program<a class="headerlink" href="#2-program" title="Permanent link">&para;</a></h2>
+<p>Three phases, strictly ordered. Phase 2 is worthless before Phase 1, and
+Phase 3 is guesswork before Phase 2. Expect the whole thing to be slow; that
+is the point.</p>
+<h3 id="phase-1-build-an-evaluation-that-can-see-accuracy">Phase 1 — build an evaluation that can see accuracy<a class="headerlink" href="#phase-1-build-an-evaluation-that-can-see-accuracy" title="Permanent link">&para;</a></h3>
+<p>Nothing else is meaningful until this exists.</p>
+<p><strong>1a. Ground truth with real Lagrangian statistics.</strong> Ranked by preference
+— <strong>re-ranked 2026-08-17</strong> after actually measuring what's on disk:</p>
+<ul>
+<li><strong>proPTV <code>500_25</code> / <code>500_30</code></strong> (<code>C:/Users/alex/Github/proPTV/data/</code>, found
+  locally, no token/download needed). Measured directly from
+  <code>origin_*.txt</code> (columns <code>ID,X,Y,Z,U,V,W,T,P,xc0,yc0,…</code>, velocity given, not
+  finite-differenced): <strong>500_30</strong> — 30 frames, 500 particles, every track the
+  full unbroken 30 frames (clean, persistent IDs), accel kurtosis <strong>K_a =
+  21.8</strong>; <strong>500_25</strong> — 5 frames, same 500 particles, <strong>K_a = 13.2</strong>. Both are
+  squarely inside the real-turbulence range (10–60) that our own
+  <code>synthetic_turbulent</code> set cannot produce (K_a≈3, §1). Per-camera 2D
+  centroids are already in the ground-truth file
+  (<code>xc0,yc0,xc1,yc1,xc2,yc2,xc3,yc3</code>), and <code>500_25/input/</code> additionally has
+  <code>raw_images/</code>, <code>processed_images/</code>, and a <code>calibration/</code> folder — a real
+  4-camera rendering pipeline, not just points. <strong>This is now the primary
+  Phase 1a candidate</strong>: it's already accessible, and the format adapter
+  (2026-08-15 plan §5, previously deferred as lower-priority) is the actual
+  remaining blocker, not data access. Build the adapter first.</li>
+<li><strong>DNS particle tracks (Johns Hopkins Turbulence Database)</strong> — demoted from
+  first choice. <strong>Checked 2026-08-17: no existing access</strong> (see open question
+  1's resolution below); would need a <code>pyJHTDB</code> install and a free API token,
+  unverified for local/offline use. Worth revisiting later for the gold
+  standard (genuine DNS physics, choosable dt/τ_η), but proPTV's data removes
+  the urgency.</li>
+<li><strong>A stochastic model with the right second-order structure</strong> (Sawford's
+  two-timescale model) as a fallback if both of the above are unworkable.
+  Gives correct <code>a_rms</code>, τ_η and an intermittent-ish acceleration PDF; cheap
+  and local, but synthetic-of-a-model rather than real DNS or a real
+  multi-camera rendering.</li>
+</ul>
+<p>Requirement either way: persist <strong>ground-truth velocity and acceleration</strong>
+per particle per frame, not just positions. openptv2's own <code>origin_*.txt</code>
+stores only <code>(pid, x, y, z)</code> (the generator in <code>benchmarking/scenario.py</code>
+knows <code>vel</code> and <code>acc</code> and throws them away) — proPTV's format already carries
+velocity, which is one reason it's now preferred.</p>
+<p><strong>1b. Injectable position noise.</strong> A <code>sigma_position</code> knob on the synthetic
+pipeline, swept over 0 → 0.5 mm. This is the single most important axis for
+acceleration accuracy and it is currently pinned at ~0. Expect tracker
+ranking to change with it — a tracker that leans on a smoothness/prediction
+model should degrade far more gracefully than nearest-neighbour, and today
+that advantage is invisible.</p>
+<p><strong>1c. Truth-referenced kinematic metrics</strong>, into
+<code>benchmarking/metrics.py</code> beside <code>e_track</code>:</p>
+<ul>
+<li>per-point velocity and acceleration error against truth (bias and rms),
+  computed only over correctly-linked points, so link errors and kinematic
+  errors are separated rather than conflated;</li>
+<li><code>a_rms</code> ratio and <code>K_a</code> ratio vs truth (the assay used in §0);</li>
+<li>contamination rate: fraction of predicted accelerations beyond 5σ of the
+  true distribution — a direct read on "wrong links that will poison the
+  statistics";</li>
+<li>Lagrangian velocity autocorrelation ρ(τ) and integral time vs truth;</li>
+<li>pair-dispersion ⟨Δr²(t)⟩ vs truth (criterion D, currently absent).</li>
+</ul>
+<p><strong>1d. A damage-weighted link metric.</strong> Per §0 finding 2, precision counts
+wrong links; it should also weigh them by the kinematic error they inject.
+Something as simple as the rms spurious acceleration per wrong link would
+have ranked these six configurations correctly where precision did not.</p>
+<p><strong>1e. Report both objectives together, and find the frontier.</strong> Every
+evaluation from here on reports an <strong>accuracy axis</strong> and a <strong>length axis</strong>
+side by side, never one alone:</p>
+<table>
+<thead>
+<tr>
+<th>axis</th>
+<th>statistics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>accuracy</td>
+<td><code>a_rms</code> error vs truth, <code>K_a</code> vs truth, &gt;5σ contamination rate, per-point velocity/acceleration error, damage-weighted link error (1d)</td>
+</tr>
+<tr>
+<td>length</td>
+<td>mean track length, fraction &gt; 10 and &gt; 30 frames, <code>e_track</code> <code>n_perfect</code>, and — the one that actually matters for the physics — <strong>span in units of the Lagrangian integral time τ_L</strong>, since "long" is only meaningful relative to the flow's own timescale</td>
+</tr>
+</tbody>
+</table>
+<p>Then sweep the parameters that plausibly move both (<code>dacc</code> / seeded search
+box, gap-bridging <code>max_gap</code> and its accel tolerance, conflict rule) and
+compute the <strong>Pareto frontier</strong> explicitly: a configuration is kept only if
+nothing else is at least as good on accuracy <em>and</em> at least as long.
+Deliverable is the frontier plus a recommended default sitting on it — the
+existing <code>dacc=3.6</code> observation says the shipped default is not on it.</p>
+<p>This also gives the honest way to expose the trade to a user: not one blessed
+setting, but a small number of frontier points labelled by the question they
+serve ("acceleration statistics" vs "time correlations / dispersion"), since
+the right point genuinely differs between those.</p>
+<p><strong>Phase 1 exit criterion:</strong> re-run the §0 table on data with realistic
+intermittency and realistic noise, reporting both axes, and have the ranking
+and the frontier be <em>stable and explicable</em>. If the ranking still contradicts
+precision, that is the real result and Phase 2 proceeds on the new metric.</p>
+<h3 id="phase-2-evaluate-the-ten-trackers-properly">Phase 2 — evaluate the ten trackers properly<a class="headerlink" href="#phase-2-evaluate-the-ten-trackers-properly" title="Permanent link">&para;</a></h3>
+<p><strong>Survivors decided 2026-08-17 (user call, informed by but not purely
+derived from the evidence above):</strong> keep <strong>five</strong> —</p>
+<ul>
+<li><code>priority_segment_3d</code> (3MA) — cost-based sequential, the default; best
+  measured kinematic fidelity on every case run so far.</li>
+<li><code>4be</code> — four-frame best-estimate; keep for its precision/give-up mechanism
+  even though its bridged/naive form is unsafe (§3) — Phase 3 needs it to
+  isolate what future-support buys.</li>
+<li><code>trackcorr</code>, <strong>forward and backward</strong> (<code>full_multipass</code>/<code>two_directional</code>
+  presets, <code>cython_epipolar_tracking.py</code>) — "our best legacy code," the
+  C-translated 2D+3D epipolar engine, the only survivor that searches in
+  image space during linking rather than pure 3D.</li>
+<li><code>myptv_3d_tracking</code> — openptv2's port of MyPTV's method.</li>
+<li><code>proptv_tracking</code> — openptv2's port of proPTV's GMM-based method.</li>
+</ul>
+<p>Deleted from the inventory: <code>kalman_hungarian_3d</code>, <code>nearest_hungarian_3d</code>,
+<code>sg_hungarian_3d</code>/<code>fast_3d_smooth_tracking</code>, <code>predictive_gmm_3d</code>. §0's
+proPTV table already showed this whole Hungarian/NN family collapsing to
+identical, worse-than-3MA kinematics at the one density tested — consistent
+with cutting them, though note (from that same table) the collapse was
+partly because that density was too easy to separate them, not full proof
+each is individually worse than every other cut engine at every condition.
+<code>predictive_gmm_3d</code> is redundant with keeping <code>proptv_tracking</code> directly
+(same source method); the Hungarian-gated engines were already deprioritised
+in the 2026-08-16 plan on Ouellette's conflict-breaking argument, and now
+have a second, independent kinematic reason to go.</p>
+<p><strong>Scoping note on trackcorr + proPTV data — plan corrected 2026-08-17.</strong>
+trackcorr's C engine performs 2D+3D epipolar search <em>during</em> linking, not
+just 3D position matching — it needs calibration that is geometrically
+consistent with whatever pixel coordinates it's given, not merely present.
+Originally scoped as "build a Soloff→openptv2 <code>.ori</code>/<code>.addpar</code> converter,
+deferred" (2026-08-15 plan §5). <strong>User correction: don't convert Soloff at
+all — calibrate directly with openptv2's own machinery instead.</strong> proPTV's
+<code>origin_*.txt</code> already carries, per frame, each particle's true 3D position
+<em>and</em> its observed 2D pixel projection in every camera that saw it
+(<code>xc0,yc0,...,xc3,yc3</code>) — exactly the known-3D/observed-2D control-point
+pairs openptv2's own orientation/bundle-adjustment pipeline (ray tracing +
+<code>mmlut</code> for refractive interfaces, <code>autocalibration.py</code>, the
+<code>openptv-calibrate</code> skill) needs to solve for <code>.ori</code>/<code>.addpar</code> directly. This
+is not merely nicer than a Soloff converter, it's the <em>only</em> practical
+option confirmed 2026-08-17 — proPTV's <code>input/calibration/</code> only holds
+Soloff coefficient text files, no calibration-target photos, so there is no
+raw material to calibrate from except these ground-truth correspondences.
+Concretely: pick one (or a few, for redundancy) frame's rows with 3D
+position + all-camera 2D projections, feed them to openptv2's orientation
+routine as control points (a synthetic calblock, in effect), solve per-camera
+<code>.ori</code>/<code>.addpar</code> with the existing ray-tracing/<code>mmlut</code> model. <strong>Decision:</strong>
+build this next as the actual unblock for trackcorr-on-proPTV, rather than
+scoping trackcorr out to openptv2-native datasets only. Once real
+<code>.ori</code>/<code>.addpar</code> exist, extend <code>adapt_proptv_dataset.py</code> to write per-camera
+2D targets through the zarr <code>RunStore.write_targets</code> API (per
+<code>docs/plans/2026-08-15-zarr-only-transition-plan.md</code> — targets are zarr-only
+now; <code>res/rt_is.*</code>/<code>res/origin_*.txt</code> ASCII, <code>store=None</code>, stays valid
+permanently and needs no change) and populate real (non‑<code>-1</code>) camera-index
+columns in <code>rt_is</code> from the same correspondences.</p>
+<p>Original ten-engine inventory (<code>plugins/loader.py</code>), for reference / in case
+a cut needs revisiting:</p>
+<table>
+<thead>
+<tr>
+<th>engine</th>
+<th>aliases</th>
+<th>free parameter(s) to sweep</th>
+<th>status going in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cython_3d_tracking</code></td>
+<td><code>default</code>, <code>fast</code>, <code>fast_3d</code>, <code>priority_segment_3d</code>, <code>splitter_tracking</code>, …</td>
+<td><code>dacc</code> (search-box scale), bridging on/off</td>
+<td>the default; 3MA cost</td>
+</tr>
+<tr>
+<td><code>cython_epipolar_tracking</code></td>
+<td><code>trackcorr</code>, <code>full_multipass</code>, <code>two_directional</code>, <code>standard_forward</code>, …</td>
+<td><code>dacc</code>/<code>dvxmax</code> equivalents, bridging</td>
+<td>the C-translated 2D+3D path</td>
+</tr>
+<tr>
+<td><code>four_be_tracking</code></td>
+<td><code>4be</code></td>
+<td><code>dacc</code>, <code>GREEDY_CONFLICTS</code>, <code>STRICT_SUPPORT</code> — <strong>never bridged</strong> (§3)</td>
+<td>best precision, most fragmented</td>
+</tr>
+<tr>
+<td><code>fast_3d_smooth_tracking</code></td>
+<td><code>sg_hungarian_3d</code>, <code>openptv2_3d_smooth</code></td>
+<td>SG window length, Hungarian gate radius</td>
+<td>SG extrapolation + Hungarian</td>
+</tr>
+<tr>
+<td><code>kalman_hungarian_3d</code></td>
+<td>—</td>
+<td>process/measurement noise ratio, gate radius</td>
+<td>deprioritised (2026-08-16 §4)</td>
+</tr>
+<tr>
+<td><code>nearest_hungarian_3d</code></td>
+<td>—</td>
+<td>gate radius</td>
+<td>deprioritised</td>
+</tr>
+<tr>
+<td><code>predictive_gmm_3d</code></td>
+<td><code>proptv</code>-adjacent</td>
+<td>GMM component count / bandwidth</td>
+<td></td>
+</tr>
+<tr>
+<td><code>myptv_3d_tracking</code>, <code>myptv_2d_tracking</code></td>
+<td>—</td>
+<td>native params, TBD</td>
+<td>external-method ports</td>
+</tr>
+<tr>
+<td><code>proptv_tracking</code></td>
+<td>—</td>
+<td>native params, TBD</td>
+<td>external-method port</td>
+</tr>
+</tbody>
+</table>
+<p>This is a genuine two-objective ranking, not a scalar leaderboard — §0 already
+shows the highest-precision engine is not the most accurate one, and the
+value function (top of this doc) treats length as a real second objective, not
+a tiebreaker. So "which 4-6 survive" cannot be read off a single sorted list;
+different engines can be optimal in different corners of the
+(accuracy, length) plane. The protocol below is designed to produce that
+shape of answer rather than force a false total order.</p>
+<p><strong>2a. Per-tracker frontier, not per-tracker point.</strong> For each engine, sweep
+its <em>own</em> free parameter(s) (table above) — 2026-08-16 §3.3 showed a single
+shared <code>dacc</code> silently favours whichever tracker it happens to suit, so no
+engine may be judged at a value chosen for another. Compute both axes (§1e)
+at every grid point and keep only the engine's own Pareto-optimal points —
+that reduced set is the engine's frontier.</p>
+<p><strong>2b. Cross with operating conditions.</strong> Repeat 2a at every cell of a small
+condition grid: seeding density (<code>synthetic_turbulent</code> 220 p/frame,
+<code>synthetic_turbulent_1k</code> 970 p/frame) × injected position noise (1b — start
+with <code>{0, one realistic value}</code> once it exists; expand to a fuller sweep only
+if engines re-rank between the two). An engine's frontier is reported
+per-condition, not averaged across conditions — §0 already shows density
+alone reorders the ranking, so collapsing conditions would hide exactly the
+effect this phase exists to find.</p>
+<p><strong>2c. Joint frontier and the keep/merge/delete rule.</strong> Per condition, overlay
+all ten engines' points in the same (accuracy, length) plane and compute the
+<em>joint</em> Pareto frontier across all of them together. Then, per engine:</p>
+<ul>
+<li><strong>Keep</strong> — it contributes at least one non-dominated point to the joint
+  frontier, in a condition that corresponds to a plausible real use case (not
+  a degenerate corner such as "only wins at exactly zero noise").</li>
+<li><strong>Merge</strong> — its frontier is ~coincident with another engine's across every
+  condition tested (redundant mechanism, per Phase 3); keep whichever
+  implementation is simpler or faster, drop the other.</li>
+<li><strong>Delete</strong> — dominated everywhere, in every condition, by some other
+  engine's frontier point.</li>
+</ul>
+<p>An engine must not be deleted for being measured at a badly chosen parameter
+value — 2a's per-engine sweep exists precisely to prevent that.</p>
+<p><strong>2d. Use-case tagging for survivors.</strong> Label each surviving engine by which
+region of the joint frontier it wins, in the vocabulary §1e already sets up:
+the high-accuracy / short-length corner serves single- and short-lag
+statistics (acceleration PDF, <code>K_a</code>, velocity gradients); the long-length
+corner (subject to whatever accuracy floor open question 3 settles) serves
+time correlations, τ_L, pair dispersion; a middle point is the general-purpose
+default. This tagging — not a single "best tracker" — is the actual
+deliverable users see.</p>
+<p><strong>2e. Mechanism tie-break.</strong> When two engines are both non-dominated and
+close, prefer the one whose winning mechanism is legible and reusable (feeds
+Phase 3's synthesis) over one that wins by opaque tuning — a frontier point
+that can't be explained mechanistically is a worse foundation for Phase 3
+than a slightly worse point that can.</p>
+<p><strong>Deliverable:</strong> a keep / merge / delete decision per engine with the joint
+frontier and use-case tags attached as evidence, not a single ranked list.</p>
+<p><strong>Practical sequencing:</strong> 2b's noise axis depends on Phase 1b (not yet
+built). Do not wait on it to start — run 2a/2c/2b-density-only (both existing
+synthetic sets, zero injected noise) as a first pass now; it is cheap
+(existing per-run cost is sub-second at these frame counts per §3.5 of the
+2026-08-16 plan) and already gives a real joint frontier, just an incomplete
+one. Flag it explicitly as preliminary — noise is the dominant untested axis
+(§1) and engines may still re-rank once it's added — and rerun once 1b lands.</p>
+<p><strong>Superseded by the actual decision</strong> (survivors section above, decided
+2026-08-17): five engines, not "4-6, to be tested" — <code>priority_segment_3d</code>,
+<code>4be</code>, <code>trackcorr</code> (fwd+bwd), <code>myptv_3d_tracking</code>, <code>proptv_tracking</code>. The
+2a-2e machinery above still runs, but its job now is to build each
+survivor's frontier and use-case tags, not to decide who survives.</p>
+<h3 id="phase-3-dissect-the-winners-then-build-the-simple-one">Phase 3 — dissect the winners, then build the simple one<a class="headerlink" href="#phase-3-dissect-the-winners-then-build-the-simple-one" title="Permanent link">&para;</a></h3>
+<p>Only after Phase 2. For each surviving tracker, isolate <em>which mechanism</em>
+earns its score, by ablation rather than by argument. The candidate
+mechanisms already visible in this codebase:</p>
+<ul>
+<li><strong>the prediction model</strong> — constant velocity (3MA), the candidate's own
+  implied velocity two frames ahead (4BE eq. 12), Savitzky-Golay
+  extrapolation (<code>fast_3d_smooth</code>), Kalman;</li>
+<li><strong>the cost</strong> — acceleration residual vs future-support distance;</li>
+<li><strong>the search-box scale</strong> — the §0 finding that this dominates kinematic
+  damage says this may matter more than the cost function;</li>
+<li><strong>conflict resolution</strong> — give-up (4BE), cost-ordered greedy (3MA),
+  Hungarian. 2026-08-16 §3.4 measured give-up vs greedy; Hungarian is
+  measured but against Ouellette's warning;</li>
+<li><strong>use of the future</strong> — 4BE's n+2 support is the one mechanism with no
+  analogue in the others, and it is what buys its precision.</li>
+</ul>
+<p>The synthesis the user anticipates — "from 3–5 best trackers, a simple idea
+that also will be the best" — has a concrete shape suggested by §0: a
+tracker that <strong>uses future support to accept a link (4BE's discriminating
+power), keeps the search box tight enough that any mistake it does make is
+kinematically small (the <code>dacc</code> finding), and declines rather than guesses
+under conflict (4BE's rule)</strong> — then recovers length by a stitching pass that
+runs only on fragments it has reason to trust.</p>
+<p>Note the coupling that §3.4 of the 2026-08-16 plan already exposed, because
+it constrains this design: give-up-on-conflict and naive gap bridging fight
+each other. A declined conflict looks exactly like a gap to the bridger, so
+it re-creates the link the tracker refused (K_a 4.33 → 343). <strong>Whatever
+declines a link must record <em>why</em>, so the stitcher can distinguish "particle
+was not detected here" from "I refused to guess here" and bridge only the
+former.</strong> That is the concrete mechanism by which length gets recovered
+without spending accuracy, and it does not exist in any current tracker.</p>
+<hr />
+<h2 id="3-what-not-to-do-and-why">3. What NOT to do, and why<a class="headerlink" href="#3-what-not-to-do-and-why" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Do not tune for track length <em>alone</em>.</strong> Length is a real objective and
+  must be reported and optimised — but only along the accuracy axis, never
+  instead of it. The failure mode to avoid is a metric that rewards guessing:
+  a tracker that links optimistically scores better on mean duration while
+  destroying the acceleration statistics. Length is safe to pursue when it
+  comes free (an accuracy-neutral parameter change, or stitching applied to
+  fragments already known to be correct) and unsafe when it is bought by
+  loosening a gate. <code>pmt</code> is separately unusable as a quality rate — it is
+  computed over predicted tracks and <em>rises</em> with fragmentation (2026-08-16
+  §2.1) — so it is not a length metric either.</li>
+<li><strong>Do not turn on gap bridging for 4BE.</strong> K_a 4.33 → 343.</li>
+<li><strong>Do not read the 2026-08-16 §3.3/§3.4 rankings as final.</strong> They rank on
+  precision and yield, which §0 shows is the wrong ordering. Their
+  <em>mechanistic</em> findings stand; their verdicts are provisional.</li>
+<li><strong>Do not add a tracker.</strong> The instruction is to reduce.</li>
+</ul>
+<h2 id="4-open-questions-for-the-next-session">4. Open questions for the next session<a class="headerlink" href="#4-open-questions-for-the-next-session" title="Permanent link">&para;</a></h2>
+<ol>
+<li>~~Is there existing JHTDB access/tooling in this workspace~~ <strong>Answered
+   2026-08-17: no.</strong> <code>src/openptv2/benchmarking/jhtdb_client.py</code> (named in
+   <code>docs/plans/differentiable_ptv_nextgen_plan.md</code>) does not exist; that plan
+   and <code>docs/lagrangian_turbulence_quality_guide.md</code> are unimplemented
+   proposal docs, not working code. "JHU data" in the 2026-08-16 plan and in
+   <code>tracking_postprocess.py</code>'s docstring is informal shorthand for
+   JHTDB-<em>like</em> statistics used once to sanity-check a warmup parameter
+   estimate (<code>dvxmax~52mm</code>), not an actual connection or downloaded dataset.
+   Phase 1a starts from scratch: the real client library is <code>pyJHTDB</code>
+   (<code>pip install pyJHTDB</code>, needs a free API token from
+   turbulence.pha.jhu.edu), and it has not been evaluated for local/offline
+   availability, dataset size, or download cost. <strong>Moot for now</strong> — proPTV's
+   <code>500_25</code>/<code>500_30</code> (found 2026-08-17, see §1a above) already has measured
+   real intermittency (K_a 13–22) sitting on disk with no access blocker, so
+   JHTDB is deferred rather than pursued next.</li>
+<li>
+<p>Also checked: <code>C:/Users/alex/projects/Alex_Ruiz_Test_cases/JHU</code> (raised
+     by the user alongside proPTV) is a <strong>simulated 4-camera 3D-PTV
+     experiment</strong> — synthetic images rendered in a 3D scene, per Alex Ruiz's
+     published method (corrected 2026-08-17: not a real physical rig, despite
+     <code>experiment.yaml</code>'s realistic-looking 1000 Hz acquisition metadata).
+     149 frames (<code>res/post_analysis.nc</code> attrs: first=10001, last=10100),
+     already calibrated, previously run end-to-end on openptv-cloud
+     (<code>res/run.zarr</code>, <code>res/post_analysis.nc</code> — Eulerian mean/rms/TKE fields
+     only, no Lagrangian output stored here). Despite the "JHU" name it is
+     <strong>not JHTDB</strong> — no <code>origin</code>/truth files exist in <em>this</em> checked-out
+     folder, and nothing references DNS or Reynolds number.</p>
+<p>The user also confirms (2026-08-17) it <strong>is the same case Ron Shnapp
+ (MyPTV's developer) used in this lab for a pair-dispersion-in-turbulence
+ study</strong> — i.e. an expert practitioner already validated this exact case
+ for the hardest of the criteria this program cares about (criterion D,
+ pair dispersion, §1 — "no harness at all" today).</p>
+<p><strong>Confirmed 2026-08-17: no ground truth is available</strong> for this case —
+ it is not recoverable, so it is <strong>not</strong> a Phase 1a source (1c's
+ truth-referenced metrics need per-particle truth this case cannot
+ supply). It still earns a role, but a different, weaker one than
+ anything else in Phase 1: <strong>cross-tracker agreement as a no-truth proxy</strong>,
+ used only in Phase 2, only after Phase 1a/1b/1c are built and every
+ tracker has a tuned operating point from real ground truth. Concretely:
+ - Run the Phase-2 survivors on this case and compute pair-dispersion
+   ⟨Δr²(t)⟩ (criterion D) per tracker.
+ - Compare trackers <strong>against each other</strong>, not against truth: agreement
+   across independently-implemented trackers is evidence (not proof) of
+   correctness, and an outlier is evidence of a tracking artefact —
+   exactly the inverse framing of §0's <code>pmt</code>/precision trap, so read it
+   cautiously (agreement can also mean shared bias, e.g. every engine
+   using the same seeded-search assumption).
+ - Sanity-check the aggregate curve against <strong>known physics</strong>, not
+   per-particle truth: Richardson's t³ super-diffusive scaling at
+   separations inside the inertial range is a real, checkable target
+   independent of this dataset's own trajectories.
+ - If Ron Shnapp's own published dispersion numbers for this case are
+   available, treat them as an external anchor, but as literature
+   comparison, not as ground truth wired into the metric harness.</p>
+<p>This does not replace Phase 1a — it is the only planned use of a
+ genuinely dispersion-purpose-built, expert-validated case, so it is
+ worth keeping as Phase 2's plausibility check even without truth. It
+ also remains a <code>myptv_3d_tracking</code>-vs-upstream-MyPTV cross-software
+ check on the exact case that engine's real-world counterpart was used
+ for.
+2. Is there a real experiment whose parameters should define the noise sweep
+   and the dt/τ_η ratio, or do we take those from the literature?
+3. Does the acceleration-accuracy target have a number attached — e.g. "a_rms
+   within 5% and K_a within 10% of truth" — or is it "best available"? This
+   matters more than it looks: an explicit accuracy floor turns the
+   two-objective problem into "maximise length subject to the floor", which
+   is a much easier thing to optimise and to defend than picking a point on
+   a frontier by taste.
+4. Which questions actually need the long trajectories, and how long is long
+   — expressed in τ_L, not frames? An integral timescale needs a few τ_L; a
+   Richardson-dispersion measurement needs far more. That number sets how
+   hard the length objective should be pushed, and nothing in this repo
+   currently states it.
+5. ~~<code>test_cavity</code> is 4 frames and poorly conditioned. Is a well-conditioned
+   real dataset obtainable?~~ <strong>Answered 2026-08-17: yes, likely.</strong>
+   <code>C:/Users/alex/projects/Alex_Ruiz_Test_cases/JHU</code> — real 4-camera
+   experiment, 149 frames, already calibrated, already run end-to-end once
+   (<code>res/run.zarr</code>). Noise-conditioning (the actual thing that made
+   <code>test_cavity</code> unusable — z-noise ≥ frame-to-frame motion) has <strong>not</strong> been
+   checked yet; run <code>scripts/audit_position_noise.py</code>-style diagnostics
+   against it before promoting it to the real-data gate. <code>Burger/</code> in the
+   same repo is a second, smaller 4-camera real case worth the same check.</p>
+</li>
+</ol>
+<hr />
+<h2 id="5-reproducing-0-and-1">5. Reproducing §0 and §1<a class="headerlink" href="#5-reproducing-0-and-1" title="Permanent link">&para;</a></h2>
+<p>The throwaway scripts behind every number above are in this session's
+scratchpad; they should be promoted into <code>scripts/</code> as part of Phase 1c
+rather than rewritten:</p>
+<ul>
+<li>ground-truth physics audit (K_a, autocorrelation, τ_L) — §1 rows 1, 3, 4;</li>
+<li>stereo position-noise audit vs <code>origin_*.txt</code> — §1 row 2;</li>
+<li>per-tracker acceleration fidelity assay — the §0 tables.</li>
+</ul>
+<p>Datasets: <code>test_data/synthetic_turbulent</code> (220 p/frame, 236 true tracks) and
+<code>test_data/synthetic_turbulent_1k</code> (970 p/frame, 1016 true tracks), frames
+10001–10030.</p>
+<p><strong>Promoted 2026-08-17</strong> (already in <code>scripts/</code>, not scratchpad): <code>scripts/
+adapt_proptv_dataset.py</code> (proPTV <code>origin_*.txt</code> → openptv2 benchmark dataset,
+writes <code>test_data/proptv_500_25</code>/<code>proptv_500_30</code>) and <code>scripts/
+bench_proptv_kinematics.py</code> (per-tracker kinematic ranking on the adapted
+data, produced the §0 proPTV table). The four scratchpad scripts referenced
+above (<code>pareto.py</code>, <code>accel_fidelity.py</code>, <code>pos_noise.py</code>, <code>gt_physics.py</code>)
+are still not promoted — do that as part of Phase 1c/1d rather than
+rewriting them from scratch.</p>
+<hr />
+<h2 id="6-next-steps-as-of-2026-08-17-end-of-session">6. Next steps (as of 2026-08-17, end of session)<a class="headerlink" href="#6-next-steps-as-of-2026-08-17-end-of-session" title="Permanent link">&para;</a></h2>
+<p>In priority order — each unblocks something later in the list:</p>
+<ol>
+<li>~~Calibrate proPTV's rig via openptv2's own orientation pipeline~~ <strong>Done
+   2026-08-17.</strong> <code>scripts/calibrate_proptv_dlt.py</code>: classic DLT camera
+   resection (Abdel-Aziz &amp; Karara 1971, ~standard numpy/scipy, openptv2 has
+   no from-scratch resection) bootstraps each camera's pose from
+   <code>origin_00000.txt</code>'s known-3D/observed-2D correspondences, then
+   openptv2's own <code>external_calibration</code> (<code>raw_orient</code>) + <code>full_calibration</code>
+   refine it (interior + <code>k1,k2,p1,p2</code> distortion). No <code>mmlut</code>/refraction
+   needed — proPTV's images are a pure synthetic render (n1=n2=n3=1, plain
+   pinhole), confirmed by the residuals converging cleanly without it.
+   Verified against a known synthetic camera before trusting it on real data
+   (<code>calibrate_proptv_dlt.py selftest</code> — exact recovery of position, <code>cc</code>,
+   and orientation angles). Result on <code>500_30</code>, all 4 cameras: reprojection
+   RMS <strong>0.94–1.96 px</strong> (well inside the <code>openptv-calibrate</code> skill's own
+   "≲2px is good" bar), written to <code>test_data/proptv_500_30/cal/camN.tif.ori</code>
+   /<code>.addpar</code>. <code>parameters_Run1.yaml</code>'s <code>ptv.imx/imy/pix_x/pix_y</code> patched to
+   match this dataset's actual convention (800×800 px, 1.0 world-unit/px —
+   not the mm-scale scaffold defaults). Confirmed the new calibration doesn't
+   break the existing 3MA path (500/500 links, unchanged). One real gotcha
+   worth remembering if this is ever redone: the DLT projection matrix has a
+   global sign ambiguity (from the SVD null vector) that plain RQ
+   decomposition does not resolve — must be pinned by checking actual point
+   depth/reprojection sign against the input data, not by determinant or
+   diagonal-sign heuristics alone (both were tried and both were
+   insufficient; see the script's comments).</li>
+<li>~~Extend <code>adapt_proptv_dataset.py</code>~~ <strong>Partially done 2026-08-17, user
+   chose "build store-backed reading" (not ASCII targets).</strong> Correction to
+   the earlier scoping note above: a first grep for <code>read_targets</code>/
+   <code>has_targets</code> missed that <code>tracking_frame_buf.read_targets()</code> (the
+   general entry point every <code>Frame.read()</code> call goes through) <strong>already</strong>
+   checks <code>store.has_targets(cam, frame)</code> before falling back to ASCII, and
+   that path is already threaded the whole way down
+   (<code>Tracker.restart→TrackingRun(store=...)→TrackBuf.read_frame_at_end→
+   Frame.read→read_targets</code>) — so no new store-reading capability needed
+   building after all; only <em>writing</em> real target data into the store was
+   missing.</li>
+<li><strong>Done:</strong> <code>adapt_proptv_dataset.py</code> now opens <code>res/run.zarr</code> and calls
+     <code>RunStore.write_targets(cam, frame, targets)</code> per camera/frame from
+     <code>origin_*.txt</code>'s <code>xc0,yc0,...,xc3,yc3</code> columns (NaN → not seen by that
+     camera). <code>rt_is</code>'s camera-index columns now hold each particle's real
+     0-based position in that camera/frame's stored target array (previously
+     always <code>-1</code>) — exactly the correspondence a real detection+matching
+     stage would have produced.</li>
+<li><strong>Verified the plumbing itself works:</strong> before this, <code>trackcorr</code>
+     produced a hard 0 links every frame (500 lost/500, every step). After,
+     link count is nonzero (a real, reproducible, frame-specific pattern —
+     frames 3,4,16,17 of 30 get exactly 1 link each, every run) — proof the
+     store-backed target/correspondence data is actually being read and
+     used, not silently ignored.</li>
+<li>
+<p><strong>Investigated further 2026-08-17, real progress, not fully resolved.</strong>
+     Traced the actual kernel: <code>run_tracker</code>'s track_overrides map to
+     <code>TrackingParams</code> (<code>dvxmax</code>→<code>set_dvxmax</code> etc.) which feed
+     <code>trackcorr_loop_fast</code> (<code>src/openptv2/algorithms/track_kernels_corr.py</code>)
+     via <code>lmax = norm([dvxmin-dvxmax, ...])</code> and <code>dacc</code> directly — <code>eps0</code>
+     does <strong>not</strong> appear in that kernel's signature at all (confirmed by
+     reading it), so widening it earlier genuinely could not have changed
+     anything; it's a detection/correspondence-stage parameter, not a
+     tracking one, and the "zero effect" result above is now explained, not
+     mysterious. <code>X_lay</code>/<code>Zmin_lay</code>/<code>Zmax_lay</code> <em>do</em> feed the kernel (via
+     <code>vpar</code>), but weren't the bottleneck either.</p>
+<p><strong>The real bottleneck was <code>dvxmax</code>/<code>dacc</code> scale, just far more than the
+ 3MA-derived guess of 0.05/0.02.</strong> A direct sweep (holding everything
+ else fixed) shows real, monotonic sensitivity trackcorr's own dvxmax=
+ 0.05 test didn't reveal because it was uniformly too tight:</p>
+<table>
+<thead>
+<tr>
+<th>dvxmax</th>
+<th>dacc</th>
+<th>tracks-with-≥2-points</th>
+<th>mean length</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.05</td>
+<td>0.02</td>
+<td>~4 (the original near-zero result)</td>
+<td>~1.0</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>0.2</td>
+<td>90</td>
+<td>1.01</td>
+</tr>
+<tr>
+<td>2.0</td>
+<td>1.0</td>
+<td>1167</td>
+<td>1.14</td>
+</tr>
+<tr>
+<td>3.0</td>
+<td>1.5</td>
+<td>1231</td>
+<td>1.16</td>
+</tr>
+<tr>
+<td>5.0</td>
+<td>2.5</td>
+<td>1238</td>
+<td>1.16</td>
+</tr>
+<tr>
+<td>8.0</td>
+<td>4.0</td>
+<td>1243</td>
+<td>1.16</td>
+</tr>
+</tbody>
+</table>
+<p>So trackcorr's own effective search-box scale on this dataset is
+ roughly <strong>40-60× larger</strong> than the value that gives 3MA a perfect
+ 500/500 — i.e. <code>dvxmax</code>/<code>dacc</code> are not interchangeable across engines
+ even in the same physical units, consistent with 2026-08-16 §3.3's
+ original finding that a shared <code>dacc</code> silently favours whichever
+ tracker it suits (now independently reproduced on a different engine
+ pair, different dataset). <code>dvxmax≈2-3</code>/<code>dacc≈1-1.5</code> is the right
+ regime here, not <code>0.05</code>/<code>0.02</code>.</p>
+<p><strong>Still open, and stranger than a simple plateau: the dvxmax/dacc
+ relationship is non-monotonic, ruling out a plain "too tight vs. too
+ loose search box" story.</strong> Full sweep, <code>dacc</code> held at <code>dvxmax/2</code>:</p>
+<table>
+<thead>
+<tr>
+<th><code>dvxmax</code></th>
+<th>with-links (of 15000 track-slots)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.05</td>
+<td>~4</td>
+</tr>
+<tr>
+<td>0.08</td>
+<td>3</td>
+</tr>
+<tr>
+<td>0.1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>0.15</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0.2</td>
+<td>5</td>
+</tr>
+<tr>
+<td>0.3</td>
+<td>18</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>90</td>
+</tr>
+<tr>
+<td>2.0</td>
+<td>1167</td>
+</tr>
+<tr>
+<td>3.0-8.0</td>
+<td>~1230-1243 (flat)</td>
+</tr>
+</tbody>
+</table>
+<p>If this were a simple search-radius effect, yield should rise smoothly
+ as <code>dvxmax</code> grows past the true velocity scale (~0.05, from this
+ dataset's own measured velocity rms) — instead it <em>dips to zero</em> at
+ <code>dvxmax=0.15</code> before climbing, and only becomes non-negligible once
+ <code>dvxmax</code> exceeds the domain size itself (~1, the unit cube), then flats
+ out at a low ~8.5% ceiling. Also checked and ruled out: <code>flagNewParticles</code>
+ /<code>add</code> (0 vs 1, zero effect, same 1167 links at <code>dvxmax=2</code>).</p>
+<p><strong>Two further hypotheses read from source and tested, both real fixes,
+ neither the root cause:</strong></p>
+<ul>
+<li><strong>Cold-start prediction (2026-08-17, at the user's direction, "use
+   3MA's cold start for trackcorr"):</strong> confirmed trackcorr's cold-start
+   (no previous link) branch assumes zero velocity (<code>X[2]=X[1]</code>,
+   <code>_trackcorr_particle_fast</code>), unlike 3MA's Level 2 (borrow velocity
+   from a spatial neighbour that already has a track,
+   <code>track_kernels_track3d.py</code>) — every other survivor does something
+   like 3MA's version (4BE: nearest-neighbour; <code>proptv_tracking</code>: an
+   explicit NN init phase). Ported the same neighbour-velocity-averaging
+   into trackcorr's cold-start branch (<code>orig_parts_1</code> threaded through
+   as a new parameter, rebuilt). <strong>Result: no meaningful change</strong> (same
+   counts within noise). Diagnosed why: the neighbour-donor pool is
+   empty exactly when it matters most — on the true first frame nothing
+   has a previous link yet (identical to 3MA's own situation), and since
+   almost nothing links on that first hop regardless, there's nothing to
+   propagate to later frames either — a chicken-and-egg gap the fix
+   doesn't break. Genuine negative evidence <em>against</em> "cold-start
+   choice" being the dominant cause, and points back to the structural
+   cause: 3MA only needs <strong>one</strong> prediction-and-match to succeed
+   (frame1→2); trackcorr requires <strong>two</strong>, cascaded and each
+   independently gated (frame1→2 <em>and</em> frame2→3), before accepting
+   anything — a harder bar regardless of how good the first guess is.
+   Kept the fix (correct, matches every other engine's design, just not
+   sufficient alone).</li>
+<li><strong>Target sort order (2026-08-17):</strong> found the real candidate search
+   (<code>candsearch_in_pix_fast_nogil</code>, <code>track_kernels_search.py</code>) does a
+   <strong>binary-search jump</strong> into the per-camera target array assuming
+   it's sorted by y-pixel, then linear-scans with an early <code>break</code> the
+   instant it sees <code>y &gt; ymax</code> — both silently wrong on unsorted input.
+   <code>gui/ptv.py</code> always calls <code>targs.sort_y()</code> before targets reach this
+   code path in every other run; <code>adapt_proptv_dataset.py</code> wrote
+   targets in origin-row order, violating that convention. Fixed (now
+   sorts each camera's target list by y-pixel before writing, remapping
+   <code>rt_is</code>'s camera-index columns to the sorted positions). <strong>Result: no
+   meaningful change either</strong> (110 vs 90 at <code>dvxmax=0.5</code>, 1015 vs 1167
+   at <code>dvxmax=2.0</code> — within noise, if anything slightly worse at the
+   high end). Kept the fix regardless — a real, independently-correct
+   requirement this adapter was violating, just not the dominant
+   bottleneck.</li>
+</ul>
+<p><strong>Sixth hypothesis, 2026-08-17: FOUND AND FIXED — this was the real
+ bottleneck.</strong> <code>candsearch_in_pix_fast_nogil</code>
+ (<code>track_kernels_pixel.py</code>, the copy actually cimported by
+ <code>_trackcorr_particle_fast</code> — a separate, unfixed duplicate also exists
+ in <code>track_kernels_search.py</code>, not on trackcorr's call path, left
+ alone) hardcoded its per-camera candidate return to the <strong>nearest 4</strong>
+ via four named variables (<code>p1..p4</code>/<code>d1..d4</code>), regardless of the outer
+ <code>MAX_CANDS_K=32</code> buffer sizing every caller already assumed. It does
+ correctly rank by pixel distance (verified), so this was invisible at
+ low density/tight search boxes, but once the search window was wide
+ enough to contain more than 4 real candidate targets, the true match
+ could be silently discarded before the acc/angle quality gate ever
+ saw it — exactly the failure mode a widening <code>dvxmax</code> cannot fix,
+ matching the observed plateau. Rewrote it to a proper
+ <code>max_cands</code>-parameterized insertion sort (generalizes the same
+ 4-element logic to N elements, same algorithm, same ranking), and
+ updated its caller (<code>_sorted_candidates_fast_out_nogil</code>) to size its
+ scratch buffers to <code>max_cands</code> instead of a literal <code>4</code>. Rebuilt;
+ <code>tests/unit/test_track3d.py</code>, <code>test_track.py</code>,
+ <code>test_cython_epipolar_direction.py</code> (28 tests) still pass; the 5
+ direct unit tests for this function
+ (<code>test_track_kernels_tracking_coverage.py</code>) updated for the new
+ signature (<code>max_cands</code>, <code>out_dists</code> added) — that file only runs in
+ pure-Python coverage mode, not exercised by this rebuild, but the
+ calls now match the new signature for when it is.</p>
+<p><strong>Measured improvement on <code>proptv_500_30</code>:</strong></p>
+<table>
+<thead>
+<tr>
+<th><code>dvxmax</code></th>
+<th>before this fix</th>
+<th>after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.5</td>
+<td>~90-110</td>
+<td><strong>1328</strong> (≈12-14×)</td>
+</tr>
+<tr>
+<td>2.0</td>
+<td>~1015-1243</td>
+<td><strong>1811</strong> (mean length also up, 1.14→1.27)</td>
+</tr>
+</tbody>
+</table>
+<p>A real, substantial improvement. <strong>Full re-sweep after the fix,
+ replacing every earlier table in this section (measured against the
+ buggy 4-candidate cap and not representative):</strong></p>
+<table>
+<thead>
+<tr>
+<th><code>dvxmax</code></th>
+<th>with-links (of 15000 track-slots)</th>
+<th>mean length</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.1</td>
+<td>1</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>0.2</td>
+<td>26</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>0.3</td>
+<td>389</td>
+<td>1.05</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>1328</td>
+<td>1.17</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>1748</td>
+<td>1.28</td>
+</tr>
+<tr>
+<td>2.0</td>
+<td>1811</td>
+<td>1.27</td>
+</tr>
+<tr>
+<td>3.0</td>
+<td>1793</td>
+<td>1.27</td>
+</tr>
+<tr>
+<td>5.0</td>
+<td>1799</td>
+<td>1.27</td>
+</tr>
+</tbody>
+</table>
+<p><strong>This confirms the earlier non-monotonic pattern (dip to zero at
+ <code>dvxmax=0.15</code>, erratic small counts) was substantially an artefact of
+ this bug (compounded with the target-sort-order bug) — the fixed
+ kernel gives a clean, monotonic, textbook search-radius curve</strong>:
+ smooth climb, plateau at <code>dvxmax≈1-2</code> around <strong>1800 links (~12.4%
+ yield)</strong>. That plateau is real progress (up from ~8.5% pre-fix, and
+ the shape is now explicable rather than mysterious) but still far
+ below a usable yield — 3MA gets 100% on the same data. Consistent with
+ the structural explanation already established: trackcorr's compound
+ two-hop gate (frame1→2 <em>and</em> frame2→3, both required) is a genuinely
+ harder bar than any single-hop survivor faces, and on real
+ intermittent turbulence some real fraction of true transitions may
+ legitimately fail the acc/angle smoothness check — a physics-vs-
+ algorithm mismatch, not a bug, if so. <code>_angle_acc_out</code>'s live gate
+ values are the next thing to check (not yet done) if this plateau is
+ worth chasing further.
+3. <strong>Run Phase 2's 2a-2e protocol properly</strong> on the five survivors: per-
+   engine parameter frontier (2a) × density (2b, proPTV <code>500_25</code> vs <code>500_30</code>
+   vs the two openptv2 synthetic sets) → joint frontier (2c) → use-case tags
+   (2d). What's been run so far (§0's proPTV table) is a single operating
+   point per engine, not a frontier — real ranking needs the sweep.
+4. <strong>Build Phase 1b (injectable position noise)</strong> — the dominant untested
+   axis per §1, needed before any of the above frontiers can be trusted as
+   more than a zero-noise special case. Apply uniformly to both openptv2's
+   synthetic sets and the proPTV-adapted sets (same knob, one code path).
+5. <strong>Phase 3 mechanism dissection</strong>, once (3) produces real per-survivor
+   frontiers — including the sharpened two-failure-mode framing from the
+   proPTV table (concentrated-few-links damage vs. spread-many-links
+   damage; §2's mechanism list should track them as separate axes).
+6. Lower priority / opportunistic: resolve open questions 2-4 (real noise
+   parameters, explicit accuracy floor, τ_L-denominated length target); run
+   the JHU cross-tracker/pair-dispersion plausibility check (§1a) once (3)
+   produces stable survivor parameters to run it with; check JHU/<code>Burger</code>
+   noise-conditioning (open question 5) before promoting either to the
+   real-data gate.
+7. <strong>Write a proPTV&lt;-&gt;openptv2 calibration tutorial</strong> (requested 2026-08-17,
+   documentation deliverable, not code) — once (2)'s store-backed target
+   reading exists and the trackcorr round-trip is verified end-to-end, so
+   the tutorial documents a working pipeline rather than a half-finished
+   one. Target: a standalone doc (e.g. <code>docs/proptv-openptv2-calibration.md</code>)
+   a future session or another user can follow without re-deriving anything
+   from this session. Should cover, in both directions:
+   - <strong>proPTV → openptv2</strong> (built 2026-08-17, <code>scripts/
+ calibrate_proptv_dlt.py</code>): proPTV's data layout (<code>origin_*.txt</code> columns,
+ Soloff <code>.txt</code> calibration files, no calibration-target photos — why that
+ forces the ground-truth-as-control-points approach rather than a format
+ converter); the empirical method used to pin down openptv2's exact
+ projection sign convention (<code>metric = -cc*(R@(X-C))_xy/(...)_z</code>, <code>dm</code>
+ stored camera-to-world but consumed transposed by <code>img_coord</code> — found by
+ direct numerical probing, not by reading the Cython source, and that's
+ a deliberately reusable technique worth teaching); DLT camera resection
+ as the from-scratch bootstrap (openptv2 has none) with its real gotcha
+ (global sign ambiguity from the SVD null vector — resolved by depth/
+ reprojection sign, not by determinant or diagonal-sign heuristics,
+ both tried and both insufficient); handoff to openptv2's own
+ <code>external_calibration</code>/<code>full_calibration</code> for refinement; verification
+ method (self-test against a known synthetic camera <em>before</em> trusting
+ real data, then reprojection RMS against the <code>openptv-calibrate</code> skill's
+ own ≲2px bar).
+   - <strong>openptv2 → proPTV</strong> (not yet attempted, direction absent from this
+ session): the natural approach is the mirror of the above — sample
+ <code>img_coord()</code> densely across the calibrated volume to synthesize
+ <code>(X,Y,Z)-&gt;(pixel)</code> pairs, then least-squares fit proPTV's Soloff
+ polynomial form to that synthetic dataset (a regression problem, no
+ resection needed, since openptv2's model is already dense and exact).
+ Needs: reading proPTV's actual Soloff polynomial order/basis from
+ <code>soloff_c{n}x.txt</code>/<code>y.txt</code> (not yet inspected this session — do that
+ first), and a validation loop (fit, then compare the Soloff fit's own
+ reprojection RMS against openptv2's <code>img_coord</code> on held-out points).
+   - A worked example on <code>500_30</code> (already-verified proPTV→openptv2 numbers
+ from this session) plus, once built, the reverse direction's numbers on
+ the same case, so a reader can see both directions validated on one
+ concrete dataset rather than in the abstract.</p>
+</li>
+</ol>
+<p><strong>Docs cleanup done 2026-08-17:</strong> removed <code>docs/plans/master-plan.md</code>
+(2026-08-10) — its two-preset consolidation goal and <code>_predictive_tracker.py</code>
+unification plan are directly superseded by today's five-named-engine
+survivor decision. Left <code>docs/plans/differentiable_ptv_nextgen_plan.md</code>,
+<code>docs/differentiable_ptv_autoresearch_architecture.md</code>, and <code>docs/
+lagrangian_turbulence_quality_guide.md</code> in place — they're aspirational/
+unimplemented (open question 1 already found their referenced
+<code>jhtdb_client.py</code> doesn't exist), but they describe a materially different,
+larger-scope effort (a differentiable PyTorch rewrite) rather than being
+directly contradicted by this plan; flagged for the user to decide on
+separately rather than removed unilaterally.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

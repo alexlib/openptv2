@@ -1278,7 +1278,7 @@ That has two consequences:</p>
   convention left over from a different naming scheme) fails with</code>FileNotFoundError<code>on the very first frame -- and only when you actually
   run the sequence step; the calibration/detection GUI panels won't catch
   it, since they only touch the calibration images. Verify with:
-  <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ls<span class="w"> </span>run1/img<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;1p;$p&#39;</span><span class="w">   </span><span class="c1"># first and last real filename</span>
+  <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ls<span class="w"> </span>run1/img<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">'1p;$p'</span><span class="w">   </span><span class="c1"># first and last real filename</span>
 </span></code></pre></div>
   and match</code>sequence.first<code>/</code>last<code>to the numbers actually in those
   filenames.</code>shaking.shaking_first_frame<code>/</code>shaking_last_frame<code>use the same
@@ -1305,7 +1305,7 @@ manual-orientation seed click landed on the wrong calibration-body point,
 or a splitter quadrant/camera-identity mismatch per above). Two tools, same
 underlying checks (<code>openptv2.calibration_diagnostics</code>):</p>
 <p><strong>Headless / CI / scripted</strong> -- <code>scripts/calibration_diagnostics.py</code>:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/calibration_diagnostics.py<span class="w"> </span>--models<span class="w"> </span><span class="s2">&quot;current=&lt;shared_calibration&gt;&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/calibration_diagnostics.py<span class="w"> </span>--models<span class="w"> </span><span class="s2">"current=&lt;shared_calibration&gt;"</span>
 </span></code></pre></div>
 Prints, per camera: distance to the calibration-body centroid, sight-line
 angle (&gt;15deg off is flagged -- a camera aimed away from the target even
@@ -1318,7 +1318,7 @@ recalibration, or two candidate calibrations) with a second <code>label=path</co
 notebook; needs the <code>viz</code> extra -- <code>uv run --extra viz</code> installs it on
 demand, no permanent dependency change needed for a one-off look):
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>uv<span class="w"> </span>run<span class="w"> </span>--extra<span class="w"> </span>viz<span class="w"> </span>marimo<span class="w"> </span>-y<span class="w"> </span>run<span class="w"> </span>src/openptv2/gui/visualize_calibration_nb.py<span class="w"> </span>--<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>--models<span class="w"> </span><span class="s2">&quot;current=&lt;shared_calibration&gt;&quot;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>--models<span class="w"> </span><span class="s2">"current=&lt;shared_calibration&gt;"</span>
 </span></code></pre></div>
 Orbit-able 3D plot of camera poses + calibration body, with the same
 diagnostics rendered as a table below it. Also usable as a Claude Code skill

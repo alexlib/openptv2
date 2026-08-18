@@ -1250,8 +1250,8 @@ For a practical step-by-step playbook covering coarse-to-fine <code>sortgrid</co
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>for each camera independently:
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    known 3D calibration points  Xᵢ   (fixed, from the calblock file)
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    detected pixels              xᵢ   (matched to Xᵢ by sortgrid)
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    solve the camera&#39;s exterior (position, angles) + interior/distortion
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    that minimize   Σᵢ ‖ xᵢ − project(Xᵢ) ‖²      ← this camera&#39;s RMS only
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    solve the camera's exterior (position, angles) + interior/distortion
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    that minimize   Σᵢ ‖ xᵢ − project(Xᵢ) ‖²      ← this camera's RMS only
 </span></code></pre></div>
 <p>Each camera is fit against the <strong>same, fixed</strong> 3D points, but <strong>separately</strong>. The
 distortion flag-set is chosen greedily by lowest RMS (<code>CANDIDATE_FLAGS</code>:
@@ -1269,7 +1269,7 @@ so nothing is coupled and RCM cannot change. A joint fit only helps when there i
 themselves</strong>.</p>
 <h2 id="2-joint-plate-bundle-adjustment-joint_plate_bundle_adjust">2. Joint plate bundle adjustment (<code>joint_plate_bundle_adjust</code>)<a class="headerlink" href="#2-joint-plate-bundle-adjustment-joint_plate_bundle_adjust" title="Permanent link">&para;</a></h2>
 <p>The coupling is created by making the 3D plate points <strong>free, shared parameters</strong>:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>free parameters:  every camera&#39;s exterior (position + angles)
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>free parameters:  every camera's exterior (position + angles)
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>                  + one shared 3D position per plate point   ← couples the cameras
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>minimize:         Σ_cameras Σ_points ‖ detected − project(point, camera) ‖²
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                  + reg_weight · Σ_points ‖ point − nominal_calblock ‖²   ← anchor
@@ -1313,7 +1313,7 @@ The report's <code>joint_ba</code> block records <code>shaken_groups</code> (whi
 <code>rcm_trace</code> (per-group trial RCM + accept/reject), plus <code>rcm_exterior_only</code> so you
 can see the exterior-BA vs +distortion contributions separately.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">new_results</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">joint_plate_bundle_adjust</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">cpar</span><span class="p">,</span> <span class="n">shake_distortion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">print</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;rcm_exterior_only&quot;</span><span class="p">],</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;rcm_after&quot;</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;shaken_groups&quot;</span><span class="p">])</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">print</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"rcm_exterior_only"</span><span class="p">],</span> <span class="s2">"-&gt;"</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">"rcm_after"</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s2">"shaken_groups"</span><span class="p">])</span>
 </span></code></pre></div>
 <p>On <code>TT13_aorta</code> shaking accepted <code>p1p2</code> + <code>glass</code> but moved RCM only
 0.076 → 0.074 mm — confirming that rig's RCM is a shallow-parallax + detection-noise
@@ -1323,7 +1323,7 @@ ceiling, and it never destabilizes the fit chasing a group that doesn't help.</p
 <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.autocalibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">joint_plate_bundle_adjust</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">new_results</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">joint_plate_bundle_adjust</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">cpar</span><span class="p">)</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;rcm_before&quot;</span><span class="p">],</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;rcm_after&quot;</span><span class="p">])</span>  <span class="c1"># median mm</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"rcm_before"</span><span class="p">],</span> <span class="s2">"-&gt;"</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">"rcm_after"</span><span class="p">])</span>  <span class="c1"># median mm</span>
 </span></code></pre></div>
 <h3 id="when-it-helps-and-when-it-doesnt">When it helps — and when it doesn't<a class="headerlink" href="#when-it-helps-and-when-it-doesnt" title="Permanent link">&para;</a></h3>
 <p>On a rig whose cameras are <strong>misaligned relative to each other</strong> (exterior
@@ -1337,7 +1337,7 @@ you where the error is coming from.</strong> The remaining error needs §3/§4, 
 §2.</p>
 <h2 id="3-roadmap-driving-rcm-down-further">3. Roadmap — driving RCM down further<a class="headerlink" href="#3-roadmap-driving-rcm-down-further" title="Permanent link">&para;</a></h2>
 <p>The full plan lives in
-<a href="../plans/master-plan/"><code>docs/plans/master-plan.md</code></a>.
+<a href="plans/master-plan.md"><code>docs/plans/master-plan.md</code></a>.
 Status: RCM reporting <strong>done</strong>, joint-plate BA first cut <strong>done</strong>, the rest below
 <strong>TODO</strong>.</p>
 <h3 id="the-full-blown-self-calibration-target-design">The full-blown self-calibration (target design)<a class="headerlink" href="#the-full-blown-self-calibration-target-design" title="Permanent link">&para;</a></h3>
