@@ -41,44 +41,42 @@ def _():
     import adapt_proptv_dataset as apd
     import benchmark_utils as bu
     from bench_proptv_kinematics import kinematics, stats
-    from tracking_registry import TRACKER_REGISTRY
+    from openptv2.tracking_registry import TRACKER_REGISTRY
 
-    return (
-        Path, TRACKER_REGISTRY, apd, bu, kinematics, mo, np, pd, stats, sys,
-    )
+    return Path, TRACKER_REGISTRY, apd, bu, kinematics, mo, np, pd, stats
 
 
 @app.cell
 def _(mo):
-    mo.md(
-        r"""
-        # Tracker Tutorial Dashboard
+    mo.md(r"""
+    # Tracker Tutorial Dashboard
 
-        Companion to `docs/tracker-tutorials.md`. Same 30-frame, 500-particle
-        proPTV-derived case, same two datasets ("clean" = ground-truth
-        correspondences injected directly, "realistic" = the real
-        detection→correspondence→triangulation error chain), same five
-        survivor trackers. **This notebook runs the real engines** — every
-        number you see is a live measurement, not a lookup table.
+    Companion to `docs/tracker-tutorials.md`. Same 30-frame, 500-particle
+    proPTV-derived case, same two datasets ("clean" = ground-truth
+    correspondences injected directly, "realistic" = the real
+    detection→correspondence→triangulation error chain), same five
+    survivor trackers. **This notebook runs the real engines** — every
+    number you see is a live measurement, not a lookup table.
 
-        Ground truth on both datasets: `a_rms=0.01101`, `K_a=19.80`
-        (acceleration kurtosis — Gaussian is 3, real turbulence intermittency
-        is 10-60; a false trajectory doesn't just add noise, it injects the
-        wrong kinematics into this number, which link-count metrics like
-        precision/yield cannot see at all — see
-        `docs/lagrangian_turbulence_quality_guide.md`).
+    Ground truth on both datasets: `a_rms=0.01101`, `K_a=19.80`
+    (acceleration kurtosis — Gaussian is 3, real turbulence intermittency
+    is 10-60; a false trajectory doesn't just add noise, it injects the
+    wrong kinematics into this number, which link-count metrics like
+    precision/yield cannot see at all — see
+    `docs/lagrangian_turbulence_quality_guide.md`).
 
-        **Workflow**: 1) generate a dataset below, 2) explore one tracker's
-        parameters interactively in §2, 3) run the full 5-tracker comparison
-        in §3.
-        """
-    )
+    **Workflow**: 1) generate a dataset below, 2) explore one tracker's
+    parameters interactively in §2, 3) run the full 5-tracker comparison
+    in §3.
+    """)
     return
 
 
 @app.cell
 def _(mo):
-    mo.md(r"""## 1. Generate the dataset""")
+    mo.md(r"""
+    ## 1. Generate the dataset
+    """)
     return
 
 
@@ -132,25 +130,23 @@ def _(FIRST, N, SRC, bu, dataset_label, kinematics, mo, stats):
 
 @app.cell
 def _(mo):
-    mo.md(
-        r"""
-        ## 2. One tracker, live parameters
+    mo.md(r"""
+    ## 2. One tracker, live parameters
 
-        The shared parameter surface every tracker is actually driven by:
-        `dvxmax` (velocity search box, mm/frame, same on all 3 axes here for
-        simplicity), `dacc` (seeded-step search radius, mm — ignored by
-        `4be`'s own cost, kept for API parity), `angle` (max angular
-        deviation, **gon**, 400 gon = 360°). Sliders start at the
-        auto-tuned recommended value for the current dataset
-        (`benchmark_utils.per_tracker_overrides`) — move them to see what
-        happens when you get it wrong.
-        """
-    )
+    The shared parameter surface every tracker is actually driven by:
+    `dvxmax` (velocity search box, mm/frame, same on all 3 axes here for
+    simplicity), `dacc` (seeded-step search radius, mm — ignored by
+    `4be`'s own cost, kept for API parity), `angle` (max angular
+    deviation, **gon**, 400 gon = 360°). Sliders start at the
+    auto-tuned recommended value for the current dataset
+    (`benchmark_utils.per_tracker_overrides`) — move them to see what
+    happens when you get it wrong.
+    """)
     return
 
 
 @app.cell
-def _(SRC, FIRST, N, TRACKER_REGISTRY, bu, mo):
+def _(TRACKER_REGISTRY, mo):
     TRACKERS = ["priority_segment_3d", "trackcorr", "4be", "myptv_3d_tracking", "proptv_tracking"]
     tracker_sel = mo.ui.dropdown(
         options={f"{t} — {TRACKER_REGISTRY[t].short_description}": t for t in TRACKERS},
@@ -196,8 +192,22 @@ def _(auto_angle, auto_dacc, auto_dvxmax, mo):
 
 @app.cell
 def _(
-    FIRST, K_a_truth, SRC, a_rms_truth, a_t_arr, angle_slider, bu, dacc_slider,
-    dvxmax_slider, kinematics, mo, np, run_one_btn, stats, tracker_sel, tt,
+    FIRST,
+    K_a_truth,
+    SRC,
+    a_rms_truth,
+    a_t_arr,
+    angle_slider,
+    bu,
+    dacc_slider,
+    dvxmax_slider,
+    kinematics,
+    mo,
+    np,
+    run_one_btn,
+    stats,
+    tracker_sel,
+    tt,
 ):
     mo.stop(not run_one_btn.value, mo.md("*Set your parameters and click **Run this tracker**.*"))
 
@@ -239,16 +249,14 @@ def _(
 
 @app.cell
 def _(mo):
-    mo.md(
-        r"""
-        ## 3. Full 5-tracker comparison
+    mo.md(r"""
+    ## 3. Full 5-tracker comparison
 
-        Reproduces `scripts/bench_with_without_noise.py`'s table on the
-        currently-generated dataset, at each tracker's own auto-tuned
-        parameters (§2's sliders don't affect this — it always uses the
-        recommended value per tracker).
-        """
-    )
+    Reproduces `scripts/bench_with_without_noise.py`'s table on the
+    currently-generated dataset, at each tracker's own auto-tuned
+    parameters (§2's sliders don't affect this — it always uses the
+    recommended value per tracker).
+    """)
     return
 
 
@@ -261,8 +269,21 @@ def _(mo):
 
 @app.cell
 def _(
-    FIRST, K_a_truth, N, SRC, TRACKERS, a_rms_truth, a_t_arr, bu, kinematics,
-    mo, np, pd, run_all_btn, stats, tt,
+    FIRST,
+    K_a_truth,
+    N,
+    SRC,
+    TRACKERS,
+    a_rms_truth,
+    a_t_arr,
+    bu,
+    kinematics,
+    mo,
+    np,
+    pd,
+    run_all_btn,
+    stats,
+    tt,
 ):
     mo.stop(not run_all_btn.value, mo.md("*Click above to run the full comparison.*"))
 
@@ -291,7 +312,7 @@ def _(
 
 
 @app.cell
-def _(K_a_truth, df_all, mo, np, plt):
+def _(K_a_truth, df_all, mo, plt):
     _fig, _ax = plt.subplots(figsize=(8, 4))
     _colors = ["#2a9d8f" if abs(k - K_a_truth) < 10 else "#e76f51" for k in df_all["K_a"]]
     _ax.barh(df_all["tracker"], df_all["K_a"], color=_colors)
@@ -306,17 +327,20 @@ def _(K_a_truth, df_all, mo, np, plt):
 @app.cell
 def _():
     import matplotlib.pyplot as plt
+
     return (plt,)
 
 
 @app.cell
 def _(mo):
-    mo.md(r"""## 4. Per-tracker reference (from `tracking_registry.py`, always in sync with the code)""")
+    mo.md(r"""
+    ## 4. Per-tracker reference (from `tracking_registry.py`, always in sync with the code)
+    """)
     return
 
 
 @app.cell
-def _(TRACKER_REGISTRY, TRACKERS, mo, tracker_sel):
+def _(TRACKER_REGISTRY, mo, tracker_sel):
     _info = TRACKER_REGISTRY[tracker_sel.value]
     _param_rows = "\n".join(
         f"| `{p.name}` | {p.default} | {p.unit} | {p.description} | {p.how_to_choose} |"
