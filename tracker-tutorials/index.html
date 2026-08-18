@@ -1,0 +1,1892 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Tracker Tutorials: What Each Engine Does, Which Parameters Matter, and How They Compare - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tracker-tutorials-what-each-engine-does-which-parameters-matter-and-how-they-compare" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tracker Tutorials: What Each Engine Does, Which Parameters Matter, and How They Compare
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-the-five-trackers-in-one-line-each" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. The five trackers, in one line each
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-how-to-reproduce-every-number-in-this-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. How to reproduce every number in this document
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-parameter-surface-every-tracker-actually-shares" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The parameter surface every tracker actually shares
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-master-comparison-clean-vs-realistic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Master comparison: clean vs. realistic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-per-tracker-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Per-tracker detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Per-tracker detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-priority_segment_3d-3ma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 priority_segment_3d ("3MA")
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-trackcorr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 trackcorr
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-4be" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 4be
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-myptv_3d_tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 myptv_3d_tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-proptv_tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 proptv_tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-decision-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Decision guide
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-whats-still-open-not-swept-under-the-rug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. What's still open, not swept under the rug
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tracker-tutorials-what-each-engine-does-which-parameters-matter-and-how-they-compare">Tracker Tutorials: What Each Engine Does, Which Parameters Matter, and How They Compare<a class="headerlink" href="#tracker-tutorials-what-each-engine-does-which-parameters-matter-and-how-they-compare" title="Permanent link">&para;</a></h1>
+<p>This is a from-scratch, verified reference for the five surviving tracker
+engines (see <code>docs/plans/2026-08-17-lagrangian-accuracy-program.md</code> for how
+they were chosen from ten). Every number below was measured, not estimated
+— reproduce them yourself with the commands in §1. Nothing is left as "tune
+this yourself and see": every parameter each tracker actually reads is
+listed, with its concrete resolved value on the reference dataset, and what
+happens if you get it wrong.</p>
+<h2 id="0-the-five-trackers-in-one-line-each">0. The five trackers, in one line each<a class="headerlink" href="#0-the-five-trackers-in-one-line-each" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>name (as passed to <code>run_tracker</code>/<code>--tracker</code>)</th>
+<th>what it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>priority_segment_3d</code> (a.k.a. "3MA")</td>
+<td>Pure 3D, single forward pass, 4-level acceleration-priority cascade</td>
+</tr>
+<tr>
+<td><code>trackcorr</code></td>
+<td>Multi-camera 2D+3D epipolar search, compound two-hop acceptance</td>
+</tr>
+<tr>
+<td><code>4be</code></td>
+<td>Pure 3D, scores a candidate by whether a real particle exists two frames ahead</td>
+</tr>
+<tr>
+<td><code>myptv_3d_tracking</code></td>
+<td>Pure 3D, polynomial velocity prediction + Hungarian assignment (Python)</td>
+</tr>
+<tr>
+<td><code>proptv_tracking</code></td>
+<td>Pure 3D, Gaussian-Mixture-smoothed track history + Hungarian assignment</td>
+</tr>
+</tbody>
+</table>
+<p>All five are registered in <code>src/openptv2/tracking_registry.py</code>
+(<code>TRACKER_REGISTRY</code>) — that file is the machine-readable version of most of
+what's below; this document adds the verified numbers, the comparison, and
+the things the registry's prose doesn't capture (e.g. what actually runs by
+default vs. what a preset's name suggests).</p>
+<h2 id="1-how-to-reproduce-every-number-in-this-document">1. How to reproduce every number in this document<a class="headerlink" href="#1-how-to-reproduce-every-number-in-this-document" title="Permanent link">&para;</a></h2>
+<p>Two datasets, same 30-frame, 500-particle proPTV-derived case, same seed:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># "clean": ground-truth 3D correspondences injected directly, no detection</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># or correspondence-stage error at all.</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/adapt_proptv_dataset.py<span class="w"> </span>500_30
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># "realistic": the actual detection -&gt; correspondence -&gt; triangulation</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># pipeline, at a calibrated "mild" noise severity (see docs/</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># holistic-3d-ptv-systems-research-program.md and</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># docs/plans/2026-08-17-lagrangian-accuracy-program.md's noise-source sweep</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># for what "mild" means and why the other severities are harsher).</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/adapt_proptv_dataset.py<span class="w"> </span>500_30<span class="w"> </span>--realistic<span class="w"> </span>--severity<span class="w"> </span>mild<span class="w"> </span>--seed<span class="w"> </span><span class="m">0</span>
+</span></code></pre></div>
+<p>Then, for either dataset:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/bench_proptv_kinematics.py<span class="w">     </span><span class="c1"># one dataset, full table</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/bench_with_without_noise.py<span class="w">    </span><span class="c1"># both datasets, side by side (this doc's source)</span>
+</span></code></pre></div>
+<p><code>bench_with_without_noise.py</code> prints the <strong>actual resolved parameters</strong>
+used for each tracker (via <code>benchmark_utils.per_tracker_overrides</code>, which
+auto-scales the shared velocity/acceleration bounds from the dataset's own
+displacement statistics — see §2) immediately before running it, so you can
+always see exactly what ran, not just what the defaults nominally are.</p>
+<h2 id="2-the-parameter-surface-every-tracker-actually-shares">2. The parameter surface every tracker actually shares<a class="headerlink" href="#2-the-parameter-surface-every-tracker-actually-shares" title="Permanent link">&para;</a></h2>
+<p>This is the single most important thing to understand before touching any
+tracker's own parameter names: <strong><code>priority_segment_3d</code>, <code>trackcorr</code>,
+<code>4be</code>, <code>myptv_3d_tracking</code>, and <code>proptv_tracking</code> are all driven by the
+same eight <code>track.par</code> / YAML <code>track:</code> fields</strong> — <code>dvxmin</code>, <code>dvxmax</code>,
+<code>dvymin</code>, <code>dvymax</code>, <code>dvzmin</code>, <code>dvzmax</code>, <code>dacc</code>, <code>angle</code>. Every tracker's own
+parameter names (<code>v_max</code>, <code>a_max</code>, <code>maxvel</code>, ...) are derived FROM these
+same eight fields by <code>src/openptv2/tracking_presets.py</code>'s
+<code>unified_velocity_bound()</code> / <code>unified_angle_deg()</code> — not independent
+settings. Verified directly (<code>scripts/benchmark_utils.py</code>'s
+<code>run_tracker</code>/<code>runner.py</code>, lines ~206-213): every override you pass maps
+onto exactly these <code>TrackPar</code> setters, regardless of which tracker you
+asked for.</p>
+<table>
+<thead>
+<tr>
+<th>field</th>
+<th>meaning</th>
+<th>unit</th>
+<th>who reads it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dvxmin</code>/<code>dvxmax</code>, <code>dvymin</code>/<code>dvymax</code>, <code>dvzmin</code>/<code>dvzmax</code></td>
+<td>per-axis velocity search box: how far (mm) a particle may move between consecutive frames on each axis</td>
+<td>mm/frame</td>
+<td>every tracker (directly for <code>priority_segment_3d</code>/<code>trackcorr</code>/<code>4be</code>; converted to an isotropic radius <code>v_max</code> = largest of the three for <code>myptv_3d_tracking</code>/<code>proptv_tracking</code>'s <code>maxvel</code>)</td>
+</tr>
+<tr>
+<td><code>dacc</code></td>
+<td>for <code>priority_segment_3d</code>/<code>trackcorr</code>: the SEEDED-step search radius (mm) around a velocity-extrapolated prediction, for a particle that already has an established velocity — despite the name, a position tolerance, not an acceleration bound. For <code>myptv_3d_tracking</code>: becomes <code>a_max</code>, the seeded-track search radius. For <code>4be</code>: read for API parity only — <strong>4BE's own cost function never uses it</strong> (§ 4be below).</td>
+<td>mm</td>
+<td><code>priority_segment_3d</code>, <code>trackcorr</code>, <code>myptv_3d_tracking</code>; ignored by <code>4be</code>'s actual linking</td>
+</tr>
+<tr>
+<td><code>angle</code></td>
+<td>maximum angular deviation allowed between successive velocity vectors, in <strong>gon</strong> (400 gon = 360°, not degrees)</td>
+<td>gon</td>
+<td><code>priority_segment_3d</code>, <code>trackcorr</code> directly; converted to degrees (<code>unified_angle_deg</code>) for <code>myptv_3d_tracking</code>'s cone-of-continuity filter and <code>proptv_tracking</code>'s own angle check</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verified reference values</strong> (this dataset, 500 particles/40mm³ cube,
+<code>scripts/bench_with_without_noise.py</code>'s printed overrides): on both the
+clean and realistic-mild datasets, the auto-tuner resolved <code>dvxmax</code> ≈
+<strong>1.13mm</strong> (clean) / <strong>1.13mm</strong> (realistic — noise barely shifts the
+displacement statistics the tuner reads) and <code>dacc</code> ≈ <strong>0.82mm / 0.85mm</strong> —
+a <code>dacc</code>/<code>dvxmax</code> ratio of <strong>~0.73</strong>, on the looser end of the registry's
+documented "~0.4x when densely seeded, ~0.8x when sparse" guidance,
+consistent with this dataset's moderate (not dense) 500-particle/40mm³
+seeding.</p>
+<p><strong>A second, independent, real-world reference point</strong> — <code>test_data/test_cavity</code>
+(a real experimental dataset, not synthetic), its own committed
+<code>parameters_Run1.yaml</code>:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">track</span><span class="p">:</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">dvxmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.6</span><span class="w">      </span><span class="c1"># mm/frame</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">dvymax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.6</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">dvzmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.6</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nt">dacc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.24</span><span class="w">       </span><span class="c1"># mm  (ratio dacc/dvxmax = 0.4 -- exactly the "densely</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">                   </span><span class="c1">#  seeded" end of the guidance above)</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="nt">angle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120.0</span><span class="w">     </span><span class="c1"># gon</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="nt">criteria</span><span class="p">:</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span><span class="nt">eps0</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span><span class="w">       </span><span class="c1"># mm -- correspondence-stage epipolar tolerance,</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">                   </span><span class="c1">#  see §6</span>
+</span></code></pre></div>
+<p><strong>How to choose these yourself, concretely, no guessing:</strong>
+1. Run a short probe sequence (a handful of frames) through detection +
+   correspondence only, with generous bounds.
+2. Compute the actual frame-to-frame displacement distribution from the
+   probe's <code>rt_is.#</code>/correspondences (<code>openptv2.tracking_recommender.compute_dataset_stats</code>
+   does exactly this — it's what <code>per_tracker_overrides</code> calls).
+3. Set <code>dvxmax</code> = the 99th-percentile displacement + a small margin (not
+   the maximum — one outlier shouldn't set your search box for every
+   particle).
+4. Set <code>dacc</code> = 0.4–0.8× <code>dvxmax</code>: closer to 0.4 at high seeding density
+   (tighter search reduces candidate ambiguity — directly the §4be finding
+   below, generalized), closer to 0.8 at low density (looser search
+   recovers more genuine fast-moving particles without much added
+   ambiguity cost).
+5. Leave <code>angle</code> at 120 gon (108°) unless you have a specific reason to
+   tighten it for laminar flow or loosen it for strongly rotational flow.</p>
+<h2 id="3-master-comparison-clean-vs-realistic">3. Master comparison: clean vs. realistic<a class="headerlink" href="#3-master-comparison-clean-vs-realistic" title="Permanent link">&para;</a></h2>
+<p>Ground truth on both datasets: <code>a_rms=0.01101</code>, <code>K_a=19.80</code> (see
+<code>docs/lagrangian_turbulence_quality_guide.md</code> for what these mean and why
+K_a — acceleration kurtosis — is the metric that actually detects
+contamination that link-count metrics (precision/yield) miss entirely; a
+false trajectory doesn't just add noise, it injects the wrong kinematics
+into the recovered statistics).</p>
+<p><strong>Clean</strong> (<code>adapt_proptv_dataset.py 500_30</code>, no noise, ground-truth
+correspondences injected directly):</p>
+<table>
+<thead>
+<tr>
+<th>tracker</th>
+<th>a_rms error</th>
+<th>K_a</th>
+<th>precision</th>
+<th>yield</th>
+<th>meanlen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>priority_segment_3d</code></td>
+<td>0.0%</td>
+<td>19.80</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>30.00</td>
+</tr>
+<tr>
+<td><code>trackcorr</code></td>
+<td>0.0%</td>
+<td>19.80</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>30.00</td>
+</tr>
+<tr>
+<td><code>4be</code></td>
+<td>0.0%</td>
+<td>19.80</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>30.00</td>
+</tr>
+<tr>
+<td><code>myptv_3d_tracking</code></td>
+<td>0.0%</td>
+<td>19.80</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>30.00</td>
+</tr>
+<tr>
+<td><code>proptv_tracking</code></td>
+<td>0.0%</td>
+<td>19.80</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>30.00</td>
+</tr>
+</tbody>
+</table>
+<p>Every tracker recovers ground truth exactly here — expected, not
+impressive: with zero ambiguity in the correspondence data, any correct
+algorithm converges to the same unique answer. This dataset validates
+correctness, not robustness; use §"realistic" for robustness comparison.</p>
+<p><strong>Realistic, "mild" severity</strong> (<code>--realistic --severity mild --seed 0</code>:
+0.08px detection noise, 1% missed-detection rate with streak-correlated
+dropout, 1px image merging, real correspondence solving with the actual
+<code>eps0</code> epipolar tolerance, small per-camera calibration residual — see
+<code>docs/holistic-3d-ptv-systems-research-program.md</code> §1 for the full chain
+and why calibration residual specifically is the dominant damage term):</p>
+<table>
+<thead>
+<tr>
+<th>tracker</th>
+<th>a_rms error</th>
+<th>K_a</th>
+<th>precision</th>
+<th>yield</th>
+<th>meanlen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>trackcorr</code></td>
+<td>+414.9%</td>
+<td><strong>25.36</strong></td>
+<td>0.9999</td>
+<td>0.9888</td>
+<td>24.28</td>
+</tr>
+<tr>
+<td><code>myptv_3d_tracking</code></td>
+<td>+441.8%</td>
+<td><strong>29.04</strong></td>
+<td>0.9999</td>
+<td>0.9928</td>
+<td>26.75</td>
+</tr>
+<tr>
+<td><code>priority_segment_3d</code></td>
+<td>+442.4%</td>
+<td><strong>29.15</strong></td>
+<td>0.9966</td>
+<td>0.9923</td>
+<td>28.82</td>
+</tr>
+<tr>
+<td><code>4be</code></td>
+<td>+457.3%</td>
+<td><strong>39.46</strong></td>
+<td>0.9999</td>
+<td>0.9929</td>
+<td>26.90</td>
+</tr>
+<tr>
+<td><code>proptv_tracking</code></td>
+<td>+471.7%</td>
+<td><strong>73.31</strong></td>
+<td>0.9999</td>
+<td>0.9892</td>
+<td>24.48</td>
+</tr>
+</tbody>
+</table>
+<p>Ranked by K_a (closer to truth's 19.80 = better recovered physics), sorted
+ascending. <strong>Read precision/yield and K_a together, never K_a alone</strong>: every
+tracker here has precision/yield above 0.986 — nearly indistinguishable by
+link-count metrics — while K_a spans a 3.7× range (25.4 to 73.3). A handful
+of wrong links, invisible to precision/yield, dominates the acceleration
+statistics because kurtosis weights by the 4th power. This is the concrete
+demonstration of why link-count metrics alone cannot certify a tracker for
+turbulence-physics work.</p>
+<h2 id="4-per-tracker-detail">4. Per-tracker detail<a class="headerlink" href="#4-per-tracker-detail" title="Permanent link">&para;</a></h2>
+<h3 id="41-priority_segment_3d-3ma">4.1 <code>priority_segment_3d</code> ("3MA")<a class="headerlink" href="#41-priority_segment_3d-3ma" title="Permanent link">&para;</a></h3>
+<p><strong>Mechanism</strong>: pure 3D, single forward pass, 4-level cascade —
+Level 1 claims high-confidence particles meeting the <code>dacc</code> threshold
+globally in ascending-cost order; Level 2 falls back to local
+neighbor-velocity averaging; Level 3 handles unseeded/static displacement.
+Never touches 2D image space or camera calibration at all — it only ever
+sees the 3D correspondence positions already handed to it.</p>
+<p><strong>Parameters</strong>: exactly the shared surface in §2, nothing tracker-specific.</p>
+<p><strong>Example</strong> (exact code that produced this doc's numbers):
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">benchmark_utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bu</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">overrides</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">per_tracker_overrides</span><span class="p">([</span><span class="s2">"priority_segment_3d"</span><span class="p">],</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>                                      <span class="n">src</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">"test_data/proptv_500_30"</span><span class="p">),</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>                                      <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span> <span class="n">n_frames</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">tracks</span><span class="p">,</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">run_single_tracker</span><span class="p">(</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="s2">"priority_segment_3d"</span><span class="p">,</span> <span class="n">track_overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">[</span><span class="s2">"priority_segment_3d"</span><span class="p">],</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="n">src</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">"test_data/proptv_500_30"</span><span class="p">),</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Strength</strong>: fastest of the five (9.5s clean / 13.1s realistic on this
+30-frame/500-particle case — comparable to <code>4be</code>, ~30% faster than
+<code>trackcorr</code>, and an order of magnitude faster than <code>proptv_tracking</code>).
+Simple, predictable, no image-space dependency (so immune to any
+calibration-model choice entirely).</p>
+<p><strong>Weakness, proven not assumed</strong>: never checks 2D image-space consistency
+of a correspondence, so a spurious 3D point (a real epipolar-tolerance
+ghost, see <code>docs/holistic-3d-ptv-systems-research-program.md</code> §1) looks
+exactly like a real one. On a harsher (non-"mild") noise setting earlier
+this project's own investigation measured K_a=1908 (nearly 100× truth) for
+this exact reason — the largest single-tracker contamination measured this
+session, on data where its own precision/yield still looked fine (0.86/0.69).</p>
+<h3 id="42-trackcorr">4.2 <code>trackcorr</code><a class="headerlink" href="#42-trackcorr" title="Permanent link">&para;</a></h3>
+<p><strong>Mechanism</strong>: the only one of the five that uses 2D image space at all.
+Projects a 3D search volume into each camera, finds 2D candidate targets,
+and requires a <strong>compound two-hop acceptance</strong>: BOTH the frame <em>n</em>→<em>n+1</em>
+hop AND the frame <em>n+1</em>→<em>n+2</em> hop must independently pass their own
+angle+acceleration gate (see <code>docs/plans/2026-08-17-lagrangian-accuracy-program.md</code>
+for the historical investigation of this engine). Neither hop can
+compensate for the other failing — the discipline <code>4be</code>'s cost function
+was found to have dropped (§4.3).</p>
+<p><strong>A registry caveat, verified not assumed</strong>: <code>trackcorr</code>'s
+<code>tracking_registry.py</code> entry is aliased to <code>FULL_MULTIPASS_INFO</code>, whose
+prose describes a <strong>three-pass</strong> pipeline (forward, backward, reciprocity
+post-processing). Every benchmark run in this document and throughout this
+project's history prints <code>"Running TrackCorr Tracking (Forward only)..."</code>
+— the <code>trackcorr</code> preset, as actually invoked by <code>run_tracker</code>/<code>bench_*</code>
+scripts, runs <strong>forward-only</strong>. If you need forward+backward, request the
+<code>full_multipass</code> preset explicitly (or set <code>track.postprocess</code>/direction
+config per <code>tracking_presets.infer_direction</code>) — do not assume <code>trackcorr</code>
+gives you the three-pass pipeline the registry's display name implies.</p>
+<p><strong>Parameters</strong>: exactly the shared surface in §2. No tracker-specific
+knobs beyond that.</p>
+<p><strong>Example</strong>:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">overrides</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">per_tracker_overrides</span><span class="p">([</span><span class="s2">"trackcorr"</span><span class="p">],</span> <span class="n">src</span><span class="o">=...</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span> <span class="n">n_frames</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">tracks</span><span class="p">,</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">run_single_tracker</span><span class="p">(</span><span class="s2">"trackcorr"</span><span class="p">,</span> <span class="n">track_overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">[</span><span class="s2">"trackcorr"</span><span class="p">],</span> <span class="n">src</span><span class="o">=...</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Strength</strong>: best K_a of all five under realistic noise (25.36, closest to
+truth's 19.80) — direct evidence that its image-space cross-check catches
+some of the ghost/ambiguous-correspondence contamination the pure-3D
+trackers (§4.1, §4.3-4.5) cannot see at all.</p>
+<p><strong>Weakness</strong>: ~40% slower than the pure-3D trackers (10.8-13.5s vs.
+7.7-13.1s here) for that cross-check; historically (this project's earlier
+investigation) needed two real bugs fixed before it worked at all on real
+turbulence data — a <code>Target.tnr</code> default-zero bug that collapsed every
+match to particle 0, and a hardcoded 4-candidate cap in the pixel-space
+search. Both are fixed; see <code>docs/plans/2026-08-17-lagrangian-accuracy-program.md</code>.</p>
+<h3 id="43-4be">4.3 <code>4be</code><a class="headerlink" href="#43-4be" title="Permanent link">&para;</a></h3>
+<p><strong>Mechanism</strong>: pure 3D. Scores a frame <em>n</em>→<em>n+1</em> candidate by whether a
+REAL particle exists near where that candidate's own constant-velocity
+extrapolation lands two frames ahead (Ouellette, Xu &amp; Bodenschatz 2006, eq.
+12/14) — "trust a candidate more if something plausible exists past it."</p>
+<p><strong>Proven bug, fixed this session</strong> (<code>src/openptv2/algorithms/track_kernels_track3d.py</code>,
+<code>track4be_loop_fast</code>): the cost for a supported candidate used to be the
+n+2 support distance <strong>alone</strong>. Live-traced at a confirmed failure
+junction: a candidate 16× farther from the correct frame <em>n+1</em> prediction
+won purely because a real particle happened to sit fractionally closer to
+its own (kinematically wrong) n+2 extrapolation. Fixed by summing both
+distances — <code>cost = sup_dists[0] + cand_dists[ci]</code> — so a coincidental
+future match can no longer override overwhelming n+1 evidence. Measured
+effect: K_a <strong>761.45 → 103.09</strong> (7.4×) from the code fix alone, then
+<strong>103.09 → 39.46</strong> once <code>4be</code> was also given the same dataset-scaled search
+window every other tracker gets (§4.3's "registry gap" below) — full
+before/after in <code>docs/holistic-3d-ptv-systems-research-program.md</code> §2.</p>
+<p><strong>A second, independent bug this session found and fixed</strong>: <code>4be</code> had <strong>no
+entry in <code>tracking_registry.py</code></strong> until this document's benchmark run
+surfaced it — <code>per_tracker_overrides</code> silently fell back to a flat,
+un-scaled <code>dvxmax=6.0mm</code> (6× too loose for this dataset) instead of the
+~1.13mm every other tracker was auto-tuned to. A looser search box means
+more competing candidates per step, which is exactly the density that
+makes the eq.12/14 coincidence above more likely — the parameter gap and
+the algorithm bug compounded each other. Both are now fixed; <code>4be</code> is
+registered with the same shared parameter surface as everyone else (§2).</p>
+<p><strong>Parameters actually used by <code>4be</code>'s own linking</strong>: <code>dvxmin</code>/<code>dvxmax</code>/
+<code>dvymin</code>/<code>dvymax</code>/<code>dvzmin</code>/<code>dvzmax</code> (the candidate search box) — that's it.
+<code>dacc</code> is accepted (for API parity with the other trackers so the same
+override dict works everywhere) but <strong><code>4be</code>'s own cost function never
+reads it</strong> — verify directly in <code>track4be_loop_fast</code>'s signature: <code>dacc</code>
+does not appear as a parameter at all, only <code>dx, dy, dz</code> (the three
+per-axis half-widths). Two further knobs exist but are <strong>not exposed via
+<code>track.par</code> at all</strong> — module-level constants in <code>src/openptv2/algorithms/track4be.py</code>:</p>
+<p><div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">STRICT_SUPPORT</span> <span class="o">=</span> <span class="mi">0</span>     <span class="c1"># 0 = unsupported candidates fall back to a 3MA-style</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>                       <span class="c1">#     acceleration-residual score instead of being</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>                       <span class="c1">#     rejected outright (recovers yield on genuine</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>                       <span class="c1">#     1-frame detection gaps). 1 = reproduce Ouellette's</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>                       <span class="c1">#     paper literally: reject any candidate with no</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>                       <span class="c1">#     real n+2 support.</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">GREEDY_CONFLICTS</span> <span class="o">=</span> <span class="mi">0</span>   <span class="c1"># 0 = the paper's give-up-on-conflict rule: a frame</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>                       <span class="c1">#     n+1 particle claimed by more than one frame-n</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>                       <span class="c1">#     particle links to none of them.</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>                       <span class="c1"># 1 = cost-ordered greedy claiming across the whole</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>                       <span class="c1">#     frame instead (a particle that loses its first</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>                       <span class="c1">#     choice may take a later one). Ouellette reports</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>                       <span class="c1">#     this degrades every heuristic but nearest-</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>                       <span class="c1">#     neighbor, hence 0 is the default.</span>
+</span></code></pre></div>
+To change either, edit <code>track4be.py</code> directly and rebuild
+(<code>uv run python setup.py build_ext --inplace</code>) — there is currently no
+YAML/CLI path to them. This is a genuine gap (documented, not hidden): if
+you need <code>STRICT_SUPPORT=1</code> for a literal Ouellette-paper reproduction, you
+must edit source.</p>
+<p><strong>Example</strong>:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">overrides</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">per_tracker_overrides</span><span class="p">([</span><span class="s2">"4be"</span><span class="p">],</span> <span class="n">src</span><span class="o">=...</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span> <span class="n">n_frames</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">tracks</span><span class="p">,</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">run_single_tracker</span><span class="p">(</span><span class="s2">"4be"</span><span class="p">,</span> <span class="n">track_overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">[</span><span class="s2">"4be"</span><span class="p">],</span> <span class="n">src</span><span class="o">=...</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Strength</strong>: fastest alongside <code>priority_segment_3d</code> (7.7-8.9s); after the
+fixes above, competitive K_a (39.46, better than <code>proptv_tracking</code>'s 73.31).</p>
+<p><strong>Weakness</strong>: still worst of the four pure-3D-or-image-checked trackers
+under realistic noise even after both fixes — an open question this
+session left unresolved (<code>docs/holistic-3d-ptv-systems-research-program.md</code>
+§7 roadmap item 1's remaining gap). Candidate hypothesis, not yet checked:
+<code>GREEDY_CONFLICTS=0</code>'s give-up-on-conflict rule may be discarding more
+correct links under noise than the other trackers' conflict resolution
+does — untested.</p>
+<h3 id="44-myptv_3d_tracking">4.4 <code>myptv_3d_tracking</code><a class="headerlink" href="#44-myptv_3d_tracking" title="Permanent link">&para;</a></h3>
+<p><strong>Mechanism</strong>: pure 3D, pure Python (not Cython — slower but fully
+readable/customizable). Predicts the next position via polynomial velocity
+extrapolation from track history, then solves frame-to-frame assignment
+with a radius-limited Hungarian algorithm (<code>openptv2.plugins._assignment.match_within_radius</code>),
+using a configurable multi-term cost matrix (distance/velocity/acceleration/
+intensity — <code>openptv2.tracking_cost</code>).</p>
+<p><strong>Parameters</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>source</th>
+<th>verified value on this dataset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v_max</code></td>
+<td><code>unified_velocity_bound(track_cfg)</code> — largest of <code>dvxmax</code>/<code>dvymax</code>/<code>dvzmax</code></td>
+<td>1.1292mm (realistic-mild)</td>
+</tr>
+<tr>
+<td><code>a_max</code></td>
+<td>same <code>track.dacc</code> field as <code>priority_segment_3d</code>/<code>trackcorr</code></td>
+<td>0.8516mm</td>
+</tr>
+<tr>
+<td><code>angle</code></td>
+<td><code>_suggest_params</code> sets this tracker's <code>angle</code> override to a fixed <strong>200 gon</strong> deliberately, NOT derived from <code>track.angle</code>'s own 120 gon (see <code>src/openptv2/tracking_recommender.py</code>'s <code>_suggest_params</code>, the <code>nearest_hungarian_3d</code> branch) — this tracker's angle filter is a hard binary reject rather than kalman_hungarian_3d's soft cost term, so an overly tight bound throws away good matches instead of de-weighting them; a grid sweep found effectively-unrestricted (200 gon = half the full 400-gon circle) best. <code>myptv_3d_tracking</code>'s own code then converts that 200 gon to degrees via <code>unified_angle_deg</code> (×0.9) before comparing</td>
+<td><strong>180°</strong> (200 gon × 0.9) — i.e. myptv's cone-of-continuity filter is set intentionally wide open by the auto-tuner, not tight; if you want it tight for laminar flow, override <code>angle</code> explicitly in your own <code>track_overrides</code> dict rather than trusting the auto-tuned value for this specific tracker</td>
+</tr>
+<tr>
+<td><code>max_gap</code></td>
+<td>hardcoded at the plugin's own call site, NOT the constructor default and NOT threaded through <code>per_tracker_overrides</code></td>
+<td><strong>1 frame</strong> — verified in <code>src/openptv2/plugins/myptv_3d_tracking.py</code>'s <code>do_tracking()</code>: <code>MyPTV3DTracker(..., max_gap=1, ...)</code> is hardcoded, even though <code>MyPTV3DTracker.__init__</code>'s own signature default is <code>max_gap: int = 2</code>. The constructor default is NOT what runs. To change it you must edit the <code>do_tracking()</code> call site itself.</td>
+</tr>
+<tr>
+<td><code>cost_weights</code></td>
+<td>plugin constructor default</td>
+<td>distance-only unless you construct <code>CostWeights</code> yourself and pass it in</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong>:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">overrides</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">per_tracker_overrides</span><span class="p">([</span><span class="s2">"myptv_3d_tracking"</span><span class="p">],</span> <span class="n">src</span><span class="o">=...</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span> <span class="n">n_frames</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">tracks</span><span class="p">,</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">run_single_tracker</span><span class="p">(</span><span class="s2">"myptv_3d_tracking"</span><span class="p">,</span> <span class="n">track_overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">[</span><span class="s2">"myptv_3d_tracking"</span><span class="p">],</span> <span class="n">src</span><span class="o">=...</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Strength</strong>: second-best K_a under realistic noise (29.04, essentially
+tied with <code>priority_segment_3d</code>'s 29.15) despite being pure Python and pure
+3D (no image-space check) — its polynomial-prediction + Hungarian
+assignment appears to resist the coincidental-candidate failure mode as
+well as any tracker here except <code>trackcorr</code>.</p>
+<p><strong>Weakness</strong>: slowest-but-one of the five (8.2-10.3s here, comparable to
+the Cython trackers on this small case, but pure Python does not scale the
+same way to larger datasets — <code>max_gap</code>/<code>cost_weights</code> require editing the
+call site, not just <code>track.par</code>, to change).</p>
+<h3 id="45-proptv_tracking">4.5 <code>proptv_tracking</code><a class="headerlink" href="#45-proptv_tracking" title="Permanent link">&para;</a></h3>
+<p><strong>Mechanism</strong>: pure 3D. Fits Gaussian basis functions to each track's
+time-position history (a GMM-style smoothing of the trajectory), analytically
+differentiates the fit to get a smoothed velocity/acceleration estimate,
+predicts the next position from that smoothed extrapolation, and links via
+radius-limited Hungarian assignment on distance+velocity+acceleration
+continuity cost. This IS the "smoothness-favoring" mechanism this project's
+research plan hypothesized might systematically suppress recovered
+turbulence intermittency (<code>docs/holistic-3d-ptv-systems-research-program.md</code>)
+— <strong>worth reading precisely</strong>: on this dataset's realistic-mild severity,
+its K_a (73.31) is the <em>highest</em> (most contaminated), not suppressed below
+truth, so the smoothness-bias hypothesis is NOT confirmed by this specific
+measurement — it needs testing at a noise level with more genuine ambiguity
+for the smoothing to have a real choice to bias, and is still an open
+question, not settled by this benchmark.</p>
+<p><strong>Parameters</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>source</th>
+<th>verified value on this dataset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>maxvel</code></td>
+<td><code>unified_velocity_bound(track_cfg)</code>, override with <code>proptv.maxvel</code> in YAML to set independently</td>
+<td>1.1292mm</td>
+</tr>
+<tr>
+<td><code>angle</code></td>
+<td><code>track.angle</code> (gon) × <code>GON_TO_DEG</code> (0.9), override with <code>proptv.angle</code> in YAML</td>
+<td><strong>108°</strong> — this dataset's <code>track.angle=120</code> gon × 0.9. The registry's stated "30° default" is a fallback used ONLY when <code>track.angle</code> is absent from the config entirely; it is NOT what runs here, since <code>track.angle</code> is always present in these datasets' YAML. Always compute <code>track.angle × 0.9</code>, don't quote the fallback number.</td>
+</tr>
+<tr>
+<td><code>t_init</code></td>
+<td><code>proptv.t_init</code> in YAML, plugin default</td>
+<td>4 frames</td>
+</tr>
+<tr>
+<td><code>backtracking</code></td>
+<td><code>proptv.backtracking</code> in YAML, plugin default</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>gaptracking</code></td>
+<td><code>proptv.gaptracking</code> in YAML, plugin default</td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong>:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">overrides</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">per_tracker_overrides</span><span class="p">([</span><span class="s2">"proptv_tracking"</span><span class="p">],</span> <span class="n">src</span><span class="o">=...</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span> <span class="n">n_frames</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">tracks</span><span class="p">,</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">run_single_tracker</span><span class="p">(</span><span class="s2">"proptv_tracking"</span><span class="p">,</span> <span class="n">track_overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">[</span><span class="s2">"proptv_tracking"</span><span class="p">],</span> <span class="n">src</span><span class="o">=...</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Strength</strong>: <code>supports_backward=True</code> and <code>supports_gap_relinking=True</code>
+(registry-declared) — the only pure-3D tracker in this set with both,
+useful for sequences with genuine multi-frame occlusion gaps.</p>
+<p><strong>Weakness, measured not assumed</strong>: by far the slowest of the five —
+<strong>54.5-64.7s</strong> on this 30-frame/500-particle case vs. 7.7-13.5s for
+everyone else (an order of magnitude), <em>and</em> worst K_a under realistic
+noise (73.31, 2-3× worse than the next-worst). The GMM fitting overhead
+scales with track count (registry's own <code>avoid_when</code> note); on this
+dataset it is also the least accurate under noise, making its case for
+production use here specifically weak — worth re-testing on a genuinely
+occlusion-heavy sequence where its gap-relinking/backward support might
+earn back the cost.</p>
+<h2 id="5-decision-guide">5. Decision guide<a class="headerlink" href="#5-decision-guide" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Need speed, data is clean or near-clean, no occlusion gaps</strong>:
+  <code>priority_segment_3d</code>. Fastest, simplest, immune to any image-space/
+  calibration-model choice by construction (it never looks at either).</li>
+<li><strong>Need the best achievable accuracy under real noise and can afford
+  ~40% more time</strong>: <code>trackcorr</code> — the only engine here that cross-checks
+  image-space consistency, and it shows in K_a (§3). Remember it runs
+  forward-only by default (§4.2) unless you explicitly request the
+  three-pass preset.</li>
+<li><strong>Want a fast pure-3D tracker with <code>4be</code>'s future-support disambiguation
+  and don't need the last word in accuracy</strong>: <code>4be</code>, now that both bugs
+  found this session are fixed — still not competitive with <code>trackcorr</code>/
+  <code>myptv_3d_tracking</code>/<code>priority_segment_3d</code> under noise (§4.3), an open
+  research question rather than a recommendation.</li>
+<li><strong>Need Python-level customizability of the cost function (add an
+  intensity term, experiment with new weighting)</strong>: <code>myptv_3d_tracking</code> —
+  competitive accuracy, pure Python so it's the one to fork/extend.</li>
+<li><strong>Have genuine multi-frame occlusion and can afford an order of magnitude
+  more runtime</strong>: <code>proptv_tracking</code> is the only one with both backward
+  tracking and gap-relinking declared — but re-verify its accuracy on your
+  actual occlusion pattern; this benchmark's noise model doesn't have heavy
+  occlusion gaps, so this recommendation is about its <em>declared</em>
+  capabilities, not a measured advantage here.</li>
+</ul>
+<h2 id="6-whats-still-open-not-swept-under-the-rug">6. What's still open, not swept under the rug<a class="headerlink" href="#6-whats-still-open-not-swept-under-the-rug" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><code>4be</code>'s residual gap</strong> (§4.3): still worst of the four
+  non-<code>proptv_tracking</code> trackers after two real fixes. Untested hypothesis:
+  its <code>GREEDY_CONFLICTS=0</code> give-up-on-conflict rule.</li>
+<li><strong><code>proptv_tracking</code>'s smoothness-bias hypothesis</strong>: not confirmed by this
+  specific "mild" measurement (§4.5) — needs a noise level with more
+  genuine multi-candidate ambiguity to test properly, and/or a direct
+  identity-swap audit (the same technique that found <code>4be</code>'s bug) rather
+  than only the aggregate K_a.</li>
+<li><strong><code>myptv_3d_tracking</code>'s <code>max_gap</code>/<code>cost_weights</code></strong> are not threaded
+  through the same <code>track_overrides</code> dict as everything else — a real,
+  documented (not hidden) gap in the "everything through one shared
+  surface" story of §2.</li>
+<li><strong><code>eps0</code></strong> (the correspondence-stage epipolar tolerance, <code>criteria.eps0</code>
+  in YAML) is not a <em>tracking</em> parameter at all — it's set before any
+  tracker runs, during correspondence solving — but it directly determines
+  how many ghost/ambiguous correspondences reach the trackers compared
+  above. See <code>docs/holistic-3d-ptv-systems-research-program.md</code> and
+  <code>adapt_proptv_dataset.py</code>'s <code>_derive_eps0_mm</code> for how it should scale
+  with detection noise and particle density; test_cavity's own real value
+  (0.05mm, §2) is a second reference point beyond this document's
+  synthetic case.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
