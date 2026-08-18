@@ -179,6 +179,37 @@ def test_adapt_proptv_dataset_convert_links_on_a_fresh_copy(tmp_path):
 
 
 @pytest.mark.unit
+def test_adapt_proptv_dataset_convert_realistic_runs_end_to_end(tmp_path):
+    """Smoke test for convert_realistic(): the real detection/correspondence
+    pipeline (not ground-truth injection) must run to completion, produce a
+    plausible (neither ~0% nor ~100%) match rate, and its output must still
+    be trackable -- catches wiring breaks (wrong calibration list, wrong
+    vpar fields, MatchedCoords/Frame index mismatches) that a pure "does it
+    link perfectly" test on noise-free data wouldn't exercise."""
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import adapt_proptv_dataset as apd
+
+    if not SCAFFOLD.exists():
+        pytest.skip("test_data/synthetic_turbulent scaffold not present")
+
+    case_dir = tmp_path / "fake_proptv_case"
+    _write_fake_proptv_origin(case_dir)
+    out = tmp_path / "converted_realistic"
+    apd.convert_realistic(case_dir, SCAFFOLD, out, seed=0)
+
+    store = RunStore.open(out, mode="r")
+    pos, cam_ids = store.read_correspondences(FIRST)
+    assert 0 < len(pos) <= N_PARTICLES, (
+        f"expected a plausible partial match count (0, {N_PARTICLES}], got {len(pos)}"
+    )
+
+    n_linked = _run_trackcorr(out)
+    assert n_linked >= 1, "expected at least one real link on the realistic-pipeline output"
+
+
+@pytest.mark.unit
 def test_trackcorr_links_when_tnr_is_set(tmp_path):
     out = tmp_path / "with_tnr"
     _build_dataset(out, set_tnr=True)
