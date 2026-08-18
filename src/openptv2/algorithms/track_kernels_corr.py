@@ -201,6 +201,7 @@ def _trackcorr_particle_fast(
     path_x_1: cython.double[:, ::1],
     path_prev_1: cython.int[:],
     path_x_0: cython.double[:, ::1],
+    orig_parts_1: cython.int,
     num_cams: cython.int,
     mnr_arr: cython.int[:],
     cal_arr: cython.double[:, ::1],
@@ -302,6 +303,12 @@ def _trackcorr_particle_fast(
     d01: cython.double
     quali2: cython.int
     claimed_ok: cython.int
+    nb_j: cython.int
+    nb_vx: cython.double
+    nb_vy: cython.double
+    nb_vz: cython.double
+    nb_n: cython.int
+    nb_inv: cython.double
 
     if tid < 0:
         tid = 0
@@ -384,9 +391,52 @@ def _trackcorr_particle_fast(
             cpx[j] = _pp_mv[0]
             cpy[j] = _pp_mv[1]
     else:
-        X[2, 0] = X[1, 0]
-        X[2, 1] = X[1, 1]
-        X[2, 2] = X[1, 2]
+        # Cold start (no established previous link): borrow a velocity
+        # estimate from a nearby particle in frame 1 that DOES have one,
+        # same as track3d_loop_fast's Level 2 (track_kernels_track3d.py) --
+        # a real turbulent flow's velocity field is spatially correlated, so
+        # a neighbour's velocity is a far better prior than assuming zero
+        # motion. Falls back to the original zero-velocity guess (Level 3)
+        # only when no such neighbour exists. Ported 2026-08-17 after
+        # finding trackcorr's zero-velocity cold start was the dominant
+        # bottleneck on real-turbulence data (see docs/plans/
+        # 2026-08-17-lagrangian-accuracy-program.md, next-steps item 2) --
+        # every other engine already does something like this (4BE: nearest
+        # neighbour; proptv_tracking: an explicit NN init phase), trackcorr
+        # was the outlier assuming stationarity instead.
+        nb_vx = 0.0
+        nb_vy = 0.0
+        nb_vz = 0.0
+        nb_n = 0
+        for nb_j in range(orig_parts_1):
+            if nb_j == h:
+                continue
+            if path_prev_1[nb_j] < 0:
+                continue
+            if (
+                path_x_1[nb_j, 0] - path_x_1[h, 0] < dvxmax
+                and path_x_1[h, 0] - path_x_1[nb_j, 0] < dvxmax
+                and path_x_1[nb_j, 1] - path_x_1[h, 1] < dvymax
+                and path_x_1[h, 1] - path_x_1[nb_j, 1] < dvymax
+                and path_x_1[nb_j, 2] - path_x_1[h, 2] < dvzmax
+                and path_x_1[h, 2] - path_x_1[nb_j, 2] < dvzmax
+            ):
+                prev_h = path_prev_1[nb_j]
+                nb_vx += path_x_1[nb_j, 0] - path_x_0[prev_h, 0]
+                nb_vy += path_x_1[nb_j, 1] - path_x_0[prev_h, 1]
+                nb_vz += path_x_1[nb_j, 2] - path_x_0[prev_h, 2]
+                nb_n += 1
+        prev_h = path_prev_1[h]  # restore -- overwritten by the scan above
+
+        if nb_n > 0:
+            nb_inv = 1.0 / nb_n
+            X[2, 0] = X[1, 0] + nb_vx * nb_inv
+            X[2, 1] = X[1, 1] + nb_vy * nb_inv
+            X[2, 2] = X[1, 2] + nb_vz * nb_inv
+        else:
+            X[2, 0] = X[1, 0]
+            X[2, 1] = X[1, 1]
+            X[2, 2] = X[1, 2]
 
         for j in range(num_cams):
             if corres_p_1[h, j] == CORRES_NONE_K:
@@ -1297,6 +1347,7 @@ def trackcorr_loop_fast(
             path_x_1,
             path_prev_1,
             path_x_0,
+            orig_parts_1,
             num_cams,
             mnr_arr,
             cal_arr,

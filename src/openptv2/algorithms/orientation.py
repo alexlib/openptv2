@@ -346,7 +346,7 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
                 bp_z /= norm_bp
 
             p = c_sqrt(1.0 - n * n) * mm_n1 / mm_n2_0
-            n_glass = -c_sqrt(1.0 - p * p)
+            n_glass = c_sqrt(1.0 - p * p) if n >= 0 else -c_sqrt(1.0 - p * p)
 
             a2_x = bp_x * p + g_dx * n_glass
             a2_y = bp_y * p + g_dy * n_glass
@@ -371,7 +371,7 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
 
             p = c_sqrt(1.0 - n_a2 * n_a2)
             p = p * mm_n2_0 / mm_n3
-            n_final = -c_sqrt(1.0 - p * p)
+            n_final = c_sqrt(1.0 - p * p) if n_a2 >= 0 else -c_sqrt(1.0 - p * p)
 
             out_x = bp_x * p + g_dx * n_final
             out_y = bp_y * p + g_dy * n_final

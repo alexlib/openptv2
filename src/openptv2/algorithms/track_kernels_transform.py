@@ -281,7 +281,7 @@ def _ray_tracing_out(
         bp2 /= bpn
 
     p = c_sqrt(1.0 - n * n) * mm_n1 / mm_n2_0
-    n_glass = -c_sqrt(1.0 - p * p)
+    n_glass = c_sqrt(1.0 - p * p) if n >= 0 else -c_sqrt(1.0 - p * p)
 
     a2_0 = bp0 * p + gd0 * n_glass
     a2_1 = bp1 * p + gd1 * n_glass
@@ -305,7 +305,7 @@ def _ray_tracing_out(
         bp2 /= bpn
 
     p2 = c_sqrt(1.0 - n_a2 * n_a2) * mm_n2_0 / mm_n3
-    n_final = -c_sqrt(1.0 - p2 * p2)
+    n_final = c_sqrt(1.0 - p2 * p2) if n_a2 >= 0 else -c_sqrt(1.0 - p2 * p2)
 
     ox = bp0 * p2 + gd0 * n_final
     oy = bp1 * p2 + gd1 * n_final

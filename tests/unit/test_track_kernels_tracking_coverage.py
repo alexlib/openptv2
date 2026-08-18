@@ -529,6 +529,7 @@ def test_candsearch_pix_fast_finds_one():
     # candsearch_in_pix_fast_nogil always returns 0; candidates are in out_idx
     tx, ty, tnr = _targ_arrays(5)
     out_idx = np.full(4, -999, dtype=np.int32)
+    out_dists = np.full(4, 1e20, dtype=np.float64)
     candsearch_in_pix_fast_nogil(
         tx,
         ty,
@@ -543,7 +544,9 @@ def test_candsearch_pix_fast_finds_one():
         100.0,
         100.0,  # imx, imy
         -1,  # tr_unused
+        4,  # max_cands
         out_idx,
+        out_dists,
     )
     assert out_idx[0] != -999  # at least one target found
 
@@ -552,6 +555,7 @@ def test_candsearch_pix_fast_out_of_image():
     """cent_x, cent_y outside image → early return with 0 candidates."""
     tx, ty, tnr = _targ_arrays(5)
     out_idx = np.full(4, -999, dtype=np.int32)
+    out_dists = np.full(4, 1e20, dtype=np.float64)
     n = candsearch_in_pix_fast_nogil(
         tx,
         ty,
@@ -566,7 +570,9 @@ def test_candsearch_pix_fast_out_of_image():
         100.0,
         100.0,
         -1,
+        4,
         out_idx,
+        out_dists,
     )
     assert n == 0
 
@@ -577,6 +583,7 @@ def test_candsearch_pix_fast_no_targets():
     ty = np.array([], dtype=np.float64)
     tnr = np.array([], dtype=np.int32)
     out_idx = np.full(4, -999, dtype=np.int32)
+    out_dists = np.full(4, 1e20, dtype=np.float64)
     n = candsearch_in_pix_fast_nogil(
         tx,
         ty,
@@ -591,7 +598,9 @@ def test_candsearch_pix_fast_no_targets():
         100.0,
         100.0,
         -1,
+        4,
         out_idx,
+        out_dists,
     )
     assert n == 0
 
@@ -602,6 +611,7 @@ def test_candsearch_pix_fast_multiple_candidates():
     ty = np.array([10.5, 10.5, 10.5, 10.5, 10.5], dtype=np.float64)
     tnr = np.arange(5, dtype=np.int32)
     out_idx = np.full(4, -999, dtype=np.int32)
+    out_dists = np.full(4, 1e20, dtype=np.float64)
     candsearch_in_pix_fast_nogil(
         tx,
         ty,
@@ -616,7 +626,9 @@ def test_candsearch_pix_fast_multiple_candidates():
         100.0,
         100.0,
         -1,
+        4,
         out_idx,
+        out_dists,
     )
     assert out_idx[0] == 0  # closest is index 0
 
@@ -627,6 +639,7 @@ def test_candsearch_pix_fast_unused_targets_skipped():
     ty = np.array([10.5, 10.5], dtype=np.float64)
     tnr = np.array([-1, 1], dtype=np.int32)  # first is unused
     out_idx = np.full(4, -999, dtype=np.int32)
+    out_dists = np.full(4, 1e20, dtype=np.float64)
     candsearch_in_pix_fast_nogil(
         tx,
         ty,
@@ -641,7 +654,9 @@ def test_candsearch_pix_fast_unused_targets_skipped():
         100.0,
         100.0,
         -1,
+        4,
         out_idx,
+        out_dists,
     )
     # target 0 is unused (-1), so only target 1 (tnr=1) is a valid candidate
     assert out_idx[0] == 1

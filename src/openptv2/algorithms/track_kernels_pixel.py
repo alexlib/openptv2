@@ -408,20 +408,29 @@ def candsearch_in_pix_fast_nogil(
     imx: cython.double,
     imy: cython.double,
     tr_unused: cython.int,
+    max_cands: cython.int,
     out_indices: cython.int[:],
+    out_dists: cython.double[:],
 ) -> cython.int:
+    """Nearest `max_cands` detected targets within the search box, sorted by
+    pixel distance (nearest first).
+
+    Was hardcoded to the nearest 4 regardless of `max_cands` -- fine at low
+    density, but silently starves the search once a real search window
+    contains more than 4 genuine candidate targets (dense/wide-search
+    cases), discarding the true match before the acc/angle quality gate
+    ever sees it. Found 2026-08-17 investigating why trackcorr's yield
+    plateaued on real-turbulence data no matter how wide dvxmax/dacc were
+    set -- see docs/plans/2026-08-17-lagrangian-accuracy-program.md,
+    Phase 2's trackcorr scoping note. `out_indices`/`out_dists` must each
+    have length >= `max_cands` (callers already size their scratch buffers
+    to `max_cands` for the caller-side `ftnr_out`/`freq_out` arrays, so this
+    matches an existing convention rather than adding a new one).
+    """
     xmin: cython.double
     xmax: cython.double
     ymin: cython.double
     ymax: cython.double
-    p1: cython.int
-    p2: cython.int
-    p3: cython.int
-    p4: cython.int
-    d1: cython.double
-    d2: cython.double
-    d3: cython.double
-    d4: cython.double
     j0: cython.int
     dj: cython.int
     j: cython.int
@@ -430,6 +439,8 @@ def candsearch_in_pix_fast_nogil(
     dx: cython.double
     dy: cython.double
     d: cython.double
+    ci: cython.int
+    pos: cython.int
 
     xmin = cent_x - dl
     xmax = cent_x + dr
@@ -445,20 +456,11 @@ def candsearch_in_pix_fast_nogil(
     if ymax > imy:
         ymax = imy
 
-    p1 = -999  # PT_UNUSED is -999
-    p2 = -999
-    p3 = -999
-    p4 = -999
-    d1 = 1e20
-    d2 = 1e20
-    d3 = 1e20
-    d4 = 1e20
+    for ci in range(max_cands):
+        out_indices[ci] = -999  # PT_UNUSED
+        out_dists[ci] = 1e20
 
     if not (0.0 <= cent_x <= imx and 0.0 <= cent_y <= imy):
-        out_indices[0] = p1
-        out_indices[1] = p2
-        out_indices[2] = p3
-        out_indices[3] = p4
         return 0
 
     j0 = num_targets // 2
@@ -485,35 +487,15 @@ def candsearch_in_pix_fast_nogil(
                 dy = cent_y - ty
                 d = c_sqrt(dx * dx + dy * dy)
 
-                if d < d1:
-                    p4 = p3
-                    p3 = p2
-                    p2 = p1
-                    p1 = j
-                    d4 = d3
-                    d3 = d2
-                    d2 = d1
-                    d1 = d
-                elif d < d2:
-                    p4 = p3
-                    p3 = p2
-                    p2 = j
-                    d4 = d3
-                    d3 = d2
-                    d2 = d
-                elif d < d3:
-                    p4 = p3
-                    p3 = j
-                    d4 = d3
-                    d3 = d
-                elif d < d4:
-                    p4 = j
-                    d4 = d
+                if d < out_dists[max_cands - 1]:
+                    pos = max_cands - 1
+                    while pos > 0 and out_dists[pos - 1] > d:
+                        out_dists[pos] = out_dists[pos - 1]
+                        out_indices[pos] = out_indices[pos - 1]
+                        pos -= 1
+                    out_dists[pos] = d
+                    out_indices[pos] = j
 
-    out_indices[0] = p1
-    out_indices[1] = p2
-    out_indices[2] = p3
-    out_indices[3] = p4
     return 0
 
 
@@ -705,11 +687,15 @@ def _sorted_candidates_fast_out_nogil(
         for j in range(num_cams):
             whichcam_out[i, j] = 0
 
-    # Local buffer for candsearch_in_pix_fast_nogil
+    # Local buffers for candsearch_in_pix_fast_nogil -- sized to max_cands,
+    # not hardcoded (see that function's docstring for why this matters).
     cands_buf: cython.int[:]
+    cand_dists_buf: cython.double[:]
     with cython.gil:
-        _cands_buf = np.zeros(4, dtype=np.int32)
+        _cands_buf = np.zeros(max_cands, dtype=np.int32)
         cands_buf = _cands_buf
+        _cand_dists_buf = np.zeros(max_cands, dtype=np.float64)
+        cand_dists_buf = _cand_dists_buf
 
     # --- candsearch per camera, write directly into ftnr_out/whichcam_out ---
     for cam in range(num_cams):
@@ -727,11 +713,13 @@ def _sorted_candidates_fast_out_nogil(
             imx,
             imy,
             tr_unused,
+            max_cands,
             cands_buf,
+            cand_dists_buf,
         )
 
         base = cam * max_cands
-        for ci in range(4):
+        for ci in range(max_cands):
             idx = cands_buf[ci]
             if idx != -999:  # PT_UNUSED is -999
                 whichcam_out[base + ci, cam] = 1

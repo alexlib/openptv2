@@ -97,7 +97,12 @@ def _ray_tracing_core(
 
     # Transform direction inside glass using Snell's law
     p: cython.double = c_sqrt(1.0 - n * n) * mm_n1 / mm_n2_0  # glass parallel
-    n_glass: cython.double = -c_sqrt(1.0 - p * p)  # glass normal
+    # Refraction never reverses which side of the interface the ray heads
+    # toward, so the outgoing glass-normal component keeps the sign of the
+    # incoming one `n` (a camera looking the other way through the glass,
+    # n > 0, previously always got a forced-negative -- i.e. mirrored --
+    # outgoing direction here).
+    n_glass: cython.double = c_sqrt(1.0 - p * p) if n >= 0 else -c_sqrt(1.0 - p * p)
 
     # Propagation length in glass
     a2_x: cython.double = bp_x * p + glass_dir_x * n_glass
@@ -127,7 +132,7 @@ def _ray_tracing_core(
 
     p = c_sqrt(1.0 - n_a2 * n_a2)
     p = p * mm_n2_0 / mm_n3
-    n_final: cython.double = -c_sqrt(1.0 - p * p)
+    n_final: cython.double = c_sqrt(1.0 - p * p) if n_a2 >= 0 else -c_sqrt(1.0 - p * p)
 
     out_x: cython.double = bp_x * p + glass_dir_x * n_final
     out_y: cython.double = bp_y * p + glass_dir_y * n_final
