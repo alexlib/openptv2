@@ -1619,8 +1619,7 @@ def read_targets(short_file_base: str, frame: int, store=None, cam_idx=None) -> 
 
             idx = cam_idx if cam_idx is not None else _guess_cam_idx(filename)
             if store.has_targets(idx, frame):
-                print(f" Reading targets from: store (cam={idx}, frame={frame}); "
-                      f"no ascii file at {filename}")
+                print(f" Reading targets from: store (cam={idx}, frame={frame})")
                 return store.read_targets(idx, frame)
         raise FileNotFoundError(f"Targets file does not exist: {filename}")
 
