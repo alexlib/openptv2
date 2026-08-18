@@ -1,10 +1,20 @@
+# ruff: noqa: E402
 import copy
 import os
 import sys
+import warnings
 from pathlib import Path
 
 import numpy as np
 import yaml
+
+# chaco.overlays.data_label has an ASCII-art docstring with backslashes in a
+# non-raw string -- a SyntaxWarning at compile time (Python 3.12+), from
+# chaco's own vendored code, not ours. Nothing to fix on our side; silencing
+# it here (scoped to chaco, before chaco.api is imported below) keeps our
+# own SyntaxWarnings visible instead of hiding them behind a blanket filter.
+warnings.filterwarnings("ignore", category=SyntaxWarning, module=r"chaco\..*")
+
 from chaco.api import ArrayDataSource, ArrayPlotData, LinearMapper, Plot, gray
 from chaco.tools.api import PanTool, ZoomTool
 from chaco.tools.image_inspector_tool import ImageInspectorTool
@@ -957,7 +967,9 @@ class TreeMenuHandler(Handler):
 
     def detect_part_track(self, info):
         """track detected particles"""
-        info.object.clear_plots(remove_background=False)
+        mainGui = info.object
+        mainGui.clear_plots(remove_background=False)
+        store = ptv._open_run_store(mainGui)
 
         seq_params = info.object.get_parameter("sequence")
         seq_first = seq_params["first"]
@@ -983,7 +995,7 @@ class TreeMenuHandler(Handler):
                 intx_green, inty_green = [], []
                 intx_blue, inty_blue = [], []
 
-                targets = ptv.read_targets(short_base_names[i_cam], i_seq)
+                targets = ptv.read_targets(short_base_names[i_cam], i_seq, store=store, cam_idx=i_cam)
 
                 for t in targets:
                     if t.tnr() > -1:
