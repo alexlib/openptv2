@@ -217,6 +217,76 @@ PRIORITY_SEGMENT_3D_INFO = TrackerInfo(
     typical_datasets="3D PTV benchmark sequences, turbulent flow sequences.",
 )
 
+FOUR_BE_INFO = TrackerInfo(
+    name="4be",
+    display_name="4BE (Four-frame Best Estimate, Cython Engine)",
+    short_description="Pure 3D linking scored by how well a candidate predicts a real particle two frames ahead",
+    algorithm_summary=(
+        "Ouellette, Xu & Bodenschatz (2006)'s four-frame best-estimate cost: for each "
+        "frame n -> n+1 candidate found within the velocity search box, extrapolate a "
+        "further constant-velocity estimate into frame n+2 and score the candidate by "
+        "how close a REAL particle sits to that n+2 estimate (support distance). Cost is "
+        "that support distance plus how well the candidate itself matched the frame n+1 "
+        "prediction -- summed, not support-distance-alone, since a candidate can no "
+        "longer win purely because a coincidental real particle happens to sit near its "
+        "own bad n+2 extrapolation while grossly failing the n+1 match (see "
+        "docs/holistic-3d-ptv-systems-research-program.md's 2026-08-18 case study)."
+    ),
+    algorithm_detail=(
+        "Calls track4be_loop_fast in track_kernels_track3d.py (compiled Cython). Give-up "
+        "on conflict (the paper's rule, greedy_conflicts=0) by default; an unsupported "
+        "candidate (nothing real near its n+2 estimate) falls back to the 3MA "
+        "acceleration residual rather than being rejected outright (strict_support=0), "
+        "which recovers yield lost to genuine 1-frame detection gaps. strict_support and "
+        "greedy_conflicts are module-level constants in track4be.py, not exposed via "
+        "track.par -- editing the source is currently the only way to change them."
+    ),
+    supports_backward=False,
+    supports_new_particles=False,
+    supports_2d=False,
+    supports_postprocessing=False,
+    supports_gap_relinking=False,
+    supports_multimedia=False,
+    supports_splitter=False,
+    supports_cost_weights=False,
+    speed_ranking="fastest",
+    density_ranking="low_to_moderate",
+    accuracy_ranking="standard",
+    parameters=(
+        ParameterGuide(
+            name="dvxmin / dvxmax (and dvy../dvz..)",
+            type="float",
+            default="±15.5",
+            description="Velocity search window, per axis (mm/frame) -- same track.par "
+                         "fields priority_segment_3d/trackcorr use.",
+            how_to_choose="Set just above max observed displacement, same guidance as "
+                          "priority_segment_3d -- there is no 4BE-specific tuning here.",
+            typical_range="1 - 100",
+            unit="mm/frame",
+        ),
+        ParameterGuide(
+            name="dacc",
+            type="float",
+            default="5.5",
+            description="Unused directly by 4BE's own cost (which is a distance sum, not "
+                         "an acceleration bound) -- retained for API parity with "
+                         "priority_segment_3d/trackcorr; the candidate search box itself "
+                         "is dvxmax/dvymax/dvzmax.",
+            how_to_choose="Leave at the same value used for priority_segment_3d on this "
+                          "dataset; it does not change 4BE's own linking decisions.",
+            typical_range="0.5 - 50",
+            unit="mm",
+        ),
+    ),
+    default_preset="4be",
+    best_for="Sparse-to-moderate density flows where a real particle usually exists two "
+              "frames ahead to disambiguate close candidates.",
+    avoid_when="High density or high-noise data (see the case study above) -- more "
+               "candidates means more chances for a coincidental n+2 match to compete "
+               "with the correct one, even with the summed cost.",
+    typical_datasets="3D PTV benchmark sequences, turbulent flow sequences.",
+)
+
 KALMAN_HUNGARIAN_3D_INFO = TrackerInfo(
     name="kalman_hungarian_3d",
     display_name="3D Kalman-Hungarian (Python Engine)",
@@ -714,6 +784,7 @@ FAST_3D_SMOOTH_INFO = TrackerInfo(
 def _build_registry() -> None:
     entries: list[TrackerInfo] = [
         PRIORITY_SEGMENT_3D_INFO,
+        FOUR_BE_INFO,
         KALMAN_HUNGARIAN_3D_INFO,
         FULL_MULTIPASS_INFO,
         FAST_3D_SMOOTH_INFO,
