@@ -99,16 +99,37 @@ either point in isolation.
 4BE's distinguishing mechanism (Ouellette et al. 2006, eq. 12) is scoring a
 frame-*n*→*n+1* candidate by how well it predicts a *real particle two
 frames ahead* — its whole design is "trust a candidate more if something
-plausible exists past it." The working hypothesis, not yet mechanistically
-proven, is that this is exactly the failure mode's source: at real density
-and noise, a WRONG frame-*n+1* candidate can coincidentally have decent
-n+2 support too (any real particle drifting through the right neighborhood
-qualifies), so the extra-frame lookahead that is 4BE's whole advantage over
-3MA on clean data becomes a liability that *actively prefers* a coincidental
-match once the field is dense/noisy enough for coincidences to occur.
-**Verifying this precisely — instrumenting 4BE's own n+2 support score for
-both the correct and the wrongly-accepted candidate at this exact junction
-— is the next concrete step**, not yet done.
+plausible exists past it."
+
+**Proven, not just hypothesized** (2026-08-18, live-traced at this exact
+junction via a decompiled debug build of `track_kernels_track3d.py`): the
+correct candidate (k=481) was by far the closest match to the frame n+1
+constant-velocity prediction (`cand_dist=0.315`, next-closest candidate was
+6× farther) with n+2 support distance 0.72. The wrongly-accepted candidate
+(k=464, the same point 3.069/-8.536/10.565→1.877/-9.877/6.021 traced above)
+was **16× farther from the prediction** (`cand_dist=5.17`) yet had a
+*slightly smaller* n+2 support distance, 0.48. Because 4BE's cost for a
+supported candidate was `sup_dists[0]` alone (eq. 14, literally, with
+nothing else in the comparison), the kinematically absurd candidate won on
+a coincidence: some real particle happened to sit fractionally closer to
+its bad n+2 extrapolation than the correct particle's real continuation
+did. The extra-frame lookahead that is 4BE's whole advantage over 3MA on
+clean data is exploitable exactly because it was used as a *substitute*
+for prediction-consistency rather than *combined* with it — the same
+AND-gated-evidence discipline trackcorr's two-hop acceptance already has
+(neither hop can compensate for the other failing).
+
+**Fixed same day** (`track_kernels_track3d.py`, `track4be_loop_fast`):
+supported-candidate cost is now `sup_dists[0] + cand_dists[ci]` — n+2
+support distance plus prediction-consistency distance, so a candidate
+can no longer win purely by coincidence while grossly failing the other
+criterion. Measured effect on the full 5-tracker benchmark (`mild`
+severity, identical dataset/seed): 4BE's K_a dropped **761.45 → 103.09**
+(7.4×), meanlen rose 21.77 → 25.56, moving 4BE from a 25-30× outlier among
+the five survivor trackers to roughly proptv_tracking's range (K_a 73-103
+vs. the other three's 25-29) — still worse than 3MA/trackcorr/myptv, an
+open question for further work, but no longer a qualitatively different
+failure mode from the rest of the field.
 
 ## 3. The back-projection filter's limited result, and why it matters
 
@@ -278,11 +299,12 @@ exists.
 
 ## 7. Phased roadmap
 
-1. **Instrument 4BE's actual n+2-support score** at the confirmed
-   track-260 junction (§2), for both the correct and wrongly-accepted
-   candidate, to move the failure-mode hypothesis from "plausible" to
-   "proven" — the same live-tracing technique already used to find the
-   tnr bug and the 4BE tail-buffer bug this week.
+1. ~~**Instrument 4BE's actual n+2-support score**~~ — **done 2026-08-18**:
+   proven (§2) and fixed (combined cost, K_a 761→103, 7.4×). Remaining gap
+   to 3MA/trackcorr/myptv (K_a ~25-29) is now a smaller, open question —
+   not yet root-caused, a candidate next audit target (does the same
+   evidence-substitution pattern exist elsewhere in 4BE's conflict
+   resolution, or is the residual gap a different mechanism entirely).
 2. **Log forward/backward reciprocity agreement per trajectory segment**
    (4b) as a first-class output of `full_forward()`+`full_backward()`,
    not just a pass/fail gate — the prerequisite data for 4a.

@@ -522,9 +522,15 @@ effect; calibration residual, the actual dominant term, hadn't been isolated
 yet). Also notable on its own: **4BE is disproportionately vulnerable even at
 mild noise** (K_a 761 vs 25–29 for the others at the identical mild setting) —
 a distinct, tracker-specific finding, not explained by any single noise
-mechanism above, and a candidate root cause to chase directly (Phase 3, its
-n+2-lookahead cost may be more easily fooled by a coincidental future "ghost"
-than the others' single-step comparison).
+mechanism above. **Root-caused and fixed same day** (see
+`docs/holistic-3d-ptv-systems-research-program.md` §2): live-traced at the
+exact junction, 4BE's supported-candidate cost was n+2 support distance
+*alone*, letting a candidate 16x farther from the frame n+1 prediction win
+purely because a real particle coincidentally sat slightly closer to its
+(wrong) n+2 extrapolation than the correct candidate's real continuation
+did. Fixed by summing support distance with prediction-consistency distance
+in `track_kernels_track3d.track4be_loop_fast`; K_a 761 -> 103 (7.4x), still
+the field's worst but no longer a qualitatively different failure mode.
 
 Next-steps consequence: recalibrate `SEVERITY_PRESETS`' calibration-residual
 knobs first (they are currently the single highest-leverage, least-tuned

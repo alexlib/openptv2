@@ -699,6 +699,21 @@ def track4be_loop_fast(
     When frame n+2 is unavailable (the tail of a sequence), seeded scoring
     degrades to the 3MA acceleration residual so the last steps still link.
 
+    Supported-candidate cost is n+2 support distance PLUS n+1
+    prediction-consistency distance, not support distance alone (eq. 14
+    literally) -- found 2026-08-18 via a live-traced identity swap on real
+    turbulence data: a candidate 16x farther from the constant-velocity
+    prediction than the correct one still won, because a real particle
+    happened to sit slightly closer to ITS OWN (kinematically wrong)
+    n+2 estimate than the correct candidate's real future support did.
+    Support-distance-alone lets a coincidental future match override
+    overwhelming evidence the candidate is wrong; summing both distances
+    means "well-supported but implausible" can no longer beat "plausible
+    and well-supported" on a coin-flip-sized support-distance margin --
+    the same AND-gated-evidence discipline trackcorr's two-hop acceptance
+    already has (neither hop can compensate for the other failing) that
+    this single-criterion substitution had dropped.
+
     ``strict_support``: 1 reproduces the paper literally -- a candidate with
     no real particle near its n+2 estimate is discarded. 0 (the default)
     keeps such candidates as a penalised 3MA fallback, which recovers the
@@ -824,7 +839,11 @@ def track4be_loop_fast(
                         dx, dy, dz, g3_nx, g3_ny, g3_nz
                     )
                     if n_sup > 0:
-                        cost = sup_dists[0]  # eq. 14
+                        # eq. 14's support distance PLUS how well the
+                        # candidate itself matches the frame n+1 prediction
+                        # -- see this function's docstring for why support
+                        # distance alone is exploitable.
+                        cost = sup_dists[0] + cand_dists[ci]
                     elif strict_support == 1:
                         # Nothing real near the estimate: strict 4BE treats
                         # the candidate as unsupported and rejects it.
