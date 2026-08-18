@@ -362,6 +362,10 @@ class Tracking:
             gaptracking=gaptracking,
         )
 
+        from openptv2.gui.ptv import _open_run_store
+
+        store = _open_run_store(self.exp)
+
         max_targets = 10000
         corres_base = str(res_dir / "rt_is")
         linkage_base = str(res_dir / "ptv_is")
@@ -370,14 +374,14 @@ class Tracking:
         frame_numbers = list(range(first_frame, last_frame + 1))
         num_frames = len(frame_numbers)
 
-        # 1. Read 3D particles per frame from rt_is.
+        # 1. Read 3D particles per frame -- store first, ascii rt_is fallback.
         frames = []
         frame_particles = []
         for fn in frame_numbers:
             frame = Frame(num_cams, max_targets)
             frame.read(
                 corres_base, "", prio_file_base=prio_base,
-                target_file_base="", frame_num=fn,
+                target_file_base="", frame_num=fn, store=store,
             )
             frames.append(frame)
             frame_particles.append(frame.positions())
@@ -424,6 +428,7 @@ class Tracking:
             frame.write(
                 corres_base, linkage_base,
                 prio_file_base=prio_base, target_file_base=None, frame_num=fn,
+                store=store,
             )
             if f_idx < num_frames - 1:
                 links = int(np.sum(frame.path_next[: frame.num_parts] >= 0))

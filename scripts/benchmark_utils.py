@@ -354,13 +354,22 @@ def per_tracker_overrides(
     """
     from openptv2.tracking_recommender import _suggest_params, compute_dataset_stats
     from openptv2.tracking_registry import TRACKER_REGISTRY
+    from openptv2.storage import RunStore
 
     from openptv2.algorithms.tracking_frame_buf import Frame
 
-    frame_particles = []
     res_dir = Path(src) / "res"
+    store = None
+    if (res_dir / "run.zarr").exists():
+        store = RunStore.open(Path(src), mode="r")
+
+    frame_particles = []
     corres_base = str(res_dir / "rt_is")
     for fn in range(first, first + n_frames):
+        if store is not None and store.has_correspondences(fn):
+            pos, _ids = store.read_correspondences(fn)
+            frame_particles.append(np.asarray(pos, dtype=np.float64))
+            continue
         if not (res_dir / f"rt_is.{fn}").exists():
             frame_particles.append(np.empty((0, 3)))
             continue

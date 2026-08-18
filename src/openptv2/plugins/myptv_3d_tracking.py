@@ -254,6 +254,10 @@ class Tracking:
         dacc = float(track_cfg.get("dacc", 50.0))
         max_angle_deg = unified_angle_deg(track_cfg, default_deg=45.0)
 
+        from openptv2.gui.ptv import _open_run_store
+
+        store = _open_run_store(self.exp)
+
         max_targets = 10000
         corres_base = str(res_dir / "rt_is")
         linkage_base = str(res_dir / "ptv_is")
@@ -262,17 +266,20 @@ class Tracking:
         frame_numbers = list(range(first_frame, last_frame + 1))
         num_frames = len(frame_numbers)
 
-        # 1. Fill database using Frame objects reading ONLY input rt_is.# files
+        # 1. Fill database using Frame objects reading correspondences from
+        # the store (falls back to ascii rt_is.# only when the store has
+        # nothing for that frame -- see read_path_frame's docstring).
         frames = []
         frame_particles = []
         for fn in frame_numbers:
             frame = Frame(num_cams, max_targets)
             frame.read(
-                corres_base,  # INPUT: res/rt_is
+                corres_base,  # INPUT: res/rt_is (ascii fallback only)
                 "",  # Do NOT read existing ptv_is as input
                 prio_file_base=prio_base,
                 target_file_base="",
                 frame_num=fn,
+                store=store,
             )
             frames.append(frame)
             frame_particles.append(frame.positions())
@@ -321,6 +328,7 @@ class Tracking:
                 prio_file_base=prio_base,
                 target_file_base=None,
                 frame_num=fn,
+                store=store,
             )
 
             if f_idx < num_frames - 1:

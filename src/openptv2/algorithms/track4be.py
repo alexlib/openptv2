@@ -86,3 +86,12 @@ def track4be_loop(run_info, step):
     fb.write_frame_from_start(step)
     if step < run_info.seq_par.last - 2:
         fb.read_frame_at_end(step + 3, read_links=False)
+    else:
+        # Frame n+2 is out of range near the sequence tail -- clear buf[3]
+        # rather than leaving it holding stale positions from an earlier
+        # read. 4BE's candidate cost scores against "the nearest real
+        # particle in frame n+2" (see module docstring); a stale buf[3]
+        # scores real candidates against garbage several frames old and
+        # silently prefers wrong, distant matches instead. Mirrors
+        # trackcorr_c_loop's identical guard in track.py.
+        fb.buf[fb.buf_len - 1].num_parts = 0

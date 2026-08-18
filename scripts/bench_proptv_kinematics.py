@@ -1,15 +1,23 @@
 """Rank trackers by kinematic accuracy on the proPTV 500_30 case (real
-turbulence intermittency, K_a truth ~21.8 -- see docs/plans/
+turbulence intermittency -- see docs/plans/
 2026-08-17-lagrangian-accuracy-program.md, Phase 2's proPTV note).
+
+adapt_proptv_dataset.py (2026-08-18 rewrite) rescales proPTV's [0,1]-cube
+ground truth into a mm-scale working volume (+-20mm, same order as
+openptv2's other synthetic sets) via its own self-consistent pinhole rig --
+so this dataset is mm-scale like every other one here, no special eps.
 
 Each tracker runs at its OWN auto-recommended parameters
 (benchmark_utils.per_tracker_overrides, dataset-scaled via
-tracking_recommender -- this dataset's positions are a ~[0,1] unit cube, not
-mm scale, so a shared dacc=6.0 would be meaningless here). Link
-precision/yield saturate at 1.0 for every sane tracker at this (currently
-noise-free) density, exactly like doc-cited to on the openptv2 synthetic set
--- so ranking here is by acceleration fidelity against ground truth, not by
-link metrics.
+tracking_recommender). Link precision/yield can still saturate at 1.0 for a
+correct tracker at this (currently noise-free) density -- the real
+differentiator, and the whole point of this script, is acceleration
+fidelity against ground truth: a false/mismatched link is not just noise, it
+injects the WRONG kinematics into the recovered statistics (e.g. a
+smoothness-favouring cost function will systematically suppress K_a below
+the true value, not just add scatter around it) -- so K_a and a_rms error
+against truth are the metrics that actually matter here, not yield/precision
+alone.
 """
 
 import sys
@@ -23,11 +31,11 @@ import benchmark_utils as bu  # noqa: E402
 SRC = Path("test_data/proptv_500_30")
 FIRST, N = 10001, 30
 
-TRACKERS = [
-    "priority_segment_3d", "trackcorr", "4be", "sg_hungarian_3d",
-    "kalman_hungarian_3d", "nearest_hungarian_3d", "predictive_gmm_3d",
-    "myptv_3d_tracking", "proptv_tracking",
-]
+# The 5-engine survivor set (see docs/plans/2026-08-17-lagrangian-accuracy-
+# program.md): 3MA, 4BE, trackcorr, MyPTV, proPTV. nearest_hungarian_3d/
+# predictive_gmm_3d are literal aliases of myptv_3d_tracking/proptv_tracking
+# (see plugins/loader.py) -- not separate engines, not listed here.
+TRACKERS = ["priority_segment_3d", "trackcorr", "4be", "myptv_3d_tracking", "proptv_tracking"]
 
 
 def kinematics(tracks):
@@ -71,10 +79,7 @@ def main():
         except Exception as e:
             print(f"{tr:<22} ERROR {e}")
             continue
-        # eps for identity/link metrics: a fraction of mean NN spacing in
-        # this normalized-cube dataset (~0.07, see adapt_proptv_dataset.py's
-        # docstring) -- NOT the mm-scale default eps=1.0.
-        m = bu.combined_metrics(tt, pred0, eps=0.02)
+        m = bu.combined_metrics(tt, pred0, eps=1.0)
         v_p, a_p = kinematics(pred0)
         a_rms, a_k = stats(a_p)
         lens = np.array([len(v) for v in pred0.values()]) if pred0 else np.zeros(1)
