@@ -228,17 +228,76 @@ def _perturb_calibration(cal, rng: np.random.Generator, angle_sigma_deg: float,
     return out_cal
 
 
+#: Three calibrated operating points (see convert_realistic's docstring for
+#: what each knob does). "moderate" is 2026-08-18's original default;
+#: severity scales noise/dropout/merge/calibration together rather than
+#: leaving them at one arbitrary combination, and eps0 is DERIVED (below),
+#: not listed here -- it must track noise_px, not be picked independently.
+SEVERITY_PRESETS: dict[str, dict[str, float]] = {
+    "mild": dict(noise_px=0.08, dropout_p=0.01, merge_radius_px=1.0,
+                 calib_angle_sigma_deg=0.01, calib_pos_sigma_mm=0.01, calib_cc_ppm=100.0),
+    "moderate": dict(noise_px=0.15, dropout_p=0.03, merge_radius_px=2.0,
+                      calib_angle_sigma_deg=0.02, calib_pos_sigma_mm=0.02, calib_cc_ppm=200.0),
+    "severe": dict(noise_px=0.3, dropout_p=0.06, merge_radius_px=3.0,
+                    calib_angle_sigma_deg=0.04, calib_pos_sigma_mm=0.04, calib_cc_ppm=400.0),
+}
+
+
+def _derive_eps0_mm(noise_px: float) -> float:
+    """eps0 (epipolar-band tolerance for accepting a correspondence) must
+    track the actual detection-noise level, not sit at one fixed value --
+    confirmed empirically: 0.1mm (the scaffold's own, tuned for a different
+    dataset's density) produces real geometric ghost matches at this
+    dataset's ~5mm particle spacing even with ZERO added noise; 0.01mm was
+    clean at zero noise. Floor covers residual/rounding slack even at
+    noise_px=0; the linear term is calibrated so noise_px=0.15 (the
+    original "moderate" default) lands at ~0.03mm, the value already
+    verified empirically to give a plausible (not ~0%, not ~100%) match
+    rate. Calibration-residual severity is deliberately NOT folded in here
+    -- it's a separate, independently observable contamination axis, not
+    something eps0 should quietly absorb."""
+    return 0.01 + 0.13 * noise_px
+
+
+def _streak_dropout_mask(
+    n_items: int, n_frames: int, dropout_p: float, mean_streak_frames: float,
+    rng: np.random.Generator,
+) -> np.ndarray:
+    """(n_items, n_frames) bool array, True = dropped that frame. A 2-state
+    per-item Markov chain (visible/occluded), steady-state occlusion
+    probability `dropout_p`, mean occluded-streak length
+    `mean_streak_frames` -- real occlusion/defocus events last several
+    consecutive frames, not independent per-frame coin flips. IID dropout
+    compounds unrealistically over a long sequence (independent p=0.03/cam
+    over 30 frames left almost no trajectory intact by frame ~15); a real
+    particle that goes out of focus tends to stay that way for a few
+    frames, then come back -- same long-run miss rate, very different
+    trajectory-length distribution."""
+    if dropout_p <= 0 or n_frames == 0:
+        return np.zeros((n_items, n_frames), dtype=bool)
+    p_leave = 1.0 / max(mean_streak_frames, 1.0)
+    p_enter = dropout_p * p_leave / max(1.0 - dropout_p, 1e-9)
+    state = rng.random(n_items) < dropout_p  # start in steady state
+    mask = np.zeros((n_items, n_frames), dtype=bool)
+    for fi in range(n_frames):
+        mask[:, fi] = state
+        r = rng.random(n_items)
+        state = np.where(state, r >= p_leave, r < p_enter)
+    return mask
+
+
 def convert_realistic(
     proptv_case_dir: Path,
     scaffold: Path,
     out: Path,
     noise_px: float = 0.15,
     dropout_p: float = 0.03,
+    mean_streak_frames: float = 4.0,
     merge_radius_px: float = 2.0,
     calib_angle_sigma_deg: float = 0.02,
     calib_pos_sigma_mm: float = 0.02,
     calib_cc_ppm: float = 200.0,
-    eps0_mm: float = 0.03,
+    eps0_mm: float | None = None,
     seed: int = 0,
 ) -> None:
     """Same ground truth as convert(), but runs the actual detection ->
@@ -251,15 +310,18 @@ def convert_realistic(
     2. Particle-image merging: two noisy detections in the same camera
        within `merge_radius_px` collapse to one (segmentation can't tell
        them apart) -- drops one, corrupting or losing that correspondence.
-    3. Missed detections: each projection independently dropped with
-       probability `dropout_p` (out of focus / below threshold / occluded).
+    3. Missed detections: each (particle, camera) independently follows a
+       2-state occlusion Markov chain with steady-state miss probability
+       `dropout_p` and mean streak length `mean_streak_frames`, NOT an
+       independent per-frame coin flip -- see _streak_dropout_mask.
     4. Real correspondence solving: openptv2's actual multi-camera epipolar
        matcher (openptv2.algorithms.correspondences.correspondences, the
        same one gui/ptv.py's real sequence loop uses on real experiments)
        runs on the noisy/merged/dropped 2D targets -- this is what can
        produce ghost 3D points (wrong ray intersections that coincidentally
        satisfy the criteria.eps0 tolerance) and miss real ones, not a
-       simulated approximation of it.
+       simulated approximation of it. eps0_mm defaults to _derive_eps0_mm
+       (tracks noise_px) rather than one fixed constant.
     5. Calibration residual: correspondence-solving and triangulation use a
        per-camera-perturbed calibration (_perturb_calibration), never the
        exact one used to generate the true projections -- systematic, not
@@ -272,6 +334,8 @@ def convert_realistic(
     = i), so writing targets from `frm.targets` after solving is correct by
     construction, not something this script has to get right by hand.
     """
+    if eps0_mm is None:
+        eps0_mm = _derive_eps0_mm(noise_px)
     from openptv2.algorithms.calibration import Calibration
     from openptv2.algorithms.correspondences import correspondences as alg_correspondences
     from openptv2.algorithms.imgcoord import img_coord
@@ -290,12 +354,6 @@ def convert_realistic(
     rng = np.random.default_rng(seed)
     yaml_path, yaml_data, ptv, cpar = _prepare_scaffold(scaffold, out)
     res = out / "res"
-    # eps0 is the epipolar-band tolerance for accepting a correspondence --
-    # the scaffold's own value was tuned for a different dataset's density;
-    # this dataset's mean particle spacing (~5mm at 500 particles/40mm^3
-    # cube) makes ~0.1mm start producing real geometric ghost matches even
-    # at zero detection noise (crossing epipolar lines coincide by chance),
-    # confirmed empirically -- eps0_mm is this pipeline's own explicit knob.
     crit = yaml_data["criteria"]
     crit["eps0"] = eps0_mm
     vpar = VolumePar(
@@ -323,12 +381,12 @@ def convert_realistic(
             str(out / "cal" / f"cam{c + 1}.tif.ori"), str(out / "cal" / f"cam{c + 1}.tif.addpar")
         )
 
-    store = RunStore.open(out, mode="a")
-    n_true_total = n_matched_total = 0
-
-    for i, f in enumerate(files):
-        fn = FIRST + i
-        true_rows = []
+    # Read every frame's truth up front: dropout must be a per-particle
+    # streak across the whole sequence (see _streak_dropout_mask), which
+    # needs the full particle count and frame count before the main loop.
+    all_true_rows: list[list[tuple[int, float, float, float]]] = []
+    for f in files:
+        rows = []
         for line in f.read_text().strip().splitlines():
             if line.startswith("#"):
                 continue
@@ -337,7 +395,20 @@ def convert_realistic(
             x = (parts[1] - 0.5) * CUBE_SCALE
             y = (parts[2] - 0.5) * CUBE_SCALE
             z = (parts[3] - 0.5) * CUBE_SCALE
-            true_rows.append((pid, x, y, z))
+            rows.append((pid, x, y, z))
+        all_true_rows.append(rows)
+    n_particles = max(pid for rows in all_true_rows for pid, *_ in rows) + 1
+    n_frames = len(files)
+    dropout_masks = [
+        _streak_dropout_mask(n_particles, n_frames, dropout_p, mean_streak_frames, rng)
+        for _ in range(NUM_CAMS)
+    ]
+
+    store = RunStore.open(out, mode="a")
+    n_true_total = n_matched_total = 0
+
+    for i, true_rows in enumerate(all_true_rows):
+        fn = FIRST + i
         n_true_total += len(true_rows)
 
         with open(res / f"origin_{fn}.txt", "w") as out_f:
@@ -346,12 +417,13 @@ def convert_realistic(
                 out_f.write(f"{pid},{x:.6f},{y:.6f},{z:.6f}\n")
 
         # 1-3: project via the TRUE calibration, then apply detection noise,
-        # missed detections, and image-merging per camera.
+        # missed detections (streak-correlated, see dropout_masks above),
+        # and image-merging per camera.
         per_cam_pix: list[np.ndarray] = []
         for c in range(NUM_CAMS):
             pts = []
-            for _pid, x, y, z in true_rows:
-                if rng.random() < dropout_p:
+            for pid, x, y, z in true_rows:
+                if dropout_masks[c][pid, i]:
                     continue
                 mx, my = img_coord((x, y, z), cals_true[c], cpar.mm)
                 px, py = metric_to_pixel(mx, my, cpar)
@@ -441,10 +513,16 @@ if __name__ == "__main__":
     ap.add_argument("--realistic", action="store_true",
                      help="simulate the real detection/correspondence error chain "
                           "instead of injecting ground-truth correspondences directly")
+    ap.add_argument("--severity", choices=sorted(SEVERITY_PRESETS), default="moderate",
+                     help="noise/dropout/merge/calibration operating point for --realistic "
+                          "(eps0 is derived from noise_px, not part of the preset)")
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
     out = Path("test_data") / f"proptv_{args.case}"
     if args.realistic:
-        convert_realistic(Path(args.proptv_root) / args.case, Path(args.scaffold), out, seed=args.seed)
+        convert_realistic(
+            Path(args.proptv_root) / args.case, Path(args.scaffold), out,
+            seed=args.seed, **SEVERITY_PRESETS[args.severity],
+        )
     else:
         convert(Path(args.proptv_root) / args.case, Path(args.scaffold), out)

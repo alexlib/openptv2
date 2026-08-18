@@ -476,6 +476,63 @@ was not detected here" from "I refused to guess here" and bridge only the
 former.** That is the concrete mechanism by which length gets recovered
 without spending accuracy, and it does not exist in any current tracker.
 
+**Two concrete Phase 3 candidates, from 2026-08-18's realistic-pipeline
+finding** (3MA/4BE never touch 2D image space at all, so a ghost 3D
+correspondence — a real, valid-looking point born from a coincidental
+epipolar crossing — is invisible to them; trackcorr's K_a stayed closer to
+truth specifically because it does image-space consistency checking, at the
+cost of the full compound two-hop search on every candidate):
+
+- **Fast-linker + back-projection filter.** Run 3MA/4BE's cheap 3D-only
+  linker as the primary pass (correct on the easy majority), then apply
+  trackcorr's back-projection consistency check *only* as a cheap secondary
+  filter on the links it already accepted: project the accepted 3D point
+  into each camera, verify it actually lands near a real detected 2D target
+  within tolerance, reject/re-link if not. Should recover most of
+  trackcorr's ghost-rejection power without paying its full per-candidate
+  cost — a direct, testable hypothesis once the realistic pipeline's noise
+  model is calibrated (severity presets, next-steps item below).
+- **Oracle tracker (a reference, not a real algorithm).** Uses ground truth
+  to always pick the correct candidate when one exists in the actual noisy
+  correspondence set for that frame. This calibrates the ceiling: it
+  separates "error inherent to this frame's correspondence ambiguity, which
+  no tracker could fix" from "this specific algorithm's own mistake" — a
+  gap between the oracle's K_a/a_rms and a real tracker's is the real,
+  addressable headroom; a gap between the oracle and ground truth is the
+  correspondence stage's own irreducible damage (real ghosts/misses that
+  even perfect linking can't undo).
+
+**2026-08-18's univariate noise-source sweep** (`scripts/sweep_proptv_noise.py`,
+`convert_realistic`'s five mechanisms — §0's proPTV note — bumped one at a
+time from "mild" to a 3-4x "high" value, all five trackers, truth K_a=19.80):
+
+| knob bumped alone | meanlen (3MA) | K_a range across trackers | verdict |
+|---|---|---|---|
+| baseline (mild, everything low) | 28.8 | 25–761 (4BE already an outlier) | even mild noise contaminates everyone some; 4BE far worse than the rest at the SAME mild noise |
+| `dropout_p` -> 0.06 | 23.7 | 29–756 | smallest marginal damage of the four |
+| `merge_radius_px` -> 4px | 20.6 | 34–487 | moderate |
+| `noise_px` -> 0.3px | 11.5 | 10–61 (K_a mostly *drops* here) | large damage, but the drop in K_a (not rise) is the survivorship signature — high noise makes trackers decline more links, so what remains is smoother/safer, not more contaminated |
+| `calib_severity` -> 4x (angle/pos/cc together) | 2.7 | 3–6 (near-total collapse, too few links to compute real statistics) | **by far the dominant lever** — this rig's known poor depth-conditioning (the ray-tracing sign-bug investigation, same week) amplifies even modest calibration mismatch into large 3D triangulation error |
+
+Ranking of damage severity, holding everything else at "mild":
+**calibration residual (catastrophic) >> detection noise (severe) > particle-image
+merging (moderate) > missed-detection dropout (mild)** — the opposite of where
+effort went first (dropout was fixed first, with a real but comparatively small
+effect; calibration residual, the actual dominant term, hadn't been isolated
+yet). Also notable on its own: **4BE is disproportionately vulnerable even at
+mild noise** (K_a 761 vs 25–29 for the others at the identical mild setting) —
+a distinct, tracker-specific finding, not explained by any single noise
+mechanism above, and a candidate root cause to chase directly (Phase 3, its
+n+2-lookahead cost may be more easily fooled by a coincidental future "ghost"
+than the others' single-step comparison).
+
+Next-steps consequence: recalibrate `SEVERITY_PRESETS`' calibration-residual
+knobs first (they are currently the single highest-leverage, least-tuned
+parameter), and design severity presets around the *tracking-level* metrics
+(`meanlen`/K_a via this sweep script) rather than the correspondence-stage
+match rate alone, which — per the ablation immediately above this table —
+was never the bottleneck any of the four mechanisms individually explained.
+
 ---
 
 ## 3. What NOT to do, and why
