@@ -1316,16 +1316,35 @@ either point in isolation.</p>
 <p>4BE's distinguishing mechanism (Ouellette et al. 2006, eq. 12) is scoring a
 frame-<em>n</em>→<em>n+1</em> candidate by how well it predicts a <em>real particle two
 frames ahead</em> — its whole design is "trust a candidate more if something
-plausible exists past it." The working hypothesis, not yet mechanistically
-proven, is that this is exactly the failure mode's source: at real density
-and noise, a WRONG frame-<em>n+1</em> candidate can coincidentally have decent
-n+2 support too (any real particle drifting through the right neighborhood
-qualifies), so the extra-frame lookahead that is 4BE's whole advantage over
-3MA on clean data becomes a liability that <em>actively prefers</em> a coincidental
-match once the field is dense/noisy enough for coincidences to occur.
-<strong>Verifying this precisely — instrumenting 4BE's own n+2 support score for
-both the correct and the wrongly-accepted candidate at this exact junction
-— is the next concrete step</strong>, not yet done.</p>
+plausible exists past it."</p>
+<p><strong>Proven, not just hypothesized</strong> (2026-08-18, live-traced at this exact
+junction via a decompiled debug build of <code>track_kernels_track3d.py</code>): the
+correct candidate (k=481) was by far the closest match to the frame n+1
+constant-velocity prediction (<code>cand_dist=0.315</code>, next-closest candidate was
+6× farther) with n+2 support distance 0.72. The wrongly-accepted candidate
+(k=464, the same point 3.069/-8.536/10.565→1.877/-9.877/6.021 traced above)
+was <strong>16× farther from the prediction</strong> (<code>cand_dist=5.17</code>) yet had a
+<em>slightly smaller</em> n+2 support distance, 0.48. Because 4BE's cost for a
+supported candidate was <code>sup_dists[0]</code> alone (eq. 14, literally, with
+nothing else in the comparison), the kinematically absurd candidate won on
+a coincidence: some real particle happened to sit fractionally closer to
+its bad n+2 extrapolation than the correct particle's real continuation
+did. The extra-frame lookahead that is 4BE's whole advantage over 3MA on
+clean data is exploitable exactly because it was used as a <em>substitute</em>
+for prediction-consistency rather than <em>combined</em> with it — the same
+AND-gated-evidence discipline trackcorr's two-hop acceptance already has
+(neither hop can compensate for the other failing).</p>
+<p><strong>Fixed same day</strong> (<code>track_kernels_track3d.py</code>, <code>track4be_loop_fast</code>):
+supported-candidate cost is now <code>sup_dists[0] + cand_dists[ci]</code> — n+2
+support distance plus prediction-consistency distance, so a candidate
+can no longer win purely by coincidence while grossly failing the other
+criterion. Measured effect on the full 5-tracker benchmark (<code>mild</code>
+severity, identical dataset/seed): 4BE's K_a dropped <strong>761.45 → 103.09</strong>
+(7.4×), meanlen rose 21.77 → 25.56, moving 4BE from a 25-30× outlier among
+the five survivor trackers to roughly proptv_tracking's range (K_a 73-103
+vs. the other three's 25-29) — still worse than 3MA/trackcorr/myptv, an
+open question for further work, but no longer a qualitatively different
+failure mode from the rest of the field.</p>
 <h2 id="3-the-back-projection-filters-limited-result-and-why-it-matters">3. The back-projection filter's limited result, and why it matters<a class="headerlink" href="#3-the-back-projection-filters-limited-result-and-why-it-matters" title="Permanent link">&para;</a></h2>
 <p>Built as directly proposed: run 3MA once, then for every point along every
 resulting track, reproject it into all four cameras (same calibration the
@@ -1480,11 +1499,12 @@ exists.</p>
 </ul>
 <h2 id="7-phased-roadmap">7. Phased roadmap<a class="headerlink" href="#7-phased-roadmap" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Instrument 4BE's actual n+2-support score</strong> at the confirmed
-   track-260 junction (§2), for both the correct and wrongly-accepted
-   candidate, to move the failure-mode hypothesis from "plausible" to
-   "proven" — the same live-tracing technique already used to find the
-   tnr bug and the 4BE tail-buffer bug this week.</li>
+<li>~~<strong>Instrument 4BE's actual n+2-support score</strong>~~ — <strong>done 2026-08-18</strong>:
+   proven (§2) and fixed (combined cost, K_a 761→103, 7.4×). Remaining gap
+   to 3MA/trackcorr/myptv (K_a ~25-29) is now a smaller, open question —
+   not yet root-caused, a candidate next audit target (does the same
+   evidence-substitution pattern exist elsewhere in 4BE's conflict
+   resolution, or is the residual gap a different mechanism entirely).</li>
 <li><strong>Log forward/backward reciprocity agreement per trajectory segment</strong>
    (4b) as a first-class output of <code>full_forward()</code>+<code>full_backward()</code>,
    not just a pass/fail gate — the prerequisite data for 4a.</li>
