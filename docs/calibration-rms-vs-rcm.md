@@ -67,7 +67,7 @@ This is why **RMS cannot see the problem**: it is computed independently per cam
 and never asks whether the cameras agree. You can drive every camera's RMS
 sub-pixel and still have a rig that triangulates poorly.
 
-## A real example (`TT13_aorta`, 4-view splitter)
+## A real example (`aorta`, 4-view splitter)
 
 After the `interf` glass-tilt fit:
 

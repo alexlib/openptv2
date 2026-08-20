@@ -5,7 +5,7 @@ import numpy as np
 
 from openptv2.plugins._assignment import match_within_radius
 
-wp1_res = Path(r"C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\wp1\res")
+wp1_res = Path(r"C:\Users\alex\Downloads\hidimaging_test\aorta\wp1\res")
 
 
 def load_rt_is(filepath):

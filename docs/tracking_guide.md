@@ -117,7 +117,7 @@ To maximize trajectory length and eliminate false-positive links, OpenPTV2 suppo
 
 ### Empirical Strategy Benchmark Comparison
 
-The tables below show typical trajectory recovery performance across the 3 main tracking strategy presets tested on a standard 4-camera dataset (`TT13_aorta`, 10 frames, ~1,858 particles/frame):
+The tables below show typical trajectory recovery performance across the 3 main tracking strategy presets tested on a standard 4-camera dataset (`aorta`, 10 frames, ~1,858 particles/frame):
 
 #### Overall Performance Summary
 

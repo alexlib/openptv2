@@ -1,7 +1,7 @@
-# TT13 Aorta Flow Test Case: End-to-End Cloud-Native 3D-PTV Tutorial
+# Aorta Flow Test Case: End-to-End Cloud-Native 3D-PTV Tutorial
 
 > [!NOTE]
-> This tutorial provides a comprehensive, step-by-step guide for performing end-to-end 3D Particle Tracking Velocimetry (3D-PTV) on complex aortic pulsatile flow (`TT13_aorta`). It covers image store preparation, local preflight verification, MyPTV parameter deduction, forward-backward reciprocity validation, GCP cloud orchestration, live job logging, and multi-stage post-processing.
+> This tutorial provides a comprehensive, step-by-step guide for performing end-to-end 3D Particle Tracking Velocimetry (3D-PTV) on complex aortic pulsatile flow (`aorta`). It covers image store preparation, local preflight verification, MyPTV parameter deduction, forward-backward reciprocity validation, GCP cloud orchestration, live job logging, and multi-stage post-processing.
 
 ---
 
@@ -99,7 +99,7 @@ accs = [np.diff(v, axis=0) for v in vels if len(v) >= 2]
 
 ```
 ==============================================================================
-  Empirical 3D Kinematic Envelopes (TT13_aorta Dataset)
+  Empirical 3D Kinematic Envelopes (aorta Dataset)
 ==============================================================================
 Component   | 5th Percentile | Mean        | 95th Percentile | Max Envelope
 ------------------------------------------------------------------------------
@@ -185,18 +185,18 @@ gcloud builds submit --config=cloudbuild.yaml --region=europe-west3
 Upload parameter YAMLs and `res/images.zarr` to `gs://openptv-uploads/`:
 
 ```powershell
-gcloud storage cp C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\wp1\parameters_wp1_batch.yaml gs://openptv-uploads/TT13_aorta_wp1/parameters_wp1_batch.yaml
-gcloud storage cp C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\wp2\parameters_wp2_batch.yaml gs://openptv-uploads/TT13_aorta_wp2/parameters_wp2_batch.yaml
-gcloud storage cp -r C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\wp1\res\images.zarr gs://openptv-uploads/TT13_aorta_wp1/res/images.zarr
-gcloud storage cp -r C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\wp2\res\images.zarr gs://openptv-uploads/TT13_aorta_wp2/res/images.zarr
+gcloud storage cp C:\Users\alex\Downloads\hidimaging_test\aorta\wp1\parameters_wp1_batch.yaml gs://openptv-uploads/aorta_wp1/parameters_wp1_batch.yaml
+gcloud storage cp C:\Users\alex\Downloads\hidimaging_test\aorta\wp2\parameters_wp2_batch.yaml gs://openptv-uploads/aorta_wp2/parameters_wp2_batch.yaml
+gcloud storage cp -r C:\Users\alex\Downloads\hidimaging_test\aorta\wp1\res\images.zarr gs://openptv-uploads/aorta_wp1/res/images.zarr
+gcloud storage cp -r C:\Users\alex\Downloads\hidimaging_test\aorta\wp2\res\images.zarr gs://openptv-uploads/aorta_wp2/res/images.zarr
 ```
 
 ### D. Launch Parallel Cloud Run Job Executions
 Trigger parallel Cloud Run executions on GCP:
 
 ```powershell
-gcloud run jobs execute openptv-batch-job --region=europe-west3 --update-env-vars="JOB_ID=TT13_aorta_wp1"
-gcloud run jobs execute openptv-batch-job --region=europe-west3 --update-env-vars="JOB_ID=TT13_aorta_wp2"
+gcloud run jobs execute openptv-batch-job --region=europe-west3 --update-env-vars="JOB_ID=aorta_wp1"
+gcloud run jobs execute openptv-batch-job --region=europe-west3 --update-env-vars="JOB_ID=aorta_wp2"
 ```
 
 ---
@@ -226,7 +226,7 @@ uv run --project C:\Users\alex\projects\openptv2 python run_postptv_analysis.py
 
 ```
 ==============================================================================
-  End-to-End Pipeline Performance Benchmark (TT13_aorta)
+  End-to-End Pipeline Performance Benchmark (aorta)
 ==============================================================================
 Pipeline Stage               | Location / Engine      | Duration | Output / Throughput
 ------------------------------------------------------------------------------

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import numpy as np
 
-wp1_res = Path(r"C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\wp1\res")
+wp1_res = Path(r"C:\Users\alex\Downloads\hidimaging_test\aorta\wp1\res")
 
 
 def parse_ptv_is(filepath):

@@ -20,8 +20,8 @@ SPLITTER = Path("test_data/test_splitter")
 
 
 @pytest.mark.unit
-def test_pick_knee_from_tt13_shape():
-    # Real TT13 sweep shape: correct saturates at 34, first wrong at 0.099.
+def test_pick_knee_from_aorta_shape():
+    # Real aorta sweep shape: correct saturates at 34, first wrong at 0.099.
     rows = [
         {"eps0": 0.012, "correct": 2, "wrong": 0},
         {"eps0": 0.045, "correct": 23, "wrong": 0},

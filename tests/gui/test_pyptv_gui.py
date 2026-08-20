@@ -35,7 +35,11 @@ CAVITY_SRC = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
 def _copy_tree(src: Path, dst: Path) -> None:
     if dst.exists():
         shutil.rmtree(dst)
-    shutil.copytree(src, dst)
+    # Exclude res/: it's gitignored and accumulates real run output (run.zarr,
+    # rt_is.*) across manual/test runs against the checked-out fixture, so a
+    # verbatim copy makes fixture behavior depend on whatever stale state
+    # happens to be sitting there. MainGUI creates a fresh res/ on init.
+    shutil.copytree(src, dst, ignore=shutil.ignore_patterns("res"))
 
 
 class _Info:
@@ -174,8 +178,13 @@ def test_init_action_loads_images_and_params(cavity_gui):
 @pytest.mark.unit
 def test_sequence_action_runs_full_pipeline(cavity_gui):
     """sequence_action drives ptv.run_sequence_plugin(mainGui), the same
-    "default" plugin path exercised by CLI/batch runs -- writes rt_is.* and
-    target files for every frame in the configured range."""
+    "default" plugin path exercised by CLI/batch runs -- writes correspondences
+    to the run.zarr store for every frame in the configured range (the
+    ptv.py_sequence_loop determination step calls store.write_correspondences
+    directly; it has not written legacy rt_is.* ASCII files since the
+    RunStore migration -- see docs/plans/2026-08-14-storage-formats-as-built.md)."""
+    from openptv2.storage import RunStore
+
     handler = TreeMenuHandler()
     info = _Info(cavity_gui)
 
@@ -185,9 +194,11 @@ def test_sequence_action_runs_full_pipeline(cavity_gui):
     first = cavity_gui.spar.get_first()
     last = cavity_gui.spar.get_last()
     assert last > first  # sanity: a real multi-frame range
+    store = RunStore.open(cavity_gui.exp_path, mode="r")
     for frame in range(first, last + 1):
-        rt_is = cavity_gui.exp_path / "res" / f"rt_is.{frame}"
-        assert rt_is.exists() and rt_is.stat().st_size > 0
+        assert store.has_correspondences(frame)
+        pos_3d, cam_ids = store.read_correspondences(frame)
+        assert pos_3d.shape[0] > 0
 
 
 @pytest.mark.unit

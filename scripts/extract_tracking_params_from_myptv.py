@@ -5,7 +5,7 @@ import numpy as np
 
 from openptv2.plugins.nearest_hungarian_3d import MyPTV3DTracker
 
-wp1_dir = Path(r"C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\wp1")
+wp1_dir = Path(r"C:\Users\alex\Downloads\hidimaging_test\aorta\wp1")
 wp1_res = wp1_dir / "res"
 
 

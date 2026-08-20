@@ -98,7 +98,7 @@ new_results, info = joint_plate_bundle_adjust(results, cpar, shake_distortion=Tr
 print(info["rcm_exterior_only"], "->", info["rcm_after"], info["shaken_groups"])
 ```
 
-On `TT13_aorta` shaking accepted `p1p2` + `glass` but moved RCM only
+On `aorta` shaking accepted `p1p2` + `glass` but moved RCM only
 0.076 → 0.074 mm — confirming that rig's RCM is a shallow-parallax + detection-noise
 **floor** the plate can't beat (neither exterior BA nor distortion helps). The
 gate/rollback is the point: it pays off on rigs where distortion genuinely is the
@@ -117,7 +117,7 @@ On a rig whose cameras are **misaligned relative to each other** (exterior
 inconsistency), the joint BA pulls them back together and RCM drops sharply — on a
 perturbed synthetic rig it took median RCM **0.77 mm → ~0**.
 
-But on `TT13_aorta` the joint BA moved RCM only **0.076 → 0.075 mm (~1%)**. That
+But on `aorta` the joint BA moved RCM only **0.076 → 0.075 mm (~1%)**. That
 near-zero gain is itself the diagnosis: the residual RCM there is **not** exterior
 misalignment — it is shallow parallax + detection noise + the distortion model's
 ceiling, none of which exterior+point BA can fix. **A BA that doesn't help tells
