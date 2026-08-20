@@ -1315,7 +1315,7 @@ can see the exterior-BA vs +distortion contributions separately.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">new_results</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">joint_plate_bundle_adjust</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">cpar</span><span class="p">,</span> <span class="n">shake_distortion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">print</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"rcm_exterior_only"</span><span class="p">],</span> <span class="s2">"-&gt;"</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">"rcm_after"</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s2">"shaken_groups"</span><span class="p">])</span>
 </span></code></pre></div>
-<p>On <code>TT13_aorta</code> shaking accepted <code>p1p2</code> + <code>glass</code> but moved RCM only
+<p>On <code>aorta</code> shaking accepted <code>p1p2</code> + <code>glass</code> but moved RCM only
 0.076 → 0.074 mm — confirming that rig's RCM is a shallow-parallax + detection-noise
 <strong>floor</strong> the plate can't beat (neither exterior BA nor distortion helps). The
 gate/rollback is the point: it pays off on rigs where distortion genuinely is the
@@ -1329,7 +1329,7 @@ ceiling, and it never destabilizes the fit chasing a group that doesn't help.</p
 <p>On a rig whose cameras are <strong>misaligned relative to each other</strong> (exterior
 inconsistency), the joint BA pulls them back together and RCM drops sharply — on a
 perturbed synthetic rig it took median RCM <strong>0.77 mm → ~0</strong>.</p>
-<p>But on <code>TT13_aorta</code> the joint BA moved RCM only <strong>0.076 → 0.075 mm (~1%)</strong>. That
+<p>But on <code>aorta</code> the joint BA moved RCM only <strong>0.076 → 0.075 mm (~1%)</strong>. That
 near-zero gain is itself the diagnosis: the residual RCM there is <strong>not</strong> exterior
 misalignment — it is shallow parallax + detection noise + the distortion model's
 ceiling, none of which exterior+point BA can fix. <strong>A BA that doesn't help tells
