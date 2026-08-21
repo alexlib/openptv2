@@ -825,7 +825,7 @@ def register_closest_neighbs(
     all_cands = [p0, p1, p2, p3]
     cand: cython.Py_ssize_t
     for cand in range(MAX_CANDS):
-        if all_cands[cand] == PT_UNUSED:
+        if cand >= len(all_cands) or all_cands[cand] == PT_UNUSED:
             reg[cand][0] = TR_UNUSED
         else:
             reg[cand][2][cam] = 1

@@ -1,12 +1,20 @@
-"""Pure-Python line-coverage tests for imgcoord.py.
+"""Line-coverage tests for imgcoord.py.
 
-Must run against the /tmp/ppsrc snapshot, not the compiled .so:
+Most of this file runs against either the compiled build or (via the
+coverage command below) the pure-Python /tmp/ppsrc snapshot:
     COVERAGE_FILE=/tmp/.cov_imgcoord uv run pytest tests/unit/test_imgcoord_coverage.py \
       -o pythonpath=/tmp/ppsrc \
       -p no:cacheprovider \
       --cov=/tmp/ppsrc/openptv2 \
       --cov-config=/tmp/covrc \
       --cov-report=term-missing -q
+
+Three helpers (``_flat_image_coord_core``, ``_flat_to_dist_core``,
+``_get_mmf_from_mmlut_core``) are ``@cython.cfunc`` and not exported from the
+compiled .pyd/.so at all (``ImportError`` on a fresh `hasattr` check, not a
+guess) -- only the tests exercising them directly are skipped when compiled,
+via ``_needs_pure_python`` below; everything else in this file runs in both
+modes.
 
 Source bugs found (do NOT fix here — report only):
   NONE — imgcoord.py has no C-array static-allocation bugs.
@@ -20,16 +28,16 @@ import math
 import numpy as np
 import pytest
 
-# ---------------------------------------------------------------------------
-# Guard: skip the whole module when running against the compiled .so
-# ---------------------------------------------------------------------------
 from openptv2.algorithms.imgcoord import is_compiled as _is_compiled
 
-if _is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
+_needs_pure_python = pytest.mark.skipif(
+    _is_compiled(),
+    reason="_flat_image_coord_core/_flat_to_dist_core/_get_mmf_from_mmlut_core "
+    "are @cython.cfunc, not exported from the compiled .pyd/.so",
+)
 
 # ---------------------------------------------------------------------------
-# Imports (after the skip guard so they resolve against ppsrc)
+# Imports
 # ---------------------------------------------------------------------------
 from openptv2.algorithms.calibration import (
     AddedPar,
@@ -40,9 +48,6 @@ from openptv2.algorithms.calibration import (
     MmLut,
 )
 from openptv2.algorithms.imgcoord import (
-    _flat_image_coord_core,
-    _flat_to_dist_core,
-    _get_mmf_from_mmlut_core,
     _img_coord_params,
     flat_image_coord,
     flat_image_coord_batch,
@@ -50,6 +55,14 @@ from openptv2.algorithms.imgcoord import (
     img_coord_batch,
     img_coord_typed,
 )
+
+if not _is_compiled():
+    from openptv2.algorithms.imgcoord import (
+        _flat_image_coord_core,
+        _flat_to_dist_core,
+        _get_mmf_from_mmlut_core,
+    )
+
 from openptv2.algorithms.parameters import MmNp
 
 EPS = 1e-6
@@ -117,6 +130,7 @@ def _cal_with_mmlut(factor: float):
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python
 def test_is_compiled_false():
     assert _is_compiled() is False
 
@@ -126,6 +140,7 @@ def test_is_compiled_false():
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python
 def test_flat_to_dist_core_near_zero():
     """r < 1e-10 → early return (0.0, 0.0)."""
     # flat_x + xh ≈ 0 and flat_y + yh ≈ 0
@@ -134,6 +149,7 @@ def test_flat_to_dist_core_near_zero():
     assert y1 == 0.0
 
 
+@_needs_pure_python
 def test_flat_to_dist_core_no_distortion():
     """No distortion coeffs → output equals input (with scx=1, she=0)."""
     x1, y1 = _flat_to_dist_core(0.5, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
@@ -141,6 +157,7 @@ def test_flat_to_dist_core_no_distortion():
     assert abs(y1 - 0.3) < EPS
 
 
+@_needs_pure_python
 def test_flat_to_dist_core_radial():
     """k1 distortion shrinks the projected radius."""
     k1 = -0.01
@@ -153,6 +170,7 @@ def test_flat_to_dist_core_radial():
     assert abs(x1 - expected) < EPS
 
 
+@_needs_pure_python
 def test_flat_to_dist_core_she_rotation():
     """Non-zero shear (she) rotates x/y."""
     she = 0.1
@@ -164,6 +182,7 @@ def test_flat_to_dist_core_she_rotation():
     assert abs(y1 - math.cos(she)) < EPS
 
 
+@_needs_pure_python
 def test_flat_to_dist_core_tangential():
     """p1 tangential distortion with x=y=0.5."""
     p1, p2 = 0.001, 0.0
@@ -172,6 +191,7 @@ def test_flat_to_dist_core_tangential():
     assert abs(x1 - (0.5 + p1 * 1.0)) < EPS
 
 
+@_needs_pure_python
 def test_flat_to_dist_core_scx():
     """scx != 1.0 scales the output."""
     x1, y1 = _flat_to_dist_core(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0)
@@ -187,6 +207,7 @@ def _make_lut_data(nr, nz, fill=1.0):
     return np.full(nr * nz, fill, dtype=np.float64)
 
 
+@_needs_pure_python
 def test_get_mmf_ir_out_of_range():
     """ir > mmlut_nr → return 0.0."""
     data = _make_lut_data(2, 3)
@@ -206,6 +227,7 @@ def test_get_mmf_ir_out_of_range():
     assert result == 0.0
 
 
+@_needs_pure_python
 def test_get_mmf_iz_negative():
     """iz < 0 → return 0.0.  tz/rw < 0 gives negative iz."""
     data = _make_lut_data(2, 3)
@@ -224,6 +246,7 @@ def test_get_mmf_iz_negative():
     assert result == 0.0
 
 
+@_needs_pure_python
 def test_get_mmf_iz_out_of_range_high():
     """iz > mmlut_nz → return 0.0."""
     data = _make_lut_data(2, 3)
@@ -242,6 +265,7 @@ def test_get_mmf_iz_out_of_range_high():
     assert result == 0.0
 
 
+@_needs_pure_python
 def test_get_mmf_v4_2_out_of_range():
     """v4_2 > max_v → return 0.0.  Use ir == nr so (ir+1)*nz+iz > max_v."""
     nr, nz = 2, 3
@@ -265,6 +289,7 @@ def test_get_mmf_v4_2_out_of_range():
     assert result == 0.0
 
 
+@_needs_pure_python
 def test_get_mmf_normal_bilinear():
     """Normal case: bilinear interpolation with ir=0, iz=0, sr=0, sz=0."""
     nr, nz = 2, 3
@@ -286,6 +311,7 @@ def test_get_mmf_normal_bilinear():
     assert abs(result - 0.5) < EPS
 
 
+@_needs_pure_python
 def test_get_mmf_bilinear_interpolated():
     """Bilinear interpolation at fractional sr, sz."""
     nr, nz = 3, 4
@@ -316,6 +342,7 @@ def test_get_mmf_bilinear_interpolated():
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python
 def test_flat_image_coord_core_zero_glass_denom_zero():
     """Zero glass vector, denom==0 → (0.0, 0.0)."""
     dm = _identity_dm()
@@ -348,6 +375,7 @@ def test_flat_image_coord_core_zero_glass_denom_zero():
     assert x == 0.0 and y == 0.0
 
 
+@_needs_pure_python
 def test_flat_image_coord_core_zero_glass_normal():
     """Zero glass vector, normal projection."""
     dm = _identity_dm()
@@ -383,6 +411,7 @@ def test_flat_image_coord_core_zero_glass_normal():
     assert abs(y - 5.0 / 6.0) < EPS
 
 
+@_needs_pure_python
 def test_flat_image_coord_core_with_glass_air():
     """Non-zero glass vector, all-air multimedia."""
     dm = _identity_dm()
@@ -416,6 +445,7 @@ def test_flat_image_coord_core_with_glass_air():
     assert abs(y - 5.0 / 6.0) < EPS
 
 
+@_needs_pure_python
 def test_flat_image_coord_core_with_glass_mmlut():
     """Non-zero glass vector with mmlut enabled."""
     dm = _identity_dm()
@@ -451,6 +481,7 @@ def test_flat_image_coord_core_with_glass_mmlut():
     assert isinstance(y, float)
 
 
+@_needs_pure_python
 def test_flat_image_coord_core_mmlut_zero_mmf():
     """mmlut returns mmf <= 0 → falls back to mmf=1.0."""
     dm = _identity_dm()
@@ -485,6 +516,7 @@ def test_flat_image_coord_core_mmlut_zero_mmf():
     assert abs(y - 5.0 / 6.0) < EPS
 
 
+@_needs_pure_python
 def test_flat_image_coord_core_n_ve_zero():
     """n_ve (pos_t_0) == 0: skip the s_x adjustment branch."""
     dm = _identity_dm()

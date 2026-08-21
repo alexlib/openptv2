@@ -566,19 +566,25 @@ def img_coord_typed(pos: cython.double[:], cal, mm):
     )
 
 
-def img_coord_batch(positions: cython.double[:, :], cal, mm):
+def img_coord_batch(positions, cal, mm):
     """Project N 3D positions to distorted metric image coordinates.
 
     Args:
-        positions: (N, 3) array of 3D positions.
+        positions: (N, 3) array-like of 3D positions (any object
+            np.ascontiguousarray accepts, e.g. a plain list of lists — not
+            just an ndarray already satisfying the buffer protocol).
         cal: Calibration object.
         mm: MmNp multimedia parameters.
 
     Returns:
         (N, 2) array of distorted metric coordinates.
     """
-    if not cython.compiled:
-        positions = np.ascontiguousarray(positions, dtype=np.float64)
+    # Coerce unconditionally, not just `if not cython.compiled`: the
+    # compiled _img_coord_batch_impl's cython.double[:, :] parameter only
+    # accepts buffer-protocol objects, so a plain list must be converted
+    # here regardless of engine -- the old compiled-only skip left list
+    # input raising a raw memoryview TypeError instead of working.
+    positions = np.ascontiguousarray(positions, dtype=np.float64)
     return _img_coord_batch_impl(positions, cal, mm)
 
 
@@ -860,19 +866,22 @@ def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> object:
     return result
 
 
-def flat_image_coord_batch(positions: cython.double[:, :], cal, mm):
+def flat_image_coord_batch(positions, cal, mm):
     """Project N 3D positions to flat metric image coordinates.
 
     Args:
-        positions: (N, 3) array of 3D positions.
+        positions: (N, 3) array-like of 3D positions (any object
+            np.ascontiguousarray accepts, e.g. a plain list of lists — not
+            just an ndarray already satisfying the buffer protocol).
         cal: Calibration object.
         mm: MmNp multimedia parameters.
 
     Returns:
         (N, 2) array of flat (undistorted) metric coordinates.
     """
-    if not cython.compiled:
-        positions = np.ascontiguousarray(positions, dtype=np.float64)
+    # See img_coord_batch's comment: coerce unconditionally so list input
+    # works compiled too, not just in pure-Python mode.
+    positions = np.ascontiguousarray(positions, dtype=np.float64)
     return _flat_image_coord_batch_impl(positions, cal, mm)
 
 
