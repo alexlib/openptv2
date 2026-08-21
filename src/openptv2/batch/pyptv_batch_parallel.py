@@ -178,21 +178,6 @@ def validate_experiment_setup(yaml_file: Path) -> Path:
 
     # Get experiment directory (parent of YAML file)
     exp_path = yaml_file.parent
-
-    # Check for required subdirectories relative to YAML file location
-    required_dirs = ["img", "cal"]  # res is created automatically
-    missing_dirs = []
-
-    for dir_name in required_dirs:
-        dir_path = exp_path / dir_name
-        if not dir_path.exists():
-            missing_dirs.append(dir_name)
-
-    if missing_dirs:
-        raise ProcessingError(
-            f"Missing required directories relative to {yaml_file}: {', '.join(missing_dirs)}"
-        )
-
     return exp_path
 
 

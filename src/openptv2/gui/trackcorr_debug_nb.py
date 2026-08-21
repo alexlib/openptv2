@@ -106,6 +106,7 @@ def _():
     from openptv2.gui.trackcorr_debug import (
         candidates_for_particle,
         load_run,
+        probe_particle,
         step_and_capture,
     )
 
@@ -123,6 +124,7 @@ def _():
         np,
         os,
         plt,
+        probe_particle,
         step_and_capture,
     )
 
@@ -147,7 +149,7 @@ def _(Calibration, ControlPar, SequencePar, TrackPar, VolumePar, dataset_dir, lo
         run = load_run(cpar, spar, vpar, tpar, cals)
     finally:
         os.chdir(_cwd)
-    return cals, cpar, run, spar
+    return cals, cpar, run, spar, tpar, vpar
 
 
 @app.cell
@@ -165,24 +167,25 @@ def _(candidates_for_particle, particle_number, snapshot):
 
 
 @app.cell
-def _(NEXT_NONE, mo, result):
+def _(NEXT_NONE, active_result, mo):
     _rows = ["| rank | cost | row | cams | winner |", "|---|---|---|---|---|"]
-    for _c in result.candidates:
-        _is_winner = "**yes**" if _c.row == result.winner_row else ""
+    for _c in active_result.candidates:
+        _is_winner = "**yes**" if _c.row == active_result.winner_row else ""
         _cams = ",".join(str(k) for k in sorted(_c.cameras))
         _rows.append(f"| {_c.rank} | {_c.cost:.4g} | {_c.row} | {_cams} | {_is_winner} |")
 
+    _winner_label = "best-by-cost (isolated probe)" if active_result.is_isolated else "linked to"
     _winner_note = (
-        "no link made this step (winner_row == NEXT_NONE)"
-        if result.winner_row == NEXT_NONE
-        else f"linked to row {result.winner_row} in the next frame"
+        "no candidate found (winner_row == NEXT_NONE)"
+        if active_result.winner_row == NEXT_NONE
+        else f"{_winner_label} row {active_result.winner_row} in the next frame"
     )
     mo.md(
         f"""
-        **Step {result.step}, particle {result.particle_index}** at
-        `{tuple(round(v, 2) for v in result.pos_3d)}` mm -- {_winner_note}.
+        **Step {active_result.step}, particle {active_result.particle_index}** at
+        `{tuple(round(v, 2) for v in active_result.pos_3d)}` mm -- {_winner_note}.
 
-        {len(result.candidates)} candidate(s) trackcorr's real search
+        {len(active_result.candidates)} candidate(s) trackcorr's real search
         accepted (passed the angle/acceleration gate):
 
         {mo.md(chr(10).join(_rows))}
@@ -192,10 +195,114 @@ def _(NEXT_NONE, mo, result):
 
 
 @app.cell
-def _(cals, cpar, dataset_dir, imread, np, os, result, snapshot, spar):
-    # Camera images for the frame the CANDIDATES live in (result.step + 1),
-    # so the overlay sits on the same image the detections came from.
-    _next_frame = result.step + 1
+def _(mo, tpar):
+    # "Tune then press Run", not live-recompute-on-drag: probe_particle() is
+    # ~200x faster than a real full-frame step (~25-40ms vs ~7.5s for a
+    # ~700-particle frame), but still one recompute per interaction is
+    # nicer as an explicit action than a reactive drag.
+    dvxmin_slider = mo.ui.slider(-50.0, 50.0, 0.5, value=tpar.dvxmin, label="dvxmin")
+    dvxmax_slider = mo.ui.slider(-50.0, 50.0, 0.5, value=tpar.dvxmax, label="dvxmax")
+    dvymin_slider = mo.ui.slider(-50.0, 50.0, 0.5, value=tpar.dvymin, label="dvymin")
+    dvymax_slider = mo.ui.slider(-50.0, 50.0, 0.5, value=tpar.dvymax, label="dvymax")
+    dvzmin_slider = mo.ui.slider(-50.0, 50.0, 0.5, value=tpar.dvzmin, label="dvzmin")
+    dvzmax_slider = mo.ui.slider(-50.0, 50.0, 0.5, value=tpar.dvzmax, label="dvzmax")
+    dacc_slider = mo.ui.slider(0.1, 50.0, 0.1, value=tpar.dacc, label="dacc")
+    dangle_slider = mo.ui.slider(1.0, 200.0, 1.0, value=tpar.dangle, label="dangle")
+    run_button = mo.ui.run_button(label="Run with these parameters")
+    mo.vstack([
+        mo.hstack([dvxmin_slider, dvxmax_slider]),
+        mo.hstack([dvymin_slider, dvymax_slider]),
+        mo.hstack([dvzmin_slider, dvzmax_slider]),
+        mo.hstack([dacc_slider, dangle_slider]),
+        run_button,
+    ])
+    return (
+        dacc_slider,
+        dangle_slider,
+        dvxmax_slider,
+        dvxmin_slider,
+        dvymax_slider,
+        dvymin_slider,
+        dvzmax_slider,
+        dvzmin_slider,
+        run_button,
+    )
+
+
+@app.cell
+def _(cals, cpar, dataset_dir, load_run, os, spar, tpar, vpar):
+    # A separate, fresh, unstepped-past run dedicated to probing -- reusing
+    # `run` (which step_and_capture already advanced) would violate
+    # probe_particle's precondition. Stepped up to (not through)
+    # first_number.value, matching what the real-capture cell assumes.
+    _cwd = os.getcwd()
+    os.chdir(dataset_dir)
+    try:
+        probe_run = load_run(cpar, spar, vpar, tpar, cals)
+    finally:
+        os.chdir(_cwd)
+    return (probe_run,)
+
+
+@app.cell
+def _(
+    dacc_slider,
+    dangle_slider,
+    dvxmax_slider,
+    dvxmin_slider,
+    dvymax_slider,
+    dvymin_slider,
+    dvzmax_slider,
+    dvzmin_slider,
+    first_number,
+    mo,
+    particle_number,
+    probe_particle,
+    probe_run,
+    result,
+    run_button,
+    step_and_capture,
+):
+    is_script_mode = mo.app_meta().mode == "script"
+    if is_script_mode or run_button.value:
+        step_and_capture(probe_run, probe_run.seq_par.first, int(first_number.value))
+        active_result = probe_particle(
+            probe_run,
+            int(first_number.value),
+            int(particle_number.value),
+            dvxmin=dvxmin_slider.value,
+            dvxmax=dvxmax_slider.value,
+            dvymin=dvymin_slider.value,
+            dvymax=dvymax_slider.value,
+            dvzmin=dvzmin_slider.value,
+            dvzmax=dvzmax_slider.value,
+            dacc=dacc_slider.value,
+            dangle=dangle_slider.value,
+        )
+    else:
+        active_result = result
+    return (active_result,)
+
+
+@app.cell
+def _(active_result, mo):
+    mo.md(
+        "**showing:** "
+        + (
+            "isolated probe with the tuned parameters above (press Run again after changing them)"
+            if active_result.is_isolated
+            else "the real trackcorr link (unmodified parameters) -- press Run above to probe with tuned parameters instead"
+        )
+    )
+    return
+
+
+@app.cell
+def _(active_result, cals, cpar, dataset_dir, imread, np, os, spar):
+    # Camera images for the frame the CANDIDATES live in
+    # (active_result.step + 1), so the overlay sits on the same image the
+    # detections came from.
+    _next_frame = active_result.step + 1
     _cwd = os.getcwd()
     os.chdir(dataset_dir)
     try:
@@ -210,14 +317,17 @@ def _(cals, cpar, dataset_dir, imread, np, os, result, snapshot, spar):
 
 
 @app.cell
-def _(images, plt, result, snapshot):
+def _(active_result, images, plt, snapshot):
+    # All-detections context dots come from the real step's snapshot
+    # (frame-2 detections don't change with the probed parameters, only
+    # which of them are considered candidates does).
     _n = len(images)
     fig, axes = plt.subplots(1, _n, figsize=(5 * _n, 5))
     if _n == 1:
         axes = [axes]
 
     _cmap = plt.get_cmap("plasma")
-    _max_rank = max((c.rank for c in result.candidates), default=0)
+    _max_rank = max((c.rank for c in active_result.candidates), default=0)
 
     for _cam, _ax in enumerate(axes):
         _ax.imshow(images[_cam], cmap="gray")
@@ -228,12 +338,12 @@ def _(images, plt, result, snapshot):
         _ty = snapshot["targ_y_2"][_cam]
         _ax.scatter(_tx, _ty, s=4, c="lightgray", alpha=0.6, label="detections")
 
-        for _cand in result.candidates:
+        for _cand in active_result.candidates:
             if _cam not in _cand.cameras:
                 continue
             _tnr, _x, _y = _cand.cameras[_cam]
             _color = _cmap(_cand.rank / max(_max_rank, 1))
-            _is_winner = _cand.row == result.winner_row
+            _is_winner = _cand.row == active_result.winner_row
             _ax.scatter(
                 [_x],
                 [_y],
