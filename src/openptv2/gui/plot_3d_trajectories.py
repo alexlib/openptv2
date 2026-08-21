@@ -122,8 +122,6 @@ def build_3d_trajectories_figure(
                             seg[:, 0],
                             seg[:, 1],
                             seg[:, 2],
-                            marker="o",
-                            markersize=3,
                             linewidth=1.5,
                             color=color,
                             alpha=0.8,
