@@ -53,7 +53,7 @@ def test_cavity_setup():
     os.chdir(original_cwd)
 
 
-def test_cavity_directory_structure():
+def test_cavity_directory_structure(tmp_path):
     """Test that test_cavity directory has expected structure"""
     software_path = Path(__file__).parent.parent
     test_cavity_path = software_path.parent / "test_data" / "test_cavity"
@@ -67,10 +67,14 @@ def test_cavity_directory_structure():
     if not res_dir.exists():
         res_dir.mkdir(parents=True, exist_ok=True)
 
-    # Check for required directories and files (updated for YAML structure)
+    # Check for required directories and files (updated for YAML structure).
+    # Dump the legacy .par directory to a scratch file, NOT over the
+    # checked-in parameters_Run1.yaml -- every other test_cavity test reads
+    # that fixture, and overwriting it with the legacy-derived values
+    # (different dvxmax/dacc/disco) corrupted it for the rest of the suite.
     pm = ParameterManager()
     pm.from_directory(test_cavity_path / "parameters")
-    pm.to_yaml(test_cavity_path / "parameters_Run1.yaml")
+    pm.to_yaml(tmp_path / "parameters_Run1.yaml")
     required_items = ["img", "cal", "res", "parameters_Run1.yaml"]
     for item in required_items:
         assert (test_cavity_path / item).exists(), f"Required item missing: {item}"
@@ -334,52 +338,15 @@ def test_particle_detection(test_cavity_setup):
         pytest.skip(f"Detection failed, likely API mismatch: {e}")
 
 
-def test_existing_trajectory_files(test_cavity_setup):
-    """Test if trajectory files exist in res/ directory"""
-
-    res_dir = Path("res")
-    if res_dir.exists():
-        ptv_files = list(res_dir.glob("ptv_is.*"))
-        print(f"Found {len(ptv_files)} trajectory files in res/")
-
-        if ptv_files:
-            # Try to read first trajectory file
-            traj_file = ptv_files[0]
-            with open(traj_file, "r") as f:
-                lines = f.readlines()
-
-            assert len(lines) > 0, f"Trajectory file {traj_file.name} is empty"
-            print(
-                f"First trajectory file {traj_file.name} has {len(lines)} trajectory points"
-            )
-
-            # Check format of first line - first line often contains just number of points
-            if lines and len(lines) > 1:
-                # Skip first line if it's just a count, check second line
-                data_line = lines[1].strip() if len(lines) > 1 else lines[0].strip()
-                parts = data_line.split()
-
-                # Trajectory files can have different formats, just check that we have some data
-                assert len(parts) >= 1, (
-                    f"Trajectory line should have at least 1 column, got {len(parts)}"
-                )
-                print(f"Sample trajectory line: {data_line}")
-
-                # If it's a data line, it should have multiple columns
-                if len(parts) >= 4:
-                    print(
-                        f"Trajectory line has expected format with {len(parts)} columns"
-                    )
-                else:
-                    print(
-                        f"Trajectory line format may be different: {len(parts)} columns"
-                    )
-        else:
-            pytest.skip(
-                "No trajectory files found - would need to run sequence processing"
-            )
-    else:
-        pytest.skip("No res/ directory found")
+# A test_existing_trajectory_files test used to live here, checking whatever
+# ASCII ptv_is.* files happened to already sit in the real (gitignored,
+# always-empty-on-a-clean-checkout) test_data/test_cavity/res/ -- it never
+# generated its own data, so it always skipped on a clean checkout even
+# before the zarr-only migration retired ASCII ptv_is output entirely (see
+# tracking_frame_buf.write_path_frame). Its assertions were also close to
+# tautological ("at least 1 column") and duplicated real coverage already in
+# test_tracker_run_store.py / test_zarr_store.py, which run tracking in a
+# sandbox and assert on the actual linkage data. Removed 2026-08-21.
 
 
 if __name__ == "__main__":

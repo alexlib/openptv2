@@ -15,13 +15,17 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# ---------------------------------------------------------------------------
-# Skip when the compiled .so is active
-# ---------------------------------------------------------------------------
 from openptv2.algorithms.tracking_run import is_compiled as _is_compiled
 
-if _is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
+_needs_pure_python = pytest.mark.skipif(
+    _is_compiled(), reason="asserts is_compiled() is False by design"
+)
+_needs_pure_python_mock_patch = pytest.mark.skipif(
+    _is_compiled(),
+    reason="mock.patch(...ControlPar/TrackPar/VolumePar.from_file...) can't "
+    "set a classmethod on a compiled @cython.cclass -- TypeError: cannot "
+    "set 'from_file' attribute of immutable type",
+)
 
 from openptv2.algorithms.parameters import (
     ControlPar,
@@ -122,6 +126,7 @@ class TestIsCompiled:
         result = _is_compiled()
         assert isinstance(result, bool)
 
+    @_needs_pure_python
     def test_is_false_in_pure_python(self):
         assert _is_compiled() is False
 
@@ -254,8 +259,10 @@ class TestTrackingRunPostInit:
             TrackingRun(
                 seq, tpar_tuple, vpar, cpar, 5, 200, "corr_", "link_", "prio_", [], 0.0
             )
+            # store=None is threaded through explicitly now (RunStore wiring,
+            # commit 69b6e65).
             MockFB.assert_called_once_with(
-                5, 2, 200, "corr_", "link_", "prio_", seq.img_base_name
+                5, 2, 200, "corr_", "link_", "prio_", seq.img_base_name, store=None
             )
 
 
@@ -297,6 +304,7 @@ class TestTrNew:
         run = self._run_tr_new(_seq(), tp, _vpar(), _cpar())
         assert isinstance(run, TrackingRun)
 
+    @_needs_pure_python_mock_patch
     def test_cpar_as_string(self):
         """cpar as a str triggers ControlPar.from_file."""
         cpar_obj = _cpar(1)
@@ -305,6 +313,7 @@ class TestTrNew:
             mock_cf.assert_called_once_with("/fake/ptv.par")
         assert isinstance(run, TrackingRun)
 
+    @_needs_pure_python_mock_patch
     def test_seq_par_as_string(self):
         """seq_par as a str triggers SequencePar.from_file."""
         cpar_obj = _cpar(1)
@@ -317,6 +326,7 @@ class TestTrNew:
             mock_sf.assert_called_once()
         assert isinstance(run, TrackingRun)
 
+    @_needs_pure_python_mock_patch
     def test_tpar_as_string(self):
         """tpar as a str triggers TrackPar.from_file then conversion."""
         tp = _tpar()
@@ -325,6 +335,7 @@ class TestTrNew:
             mock_tf.assert_called_once_with("/fake/track.par")
         assert isinstance(run, TrackingRun)
 
+    @_needs_pure_python_mock_patch
     def test_vpar_as_string(self):
         """vpar as a str triggers VolumePar.from_file."""
         vp = _vpar()
@@ -333,6 +344,7 @@ class TestTrNew:
             mock_vf.assert_called_once_with("/fake/criteria.par")
         assert isinstance(run, TrackingRun)
 
+    @_needs_pure_python_mock_patch
     def test_all_strings(self):
         """All four params as strings — all from_file methods called."""
         cpar_obj = _cpar(1)

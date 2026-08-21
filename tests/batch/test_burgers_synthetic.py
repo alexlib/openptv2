@@ -104,6 +104,23 @@ def _read_targets(path: Path) -> dict[int, tuple[float, float]]:
     return out
 
 
+def _read_detected_targets(workdir: Path, cam: int, frame: int) -> dict[int, tuple[float, float]]:
+    """Read detected targets for one camera/frame from the run's ASCII
+    ``img/*_targets`` file, or -- for a store-backed run (no ``_targets``
+    files are written, see ``tracking_frame_buf.write_targets``) -- from the
+    ``res/run.zarr`` RunStore. ``cam`` is 1-based to match the ASCII naming.
+    """
+    ascii_path = workdir / "img" / f"cam{cam}.{frame}_targets"
+    if ascii_path.exists():
+        return _read_targets(ascii_path)
+
+    from openptv2.storage import RunStore
+
+    store = RunStore(workdir / "res" / "run.zarr", mode="r")
+    tarr = store.read_targets(cam=cam - 1, frame=frame)
+    return {t.pnr(): (t.x(), t.y()) for t in tarr}
+
+
 def _read_ptv_is(path: Path) -> list[list[str]]:
     lines = Path(path).read_text().splitlines()
     n = int(lines[0].strip())
@@ -121,6 +138,23 @@ def _read_rt_is(path: Path) -> list[np.ndarray]:
             continue
         out.append(np.array([float(p[1]), float(p[2]), float(p[3])]))
     return out
+
+
+def _read_reconstructed_3d(workdir: Path, frame: int) -> list[np.ndarray]:
+    """Read reconstructed 3D positions for one frame from ``res/rt_is.*``, or
+    -- for a store-backed run -- from the ``res/run.zarr`` RunStore's
+    correspondences (see ``_read_detected_targets``)."""
+    ascii_path = workdir / "res" / f"rt_is.{frame}"
+    if ascii_path.exists():
+        return _read_rt_is(ascii_path)
+
+    from openptv2.storage import RunStore
+
+    store = RunStore(workdir / "res" / "run.zarr", mode="r")
+    if not store.has_correspondences(frame):
+        return []
+    pos_3d, _ = store.read_correspondences(frame)
+    return [row for row in pos_3d]
 
 
 def _find_yaml(workdir: Path) -> Path:
@@ -162,7 +196,7 @@ def test_burgers_detection_roundtrip(burgers_workdir):
     for cam in range(1, NCAMS + 1):
         for frame in FRAMES:
             gt = _read_targets(burgers_workdir / "img_orig" / f"cam{cam}.{frame}_targets")
-            det = _read_targets(burgers_workdir / "img" / f"cam{cam}.{frame}_targets")
+            det = _read_detected_targets(burgers_workdir, cam, frame)
 
             # Ground truth sets the count; detection must recover every one.
             assert len(det) == len(gt), (
@@ -220,7 +254,7 @@ def test_burgers_3d_trajectory_vs_res_orig(burgers_workdir):
     n_matched = 0
     for frame in FRAMES:
         gt = _read_rt_is(burgers_workdir / "res_orig" / f"rt_is.{frame}")
-        rec = _read_rt_is(burgers_workdir / "res" / f"rt_is.{frame}")
+        rec = _read_reconstructed_3d(burgers_workdir, frame)
 
         rec_arr = np.array(rec) if rec else np.empty((0, 3))
         n_gt += len(gt)

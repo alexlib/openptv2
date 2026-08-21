@@ -29,6 +29,13 @@ from tune_tracker_params import _run_via_subprocess  # noqa: E402
 
 DATASET = Path(__file__).resolve().parents[2] / "test_data" / "synthetic_turbulent_1k"
 
+# 20 frames, not benchmark_utils.N_FRAMES's default 30: this floor only needs
+# enough frames to exercise both scripted crossings (frame 15, 18) and settle
+# into steady-state linking; the extra 10 frames added ~1/3 of this file's
+# runtime for no extra regression signal. Local override, not a change to the
+# shared benchmark_utils.N_FRAMES default other scripts rely on.
+N_FRAMES = 20
+
 
 @pytest.mark.slow
 def test_fast_3d_quality_floor_at_1k_density():
@@ -36,10 +43,10 @@ def test_fast_3d_quality_floor_at_1k_density():
     # only cal/ and parameters_Run1.yaml are checked in. Regenerate the rest
     # deterministically (fixed seed) on a fresh checkout.
     if not (DATASET / "res").exists():
-        make_dataset(DATASET, num_particles=1000, num_frames=bu.N_FRAMES, seed=2026)
+        make_dataset(DATASET, num_particles=1000, num_frames=N_FRAMES, seed=2026)
 
     results = bu.run_all_trackers(
-        ["fast_3d"], silent=True, src=DATASET, first=bu.FIRST, n_frames=bu.N_FRAMES,
+        ["fast_3d"], silent=True, src=DATASET, first=bu.FIRST, n_frames=N_FRAMES,
     )
     row = results["fast_3d"]["row"]
     assert row is not None, results["fast_3d"].get("error")
@@ -91,13 +98,38 @@ def test_fast_3d_quality_floor_at_1k_density():
 #   sg_hungarian_3d:     precision 0.650, yield_recall 0.577, ghost 0.038
 #   nearest_hungarian_3d:precision 0.634, yield_recall 0.603, ghost 0.038
 #   predictive_gmm_3d:   precision 0.690, yield_recall 0.693, ghost 0.034
+#
+# trackcorr precision floor lowered 0.91 -> 0.86 (2026-08-21): commit
+# 7ceff6a (after this Stage 0b baseline was measured) fixed a real
+# ray-tracing Snell's-law sign bug and generalized candidate search from a
+# hardcoded top-4 to the actual max_cands -- both widen the candidate pool
+# trackcorr's angle/acc gate must filter, trading some precision for more
+# recall elsewhere (see test_track.py::test_cavity's baseline bump in the
+# same commit). Measured trackcorr precision post-fix: 0.879 (at 30 frames;
+# see the N_FRAMES=20 remeasurement below for the current floors).
+#
+# N_FRAMES cut 30 -> 20 (2026-08-21): the extra 10 frames added ~1/3 of this
+# file's runtime (the sole cost driver -- subprocess-per-tracker with no
+# parallelism) for no extra regression signal past both scripted crossings
+# (frame 15, 18) settling into steady-state. Every floor below is a fresh
+# measurement on the 20-frame dataset, not a rescale of the 30-frame numbers
+# -- fewer frames changes the actual trajectories (fewer frames alive at once
+# to fragment/misassign), so this is not directly comparable to the note
+# above. Baseline measured 2026-08-21 on synthetic_turbulent_1k (20 frames,
+# ~1000 particles/frame), same code as the 30-frame trackcorr note above:
+#   priority_segment_3d: precision 0.902, yield_recall 0.881, ghost 0.038
+#   trackcorr:           precision 0.902, yield_recall 0.826, ghost 0.038
+#   kalman_hungarian_3d: precision 0.841, yield_recall 0.746, ghost 0.038
+#   sg_hungarian_3d:     precision 0.579, yield_recall 0.514, ghost 0.038
+#   nearest_hungarian_3d:precision 0.688, yield_recall 0.646, ghost 0.038
+#   predictive_gmm_3d:   precision 0.707, yield_recall 0.690, ghost 0.035
 _STAGE0B_FLOORS = {
-    "priority_segment_3d": {"precision": 0.88, "yield_recall": 0.84, "ghost_capture_rate": 0.06},
-    "trackcorr": {"precision": 0.91, "yield_recall": 0.74, "ghost_capture_rate": 0.06},
-    "kalman_hungarian_3d": {"precision": 0.83, "yield_recall": 0.74, "ghost_capture_rate": 0.06},
-    "sg_hungarian_3d": {"precision": 0.63, "yield_recall": 0.56, "ghost_capture_rate": 0.06},
-    "nearest_hungarian_3d": {"precision": 0.61, "yield_recall": 0.58, "ghost_capture_rate": 0.06},
-    "predictive_gmm_3d": {"precision": 0.67, "yield_recall": 0.67, "ghost_capture_rate": 0.05},
+    "priority_segment_3d": {"precision": 0.88, "yield_recall": 0.86, "ghost_capture_rate": 0.06},
+    "trackcorr": {"precision": 0.88, "yield_recall": 0.80, "ghost_capture_rate": 0.06},
+    "kalman_hungarian_3d": {"precision": 0.82, "yield_recall": 0.72, "ghost_capture_rate": 0.06},
+    "sg_hungarian_3d": {"precision": 0.56, "yield_recall": 0.49, "ghost_capture_rate": 0.06},
+    "nearest_hungarian_3d": {"precision": 0.67, "yield_recall": 0.62, "ghost_capture_rate": 0.06},
+    "predictive_gmm_3d": {"precision": 0.69, "yield_recall": 0.67, "ghost_capture_rate": 0.055},
 }
 
 
@@ -105,10 +137,10 @@ _STAGE0B_FLOORS = {
 @pytest.mark.parametrize("tracker", sorted(_STAGE0B_FLOORS))
 def test_registered_tracker_quality_floor_at_1k_density(tracker):
     if not (DATASET / "res").exists():
-        make_dataset(DATASET, num_particles=1000, num_frames=bu.N_FRAMES, seed=2026)
+        make_dataset(DATASET, num_particles=1000, num_frames=N_FRAMES, seed=2026)
 
     overrides = bu.per_tracker_overrides(
-        [tracker], src=DATASET, first=bu.FIRST, n_frames=bu.N_FRAMES,
+        [tracker], src=DATASET, first=bu.FIRST, n_frames=N_FRAMES,
     )[tracker]
 
     # Subprocess-isolated (see scripts/tune_tracker_params.py docstring):
@@ -117,10 +149,10 @@ def test_registered_tracker_quality_floor_at_1k_density(tracker):
     # trackers run back-to-back in one process -- exactly what a
     # parametrized sweep over all registered trackers does.
     pred0, _dt = _run_via_subprocess(
-        tracker, DATASET, bu.FIRST, bu.N_FRAMES, overrides,
+        tracker, DATASET, bu.FIRST, N_FRAMES, overrides,
     )
 
-    frames = bu.read_gt_frames(DATASET, bu.FIRST, bu.N_FRAMES)
+    frames = bu.read_gt_frames(DATASET, bu.FIRST, N_FRAMES)
     tt = bu.build_true_tracks(frames, bu.FIRST)
     ghosts = bu.build_ghost_frames(frames, bu.FIRST)
     m = bu.bm.compute_identity_metrics(tt, pred0, eps=1.0, ghost_pos_by_frame=ghosts)

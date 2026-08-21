@@ -10,6 +10,26 @@ from openptv2.gui.parameter_manager import ParameterManager
 TRACK_DIR = Path(__file__).parent.parent.parent / "test_data" / "pyptv_track"
 
 
+def _count_particle_lines(res_dir: Path, last_frame: int) -> int:
+    """Particle-line count for the last frame's rt_is output, matching the
+    len(file.readlines()) convention used below (count line + N particle
+    lines). Reads the ASCII rt_is.<frame> file when present, or -- for a
+    store-backed run (rt_is/ptv_is/added are no longer written for
+    store-backed runs, see tracking_frame_buf.write_path_frame) -- the
+    RunStore's correspondences for that frame."""
+    ascii_files = sorted(res_dir.glob("rt_is.*"))
+    if ascii_files:
+        return len(ascii_files[-1].read_text().splitlines())
+
+    from openptv2.storage import RunStore
+
+    store = RunStore(res_dir / "run.zarr", mode="r")
+    if not store.has_correspondences(last_frame):
+        return 0
+    pos_3d, _ = store.read_correspondences(last_frame)
+    return len(pos_3d) + 1
+
+
 def _skip_if_frame_read_failure(error: Exception) -> None:
     """Skip test if the error is due to missing frame files."""
     msg = str(error)
@@ -87,11 +107,9 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
             _skip_if_frame_read_failure(e)
             raise
 
-        res_files_noadd = sorted(res_dir.glob("rt_is.*"))
-        if not res_files_noadd:
-            pytest.skip("Sequence+tracking produced no rt_is files")
-        with open(res_files_noadd[-1], "r") as f:
-            lines_noadd = f.readlines()
+        n_lines_noadd = _count_particle_lines(res_dir, last)
+        if n_lines_noadd == 0:
+            pytest.skip("Sequence+tracking produced no rt_is data")
 
         # Second run: add new particle — tracking only (rt_is.* now exist)
         with open(yaml_path, "r") as f:
@@ -110,11 +128,9 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
         except Exception as e:
             _skip_if_frame_read_failure(e)
             raise
-        res_files_add = sorted(res_dir.glob("rt_is.*"))
-        with open(res_files_add[-1], "r") as f:
-            lines_add = f.readlines()
+        n_lines_add = _count_particle_lines(res_dir, last)
 
-        assert len(lines_add) >= len(lines_noadd), (
+        assert n_lines_add >= n_lines_noadd, (
             "New particle tracking produced fewer lines than standard tracking"
         )
 

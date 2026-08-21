@@ -527,7 +527,16 @@ def test_cavity():
         assert run.npart == 672 + 699 + 711
         # Use ~2% tolerance: real experimental data has noise, floating-point
         # ordering varies across Python/NumPy/Cython compilation modes.
-        _base_nlinks = 450 + 485 + 438  # ~1373
+        #
+        # Baseline raised 1373 -> 1596 (2026-08-21) after commit 7ceff6a fixed
+        # a real sign bug in the shared multi-media ray-tracing Snell's-law
+        # code (a camera looking "the other way" through the interface got
+        # its back-projected ray mirror-flipped) and generalized
+        # candsearch_in_pix_fast_nogil from a hardcoded top-4 candidates to
+        # the actual max_cands (was silently starving dense candidate
+        # windows). Both legitimately recover more true links on this dense
+        # (~700 particles/frame) dataset; 1373 was the pre-fix count.
+        _base_nlinks = 568 + 541 + 487  # ~1596
         assert abs(run.nlinks - _base_nlinks) / _base_nlinks < 0.02, (
             f"nlinks={run.nlinks}"
         )
@@ -560,7 +569,8 @@ def test_cavity():
         trackcorr_c_finish(run, run.seq_par.last)
 
         assert abs(run.npart - 2082) / 2082 < 0.02, f"npart={run.npart}"
-        assert abs(run.nlinks - 1373) / 1373 < 0.02, f"nlinks={run.nlinks}"
+        # See the baseline-bump comment on the first TrackingRun above (1373 -> 1596).
+        assert abs(run.nlinks - 1596) / 1596 < 0.02, f"nlinks={run.nlinks}"
 
     finally:
         os.chdir(original)

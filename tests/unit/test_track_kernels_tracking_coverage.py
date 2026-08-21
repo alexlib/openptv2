@@ -20,9 +20,20 @@ import pytest
 
 from openptv2.algorithms.track_kernels import is_compiled as _is_compiled
 
-if _is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
+_needs_pure_python_semantics = pytest.mark.skipif(
+    _is_compiled(),
+    reason="tests a Python-only runtime-error path (an uninitialized local "
+    "variable raises UnboundLocalError in interpreted Python); compiled "
+    "Cython gives typed locals a default value instead, so the error this "
+    "test expects cannot occur",
+)
+_needs_pure_python_private_cfunc = pytest.mark.skipif(
+    _is_compiled(),
+    reason="_sorted_candidates_fast_out_nogil is @cython.cfunc, not exported "
+    "from the compiled module -- can't be monkeypatched from outside it",
+)
 
+import openptv2.algorithms.track_kernels_corr as _corr_mod
 import openptv2.algorithms.track_kernels_tracking as _mod
 from openptv2.algorithms.track_kernels_tracking import (
     ADD_PART_K,
@@ -339,7 +350,9 @@ def _call_trackback(n1, n2, n3, nc=1, n_targ=0):
 def test_constants():
     assert PT_UNUSED == -999
     assert POSI_K == 80
-    assert MAX_CANDS_K == 4
+    # MAX_CANDS_K raised 4 -> 32 (commit 7ceff6a: candsearch generalized from
+    # a hardcoded top-4 to the actual max_cands).
+    assert MAX_CANDS_K == 32
     assert TR_UNUSED_K == -1
     assert CORRES_NONE_K == -1
     assert PREV_NONE_K == -1
@@ -667,6 +680,7 @@ def test_candsearch_pix_fast_unused_targets_skipped():
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python_semantics
 def test_sorted_candidates_raises_unbound_local():
     """quader_buf: cython.double[24] at L702 — never assigned, raises on access."""
     nc = 1
@@ -1773,6 +1787,7 @@ def test_candsearch_rest_xmax_clamp():
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python_private_cfunc
 def test_trackcorr_stub_nonzero_enters_for_mm_loop():
     """Stub returns 1 for first call (w_nc=1) and 0 for second (wn_nc=0).
 
@@ -1807,8 +1822,12 @@ def test_trackcorr_stub_nonzero_enters_for_mm_loop():
             return 1
         return 0  # second call (frame 3): 0 candidates
 
-    orig = _mod._sorted_candidates_fast_out_nogil
-    _mod._sorted_candidates_fast_out_nogil = _stub
+    # trackcorr_loop_fast lives in track_kernels_corr.py and resolves
+    # _sorted_candidates_fast_out_nogil from ITS OWN import binding, not
+    # track_kernels_tracking's re-export -- patch the module that's actually
+    # called, or the stub is silently never invoked.
+    orig = _corr_mod._sorted_candidates_fast_out_nogil
+    _corr_mod._sorted_candidates_fast_out_nogil = _stub
     try:
         count1, num_added = trackcorr_loop_fast(
             1,
@@ -1889,7 +1908,7 @@ def test_trackcorr_stub_nonzero_enters_for_mm_loop():
             0.001,
         )
     finally:
-        _mod._sorted_candidates_fast_out_nogil = orig
+        _corr_mod._sorted_candidates_fast_out_nogil = orig
 
     assert isinstance(count1, int)
     assert call_count[0] >= 2  # both calls were made

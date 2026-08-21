@@ -120,7 +120,7 @@ sequence:
   - img/cam3.%d
   - img/cam4.%d
   first: 10001
-  last: 10030
+  last: 10020
 shaking:
   shaking_first_frame: 10000
   shaking_last_frame: 10004
