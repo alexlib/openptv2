@@ -18,11 +18,11 @@ import types
 import numpy as np
 import pytest
 
-# Guard: skip entire module when compiled Cython .so is active.
 from openptv2.algorithms.track_kernels import is_compiled as _is_compiled
 
-if _is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
+_needs_pure_python = pytest.mark.skipif(
+    _is_compiled(), reason="asserts is_compiled() is False by design"
+)
 
 from openptv2.algorithms.track_kernels import (
     candsearch_in_pix_fast,
@@ -99,6 +99,7 @@ def _make_mm():
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python
 def test_is_compiled_returns_false_in_pure_python():
     result = is_compiled()
     assert result is False

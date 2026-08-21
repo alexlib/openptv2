@@ -17,8 +17,9 @@ import pytest
 
 from openptv2.algorithms.ray_tracing import is_compiled as _is_compiled
 
-if _is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
+_needs_pure_python = pytest.mark.skipif(
+    _is_compiled(), reason="asserts is_compiled() is False by design"
+)
 
 from openptv2.algorithms.ray_tracing import (
     _ray_tracing_core,
@@ -109,6 +110,7 @@ def _standard_kwargs():
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python
 def test_is_compiled_false():
     assert _is_compiled() is False
 

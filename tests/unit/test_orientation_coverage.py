@@ -21,11 +21,11 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-# ── compiled-mode guard ────────────────────────────────────────────────────────
 from openptv2.algorithms.orientation import is_compiled as _is_compiled
 
-if _is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
+_needs_pure_python = pytest.mark.skipif(
+    _is_compiled(), reason="asserts is_compiled() is False by design"
+)
 
 # ── module-level imports ───────────────────────────────────────────────────────
 from openptv2.algorithms.calibration import Calibration
@@ -99,6 +99,7 @@ def _project_targets(fix, cal, cpar, dy=0.0):
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+@_needs_pure_python
 def test_is_compiled_false():
     assert _is_compiled() is False
 

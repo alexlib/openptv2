@@ -1,4 +1,6 @@
-"""Pure-Python line coverage tests for src/openptv2/algorithms/track_kernels_geom.py.
+"""Line coverage tests for src/openptv2/algorithms/track_kernels_geom.py.
+
+Runs against both the compiled build and the pure-Python source.
 
 Run via:
     COVERAGE_FILE=/tmp/.cov_track_kernels_geom uv run pytest \
@@ -13,12 +15,6 @@ Run via:
 
 import numpy as np
 import pytest
-
-# Guard: skip when compiled .so is active.
-from openptv2.algorithms.track_kernels import is_compiled as _is_compiled
-
-if _is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
 
 from openptv2.algorithms.track_kernels_geom import (
     CAL_ARRAY_SIZE,
@@ -935,8 +931,15 @@ def test_searchquader_with_output_buffers():
         yd_out=yd_out,
         yu_out=yu_out,
     )
-    assert xr is xr_out
-    assert xl is xl_out
+    # The out-buffer contract is "no new allocation, write into the caller's
+    # array" -- checked as shared-memory (same data pointer), not Python
+    # object identity: compiled Cython coerces an ndarray argument to a
+    # `cython.double[:]` memoryview at the call boundary, so `xr` is a
+    # memoryview wrapping xr_out's buffer, never xr_out itself, even though
+    # no allocation happened. `is` identity only ever holds in pure-Python
+    # mode, where the type hint is a no-op.
+    assert np.asarray(xr).ctypes.data == xr_out.ctypes.data
+    assert np.asarray(xl).ctypes.data == xl_out.ctypes.data
 
 
 def test_searchquader_boundary_clip():

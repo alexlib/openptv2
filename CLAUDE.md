@@ -58,6 +58,52 @@ uv run python setup.py build_ext --inplace
 # annotate=True is already set in setup.py — every rebuild generates <module>.html
 ```
 
+### Pure-Python fallback tests (opt-in)
+
+`tests/unit/test_*_coverage.py` (16 files) run the `algorithms/*.py` sources
+**interpreted**, not compiled — each guards itself with `if is_compiled():
+pytest.skip(...)`, so under the normal compiled build (the default `uv run
+pytest` above) they always skip. They exist for two reasons:
+
+1. **Line coverage.** `coverage.py` can't see into a compiled `.pyd`/`.so`
+   (see `docs/coverage-to-100-plan.md`), so these are the only tests that ever
+   report real line coverage for `algorithms/`.
+2. **The pure-Python backup path.** If the Cython build fails on a user's
+   machine (missing compiler, ABI mismatch, etc.), `openptv2` still imports
+   and runs on the interpreted `.py` sources — `cython.compiled` is just
+   `False` and every module falls back automatically. These 952 tests are the
+   only thing that actually exercises that fallback; without them a break in
+   it would go unnoticed until a user hit it.
+
+Run them by making the compiled extensions unimportable for one Python
+version, so the pure-Python source loads instead:
+
+```bash
+# Move the active interpreter's compiled extensions aside (adjust the tag,
+# e.g. cp312-win_amd64 / cpython-312-x86_64-linux-gnu, to match `python --version`)
+mkdir .pyd_backup && mv src/openptv2/algorithms/*.cp312-win_amd64.pyd .pyd_backup/
+
+uv run pytest tests/unit/test_*_coverage.py -m '' -q
+
+# Restore and rebuild
+mv .pyd_backup/*.pyd src/openptv2/algorithms/ && rmdir .pyd_backup
+uv run python setup.py build_ext --inplace
+```
+
+Do **not** run the full suite this way — hot-path tests (`test_track.py`,
+`test_track3d.py`, `test_correspondences.py`, the batch/tracking-quality
+tests) run real per-particle loops over real datasets and are 50-100x slower
+uncompiled; they can run for tens of minutes without failing. The 16
+`*_coverage.py` files use tiny synthetic fixtures specifically so this check
+stays fast (<15s) — that's the intended scope for this mode, not a general
+"run everything without Cython" substitute.
+
+Last verified 2026-08-21: passes clean (952/952) after fixing three real bugs
+this mode caught that the compiled build's `@cython.boundscheck(False)`
+hides — see `git log --oneline -- src/openptv2/algorithms/track.py
+src/openptv2/algorithms/track_kernels_search.py` around that date. Re-run
+this before relying on the fallback after any change to `algorithms/`.
+
 ## Architecture
 
 **Runtime model**: the same `src/openptv2/algorithms/*.py` modules run interpreted in development and compiled when built through Cython 3. There is no runtime engine selector.

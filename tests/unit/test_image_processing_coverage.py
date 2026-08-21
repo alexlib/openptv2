@@ -8,7 +8,10 @@ Run via:
       --cov-config=/tmp/covrc \
       --cov-report=term-missing -q
 
-For normal (compiled) runs the module-level skip fires and the suite is a no-op.
+Runs against both the compiled build and the pure-Python source: every test
+here imports only public, always-exported names, except
+TestIsCompiled.test_returns_false_in_pure_python (self-referential by
+design).
 """
 
 import os
@@ -17,13 +20,11 @@ import tempfile
 import numpy as np
 import pytest
 
-# ---------------------------------------------------------------------------
-# Skip entire module when running against compiled extension
-# ---------------------------------------------------------------------------
 from openptv2.algorithms.image_processing import is_compiled as _is_compiled
 
-if _is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
+_needs_pure_python = pytest.mark.skipif(
+    _is_compiled(), reason="asserts is_compiled() is False by design"
+)
 
 from openptv2.algorithms.image_processing import (
     copy_images,
@@ -489,6 +490,7 @@ class TestIsCompiled:
         result = is_compiled()
         assert isinstance(result, bool)
 
+    @_needs_pure_python
     def test_returns_false_in_pure_python(self):
         from openptv2.algorithms.image_processing import is_compiled
 

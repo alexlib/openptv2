@@ -49,11 +49,16 @@ from openptv2.algorithms.tracking_frame_buf import (
     write_targets,
 )
 
-# ---------------------------------------------------------------------------
-# Module-level guard: skip this file when running compiled (.so) mode
-# ---------------------------------------------------------------------------
-if is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
+_needs_pure_python = pytest.mark.skipif(
+    is_compiled(), reason="asserts is_compiled() is False by design"
+)
+_needs_pure_python_lazy_attrs = pytest.mark.skipif(
+    is_compiled(),
+    reason="tests Pathinfo._decis/_linkdecis, private lazy-init attributes "
+    "that exist only on the pure-Python dataclass; the compiled "
+    "@cython.cclass has fixed declared fields (decis/linkdecis directly, no "
+    "leading-underscore backing attribute) -- AttributeError is expected",
+)
 
 
 # ===========================================================================
@@ -387,6 +392,7 @@ class TestPathinfo:
         assert p.next_idx == 6
         assert p.prio == 2
 
+    @_needs_pure_python_lazy_attrs
     def test_decis_lazy_init(self):
         p = Pathinfo()
         # _decis is None initially, accessing .decis materializes it
@@ -395,6 +401,7 @@ class TestPathinfo:
         assert len(d) == POSI
         assert all(v == 0.0 for v in d)
 
+    @_needs_pure_python_lazy_attrs
     def test_linkdecis_lazy_init(self):
         p = Pathinfo()
         assert p._linkdecis is None
@@ -402,16 +409,19 @@ class TestPathinfo:
         assert len(ld) == POSI
         assert all(v == PT_UNUSED for v in ld)
 
+    @_needs_pure_python_lazy_attrs
     def test_decis_setter(self):
         p = Pathinfo()
         p.decis = [1.0] * POSI
         assert p._decis == [1.0] * POSI
 
+    @_needs_pure_python_lazy_attrs
     def test_linkdecis_setter(self):
         p = Pathinfo()
         p.linkdecis = [0] * POSI
         assert p._linkdecis == [0] * POSI
 
+    @_needs_pure_python_lazy_attrs
     def test_init_with_decis_linkdecis(self):
         d = [0.5] * POSI
         ld = [1] * POSI
@@ -419,12 +429,14 @@ class TestPathinfo:
         assert p._decis == d
         assert p._linkdecis == ld
 
+    @_needs_pure_python_lazy_attrs
     def test_decis_already_materialized(self):
         p = Pathinfo()
         _ = p.decis  # materialize
         p._decis[0] = 99.0
         assert p.decis[0] == pytest.approx(99.0)
 
+    @_needs_pure_python_lazy_attrs
     def test_linkdecis_already_materialized(self):
         p = Pathinfo()
         _ = p.linkdecis  # materialize
@@ -1229,6 +1241,7 @@ def test_corres_dtype():
     assert Corres_dtype.names == ("nr", "p")
 
 
+@_needs_pure_python
 def test_is_compiled_returns_bool():
     result = is_compiled()
     assert isinstance(result, bool)

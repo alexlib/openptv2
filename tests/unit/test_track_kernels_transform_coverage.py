@@ -1,4 +1,7 @@
-"""Pure-Python line-coverage tests for track_kernels_transform.py (1417 lines, 15 cfuncs).
+"""Line-coverage tests for track_kernels_transform.py (1417 lines, 15 cfuncs).
+
+Runs against both the compiled build and the pure-Python source, except
+where a per-test/per-class skipif marker says otherwise.
 
 Run with:
     COVERAGE_FILE=/tmp/.cov_track_kernels_transform uv run pytest \
@@ -28,23 +31,29 @@ import math
 import numpy as np
 import pytest
 
-# ---------------------------------------------------------------------------
-# Guard: skip whole module when the compiled .so is active.
 # is_compiled lives only in track_kernels (not in the sub-module).
-# ---------------------------------------------------------------------------
 from openptv2.algorithms.track_kernels import is_compiled as _is_compiled
 
-if _is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
+# PT_UNUSED/COORD_UNUSED are module globals declared via cython.declare()
+# without visibility="public" -- never exported as Python attributes even
+# compiled. Their values are stable, documented sentinel constants (see
+# track_kernels_transform.py's own `PT_UNUSED = -999`,
+# `COORD_UNUSED = -1e10`); defined locally instead of gating on an import
+# that can never succeed.
+PT_UNUSED = -999
+COORD_UNUSED = -1e10
+
+_needs_pure_python = pytest.mark.skipif(
+    _is_compiled(),
+    reason="_dist_to_flat_out is @cython.cfunc, not exported from the "
+    "compiled .pyd/.so",
+)
 
 # ---------------------------------------------------------------------------
 # Imports under test
 # ---------------------------------------------------------------------------
 from openptv2.algorithms.track_kernels_transform import (
-    COORD_UNUSED,
-    PT_UNUSED,
     _candsearch_in_pix_rest_nogil,
-    _dist_to_flat_out,
     _flat_image_coord_fast,
     _img_coord_fast,
     _metric_to_pixel_out,
@@ -61,6 +70,9 @@ from openptv2.algorithms.track_kernels_transform import (
     pixel_to_metric_fast,
     point_position_fast,
 )
+
+if not _is_compiled():
+    from openptv2.algorithms.track_kernels_transform import _dist_to_flat_out
 
 # ---------------------------------------------------------------------------
 # Helpers: build a minimal 31-element calibration flat array
@@ -584,6 +596,7 @@ class TestDistToFlatFast:
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python
 class TestDistToFlatOut:
     def test_r_near_zero(self):
         """r < 1e-10 → out[0] = -xh, out[1] = -yh."""
@@ -1262,9 +1275,14 @@ class TestAssessNewPositionFast:
             cand_inds_out=cand_inds_out,
             scratch=scratch,
         )
-        # Buffers used in place
-        assert targ_pos is targ_pos_out
-        assert cand_inds is cand_inds_out
+        # Buffers used in place -- checked as shared memory (same data
+        # pointer), not Python object identity: compiled Cython coerces an
+        # ndarray argument to a memoryview at the call boundary, so the
+        # returned object is never the original ndarray even when no
+        # allocation happened (see test_track_kernels_geom_coverage.py's
+        # test_searchquader_with_output_buffers for the same pattern).
+        assert np.asarray(targ_pos).ctypes.data == targ_pos_out.ctypes.data
+        assert np.asarray(cand_inds).ctypes.data == cand_inds_out.ctypes.data
 
     def test_chfield_variants(self):
         """Exercise chfield 0, 1, 2 code paths in the undistort pass."""
@@ -1565,6 +1583,7 @@ def test_pixel_metric_pixel_roundtrip():
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python
 def test_dist_to_flat_fast_and_out_agree():
     """fast and _out variants give same result."""
     args = (2.5, -1.0, 0.1, -0.2, 0.001, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1e-8)
@@ -1674,6 +1693,7 @@ def test_dist_to_flat_fast_loop_exhaustion():
     assert isinstance(y, float)
 
 
+@_needs_pure_python
 def test_dist_to_flat_out_loop_exhaustion():
     """tol=0.0 → loop exhausts all 50 iterations (665->680 branch)."""
     out = np.zeros(2, dtype=np.float64)

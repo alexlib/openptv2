@@ -1,27 +1,25 @@
 """Coverage tests for openptv2.algorithms.lsqadj.
 
-Pure-Python coverage only — skip this module if running against the compiled .so.
+Runs against both the compiled build and the pure-Python source: every test
+here imports only public, always-exported names, except
+test_is_compiled_returns_bool (self-referential by design).
 """
 
 import numpy as np
 import pytest
 
-# Skip entirely when running against the compiled extension.
-try:
-    from openptv2.algorithms.lsqadj import is_compiled as _is_compiled
-
-    if _is_compiled():
-        pytest.skip("pure-Python coverage tests only", allow_module_level=True)
-except Exception:
-    pass
-
 from openptv2.algorithms.lsqadj import ata, atl, is_compiled, matinv, matmul
+
+_needs_pure_python = pytest.mark.skipif(
+    is_compiled(), reason="asserts is_compiled() is False by design"
+)
 
 # ---------------------------------------------------------------------------
 # is_compiled
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python
 def test_is_compiled_returns_bool():
     result = is_compiled()
     assert isinstance(result, bool)

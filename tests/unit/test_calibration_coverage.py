@@ -19,11 +19,15 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-# Skip in compiled mode — cfuncs are not exported and coverage is meaningless.
+# Runs against both the compiled build and the pure-Python /tmp/ppsrc
+# snapshot -- every test here imports only public, always-exported names and
+# passes either way, except test_is_compiled_returns_bool (self-referential
+# by design; skipped below via _needs_pure_python).
 from openptv2.algorithms.calibration import is_compiled as _is_compiled
 
-if _is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
+_needs_pure_python = pytest.mark.skipif(
+    _is_compiled(), reason="asserts is_compiled() is False by design"
+)
 
 from openptv2.algorithms.calibration import (
     AddedPar,
@@ -705,6 +709,7 @@ class TestHybridFromFile:
 # ===========================================================================
 
 
+@_needs_pure_python
 def test_is_compiled_returns_bool():
     from openptv2.algorithms.calibration import is_compiled
 

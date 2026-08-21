@@ -1,4 +1,8 @@
-"""Pure-Python line-coverage tests for track_kernels_search.py.
+"""Line-coverage tests for track_kernels_search.py.
+
+Runs against both the compiled build and the pure-Python source, except
+where a per-test/per-class skipif marker says otherwise (see the
+_needs_pure_python* markers below for the specific, verified reasons).
 
 Coverage command:
     cd /home/user/Documents/GitHub/openptv2
@@ -30,22 +34,47 @@ import math
 import numpy as np
 import pytest
 
-# ---------------------------------------------------------------------------
-# Skip guard — must use track_kernels.is_compiled (sub-module has none)
-# ---------------------------------------------------------------------------
 from openptv2.algorithms.track_kernels import is_compiled as _is_compiled
 
-if _is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
+# PT_UNUSED/TR_UNUSED_K are module globals declared via cython.declare()
+# without visibility="public" -- never exported as Python attributes even
+# compiled, so they're not importable either way. Their values are stable,
+# documented sentinel constants (see track_kernels_search.py's own
+# `PT_UNUSED = -999`, `TR_UNUSED_K = -1`); defined locally here instead of
+# gating ~30 test references on an import that can never succeed.
+PT_UNUSED = -999
+TR_UNUSED_K = -1
+
+_needs_pure_python = pytest.mark.skipif(
+    _is_compiled(),
+    reason="_multimed_r_nlay_1layer/_point_to_pixel_out are @cython.cfunc, "
+    "not exported from the compiled .pyd/.so",
+)
+_needs_pure_python_loose_types = pytest.mark.skipif(
+    _is_compiled(),
+    reason="passes a plain list/tuple where compiled Cython's typed "
+    "memoryview parameters require a real buffer-protocol array "
+    "(TypeError: a bytes-like object is required); the functions under test "
+    "are internal-only nogil hot-path primitives with no caller that ever "
+    "passes anything but a real ndarray, so this is a test-convenience gap "
+    "in pure-Python mode, not a production one",
+)
+_sorted_candidates_fast_dead_code_bug = pytest.mark.skipif(
+    _is_compiled(),
+    reason="sorted_candidates_fast/sorted_candidates_in_volume are DEAD CODE "
+    "(zero callers anywhere in src/openptv2) with a real internal signature "
+    "mismatch: the outer function's cal_arrays/mmlut_* params are typed "
+    "`tuple` and passed straight through to _sorted_candidates_fast_out, "
+    "whose matching params are typed cython.double[:, ::1]/cython.int[:] "
+    "memoryviews -- would TypeError on any real (non-empty) call if "
+    "compiled. Not fixed here since nothing calls this path; flagged so a "
+    "future caller doesn't hit it silently.",
+)
 
 # ---------------------------------------------------------------------------
 # Imports from the module under test
 # ---------------------------------------------------------------------------
 from openptv2.algorithms.track_kernels_search import (
-    PT_UNUSED,
-    TR_UNUSED_K,
-    _multimed_r_nlay_1layer,
-    _point_to_pixel_out,
     _sorted_candidates_fast_out,
     _sorted_candidates_fast_out_nogil,
     candsearch_in_pix_fast,
@@ -54,6 +83,12 @@ from openptv2.algorithms.track_kernels_search import (
     sort_candidates_by_freq_fast,
     sorted_candidates_fast,
 )
+
+if not _is_compiled():
+    from openptv2.algorithms.track_kernels_search import (
+        _multimed_r_nlay_1layer,
+        _point_to_pixel_out,
+    )
 
 EPS = 1e-8
 
@@ -184,6 +219,7 @@ def test_tr_unused_k_value():
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python
 class TestMultimedRNlay1Layer:
     def test_all_n_equal_one_returns_one(self):
         r = _multimed_r_nlay_1layer(5.0, 3.0, 0.0, 0.0, 0.0, 100.0, 1.0, 1.0, 1.0, 0.0)
@@ -233,6 +269,7 @@ class TestMultimedRNlay1Layer:
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python
 class TestPointToPixelOut:
     """Tests for the cfunc _point_to_pixel_out."""
 
@@ -989,6 +1026,7 @@ class TestSortCandidatesByFreqFast:
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python_loose_types
 class TestCandsearchInPixFastNogil:
     """Tests for the nogil cfunc variant. Pass a list for out_indices."""
 
@@ -1405,6 +1443,7 @@ def _make_sorted_candidates_args(num_cams=1, max_cands=4, n_targ=5):
     )
 
 
+@_sorted_candidates_fast_dead_code_bug
 class TestSortedCandidatesFastBug:
     """sorted_candidates_fast runs in pure Python (C-array bug fixed 2026-07-10)."""
 
@@ -1417,6 +1456,7 @@ class TestSortedCandidatesFastBug:
         sorted_candidates_fast(*args)
 
 
+@_sorted_candidates_fast_dead_code_bug
 class TestSortedCandidatesFastOutBug:
     """_sorted_candidates_fast_out runs in pure Python (C-array bug fixed 2026-07-10)."""
 
@@ -1489,6 +1529,7 @@ class TestSortedCandidatesFastOutBug:
         _sorted_candidates_fast_out(*args)
 
 
+@_needs_pure_python_loose_types
 class TestSortedCandidatesFastOutNogil:
     """_sorted_candidates_fast_out_nogil runs in pure Python (C-array bug fixed 2026-07-10)."""
 
@@ -1569,6 +1610,7 @@ class TestSortedCandidatesFastOutNogil:
 # ---------------------------------------------------------------------------
 
 
+@_needs_pure_python
 def test_module_skip_guard_works():
     """In pure-Python mode, is_compiled() returns False — module not skipped."""
     assert _is_compiled() is False

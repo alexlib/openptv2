@@ -2,8 +2,9 @@
 
 Target: >= 90% pure-Python line coverage of track_kernels_batch.py (423 lines).
 
-Skip guard: module is skipped when running against compiled .so files; the
-coverage command sets pythonpath=/tmp/ppsrc so the pure .py source is used.
+Runs against both the compiled build and (via the coverage command, which
+sets pythonpath=/tmp/ppsrc) the pure .py source -- every test in this file
+passes identically either way, so there is no compiled-mode skip guard.
 
 Known unreachable branches (structural dead code — do NOT fix here):
   - targ_rec_fast, line ~298: `head = 0` (queue head wrap) — head can never
@@ -21,11 +22,6 @@ import warnings
 
 import numpy as np
 import pytest
-
-from openptv2.algorithms.track_kernels import is_compiled as _is_compiled
-
-if _is_compiled():
-    pytest.skip("pure-Python coverage tests only", allow_module_level=True)
 
 from openptv2.algorithms.track_kernels_batch import (  # noqa: E402
     init_mmlut_data_fast,

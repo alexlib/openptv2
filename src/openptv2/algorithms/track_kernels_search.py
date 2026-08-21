@@ -131,7 +131,7 @@ def _multimed_r_nlay_1layer(
 @cython.profile(False)
 @cython.nogil
 def _point_to_pixel_out(
-    pos: cython.p_double,
+    pos: cython.double[:],
     cal: cython.double[:],
     mmlut_data: cython.double[:],
     mmlut_origin: cython.double[:],
@@ -144,7 +144,7 @@ def _point_to_pixel_out(
     inv_pix_x: cython.double,
     inv_pix_y: cython.double,
     chfield: cython.int,
-    out: cython.p_double,
+    out: cython.double[:],
 ) -> cython.int:
     """Write pixel coordinates to out[0], out[1] — no tuple creation."""
     pos0: cython.double
@@ -906,7 +906,7 @@ def _sorted_candidates_fast_out(
             pt_buf[1] = quader_buf[pt * 3 + 1]
             pt_buf[2] = quader_buf[pt * 3 + 2]
             _point_to_pixel_out(
-                cython.address(pt_buf[0]),
+                pt_buf,
                 cal,
                 md,
                 mo,
@@ -919,7 +919,7 @@ def _sorted_candidates_fast_out(
                 inv_pix_x,
                 inv_pix_y,
                 chfield,
-                cython.address(_pp[0]),
+                _pp,
             )
             corner_x = _pp[0]
             corner_y = _pp[1]
@@ -1304,7 +1304,7 @@ def _sorted_candidates_fast_out_nogil(
             pt_buf[1] = quader_buf[pt * 3 + 1]
             pt_buf[2] = quader_buf[pt * 3 + 2]
             _point_to_pixel_out(
-                cython.address(pt_buf[0]),
+                pt_buf,
                 cal,
                 md,
                 mo,
@@ -1317,7 +1317,7 @@ def _sorted_candidates_fast_out_nogil(
                 inv_pix_x,
                 inv_pix_y,
                 chfield,
-                cython.address(_pp[0]),
+                _pp,
             )
             corner_x = _pp[0]
             corner_y = _pp[1]
