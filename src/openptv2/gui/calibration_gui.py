@@ -1265,6 +1265,7 @@ class CalibrationGUI(HasTraits):
         hold_cam = max(0, int(shk.get("shaking_hold_cam") or 1) - 1)
 
         self.status_text = "Tracer self-calibration (this may take a moment)..."
+        print("Tracer self-cal: button clicked, starting...", flush=True)
         try:
             new_cals, info = tracer_self_calibrate(
                 self.working_folder,

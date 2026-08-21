@@ -1010,8 +1010,16 @@ def _tracer_rcm_median(obs_list, cals, cpar):
 
 
 def _load_tracer_frame_data(base: Path, cpar, frames):
-    """Load the sequence YAML, list res/ptv_is.* frames, and read each frame's
-    tracked 3D points + per-camera detections for tracer_self_calibrate.
+    """Load the sequence YAML, list tracked-linkage frames, and read each
+    frame's tracked 3D points + per-camera detections for
+    tracer_self_calibrate.
+
+    Reads ``res/ptv_is.*`` ASCII when present, or -- for a store-backed run
+    (linkage/targets are written only to ``res/run.zarr`` now, see
+    ``tracking_frame_buf.write_path_frame``/``write_targets``) -- the
+    RunStore directly. A normal sequence+tracking run through the GUI or
+    batch pipeline is store-backed, so this is the common case, not a
+    fallback.
 
     Returns (frame_data, skip_reason): frame_data is a list of (pts, det)
     tuples on success; skip_reason is None on success, else the reason
@@ -1026,31 +1034,45 @@ def _load_tracer_frame_data(base: Path, cpar, frames):
         return None, "no sequence.base_name in YAML"
     seq_bases = [str(base / s.replace("%d", "")) for s in seq]
 
-    ptv_files = sorted(
+    n_cams = cpar.num_cams
+    store = None
+    zarr_path = base / "res" / "run.zarr"
+    ascii_ptv_files = sorted(
         (base / "res").glob("ptv_is.*"), key=lambda p: int(p.suffix.lstrip("."))
     )
+    if not ascii_ptv_files and zarr_path.exists():
+        from openptv2.storage import RunStore
+
+        store = RunStore(zarr_path, mode="r")
+
+    if store is not None:
+        frame_nums = [f for f in store.frames() if store.has_linkage(f, "ptv_is")]
+    else:
+        frame_nums = [int(p.suffix.lstrip(".")) for p in ascii_ptv_files]
     if frames is not None:
         wanted = set(frames)
-        ptv_files = [p for p in ptv_files if int(p.suffix.lstrip(".")) in wanted]
-    if not ptv_files:
+        frame_nums = [f for f in frame_nums if f in wanted]
+    if not frame_nums:
         return None, "no res/ptv_is.* frames"
 
-    n_cams = cpar.num_cams
     frame_data = []
-    for pf in ptv_files:
-        frame = int(pf.suffix.lstrip("."))
-        lines = pf.read_text().splitlines()
-        nn = int(lines[0])
-        pts = []
-        for line in lines[1 : nn + 1]:
-            parts = line.split()
-            if len(parts) >= 5:
-                pts.append([float(parts[2]), float(parts[3]), float(parts[4])])
+    for frame in frame_nums:
+        if store is not None:
+            _prev, _next, pos = store.read_linkage(frame, "ptv_is")
+            pts = [list(row) for row in pos]
+        else:
+            lines = (base / "res" / f"ptv_is.{frame}").read_text().splitlines()
+            nn = int(lines[0])
+            pts = []
+            for line in lines[1 : nn + 1]:
+                parts = line.split()
+                if len(parts) >= 5:
+                    pts.append([float(parts[2]), float(parts[3]), float(parts[4])])
         if not pts:
             continue
         det = []
         for cam in range(n_cams):
-            tg = read_targets(seq_bases[cam], frame)
+            tg = read_targets(seq_bases[cam], frame, cam_idx=cam, store=store)
             det.append(np.array([[t.x, t.y] for t in tg]) if tg else np.empty((0, 2)))
         frame_data.append((np.asarray(pts, float), det))
     if not frame_data:
@@ -1103,11 +1125,20 @@ def tracer_self_calibrate(
     from openptv2.imgcoord import image_coordinates
 
     base = Path(base)
+    print(
+        f"[tracer self-cal] starting: base={base}, "
+        f"frames={'all' if frames is None else f'{frames[0]}-{frames[-1]} ({len(frames)})'}, "
+        f"tol_px={tol_px}, hold_cam={hold_cam + 1}, max_particles={max_particles}, "
+        f"iters={iters}",
+        flush=True,
+    )
     # Load raw per-frame data ONCE (tracked 3D + per-camera detections), so the
     # match->fit iterations re-associate without re-reading the files.
     frame_data, skip_reason = _load_tracer_frame_data(base, cpar, frames)
     if skip_reason is not None:
+        print(f"[tracer self-cal] skipped: {skip_reason}", flush=True)
         return cals, {"skipped": skip_reason}
+    print(f"[tracer self-cal] loaded {len(frame_data)} frames of tracked data", flush=True)
 
     n_cams = cpar.num_cams
     free_cams = [c for c in range(n_cams) if c != hold_cam]
@@ -1203,19 +1234,41 @@ def tracer_self_calibrate(
     best_cals = [copy.deepcopy(c) for c in cals]
     obs0, _ = _match(best_cals)
     if len(obs0) < 10:
+        print(
+            f"[tracer self-cal] skipped: only {len(obs0)} multi-cam tracer "
+            "particles (need >= 10)",
+            flush=True,
+        )
         return cals, {"skipped": f"only {len(obs0)} multi-cam tracer particles"}
     rcm_before = _tracer_rcm_median(obs0, best_cals, cpar)
     best_rcm = rcm_before
     trace = []
     success = False
+    rcm_before_str = "n/a" if rcm_before is None else f"{rcm_before * 1000:.1f} um"
+    print(
+        f"[tracer self-cal] initial match: {len(obs0)} particles "
+        f"(>={min_cams} cams), RCM before = {rcm_before_str}",
+        flush=True,
+    )
 
     # Iterate: match -> fit, accepting a pass only if median tracer RCM improves.
-    for _ in range(max(1, iters)):
+    for it in range(max(1, iters)):
         obs, seed = _match(best_cals)
         if len(obs) < 10:
+            print(
+                f"[tracer self-cal] iter {it + 1}/{iters}: only {len(obs)} "
+                "particles matched, stopping",
+                flush=True,
+            )
             break
+        print(
+            f"[tracer self-cal] iter {it + 1}/{iters}: fitting {len(obs)} "
+            "particles (this may take a moment)...",
+            flush=True,
+        )
         fit = _fit(obs, seed, best_cals)
         if fit is None:
+            print(f"[tracer self-cal] iter {it + 1}/{iters}: solver failed, stopping", flush=True)
             break
         cand_cals, cand_success = fit
         cand_rcm = _tracer_rcm_median(obs, cand_cals, cpar)
@@ -1223,11 +1276,18 @@ def tracer_self_calibrate(
             best_rcm is None or cand_rcm < best_rcm - 1e-9
         )
         trace.append({"rcm": cand_rcm, "n_particles": len(obs), "accepted": improved})
+        cand_rcm_str = "n/a" if cand_rcm is None else f"{cand_rcm * 1000:.1f} um"
+        print(
+            f"[tracer self-cal] iter {it + 1}/{iters}: RCM = {cand_rcm_str} "
+            f"({'accepted, improved' if improved else 'not improved, stopping'})",
+            flush=True,
+        )
         if not improved:
             break
         best_cals, best_rcm, success = cand_cals, cand_rcm, cand_success
 
     obs_final, _ = _match(best_cals)
+    print("[tracer self-cal] done", flush=True)
     return best_cals, {
         "rcm_before": rcm_before,
         "rcm_after": best_rcm,
