@@ -19,7 +19,8 @@ Welcome to the openptv2 documentation.
 - [Command-Line Batch Processing](tutorials/batch_processing.md) - Running `openptv2-batch` headlessly
 - [Sequence & Tracking Plugins](tutorials/plugins.md) - Built-in plugins, selecting one, writing your own
 - [Tracking Visualization](tutorials/tracking_visualization.md) - Preview tracking results
-- [Tracking Debug Visualization](tutorials/tracking_debug_visualization.md) - Debug tracking parameters interactively
+- [trackcorr Candidate Viewer](tutorials/trackcorr_candidate_viewer.md) - Tune trackcorr parameters interactively against the real candidate search (marimo notebook)
+- [Tracking Debug Visualization](tutorials/tracking_debug_visualization.md) - Older GUI panel; currently broken, see the trackcorr Candidate Viewer instead
 - [Running Tests](tests.md) - Command-line test suite, excluding slow tests, running native C and virtual wheel pipelines
 - [Algorithm Documentation](algorithms/tracking.md) - Algorithm explanations
 - [Burgers Case Study](algorithms/burgers_gap_relinking_case_study.md) - Detailed analysis of tracking deviation and recovery

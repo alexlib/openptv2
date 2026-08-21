@@ -61,7 +61,8 @@ nav:
     - Calibration Best Practices: calibration_best_practices.md
     - Command-Line Batch Processing: tutorials/batch_processing.md
     - Tracking Visualization: tutorials/tracking_visualization.md
-    - Debug Visualization: tutorials/tracking_debug_visualization.md
+    - trackcorr Candidate Viewer: tutorials/trackcorr_candidate_viewer.md
+    - Debug Visualization (broken, GUI panel): tutorials/tracking_debug_visualization.md
   - Running Tests: tests.md
   - Developer Guide:
     - Building from Source: developer_guide/building.md

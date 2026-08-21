@@ -1,23 +1,25 @@
-"""Interactive trackcorr candidate viewer (marimo notebook), Phase 2 (static).
+"""Interactive trackcorr candidate viewer (marimo notebook).
 
-See docs/plans/2026-08-21-trackcorr-interactive-debug.md. Loads a trackcorr
-tracking run, steps it forward over a frame range, and for one chosen
-frame/particle shows every candidate trackcorr's real search actually
-considered (from openptv2.gui.trackcorr_debug -- these are the real
-per-step results, not a reimplementation of the search), overlaid on the
-camera images: all next-frame detections as small dots, considered
+See docs/tutorials/trackcorr_candidate_viewer.md for the full walkthrough
+and docs/plans/2026-08-21-trackcorr-interactive-debug.md for the design.
+Loads a trackcorr tracking run, steps it forward over a frame range, and
+for one chosen frame/particle shows every candidate trackcorr's real search
+actually considered (from openptv2.gui.trackcorr_debug -- these are the
+real per-step results, not a reimplementation of the search), overlaid on
+the camera images: all next-frame detections as small dots, considered
 candidates ranked/labeled by cost, the winning link highlighted.
 
-trackcorr only (track_mode=0). No interactivity yet (Phase 3) beyond
-editable frame/particle fields -- parameter sliders that live-recompute the
-search come next.
+trackcorr only (track_mode=0). Parameter sliders (dvxmin/max, dvymin/max,
+dvzmin/max, dacc, dangle) recompute a single-particle probe -- press "Run
+with these parameters" to apply them; dragging alone does not recompute
+(a real full-frame step is too slow to redo on every drag).
 
-Run as an app (read-only, no visible code):
-    uv run marimo run src/openptv2/gui/trackcorr_debug_nb.py -- \\
+Run as an app (read-only, sliders/buttons live, no visible code):
+    uv run --extra viz marimo run src/openptv2/gui/trackcorr_debug_nb.py -- \\
         --dataset test_data/test_cavity --first 10001 --last 10002 --particle 0
 
 Edit interactively (shows code):
-    uv run marimo edit src/openptv2/gui/trackcorr_debug_nb.py
+    uv run --extra viz marimo edit src/openptv2/gui/trackcorr_debug_nb.py
 
 `--dataset` is a directory containing parameters.yaml, cal/, img_orig/ (or
 img/), and res_orig/ (or res/) -- the same layout test_track.py's own

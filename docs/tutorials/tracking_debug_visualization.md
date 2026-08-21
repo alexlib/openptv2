@@ -1,5 +1,14 @@
 # Tracking Debug Visualization Tutorial
 
+> **This panel is currently broken** -- clicking a particle raises an
+> `AttributeError` (`_compute_search_volumes` is not defined), and the
+> triangulated 3D position it would show is a hardcoded stub even where it
+> doesn't crash. Use the
+> [trackcorr Candidate Viewer](trackcorr_candidate_viewer.md) marimo
+> notebook instead -- it reconstructs the same real candidate search from
+> the actual tracking kernel, verified against real tracking runs. This page
+> is kept for reference until the GUI panel is fixed or removed.
+
 ## Overview
 
 The tracking debug visualization allows you to click on any detected particle and see:
