@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from openptv2.algorithms.constants import CORRES_NONE, POSI
+from openptv2.algorithms.constants import CORRES_NONE, NEXT_NONE, POSI
 from openptv2.algorithms.parameters import convert_track_par_to_tuple
 from openptv2.algorithms.track import (
     _pack_cams_fast,
@@ -239,12 +239,227 @@ def step_and_capture(run, first, last):
     """Step trackcorr forward from `first` to `last` (inclusive of the last
     *transition*, i.e. last-1 -> last), capturing each step's real candidate
     data. Returns {frame_number: snapshot}, keyed by the frame the particles
-    in `path_x_1` belong to (== the step number)."""
+    in `path_x_1` belong to (== the step number).
+
+    After this call, ``run.fb.buf[1]`` is positioned at frame `last`,
+    unprocessed -- ready for ``probe_particle(run, last, ...)`` without any
+    further stepping. Right after ``load_run()`` (no stepping at all),
+    ``run.fb.buf[1]`` is already positioned at ``run.seq_par.first`` for the
+    same reason (``track_forward_start`` leaves it there)."""
     snapshots = {}
     for step in range(first, last):
         snap, _count1, _num_added = _trackcorr_c_loop_capture(run, step)
         snapshots[step] = snap
     return snapshots
+
+
+def probe_particle(
+    run,
+    step,
+    particle_index,
+    *,
+    dvxmin=None,
+    dvxmax=None,
+    dvymin=None,
+    dvymax=None,
+    dvzmin=None,
+    dvzmax=None,
+    dacc=None,
+    dangle=None,
+    num_threads=1,
+):
+    """Fast, real-kernel-backed candidate recompute for ONE particle, for
+    "tune parameters then press Run" workflows -- avoids the ~7.5s (for a
+    ~700-particle frame) cost of ``_trackcorr_c_loop_capture``'s full-frame
+    real step by slicing the frame-1 side of the exact same compiled kernel
+    call down to just this one particle. Each `dv*`/`dacc`/`dangle` kwarg
+    overrides the run's configured value for this probe only; omitted ones
+    use ``run.tpar``'s real value.
+
+    Precondition: ``run.fb.buf[1]`` must currently be positioned at `step`,
+    unprocessed -- true right after ``load_run()`` (for
+    ``step == run.seq_par.first``) or after
+    ``step_and_capture(run, first, step)`` for any later `step`. This
+    function does not advance or mutate `run`'s real tracking state (frame
+    2/3 arrays are copied before the kernel call, never written back), so
+    any number of probe calls -- and different parameter values -- can be
+    made for the same `step` before a real step is taken through it.
+
+    Returns a ParticleSearchResult, same shape as
+    ``candidates_for_particle()`` returns from a real captured snapshot.
+    """
+    fb = run.fb
+    tpar = run.tpar
+    vpar = run.vpar
+    cpar = run.cpar
+    cal = run.cal
+
+    if particle_index < 0 or particle_index >= fb.buf[1].num_parts:
+        raise IndexError(
+            f"particle {particle_index} out of range "
+            f"(frame {step} has {fb.buf[1].num_parts} particles)"
+        )
+
+    c_imx = cpar.imx
+    c_imy = cpar.imy
+    imx_half = c_imx * 0.5
+    imy_half = c_imy * 0.5
+    inv_pix_x = 1.0 / cpar.pix_x
+    inv_pix_y = 1.0 / cpar.pix_y
+    c_chfield = cpar.chfield
+    c_mm = cpar.mm
+
+    fast_cals, fast_mmluts = _pack_cams_fast(cal, c_mm)
+    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _pack_cams_fast_tuples(fast_cals, fast_mmluts)
+    cal_arr = np.asarray(list(cal_t), dtype=np.float64)
+    md_arr = list(md_t)
+    mo_arr = np.asarray(list(mo_t), dtype=np.float64)
+    mnr_arr = np.array(list(mnr_t), dtype=np.int32)
+    mnz_arr = np.array(list(mnz_t), dtype=np.int32)
+    mrw_arr = np.array(list(mrw_t), dtype=np.float64)
+
+    nc = fb.num_cams
+
+    # Frame 1: a single throwaway row for the particle being probed -- built
+    # fresh, never touches the live fb.buf[1] arrays. path_prev indexes into
+    # buf[0], which we pass through unmodified (read-only, real data).
+    path_x_1 = np.array([fb.buf[1].path_x[particle_index]], dtype=np.float64)
+    path_prev_1 = np.array([fb.buf[1].path_prev[particle_index]], dtype=np.int32)
+    path_next_1 = np.full(1, NEXT_NONE, dtype=np.int32)
+    path_inlist_1 = np.zeros(1, dtype=np.int32)
+    path_finaldecis_1 = np.full(1, 1e6, dtype=np.float64)
+    path_decis_1 = np.zeros((1, POSI), dtype=np.float64)
+    path_linkdecis_1 = np.zeros((1, POSI), dtype=np.int32)
+    corres_p_1 = np.array([fb.buf[1].corres_p[particle_index]], dtype=np.int32)
+
+    # Frames 2/3: fresh copies. The kernel may write link/add-particle
+    # results into these -- copies mean the live run is never touched.
+    def _frame_copy(frm):
+        return {
+            "path_x": np.array(frm.path_x),
+            "path_prev": np.array(frm.path_prev),
+            "path_next": np.array(frm.path_next),
+            "path_inlist": np.array(frm.path_inlist),
+            "path_prio": np.array(frm.path_prio),
+            "path_finaldecis": np.array(frm.path_finaldecis),
+            "path_decis": np.array(frm.path_decis),
+            "path_linkdecis": np.array(frm.path_linkdecis),
+            "corres_p": np.array(frm.corres_p),
+            "corres_nr": np.array(frm.corres_nr),
+            "targ_x": np.array(frm.targ_x),
+            "targ_y": np.array(frm.targ_y),
+            "targ_tnr": np.array(frm.targ_tnr),
+            "num_targets": np.array(frm.num_targets[:nc], dtype=np.int32),
+            "num_parts": frm.num_parts,
+        }
+
+    f2 = _frame_copy(fb.buf[2])
+    f3 = _frame_copy(fb.buf[3])
+    np2 = np.array([f2["num_parts"]], dtype=np.int32)
+    np3 = np.array([f3["num_parts"]], dtype=np.int32)
+
+    def _v(override, real):
+        return real if override is None else override
+
+    count1, _num_added = _trackcorr_loop_fast(
+        1,  # orig_parts -- just this one particle
+        np.array(fb.buf[0].path_x),
+        path_x_1,
+        path_prev_1,
+        path_next_1,
+        path_inlist_1,
+        path_finaldecis_1,
+        path_decis_1,
+        path_linkdecis_1,
+        corres_p_1,
+        fb.buf[1].targ_x,
+        fb.buf[1].targ_y,
+        fb.buf[1].targ_tnr,
+        f2["path_x"],
+        f2["path_prev"],
+        f2["path_next"],
+        f2["path_inlist"],
+        f2["path_prio"],
+        f2["path_finaldecis"],
+        f2["path_decis"],
+        f2["path_linkdecis"],
+        f2["corres_p"],
+        f2["corres_nr"],
+        f2["targ_x"],
+        f2["targ_y"],
+        f2["targ_tnr"],
+        f2["num_targets"],
+        np2,
+        f3["path_x"],
+        f3["path_prev"],
+        f3["path_next"],
+        f3["path_inlist"],
+        f3["path_prio"],
+        f3["path_finaldecis"],
+        f3["path_decis"],
+        f3["path_linkdecis"],
+        f3["corres_p"],
+        f3["corres_nr"],
+        f3["targ_x"],
+        f3["targ_y"],
+        f3["targ_tnr"],
+        f3["num_targets"],
+        np3,
+        cal_arr,
+        md_arr,
+        mo_arr,
+        mnr_arr,
+        mnz_arr,
+        mrw_arr,
+        _v(dvxmin, tpar.dvxmin),
+        _v(dvxmax, tpar.dvxmax),
+        _v(dvymin, tpar.dvymin),
+        _v(dvymax, tpar.dvymax),
+        _v(dvzmin, tpar.dvzmin),
+        _v(dvzmax, tpar.dvzmax),
+        _v(dacc, tpar.dacc),
+        _v(dangle, tpar.dangle),
+        int(tpar.add),
+        run.lmax,
+        vpar.X_lay[0],
+        vpar.X_lay[1],
+        run.ymin,
+        run.ymax,
+        vpar.Zmin_lay[0],
+        vpar.Zmax_lay[1],
+        nc,
+        imx_half,
+        imy_half,
+        inv_pix_x,
+        inv_pix_y,
+        c_chfield,
+        float(c_imx),
+        float(c_imy),
+        cpar.pix_x,
+        cpar.pix_y,
+        run.flatten_tol,
+        num_threads,
+    )
+
+    snapshot = {
+        "step": step,
+        "num_cams": nc,
+        "num_parts_1": 1,
+        "path_x_1": path_x_1,
+        "path_next_1": path_next_1,
+        "path_inlist_1": path_inlist_1,
+        "path_decis_1": path_decis_1,
+        "path_linkdecis_1": path_linkdecis_1,
+        "num_parts_2": int(np2[0]),
+        "path_x_2": np.array(f2["path_x"][: int(np2[0])]),
+        "corres_p_2": np.array(f2["corres_p"][: int(np2[0])]),
+        "targ_x_2": [f2["targ_x"][c][: f2["num_targets"][c]] for c in range(nc)],
+        "targ_y_2": [f2["targ_y"][c][: f2["num_targets"][c]] for c in range(nc)],
+        "targ_tnr_2": [f2["targ_tnr"][c][: f2["num_targets"][c]] for c in range(nc)],
+    }
+    result = candidates_for_particle(snapshot, 0, is_isolated=True)
+    result.particle_index = particle_index  # report the real particle index, not 0
+    return result
 
 
 class ParticleCandidate:
@@ -268,14 +483,34 @@ class ParticleCandidate:
 
 
 class ParticleSearchResult:
-    """The real trackcorr search result for one particle at one step."""
+    """The trackcorr search result for one particle at one step.
 
-    def __init__(self, step, particle_index, pos_3d, candidates, winner_row):
+    ``winner_row``/``winner`` mean different things depending on how this
+    was produced:
+
+    - From ``candidates_for_particle()`` on a real ``step_and_capture()``
+      snapshot: the REAL link trackcorr made, resolved against every other
+      particle competing in that step.
+    - From ``probe_particle()``: only the lowest-cost candidate *for this
+      one particle in isolation* -- ``is_isolated`` is True. trackcorr's
+      real winner can legitimately differ, because two particles can both
+      want the same next-frame target; the real run resolves that
+      cross-particle competition globally, which a single-particle probe
+      cannot see (confirmed empirically: probing gives an identical
+      candidate set/costs to the real run, but the isolated best-by-cost
+      candidate does not always match the real winner -- see
+      tests/unit/test_trackcorr_debug.py). Read this as "what this
+      particle would prefer if nothing else was competing for the same
+      target", not as a prediction of the real link.
+    """
+
+    def __init__(self, step, particle_index, pos_3d, candidates, winner_row, is_isolated=False):
         self.step = step
         self.particle_index = particle_index
         self.pos_3d = pos_3d
         self.candidates = candidates  # list[ParticleCandidate], rank-ordered
         self.winner_row = winner_row  # row in next frame, or NEXT_NONE
+        self.is_isolated = is_isolated
 
     @property
     def winner(self):
@@ -292,7 +527,7 @@ class ParticleSearchResult:
         )
 
 
-def candidates_for_particle(snapshot, particle_index) -> ParticleSearchResult:
+def candidates_for_particle(snapshot, particle_index, is_isolated=False) -> ParticleSearchResult:
     """Read the real, already-computed candidate list for one particle from
     a step's snapshot -- no re-search, no approximation."""
     if particle_index < 0 or particle_index >= snapshot["num_parts_1"]:
@@ -323,8 +558,16 @@ def candidates_for_particle(snapshot, particle_index) -> ParticleSearchResult:
             cameras[cam] = (tnr, x, y)
         candidates.append(ParticleCandidate(row, cost, rank, pos_3d, cameras))
 
-    winner_row = int(snapshot["path_next_1"][particle_index])
+    if is_isolated:
+        # No cross-particle competition was resolved for this call (see
+        # ParticleSearchResult's docstring) -- report the best candidate by
+        # cost, not the kernel's raw path_next_1 (which, for an
+        # orig_parts=1 call, is *also* just "best by cost in isolation",
+        # but naming it "winner" here would overstate what it means).
+        winner_row = candidates[0].row if candidates else NEXT_NONE
+    else:
+        winner_row = int(snapshot["path_next_1"][particle_index])
     pos_3d = tuple(float(v) for v in snapshot["path_x_1"][particle_index])
     return ParticleSearchResult(
-        snapshot["step"], particle_index, pos_3d, candidates, winner_row
+        snapshot["step"], particle_index, pos_3d, candidates, winner_row, is_isolated
     )
