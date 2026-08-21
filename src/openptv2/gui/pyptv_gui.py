@@ -856,6 +856,45 @@ class TreeMenuHandler(Handler):
         panel = create_tracking_viz_panel(mainGui, num_frames=5)
         panel.configure_traits()
 
+    def trackcorr_candidate_viewer_action(self, info):
+        """Launch the interactive trackcorr candidate viewer (marimo notebook)
+        as a separate browser-based app, pointed at the current experiment."""
+        import subprocess
+
+        from pyface.api import warning
+
+        mainGui = info.object
+        try:
+            import marimo  # noqa: F401
+        except ImportError:
+            warning(
+                info.ui.control,
+                "marimo is not installed.\n\n"
+                'Install it with: uv pip install -e ".[viz]"',
+            )
+            return
+
+        seq_params = mainGui.get_parameter("sequence")
+        nb_path = Path(__file__).parent / "trackcorr_debug_nb.py"
+        cmd = [
+            sys.executable,
+            "-m",
+            "marimo",
+            "run",
+            str(nb_path),
+            "--",
+            "--dataset",
+            str(mainGui.exp_path),
+            "--first",
+            str(seq_params["first"]),
+            "--last",
+            str(min(int(seq_params["first"]) + 2, int(seq_params["last"]))),
+            "--particle",
+            "0",
+        ]
+        print("Launching trackcorr candidate viewer:", " ".join(cmd))
+        subprocess.Popen(cmd)
+
     def three_d_positions(self, info):
         """Extracts and saves 3D positions from the list of correspondences"""
         mainGui = info.object
@@ -1212,6 +1251,11 @@ menu_bar = MenuBar(
         Action(
             name="Debugging with display",
             action="track_debug_with_display_action",
+            enabled_when="pass_init",
+        ),
+        Action(
+            name="trackcorr candidate viewer (interactive)",
+            action="trackcorr_candidate_viewer_action",
             enabled_when="pass_init",
         ),
         Action(
