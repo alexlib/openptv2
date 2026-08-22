@@ -102,7 +102,6 @@ def epipolar_curve(
     line_points = np.empty((num_points, 2))
     zvals = np.linspace(vpar.Zmin_lay[0], vpar.Zmax_lay[0], num_points)
 
-    i: cython.int
     for i in range(num_points):
         Z = zvals[i]
         pt3d = move_along_ray(Z, pos, direct)

@@ -293,9 +293,9 @@ def _flat_image_coord_core(
         bz -= tmp_z * s_x
 
     # === perspective projection ===
-    dx: cython.double = bx - ext_x0
-    dy: cython.double = by - ext_y0
-    dz: cython.double = bz - ext_z0
+    dx = bx - ext_x0
+    dy = by - ext_y0
+    dz = bz - ext_z0
 
     deno: cython.double = ext_dm[0, 2] * dx + ext_dm[1, 2] * dy + ext_dm[2, 2] * dz
 

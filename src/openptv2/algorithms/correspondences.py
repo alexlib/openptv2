@@ -339,7 +339,7 @@ def match_pairs(
         cpar: ControlPar.
         calib: list of Calibration objects.
     """
-    num_cams: cython.int = cpar.num_cams
+    num_cams = cpar.num_cams
 
     pairs = [(i1, i2) for i1 in range(num_cams - 1) for i2 in range(i1 + 1, num_cams)]
 
@@ -440,11 +440,11 @@ def four_camera_matching(
     Returns:
         Number of cliques found.
     """
-    matched: cython.int = 0
+    matched = 0
 
     # scratch_p0 = p1_arr[0, 1, i] is the reference target in camera 0 for this i
     for i in range(base_target_count):
-        p1: cython.int = p1_arr[0, 1, i]
+        p1 = p1_arr[0, 1, i]
 
         # Slice 1D views from 4D arrays — inner loops become 1D access (score-0)
         n_01_i: cython.int = n_arr[0, 1, i]
@@ -461,7 +461,7 @@ def four_camera_matching(
         d03_i: cython.double[:] = dist_arr[0, 3, i]
 
         for j in range(n_01_i):
-            p2: cython.int = p2_01_i[j]
+            p2 = p2_01_i[j]
             c01: cython.double = c01_i[j]
             d01: cython.double = d01_i[j]
 
@@ -476,7 +476,7 @@ def four_camera_matching(
             d13_p2: cython.double[:] = dist_arr[1, 3, p2]
 
             for k in range(n_02_i):
-                p3: cython.int = p2_02_i[k]
+                p3 = p2_02_i[k]
                 c02: cython.double = c02_i[k]
                 d02: cython.double = d02_i[k]
 
@@ -487,7 +487,7 @@ def four_camera_matching(
                 d23_p3: cython.double[:] = dist_arr[2, 3, p3]
 
                 for target_idx in range(n_03_i):
-                    p4: cython.int = p2_03_i[target_idx]
+                    p4 = p2_03_i[target_idx]
                     c03: cython.double = c03_i[target_idx]
                     d03: cython.double = d03_i[target_idx]
 
@@ -495,21 +495,21 @@ def four_camera_matching(
                     dist_partial: cython.double = d01 + d02 + d03
 
                     for m in range(n_12_p2):
-                        p31: cython.int = p2_12_p2[m]
+                        p31 = p2_12_p2[m]
                         if p3 != p31:
                             continue
 
                         for n in range(n_13_p2):
-                            p41: cython.int = p2_13_p2[n]
+                            p41 = p2_13_p2[n]
                             if p4 != p41:
                                 continue
 
                             for o in range(n_23_p3):
-                                p42: cython.int = p2_23_p3[o]
+                                p42 = p2_23_p3[o]
                                 if p4 != p42:
                                     continue
 
-                                corr: cython.double = (
+                                corr = (
                                     corr_partial + c12_p2[m] + c13_p2[n] + c23_p3[o]
                                 ) / (dist_partial + d12_p2[m] + d13_p2[n] + d23_p3[o])
 
@@ -672,13 +672,13 @@ def three_camera_matching(
     tusage: cython.int[:, :],
 ) -> cython.int:
     """Find consistent 3-camera correspondences (triplets)."""
-    matched: cython.int = 0
+    matched = 0
     tc = np.asarray(target_counts, dtype=np.int32)
 
     for i1 in range(num_cams - 2):
         for i in range(tc[i1]):
             for i2 in range(i1 + 1, num_cams - 1):
-                p1: cython.int = p1_arr[i1, i2, i]
+                p1 = p1_arr[i1, i2, i]
                 if p1 > NMAX or tusage[i1, p1] > 0:
                     continue
 
@@ -689,7 +689,7 @@ def three_camera_matching(
                 d_i1i2_i: cython.double[:] = dist_arr[i1, i2, i]
 
                 for j in range(n_i1i2_i):
-                    p2: cython.int = p2_i1i2_i[j]
+                    p2 = p2_i1i2_i[j]
                     if p2 > NMAX or tusage[i2, p2] > 0:
                         continue
 
@@ -710,7 +710,7 @@ def three_camera_matching(
                         d_i2i3_p2: cython.double[:] = dist_arr[i2, i3, p2]
 
                         for k in range(n_i1i3_i):
-                            p3: cython.int = p2_i1i3_i[k]
+                            p3 = p2_i1i3_i[k]
                             if p3 > NMAX or tusage[i3, p3] > 0:
                                 continue
 
@@ -723,7 +723,7 @@ def three_camera_matching(
                                 if p3 != p2_i2i3_p2[m_idx]:
                                     continue
 
-                                corr: cython.double = (
+                                corr = (
                                     corr_partial + c_i2i3_p2[m_idx]
                                 ) / (dist_partial + d_i2i3_p2[m_idx])
 
@@ -770,13 +770,13 @@ def consistent_pair_matching(
     tusage: cython.int[:, :],
 ) -> cython.int:
     """Find unambiguous 2-camera pairs."""
-    matched: cython.int = 0
+    matched = 0
     tc = np.asarray(target_counts, dtype=np.int32)
 
     for i1 in range(num_cams - 1):
         for i2 in range(i1 + 1, num_cams):
             for i in range(tc[i1]):
-                p1: cython.int = p1_arr[i1, i2, i]
+                p1 = p1_arr[i1, i2, i]
                 if p1 > NMAX or tusage[i1, p1] > 0:
                     continue
 
@@ -787,11 +787,11 @@ def consistent_pair_matching(
                 p2_row: cython.int[:] = p2_arr[i1, i2, i]
                 c_row: cython.double[:] = corr_arr[i1, i2, i]
                 d_row: cython.double[:] = dist_arr[i1, i2, i]
-                p2: cython.int = p2_row[0]
+                p2 = p2_row[0]
                 if p2 > NMAX or tusage[i2, p2] > 0:
                     continue
 
-                corr: cython.double = c_row[0] / d_row[0]
+                corr = c_row[0] / d_row[0]
                 if corr <= accept_corr:
                     continue
 
@@ -833,13 +833,13 @@ def take_best_candidates(
     """Take candidates by descending correlation, skipping used targets."""
     order = np.argsort(src_corr[:num_cands])[::-1]
 
-    taken: cython.int = 0
+    taken = 0
 
     for idx in range(num_cands):
         cand: cython.int = order[idx]
-        has_used: cython.bint = False
+        has_used = False
         for cam in range(num_cams):
-            tnum: cython.int = src_p[cand, cam]
+            tnum = src_p[cand, cam]
             if tnum > -1 and tusage[cam, tnum] > 0:
                 has_used = True
                 break
@@ -911,7 +911,7 @@ def correct_frame(frm, calib, cpar, tol):
     Returns:
         list of lists of Coord2d, one per camera, x-sorted.
     """
-    num_cams: cython.int = cpar.num_cams
+    num_cams = cpar.num_cams
 
     if num_cams <= 1:
         corrected = []
@@ -1015,8 +1015,8 @@ def correspondences(frm, corrected, vpar, cpar, calib):
         (con, match_counts) where con is the list of NTupel correspondences
         and match_counts is [quads, trips, pairs, total].
     """
-    num_cams: cython.int = cpar.num_cams
-    con0_size: cython.int = num_cams * NMAX
+    num_cams = cpar.num_cams
+    con0_size = num_cams * NMAX
 
     # Flat scratch arrays — 98× faster than [NTupel() for _ in range(con0_size)]
     con0_p: cython.int[:, :] = np.full((con0_size, num_cams), -1, dtype=np.int32)
