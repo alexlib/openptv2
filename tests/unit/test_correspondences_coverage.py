@@ -792,15 +792,30 @@ class TestCorrectFrame:
 
 
 # ---------------------------------------------------------------------------
-# correspondences (full pipeline) — monkeypatch epi.find_candidate + trafo
+# correspondences (full pipeline) — monkeypatch epi.epi_mm_batch + trafo
 # ---------------------------------------------------------------------------
 
 
+def _mock_epi_mm_batch_zero(corrected_x, corrected_y, cal1, cal2, mmp, vpar):
+    """Return epipolar boxes far outside the image → 0 candidates found."""
+    n = len(corrected_x)
+    far = np.full(n, 1e9, dtype=np.float64)
+    return far, far, far + 1.0, far + 1.0
+
+
+def _mock_epi_mm_batch_all(corrected_x, corrected_y, cal1, cal2, mmp, vpar):
+    """Return epipolar boxes covering the whole image → all targets are candidates."""
+    n = len(corrected_x)
+    lo = np.full(n, -1e9, dtype=np.float64)
+    hi = np.full(n, 1e9, dtype=np.float64)
+    return lo, lo, hi, hi
+
+
 class TestCorrespondences:
-    def _setup(self, monkeypatch, num_cams=2, find_cand=None, allCam=0, corrmin=0.001):
+    def _setup(self, monkeypatch, num_cams=2, epi_batch=None, allCam=0, corrmin=0.001):
         monkeypatch.setattr(
-            "openptv2.algorithms.epi.find_candidate",
-            find_cand or _mock_find_candidate_zero,
+            "openptv2.algorithms.epi.epi_mm_batch",
+            epi_batch or _mock_epi_mm_batch_zero,
         )
         monkeypatch.setattr(
             "openptv2.algorithms.trafo.pixel_to_metric", _mock_pixel_to_metric
@@ -819,16 +834,16 @@ class TestCorrespondences:
         return frm, corrected, vpar, cpar, calib
 
     def test_2cam_no_candidates_empty_result(self, monkeypatch):
-        """2-cam, find_candidate=0 → no pairs → empty."""
+        """2-cam, epi_mm_batch returns empty boxes → no pairs → empty."""
         frm, corrected, vpar, cpar, calib = self._setup(monkeypatch, 2)
         con, mc = correspondences(frm, corrected, vpar, cpar, calib)
         assert mc[3] == 0
         assert len(con) == 0
 
     def test_2cam_one_pair_found(self, monkeypatch):
-        """2-cam, find_candidate=1 → 1 pair."""
+        """2-cam, wide epipolar boxes → 1 pair (quality ratios pass for equal targets)."""
         frm, corrected, vpar, cpar, calib = self._setup(
-            monkeypatch, 2, _mock_find_candidate_one
+            monkeypatch, 2, _mock_epi_mm_batch_all
         )
         con, mc = correspondences(frm, corrected, vpar, cpar, calib)
         assert mc[2] == 1
@@ -837,7 +852,7 @@ class TestCorrespondences:
     def test_2cam_tnr_updated(self, monkeypatch):
         """Target track numbers should be set after matching."""
         frm, corrected, vpar, cpar, calib = self._setup(
-            monkeypatch, 2, _mock_find_candidate_one
+            monkeypatch, 2, _mock_epi_mm_batch_all
         )
         correspondences(frm, corrected, vpar, cpar, calib)
         assert frm.targets[0][0].tnr == 0
@@ -845,7 +860,7 @@ class TestCorrespondences:
     def test_3cam_triplet_branch(self, monkeypatch):
         """3-cam → three_camera_matching branch runs."""
         frm, corrected, vpar, cpar, calib = self._setup(
-            monkeypatch, 3, _mock_find_candidate_one
+            monkeypatch, 3, _mock_epi_mm_batch_all
         )
         con, mc = correspondences(frm, corrected, vpar, cpar, calib)
         assert mc[3] >= 1
@@ -853,7 +868,7 @@ class TestCorrespondences:
     def test_4cam_quadruplet_branch(self, monkeypatch):
         """4-cam → four_camera_matching branch runs."""
         frm, corrected, vpar, cpar, calib = self._setup(
-            monkeypatch, 4, _mock_find_candidate_one
+            monkeypatch, 4, _mock_epi_mm_batch_all
         )
         con, mc = correspondences(frm, corrected, vpar, cpar, calib)
         assert mc[0] >= 1  # quadruplet found
@@ -862,23 +877,23 @@ class TestCorrespondences:
     def test_4cam_allcam_flag_1_skips_trips_pairs(self, monkeypatch):
         """4-cam allCam_flag=1 → only quads, triplet and pair branches skipped."""
         frm, corrected, vpar, cpar, calib = self._setup(
-            monkeypatch, 4, _mock_find_candidate_one, allCam=1
+            monkeypatch, 4, _mock_epi_mm_batch_all, allCam=1
         )
         con, mc = correspondences(frm, corrected, vpar, cpar, calib)
         assert mc[1] == 0  # no triplets
         assert mc[2] == 0  # no pairs
 
     def test_match_pairs_serial_branch_2cam(self, monkeypatch):
-        """2-cam has only 1 pair → match_pairs uses serial path."""
+        """2-cam has only 1 pair → match_pairs uses serial path, no crash."""
         frm, corrected, vpar, cpar, calib = self._setup(monkeypatch, 2)
         con, mc = correspondences(frm, corrected, vpar, cpar, calib)
-        assert mc[3] == 0  # no crashes
+        assert mc[3] == 0  # no candidates with zero-box mock
 
     def test_match_pairs_threaded_branch_3cam(self, monkeypatch):
-        """3-cam has 3 pairs → match_pairs uses ThreadPoolExecutor path."""
+        """3-cam has 3 pairs → match_pairs uses ThreadPoolExecutor path, no crash."""
         frm, corrected, vpar, cpar, calib = self._setup(monkeypatch, 3)
         con, mc = correspondences(frm, corrected, vpar, cpar, calib)
-        assert mc[3] == 0  # no crashes
+        assert mc[3] == 0  # no candidates with zero-box mock
 
     def test_pt_unused_skipped_in_adjacency(self, monkeypatch):
         """corrected coord with x==PT_UNUSED should be skipped by _build_adjacency_for_pair."""

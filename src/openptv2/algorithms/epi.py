@@ -456,6 +456,61 @@ def find_candidate(
     return count
 
 
+def epi_mm_batch(corrected_x, corrected_y, cal1, cal2, mmp, vpar):
+    """Compute epipolar bounding boxes for all N targets in cam1 projected into cam2.
+
+    Replaces N individual :func:`epi_mm` calls with a handful of batched
+    NumPy/matrix operations (batch ray-tracing → vectorised Z-interpolation →
+    batch flat-image projection).  The returned arrays are in the same flat
+    metric coordinate system as :func:`epi_mm`.
+
+    Args:
+        corrected_x: (N,) float64 flat-image x-coordinates in cam1.
+        corrected_y: (N,) float64 flat-image y-coordinates in cam1.
+        cal1: Calibration of source camera.
+        cal2: Calibration of target camera.
+        mmp: MmNp multimedia parameters.
+        vpar: VolumePar with Zmin_lay, Zmax_lay, X_lay.
+
+    Returns:
+        Tuple ``(xmin, ymin, xmax, ymax)`` — each a (N,) float64 array
+        representing the two epipolar-line endpoints in cam2 flat-image coords.
+    """
+    from .imgcoord import flat_image_coord_batch
+    from .ray_tracing import ray_tracing_batch
+
+    xy = np.empty((len(corrected_x), 2), dtype=np.float64)
+    xy[:, 0] = corrected_x
+    xy[:, 1] = corrected_y
+
+    pos, v = ray_tracing_batch(xy, cal1, mmp)
+
+    # Per-target Zmin/Zmax (linear interpolation between the two volume layers)
+    x_lay0: float = vpar.X_lay[0]
+    x_lay1: float = vpar.X_lay[1]
+    inv_dx: float = 1.0 / (x_lay1 - x_lay0)
+    alpha = (pos[:, 0] - x_lay0) * inv_dx
+
+    Zmin = vpar.Zmin_lay[0] + alpha * (vpar.Zmin_lay[1] - vpar.Zmin_lay[0])
+    Zmax = vpar.Zmax_lay[0] + alpha * (vpar.Zmax_lay[1] - vpar.Zmax_lay[0])
+
+    # Vectorised move_along_ray: X = pos + (Z - pos_z) / v_z * v
+    inv_vz = 1.0 / v[:, 2]
+    t_min = (Zmin - pos[:, 2]) * inv_vz
+    t_max = (Zmax - pos[:, 2]) * inv_vz
+
+    X_at_Zmin = pos + t_min[:, np.newaxis] * v
+    X_at_Zmin[:, 2] = Zmin
+
+    X_at_Zmax = pos + t_max[:, np.newaxis] * v
+    X_at_Zmax[:, 2] = Zmax
+
+    xy_min = flat_image_coord_batch(X_at_Zmin, cal2, mmp)
+    xy_max = flat_image_coord_batch(X_at_Zmax, cal2, mmp)
+
+    return xy_min[:, 0], xy_min[:, 1], xy_max[:, 0], xy_max[:, 1]
+
+
 def is_compiled() -> bool:
     """Return whether this module is compiled to C."""
     return cython.compiled
