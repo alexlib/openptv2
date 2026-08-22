@@ -39,8 +39,8 @@ class NTupel:
     correspondences``, which does this uniformly for all cameras).
     """
 
-    p: list = cython.declare(object, visibility="public")
-    corr: cython.double = cython.declare(cython.double, visibility="public")
+    p = cython.declare(object, visibility="public")
+    corr = cython.declare(cython.double, visibility="public")
 
     def __init__(self, p=None, corr=0.0):
         if p is None:

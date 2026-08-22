@@ -25,14 +25,14 @@ class CallableFloat(float):
 class Target:
     """Particle target in a camera frame."""
 
-    c_pnr: cython.int = cython.declare(cython.int, visibility="public")
-    c_x: cython.double = cython.declare(cython.double, visibility="public")
-    c_y: cython.double = cython.declare(cython.double, visibility="public")
-    n: cython.int = cython.declare(cython.int, visibility="public")
-    nx: cython.int = cython.declare(cython.int, visibility="public")
-    ny: cython.int = cython.declare(cython.int, visibility="public")
-    sumg: cython.int = cython.declare(cython.int, visibility="public")
-    c_tnr: cython.int = cython.declare(cython.int, visibility="public")
+    c_pnr = cython.declare(cython.int, visibility="public")
+    c_x = cython.declare(cython.double, visibility="public")
+    c_y = cython.declare(cython.double, visibility="public")
+    n = cython.declare(cython.int, visibility="public")
+    nx = cython.declare(cython.int, visibility="public")
+    ny = cython.declare(cython.int, visibility="public")
+    sumg = cython.declare(cython.int, visibility="public")
+    c_tnr = cython.declare(cython.int, visibility="public")
 
     def __init__(self, pnr=0, x=0.0, y=0.0, n=0, nx=0, ny=0, sumg=0, tnr=0):
         self.c_pnr = int(pnr)
@@ -252,8 +252,8 @@ def write_targets(tbuf, num_targets, file_base, frame_num, store=None, cam_idx=N
 class Corres:
     """Correspondence between cameras for a 3D particle."""
 
-    nr: cython.int = cython.declare(cython.int, visibility="public")
-    p: np.ndarray = cython.declare(object, visibility="public")
+    nr = cython.declare(cython.int, visibility="public")
+    p = cython.declare(object, visibility="public")
 
     def __init__(self, nr=0, p=None):
         self.nr = int(nr)
@@ -278,19 +278,19 @@ def compare_corres(c1, c2):
 class Pathinfo:
     """Particle path information across frames."""
 
-    x: np.ndarray = cython.declare(object, visibility="public")
-    prev: cython.int = cython.declare(cython.int, visibility="public")
-    next_idx: cython.int = cython.declare(cython.int, visibility="public")
-    prio: cython.int = cython.declare(cython.int, visibility="public")
-    finaldecis: cython.double = cython.declare(cython.double, visibility="public")
-    inlist: cython.int = cython.declare(cython.int, visibility="public")
+    x = cython.declare(object, visibility="public")
+    prev = cython.declare(cython.int, visibility="public")
+    next_idx = cython.declare(cython.int, visibility="public")
+    prio = cython.declare(cython.int, visibility="public")
+    finaldecis = cython.declare(cython.double, visibility="public")
+    inlist = cython.declare(cython.int, visibility="public")
     # Backing storage for decis/linkdecis is lazily materialized (see
     # properties below): Frame() mass-preallocates max_targets Pathinfo
     # objects but only ~num_parts are ever touched per frame, so eagerly
     # building two POSI-length lists per object wastes the vast majority
     # of the allocations.
-    _decis: list = cython.declare(object)
-    _linkdecis: list = cython.declare(object)
+    _decis = cython.declare(object)
+    _linkdecis = cython.declare(object)
 
     def __init__(
         self,
@@ -673,27 +673,27 @@ def write_path_frame(
 
 @cython.cclass
 class Frame:
-    num_cams: cython.int = cython.declare(cython.int, visibility="public")
-    _num_cams: cython.int = cython.declare(cython.int, visibility="public")
-    max_targets: cython.int = cython.declare(cython.int, visibility="public")
-    targets: object = cython.declare(object, visibility="public")
-    correspond: object = cython.declare(object, visibility="public")
-    path_info: object = cython.declare(object, visibility="public")
-    num_targets: object = cython.declare(object, visibility="public")
-    num_parts: cython.int = cython.declare(cython.int, visibility="public")
-    targ_x: object = cython.declare(object, visibility="public")
-    targ_y: object = cython.declare(object, visibility="public")
-    targ_tnr: object = cython.declare(object, visibility="public")
-    path_x: object = cython.declare(object, visibility="public")
-    path_prev: object = cython.declare(object, visibility="public")
-    path_next: object = cython.declare(object, visibility="public")
-    path_prio: object = cython.declare(object, visibility="public")
-    path_inlist: object = cython.declare(object, visibility="public")
-    path_finaldecis: object = cython.declare(object, visibility="public")
-    path_decis: object = cython.declare(object, visibility="public")
-    path_linkdecis: object = cython.declare(object, visibility="public")
-    corres_nr: object = cython.declare(object, visibility="public")
-    corres_p: object = cython.declare(object, visibility="public")
+    num_cams = cython.declare(cython.int, visibility="public")
+    _num_cams = cython.declare(cython.int, visibility="public")
+    max_targets = cython.declare(cython.int, visibility="public")
+    targets = cython.declare(object, visibility="public")
+    correspond = cython.declare(object, visibility="public")
+    path_info = cython.declare(object, visibility="public")
+    num_targets = cython.declare(object, visibility="public")
+    num_parts = cython.declare(cython.int, visibility="public")
+    targ_x = cython.declare(object, visibility="public")
+    targ_y = cython.declare(object, visibility="public")
+    targ_tnr = cython.declare(object, visibility="public")
+    path_x = cython.declare(object, visibility="public")
+    path_prev = cython.declare(object, visibility="public")
+    path_next = cython.declare(object, visibility="public")
+    path_prio = cython.declare(object, visibility="public")
+    path_inlist = cython.declare(object, visibility="public")
+    path_finaldecis = cython.declare(object, visibility="public")
+    path_decis = cython.declare(object, visibility="public")
+    path_linkdecis = cython.declare(object, visibility="public")
+    corres_nr = cython.declare(object, visibility="public")
+    corres_p = cython.declare(object, visibility="public")
 
     def __init__(self, num_cams=4, max_targets=1000, **kwargs):
         self.num_cams = num_cams
@@ -762,24 +762,24 @@ class Frame:
         c: Corres
 
         # Local typed memoryview references — avoids repeated self.path_* lookups
-        path_x: cython.double[:, ::1] = cython.declare(
+        path_x = cython.declare(
             cython.double[:, ::1], self.path_x
         )
-        path_prev: cython.int[::1] = cython.declare(cython.int[::1], self.path_prev)
-        path_next: cython.int[::1] = cython.declare(cython.int[::1], self.path_next)
-        path_prio: cython.int[::1] = cython.declare(cython.int[::1], self.path_prio)
-        path_inlist: cython.int[::1] = cython.declare(cython.int[::1], self.path_inlist)
-        path_finaldecis: cython.double[::1] = cython.declare(
+        path_prev = cython.declare(cython.int[::1], self.path_prev)
+        path_next = cython.declare(cython.int[::1], self.path_next)
+        path_prio = cython.declare(cython.int[::1], self.path_prio)
+        path_inlist = cython.declare(cython.int[::1], self.path_inlist)
+        path_finaldecis = cython.declare(
             cython.double[::1], self.path_finaldecis
         )
-        path_decis: cython.double[:, ::1] = cython.declare(
+        path_decis = cython.declare(
             cython.double[:, ::1], self.path_decis
         )
-        path_linkdecis: cython.int[:, ::1] = cython.declare(
+        path_linkdecis = cython.declare(
             cython.int[:, ::1], self.path_linkdecis
         )
-        corres_nr: cython.int[::1] = cython.declare(cython.int[::1], self.corres_nr)
-        corres_p: cython.int[:, ::1] = cython.declare(cython.int[:, ::1], self.corres_p)
+        corres_nr = cython.declare(cython.int[::1], self.corres_nr)
+        corres_p = cython.declare(cython.int[:, ::1], self.corres_p)
 
         for i in range(num_parts):
             p = self.path_info[i]
@@ -813,24 +813,24 @@ class Frame:
         c: Corres
 
         # Local typed memoryview references — avoids repeated self.path_* lookups
-        path_x: cython.double[:, ::1] = cython.declare(
+        path_x = cython.declare(
             cython.double[:, ::1], self.path_x
         )
-        path_prev: cython.int[::1] = cython.declare(cython.int[::1], self.path_prev)
-        path_next: cython.int[::1] = cython.declare(cython.int[::1], self.path_next)
-        path_prio: cython.int[::1] = cython.declare(cython.int[::1], self.path_prio)
-        path_inlist: cython.int[::1] = cython.declare(cython.int[::1], self.path_inlist)
-        path_finaldecis: cython.double[::1] = cython.declare(
+        path_prev = cython.declare(cython.int[::1], self.path_prev)
+        path_next = cython.declare(cython.int[::1], self.path_next)
+        path_prio = cython.declare(cython.int[::1], self.path_prio)
+        path_inlist = cython.declare(cython.int[::1], self.path_inlist)
+        path_finaldecis = cython.declare(
             cython.double[::1], self.path_finaldecis
         )
-        path_decis: cython.double[:, ::1] = cython.declare(
+        path_decis = cython.declare(
             cython.double[:, ::1], self.path_decis
         )
-        path_linkdecis: cython.int[:, ::1] = cython.declare(
+        path_linkdecis = cython.declare(
             cython.int[:, ::1], self.path_linkdecis
         )
-        corres_nr: cython.int[::1] = cython.declare(cython.int[::1], self.corres_nr)
-        corres_p: cython.int[:, ::1] = cython.declare(cython.int[:, ::1], self.corres_p)
+        corres_nr = cython.declare(cython.int[::1], self.corres_nr)
+        corres_p = cython.declare(cython.int[:, ::1], self.corres_p)
 
         for i in range(num_parts):
             p = self.path_info[i]
@@ -985,15 +985,15 @@ class Frame:
 
 @cython.cclass
 class FrameBuf:
-    buf_len: cython.int = cython.declare(cython.int, visibility="public")
-    num_cams: cython.int = cython.declare(cython.int, visibility="public")
-    _frames: object = cython.declare(object, visibility="public")
-    buf: object = cython.declare(object, visibility="public")
-    corres_file_base: object = cython.declare(object, visibility="public")
-    linkage_file_base: object = cython.declare(object, visibility="public")
-    prio_file_base: object = cython.declare(object, visibility="public")
-    target_file_base: object = cython.declare(object, visibility="public")
-    store: object = cython.declare(object, visibility="public")
+    buf_len = cython.declare(cython.int, visibility="public")
+    num_cams = cython.declare(cython.int, visibility="public")
+    _frames = cython.declare(object, visibility="public")
+    buf = cython.declare(object, visibility="public")
+    corres_file_base = cython.declare(object, visibility="public")
+    linkage_file_base = cython.declare(object, visibility="public")
+    prio_file_base = cython.declare(object, visibility="public")
+    target_file_base = cython.declare(object, visibility="public")
+    store = cython.declare(object, visibility="public")
 
     def __init__(
         self,
