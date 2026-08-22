@@ -261,7 +261,7 @@ def _build_adjacency_for_pair(
             ya, yb = yb, ya
 
         # Out-of-sensor check
-        if xb <= xmin_c or xa >= xmax_c or yb <= ymin_s or ya >= ymax_s:
+        if xb <= xmin_c or xa >= xmax_c or yb <= ymin_c or ya >= ymax_c:
             continue
 
         sqrt_m2_1: cython.double = np.sqrt(m_line * m_line + 1.0)
@@ -296,10 +296,10 @@ def _build_adjacency_for_pair(
             ny2_j: cython.double = targ2_ny[j]
             sumg2_j: cython.double = targ2_sumg[j]
 
-            qn: cython.double = (n_i / n2_j) if n_i < n2_j else (n2_j / n_i if n2_j > 0 else 0.0)
-            qnx: cython.double = (nx_i / nx2_j) if nx_i < nx2_j else (nx2_j / nx_i if nx2_j > 0 else 0.0)
-            qny: cython.double = (ny_i / ny2_j) if ny_i < ny2_j else (ny2_j / ny_i if ny2_j > 0 else 0.0)
-            qsumg: cython.double = (sumg_i / sumg2_j) if sumg_i < sumg2_j else (sumg2_j / sumg_i if sumg2_j > 0 else 0.0)
+            qn: cython.double = (n_i / n2_j) if n_i < n2_j else (n2_j / n_i)
+            qnx: cython.double = (nx_i / nx2_j) if nx_i < nx2_j else (nx2_j / nx_i)
+            qny: cython.double = (ny_i / ny2_j) if ny_i < ny2_j else (ny2_j / ny_i)
+            qsumg: cython.double = (sumg_i / sumg2_j) if sumg_i < sumg2_j else (sumg2_j / sumg_i)
 
             if qn < cn or qnx < cnx or qny < cny or qsumg <= csumg:
                 continue
