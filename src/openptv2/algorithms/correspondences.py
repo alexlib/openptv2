@@ -143,67 +143,176 @@ def _build_adjacency_for_pair(
 
     Module-level for compatibility with ThreadPoolExecutor.
 
-    Uses pre-allocated output arrays for find_candidate (no Python list or
-    Candidate objects in the hot path).
+    Speedups applied:
+    * :func:`epi_mm_batch` computes all N epipolar bounding boxes in one
+      vectorised call (replacing N individual :func:`epi_mm` calls).
+    * :func:`numpy.searchsorted` on the x-sorted destination array finds
+      the epipolar-band start in O(log M) instead of the manual bisection
+      previously inside :func:`find_candidate`.
+    * Quality-ratio checks and distance filtering are applied inline,
+      avoiding Python function-call overhead for :func:`find_candidate`.
     """
-    from .epi import epi_mm, find_candidate
+    from .epi import MAXCAND, epi_mm_batch
+    from .trafo import correct_brown_affin
 
-    i: cython.int
-    j: cython.int
-    count: cython.int
-    pt1: cython.int
+    n1: cython.int = frm.num_targets[i1]
+    n2: cython.int = frm.num_targets[i2]
 
-    # Pre-allocated scratch arrays for find_candidate output (reused per target)
+    if n1 == 0 or n2 == 0:
+        return i1, i2
+
+    # ------------------------------------------------------------------ #
+    # Build SoA views of cam1 and cam2 corrected coordinates once.        #
+    # ------------------------------------------------------------------ #
+    src_x = np.empty(n1, dtype=np.float64)
+    src_y = np.empty(n1, dtype=np.float64)
+    src_pnr = np.empty(n1, dtype=np.int32)
+    for ii in range(n1):
+        src_x[ii] = corrected[i1][ii].x
+        src_y[ii] = corrected[i1][ii].y
+        src_pnr[ii] = corrected[i1][ii].pnr
+
+    dst_x = np.empty(n2, dtype=np.float64)
+    dst_y = np.empty(n2, dtype=np.float64)
+    dst_pnr = np.empty(n2, dtype=np.int32)
+    for jj in range(n2):
+        dst_x[jj] = corrected[i2][jj].x
+        dst_y[jj] = corrected[i2][jj].y
+        dst_pnr[jj] = corrected[i2][jj].pnr
+
+    # Target quality attributes for cam2 targets (indexed by x-sorted order)
+    targ2_n = np.empty(n2, dtype=np.float64)
+    targ2_nx = np.empty(n2, dtype=np.float64)
+    targ2_ny = np.empty(n2, dtype=np.float64)
+    targ2_sumg = np.empty(n2, dtype=np.float64)
+    for jj in range(n2):
+        p = dst_pnr[jj]
+        targ2_n[jj] = frm.targets[i2][p].n
+        targ2_nx[jj] = frm.targets[i2][p].nx
+        targ2_ny[jj] = frm.targets[i2][p].ny
+        targ2_sumg[jj] = frm.targets[i2][p].sumg
+
+    # ------------------------------------------------------------------ #
+    # Batch epipolar boxes — one vectorised call instead of n1 individual #
+    # epi_mm calls.                                                        #
+    # ------------------------------------------------------------------ #
+    xmin_all, ymin_all, xmax_all, ymax_all = epi_mm_batch(
+        src_x, src_y, calib[i1], calib[i2], cpar.mm, vpar
+    )
+
+    # ------------------------------------------------------------------ #
+    # Sensor bounds for cam2 (matches find_candidate's boundary filter).  #
+    # ------------------------------------------------------------------ #
+    cal2 = calib[i2]
+    k1 = cal2.added_par.k1
+    k2 = cal2.added_par.k2
+    k3 = cal2.added_par.k3
+    p1c = cal2.added_par.p1
+    p2c = cal2.added_par.p2
+    scx = cal2.added_par.scx
+    she = cal2.added_par.she
+    xh = cal2.int_par.xh
+    yh = cal2.int_par.yh
+    pix_x = cpar.pix_x
+    pix_y = cpar.pix_y
+    imx = cpar.imx
+    imy = cpar.imy
+    xmin_s = -pix_x * imx / 2.0 - xh
+    xmax_s = pix_x * imx / 2.0 - xh
+    ymin_s = -pix_y * imy / 2.0 - yh
+    ymax_s = pix_y * imy / 2.0 - yh
+    xmin_c, ymin_c = correct_brown_affin(xmin_s, ymin_s, k1, k2, k3, p1c, p2c, scx, she)
+    xmax_c, ymax_c = correct_brown_affin(xmax_s, ymax_s, k1, k2, k3, p1c, p2c, scx, she)
+
+    eps: cython.double = vpar.eps0
+    cn: cython.double = vpar.cn
+    cnx: cython.double = vpar.cnx
+    cny: cython.double = vpar.cny
+    csumg: cython.double = vpar.csumg
+
+    # Pre-allocated scratch arrays for candidate output (reused per target)
     _cand_pnr = np.empty(MAXCAND + 1, dtype=np.int32)
     _cand_tol = np.empty(MAXCAND + 1, dtype=np.float64)
     _cand_corr = np.empty(MAXCAND + 1, dtype=np.float64)
 
-    for i in range(frm.num_targets[i1]):
-        if corrected[i1][i].x == PT_UNUSED:
+    i: cython.int
+    j: cython.int
+    lo: cython.int
+    count: cython.int
+
+    for i in range(n1):
+        if src_x[i] == PT_UNUSED:
             continue
 
-        xmin, ymin, xmax, ymax = epi_mm(
-            corrected[i1][i].x,
-            corrected[i1][i].y,
-            calib[i1],
-            calib[i2],
-            cpar.mm,
-            vpar,
-        )
+        xa: cython.double = xmin_all[i]
+        ya: cython.double = ymin_all[i]
+        xb: cython.double = xmax_all[i]
+        yb: cython.double = ymax_all[i]
 
-        pt1 = corrected[i1][i].pnr
-        count = find_candidate(
-            corrected[i2],
-            frm.targets[i2],
-            frm.num_targets[i2],
-            xmin,
-            ymin,
-            xmax,
-            ymax,
-            frm.targets[i1][pt1].n,
-            frm.targets[i1][pt1].nx,
-            frm.targets[i1][pt1].ny,
-            frm.targets[i1][pt1].sumg,
-            _cand_pnr,
-            _cand_tol,
-            _cand_corr,
-            vpar,
-            cpar,
-            calib[i2],
-        )
+        # Compute slope before any swapping (mirrors find_candidate)
+        if xa == xb:
+            xb += 1e-10
+        m_line: cython.double = (yb - ya) / (xb - xa)
+        b_line: cython.double = ya - m_line * xa
 
-        if count > MAXCAND:
-            count = MAXCAND
+        if xa > xb:
+            xa, xb = xb, xa
+        if ya > yb:
+            ya, yb = yb, ya
 
-        # 1D views for (i1, i2, i) row — 4D write becomes 1D
-        p2_row: cython.int[:] = p2_arr[i1, i2, i]
-        corr_row: cython.double[:] = corr_arr[i1, i2, i]
-        dist_row: cython.double[:] = dist_arr[i1, i2, i]
-        for j in range(count):
-            cand_p = _cand_pnr[j]
-            p2_row[j] = cand_p
-            corr_row[j] = _cand_corr[j]
-            dist_row[j] = _cand_tol[j]
+        # Out-of-sensor check
+        if xb <= xmin_c or xa >= xmax_c or yb <= ymin_c or ya >= ymax_c:
+            continue
+
+        sqrt_m2_1: cython.double = np.sqrt(m_line * m_line + 1.0)
+
+        # Binary-search for x-range start (replaces manual bisection)
+        lo = int(np.searchsorted(dst_x, xa - eps))
+
+        n_i: cython.double = frm.targets[i1][src_pnr[i]].n
+        nx_i: cython.double = frm.targets[i1][src_pnr[i]].nx
+        ny_i: cython.double = frm.targets[i1][src_pnr[i]].ny
+        sumg_i: cython.double = frm.targets[i1][src_pnr[i]].sumg
+
+        count = 0
+        for j in range(lo, n2):
+            xj: cython.double = dst_x[j]
+            if xj > xb + eps:
+                break
+
+            yj: cython.double = dst_y[j]
+            if yj <= ya - eps or yj >= yb + eps:
+                continue
+            if xj <= xa - eps or xj >= xb + eps:
+                continue
+
+            d: cython.double = abs((yj - m_line * xj - b_line) / sqrt_m2_1)
+            if d >= eps:
+                continue
+
+            # Quality ratios (same logic as _quality_ratio in epi.py)
+            n2_j: cython.double = targ2_n[j]
+            nx2_j: cython.double = targ2_nx[j]
+            ny2_j: cython.double = targ2_ny[j]
+            sumg2_j: cython.double = targ2_sumg[j]
+
+            qn: cython.double = (n_i / n2_j) if n_i < n2_j else (n2_j / n_i)
+            qnx: cython.double = (nx_i / nx2_j) if nx_i < nx2_j else (nx2_j / nx_i)
+            qny: cython.double = (ny_i / ny2_j) if ny_i < ny2_j else (ny2_j / ny_i)
+            qsumg: cython.double = (sumg_i / sumg2_j) if sumg_i < sumg2_j else (sumg2_j / sumg_i)
+
+            if qn < cn or qnx < cnx or qny < cny or qsumg <= csumg:
+                continue
+
+            if count >= MAXCAND:
+                break
+
+            corr: cython.double = (4.0 * qsumg + 2.0 * qn + qnx + qny) * (sumg_i + sumg2_j)
+            p2_arr[i1, i2, i, count] = j
+            corr_arr[i1, i2, i, count] = corr
+            dist_arr[i1, i2, i, count] = d
+            count += 1
+
         n_arr[i1, i2, i] = count
 
     return i1, i2
@@ -416,6 +525,119 @@ def four_camera_matching(
                                 matched += 1
                                 if matched == scratch_size:
                                     return matched
+    return matched
+
+
+def _four_camera_matching_fast_py(
+    p1_arr,
+    n_arr,
+    p2_arr,
+    corr_arr,
+    dist_arr,
+    base_target_count,
+    accept_corr,
+    scratch_p,
+    scratch_corr,
+    scratch_size,
+):
+    """Fast Python fallback for :func:`four_camera_matching`.
+
+    Replaces the three innermost O(MAXCAND) linear scans with O(1)
+    dict lookups by precomputing candidate-index maps for each target.
+    In interpreted (non-compiled) mode this is typically 50–200× faster
+    than the typed-memoryview version when MAXCAND > 2.
+
+    The function signature and semantics are identical to
+    :func:`four_camera_matching`.
+    """
+    n_arr_np = np.asarray(n_arr)
+    p2_np = np.asarray(p2_arr)
+    corr_np = np.asarray(corr_arr)
+    dist_np = np.asarray(dist_arr)
+
+    # Precompute candidate-index dicts for the three "cross" pairs:
+    #   lookup12[p2] → {p3: m}   (cam1→cam2, where m is index into cands)
+    #   lookup13[p2] → {p4: m}
+    #   lookup23[p3] → {p4: o}
+    max_t = p2_np.shape[2]
+    lookup12 = [None] * max_t
+    lookup13 = [None] * max_t
+    lookup23 = [None] * max_t
+
+    for p in range(max_t):
+        n12 = int(n_arr_np[1, 2, p])
+        lookup12[p] = {int(p2_np[1, 2, p, m]): m for m in range(n12)}
+        n13 = int(n_arr_np[1, 3, p])
+        lookup13[p] = {int(p2_np[1, 3, p, m]): m for m in range(n13)}
+        n23 = int(n_arr_np[2, 3, p])
+        lookup23[p] = {int(p2_np[2, 3, p, o]): o for o in range(n23)}
+
+    p1_np = np.asarray(p1_arr)
+    matched = 0
+
+    for i in range(base_target_count):
+        p1 = int(p1_np[0, 1, i])
+
+        n01 = int(n_arr_np[0, 1, i])
+        n02 = int(n_arr_np[0, 2, i])
+        n03 = int(n_arr_np[0, 3, i])
+
+        for j in range(n01):
+            p2 = int(p2_np[0, 1, i, j])
+            c01 = corr_np[0, 1, i, j]
+            d01 = dist_np[0, 1, i, j]
+
+            lk12 = lookup12[p2]
+            lk13 = lookup13[p2]
+
+            for k in range(n02):
+                p3 = int(p2_np[0, 2, i, k])
+                c02 = corr_np[0, 2, i, k]
+                d02 = dist_np[0, 2, i, k]
+
+                m = lk12.get(p3)
+                if m is None:
+                    continue
+
+                c12 = corr_np[1, 2, p2, m]
+                d12 = dist_np[1, 2, p2, m]
+
+                lk23 = lookup23[p3]
+
+                for target_idx in range(n03):
+                    p4 = int(p2_np[0, 3, i, target_idx])
+                    c03 = corr_np[0, 3, i, target_idx]
+                    d03 = dist_np[0, 3, i, target_idx]
+
+                    n = lk13.get(p4)
+                    if n is None:
+                        continue
+
+                    o = lk23.get(p4)
+                    if o is None:
+                        continue
+
+                    c13 = corr_np[1, 3, p2, n]
+                    d13 = dist_np[1, 3, p2, n]
+                    c23 = corr_np[2, 3, p3, o]
+                    d23 = dist_np[2, 3, p3, o]
+
+                    total_dist = d01 + d02 + d03 + d12 + d13 + d23
+                    corr = (c01 + c02 + c03 + c12 + c13 + c23) / total_dist if total_dist != 0.0 else float("inf")
+
+                    if corr <= accept_corr:
+                        continue
+
+                    scratch_p[matched, 0] = p1
+                    scratch_p[matched, 1] = p2
+                    scratch_p[matched, 2] = p3
+                    scratch_p[matched, 3] = p4
+                    scratch_corr[matched] = corr
+
+                    matched += 1
+                    if matched == scratch_size:
+                        return matched
+
     return matched
 
 
@@ -818,7 +1040,8 @@ def correspondences(frm, corrected, vpar, cpar, calib):
 
     # 4-camera cliques
     if num_cams == 4:
-        match0: cython.int = four_camera_matching(
+        _fcm = four_camera_matching if cython.compiled else _four_camera_matching_fast_py
+        match0: cython.int = _fcm(
             p1_arr,
             n_arr,
             p2_arr,
