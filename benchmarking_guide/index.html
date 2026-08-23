@@ -1179,21 +1179,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#b-kalman_hungarian_3d-kalman-hungarian-engine" class="md-nav__link">
+  <a href="#b-nearest_hungarian_3d-myptv-kinematic-engine" class="md-nav__link">
     <span class="md-ellipsis">
       
-        B. kalman_hungarian_3d (Kalman-Hungarian Engine)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#c-nearest_hungarian_3d-myptv-kinematic-engine" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        C. nearest_hungarian_3d (MyPTV Kinematic Engine)
+        B. nearest_hungarian_3d (MyPTV Kinematic Engine)
       
     </span>
   </a>
@@ -1285,24 +1274,6 @@
 <td style="text-align: center;"><strong>150.6 ms</strong></td>
 </tr>
 <tr>
-<td><strong><code>kalman_hungarian_3d</code></strong></td>
-<td style="text-align: center;">0.906</td>
-<td style="text-align: center;">0.852</td>
-<td style="text-align: center;">3.37</td>
-<td style="text-align: center;">0.964</td>
-<td style="text-align: center;">72.5%</td>
-<td style="text-align: center;">556.9 ms</td>
-</tr>
-<tr>
-<td><strong><code>sg_hungarian_3d</code></strong></td>
-<td style="text-align: center;">0.966</td>
-<td style="text-align: center;">0.860</td>
-<td style="text-align: center;">4.64</td>
-<td style="text-align: center;">0.965</td>
-<td style="text-align: center;">77.6%</td>
-<td style="text-align: center;">174.2 ms</td>
-</tr>
-<tr>
 <td><strong><code>predictive_gmm_3d</code></strong></td>
 <td style="text-align: center;">0.959</td>
 <td style="text-align: center;">0.752</td>
@@ -1341,7 +1312,7 @@
 <td style="text-align: center;"><strong>157.0 ms</strong></td>
 </tr>
 <tr>
-<td><strong>Strategy 1: Forward-Fast / Backward-Kalman</strong></td>
+<td><strong>Strategy 1: Forward-Fast / Backward-GMM</strong></td>
 <td style="text-align: center;"><strong>0.974</strong></td>
 <td style="text-align: center;"><strong>0.901</strong></td>
 <td style="text-align: center;"><strong>0.50%</strong></td>
@@ -1364,7 +1335,7 @@
 </table>
 <h3 id="strategy-highlights">Strategy Highlights<a class="headerlink" href="#strategy-highlights" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Strategy 1 (Forward Fast / Backward Kalman)</strong>: Increases <strong>Perfect Match Trajectory Percentage (PMT%) from 73.7% to 93.6%</strong> and reduces <strong>Ghost capture rate from 3.56% down to 0.50%</strong>.</li>
+<li><strong>Strategy 1 (Forward Fast / Backward GMM)</strong>: Increases <strong>Perfect Match Trajectory Percentage (PMT%) from 73.7% to 93.6%</strong> and reduces <strong>Ghost capture rate from 3.56% down to 0.50%</strong>.</li>
 <li><strong>Strategy 2 (Two-Scale Velocity Cascading)</strong>: Achieves <strong>87.0% PMT</strong> and reduces Ghost capture to <strong>1.07%</strong> at nearly <strong>double the speed</strong> of Strategy 1 (365.4 ms/frame).</li>
 </ul>
 <hr />
@@ -1376,12 +1347,12 @@
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>[ High / Medium Density ]                                         [ Low Density / Sparse ]
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    (N &gt; 500 / frame)                                                (N &lt; 200 / frame)
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>           │                                                                 │
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>   ┌───────┴────────┐                                              ┌─────────┴─────────┐
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>   ▼                ▼                                              ▼                   ▼
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>[ Smooth Flow ]  [ Strong Turbulence ]                      [ Moderate Noise ]   [ High Noise / Missing ]
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>   │                │                                              │                   │
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>   ▼                ▼                                              ▼                   ▼
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>priority_segment_3d nearest_hungarian_3d                   kalman_hungarian_3d  predictive_gmm_3d
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>   ┌───────┴────────┐                                                        │
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>   ▼                ▼                                                        ▼
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>[ Smooth Flow ]  [ Strong Turbulence ]                             [ High Noise / Missing ]
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>   │                │                                                        │
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>   ▼                ▼                                                        ▼
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>priority_segment_3d nearest_hungarian_3d                             predictive_gmm_3d
 </span></code></pre></div>
 <h3 id="condition-by-condition-guide">Condition-by-Condition Guide<a class="headerlink" href="#condition-by-condition-guide" title="Permanent link">&para;</a></h3>
 <table>
@@ -1404,14 +1375,9 @@
 <td>Global Hungarian bipartite matching prevents greedy assignment conflicts in dense eddies.</td>
 </tr>
 <tr>
-<td><strong>Noisy Data &amp; Occasional Occlusions</strong></td>
-<td><code>kalman_hungarian_3d</code></td>
-<td>Kalman state estimation filters measurement noise and propagates particle states across missing frames.</td>
-</tr>
-<tr>
-<td><strong>Curved &amp; Smooth Trajectories</strong></td>
-<td><code>sg_hungarian_3d</code></td>
-<td>Savitzky-Golay polynomial velocity smooths acceleration noise without overshooting turns.</td>
+<td><strong>Irregular Steps / High Noise</strong></td>
+<td><code>predictive_gmm_3d</code></td>
+<td>GMM-based predictive estimation handles complex trajectory curvatures and noise.</td>
 </tr>
 <tr>
 <td><strong>Fragmented Tracks needing High Purity</strong></td>
@@ -1431,16 +1397,7 @@
 <li><em>Default</em>: <code>120.0 deg</code></li>
 <li><em>Tuning</em>: Decrease to <code>45.0–60.0 deg</code> for directed laminar flows to prune improbable sharp turns.</li>
 </ul>
-<h3 id="b-kalman_hungarian_3d-kalman-hungarian-engine">B. <code>kalman_hungarian_3d</code> (Kalman-Hungarian Engine)<a class="headerlink" href="#b-kalman_hungarian_3d-kalman-hungarian-engine" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong><code>gate_threshold</code> (Mahalanobis Distance Cutoff)</strong>:</li>
-<li><em>Default</em>: <code>9.21</code> ($\chi^2$ 99% confidence for 3 DOF).</li>
-<li><em>Tuning</em>: Lower to <code>5.99</code> (95% confidence) in high-density cases to prevent false links; raise to <code>11.34</code> for high turbulent jitter.</li>
-<li><strong><code>process_noise_std</code> ($Q$ covariance)</strong>:</li>
-<li><em>Default</em>: <code>0.5 mm/frame</code></li>
-<li><em>Tuning</em>: Increase to <code>1.5–2.5 mm/frame</code> for turbulent fluid elements experiencing rapid velocity shifts.</li>
-</ul>
-<h3 id="c-nearest_hungarian_3d-myptv-kinematic-engine">C. <code>nearest_hungarian_3d</code> (MyPTV Kinematic Engine)<a class="headerlink" href="#c-nearest_hungarian_3d-myptv-kinematic-engine" title="Permanent link">&para;</a></h3>
+<h3 id="b-nearest_hungarian_3d-myptv-kinematic-engine">B. <code>nearest_hungarian_3d</code> (MyPTV Kinematic Engine)<a class="headerlink" href="#b-nearest_hungarian_3d-myptv-kinematic-engine" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong><code>search_radius</code> (Max Displacement Distance, mm)</strong>:</li>
 <li><em>Default</em>: Derived from <code>dvxmax</code> (<code>15.5 mm</code>).</li>
