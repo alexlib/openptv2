@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/openptv2.svg)](https://pypi.org/project/openptv2/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg)](https://alexlib.github.io/openptv2/)
-[![Coverage](https://img.shields.io/badge/coverage-22%25-red)](scripts/update_coverage_badge.sh)
+[![Coverage](https://img.shields.io/badge/coverage-34%25-red)](scripts/update_coverage_badge.sh)
 [![Code health](https://api.repowise.dev/badge/health/alexlib/openptv2.svg)](https://repowise.dev/repo/alexlib/openptv2)
 
 ## Overview
