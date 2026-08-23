@@ -385,7 +385,14 @@ class BuildExtWithPrepare(build_ext):
         # We can compile extensions in parallel since generated C sources
         # are pre-generated.
         # and static before compiling begins.
-        self.parallel = min(os.cpu_count() or 1, 8)
+        # Serialize the traced coverage build: parallel MSVC writes to
+        # build/temp raced Windows Defender's real-time scan of freshly
+        # written .obj files, producing intermittent Permission denied
+        # errors that setuptools' parallel build_ext silently swallowed.
+        if os.environ.get("OPENPTV_CYTHON_TRACE") == "1":
+            self.parallel = 1
+        else:
+            self.parallel = min(os.cpu_count() or 1, 8)
 
     def _setup_ccache(self):
         """Prepend ccache to the compiler if available (speeds up rebuilds)."""

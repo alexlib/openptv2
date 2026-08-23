@@ -1,0 +1,11 @@
+[run]
+plugins = Cython.Coverage
+source = src/openptv2
+omit =
+    *_nb.py
+    */batch/demo_*.py
+    */batch/logger_demo.py
+    */batch/run_tracking_parameter_optimization.py
+
+[report]
+show_missing = true
