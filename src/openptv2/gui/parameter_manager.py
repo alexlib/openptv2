@@ -281,7 +281,8 @@ class ParameterManager:
         except Exception as exc:
             print(f"Warning: parameter validation failed ({file_path}): {exc}")
             self.parameters = data
-        self.yaml_path = file_path
+        self.yaml_path = Path(file_path).resolve()
+        self.exp_path = self.yaml_path.parent
 
         # A dataset with no manual-orientation seed yet (e.g. a fresh
         # calibration with no prior parameters/ directory) has no man_ori

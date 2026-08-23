@@ -612,9 +612,12 @@ def py_start_proc_c(
         target_params_dict = {"targ_rec": params["targ_rec"]}
         tpar = _populate_tpar(target_params_dict, num_cams)
 
-        epar = params.get("examine")
+        exp_dir = getattr(pm, "exp_path", None)
+        if exp_dir is None and getattr(pm, "yaml_path", None) is not None:
+            from pathlib import Path
+            exp_dir = Path(pm.yaml_path).resolve().parent
 
-        cals = ptv_calibration._read_calibrations(cpar, num_cams)
+        cals = ptv_calibration._read_calibrations(cpar, num_cams, base_dir=exp_dir)
 
         # NOTE: the multimedia LUT is deliberately NOT pre-built here. The
         # benchmark (tests/perf/test_mmlut_benchmark.py) shows that in the
@@ -625,6 +628,7 @@ def py_start_proc_c(
         # available if a future efficient LUT call path (see the mmlut plan's
         # Phase 4) makes it worthwhile. The tracker still builds its own LUT.
 
+        epar = params.get("examine")
         return cpar, spar, vpar, track_par, tpar, cals, epar
 
     except IOError as e:

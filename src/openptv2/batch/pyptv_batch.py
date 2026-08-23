@@ -123,6 +123,9 @@ def build_processing_experiment(
     from openptv2.gui.experiment import Experiment
     from openptv2.gui.ptv import py_start_proc_c
 
+    yaml_file = Path(yaml_file).resolve()
+    exp_path = yaml_file.parent
+
     experiment = Experiment()
     print(f"Loading parameters from: {yaml_file}")
     experiment.pm.from_yaml(yaml_file)
@@ -133,9 +136,11 @@ def build_processing_experiment(
     spar.set_first(seq_first)
     spar.set_last(seq_last)
 
-    return ProcessingExperiment(
+    proc_exp = ProcessingExperiment(
         experiment.pm, cpar, spar, vpar, track_par, tpar, cals, epar
     )
+    proc_exp.exp_path = str(exp_path)
+    return proc_exp
 
 
 def _warn_if_tracking_poorly_conditioned(proc_exp, seq_first: int, seq_last: int) -> None:

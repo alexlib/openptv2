@@ -378,36 +378,43 @@ def main():
             )
             args, _ = parser.parse_known_args(sys.argv[2:])
 
+            import os
             from openptv2.algorithms.parameters import SequencePar
             from openptv2.batch.pyptv_batch import build_processing_experiment
             from openptv2.gui.ptv import _open_run_store
             from openptv2.tracking_warmup import run_warmup, write_result_to_yaml
 
-            yaml_file = Path(args.yaml_file)
-            seq_bounds = SequencePar.from_yaml(str(yaml_file))
-            exp = build_processing_experiment(yaml_file, seq_bounds.first, seq_bounds.last)
-            store = _open_run_store(exp)
+            yaml_file = Path(args.yaml_file).resolve()
+            exp_dir = yaml_file.parent
+            prev_cwd = Path.cwd()
+            os.chdir(exp_dir)
+            try:
+                seq_bounds = SequencePar.from_yaml(str(yaml_file))
+                exp = build_processing_experiment(yaml_file, seq_bounds.first, seq_bounds.last)
+                store = _open_run_store(exp)
 
-            result = run_warmup(
-                exp.cpar, exp.vpar, exp.track_par, exp.spar, exp.cals, store,
-                frames=args.frames, max_cycles=args.max_cycles,
-            )
+                result = run_warmup(
+                    exp.cpar, exp.vpar, exp.track_par, exp.spar, exp.cals, store,
+                    frames=args.frames, max_cycles=args.max_cycles,
+                )
 
-            print(f"Warmup window: frames {result.frames[0]}-{result.frames[1]} "
-                  f"({result.cycles} cycle(s))")
-            print(f"Chosen tracker: {result.tracker}  "
-                  f"(engine scores: {result.engine_scores})")
-            print(f"Forward/backward agreement: {result.agreement_rate:.1%}")
-            print(f"Empirical noise estimate: {result.noise_estimate_mm:.3f} mm")
-            print("Tuned track params:")
-            for k, v in result.track_par.items():
-                print(f"  {k}: {v}")
+                print(f"Warmup window: frames {result.frames[0]}-{result.frames[1]} "
+                      f"({result.cycles} cycle(s))")
+                print(f"Chosen tracker: {result.tracker}  "
+                      f"(engine scores: {result.engine_scores})")
+                print(f"Forward/backward agreement: {result.agreement_rate:.1%}")
+                print(f"Empirical noise estimate: {result.noise_estimate_mm:.3f} mm")
+                print("Tuned track params:")
+                for k, v in result.track_par.items():
+                    print(f"  {k}: {v}")
 
-            if args.write:
-                write_result_to_yaml(result, yaml_file)
-                print(f"\nWritten back to {yaml_file}")
-            else:
-                print("\nDry run (pass --write to persist into the YAML)")
+                if args.write:
+                    write_result_to_yaml(result, yaml_file)
+                    print(f"\nWritten back to {yaml_file}")
+                else:
+                    print("\nDry run (pass --write to persist into the YAML)")
+            finally:
+                os.chdir(prev_cwd)
         except Exception as e:
             print(f"Warmup failed: {e}")
             sys.exit(1)

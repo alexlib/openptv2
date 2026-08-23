@@ -25,12 +25,16 @@ from openptv2.transforms import convert_arr_pixel_to_metric
 NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear", "interf"]
 
 
-def _read_calibrations(cpar: ControlParams, num_cams: int) -> List[Calibration]:
+def _read_calibrations(
+    cpar: ControlParams, num_cams: int, base_dir: os.PathLike | str | None = None
+) -> List[Calibration]:
     """Read calibration files for all cameras.
 
     Returns empty/default calibrations if files don't exist, which is normal
     for the calibration GUI before calibrations have been created.
     """
+    from pathlib import Path
+
     cals = []
     for i_cam in range(num_cams):
         cal = Calibration()
@@ -43,18 +47,39 @@ def _read_calibrations(cpar: ControlParams, num_cams: int) -> List[Calibration]:
             cals.append(cal)
             continue
 
-        ori_file = base_name + ".ori"
-        addpar_file = base_name + ".addpar"
+        candidates = []
+        if base_dir is not None and not Path(base_name).is_absolute():
+            candidates.append(Path(base_dir) / base_name)
+        candidates.append(Path(base_name))
 
-        # Check if calibration files exist and are readable
-        ori_exists = os.path.isfile(ori_file) and os.access(ori_file, os.R_OK)
-        addpar_exists = os.path.isfile(addpar_file) and os.access(addpar_file, os.R_OK)
+        found_ori = None
+        found_addpar = None
+        for cand in candidates:
+            cand_str = str(cand)
+            if cand_str.endswith(".ori"):
+                ori_file = cand_str
+                addpar_file = cand_str[:-4] + ".addpar"
+            else:
+                ori_file = cand_str + ".ori"
+                addpar_file = cand_str + ".addpar"
 
-        if ori_exists and addpar_exists:
-            # Both files exist, load them
-            cal.from_file(ori_file, addpar_file)
-            print(f"Loaded calibration for camera {i_cam + 1} from {ori_file}")
+            ori_exists = os.path.isfile(ori_file) and os.access(ori_file, os.R_OK)
+            addpar_exists = os.path.isfile(addpar_file) and os.access(addpar_file, os.R_OK)
+
+            if ori_exists and addpar_exists:
+                found_ori = ori_file
+                found_addpar = addpar_file
+                break
+
+        if found_ori and found_addpar:
+            cal.from_file(found_ori, found_addpar)
+            print(f"Loaded calibration for camera {i_cam + 1} from {found_ori}")
         else:
+            primary_cand = str(candidates[0])
+            ori_file = primary_cand if primary_cand.endswith(".ori") else (primary_cand + ".ori")
+            addpar_file = (primary_cand[:-4] + ".addpar") if primary_cand.endswith(".ori") else (primary_cand + ".addpar")
+            ori_exists = os.path.isfile(ori_file) and os.access(ori_file, os.R_OK)
+            addpar_exists = os.path.isfile(addpar_file) and os.access(addpar_file, os.R_OK)
             missing_str = f"Missing: {ori_file if not ori_exists else ''} {addpar_file if not addpar_exists else ''}"
             if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
                 raise RuntimeError(
