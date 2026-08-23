@@ -50,6 +50,7 @@ added.*
 ptv_is.*
 rt_is.*
 *_targets
+res/
 
 # Build artifacts
 *.o

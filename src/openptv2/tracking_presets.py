@@ -174,7 +174,6 @@ def apply_preset(
 TRACKER_CHOICES = [
     ("priority_segment_3d", "OpenPTV Fast 3D (Default - Cython)"),
     ("4be", "OpenPTV 4BE (Four-Frame Best Estimate)"),
-    ("cython_epipolar_tracking", "OpenPTV Epipolar (Multi-Camera Cython)"),
     ("trackcorr", "OpenPTV Epipolar (Multi-Camera 2D+3D)"),
     ("nearest_hungarian_3d", "MyPTV 3D (Nearest-Neighbor Hungarian)"),
     ("myptv_2d_tracking", "MyPTV 2D (Image-Space Assignment)"),
@@ -186,23 +185,35 @@ DIRECTION_CHOICES = [
     ("forward_backward", "Forward + Backward"),
 ]
 
-# Trackers whose engine actually implements a backward pass (mirrors
-# tracking_registry.TRACKER_REGISTRY[...].supports_backward for these keys).
+# Trackers whose engine supports a backward / bidirectional pass and accumulation.
 TRACKER_SUPPORTS_BACKWARD: Dict[str, bool] = {
-    "priority_segment_3d": False,
+    "priority_segment_3d": True,
+    "4be": True,
     "trackcorr": True,
-    "nearest_hungarian_3d": False,
+    "nearest_hungarian_3d": True,
+    "myptv_2d_tracking": True,
     "predictive_gmm_3d": True,
 }
 
-# Trackers whose do_tracking() reads track.postprocess at all (myptv/proptv
-# engines run their own self-contained pipeline and ignore it).
-TRACKER_SUPPORTS_POSTPROCESS = {"priority_segment_3d", "trackcorr"}
+# Trackers whose do_tracking() supports post-processing (reciprocity + cold start + gap relinking).
+TRACKER_SUPPORTS_POSTPROCESS = {
+    "priority_segment_3d",
+    "4be",
+    "trackcorr",
+    "nearest_hungarian_3d",
+    "myptv_2d_tracking",
+    "predictive_gmm_3d",
+}
 
 _LEGACY_TRACKER_ALIASES = {
     "default": "priority_segment_3d",
     "fast": "priority_segment_3d",
     "fast_3d": "priority_segment_3d",
+    "cython_3d": "priority_segment_3d",
+    "cython_3d_tracking": "priority_segment_3d",
+    "cython_epipolar_tracking": "trackcorr",
+    "cython_epipolar": "trackcorr",
+    "openptv_epipolar": "trackcorr",
     "full_multipass": "trackcorr",
     "standard_forward": "trackcorr",
     "two_directional": "trackcorr",
@@ -219,7 +230,7 @@ _DIRECTION_BACKWARD_PRESETS = {"full_multipass", "two_directional"}
 
 def infer_tracker(plugins_params: Dict[str, Any] | None) -> str:
     """Map any current or legacy ``selected_tracking`` value onto one of
-    the 5 canonical tracker keys. An unrecognised name (a custom
+    the canonical tracker keys. An unrecognised name (a custom
     experiment-local plugin) passes through unchanged."""
     selected = (plugins_params or {}).get("selected_tracking", "default")
     return _LEGACY_TRACKER_ALIASES.get(selected, selected)
@@ -228,8 +239,12 @@ def infer_tracker(plugins_params: Dict[str, Any] | None) -> str:
 def infer_direction(
     track_params: Dict[str, Any], plugins_params: Dict[str, Any] | None = None
 ) -> str:
-    """Forward-only vs forward+backward, from the explicit ``track.direction``
-    field, falling back to the legacy preset name for old saved YAMLs."""
+    """Forward-only vs forward+backward, from ``track.run_backward``, ``track.backward``,
+    or ``track.direction``, falling back to legacy preset names for old saved YAMLs."""
+    if "run_backward" in track_params:
+        return "forward_backward" if track_params["run_backward"] else "forward"
+    if "backward" in track_params:
+        return "forward_backward" if track_params["backward"] else "forward"
     if "direction" in track_params:
         return track_params["direction"]
     selected = (plugins_params or {}).get("selected_tracking", "default")
@@ -252,13 +267,16 @@ def apply_tracker(
     plugins_params = dict(plugins_params) if plugins_params else {}
     proptv_params = dict(proptv_params) if proptv_params else {}
 
-    if not TRACKER_SUPPORTS_BACKWARD.get(tracker, False):
-        direction = "forward"
+    run_backward = (direction == "forward_backward")
 
     if tracker == "priority_segment_3d":
         track_params["track_mode"] = 1
         track_params["flagNewParticles"] = False
-        track_params.pop("direction", None)
+        track_params["direction"] = direction
+    elif tracker == "4be":
+        track_params["track_mode"] = 1
+        track_params["flagNewParticles"] = False
+        track_params["direction"] = direction
     elif tracker == "trackcorr":
         track_params["track_mode"] = 0
         track_params["flagNewParticles"] = True
@@ -266,13 +284,14 @@ def apply_tracker(
     elif tracker == "predictive_gmm_3d":
         track_params["track_mode"] = 1
         track_params["flagNewParticles"] = True
-        track_params.pop("direction", None)
-        proptv_params["backtracking"] = direction == "forward_backward"
-    else:  # nearest_hungarian_3d, etc.
+        track_params["direction"] = direction
+        proptv_params["backtracking"] = run_backward
+    else:  # nearest_hungarian_3d, myptv_2d_tracking, etc.
         track_params["track_mode"] = 1
         track_params["flagNewParticles"] = True
-        track_params.pop("direction", None)
+        track_params["direction"] = direction
 
+    track_params["run_backward"] = run_backward
     track_params["postprocess"] = bool(postprocess)
     plugins_params["selected_tracking"] = tracker
     track_params["preset"] = tracker

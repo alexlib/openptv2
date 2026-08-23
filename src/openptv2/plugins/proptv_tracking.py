@@ -351,15 +351,22 @@ class Tracking:
         maxvel = float(proptv_cfg.get("maxvel", unified_velocity_bound(track_cfg)))
         angle = float(proptv_cfg.get("angle", unified_angle_deg(track_cfg, default_deg=30.0)))
         t_init = int(proptv_cfg.get("t_init", 4))
-        gaptracking = bool(proptv_cfg.get("gaptracking", False))
+        
+        from openptv2.tracking_presets import infer_direction
+        direction = infer_direction(track_cfg, proptv_cfg)
+        backtracking = bool(proptv_cfg.get("backtracking", False)) or (direction == "forward_backward")
+        maxacc = float(proptv_cfg.get("maxacc", 10.0))
+        weights = [float(w) for w in proptv_cfg.get("weights", [1.0, 0.6, 0.3])]
 
         cfg = ProPTVConfig(
             t_init=t_init,
             maxvel=maxvel,
             angle=angle,
+            maxacc=maxacc,
+            cost_weights=weights,
             activeMatches_extend=int(proptv_cfg.get("activeMatches_extend", 3)),
-            backtracking=bool(proptv_cfg.get("backtracking", False)),
-            gaptracking=gaptracking,
+            backtracking=backtracking,
+            gaptracking=bool(proptv_cfg.get("gaptracking", False)),
         )
 
         from openptv2.gui.ptv import _open_run_store
@@ -440,6 +447,27 @@ class Tracking:
             f"proPTV-concept Tracking completed: {total_links} total links, "
             f"avg {avg_links:.1f}/step"
         )
+
+        if track_cfg.get("postprocess", True) and num_frames > 1:
+            from openptv2.tracking_postprocess import (
+                count_links,
+                seed_cold_start,
+                relink_trajectory_gaps,
+                enforce_reciprocity,
+            )
+            base = linkage_base
+            first, last = frame_numbers[0], frame_numbers[-1]
+            stats = {"links_before": count_links(base, first, last, store=store)}
+            stats["cold_start"] = seed_cold_start(base, first, last, float(maxvel), store=store)
+            stats["gap_relinking"] = relink_trajectory_gaps(
+                base, first, last, max_gap=2, max_accel_err=float(maxacc), store=store
+            )
+            if cfg.backtracking:
+                stats["reciprocity"] = enforce_reciprocity(base, first, last, store=store)
+            stats["links_after"] = count_links(base, first, last, store=store)
+            print(
+                f"Post-process links: {stats.get('links_before', 0)} -> {stats.get('links_after', 0)}"
+            )
 
     @staticmethod
     def _backtrack(completed, frame_particles, maxvel):

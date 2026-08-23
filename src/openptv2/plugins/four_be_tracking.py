@@ -28,23 +28,22 @@ class Tracking:
         tracker = self.ptv.py_trackcorr_init(self.exp)
         # Side effect the GUI relies on after a forward run (same contract
         # as every other tracking plugin here).
-        self.exp.tracker = tracker
-
-        print("Running 4BE Tracking (Four-Frame Best Estimate)...")
-        tracker.full_forward_4be()
-
-        # 4BE cannot bridge a missing frame at all -- it gives up on any
-        # candidate it cannot support two frames ahead -- so its output is
-        # short and clean, which is exactly the input gap bridging wants
-        # (bridging is only safe when the fragments being joined are right).
-        # Opt-in via track.postprocess, matching default_tracking's
-        # priority_segment_3d branch; this plugin used to skip the call
-        # entirely, which made the setting silently a no-op here.
         pm = getattr(self.exp, "pm", None)
         if pm is None and hasattr(self.exp, "exp1"):
             pm = getattr(self.exp.exp1, "pm", None)
         track_cfg = pm.parameters.get("track", {}) if pm else {}
-        if track_cfg.get("postprocess", False):
+        plugins_cfg = pm.parameters.get("plugins", {}) if pm else {}
+
+        from openptv2.tracking_presets import infer_direction
+        direction = infer_direction(track_cfg, plugins_cfg)
+
+        print(f"Running 4BE Tracking (Four-Frame Best Estimate, {direction})...")
+        tracker.full_forward_4be()
+
+        if direction == "forward_backward":
+            tracker.full_backward()
+
+        if track_cfg.get("postprocess", True):
             stats = tracker.postprocess()
             print(
                 f"Post-process links: {stats.get('links_before', 0)} -> "

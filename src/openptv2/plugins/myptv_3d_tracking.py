@@ -349,4 +349,34 @@ class Tracking:
         print(
             f"Average over sequence, particles: {avg_particles:.1f}, links: {avg_links:.1f}, lost: {avg_lost:.1f}"
         )
+
+        pm = getattr(self.exp, "pm", None)
+        if pm is None and hasattr(self.exp, "exp1"):
+            pm = getattr(self.exp.exp1, "pm", None)
+        track_cfg = pm.parameters.get("track", {}) if pm else {}
+        plugins_cfg = pm.parameters.get("plugins", {}) if pm else {}
+        from openptv2.tracking_presets import infer_direction
+        direction = infer_direction(track_cfg, plugins_cfg)
+
+        if track_cfg.get("postprocess", True) and num_frames > 1:
+            from openptv2.tracking_postprocess import (
+                count_links,
+                seed_cold_start,
+                relink_trajectory_gaps,
+                enforce_reciprocity,
+            )
+            base = linkage_base
+            first, last = frame_numbers[0], frame_numbers[-1]
+            stats = {"links_before": count_links(base, first, last, store=store)}
+            stats["cold_start"] = seed_cold_start(base, first, last, float(dvxmax), store=store)
+            stats["gap_relinking"] = relink_trajectory_gaps(
+                base, first, last, max_gap=2, max_accel_err=float(dacc), store=store
+            )
+            if direction == "forward_backward":
+                stats["reciprocity"] = enforce_reciprocity(base, first, last, store=store)
+            stats["links_after"] = count_links(base, first, last, store=store)
+            print(
+                f"Post-process links: {stats.get('links_before', 0)} -> {stats.get('links_after', 0)}"
+            )
+
         print("MyPTV 3D Tracking completed successfully.")

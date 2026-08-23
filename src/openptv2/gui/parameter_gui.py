@@ -377,9 +377,10 @@ class TrackHandler(Handler):
             if "proptv" not in experiment.pm.parameters:
                 experiment.pm.parameters["proptv"] = {}
 
+            direction = "forward_backward" if getattr(track_params, "run_backward", False) else "forward"
             t_dict, p_dict, proptv_dict = apply_tracker(
                 track_params.tracker,
-                track_params.direction,
+                direction,
                 bool(track_params.postprocess),
                 {
                     "dvxmin": track_params.dvxmin,
@@ -417,9 +418,8 @@ class TrackHandler(Handler):
 
 class Tracking_Params(HasTraits):
     tracker = Enum(*[key for key, label in TRACKER_CHOICES])
-    direction = Enum(*[key for key, label in DIRECTION_CHOICES])
-    direction_enabled = Bool(True)
-    postprocess_enabled = Bool(True)
+    run_backward = Bool(False)
+    postprocess = Bool(True)
     dvxmin = Float()
     dvxmax = Float()
     dvymin = Float()
@@ -428,7 +428,6 @@ class Tracking_Params(HasTraits):
     dvzmax = Float()
     angle = Float()
     dacc = Float()
-    postprocess = Bool(True)
 
     def __init__(self, experiment: Experiment):
         super(Tracking_Params, self).__init__()
@@ -447,19 +446,8 @@ class Tracking_Params(HasTraits):
         self.postprocess = bool(tracking_params.get("postprocess", True))
 
         self.tracker = infer_tracker(plugins_params)
-        self.direction = infer_direction(tracking_params, plugins_params)
-        self._sync_enabled_state()
-
-    def _tracker_changed(self, old, new):
-        self._sync_enabled_state()
-        if not self.direction_enabled:
-            self.direction = "forward"
-        if not self.postprocess_enabled:
-            self.postprocess = False
-
-    def _sync_enabled_state(self):
-        self.direction_enabled = TRACKER_SUPPORTS_BACKWARD.get(self.tracker, False)
-        self.postprocess_enabled = self.tracker in TRACKER_SUPPORTS_POSTPROCESS
+        dir_val = infer_direction(tracking_params, plugins_params)
+        self.run_backward = (dir_val == "forward_backward")
 
     Tracking_Params_View = View(
         VGroup(
@@ -469,15 +457,12 @@ class Tracking_Params(HasTraits):
                 editor=EnumEditor(values={key: label for key, label in TRACKER_CHOICES}),
             ),
             Item(
-                name="direction",
-                label="Direction:",
-                editor=EnumEditor(values={key: label for key, label in DIRECTION_CHOICES}),
-                enabled_when="direction_enabled",
+                name="run_backward",
+                label="Run backward pass (accumulate tracks, fill gaps & filter):",
             ),
             Item(
                 name="postprocess",
                 label="Post-process (reciprocity + cold-start + gap-relink):",
-                enabled_when="postprocess_enabled",
             ),
             show_border=True,
             label="Pipeline",

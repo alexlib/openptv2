@@ -75,12 +75,20 @@ class Cython3DTracker:
         if self.ptv is not None:
             tracker = self.ptv.py_trackcorr_init(self.exp)
             self.exp.tracker = tracker
-            tracker.full_forward_3d()
 
             pm = getattr(self.exp, "pm", None)
             if pm is None and hasattr(self.exp, "exp1"):
                 pm = getattr(self.exp.exp1, "pm", None)
             track_cfg = pm.parameters.get("track", {}) if pm else {}
+            plugins_cfg = pm.parameters.get("plugins", {}) if pm else {}
+
+            from openptv2.tracking_presets import infer_direction
+            direction = infer_direction(track_cfg, plugins_cfg)
+
+            tracker.full_forward_3d()
+            if direction == "forward_backward":
+                tracker.full_backward()
+
             if track_cfg.get("postprocess", True):
                 stats = tracker.postprocess()
                 log.info(

@@ -37,16 +37,13 @@ class Tracking:
 
         tracker_key = infer_tracker(plugins_cfg)
         force_3d = getattr(self.exp, "track3d", False)
+        direction = infer_direction(track_cfg, plugins_cfg)
 
         if force_3d or tracker_key == "priority_segment_3d":
-            print("Running Fast 3D-Only Tracking (Segment Mode)...")
+            print(f"Running Fast 3D-Only Tracking (Segment Mode, {direction})...")
             tracker.full_forward_3d()
-            # Postprocess is disk-level (reads/rewrites the linkage files
-            # tracker.full_forward_3d() just wrote) and tracker-agnostic --
-            # same call the forward+backward path below makes. ON by default,
-            # matching PRESET_CONFIGS' priority_segment_3d entry (see the
-            # measured tradeoff in its comment: ~50% longer trajectories for
-            # ~20-40% wall time) -- set track.postprocess: false to opt out.
+            if direction == "forward_backward":
+                tracker.full_backward()
             if track_cfg.get("postprocess", True):
                 stats = tracker.postprocess()
                 print(
@@ -54,11 +51,6 @@ class Tracking:
                     f"{stats.get('links_after', 0)}"
                 )
         else:
-            # trackcorr engine: direction picks forward-only vs
-            # forward+backward; postprocess (reciprocity/cold-start/gap-
-            # relink) only runs after a backward pass exists to check
-            # reciprocity against.
-            direction = infer_direction(track_cfg, plugins_cfg)
             if direction == "forward_backward":
                 print("Running TrackCorr Tracking (Forward + Backward)...")
                 tracker.full_forward()
@@ -72,6 +64,12 @@ class Tracking:
             else:
                 print("Running TrackCorr Tracking (Forward only)...")
                 tracker.full_forward()
+                if track_cfg.get("postprocess", False):
+                    stats = tracker.postprocess(reciprocity=False)
+                    print(
+                        f"Post-process links: {stats.get('links_before', 0)} -> "
+                        f"{stats.get('links_after', 0)}"
+                    )
 
         corrective_passes = int(track_cfg.get("corrective_passes", 0))
         if corrective_passes > 0:
