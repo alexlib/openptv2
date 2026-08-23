@@ -6,7 +6,6 @@ from typing import Any, Dict
 
 class TrackingPreset(str, Enum):
     PRIORITY_SEGMENT_3D = "priority_segment_3d"  # 3D Segment-Priority (Cython Engine - Default)
-    KALMAN_HUNGARIAN_3D = "kalman_hungarian_3d"  # 3D Kalman-Hungarian (Python Engine)
     FAST_3D = "fast_3d"  # Alias for priority_segment_3d
     FAST = "fast"  # Alias for priority_segment_3d
     FULL_MULTIPASS = "full_multipass"  # Forward + Backward + Reciprocity Postprocessing
@@ -25,10 +24,6 @@ PRESET_CHOICES = [
     (
         "cython_epipolar_tracking",
         "OpenPTV Epipolar (Multi-Camera Cython)",
-    ),
-    (
-        "fast_3d_smooth",
-        "OpenPTV2 3D Smooth (SG Extrapolation + Hungarian)",
     ),
     (
         "full_multipass",
@@ -81,18 +76,6 @@ PRESET_CONFIGS: Dict[str, Dict[str, Any]] = {
         "postprocess": True,
         "selected_tracking": "priority_segment_3d",
     },
-    "kalman_hungarian_3d": {
-        "track_mode": 1,
-        "flagNewParticles": True,
-        "postprocess": False,
-        "selected_tracking": "kalman_hungarian_3d",
-    },
-    "quality_3d_tracking": {
-        "track_mode": 1,
-        "flagNewParticles": True,
-        "postprocess": False,
-        "selected_tracking": "kalman_hungarian_3d",
-    },
     "full_multipass": {
         "track_mode": 0,
         "flagNewParticles": True,
@@ -122,8 +105,6 @@ def infer_preset(
     # Resolve aliases
     if selected_tracking in ("fast", "fast_3d", "priority_segment_3d"):
         return "priority_segment_3d"
-    if selected_tracking in ("quality_3d_tracking", "kalman_hungarian_3d"):
-        return "kalman_hungarian_3d"
     if selected_tracking in (
         "full_multipass",
         "two_directional",
@@ -197,7 +178,6 @@ TRACKER_CHOICES = [
     ("trackcorr", "OpenPTV Epipolar (Multi-Camera 2D+3D)"),
     ("nearest_hungarian_3d", "MyPTV 3D (Nearest-Neighbor Hungarian)"),
     ("myptv_2d_tracking", "MyPTV 2D (Image-Space Assignment)"),
-    ("fast_3d_smooth", "OpenPTV2 3D Smooth (SG Extrapolation + Hungarian)"),
     ("predictive_gmm_3d", "proPTV (Predictive GMM - Optional)"),
 ]
 
@@ -211,13 +191,12 @@ DIRECTION_CHOICES = [
 TRACKER_SUPPORTS_BACKWARD: Dict[str, bool] = {
     "priority_segment_3d": False,
     "trackcorr": True,
-    "kalman_hungarian_3d": False,
     "nearest_hungarian_3d": False,
     "predictive_gmm_3d": True,
 }
 
-# Trackers whose do_tracking() reads track.postprocess at all (myptv/proptv/
-# kalman engines run their own self-contained pipeline and ignore it).
+# Trackers whose do_tracking() reads track.postprocess at all (myptv/proptv
+# engines run their own self-contained pipeline and ignore it).
 TRACKER_SUPPORTS_POSTPROCESS = {"priority_segment_3d", "trackcorr"}
 
 _LEGACY_TRACKER_ALIASES = {
@@ -228,8 +207,6 @@ _LEGACY_TRACKER_ALIASES = {
     "standard_forward": "trackcorr",
     "two_directional": "trackcorr",
     "splitter_tracking": "trackcorr",
-    "quality_3d_tracking": "kalman_hungarian_3d",
-    "quality_3d": "kalman_hungarian_3d",
     "myptv_3d_tracking": "nearest_hungarian_3d",
     "proptv_tracking": "predictive_gmm_3d",
     "proptv": "predictive_gmm_3d",
@@ -291,7 +268,7 @@ def apply_tracker(
         track_params["flagNewParticles"] = True
         track_params.pop("direction", None)
         proptv_params["backtracking"] = direction == "forward_backward"
-    else:  # kalman_hungarian_3d, nearest_hungarian_3d
+    else:  # nearest_hungarian_3d, etc.
         track_params["track_mode"] = 1
         track_params["flagNewParticles"] = True
         track_params.pop("direction", None)
@@ -309,12 +286,12 @@ def apply_tracker(
 # (dv*), mm/frame^2 (dacc), gon (angle) -- trackcorr/priority_segment_3d's
 # native units (dt is always 1 frame throughout openptv2, so mm/frame and
 # mm/frame^2 are numerically what the isotropic trackers below also expect
-# for their own v_max/a_max). kalman_hungarian_3d and nearest_hungarian_3d
-# search an isotropic sphere/radius rather than trackcorr's per-axis box, so
-# they need a single scalar bound; predictive_gmm_3d's own angle concept is
-# in degrees, not gon. These two helpers are the ONE place that derives
-# those isotropic/degree values from the shared per-axis/gon inputs, so
-# every tracker reads the same parameter types with the same meaning.
+# for their own v_max/a_max). nearest_hungarian_3d searches an isotropic
+# sphere/radius rather than trackcorr's per-axis box, so it needs a single
+# scalar bound; predictive_gmm_3d's own angle concept is in degrees, not gon.
+# These two helpers are the ONE place that derives those isotropic/degree
+# values from the shared per-axis/gon inputs, so every tracker reads the same
+# parameter types with the same meaning.
 # ---------------------------------------------------------------------------
 
 GON_TO_DEG = 0.9  # 400 gon = 360 deg (gon is trackcorr's legacy convention)

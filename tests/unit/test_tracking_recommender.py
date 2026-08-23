@@ -122,7 +122,7 @@ def test_suggest_params_margin_not_clamped_back_to_raw_p95():
     clamp used to trigger at 0.8x spacing, which silently clamped the
     margin-widened dvxmax right back down to roughly the raw (too-tight)
     p95 displacement value -- on test_data/synthetic_turbulent this
-    left priority_segment_3d/kalman_hungarian_3d/nearest_hungarian_3d with
+    left priority_segment_3d/nearest_hungarian_3d with
     mean trajectory length as low as 1 frame despite the margin fix, because
     the clamp fired every time. The clamp should only fire well above one
     mean-spacing multiple, not routinely undo the margin.

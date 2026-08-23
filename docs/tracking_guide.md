@@ -154,8 +154,8 @@ To understand why `priority_segment_3d` shows a higher raw *overall* mean length
 
 OpenPTV2 supports extensible tracking algorithms selected via `plugins.selected_tracking`:
 
-* **`kalman_hungarian_3d`** (`kalman_hungarian_3d`):
-  High-accuracy Constant-Acceleration 3D Kalman Filter predictor with multi-term cost matrix (distance + velocity continuity + acceleration penalty) and Hungarian cluster assignment. Delivers **98.0% precision** at high speed (~178 ms/frame). See [**`kalman_hungarian_3d` Mathematical Guide**](file:///C:/Users/alex/projects/openptv2/docs/kalman_hungarian_3d_guide.md).
+* **`priority_segment_3d`**:
+  High-speed Cythonized 3D segment-priority engine with grid spatial indexing.
 * **`default` (`trackcorr`)**:
   Standard OpenPTV Lagrangian tracking engine. Works best for 3D PTV setups with 2-4 cameras.
 * **`splitter_tracking`**:

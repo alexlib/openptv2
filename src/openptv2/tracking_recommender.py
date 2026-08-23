@@ -347,14 +347,13 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
     Margin calibrated empirically (scripts/tune_tracker_params.py, a grid
     sweep over dv/dacc/angle on test_data/synthetic_turbulent), not derived
     analytically: the previous 1.2x displacement margin with a SEPARATE
-    p95_acceleration*1.2 dacc measurably starved priority_segment_3d,
-    kalman_hungarian_3d, and nearest_hungarian_3d of recall (mean trajectory
-    length as low as 1 frame on some trackers) -- the p95_acceleration
-    estimate in particular compounds nearest-neighbour-mismatch noise across
-    THREE frames (a second difference), so it runs even more inflated than
-    p95_displacement. Across all three trackers swept, capping dacc at the
-    SAME value as the (now wider) displacement bound outperformed the
-    separate, larger acceleration-derived value.
+    p95_acceleration*1.2 dacc measurably starved priority_segment_3d and
+    nearest_hungarian_3d of recall (mean trajectory length as low as 1 frame
+    on some trackers) -- the p95_acceleration estimate in particular compounds
+    nearest-neighbour-mismatch noise across THREE frames (a second difference),
+    so it runs even more inflated than p95_displacement. Across trackers swept,
+    capping dacc at the SAME value as the (now wider) displacement bound
+    outperformed the separate, larger acceleration-derived value.
 
     That earlier sweep only ever compared dacc values *at or above*
     half_window, so it established which of those was best, not that
@@ -392,17 +391,14 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
         #   --- 220 particles/frame ---
         #   priority_segment_3d   .978 / .850    .975 / .891    .967 / .894
         #   nearest_hungarian_3d  .980 / .778    .987 / .882    .984 / .890
-        #   kalman_hungarian_3d   .968 / .679    .978 / .825    .974 / .874
         #   --- 970 particles/frame ---
         #   priority_segment_3d   .950 / .873    .938 / .872    .916 / .867
         #   nearest_hungarian_3d  .960 / .860    .946 / .853    .848 / .765
-        #   kalman_hungarian_3d   .938 / .798    .936 / .839    .875 / .783
         #
         # 1.0 is never the best column and is the worst for every tracker at
         # the higher density. 0.6 takes large gains where results are poor
         # (dense: up to +9.8 points of precision and +8.8 of yield) against
-        # small losses where they are already good (sparse: kalman gives up
-        # 4.9 points of yield, the worst case). The optimum is genuinely
+        # small losses where they are already good. The optimum is genuinely
         # density-dependent -- 0.8 wins at 220/frame, 0.4 at 970/frame -- so
         # a future refinement could scale it by
         # stats.mean_interparticle_distance rather than use one constant.
@@ -432,10 +428,9 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
         if p95_displacement > 0:
             params["v_max"] = params["dvxmax"]
             params["a_max"] = params["dacc"]
-        # This tracker's angle filter is a hard binary reject (not a soft
-        # cost term like kalman_hungarian_3d's), so an overly tight bound
-        # throws away good matches rather than just de-weighting them --
-        # swept best at effectively unrestricted (200 gon = 180 deg).
+        # This tracker's angle filter is a hard binary reject, so an overly
+        # tight bound throws away good matches rather than just de-weighting
+        # them -- swept best at effectively unrestricted (200 gon = 180 deg).
         params["angle"] = 200.0
     elif info.name == "predictive_gmm_3d":
         if p95_displacement > 0:

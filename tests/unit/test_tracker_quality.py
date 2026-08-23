@@ -126,8 +126,6 @@ def test_fast_3d_quality_floor_at_1k_density():
 _STAGE0B_FLOORS = {
     "priority_segment_3d": {"precision": 0.88, "yield_recall": 0.86, "ghost_capture_rate": 0.06},
     "trackcorr": {"precision": 0.88, "yield_recall": 0.80, "ghost_capture_rate": 0.06},
-    "kalman_hungarian_3d": {"precision": 0.82, "yield_recall": 0.72, "ghost_capture_rate": 0.06},
-    "sg_hungarian_3d": {"precision": 0.56, "yield_recall": 0.49, "ghost_capture_rate": 0.06},
     "nearest_hungarian_3d": {"precision": 0.67, "yield_recall": 0.62, "ghost_capture_rate": 0.06},
     "predictive_gmm_3d": {"precision": 0.69, "yield_recall": 0.67, "ghost_capture_rate": 0.055},
 }

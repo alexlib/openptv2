@@ -190,7 +190,7 @@ def print_table(rows: list[dict]) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("tracker", choices=[
-        "priority_segment_3d", "trackcorr", "kalman_hungarian_3d",
+        "priority_segment_3d", "trackcorr",
         "nearest_hungarian_3d", "predictive_gmm_3d",
     ])
     ap.add_argument("--dv", type=float, nargs="+", default=[2.0, 4.0, 6.0, 10.0, 15.0],

@@ -14,8 +14,6 @@ OpenPTV2 features five 3D tracking engines, each engineered for distinct flow re
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
 | **`priority_segment_3d`** *(Default)* | **0.974** | **0.901** | **3.56** | **0.970** | **73.7%** | **159.4 ms** |
 | **`nearest_hungarian_3d`** | **0.984** | **0.904** | **3.53** | **0.982** | **76.2%** | **150.6 ms** |
-| **`kalman_hungarian_3d`** | 0.906 | 0.852 | 3.37 | 0.964 | 72.5% | 556.9 ms |
-| **`sg_hungarian_3d`** | 0.966 | 0.860 | 4.64 | 0.965 | 77.6% | 174.2 ms |
 | **`predictive_gmm_3d`** | 0.959 | 0.752 | 7.53 | 0.977 | **86.0%** | 732.3 ms |
 
 ---
@@ -27,11 +25,11 @@ To go beyond single-pass limits, OpenPTV2 supports multi-pass hybrid cascading w
 | Hybrid Strategy Pipeline | Precision | Recall / Yield | Ghost % | Fragment Count ($F$) | Track Purity | Perfect Match % (PMT) | Speed (ms/frame) |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | **Baseline (Single Pass `priority_segment_3d`)** | **0.974** | **0.901** | 3.56% | 3.56 | **0.970** | 73.7% | **157.0 ms** |
-| **Strategy 1: Forward-Fast / Backward-Kalman** | **0.974** | **0.901** | **0.50%** | **3.15** | 0.965 | **93.6%** | 689.9 ms |
+| **Strategy 1: Forward-Fast / Backward-GMM** | **0.974** | **0.901** | **0.50%** | **3.15** | 0.965 | **93.6%** | 689.9 ms |
 | **Strategy 2: Two-Scale Velocity Cascading** | 0.963 | 0.888 | **1.07%** | 3.67 | 0.938 | **87.0%** | 365.4 ms |
 
 ### Strategy Highlights
-- **Strategy 1 (Forward Fast / Backward Kalman)**: Increases **Perfect Match Trajectory Percentage (PMT%) from 73.7% to 93.6%** and reduces **Ghost capture rate from 3.56% down to 0.50%**.
+- **Strategy 1 (Forward Fast / Backward GMM)**: Increases **Perfect Match Trajectory Percentage (PMT%) from 73.7% to 93.6%** and reduces **Ghost capture rate from 3.56% down to 0.50%**.
 - **Strategy 2 (Two-Scale Velocity Cascading)**: Achieves **87.0% PMT** and reduces Ghost capture to **1.07%** at nearly **double the speed** of Strategy 1 (365.4 ms/frame).
 
 ---
@@ -46,12 +44,12 @@ To go beyond single-pass limits, OpenPTV2 supports multi-pass hybrid cascading w
 [ High / Medium Density ]                                         [ Low Density / Sparse ]
     (N > 500 / frame)                                                (N < 200 / frame)
            │                                                                 │
-   ┌───────┴────────┐                                              ┌─────────┴─────────┐
-   ▼                ▼                                              ▼                   ▼
-[ Smooth Flow ]  [ Strong Turbulence ]                      [ Moderate Noise ]   [ High Noise / Missing ]
-   │                │                                              │                   │
-   ▼                ▼                                              ▼                   ▼
-priority_segment_3d nearest_hungarian_3d                   kalman_hungarian_3d  predictive_gmm_3d
+   ┌───────┴────────┐                                                        │
+   ▼                ▼                                                        ▼
+[ Smooth Flow ]  [ Strong Turbulence ]                             [ High Noise / Missing ]
+   │                │                                                        │
+   ▼                ▼                                                        ▼
+priority_segment_3d nearest_hungarian_3d                             predictive_gmm_3d
 ```
 
 ### Condition-by-Condition Guide
@@ -60,8 +58,7 @@ priority_segment_3d nearest_hungarian_3d                   kalman_hungarian_3d  
 |---|---|---|
 | **High Density / Large Datasets** ($N > 1,000$) | `priority_segment_3d` | $O(N)$ spatial grid cell indexing provides 4x–10x faster runtime without precision loss. |
 | **High Velocity Turbulences & Recirculation** | `nearest_hungarian_3d` | Global Hungarian bipartite matching prevents greedy assignment conflicts in dense eddies. |
-| **Noisy Data & Occasional Occlusions** | `kalman_hungarian_3d` | Kalman state estimation filters measurement noise and propagates particle states across missing frames. |
-| **Curved & Smooth Trajectories** | `sg_hungarian_3d` | Savitzky-Golay polynomial velocity smooths acceleration noise without overshooting turns. |
+| **Irregular Steps / High Noise** | `predictive_gmm_3d` | GMM-based predictive estimation handles complex trajectory curvatures and noise. |
 | **Fragmented Tracks needing High Purity** | **Strategy 1 Hybrid** | **93.6% PMT** with **0.50% Ghost Capture rate**. |
 
 ---
@@ -76,15 +73,7 @@ priority_segment_3d nearest_hungarian_3d                   kalman_hungarian_3d  
   - *Default*: `120.0 deg`
   - *Tuning*: Decrease to `45.0–60.0 deg` for directed laminar flows to prune improbable sharp turns.
 
-### B. `kalman_hungarian_3d` (Kalman-Hungarian Engine)
-- **`gate_threshold` (Mahalanobis Distance Cutoff)**:
-  - *Default*: `9.21` ($\chi^2$ 99% confidence for 3 DOF).
-  - *Tuning*: Lower to `5.99` (95% confidence) in high-density cases to prevent false links; raise to `11.34` for high turbulent jitter.
-- **`process_noise_std` ($Q$ covariance)**:
-  - *Default*: `0.5 mm/frame`
-  - *Tuning*: Increase to `1.5–2.5 mm/frame` for turbulent fluid elements experiencing rapid velocity shifts.
-
-### C. `nearest_hungarian_3d` (MyPTV Kinematic Engine)
+### B. `nearest_hungarian_3d` (MyPTV Kinematic Engine)
 - **`search_radius` (Max Displacement Distance, mm)**:
   - *Default*: Derived from `dvxmax` (`15.5 mm`).
   - *Tuning*: Set search radius to $1.5 \times v_{\max} \Delta t$. Setting radius too large ($>3 \times v_{\max}$) degrades precision in dense regions.

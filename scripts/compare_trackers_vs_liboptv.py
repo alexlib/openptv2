@@ -16,7 +16,7 @@ Two independent questions, both scored per-tracker:
      metrics, but with liboptv's own forward-mode output as the reference
      trajectory set instead of ground truth. priority_segment_3d and
      trackcorr are direct translations of liboptv algorithms, so this is a
-     near-parity check for them; kalman_hungarian_3d/nearest_hungarian_3d/
+     near-parity check for them; nearest_hungarian_3d/
      predictive_gmm_3d are intentionally different algorithms, so disagreement
      there is expected and diagnostic, not a bug.
 
@@ -74,14 +74,13 @@ def _run_via_subprocess(
     return tracks, payload["time_s"]
 
 # Which liboptv forward-mode engine each openptv2 tracker is checked
-# against. priority_segment_3d/kalman/myptv/proptv are all 3D-only linkers
+# against. priority_segment_3d/myptv/proptv are all 3D-only linkers
 # over already-triangulated rt_is.# points (liboptv's fast3d counterpart);
 # trackcorr is the multi-camera 2D+3D epipolar engine (liboptv's own
 # trackcorr, same input target files).
 LIBOPTV_REFERENCE = {
     "priority_segment_3d": "fast3d",
     "trackcorr": "trackcorr",
-    "kalman_hungarian_3d": "fast3d",
     "nearest_hungarian_3d": "fast3d",
     "predictive_gmm_3d": "fast3d",
 }

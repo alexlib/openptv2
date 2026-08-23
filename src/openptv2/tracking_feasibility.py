@@ -7,11 +7,10 @@ This is a real, measured failure mode, not a hypothetical: on test_cavity
 (docs/plans/two-subrig-calibration.md), the true flow is ~0.2-0.3mm/frame
 while z-reconstruction noise is ~0.3-0.6mm (from ~7x worse depth than
 in-plane pixel sensitivity, a property of the camera rig geometry). No
-tracker parameter or algorithm choice fixes that; both a Kalman filter
-(quality_3d_tracking) and a global Hungarian assignment (nearest_hungarian_3d)
-were tried on this dataset and neither helped, because the limitation is in
-the input data's information content, not in how the tracker decides between
-candidates. The only way to raise the ceiling is more/better-conditioned
+tracker parameter or algorithm choice fixes that; global Hungarian
+assignment (nearest_hungarian_3d) was tried on this dataset and did not help,
+because the limitation is in the input data's information content, not in how
+the tracker decides between candidates. The only way to raise the ceiling is more/better-conditioned
 calibration data or different rig geometry (see the plan doc); the only
 thing software can do about an *existing* dataset is say so up front.
 """

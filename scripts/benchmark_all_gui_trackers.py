@@ -35,7 +35,6 @@ ROWS = [
     ("OpenPTV Epipolar (Multi-Camera 2D+3D)", "full_multipass", "forward + backward"),
     ("MyPTV 3D (Nearest-Neighbor Hungarian)", "nearest_hungarian_3d", "n/a"),
     ("MyPTV 2D (Image-Space Assignment)", "myptv_2d_tracking", "n/a"),
-    ("OpenPTV2 3D Smooth (SG Extrapolation + Hungarian)", "fast_3d_smooth", "n/a"),
     ("proPTV (Predictive GMM - Optional)", "predictive_gmm_3d", "n/a (no direction toggle found)"),
 ]
 

@@ -287,69 +287,6 @@ FOUR_BE_INFO = TrackerInfo(
     typical_datasets="3D PTV benchmark sequences, turbulent flow sequences.",
 )
 
-KALMAN_HUNGARIAN_3D_INFO = TrackerInfo(
-    name="kalman_hungarian_3d",
-    display_name="3D Kalman-Hungarian (Python Engine)",
-    short_description="Multi-frame Kalman predictor + cKDTree sparse graph Hungarian assignment",
-    algorithm_summary=(
-        "Uses a 9D Constant-Acceleration / Constant-Velocity Kalman Filter predictor with dynamic "
-        "innovation gating. Candidate matching is solved via cKDTree bipartite graph decomposition "
-        "and connected-component Hungarian assignment using multi-term physical cost matrices."
-    ),
-    algorithm_detail=(
-        "Uses ConstantAccelerationKF3D from openptv2.tracking_kalman and match_within_radius from "
-        "openptv2.plugins._assignment. Features two-tiered innovation search gating for high-density "
-        "particle stability and multi-frame gap bridging."
-    ),
-    supports_backward=False,
-    supports_new_particles=True,
-    supports_2d=False,
-    supports_postprocessing=False,
-    supports_gap_relinking=True,
-    supports_multimedia=False,
-    supports_splitter=False,
-    supports_cost_weights=True,
-    speed_ranking="fast",
-    density_ranking="high",
-    accuracy_ranking="highest",
-    parameters=(
-        ParameterGuide(
-            name="v_max",
-            type="float",
-            default="15.0",
-            description="Maximum baseline search radius for unseeded tracks (mm).",
-            how_to_choose=(
-                "Not a separate field in Tracking Parameters -- derived from the "
-                "same track.dvxmax/dvymax/dvzmax as every other tracker via "
-                "tracking_presets.unified_velocity_bound() (the largest of the "
-                "three, since this tracker searches an isotropic radius, not "
-                "trackcorr's per-axis box). Set to max expected displacement."
-            ),
-            typical_range="1 – 50",
-            unit="mm",
-        ),
-        ParameterGuide(
-            name="a_max",
-            type="float",
-            default="6.0",
-            description="Maximum innovation gating radius for seeded tracks (mm).",
-            how_to_choose=(
-                "Same track.dacc field trackcorr/priority_segment_3d use "
-                "(mm/frame^2, but numerically a mm search radius since dt=1 "
-                "frame throughout openptv2). No angle parameter here: the "
-                "multi-term cost matrix already penalizes velocity-direction "
-                "changes continuously, so a hard angle cutoff isn't used."
-            ),
-            typical_range="1 – 20",
-            unit="mm",
-        ),
-    ),
-    default_preset="kalman_hungarian_3d",
-    best_for="High-density flows, data with missing frame dropouts, or where multi-term physical cost weights are needed.",
-    avoid_when="Simple low-density sequences where priority_segment_3d is sufficient.",
-    typical_datasets="High-density 3D particle sequences.",
-)
-
 STANDARD_FORWARD_INFO = TrackerInfo(
     name="standard_forward",
     display_name="Standard Forward (2D+3D)",
@@ -725,69 +662,11 @@ PROPTV_INFO = TrackerInfo(
 )
 
 
-# ----------------------------------------------------------------------
-FAST_3D_SMOOTH_INFO = TrackerInfo(
-    name="fast_3d_smooth",
-    display_name="Fast 3D Smooth (SG velocity)",
-    short_description="Fast 3D-only tracking with a Savitzky-Golay smoothed velocity predictor",
-    algorithm_summary=(
-        "priority_segment_3d 2-point extrapolation upgraded to a Savitzky-Golay smoothed "
-        "velocity estimate over a short track history, with radius-limited "
-        "Hungarian assignment instead of the order-dependent greedy scan."
-    ),
-    algorithm_detail=(
-        "Reads rt_is.# particles and links them in 3D only (no 2D epipolar search). "
-        "Each track's last positions are smoothed with an order-3 SG filter; the "
-        "smoothed velocity extrapolates the next position and candidates are matched "
-        "with a radius-limited Hungarian assignment (openptv2.plugins._assignment). "
-        "Cuts single-frame velocity-noise amplification roughly in half at window 5 "
-        "and removes greedy ordering bias at crossing particles."
-    ),
-    supports_backward=False,
-    supports_new_particles=True,
-    supports_2d=False,
-    supports_postprocessing=False,
-    supports_gap_relinking=True,
-    supports_multimedia=False,
-    supports_splitter=False,
-    supports_cost_weights=True,
-    speed_ranking="fast",
-    density_ranking="low_to_moderate",
-    accuracy_ranking="standard",
-    parameters=(
-        ParameterGuide(
-            name="dvxmin / dvxmax",
-            type="float",
-            default="±10.0",
-            description="Velocity search window in X for tracks without a velocity estimate (mm/frame).",
-            how_to_choose="From a myptv probe envelope (p1/p99), e.g. ±6 for the synthetic turbulent case.",
-            typical_range="1 – 20",
-            unit="mm/frame",
-        ),
-        ParameterGuide(
-            name="dacc",
-            type="float",
-            default="3.0",
-            description="Search radius around the predicted position for seeded tracks (mm).",
-            how_to_choose="From the probe's 2nd-derivative envelope; too large lets wrong neighbours in.",
-            typical_range="1 – 10",
-            unit="mm",
-        ),
-    ),
-    default_preset="fast_3d_smooth",
-    best_for="Same as priority_segment_3d but on data with moderate noise or brief crossings.",
-    avoid_when="Extremely high density or particles vanishing for 2+ frames.",
-    typical_datasets="Synthetic verification, noisy first-pass 3D IS data, preview batches.",
-)
-
-
 def _build_registry() -> None:
     entries: list[TrackerInfo] = [
         PRIORITY_SEGMENT_3D_INFO,
         FOUR_BE_INFO,
-        KALMAN_HUNGARIAN_3D_INFO,
         FULL_MULTIPASS_INFO,
-        FAST_3D_SMOOTH_INFO,
         STANDARD_FORWARD_INFO,
         TWO_DIRECTIONAL_INFO,
         MYPTV_3D_INFO,
@@ -801,7 +680,6 @@ def _build_registry() -> None:
     # Register legacy aliases
     TRACKER_REGISTRY["fast_3d"] = PRIORITY_SEGMENT_3D_INFO
     TRACKER_REGISTRY["fast"] = PRIORITY_SEGMENT_3D_INFO
-    TRACKER_REGISTRY["quality_3d_tracking"] = KALMAN_HUNGARIAN_3D_INFO
     TRACKER_REGISTRY["myptv_3d_tracking"] = MYPTV_3D_INFO
     TRACKER_REGISTRY["proptv_tracking"] = PROPTV_INFO
     TRACKER_REGISTRY["trackcorr"] = FULL_MULTIPASS_INFO
@@ -815,8 +693,6 @@ def get_tracker_info(name: str) -> TrackerInfo | None:
     alias_map = {
         "fast_3d": "priority_segment_3d",
         "fast": "priority_segment_3d",
-        "quality_3d_tracking": "kalman_hungarian_3d",
-        "fast_3d_smooth": "fast_3d_smooth",
         "myptv_3d_tracking": "nearest_hungarian_3d",
         "proptv_tracking": "predictive_gmm_3d",
     }

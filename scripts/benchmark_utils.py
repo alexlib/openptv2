@@ -31,7 +31,7 @@ SRC = Path("test_data/synthetic_turbulent")
 FIRST = 10001
 N_FRAMES = 30
 LAST = FIRST + N_FRAMES - 1
-TRACKERS = ["priority_segment_3d", "trackcorr", "kalman_hungarian_3d", "sg_hungarian_3d", "nearest_hungarian_3d", "predictive_gmm_3d"]
+TRACKERS = ["priority_segment_3d", "trackcorr", "nearest_hungarian_3d", "predictive_gmm_3d"]
 
 BASE_OVERRIDES = dict(dvxmax=6.0, dvxmin=-6.0, dvymax=6.0, dvymin=-6.0,
                       dvzmax=6.0, dvzmin=-6.0, dacc=6.0)
@@ -241,8 +241,8 @@ def run_liboptv_tracker(
 
     ``mode``:
       "fast3d"    -- Tracker.full_forward_3d(), liboptv's counterpart of our
-                     priority_segment_3d/kalman_hungarian_3d/
-                     nearest_hungarian_3d/predictive_gmm_3d (3D-only linking
+                     priority_segment_3d/nearest_hungarian_3d/
+                     predictive_gmm_3d (3D-only linking
                      over already-triangulated rt_is.# points).
       "trackcorr" -- Tracker.full_forward(), liboptv's counterpart of our
                      trackcorr engine (multi-camera 2D+3D epipolar search).

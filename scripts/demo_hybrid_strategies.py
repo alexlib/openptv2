@@ -3,10 +3,10 @@
 
 Compares:
 1. Baseline Default Single-Pass: priority_segment_3d
-2. Strategy 1: Forward-Fast / Backward-Kalman Hybrid
-   (Fast priority_segment_3d forward pass + kalman_hungarian_3d backward pass on unlinked residue)
+2. Strategy 1: Forward-Fast / Backward-GMM Hybrid
+   (Fast priority_segment_3d forward pass + predictive_gmm_3d backward pass on unlinked residue)
 3. Strategy 2: Two-Scale Velocity Cascading
-   (Coarse nearest_hungarian_3d pass + Fine sg_hungarian_3d pass on residual particles)
+   (Coarse nearest_hungarian_3d pass + Fine predictive_gmm_3d pass on residual particles)
 
 Emits unified performance metrics (Precision, Recall/Yield, Purity, PMT%, Speed).
 """
@@ -50,20 +50,20 @@ def run_strategy_single_pass(
         shutil.rmtree(run_dir, ignore_errors=True)
 
 
-def run_strategy_1_forward_fast_backward_kalman(
+def run_strategy_1_forward_fast_backward_gmm(
     src: Path = bu.SRC, first: int = bu.FIRST, n_frames: int = bu.N_FRAMES
 ) -> tuple[dict, float]:
-    """Strategy 1: Forward-Fast / Backward-Kalman Hybrid."""
+    """Strategy 1: Forward-Fast / Backward-GMM Hybrid."""
     run_dir, yaml_run = _isolate_and_set_n_frames(src, first, n_frames)
     try:
         t0 = time.perf_counter()
         # 1. Forward fast pass
         pred_fwd = bm.run_tracker(yaml_run, "priority_segment_3d", track_overrides=bu.BASE_OVERRIDES)
 
-        # 2. Backward Kalman pass for gap filling and tight turn recovery
-        kalman_overrides = dict(bu.BASE_OVERRIDES)
-        kalman_overrides["reverse"] = True
-        pred_bwd = bm.run_tracker(yaml_run, "kalman_hungarian_3d", track_overrides=kalman_overrides)
+        # 2. Backward GMM pass for gap filling and tight turn recovery
+        gmm_overrides = dict(bu.BASE_OVERRIDES)
+        gmm_overrides["reverse"] = True
+        pred_bwd = bm.run_tracker(yaml_run, "predictive_gmm_3d", track_overrides=gmm_overrides)
 
         # 3. Merge tracks: start with forward links, add non-overlapping backward links
         merged_tracks = {}
@@ -119,7 +119,7 @@ def run_strategy_2_two_scale_velocity_cascading(
         fine_overrides["dvymin"] = -4.0
         fine_overrides["dvzmax"] = 4.0
         fine_overrides["dvzmin"] = -4.0
-        pred_fine = bm.run_tracker(yaml_run, "sg_hungarian_3d", track_overrides=fine_overrides)
+        pred_fine = bm.run_tracker(yaml_run, "predictive_gmm_3d", track_overrides=fine_overrides)
 
         # 3. Combine non-conflicting trajectories
         merged_tracks = {}
@@ -157,7 +157,7 @@ def compare_all_strategies(src: Path = bu.SRC, first: int = bu.FIRST, n_frames: 
 
     strategies = [
         ("Baseline (Single Pass)", run_strategy_single_pass),
-        ("Strategy 1 (Fwd-Fast/Bwd-Kalman)", run_strategy_1_forward_fast_backward_kalman),
+        ("Strategy 1 (Fwd-Fast/Bwd-GMM)", run_strategy_1_forward_fast_backward_gmm),
         ("Strategy 2 (Two-Scale Cascading)", run_strategy_2_two_scale_velocity_cascading),
     ]
 

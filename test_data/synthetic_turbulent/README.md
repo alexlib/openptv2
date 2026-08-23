@@ -49,7 +49,7 @@ uv run python scripts/bench_trackers.py
 uv run python scripts/bench_trackers.py --density 1000,5000,20000  # see test_data/synthetic_turbulent_1k/
 ```
 
-Runs `priority_segment_3d`, `fast_3d_smooth`, `nearest_hungarian_3d` and `predictive_gmm_3d` on
+Runs `priority_segment_3d`, `nearest_hungarian_3d` and `predictive_gmm_3d` on
 isolated copies with identical `track` parameters and reports one table
 merging both metric systems computed from the same run: proPTV-style
 identity metrics (F, C, Cr/purity, pmt, ghost-capture rate) and link-level
