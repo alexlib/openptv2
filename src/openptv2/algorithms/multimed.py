@@ -11,6 +11,7 @@ Handles:
 
 from itertools import product
 import os
+from typing import Any
 
 import cython
 import numpy as np
@@ -535,6 +536,86 @@ def get_mmf_from_mmlut(
     return mmf
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def get_mmf_from_mmlut_batch(
+    positions: cython.double[:, :],
+    mmlut_origin: cython.double[:],
+    mmlut_nr: cython.int,
+    mmlut_nz: cython.int,
+    mmlut_rw: cython.double,
+    mmlut_data: cython.double[:],
+    out: cython.double[:] = None,
+):
+    """Vectorized / batch evaluation of MMLUT bilinear interpolation over N 3D points.
+
+    Args:
+        positions: (N, 3) float64 array of 3D points.
+        mmlut_origin: (3,) float64 array of origin coordinates.
+        mmlut_nr: number of radial grid points.
+        mmlut_nz: number of depth grid points.
+        mmlut_rw: grid cell size.
+        mmlut_data: (nr * nz,) float64 lookup table array.
+        out: Optional (N,) float64 array for output. If None, allocates a new array.
+
+    Returns:
+        (N,) float64 array of multimedia factors.
+    """
+    n: cython.int = positions.shape[0]
+    result = np.empty(n, dtype=np.float64) if out is None else out
+    res_mv: cython.double[:] = result
+
+    i: cython.int
+    tx: cython.double
+    ty: cython.double
+    tz: cython.double
+    sz: cython.double
+    iz: cython.int
+    R: cython.double
+    sr: cython.double
+    ir: cython.int
+    v4_0: cython.int
+    v4_1: cython.int
+    v4_2: cython.int
+    v4_3: cython.int
+
+    orig_x: cython.double = mmlut_origin[0]
+    orig_y: cython.double = mmlut_origin[1]
+    orig_z: cython.double = mmlut_origin[2]
+
+    for i in range(n):
+        tx = positions[i, 0] - orig_x
+        ty = positions[i, 1] - orig_y
+        tz = positions[i, 2] - orig_z
+        sz = tz / mmlut_rw
+        iz = int(sz)
+        sz -= iz
+
+        R = c_sqrt(tx * tx + ty * ty)
+        sr = R / mmlut_rw
+        ir = int(sr)
+        sr -= ir
+
+        if ir < 0 or ir + 1 > mmlut_nr - 1 or iz < 0 or iz + 1 > mmlut_nz - 1:
+            res_mv[i] = 0.0
+            continue
+
+        v4_0 = ir * mmlut_nz + iz
+        v4_1 = ir * mmlut_nz + (iz + 1)
+        v4_2 = (ir + 1) * mmlut_nz + iz
+        v4_3 = (ir + 1) * mmlut_nz + (iz + 1)
+
+        res_mv[i] = (
+            mmlut_data[v4_0] * (1.0 - sr) * (1.0 - sz)
+            + mmlut_data[v4_1] * (1.0 - sr) * sz
+            + mmlut_data[v4_2] * sr * (1.0 - sz)
+            + mmlut_data[v4_3] * sr * sz
+        )
+
+    return result
+
+
 def _corner_ray_extremes(x_px, y_px, cpar, c, mm, Zmin, Zmax):
     """Ray-trace one image corner through camera `c` and return its (X, Y)
     ground position at Zmin and Zmax.
@@ -816,7 +897,9 @@ def init_mmlut(vpar, cpar, cal):
     return cal
 
 
-def prepare_mmluts(vpar, cpar, cals, n_workers: int | None = None) -> None:
+def prepare_mmluts(
+    vpar, cpar, cals, store: Any | None = None, n_workers: int | None = None
+) -> None:
     """Build the multimedia LUT for every camera that lacks one in parallel.
 
     This is the explicit "init at run start" that lets the whole pipeline
@@ -827,6 +910,8 @@ def prepare_mmluts(vpar, cpar, cals, n_workers: int | None = None) -> None:
       already short-circuits to 1.0, so a LUT would only add overhead.
     - Idempotent: cameras whose LUT is already initialized are skipped, so it
       is safe to call at several pipeline entry points.
+    - Persistent Store Caching: If a RunStore is provided and has cached MMLUT
+      tables, loads directly in 0.000s. Otherwise writes computed tables to store.
     - Multi-camera parallel: initializes multiple cameras concurrently using a thread pool.
     """
     from concurrent.futures import ThreadPoolExecutor
@@ -836,12 +921,25 @@ def prepare_mmluts(vpar, cpar, cals, n_workers: int | None = None) -> None:
     if mm.n1 == 1.0 and n2_0 == 1.0 and mm.n3 == 1.0:
         return
 
-    uninit_cals = [cal for cal in cals if not cal.mmlut.is_initialized]
+    # Check if we can reload from store first
+    if store is not None and hasattr(store, "has_mmlut"):
+        for i, cal in enumerate(cals):
+            if not cal.mmlut.is_initialized and store.has_mmlut(i):
+                cached = store.read_mmlut(i)
+                if cached is not None:
+                    nr, nz, rw, origin, data = cached
+                    cal.mmlut.nr = nr
+                    cal.mmlut.nz = nz
+                    cal.mmlut.rw = rw
+                    cal.mmlut.origin = origin
+                    cal.mmlut.data = data
+
+    uninit_cals = [(i, cal) for i, cal in enumerate(cals) if not cal.mmlut.is_initialized]
     if not uninit_cals:
         return
 
     if len(uninit_cals) == 1:
-        init_mmlut(vpar, cpar, uninit_cals[0])
+        init_mmlut(vpar, cpar, uninit_cals[0][1])
     else:
         max_workers = (
             min(len(uninit_cals), os.cpu_count() or 1)
@@ -849,11 +947,105 @@ def prepare_mmluts(vpar, cpar, cals, n_workers: int | None = None) -> None:
             else max(1, n_workers)
         )
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [executor.submit(init_mmlut, vpar, cpar, cal) for cal in uninit_cals]
+            futures = [
+                executor.submit(init_mmlut, vpar, cpar, cal)
+                for _, cal in uninit_cals
+            ]
             for fut in futures:
                 fut.result()
+
+    # Write newly initialized tables to store if available
+    if store is not None and hasattr(store, "write_mmlut"):
+        for i, cal in uninit_cals:
+            if cal.mmlut.is_initialized and cal.mmlut.data is not None:
+                store.write_mmlut(
+                    i,
+                    cal.mmlut.nr,
+                    cal.mmlut.nz,
+                    cal.mmlut.rw,
+                    cal.mmlut.origin,
+                    cal.mmlut.data,
+                )
+
+
+def fit_mmlut_polynomial(cal, degree: int = 3) -> tuple[np.ndarray, dict]:
+    """Fit a 2D bivariate polynomial approximation to an initialized MMLUT grid.
+
+    Approximates radial shift factor as:
+        mu(R, Z) = sum_{p=0..d, q=0..d-p} c_{p,q} * R^p * Z^q
+
+    Args:
+        cal: Calibration object with initialized cal.mmlut.
+        degree: Polynomial degree (default: 3).
+
+    Returns:
+        (coeffs, stats):
+            coeffs: 1D array of polynomial coefficients.
+            stats: dict with 'max_abs_error', 'rms_error', 'degree'.
+    """
+    if not cal.mmlut.is_initialized or cal.mmlut.data is None:
+        raise ValueError("cal.mmlut must be initialized before fitting polynomial")
+
+    nr = cal.mmlut.nr
+    nz = cal.mmlut.nz
+    rw = cal.mmlut.rw
+    data = np.asarray(cal.mmlut.data).reshape((nr, nz))
+
+    # Grid coordinates
+    r_coords = np.arange(nr, dtype=np.float64) * rw
+    z_coords = np.arange(nz, dtype=np.float64) * rw
+
+    R_mesh, Z_mesh = np.meshgrid(r_coords, z_coords, indexing="ij")
+    r_flat = R_mesh.ravel()
+    z_flat = Z_mesh.ravel()
+    y_flat = data.ravel()
+
+    # Build Vandermonde design matrix for bivariate polynomial
+    basis = []
+    for d in range(degree + 1):
+        for p in range(d + 1):
+            q = d - p
+            basis.append((r_flat ** p) * (z_flat ** q))
+    A = np.column_stack(basis)
+
+    coeffs, _, _, _ = np.linalg.lstsq(A, y_flat, rcond=None)
+    y_pred = A @ coeffs
+    errors = np.abs(y_flat - y_pred)
+
+    stats = {
+        "degree": degree,
+        "n_terms": len(coeffs),
+        "max_abs_error": float(np.max(errors)),
+        "rms_error": float(np.sqrt(np.mean(errors ** 2))),
+    }
+    return coeffs, stats
+
+
+def eval_mmlut_polynomial(
+    positions: np.ndarray,
+    mmlut_origin: np.ndarray,
+    coeffs: np.ndarray,
+    degree: int = 3,
+) -> np.ndarray:
+    """Evaluate bivariate polynomial approximation over an (N, 3) array of 3D positions."""
+    pos = np.asarray(positions, dtype=np.float64)
+    tx = pos[:, 0] - mmlut_origin[0]
+    ty = pos[:, 1] - mmlut_origin[1]
+    tz = pos[:, 2] - mmlut_origin[2]
+
+    R = np.sqrt(tx * tx + ty * ty)
+    Z = tz
+
+    basis = []
+    for d in range(degree + 1):
+        for p in range(d + 1):
+            q = d - p
+            basis.append((R ** p) * (Z ** q))
+    A = np.column_stack(basis)
+    return A @ coeffs
 
 
 def is_compiled() -> bool:
     """Return whether this module is compiled to C."""
     return cython.compiled
+

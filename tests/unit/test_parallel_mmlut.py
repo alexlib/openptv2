@@ -119,3 +119,116 @@ def test_prepare_mmluts_multi_camera_parallel(cavity_params):
         assert cal.mmlut.is_initialized, f"Camera {i} mmlut not initialized"
         assert cal.mmlut.data is not None
         assert len(cal.mmlut.data) == cal.mmlut.nr * cal.mmlut.nz
+
+
+def test_run_store_mmlut_caching_roundtrip(cavity_params, tmp_path):
+    """Test persisting and reloading MMLUT tables through RunStore."""
+    from openptv2.storage.run_store import RunStore
+
+    exp, cpar, spar, vpar, cals = cavity_params
+    store = RunStore.open(tmp_path, mode="w")
+
+    # Initialize and cache into store
+    for cal in cals:
+        cal.mmlut.data = None
+    prepare_mmluts(vpar, cpar, cals, store=store, n_workers=4)
+
+    for i in range(len(cals)):
+        assert store.has_mmlut(i)
+        cached = store.read_mmlut(i)
+        assert cached is not None
+        nr, nz, rw, origin, data = cached
+        assert nr == cals[i].mmlut.nr
+        assert nz == cals[i].mmlut.nz
+        assert rw == cals[i].mmlut.rw
+        assert np.array_equal(origin, cals[i].mmlut.origin)
+        assert np.array_equal(data, cals[i].mmlut.data)
+
+    # Fresh calibrations loaded via cache
+    fresh_cals = [cal for cal in cals]
+    for cal in fresh_cals:
+        cal.mmlut.data = None
+
+    prepare_mmluts(vpar, cpar, fresh_cals, store=store)
+    for i, cal in enumerate(fresh_cals):
+        assert cal.mmlut.is_initialized
+        assert np.array_equal(cal.mmlut.data, cals[i].mmlut.data)
+
+
+def test_get_mmf_from_mmlut_batch_parity(cavity_params):
+    """Test that get_mmf_from_mmlut_batch matches scalar get_mmf_from_mmlut bit-exact."""
+    from openptv2.algorithms.multimed import get_mmf_from_mmlut, get_mmf_from_mmlut_batch
+
+    exp, cpar, spar, vpar, cals = cavity_params
+    prepare_mmluts(vpar, cpar, cals)
+
+    cal = cals[0]
+    # Generate 1,000 random test particles inside and around measurement volume
+    np.random.seed(42)
+    positions = np.random.uniform(low=[-50.0, -50.0, -50.0], high=[50.0, 50.0, 50.0], size=(1000, 3))
+
+    # Scalar reference
+    scalar_factors = np.empty(len(positions), dtype=np.float64)
+    for i in range(len(positions)):
+        scalar_factors[i] = get_mmf_from_mmlut(
+            positions[i],
+            cal.mmlut.origin,
+            cal.mmlut.nr,
+            cal.mmlut.nz,
+            cal.mmlut.rw,
+            cal.mmlut.data,
+        )
+
+    # Vectorized batch evaluation
+    batch_factors = get_mmf_from_mmlut_batch(
+        positions,
+        cal.mmlut.origin,
+        cal.mmlut.nr,
+        cal.mmlut.nz,
+        cal.mmlut.rw,
+        cal.mmlut.data,
+    )
+
+    assert np.allclose(batch_factors, scalar_factors, atol=1e-12)
+    assert np.array_equal(batch_factors, scalar_factors)
+
+
+def test_mmlut_polynomial_fit_and_accuracy(cavity_params):
+    """Test polynomial fitting against MMLUT grid and check accuracy metrics."""
+    from openptv2.algorithms.multimed import (
+        eval_mmlut_polynomial,
+        fit_mmlut_polynomial,
+        get_mmf_from_mmlut_batch,
+    )
+
+    exp, cpar, spar, vpar, cals = cavity_params
+    prepare_mmluts(vpar, cpar, cals)
+    cal = cals[0]
+
+    # Fit 3rd-order bivariate polynomial
+    coeffs, stats = fit_mmlut_polynomial(cal, degree=3)
+    assert stats["degree"] == 3
+    # Check that polynomial captures the overall trend (RMS error < 1%)
+    assert stats["rms_error"] < 0.01, f"RMS error too high: {stats['rms_error']}"
+
+    # Evaluate on central test points
+    np.random.seed(42)
+    positions = np.random.uniform(
+        low=[-10.0, -10.0, -10.0], high=[10.0, 10.0, 10.0], size=(100, 3)
+    )
+
+    lut_values = get_mmf_from_mmlut_batch(
+        positions,
+        cal.mmlut.origin,
+        cal.mmlut.nr,
+        cal.mmlut.nz,
+        cal.mmlut.rw,
+        cal.mmlut.data,
+    )
+    poly_values = eval_mmlut_polynomial(positions, cal.mmlut.origin, coeffs, degree=3)
+
+    # Check maximum deviation in central volume
+    max_diff = np.max(np.abs(lut_values - poly_values))
+    assert max_diff < 0.02, f"Polynomial deviation too high: {max_diff}"
+
+

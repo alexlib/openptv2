@@ -106,6 +106,7 @@ class RunStore:
         "trajectories",
         "stats",
         "meta",
+        "calibrations",
     )
 
     def __init__(self, store_path: Union[str, Path], mode: str = "a"):
@@ -588,3 +589,49 @@ class RunStore:
                 }
             )
         return rows
+
+    # -- calibrations / mmlut --------------------------------------------
+
+    def has_mmlut(self, cam_idx: int) -> bool:
+        """Check if MMLUT table exists for camera index."""
+        if "calibrations" not in self.root:
+            return False
+        cal_grp = self.root["calibrations"]
+        cam_key = f"cam_{cam_idx}"
+        if cam_key not in cal_grp:
+            return False
+        cam_grp = cal_grp[cam_key]
+        return "mmlut" in cam_grp and "data" in cam_grp["mmlut"]
+
+    def write_mmlut(
+        self,
+        cam_idx: int,
+        nr: int,
+        nz: int,
+        rw: float,
+        origin: np.ndarray,
+        data: np.ndarray,
+    ) -> None:
+        """Cache precomputed MMLUT lookup grid in Zarr store."""
+        cal_grp = _require_group(self.root, "calibrations")
+        cam_grp = _require_group(cal_grp, f"cam_{cam_idx}")
+        lut_grp = _require_group(cam_grp, "mmlut")
+        lut_grp.attrs["nr"] = int(nr)
+        lut_grp.attrs["nz"] = int(nz)
+        lut_grp.attrs["rw"] = float(rw)
+        lut_grp.create_array("origin", data=np.asarray(origin, dtype=np.float64), overwrite=True)
+        lut_grp.create_array("data", data=np.asarray(data, dtype=np.float64), overwrite=True)
+
+    def read_mmlut(
+        self, cam_idx: int
+    ) -> Optional[tuple[int, int, float, np.ndarray, np.ndarray]]:
+        """Read cached MMLUT table: (nr, nz, rw, origin, data) or None."""
+        if not self.has_mmlut(cam_idx):
+            return None
+        lut_grp = self.root["calibrations"][f"cam_{cam_idx}"]["mmlut"]
+        nr = int(lut_grp.attrs["nr"])
+        nz = int(lut_grp.attrs["nz"])
+        rw = float(lut_grp.attrs["rw"])
+        origin = np.asarray(lut_grp["origin"], dtype=np.float64)
+        data = np.asarray(lut_grp["data"], dtype=np.float64)
+        return nr, nz, rw, origin, data
