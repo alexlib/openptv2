@@ -64,6 +64,11 @@ from .storage import (
     seal,
 )
 from .tracker import Tracker, default_naming
+from .tracking_chunked import (
+    partition_tracking_chunks,
+    stitch_chunked_linkages,
+    track_sequence_chunked_parallel,
+)
 from .tracking_framebuf import Frame, Target, TargetArray, read_targets
 from .transforms import (
     convert_arr_metric_to_pixel,
@@ -118,6 +123,9 @@ __all__ = [
     "TargetArray",
     "Frame",
     "Tracker",
+    "partition_tracking_chunks",
+    "stitch_chunked_linkages",
+    "track_sequence_chunked_parallel",
     "MatchedCoords",
     "TrackParTuple",
     "correspondences",
