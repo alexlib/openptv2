@@ -16,10 +16,15 @@ compiled through Cython 3 when built, with no separate C core, no
 Cython bindings to an external library, and no runtime engine
 selector.
 
+<p align="center">
+  <img src="docs/images/test_cavity_trajectories.gif" alt="3D Particle Trajectories in Cavity Flow" width="550"/>
+</p>
+
 - **Algorithms** (`src/openptv2/algorithms/`) - Cython 3 pure-Python particle tracking, correspondence, and calibration code
 - **Plugins** (`src/openptv2/plugins/`) - pluggable tracker implementations (fast, MyPTV/ProPTV-informed trackers)
 - **GUI** (`src/openptv2/gui/`) - TraitsUI/Chaco desktop application
 - **Batch pipeline** (`openptv2-batch`) - headless sequence/tracking runner for scripting and cloud use
+- **Tutorials & Case Studies** - [Lid-Driven Cavity Flow Tutorial](docs/tutorials/cavity_flow_tutorial.md) | [Aortic Pulsatile Flow Tutorial](docs/aorta_tutorial.md)
 
 ## What's Inside (and Where the Tracking Concepts Come From)
 
