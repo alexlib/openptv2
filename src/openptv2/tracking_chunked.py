@@ -115,6 +115,9 @@ class _InMemoryLinkageStore:
             return self._source_store.read_targets(cam_idx, frame)
         return []
 
+    def write_targets(self, cam_idx: int, frame: int, targets) -> None:
+        pass
+
     def write_correspondences(self, frame: int, pos_3d: np.ndarray, cam_target_ids: np.ndarray) -> None:
         pass
 
