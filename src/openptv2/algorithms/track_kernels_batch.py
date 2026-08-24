@@ -182,8 +182,8 @@ def metric_to_pixel_batch_fast(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def targ_rec_fast(
-    img: cython.uchar[:, :],
-    img0: cython.uchar[:, :],
+    img: cython.uchar[:, ::1],
+    img0: cython.uchar[:, ::1],
     gvthres: cython.int,
     discont: cython.int,
     nnmin: cython.int,

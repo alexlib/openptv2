@@ -54,7 +54,7 @@ class Peak:
 
 @cython.ccall
 def _is_local_maximum(
-    img: cython.uchar[:, :], i: cython.int, j: cython.int
+    img: cython.uchar[:, ::1], i: cython.int, j: cython.int
 ) -> cython.bint:
     """Check if pixel at (i, j) is an 8-neighbor local maximum.
 
@@ -109,7 +109,7 @@ def check_touch(tpeak: Peak, p1: cython.int, p2: cython.int):
 
 @cython.ccall
 def targ_rec(
-    img: cython.uchar[:, :],
+    img: cython.uchar[:, ::1],
     gvthres: cython.int,
     discont: cython.int,
     nnmin: cython.int,
@@ -153,11 +153,12 @@ def targ_rec(
     xmax = min(xmax, imx - 1)
     ymax = min(ymax, imy - 1)
 
-    img0 = np.asarray(img, dtype=np.uint8).copy()
+    img_u8 = np.ascontiguousarray(img, dtype=np.uint8)
+    img0 = img_u8.copy()
     max_targets = (xmax - xmin) * (ymax - ymin)
 
     n_found, ox, oy, on, onx, ony, osumg = _targ_rec_fast(
-        np.asarray(img, dtype=np.uint8),
+        img_u8,
         img0,
         gvthres,
         discont,
@@ -195,7 +196,7 @@ def targ_rec(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def peak_fit(
-    img: cython.uchar[:, :],
+    img: cython.uchar[:, ::1],
     gvthres: cython.int,
     discont: cython.int,
     nnmin: cython.int,
@@ -449,3 +450,335 @@ def peak_fit(
 def is_compiled() -> bool:
     """Return whether this module is compiled to C."""
     return cython.compiled
+
+
+def _load_image_array(img_source) -> np.ndarray:
+    """Load and normalize an image source into a C-contiguous uint8 2D array."""
+    from pathlib import Path
+
+    if isinstance(img_source, (str, Path)):
+        p = Path(img_source)
+        if not p.exists():
+            raise FileNotFoundError(f"Image not found: {p}")
+        from skimage.io import imread
+        from skimage.color import rgb2gray
+        from skimage.util import img_as_ubyte
+
+        arr = imread(p)
+        if arr.ndim > 2:
+            arr = rgb2gray(arr[:, :, :3])
+        if arr.dtype != np.uint8:
+            arr = img_as_ubyte(arr)
+        return np.ascontiguousarray(arr, dtype=np.uint8)
+
+    elif isinstance(img_source, np.ndarray):
+        arr = img_source
+        if arr.ndim > 2:
+            from skimage.color import rgb2gray
+            arr = rgb2gray(arr[:, :, :3])
+        if arr.dtype != np.uint8:
+            from skimage.util import img_as_ubyte
+            arr = img_as_ubyte(arr)
+        return np.ascontiguousarray(arr, dtype=np.uint8)
+
+    elif isinstance(img_source, dict) and "shm_name" in img_source:
+        from multiprocessing import shared_memory
+        shm = shared_memory.SharedMemory(name=img_source["shm_name"])
+        try:
+            shape = img_source["shape"]
+            dtype = np.dtype(img_source.get("dtype", "uint8"))
+            offset = img_source.get("offset", 0)
+            raw = np.ndarray(shape, dtype=dtype, buffer=shm.buf, offset=offset)
+            return raw.copy()
+        finally:
+            shm.close()
+
+    else:
+        raise TypeError(f"Unsupported image source type: {type(img_source)}")
+
+
+def _detect_single_worker(task: tuple) -> dict:
+    """Worker task executed in separate processes for batch target detection."""
+    from pathlib import Path
+
+    img_source, params_dict, write_path, cam_idx, frame_idx = task
+    img = _load_image_array(img_source)
+    imy, imx = img.shape
+
+    xmin = max(int(params_dict.get("xmin", 1)), 1)
+    ymin = max(int(params_dict.get("ymin", 1)), 1)
+    xmax = int(params_dict.get("xmax", -1))
+    ymax = int(params_dict.get("ymax", -1))
+    if xmax < 0:
+        xmax = imx - 1
+    if ymax < 0:
+        ymax = imy - 1
+    xmax = min(xmax, imx - 1)
+    ymax = min(ymax, imy - 1)
+
+    gvthres = int(params_dict.get("gvthres", 10))
+    discont = int(params_dict.get("discont", 100))
+    nnmin = int(params_dict.get("nnmin", 1))
+    nnmax = int(params_dict.get("nnmax", 100))
+    nxmin = int(params_dict.get("nxmin", 1))
+    nxmax = int(params_dict.get("nxmax", 100))
+    nymin = int(params_dict.get("nymin", 1))
+    nymax = int(params_dict.get("nymax", 100))
+    sumg_min = int(params_dict.get("sumg_min", 10))
+    max_targets = int(params_dict.get("max_targets", (xmax - xmin) * (ymax - ymin)))
+
+    img0 = img.copy()
+    n_found, ox, oy, on, onx, ony, osumg = _targ_rec_fast(
+        img,
+        img0,
+        gvthres,
+        discont,
+        nnmin,
+        nnmax,
+        nxmin,
+        nxmax,
+        nymin,
+        nymax,
+        sumg_min,
+        xmin,
+        ymin,
+        xmax,
+        ymax,
+        max_targets,
+    )
+
+    if write_path is not None:
+        p = Path(write_path)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with open(p, "w") as f:
+            f.write(f"{n_found}\n")
+            for k in range(n_found):
+                f.write(
+                    f"{k:4d} {ox[k]:9.4f} {oy[k]:9.4f} "
+                    f"{on[k]:5d} {onx[k]:5d} {ony[k]:5d} {osumg[k]:5d} {-1:5d}\n"
+                )
+
+    return {
+        "cam_idx": cam_idx,
+        "frame_idx": frame_idx,
+        "n_found": int(n_found),
+        "x": ox[:n_found].copy(),
+        "y": oy[:n_found].copy(),
+        "n": on[:n_found].copy(),
+        "nx": onx[:n_found].copy(),
+        "ny": ony[:n_found].copy(),
+        "sumg": osumg[:n_found].copy(),
+        "write_path": str(write_path) if write_path is not None else None,
+    }
+
+
+def _normalize_targ_params(targ_rec_params, num_items: int, cam_indices=None) -> list:
+    """Normalize user-provided target parameters into a list of dicts."""
+    if isinstance(targ_rec_params, list):
+        if len(targ_rec_params) == num_items:
+            return [dict(p) if isinstance(p, dict) else p for p in targ_rec_params]
+        raise ValueError(
+            f"Length of targ_rec_params list ({len(targ_rec_params)}) does not match num_items ({num_items})"
+        )
+
+    # Object with getter methods (e.g. TargetPar)
+    if hasattr(targ_rec_params, "get_grey_thresholds"):
+        thresholds = targ_rec_params.get_grey_thresholds()
+        nn_bounds = targ_rec_params.get_pixel_count_bounds()
+        nx_bounds = targ_rec_params.get_xsize_bounds()
+        ny_bounds = targ_rec_params.get_ysize_bounds()
+        discont = targ_rec_params.get_max_discontinuity()
+        sumg_min = targ_rec_params.get_min_sum_grey()
+
+        param_list = []
+        for i in range(num_items):
+            cam = cam_indices[i] if cam_indices is not None else 0
+            gv = int(thresholds[cam]) if cam < len(thresholds) else int(thresholds[0])
+            param_list.append(
+                {
+                    "gvthres": gv,
+                    "discont": int(discont),
+                    "nnmin": int(nn_bounds[0]),
+                    "nnmax": int(nn_bounds[1]),
+                    "nxmin": int(nx_bounds[0]),
+                    "nxmax": int(nx_bounds[1]),
+                    "nymin": int(ny_bounds[0]),
+                    "nymax": int(ny_bounds[1]),
+                    "sumg_min": int(sumg_min),
+                }
+            )
+        return param_list
+
+    if isinstance(targ_rec_params, dict):
+        return [dict(targ_rec_params) for _ in range(num_items)]
+
+    raise TypeError(f"Unsupported targ_rec_params type: {type(targ_rec_params)}")
+
+
+def detect_targets_batch_parallel(
+    images,
+    targ_rec_params,
+    n_workers=None,
+    chunksize: int = None,
+    return_type: str = "targets",
+    write_paths=None,
+    zarr_store_path: str = None,
+    cam_indices=None,
+    frame_indices=None,
+    use_shared_memory: bool = True,
+):
+    """Detect targets across a batch of images concurrently.
+
+    Supports image file paths, 2D arrays, or a 3D numpy array. Employs ProcessPoolExecutor
+    and optional SharedMemory to achieve near-linear multi-core scaling with zero IPC overhead.
+
+    Args:
+        images: List of file paths (str/Path), list of 2D uint8 numpy arrays, or 3D numpy array (N, H, W).
+        targ_rec_params: Parameter dict, TargetPar object, or list of dicts.
+        n_workers: Number of worker processes (default: os.cpu_count()).
+        chunksize: Number of images per worker batch chunk.
+        return_type: Format of return values ('targets', 'arrays', or 'counts').
+        write_paths: Optional list of output target file paths.
+        zarr_store_path: Optional path to Zarr store to write targets directly.
+        cam_indices: Optional list of camera indices corresponding to each image.
+        frame_indices: Optional list of frame numbers corresponding to each image.
+        use_shared_memory: If True, uses multiprocessing.shared_memory for 3D numpy arrays.
+
+    Returns:
+        List of detected targets, arrays, or counts matching return_type.
+    """
+    import os
+    from concurrent.futures import ProcessPoolExecutor
+    from pathlib import Path
+
+    if isinstance(images, np.ndarray) and images.ndim == 3:
+        num_items = images.shape[0]
+        is_3d_array = True
+    else:
+        images = list(images)
+        num_items = len(images)
+        is_3d_array = False
+
+    if num_items == 0:
+        return []
+
+    if cam_indices is None:
+        cam_indices = [0] * num_items
+    if frame_indices is None:
+        frame_indices = list(range(num_items))
+    if write_paths is None:
+        write_paths = [None] * num_items
+
+    norm_params = _normalize_targ_params(targ_rec_params, num_items, cam_indices)
+
+    shm = None
+    tasks = []
+
+    try:
+        if is_3d_array and use_shared_memory and num_items > 1 and n_workers != 1:
+            from multiprocessing import shared_memory
+
+            images_u8 = np.ascontiguousarray(images, dtype=np.uint8)
+            shm = shared_memory.SharedMemory(create=True, size=images_u8.nbytes)
+            shm_arr = np.ndarray(images_u8.shape, dtype=np.uint8, buffer=shm.buf)
+            shm_arr[:] = images_u8[:]
+
+            item_bytes = images_u8[0].nbytes
+            for idx in range(num_items):
+                img_source = {
+                    "shm_name": shm.name,
+                    "shape": images_u8[idx].shape,
+                    "offset": idx * item_bytes,
+                    "dtype": "uint8",
+                }
+                tasks.append(
+                    (
+                        img_source,
+                        norm_params[idx],
+                        write_paths[idx],
+                        cam_indices[idx],
+                        frame_indices[idx],
+                    )
+                )
+        else:
+            for idx in range(num_items):
+                tasks.append(
+                    (
+                        images[idx],
+                        norm_params[idx],
+                        write_paths[idx],
+                        cam_indices[idx],
+                        frame_indices[idx],
+                    )
+                )
+
+        if n_workers == 1 or num_items == 1:
+            raw_results = [_detect_single_worker(t) for t in tasks]
+        else:
+            max_workers = n_workers if n_workers is not None else min(os.cpu_count() or 1, num_items)
+            csize = chunksize if chunksize is not None else max(1, num_items // (max_workers * 4))
+            with ProcessPoolExecutor(max_workers=max_workers) as executor:
+                raw_results = list(executor.map(_detect_single_worker, tasks, chunksize=csize))
+
+    finally:
+        if shm is not None:
+            try:
+                shm.close()
+                shm.unlink()
+            except Exception:
+                pass
+
+    if zarr_store_path is not None:
+        from openptv2.storage import ZarrFrameStore
+        store = ZarrFrameStore(zarr_store_path, mode="a")
+        for res in raw_results:
+            c_idx = res["cam_idx"]
+            f_idx = res["frame_idx"]
+            n_found = res["n_found"]
+            targs = [
+                Target(
+                    pnr=k,
+                    x=float(res["x"][k]),
+                    y=float(res["y"][k]),
+                    n=int(res["n"][k]),
+                    nx=int(res["nx"][k]),
+                    ny=int(res["ny"][k]),
+                    sumg=int(res["sumg"][k]),
+                    tnr=CORRES_NONE,
+                )
+                for k in range(n_found)
+            ]
+            store.write_targets(c_idx, f_idx, targs)
+
+    if return_type == "arrays":
+        return raw_results
+
+    elif return_type == "counts":
+        return [res["n_found"] for res in raw_results]
+
+    else:  # 'targets'
+        output_targets = []
+        for res in raw_results:
+            n_found = res["n_found"]
+            if n_found == 0:
+                output_targets.append(
+                    [Target(pnr=1, x=1.0, y=1.0, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE)]
+                )
+            else:
+                output_targets.append(
+                    [
+                        Target(
+                            pnr=k,
+                            x=float(res["x"][k]),
+                            y=float(res["y"][k]),
+                            n=int(res["n"][k]),
+                            nx=int(res["nx"][k]),
+                            ny=int(res["ny"][k]),
+                            sumg=int(res["sumg"][k]),
+                            tnr=CORRES_NONE,
+                        )
+                        for k in range(n_found)
+                    ]
+                )
+        return output_targets
+

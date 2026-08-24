@@ -41,7 +41,7 @@ from .parameters import (
     TrackingParams,
     VolumeParams,
 )
-from .segmentation import target_recognition
+from .segmentation import detect_targets_batch_parallel, target_recognition
 from .tracker import Tracker, default_naming
 from .tracking_framebuf import Frame, Target, TargetArray, read_targets
 from .transforms import (
@@ -102,6 +102,7 @@ __all__ = [
     "correspondences",
     "preprocess_image",
     "target_recognition",
+    "detect_targets_batch_parallel",
     "read_targets",
     "default_naming",
     "convert_arr_pixel_to_metric",
