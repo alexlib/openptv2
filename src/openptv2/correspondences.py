@@ -1,5 +1,6 @@
 """Streamlined correspondences matching API."""
 
+import os
 import numpy as np
 
 
@@ -255,4 +256,185 @@ def single_cam_correspondence(img_pts, flat_coords, cals):
     return sorted_pos, sorted_corresp, num_targs
 
 
-__all__ = ["MatchedCoords", "correspondences"]
+def match_frame_correspondences(detections, cpar, cals, vpar):
+    """Compute multi-camera stereo correspondences and triangulated 3D positions
+    for a single frame.
+
+    Args:
+        detections: List of TargetArray / list of Target per camera.
+        cpar: ControlParams / ControlPar instance.
+        cals: List of Calibration instances.
+        vpar: VolumeParams / VolumePar instance.
+
+    Returns:
+        tuple: (pos_3d, cam_target_ids)
+            pos_3d: (N, 3) ndarray of reconstructed 3D particle coordinates in mm.
+            cam_target_ids: (N, max(4, num_cams)) ndarray of corresponding target indices (-1 = not seen).
+    """
+    from openptv2.orientation import point_positions
+
+    num_cams = len(cals)
+    corrected = []
+    wrapped_detections = []
+
+    for i_cam in range(num_cams):
+        targs = detections[i_cam]
+        if hasattr(targs, "sort_y") and callable(targs.sort_y):
+            if len(targs) > 0:
+                targs.sort_y()
+        wrapped_detections.append(targs)
+        mc = MatchedCoords(targs, cpar, cals[i_cam])
+        corrected.append(mc)
+
+    sorted_pos, sorted_corresp, _ = correspondences(
+        wrapped_detections, corrected, cals, vpar, cpar
+    )
+
+    total_matches = sum(s.shape[1] for s in sorted_pos)
+    if total_matches == 0:
+        return np.empty((0, 3), dtype=np.float64), np.empty((0, max(4, num_cams)), dtype=np.int32)
+
+    sorted_pos = np.concatenate(sorted_pos, axis=1)
+    sorted_corresp = np.concatenate(sorted_corresp, axis=1)
+
+    flat = np.array(
+        [
+            corr.get_by_pnrs(corresp)
+            for corr, corresp in zip(corrected, sorted_corresp)
+        ]
+    )
+
+    pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
+
+    if num_cams < 4:
+        print_corresp = -1 * np.ones((4, sorted_corresp.shape[1]), dtype=np.int32)
+        print_corresp[:num_cams, :] = sorted_corresp
+    else:
+        print_corresp = sorted_corresp.astype(np.int32)
+
+    return pos, print_corresp.T
+
+
+def _correspondence_worker_chunk(frames, targets_data, cpar, cals, vpar, zarr_store_path=None):
+    """Worker function to process a chunk of frames in parallel."""
+    results = []
+    num_cams = len(cals)
+
+    store = None
+    if zarr_store_path is not None and targets_data is None:
+        from openptv2.storage import RunStore
+        store = RunStore(zarr_store_path, mode="r")
+
+    for frame in frames:
+        if targets_data is not None:
+            detections = targets_data[frame]
+        elif store is not None:
+            detections = [store.read_targets(c, frame) for c in range(num_cams)]
+        else:
+            raise ValueError("Either targets_data or zarr_store_path must be provided")
+
+        pos_3d, cam_target_ids = match_frame_correspondences(detections, cpar, cals, vpar)
+        results.append((frame, pos_3d, cam_target_ids))
+
+    return results
+
+
+def match_correspondences_batch_parallel(
+    frames,
+    cpar,
+    cals,
+    vpar,
+    targets=None,
+    zarr_store_path=None,
+    n_workers=None,
+    write_to_store=True,
+):
+    """Process stereo correspondences and 3D point positions for a batch/sequence of frames
+    in parallel using multi-processing.
+
+    Args:
+        frames: Sequence or iterable of frame integers (e.g. range(10001, 10005)).
+        cpar: ControlParams instance.
+        cals: List of Calibration instances.
+        vpar: VolumeParams instance.
+        targets: Optional dict mapping frame -> list of TargetArray/targets per camera.
+        zarr_store_path: Optional path to Zarr store (res/run.zarr) to read targets from
+            and/or write correspondences to.
+        n_workers: Number of parallel worker processes. If None, auto-selects based on CPU count.
+        write_to_store: If True and zarr_store_path is given, writes all correspondences into the Zarr store.
+
+    Returns:
+        dict: Mapping frame -> (pos_3d, cam_target_ids)
+    """
+    import multiprocessing
+    from concurrent.futures import ProcessPoolExecutor
+
+    frames_list = list(frames)
+    if not frames_list:
+        return {}
+
+    num_frames = len(frames_list)
+    cpu_count = os.cpu_count() or 1
+    if n_workers is None:
+        n_workers = min(cpu_count, num_frames)
+    else:
+        n_workers = max(1, min(n_workers, num_frames))
+
+    results = {}
+
+    # If single worker or single frame, run directly without multiprocessing overhead
+    if n_workers <= 1:
+        chunk_results = _correspondence_worker_chunk(
+            frames_list, targets, cpar, cals, vpar, zarr_store_path
+        )
+        for frame, pos_3d, cam_target_ids in chunk_results:
+            results[frame] = (pos_3d, cam_target_ids)
+    else:
+        # Split frames into roughly equal contiguous chunks
+        chunk_size = (num_frames + n_workers - 1) // n_workers
+        chunks = [
+            frames_list[i : i + chunk_size]
+            for i in range(0, num_frames, chunk_size)
+        ]
+
+        mp_ctx = multiprocessing.get_context("spawn")
+        with ProcessPoolExecutor(max_workers=len(chunks), mp_context=mp_ctx) as executor:
+            futures = []
+            for chunk in chunks:
+                chunk_targets = (
+                    {f: targets[f] for f in chunk} if targets is not None else None
+                )
+                fut = executor.submit(
+                    _correspondence_worker_chunk,
+                    chunk,
+                    chunk_targets,
+                    cpar,
+                    cals,
+                    vpar,
+                    zarr_store_path,
+                )
+                futures.append(fut)
+
+            for fut in futures:
+                chunk_results = fut.result()
+                for frame, pos_3d, cam_target_ids in chunk_results:
+                    results[frame] = (pos_3d, cam_target_ids)
+
+    # Write to store if requested
+    if write_to_store and zarr_store_path is not None:
+        from openptv2.storage import RunStore
+        store = RunStore(zarr_store_path, mode="a")
+        for frame in frames_list:
+            if frame in results:
+                pos_3d, cam_target_ids = results[frame]
+                store.write_correspondences(frame, pos_3d, cam_target_ids)
+
+    return results
+
+
+__all__ = [
+    "MatchedCoords",
+    "correspondences",
+    "match_frame_correspondences",
+    "match_correspondences_batch_parallel",
+]

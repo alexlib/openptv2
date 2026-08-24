@@ -21,7 +21,12 @@ from .algorithms.parameters import (
 )
 from .algorithms.track_kernels import is_compiled as _is_compiled
 from .calibration import Calibration
-from .correspondences import MatchedCoords, correspondences
+from .correspondences import (
+    MatchedCoords,
+    correspondences,
+    match_correspondences_batch_parallel,
+    match_frame_correspondences,
+)
 from .epipolar import epipolar_curve
 from .image_processing import preprocess_image
 from .imgcoord import flat_image_coordinates, image_coordinates
@@ -110,6 +115,8 @@ __all__ = [
     "MatchedCoords",
     "TrackParTuple",
     "correspondences",
+    "match_frame_correspondences",
+    "match_correspondences_batch_parallel",
     "preprocess_image",
     "target_recognition",
     "detect_targets_batch_parallel",

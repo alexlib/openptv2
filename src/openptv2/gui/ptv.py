@@ -1029,7 +1029,28 @@ def py_sequence_loop(exp) -> None:
     short_file_bases = exp.target_filenames
     _ensure_target_output_writable(short_file_bases)
 
-    for frame in range(first_frame, last_frame + 1):
+    frames = list(range(first_frame, last_frame + 1))
+    if existing_target and store is not None:
+        all_in_store = all(
+            store.has_targets(c, f) for f in frames for c in range(num_cams)
+        )
+        if all_in_store:
+            from openptv2.correspondences import match_correspondences_batch_parallel
+
+            results = match_correspondences_batch_parallel(
+                frames=frames,
+                cpar=cpar,
+                cals=cals,
+                vpar=vpar,
+                zarr_store_path=str(store.store_path),
+                write_to_store=True,
+            )
+            for frame in frames:
+                pos, cam_ids = results[frame]
+                print(f"Frame {frame} had {len(pos)} correspondences.")
+            return
+
+    for frame in frames:
         detections = []
         corrected = []
         if not existing_target:
