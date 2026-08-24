@@ -386,6 +386,46 @@ def targ_rec_fast(
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
+def _init_mmlut_slice_1layer(
+    data: cython.double[:],
+    i_start: cython.int,
+    i_end: cython.int,
+    nz: cython.int,
+    rw: cython.double,
+    cal_t_x0: cython.double,
+    cal_t_y0: cython.double,
+    cal_t_z0: cython.double,
+    Zmin_t: cython.double,
+    mm_n1: cython.double,
+    mm_n2_0: cython.double,
+    mm_n3: cython.double,
+    mm_d0: cython.double,
+):
+    i: cython.int
+    j: cython.int
+    R: cython.double
+    Z: cython.double
+    for i in range(i_start, i_end):
+        R = i * rw + cal_t_x0
+        for j in range(nz):
+            Z = Zmin_t + j * rw
+            data[i * nz + j] = _multimed_r_nlay_1layer(
+                R,
+                cal_t_y0,
+                Z,
+                cal_t_x0,
+                cal_t_y0,
+                cal_t_z0,
+                mm_n1,
+                mm_n2_0,
+                mm_n3,
+                mm_d0,
+            )
+
+
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def init_mmlut_data_fast(
     nr: cython.int,
     nz: cython.int,
@@ -415,35 +455,62 @@ def init_mmlut_data_fast(
     Returns:
         data: (nr * nz,) float64 array of radial shift factors.
     """
-    i: cython.int
-    j: cython.int
-    R: cython.double
-    Z: cython.double
+    import os
+    from concurrent.futures import ThreadPoolExecutor
+
     data = np.empty(nr * nz, dtype=np.float64)
-    for i in range(nr):
-        R = i * rw + cal_t_x0
-        for j in range(nz):
-            Z = Zmin_t + j * rw
-            data[i * nz + j] = _multimed_r_nlay_1layer(
-                R,
-                cal_t_y0,
-                Z,
-                cal_t_x0,
-                cal_t_y0,
-                cal_t_z0,
-                mm_n1,
-                mm_n2_0,
-                mm_n3,
-                mm_d0,
-            )
+    data_mv: cython.double[:] = data
+    if nr <= 16:
+        _init_mmlut_slice_1layer(
+            data_mv,
+            0,
+            nr,
+            nz,
+            rw,
+            cal_t_x0,
+            cal_t_y0,
+            cal_t_z0,
+            Zmin_t,
+            mm_n1,
+            mm_n2_0,
+            mm_n3,
+            mm_d0,
+        )
+    else:
+        num_workers = min(os.cpu_count() or 1, 8)
+        chunk_size = (nr + num_workers - 1) // num_workers
+        with ThreadPoolExecutor(max_workers=num_workers) as executor:
+            futures = [
+                executor.submit(
+                    _init_mmlut_slice_1layer,
+                    data_mv,
+                    start,
+                    min(start + chunk_size, nr),
+                    nz,
+                    rw,
+                    cal_t_x0,
+                    cal_t_y0,
+                    cal_t_z0,
+                    Zmin_t,
+                    mm_n1,
+                    mm_n2_0,
+                    mm_n3,
+                    mm_d0,
+                )
+                for start in range(0, nr, chunk_size)
+            ]
+            for fut in futures:
+                fut.result()
     return data
 
 
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def init_mmlut_data_nlay_fast(
-    nr: cython.int,
+def _init_mmlut_slice_nlay(
+    data: cython.double[:],
+    i_start: cython.int,
+    i_end: cython.int,
     nz: cython.int,
     rw: cython.double,
     cal_t_x0: cython.double,
@@ -456,26 +523,6 @@ def init_mmlut_data_nlay_fast(
     d: cython.double[:],
     nlay: cython.int,
 ):
-    """Fill the mmlut data grid — multi-layer multimedia (nlay > 1).
-
-    Compiled counterpart of init_mmlut_data_fast for the general n-layer
-    case. Inlines the iterative Snell solve (multimed_r_nlay_iterative) with
-    typed n2[]/d[] memoryviews so the whole nr*nz grid is built in C instead
-    of a Python double loop that boxed every cell through the object API.
-
-    Args:
-        nr, nz: grid dimensions.
-        rw: grid cell size (mm).
-        cal_t_x0, cal_t_y0, cal_t_z0: transformed camera center.
-        Zmin_t: minimum Z of the translated grid.
-        mm_n1, mm_n3: outer refractive indices.
-        n2: (nlay,) refractive index per layer.
-        d: (nlay,) thickness per layer (d[0] is the glass distance).
-        nlay: number of layers.
-
-    Returns:
-        data: (nr * nz,) float64 array of radial shift factors.
-    """
     i: cython.int
     j: cython.int
     k: cython.int
@@ -496,11 +543,9 @@ def init_mmlut_data_nlay_fast(
     n_iter: cython.int = 40
     tol: cython.double = 0.001
 
-    data = np.empty(nr * nz, dtype=np.float64)
-    for i in range(nr):
+    for i in range(i_start, i_end):
         R = i * rw + cal_t_x0
         pos_x = R
-        # dx = pos_x - cal_t_x0 (== i*rw), dy = cal_t_y0 - cal_t_y0 == 0
         r = pos_x - cal_t_x0
         for j in range(nz):
             Z = Zmin_t + j * rw
@@ -541,4 +586,91 @@ def init_mmlut_data_nlay_fast(
                     break
             else:
                 data[i * nz + j] = 1.0
+
+
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def init_mmlut_data_nlay_fast(
+    nr: cython.int,
+    nz: cython.int,
+    rw: cython.double,
+    cal_t_x0: cython.double,
+    cal_t_y0: cython.double,
+    cal_t_z0: cython.double,
+    Zmin_t: cython.double,
+    mm_n1: cython.double,
+    mm_n3: cython.double,
+    n2: cython.double[:],
+    d: cython.double[:],
+    nlay: cython.int,
+):
+    """Fill the mmlut data grid — multi-layer multimedia (nlay > 1).
+
+    Compiled counterpart of init_mmlut_data_fast for the general n-layer
+    case. Inlines the iterative Snell solve (multimed_r_nlay_iterative) with
+    typed n2[]/d[] memoryviews so the whole nr*nz grid is built in C instead
+    of a Python double loop that boxed every cell through the object API.
+
+    Args:
+        nr, nz: grid dimensions.
+        rw: grid cell size (mm).
+        cal_t_x0, cal_t_y0, cal_t_z0: transformed camera center.
+        Zmin_t: minimum Z of the translated grid.
+        mm_n1, mm_n3: outer refractive indices.
+        n2: (nlay,) refractive index per layer.
+        d: (nlay,) thickness per layer (d[0] is the glass distance).
+        nlay: number of layers.
+
+    Returns:
+        data: (nr * nz,) float64 array of radial shift factors.
+    """
+    import os
+    from concurrent.futures import ThreadPoolExecutor
+
+    data = np.empty(nr * nz, dtype=np.float64)
+    data_mv: cython.double[:] = data
+    if nr <= 16:
+        _init_mmlut_slice_nlay(
+            data_mv,
+            0,
+            nr,
+            nz,
+            rw,
+            cal_t_x0,
+            cal_t_y0,
+            cal_t_z0,
+            Zmin_t,
+            mm_n1,
+            mm_n3,
+            n2,
+            d,
+            nlay,
+        )
+    else:
+        num_workers = min(os.cpu_count() or 1, 8)
+        chunk_size = (nr + num_workers - 1) // num_workers
+        with ThreadPoolExecutor(max_workers=num_workers) as executor:
+            futures = [
+                executor.submit(
+                    _init_mmlut_slice_nlay,
+                    data_mv,
+                    start,
+                    min(start + chunk_size, nr),
+                    nz,
+                    rw,
+                    cal_t_x0,
+                    cal_t_y0,
+                    cal_t_z0,
+                    Zmin_t,
+                    mm_n1,
+                    mm_n3,
+                    n2,
+                    d,
+                    nlay,
+                )
+                for start in range(0, nr, chunk_size)
+            ]
+            for fut in futures:
+                fut.result()
     return data

@@ -10,6 +10,7 @@ Handles:
 """
 
 from itertools import product
+import os
 
 import cython
 import numpy as np
@@ -815,8 +816,8 @@ def init_mmlut(vpar, cpar, cal):
     return cal
 
 
-def prepare_mmluts(vpar, cpar, cals) -> None:
-    """Build the multimedia LUT for every camera that lacks one.
+def prepare_mmluts(vpar, cpar, cals, n_workers: int | None = None) -> None:
+    """Build the multimedia LUT for every camera that lacks one in parallel.
 
     This is the explicit "init at run start" that lets the whole pipeline
     (correspondences, 3D determination, sequence, tracking) use the fast
@@ -826,14 +827,31 @@ def prepare_mmluts(vpar, cpar, cals) -> None:
       already short-circuits to 1.0, so a LUT would only add overhead.
     - Idempotent: cameras whose LUT is already initialized are skipped, so it
       is safe to call at several pipeline entry points.
+    - Multi-camera parallel: initializes multiple cameras concurrently using a thread pool.
     """
+    from concurrent.futures import ThreadPoolExecutor
+
     mm = cpar.mm
     n2_0 = mm.n2[0] if hasattr(mm.n2, "__getitem__") else mm.n2
     if mm.n1 == 1.0 and n2_0 == 1.0 and mm.n3 == 1.0:
         return
-    for cal in cals:
-        if not cal.mmlut.is_initialized:
-            init_mmlut(vpar, cpar, cal)
+
+    uninit_cals = [cal for cal in cals if not cal.mmlut.is_initialized]
+    if not uninit_cals:
+        return
+
+    if len(uninit_cals) == 1:
+        init_mmlut(vpar, cpar, uninit_cals[0])
+    else:
+        max_workers = (
+            min(len(uninit_cals), os.cpu_count() or 1)
+            if n_workers is None
+            else max(1, n_workers)
+        )
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [executor.submit(init_mmlut, vpar, cpar, cal) for cal in uninit_cals]
+            for fut in futures:
+                fut.result()
 
 
 def is_compiled() -> bool:
