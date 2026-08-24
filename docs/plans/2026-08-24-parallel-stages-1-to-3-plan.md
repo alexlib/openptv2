@@ -71,11 +71,8 @@ This task has **high arithmetic intensity** and **zero shared mutable state**, m
   - Added `write_mmlut`, `read_mmlut`, and `has_mmlut` to [`RunStore`](file:///C:/Users/alex/projects/openptv2/src/openptv2/storage/run_store.py#L593-L638) under `/calibrations/cam_{i}/mmlut`. Subsequent runs reload the precomputed table instantly in $0.000\text{s}$.
 - **Optimization B — Vectorized / SIMD Batch Bilinear Query Kernel:**
   - Implemented `get_mmf_from_mmlut_batch` in [`multimed.py`](file:///C:/Users/alex/projects/openptv2/src/openptv2/algorithms/multimed.py#L538-L618) to evaluate bilinear interpolation over arrays of $N$ 3D positions in a single compiled pass without Python object overhead.
-- **Optimization C — Polynomial Model Fit & Analysis:**
-  - Implemented `fit_mmlut_polynomial` and `eval_mmlut_polynomial` in [`multimed.py`](file:///C:/Users/alex/projects/openptv2/src/openptv2/algorithms/multimed.py#L971-L1048) to test bivariate polynomial approximation against the bilinear LUT grid.
-  - *Empirical Analysis*: Global polynomials achieve $\approx 0.5\%$ RMS accuracy across central volume, but higher-order fits ($d \ge 5$) exhibit edge Runge oscillations near total internal reflection boundaries. Therefore, the **Bilinear Lookup Table** remains the gold-standard exact representation, while polynomial fitting is provided as an analytical tool.
 
 ### 3.3 Verification & Quality Gates
 - **Accuracy**: 100% bit-exact numerical parity (max error $= 0.0$) against serial MMLUT calculations.
-- **Test Suite**: [`tests/unit/test_parallel_mmlut.py`](file:///C:/Users/alex/projects/openptv2/tests/unit/test_parallel_mmlut.py) (all 6 tests passing).
+- **Test Suite**: [`tests/unit/test_parallel_mmlut.py`](file:///C:/Users/alex/projects/openptv2/tests/unit/test_parallel_mmlut.py) (all 5 unit tests passing).
 

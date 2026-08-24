@@ -968,84 +968,8 @@ def prepare_mmluts(
                 )
 
 
-def fit_mmlut_polynomial(cal, degree: int = 3) -> tuple[np.ndarray, dict]:
-    """Fit a 2D bivariate polynomial approximation to an initialized MMLUT grid.
-
-    Approximates radial shift factor as:
-        mu(R, Z) = sum_{p=0..d, q=0..d-p} c_{p,q} * R^p * Z^q
-
-    Args:
-        cal: Calibration object with initialized cal.mmlut.
-        degree: Polynomial degree (default: 3).
-
-    Returns:
-        (coeffs, stats):
-            coeffs: 1D array of polynomial coefficients.
-            stats: dict with 'max_abs_error', 'rms_error', 'degree'.
-    """
-    if not cal.mmlut.is_initialized or cal.mmlut.data is None:
-        raise ValueError("cal.mmlut must be initialized before fitting polynomial")
-
-    nr = cal.mmlut.nr
-    nz = cal.mmlut.nz
-    rw = cal.mmlut.rw
-    data = np.asarray(cal.mmlut.data).reshape((nr, nz))
-
-    # Grid coordinates
-    r_coords = np.arange(nr, dtype=np.float64) * rw
-    z_coords = np.arange(nz, dtype=np.float64) * rw
-
-    R_mesh, Z_mesh = np.meshgrid(r_coords, z_coords, indexing="ij")
-    r_flat = R_mesh.ravel()
-    z_flat = Z_mesh.ravel()
-    y_flat = data.ravel()
-
-    # Build Vandermonde design matrix for bivariate polynomial
-    basis = []
-    for d in range(degree + 1):
-        for p in range(d + 1):
-            q = d - p
-            basis.append((r_flat ** p) * (z_flat ** q))
-    A = np.column_stack(basis)
-
-    coeffs, _, _, _ = np.linalg.lstsq(A, y_flat, rcond=None)
-    y_pred = A @ coeffs
-    errors = np.abs(y_flat - y_pred)
-
-    stats = {
-        "degree": degree,
-        "n_terms": len(coeffs),
-        "max_abs_error": float(np.max(errors)),
-        "rms_error": float(np.sqrt(np.mean(errors ** 2))),
-    }
-    return coeffs, stats
-
-
-def eval_mmlut_polynomial(
-    positions: np.ndarray,
-    mmlut_origin: np.ndarray,
-    coeffs: np.ndarray,
-    degree: int = 3,
-) -> np.ndarray:
-    """Evaluate bivariate polynomial approximation over an (N, 3) array of 3D positions."""
-    pos = np.asarray(positions, dtype=np.float64)
-    tx = pos[:, 0] - mmlut_origin[0]
-    ty = pos[:, 1] - mmlut_origin[1]
-    tz = pos[:, 2] - mmlut_origin[2]
-
-    R = np.sqrt(tx * tx + ty * ty)
-    Z = tz
-
-    basis = []
-    for d in range(degree + 1):
-        for p in range(d + 1):
-            q = d - p
-            basis.append((R ** p) * (Z ** q))
-    A = np.column_stack(basis)
-    return A @ coeffs
-
-
 def is_compiled() -> bool:
     """Return whether this module is compiled to C."""
     return cython.compiled
+
 
