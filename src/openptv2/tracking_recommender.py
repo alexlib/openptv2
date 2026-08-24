@@ -82,6 +82,16 @@ def compute_dataset_stats(
     -------
     DatasetStats
     """
+    # Filter non-finite particle coordinates if any
+    cleaned_frames = []
+    for p in frame_particles:
+        if len(p) > 0:
+            mask = np.isfinite(p).all(axis=1)
+            cleaned_frames.append(p[mask])
+        else:
+            cleaned_frames.append(p)
+    frame_particles = cleaned_frames
+
     stats = DatasetStats()
     stats.num_frames = len(frame_particles)
     counts = [len(p) for p in frame_particles if len(p) > 0]

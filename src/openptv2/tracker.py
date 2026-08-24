@@ -305,6 +305,46 @@ class Tracker:
         # Write final frame (mirrors trackcorr_c_finish at seq_par.last)
         trackcorr_c_finish(self._run, self._spar.get_last())
 
+    def full_forward_chunked_parallel(
+        self,
+        n_workers: int | None = None,
+        overlap: int = 4,
+        mode: str = "3d",
+        postprocess: bool = True,
+    ) -> tuple[int, int]:
+        """Run complete 3D forward tracking in parallel using temporal chunking.
+
+        Decomposes sequence into overlapping sub-windows, executes single-threaded
+        tracking runs concurrently, and stitches trajectories across boundaries.
+
+        Args:
+            n_workers: Number of concurrent workers (default: min(cpu_count, 8)).
+            overlap: Overlap buffer in frames (default: 4).
+            mode: Tracking mode ("3d", "4be", "corr").
+            postprocess: Whether to execute trajectory quality postprocessing.
+
+        Returns:
+            (total_npart, total_nlinks)
+        """
+        from openptv2.tracking_chunked import track_sequence_chunked_parallel
+
+        npart, nlinks = track_sequence_chunked_parallel(
+            cpar=self._cpar_algo,
+            vpar=self._vpar_algo,
+            tpar=self._tpar,
+            spar=self._spar_algo,
+            cals=self._cals_algo,
+            store=self._store,
+            naming=self._naming,
+            flatten_tol=self._flatten_tol,
+            n_workers=n_workers,
+            overlap=overlap,
+            mode=mode,
+            postprocess=postprocess,
+        )
+        self._is_initialized = True
+        return npart, nlinks
+
     def current_step(self):
         if not self._is_initialized:
             return -1
@@ -320,3 +360,4 @@ class Tracker:
 
 
 __all__ = ["Tracker", "default_naming"]
+

@@ -32,9 +32,9 @@ LEVEL1_DIST_WEIGHT = 1.0
 UNSUPPORTED_PENALTY = 1e6
 
 if cython.compiled:
-    from cython.cimports.libc.math import floor as c_floor, sqrt as c_sqrt
+    from cython.cimports.libc.math import floor as c_floor, sqrt as c_sqrt, isnan as c_isnan
 else:
-    from math import floor as c_floor, sqrt as c_sqrt
+    from math import floor as c_floor, sqrt as c_sqrt, isnan as c_isnan
 
 
 @cython.cfunc
@@ -84,6 +84,13 @@ def _find_closest_in_3d_grid(
         return _find_closest_in_3d(
             path_x_2, np2, pred_x, pred_y, pred_z, dx, dy, dz, max_cands, cand_inds, cand_dists
         )
+
+    if (
+        c_isnan(pred_x) or c_isnan(pred_y) or c_isnan(pred_z)
+        or c_isnan(min_x) or c_isnan(min_y) or c_isnan(min_z)
+        or cell_x <= 0 or cell_y <= 0 or cell_z <= 0
+    ):
+        return 0
 
     for s in range(max_cands):
         cand_inds[s] = -1
@@ -166,6 +173,9 @@ def _find_closest_in_3d(
     ddz: cython.double
     d: cython.double
     n_found: cython.int = 0
+    if c_isnan(pred_x) or c_isnan(pred_y) or c_isnan(pred_z):
+        return 0
+
     for s in range(max_cands):
         cand_inds[s] = -1
         cand_dists[s] = 1e20
