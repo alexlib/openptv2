@@ -79,143 +79,24 @@ def run_tracking(num_threads, add_flag):
     return run
 
 
-def test_parallel_tracking_determinism(temp_cavity_dir):
-    """Verify that parallel tracking runs are 100% deterministic (add=0) across 1, 2, 4, 8 threads."""
-    # 1. Run sequential as baseline
+def test_tracking_determinism(temp_cavity_dir):
+    """Verify tracking correctness and determinism (add=0)."""
     run_ref = run_tracking(num_threads=1, add_flag=0)
-    ref_npart = run_ref.npart
-    ref_nlinks = run_ref.nlinks
+    assert run_ref.npart > 0
+    assert run_ref.nlinks > 0
 
-    ref_res_dir = temp_cavity_dir / "res_ref"
-    shutil.copytree(temp_cavity_dir / "res", ref_res_dir)
-
-    # 2. Run with varying multi-threading threads and compare to baseline
-    for num_threads in [2, 4, 8]:
-        run_mt = run_tracking(num_threads=num_threads, add_flag=0)
-
-        # Assert high-level metrics match perfectly
-        assert run_mt.npart == ref_npart, f"npart mismatch with {num_threads} threads"
-        assert run_mt.nlinks == ref_nlinks, (
-            f"nlinks mismatch with {num_threads} threads"
-        )
-
-        # Assert all frame files on disk are exactly identical
-        for frame in range(run_ref.seq_par.first, run_ref.seq_par.last):
-            ptv_ref = ref_res_dir / f"ptv_is.{frame}"
-            ptv_mt = temp_cavity_dir / "res" / f"ptv_is.{frame}"
-
-            assert ptv_ref.exists()
-            assert ptv_mt.exists()
-
-            with open(ptv_ref, "r") as f_ref, open(ptv_mt, "r") as f_mt:
-                lines_ref = f_ref.readlines()
-                lines_mt = f_mt.readlines()
-
-            assert len(lines_ref) == len(lines_mt), (
-                f"Line count mismatch on frame {frame} with {num_threads} threads"
-            )
-            for idx, (l_ref, l_mt) in enumerate(zip(lines_ref, lines_mt)):
-                assert l_ref == l_mt, (
-                    f"Content mismatch on frame {frame}, line {idx} with {num_threads} threads:\n"
-                    f"REF: {l_ref.strip()}\n"
-                    f"MT:  {l_mt.strip()}"
-                )
+    # Ensure backward compatibility when num_threads is explicitly passed
+    run_compat = run_tracking(num_threads=4, add_flag=0)
+    assert run_compat.npart == run_ref.npart
+    assert run_compat.nlinks == run_ref.nlinks
 
 
-def test_parallel_tracking_with_add_race(temp_cavity_dir):
-    """Verify that parallel tracking with active particle addition (add=1) is completely deterministic and race-free."""
-    # 1. Run sequential as baseline with particle additions
+def test_tracking_with_add(temp_cavity_dir):
+    """Verify tracking with particle addition (add=1)."""
     run_ref = run_tracking(num_threads=1, add_flag=1)
-    ref_npart = run_ref.npart
-    ref_nlinks = run_ref.nlinks
+    assert run_ref.npart > 0
+    assert run_ref.nlinks > 0
 
-    ref_res_dir = temp_cavity_dir / "res_ref_add"
-    shutil.copytree(temp_cavity_dir / "res", ref_res_dir)
-
-    # 2. Run with varying multi-threading threads and compare to baseline
-    for num_threads in [2, 4, 8]:
-        run_mt = run_tracking(num_threads=num_threads, add_flag=1)
-
-        # Assert high-level metrics match perfectly (asserting no lost or overwritten tracks)
-        assert run_mt.npart == ref_npart, (
-            f"npart mismatch under multi-threading ({num_threads} threads)"
-        )
-        assert run_mt.nlinks == ref_nlinks, (
-            f"nlinks mismatch under multi-threading ({num_threads} threads)"
-        )
-
-        # Assert all frame files on disk are exactly identical
-        for frame in range(run_ref.seq_par.first, run_ref.seq_par.last):
-            ptv_ref = ref_res_dir / f"ptv_is.{frame}"
-            ptv_mt = temp_cavity_dir / "res" / f"ptv_is.{frame}"
-
-            assert ptv_ref.exists()
-            assert ptv_mt.exists()
-
-            with open(ptv_ref, "r") as f_ref, open(ptv_mt, "r") as f_mt:
-                lines_ref = f_ref.readlines()
-                lines_mt = f_mt.readlines()
-
-            assert len(lines_ref) == len(lines_mt), (
-                f"ptv_is line count mismatch on frame {frame} with {num_threads} threads (add=1)"
-            )
-            for idx, (l_ref, l_mt) in enumerate(zip(lines_ref, lines_mt)):
-                assert l_ref == l_mt, (
-                    f"ptv_is content mismatch on frame {frame}, line {idx} with {num_threads} threads (add=1):\n"
-                    f"REF: {l_ref.strip()}\n"
-                    f"MT:  {l_mt.strip()}"
-                )
-
-            # Check added files are also identical
-            added_ref = ref_res_dir / f"added.{frame}"
-            added_mt = temp_cavity_dir / "res" / f"added.{frame}"
-
-            if added_ref.exists():
-                assert added_mt.exists()
-                with open(added_ref, "r") as f_ref, open(added_mt, "r") as f_mt:
-                    lines_ref_add = f_ref.readlines()
-                    lines_mt_add = f_mt.readlines()
-                assert len(lines_ref_add) == len(lines_mt_add), (
-                    f"added line count mismatch on frame {frame} with {num_threads} threads"
-                )
-                for idx, (l_ref, l_mt) in enumerate(zip(lines_ref_add, lines_mt_add)):
-                    assert l_ref == l_mt, (
-                        f"added mismatch on frame {frame}, line {idx} with {num_threads} threads:\n"
-                        f"REF: {l_ref.strip()}\n"
-                        f"MT:  {l_mt.strip()}"
-                    )
-
-
-@pytest.mark.perf
-def test_parallel_tracking_speedup_scaling(temp_cavity_dir):
-    """Benchmark tracking speedup across thread counts (1, 2, 4, 8).
-
-    Reports wall-clock speedup factors (speedup requires larger datasets).
-    Asserts deterministic results identical across all thread counts.
-    """
-    thread_counts = [1, 2, 4, 8]
-    times: dict[int, float] = {}
-    results: dict[int, object] = {}
-
-    for nt in thread_counts:
-        t0 = time.perf_counter()
-        run = run_tracking(num_threads=nt, add_flag=0)
-        elapsed = time.perf_counter() - t0
-        times[nt] = elapsed
-        results[nt] = run
-
-    # Report results
-    baseline = times[1]
-    print("\n── Tracking Speedup Scaling (cavity, 5 frames) ──")
-    print(f"{'Threads':>8} {'Time (s)':>10} {'Speedup':>8} {'npart':>8} {'nlinks':>8}")
-    for nt in thread_counts:
-        speedup = baseline / times[nt]
-        r = results[nt]
-        print(f"{nt:>8} {times[nt]:>10.3f} {speedup:>7.2f}× {r.npart:>8} {r.nlinks:>8}")
-
-    # Determinism check across all thread counts (critical correctness)
-    ref_npart = results[1].npart
-    ref_nlinks = results[1].nlinks
-    for nt in [2, 4, 8]:
-        assert results[nt].npart == ref_npart, f"npart mismatch at {nt} threads"
-        assert results[nt].nlinks == ref_nlinks, f"nlinks mismatch at {nt} threads"
+    run_compat = run_tracking(num_threads=4, add_flag=1)
+    assert run_compat.npart == run_ref.npart
+    assert run_compat.nlinks == run_ref.nlinks

@@ -8,10 +8,8 @@ dist/
 *.egg-info/
 __pycache__/
 *.pyc
-# Cython build artifacts (rebuilt inside the image) — but keep the hand-written
-# C shim (cas_shim.c is a real source setup.py compiles, not generated).
+# Cython build artifacts (rebuilt inside the image)
 src/openptv2/algorithms/*.c
-!src/openptv2/algorithms/cas_shim.c
 src/openptv2/algorithms/*.so
 src/openptv2/algorithms/*.html
 

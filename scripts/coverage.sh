@@ -11,11 +11,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-# Delete only Cython-GENERATED artifacts. cas_shim.c is hand-written (needed by
-# track_kernels_tracking) and must survive.
+# Delete Cython-GENERATED artifacts.
 clean() {
     rm -rf build/   # force real recompile (build/ cache ignores macro changes)
-    find src/openptv2/algorithms -maxdepth 1 -name '*.c' ! -name 'cas_shim.c' -delete
+    find src/openptv2/algorithms -maxdepth 1 -name '*.c' -delete
     find src/openptv2/algorithms -maxdepth 1 -name '*.so' -delete
 }
 

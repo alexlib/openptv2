@@ -28,23 +28,6 @@ from setuptools.command.install import install
 ROOT = Path(__file__).parent.resolve()
 
 
-def _libomp_prefix():
-    """libomp prefix for macOS OpenMP (Apple clang needs it).
-
-    Order: explicit OPENPTV_LIBOMP_PREFIX (CI uses a low-deployment-target
-    libomp under /usr/local), then `brew --prefix libomp`, then arm64 default.
-    """
-    import subprocess
-
-    env = os.environ.get("OPENPTV_LIBOMP_PREFIX")
-    if env:
-        return env
-    try:
-        return subprocess.check_output(
-            ["brew", "--prefix", "libomp"], text=True
-        ).strip()
-    except Exception:
-        return "/opt/homebrew/opt/libomp"
 
 
 # All 18 modules translated from the C library to Cython 3 Pure Python
@@ -255,24 +238,17 @@ if __name__ == "__main__":
 
 def _windows_compile_args(is_dev):
     opt = "/Od" if is_dev else "/O2"
-    return [opt, "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS", "/openmp"], []
+    return [opt, "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS"], []
 
 
 def _darwin_compile_args(is_dev):
-    # Apple clang rejects bare -fopenmp; it needs Homebrew libomp via
-    # -Xpreprocessor -fopenmp + -lomp. delocate bundles libomp.dylib into the
-    # wheel and rewrites the rpath.
     opt = "-O0" if is_dev else "-O3"
-    libomp = _libomp_prefix()
     compile_args = [
         opt,
         "-Wno-cpp",
         "-Wno-unused-function",
-        "-Xpreprocessor",
-        "-fopenmp",
-        f"-I{libomp}/include",
     ]
-    link_args = ["-Wl,-rpath,@loader_path", f"-L{libomp}/lib", "-lomp"]
+    link_args = ["-Wl,-rpath,@loader_path"]
     return compile_args, link_args
 
 
@@ -283,9 +259,8 @@ def _posix_compile_args(is_dev):
         "-Wno-cpp",
         "-Wno-unused-function",
         "-Wno-maybe-uninitialized",
-        "-fopenmp",
     ]
-    return compile_args, ["-Wl,-rpath,$ORIGIN", "-fopenmp"]
+    return compile_args, ["-Wl,-rpath,$ORIGIN"]
 
 
 def _platform_compile_args(is_dev):
@@ -331,10 +306,6 @@ def get_extensions():
 
         c_file = py_file.with_suffix(".c")
         sources = [str(c_file.relative_to(ROOT))]
-
-        # Add CAS shim for MSVC portability (__sync_bool_compare_and_swap)
-        if mod == "track_kernels_corr":
-            sources.append("src/openptv2/algorithms/cas_shim.c")
 
         extensions.append(
             Extension(
