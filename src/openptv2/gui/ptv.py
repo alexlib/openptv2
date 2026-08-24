@@ -1611,20 +1611,19 @@ def write_targets(
 
 
 def read_targets(short_file_base: str, frame: int, store=None, cam_idx=None) -> TargetArray:
-    """Read targets from a file. ASCII is tried first; on a miss, and only
-    when ``store`` is given, the same data is read from the unified RunStore
-    instead. With no store (the default), the missing-file behavior is
-    unchanged: raises FileNotFoundError, matching every existing caller."""
+    """Read targets: from the unified RunStore when ``store`` is given and has targets,
+    otherwise falls back to ASCII file."""
     filename = f"{short_file_base}.{frame:04d}_targets"
 
-    if not os.path.exists(filename):
-        if store is not None:
-            from openptv2.algorithms.tracking_frame_buf import _guess_cam_idx
+    if store is not None:
+        from openptv2.algorithms.tracking_frame_buf import _guess_cam_idx
 
-            idx = cam_idx if cam_idx is not None else _guess_cam_idx(filename)
-            if store.has_targets(idx, frame):
-                print(f" Reading targets from: store (cam={idx}, frame={frame})")
-                return store.read_targets(idx, frame)
+        idx = cam_idx if cam_idx is not None else _guess_cam_idx(filename)
+        if store.has_targets(idx, frame):
+            print(f" Reading targets from: store (cam={idx}, frame={frame})")
+            return store.read_targets(idx, frame)
+
+    if not os.path.exists(filename):
         raise FileNotFoundError(f"Targets file does not exist: {filename}")
 
     print(f" Reading targets from: filename: {filename}")

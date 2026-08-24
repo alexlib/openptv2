@@ -175,15 +175,16 @@ def _guess_cam_idx(fname) -> int:
 
 @cython.ccall
 def read_targets(file_base, frame_num, cam_idx=None, store=None):
-    """Read one camera/frame's 2D targets.
-
-    ``store``: an ``openptv2.storage.RunStore``, or ``None``. ASCII is tried
-    first; on a miss, and only when ``store`` is given, the same data is read
-    from the store instead -- replacing the old ``OPENPTV_STORAGE``-gated
-    3-candidate guessed-path fallback (see
-    docs/plans/2026-08-14-storage-formats-as-built.md).
+    """Read one camera/frame's 2D targets. When ``store`` is given and contains
+    the targets, reads from store directly; otherwise falls back to ASCII.
     """
     fname = _resolve_file_base(file_base, frame_num)
+
+    if store is not None:
+        if cam_idx is None:
+            cam_idx = _guess_cam_idx(fname)
+        if store.has_targets(cam_idx, frame_num):
+            return list(store.read_targets(cam_idx, frame_num))
 
     try:
         with open(fname, "r") as f:
@@ -207,12 +208,6 @@ def read_targets(file_base, frame_num, cam_idx=None, store=None):
                 )
             return targets
     except FileNotFoundError:
-        if store is None:
-            return []
-        if cam_idx is None:
-            cam_idx = _guess_cam_idx(fname)
-        if store.has_targets(cam_idx, frame_num):
-            return list(store.read_targets(cam_idx, frame_num))
         return []
 
 

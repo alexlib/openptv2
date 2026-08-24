@@ -45,7 +45,19 @@ def _discover_frames(res_dir: Path) -> list[int]:
     return sorted(nums)
 
 
+def _discover_target_frames(img_dir: Path) -> list[int]:
+    """Frame numbers discovered from cam*_targets files."""
+    nums = set()
+    for p in img_dir.glob("cam*_targets"):
+        m = _TARGET_RE.search(p.name)
+        if m:
+            nums.add(int(m.group(2)))
+    return sorted(nums)
+
+
 def _load_rt_is(path: Path) -> tuple[np.ndarray, np.ndarray]:
+    if not path.exists() or path.stat().st_size == 0:
+        return np.zeros((0, 3)), np.zeros((0, 0), dtype=np.int32)
     data = np.loadtxt(path, skiprows=1, ndmin=2)
     if data.size == 0:
         return np.zeros((0, 3)), np.zeros((0, 0), dtype=np.int32)
@@ -76,6 +88,7 @@ def _load_linkage(
 def import_run(
     experiment_root: Union[str, Path],
     store_path: Optional[Union[str, Path]] = None,
+    remove_ascii: bool = False,
 ) -> RunStore:
     """Ingest an existing ASCII run (``img/*_targets``, ``res/rt_is.*``,
     ``res/ptv_is.*``, ``res/added.*``) into a new/updated RunStore.
@@ -83,43 +96,67 @@ def import_run(
     Frame keys are normalised to the store's fixed-width convention as part
     of the import, fixing the inconsistent padding the legacy Zarr mirror had
     (unpadded for targets/correspondences, ``:05d`` for linkage).
+
+    Args:
+        experiment_root: Path to the experiment directory containing img/ and/or res/
+        store_path: Optional output path for the Zarr store (default: res/run.zarr)
+        remove_ascii: If True, delete imported ASCII files after successful ingestion
     """
     root = Path(experiment_root)
     img_dir = root / "img"
     res_dir = root / "res"
-    if not img_dir.is_dir() or not res_dir.is_dir():
-        raise RunStoreError(f"{root} does not look like a PTV run (missing img/ or res/)")
+    if not img_dir.is_dir() and not res_dir.is_dir():
+        raise RunStoreError(f"{root} does not look like a PTV run (missing img/ and res/)")
 
-    cams = _discover_cams(img_dir)
-    frames = _discover_frames(res_dir)
-    if not frames:
-        raise RunStoreError(f"No res/rt_is.* files found under {root}")
+    cams = _discover_cams(img_dir) if img_dir.is_dir() else []
+    frames_rt = _discover_frames(res_dir) if res_dir.is_dir() else []
+    frames_targ = _discover_target_frames(img_dir) if img_dir.is_dir() else []
+    all_frames = sorted(set(frames_rt) | set(frames_targ))
 
+    if not all_frames:
+        raise RunStoreError(f"No targets or rt_is.* files found under {root}")
+
+    res_dir.mkdir(parents=True, exist_ok=True)
     store = RunStore(store_path or resolve_store_path(root), mode="a")
+    files_to_remove = []
 
-    for frame in frames:
+    for frame in all_frames:
+        targets_per_cam = []
         for cam in cams:
-            file_base = str(img_dir / f"cam{cam}.")
-            targets = _read_targets_ascii(file_base, frame, cam_idx=cam - 1)
-            store.write_targets(cam - 1, frame, targets)
+            target_file = img_dir / f"cam{cam}.{frame:04d}_targets"
+            if not target_file.exists():
+                target_file = img_dir / f"cam{cam}.{frame}_targets"
+            if target_file.exists():
+                file_base = str(img_dir / f"cam{cam}.")
+                targets = _read_targets_ascii(file_base, frame, cam_idx=cam - 1)
+                store.write_targets(cam - 1, frame, targets)
+                targets_per_cam.append(len(targets))
+                files_to_remove.append(target_file)
+            else:
+                targets_per_cam.append(0)
 
-        pos, cam_ids = _load_rt_is(res_dir / f"rt_is.{frame}")
-        store.write_correspondences(frame, pos, cam_ids)
+        rt_path = res_dir / f"rt_is.{frame}"
+        has_corres = rt_path.exists()
+        pos, cam_ids = _load_rt_is(rt_path)
+        if has_corres:
+            store.write_correspondences(frame, pos, cam_ids)
+            files_to_remove.append(rt_path)
 
-        ptv_is = _load_linkage(res_dir / f"ptv_is.{frame}")
+        ptv_is_path = res_dir / f"ptv_is.{frame}"
+        ptv_is = _load_linkage(ptv_is_path)
         if ptv_is is not None:
             p_prev, p_next, p_pos, p_prio = ptv_is
             store.write_linkage(frame, p_prev, p_next, p_pos, name="ptv_is", prio=p_prio)
+            files_to_remove.append(ptv_is_path)
 
-        added = _load_linkage(res_dir / f"added.{frame}")
+        added_path = res_dir / f"added.{frame}"
+        added = _load_linkage(added_path)
         if added is not None:
             a_prev, a_next, a_pos, a_prio = added
             store.write_linkage(frame, a_prev, a_next, a_pos, name="added", prio=a_prio)
+            files_to_remove.append(added_path)
 
-        n_targets = np.array(
-            [len(_read_targets_ascii(str(img_dir / f"cam{c}."), frame, cam_idx=c - 1)) for c in cams],
-            dtype=np.int32,
-        )
+        n_targets = np.array(targets_per_cam, dtype=np.int32)
         clique_size = (cam_ids != -1).sum(axis=1) if cam_ids.size else np.zeros(0, dtype=np.int32)
         n_quads = int((clique_size == 4).sum())
         n_trips = int((clique_size == 3).sum())
@@ -141,7 +178,17 @@ def import_run(
             n_links=n_links,
         )
 
+    if remove_ascii:
+        for f in files_to_remove:
+            try:
+                f.unlink(missing_ok=True)
+            except OSError:
+                pass
+
     return store
+
+
+convert_ascii_to_zarr = import_run
 
 
 def _write_targets_ascii(path: Path, arr: np.ndarray) -> None:
@@ -225,3 +272,55 @@ def export_run(store: RunStore, experiment_root: Union[str, Path]) -> None:
                 prio = store.read_prio(frame, "ptv_is")
                 if prio is not None:
                     _write_linkage_ascii(res_dir / f"added.{frame}", prev, nxt, pos, prio)
+
+
+def main(argv=None) -> int:
+    """CLI entrypoint to convert legacy ASCII files to a unified Zarr store."""
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(
+        prog="openptv2-convert-legacy",
+        description="Convert legacy OpenPTV ASCII run files (*_targets, rt_is.*, ptv_is.*, added.*) to a unified Zarr store.",
+    )
+    parser.add_argument(
+        "folder",
+        type=str,
+        help="Experiment folder containing img/ and/or res/ directories.",
+    )
+    parser.add_argument(
+        "--store",
+        "-s",
+        type=str,
+        default=None,
+        help="Optional destination path for the .zarr store (defaults to <folder>/res/run.zarr).",
+    )
+    parser.add_argument(
+        "--remove-ascii",
+        "-r",
+        action="store_true",
+        help="Delete legacy ASCII files after successful conversion to Zarr.",
+    )
+
+    args = parser.parse_args(argv)
+    folder_path = Path(args.folder).resolve()
+
+    if not folder_path.exists() or not folder_path.is_dir():
+        print(f"Error: Directory '{folder_path}' does not exist.", file=sys.stderr)
+        return 1
+
+    try:
+        store = import_run(folder_path, store_path=args.store, remove_ascii=args.remove_ascii)
+        n_frames = len(store.frames())
+        print(f"Successfully converted {n_frames} frames to Zarr store: {store.store_path}")
+        if args.remove_ascii:
+            print("Legacy ASCII files removed successfully.")
+        return 0
+    except Exception as exc:
+        print(f"Error during conversion: {exc}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(main())
