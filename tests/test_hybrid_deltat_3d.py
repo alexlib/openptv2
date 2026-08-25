@@ -13,7 +13,6 @@ import pytest
 from openptv2.plugins.hybrid_deltat_3d import hybrid_track
 from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
 
-
 N_PARTICLES = 25
 N_FRAMES = 30
 VEL = np.array([0.40, 0.06, -0.12])  # mm/frame; |v| ~ 0.42
