@@ -29,6 +29,11 @@ jobs:
 
       - name: Run tests (not slow)
         run: uv run pytest -m "not slow" --tb=short
+        env:
+          # Headless linux runners have no display; without this every
+          # tests/gui import dies at collection ("No pyface.toolkits
+          # plugin could be loaded for qt").
+          QT_QPA_PLATFORM: offscreen
 
   lint:
     name: Lint (ruff)
