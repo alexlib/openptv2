@@ -25,8 +25,8 @@ import yaml
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.imgcoord import img_coord
 from openptv2.algorithms.parameters import ControlPar, MmNp
-from openptv2.algorithms.trafo import metric_to_pixel
 from openptv2.algorithms.tracking_frame_buf import Target
+from openptv2.algorithms.trafo import metric_to_pixel
 from openptv2.storage import RunStore
 
 SCAFFOLD = Path(__file__).resolve().parents[2] / "test_data" / "synthetic_turbulent"

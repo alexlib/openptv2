@@ -62,8 +62,8 @@ def envelope_from_tracks(tracks, lo: float = 1.0, hi: float = 99.0, prune=True):
 def show(label, tracks, lo=1.0, hi=99.0, prune=True):
     dl, dh, ah = envelope_from_tracks(tracks, lo, hi, prune)
     print(f"[{label}]  p{lo:g}/p{hi:g}")
-    for n, l, h in zip(("dx", "dy", "dz"), dl, dh):
-        print(f"  {n}: [{l:+.2f}, {h:+.2f}]")
+    for n, vlo, vhi in zip(("dx", "dy", "dz"), dl, dh):
+        print(f"  {n}: [{vlo:+.2f}, {vhi:+.2f}]")
     print(f"  dacc (p{hi:g} |2nd-deriv|): "
           f"[{ah[0]:.2f}, {ah[1]:.2f}, {ah[2]:.2f}] max {ah.max():.2f}")
     return dl, dh, ah

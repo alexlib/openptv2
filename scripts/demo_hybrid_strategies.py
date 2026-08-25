@@ -14,14 +14,14 @@ Emits unified performance metrics (Precision, Recall/Yield, Purity, PMT%, Speed)
 from __future__ import annotations
 
 import shutil
-import tempfile
-import time
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import benchmark_utils as bu
+
 import openptv2.benchmarking as bm
 
 

@@ -14,8 +14,7 @@ The 3D tracking loop, assignment, and file I/O are implemented natively in
 openptv2 (see ``openptv2.plugins.predictive_gmm_3d``).
 """
 
-from . import prediction
-from . import initialisation
+from . import initialisation, prediction
 from ._config import ProPTVConfig
 
 __all__ = [

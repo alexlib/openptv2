@@ -201,6 +201,6 @@ def target_recognition(img, tpar, cam, cpar, subrange_x=None, subrange_y=None):
     return TargetArray(targets)
 
 
-from openptv2.algorithms.segmentation import detect_targets_batch_parallel
+from openptv2.algorithms.segmentation import detect_targets_batch_parallel  # noqa: E402
 
 __all__ = ["target_recognition", "detect_targets_batch_parallel"]

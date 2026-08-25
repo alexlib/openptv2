@@ -347,7 +347,7 @@ def test_sort_candidates_by_freq_one_seen_twice():
     n = 2 * MAX_CANDS
     items = _make_foundpix_array(n, 2)
     items[0][0] = 5  # cam-0 slot 0
-    items[4][0] = 5  # cam-1 slot 0
+    items[MAX_CANDS][0] = 5  # cam-1 slot 0
     diff = sort_candidates_by_freq(items, 2)
     assert diff >= 1
     assert items[0][0] == 5
@@ -360,8 +360,8 @@ def test_sort_candidates_by_freq_unique_particles():
     items = _make_foundpix_array(n, 2)
     items[0][0] = 1
     items[1][0] = 2
-    items[4][0] = 3
-    items[5][0] = 4
+    items[MAX_CANDS][0] = 3
+    items[MAX_CANDS + 1][0] = 4
     sort_candidates_by_freq(items, 2)  # must not crash
 
 

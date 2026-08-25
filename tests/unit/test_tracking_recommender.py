@@ -127,7 +127,7 @@ def test_suggest_params_margin_not_clamped_back_to_raw_p95():
     the clamp fired every time. The clamp should only fire well above one
     mean-spacing multiple, not routinely undo the margin.
     """
-    from openptv2.tracking_recommender import DatasetStats, _suggest_params
+    from openptv2.tracking_recommender import _suggest_params
     from openptv2.tracking_registry import TRACKER_REGISTRY
 
     stats = DatasetStats()

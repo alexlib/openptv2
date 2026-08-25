@@ -9,7 +9,6 @@ validated against the model so the volume projects onto the sensors.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 
@@ -20,7 +19,7 @@ from openptv2.algorithms.calibration import (
     Glass,
     Interior,
 )
-from openptv2.algorithms.imgcoord import img_coord_batch, flat_image_coord_batch
+from openptv2.algorithms.imgcoord import flat_image_coord_batch, img_coord_batch
 from openptv2.algorithms.multimed import prepare_mmluts
 from openptv2.algorithms.parameters import ControlPar, MmNp, VolumePar
 from openptv2.algorithms.trafo import metric_to_pixel_batch

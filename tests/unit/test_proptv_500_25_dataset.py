@@ -1,6 +1,7 @@
 """Integration unit test for running openptv2 ProPTVTracker on proPTV 500_25 synthetic dataset."""
 
 import os
+
 import numpy as np
 import pytest
 

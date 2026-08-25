@@ -277,9 +277,9 @@ def main():
 
         try:
             from openptv2.benchmarking.cli_benchmark import (
+                cmd_compare,
                 cmd_dataset,
                 cmd_sweep,
-                cmd_compare,
             )
 
             if args.action == "dataset":
@@ -338,8 +338,8 @@ def main():
             args, _ = parser.parse_known_args(sys.argv[2:])
 
             from openptv2.tracking_recommender import (
-                recommend_from_files,
                 print_recommendation,
+                recommend_from_files,
             )
 
             rec = recommend_from_files(
@@ -379,6 +379,7 @@ def main():
             args, _ = parser.parse_known_args(sys.argv[2:])
 
             import os
+
             from openptv2.algorithms.parameters import SequencePar
             from openptv2.batch.pyptv_batch import build_processing_experiment
             from openptv2.gui.ptv import _open_run_store

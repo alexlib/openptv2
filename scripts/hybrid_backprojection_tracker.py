@@ -43,13 +43,13 @@ def apply_backprojection_filter(
     real 2D target in fewer than `min_cams` cameras. Returns a new
     {track_id: [(frame, x, y, z), ...]} dict -- fragments, not merges, so
     downstream kinematics/yield metrics from benchmark_utils work unchanged."""
+    import yaml
+
     from openptv2.algorithms.calibration import Calibration
     from openptv2.algorithms.imgcoord import img_coord
     from openptv2.algorithms.parameters import ControlPar, MmNp
     from openptv2.algorithms.trafo import metric_to_pixel
     from openptv2.storage import RunStore
-
-    import yaml
 
     yaml_data = yaml.safe_load((src / "parameters_Run1.yaml").read_text())
     ptv = yaml_data["ptv"]

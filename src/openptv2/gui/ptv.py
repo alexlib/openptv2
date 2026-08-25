@@ -1274,7 +1274,8 @@ def py_sequence_loop_python(exp) -> None:
     from openptv2.algorithms.orientation import point_positions as alg_point_positions
     from openptv2.correspondences import MatchedCoords as AlgMatchedCoords
     from openptv2.segmentation import target_recognition as alg_target_recognition
-    from openptv2.tracking_framebuf import Frame, read_targets, write_targets as _write_targets_canonical
+    from openptv2.tracking_framebuf import Frame, read_targets
+    from openptv2.tracking_framebuf import write_targets as _write_targets_canonical
 
     store = _open_run_store(exp)
 

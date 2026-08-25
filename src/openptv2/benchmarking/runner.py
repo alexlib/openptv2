@@ -15,7 +15,6 @@ from pathlib import Path
 
 import numpy as np
 
-from openptv2.algorithms.tracking_frame_buf import Frame
 from openptv2.tracking_postprocess import link_step
 
 # Tracker names recognised as presets by the default_tracking plugin.
@@ -183,11 +182,11 @@ def run_tracker(
     yaml_dir = yaml_path.parent
     run_dir = Path(cwd) if cwd is not None else yaml_dir
 
-    from openptv2.batch.pyptv_batch import build_processing_experiment
-    from openptv2.plugins import run_tracking_plugin
-
     # Read sequence bounds and camera count from the YAML.
     import yaml as _yaml
+
+    from openptv2.batch.pyptv_batch import build_processing_experiment
+    from openptv2.plugins import run_tracking_plugin
     data = _yaml.safe_load(yaml_path.read_text())
     seq_first = int(data["sequence"]["first"])
     seq_last = int(data["sequence"]["last"])

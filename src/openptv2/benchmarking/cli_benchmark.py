@@ -5,10 +5,8 @@ Backs the ``openptv benchmark`` subcommand.
 
 from __future__ import annotations
 
-import tempfile
 import time
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 

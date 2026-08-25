@@ -679,7 +679,7 @@ def three_camera_matching(
         for i in range(tc[i1]):
             for i2 in range(i1 + 1, num_cams - 1):
                 p1 = p1_arr[i1, i2, i]
-                if p1 > NMAX or tusage[i1, p1] > 0:
+                if p1 >= NMAX or tusage[i1, p1] > 0:
                     continue
 
                 # 1D views for (i1, i2, i) row
@@ -690,7 +690,7 @@ def three_camera_matching(
 
                 for j in range(n_i1i2_i):
                     p2 = p2_i1i2_i[j]
-                    if p2 > NMAX or tusage[i2, p2] > 0:
+                    if p2 >= NMAX or tusage[i2, p2] > 0:
                         continue
 
                     c12: cython.double = c_i1i2_i[j]
@@ -711,7 +711,7 @@ def three_camera_matching(
 
                         for k in range(n_i1i3_i):
                             p3 = p2_i1i3_i[k]
-                            if p3 > NMAX or tusage[i3, p3] > 0:
+                            if p3 >= NMAX or tusage[i3, p3] > 0:
                                 continue
 
                             c13: cython.double = c_i1i3_i[k]
@@ -777,7 +777,7 @@ def consistent_pair_matching(
         for i2 in range(i1 + 1, num_cams):
             for i in range(tc[i1]):
                 p1 = p1_arr[i1, i2, i]
-                if p1 > NMAX or tusage[i1, p1] > 0:
+                if p1 >= NMAX or tusage[i1, p1] > 0:
                     continue
 
                 if n_arr[i1, i2, i] != 1:
@@ -788,7 +788,7 @@ def consistent_pair_matching(
                 c_row: cython.double[:] = corr_arr[i1, i2, i]
                 d_row: cython.double[:] = dist_arr[i1, i2, i]
                 p2 = p2_row[0]
-                if p2 > NMAX or tusage[i2, p2] > 0:
+                if p2 >= NMAX or tusage[i2, p2] > 0:
                     continue
 
                 corr = c_row[0] / d_row[0]
@@ -1051,7 +1051,7 @@ def correspondences(frm, corrected, vpar, cpar, calib):
             vpar.corrmin,
             con0_p,
             con0_corr,
-            4 * NMAX,
+            con0_size,
         )
         match_counts[0] = take_best_candidates(
             con0_p, con0_corr, con_p, con_corr, num_cams, match0, tusage, 0
@@ -1071,7 +1071,7 @@ def correspondences(frm, corrected, vpar, cpar, calib):
             vpar.corrmin,
             con0_p,
             con0_corr,
-            4 * NMAX,
+            con0_size,
             tusage,
         )
         match_counts[1] = take_best_candidates(
@@ -1099,7 +1099,7 @@ def correspondences(frm, corrected, vpar, cpar, calib):
             vpar.corrmin,
             con0_p,
             con0_corr,
-            4 * NMAX,
+            con0_size,
             tusage,
         )
         match_counts[2] = take_best_candidates(

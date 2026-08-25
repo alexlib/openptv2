@@ -143,15 +143,15 @@ class SelfChecker:
     def check_core_api(self) -> None:
         """Verify instantiation and basic functionality of core openptv2 objects."""
         try:
-            cal = openptv2.Calibration()
+            openptv2.Calibration()
             cpar = openptv2.ControlParams(num_cams=4)
             cpar.set_image_size((1280, 1024))
             cpar.set_pixel_size((0.012, 0.012))
-            vpar = openptv2.VolumeParams()
-            tpar = openptv2.TargetParams()
-            mm = openptv2.MultimediaParams()
-            spar = openptv2.SequenceParams()
-            tkpar = openptv2.TrackingParams()
+            openptv2.VolumeParams()
+            openptv2.TargetParams()
+            openptv2.MultimediaParams()
+            openptv2.SequenceParams()
+            openptv2.TrackingParams()
             self.log(
                 "Core API",
                 "param_instantiation",

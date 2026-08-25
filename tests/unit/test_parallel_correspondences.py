@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -16,7 +17,6 @@ from openptv2.gui.ptv import py_start_proc_c
 from openptv2.orientation import point_positions
 from openptv2.storage import RunStore
 from openptv2.tracking_framebuf import TargetArray
-
 
 REPO_ROOT = Path(__file__).parent.parent.parent
 TEST_DATA = REPO_ROOT / "test_data" / "test_cavity"
@@ -48,7 +48,9 @@ def sample_targets(cavity_params):
     frames = [10001, 10002, 10003, 10004]
     targets_per_frame = {}
 
-    from openptv2.algorithms.tracking_frame_buf import read_targets as read_targets_ascii
+    from openptv2.algorithms.tracking_frame_buf import (
+        read_targets as read_targets_ascii,
+    )
 
     for frame in frames:
         frame_targs = []

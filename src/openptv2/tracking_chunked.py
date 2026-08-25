@@ -7,12 +7,11 @@ and stitches linkages across boundaries with guaranteed trajectory continuity.
 
 from __future__ import annotations
 
-import copy
 import os
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Literal, Optional, Sequence, Union
+from typing import Any, Literal, Optional
 
 import numpy as np
 
@@ -22,19 +21,10 @@ from openptv2.algorithms.parameters import (
     SequencePar,
     TrackPar,
     VolumePar,
-    convert_track_par_to_tuple,
 )
-from openptv2.algorithms.track import (
-    track_forward_start,
-    trackcorr_c_finish,
-    trackcorr_c_loop,
-)
-from openptv2.algorithms.track3d import track3d_loop
-from openptv2.algorithms.track4be import track4be_loop
-from openptv2.algorithms.tracking_run import TrackingRun
 from openptv2.storage.run_store import RunStore, RunStoreError
 from openptv2.storage.seal import seal
-from openptv2.tracker import DEFAULT_MAX_TARGETS, Tracker, default_naming
+from openptv2.tracker import Tracker, default_naming
 
 
 def partition_tracking_chunks(
@@ -372,7 +362,6 @@ def track_sequence_chunked_parallel(
     """
     first = spar.get_first()
     last = spar.get_last()
-    total_frames = last - first + 1
 
     if naming is None:
         naming = default_naming.copy()

@@ -1,6 +1,7 @@
 """Unit tests for openptv2 self-check diagnostic runner."""
 
-from openptv2.self_check import SelfChecker, main as self_check_main
+from openptv2.self_check import SelfChecker
+from openptv2.self_check import main as self_check_main
 
 
 def test_self_check_runner():

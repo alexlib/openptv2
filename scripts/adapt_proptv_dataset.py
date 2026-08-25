@@ -107,8 +107,8 @@ def _prepare_scaffold(scaffold: Path, out: Path):
 def convert(proptv_case_dir: Path, scaffold: Path, out: Path) -> None:
     from openptv2.algorithms.calibration import Calibration
     from openptv2.algorithms.imgcoord import img_coord
-    from openptv2.algorithms.trafo import metric_to_pixel
     from openptv2.algorithms.tracking_frame_buf import Target
+    from openptv2.algorithms.trafo import metric_to_pixel
     from openptv2.storage import RunStore
 
     origin_dir = proptv_case_dir / "origin"
@@ -337,12 +337,14 @@ def convert_realistic(
     if eps0_mm is None:
         eps0_mm = _derive_eps0_mm(noise_px)
     from openptv2.algorithms.calibration import Calibration
-    from openptv2.algorithms.correspondences import correspondences as alg_correspondences
+    from openptv2.algorithms.correspondences import (
+        correspondences as alg_correspondences,
+    )
     from openptv2.algorithms.imgcoord import img_coord
     from openptv2.algorithms.orientation import point_positions as alg_point_positions
     from openptv2.algorithms.parameters import VolumePar
-    from openptv2.algorithms.trafo import metric_to_pixel
     from openptv2.algorithms.tracking_frame_buf import Frame, Target
+    from openptv2.algorithms.trafo import metric_to_pixel
     from openptv2.correspondences import MatchedCoords
     from openptv2.storage import RunStore
 

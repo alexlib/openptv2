@@ -94,8 +94,8 @@ def _score_trackcorr_or_track3d(tmp_path, scene_dir, mode, first, last, **tpar_o
 
 def _score_nearest_hungarian(tmp_path, scene_dir, first, last, v_max, a_max):
     from openptv2.algorithms.parameters import ControlPar as _CP
-    from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
     from openptv2.algorithms.tracking_frame_buf import Frame
+    from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
 
     cpar = _CP.from_yaml(str(scene_dir / "parameters_Run1.yaml"))
     frames = list(range(first, last + 1))

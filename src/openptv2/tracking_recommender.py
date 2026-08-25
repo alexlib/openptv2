@@ -18,7 +18,6 @@ import numpy as np
 
 from openptv2.tracking_registry import (
     TrackerInfo,
-    get_tracker_info,
     list_trackers,
 )
 

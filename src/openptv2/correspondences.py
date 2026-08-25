@@ -1,6 +1,7 @@
 """Streamlined correspondences matching API."""
 
 import os
+
 import numpy as np
 
 
@@ -139,8 +140,17 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
         else raw_cparam.num_cams
     )
 
+    # Size the frame from the actual data: the Frame's per-camera SoA
+    # buffers are indexed with boundscheck disabled in compiled kernels, so a
+    # camera with more targets than max_targets would silently overrun them.
+    max_targets = max(
+        (len(img_pts[cam]._targets if hasattr(img_pts[cam], "_targets") else img_pts[cam])
+         for cam in range(num_cams)),
+        default=1000,
+    )
+
     # Build Frame object from img_pts
-    frame = AlgoFrame(num_cams=num_cams, max_targets=1000)
+    frame = AlgoFrame(num_cams=num_cams, max_targets=max(max_targets, 1))
 
     # Copy targets to frame
     for cam in range(num_cams):

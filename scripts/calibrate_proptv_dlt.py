@@ -88,8 +88,6 @@ def dlt_resection(ref_pts: np.ndarray, metric_pts: np.ndarray):
     K = K / scale
     # t (last column of M^-1 @ P[:,3]) scales the same way; recover camera
     # center C from world = -R^T @ (M^-1 @ p4).
-    Mfull = P[:, :3] / scale
-    t = np.linalg.solve(Mfull, P[:, 3] / scale) if False else None
     # Simpler: solve M @ C = -p4 for camera center directly (unscaled M, p4).
     C = -np.linalg.solve(P[:, :3], P[:, 3])
 
@@ -135,7 +133,13 @@ def _self_test():
     """Verify dlt_resection against a KNOWN synthetic camera before trusting
     it on real proPTV data -- exactly the camera used to empirically pin
     down the projection sign convention above."""
-    from openptv2.algorithms.calibration import AddedPar, Calibration, Exterior, Glass, Interior
+    from openptv2.algorithms.calibration import (
+        AddedPar,
+        Calibration,
+        Exterior,
+        Glass,
+        Interior,
+    )
     from openptv2.algorithms.imgcoord import img_coord
     from openptv2.algorithms.parameters import ControlPar, MmNp
 
@@ -182,7 +186,13 @@ def load_camera_correspondences(origin_path: Path, cam: int) -> tuple[np.ndarray
 def calibrate_camera_from_scratch(cam: int, origin_path: Path, cpar):
     """DLT bootstrap -> openptv2 external_calibration -> full_calibration.
     Returns (Calibration, rms_px, n_points) or raises on failure."""
-    from openptv2.algorithms.calibration import AddedPar, Calibration, Exterior, Glass, Interior
+    from openptv2.algorithms.calibration import (
+        AddedPar,
+        Calibration,
+        Exterior,
+        Glass,
+        Interior,
+    )
     from openptv2.algorithms.imgcoord import img_coord
     from openptv2.algorithms.trafo import pixel_to_metric_batch
     from openptv2.orientation import external_calibration, full_calibration

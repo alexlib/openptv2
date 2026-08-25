@@ -361,9 +361,9 @@ class Tracking:
         if track_cfg.get("postprocess", True) and num_frames > 1:
             from openptv2.tracking_postprocess import (
                 count_links,
-                seed_cold_start,
-                relink_trajectory_gaps,
                 enforce_reciprocity,
+                relink_trajectory_gaps,
+                seed_cold_start,
             )
             base = linkage_base
             first, last = frame_numbers[0], frame_numbers[-1]

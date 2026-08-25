@@ -48,7 +48,7 @@ def _require_group(parent: Any, name: str) -> Any:
                 return parent[name]
             time.sleep(0.02 * (attempt + 1))
 
-from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
+from openptv2.algorithms.tracking_frame_buf import Target, TargetArray  # noqa: E402
 
 STORE_DIRNAME = "run.zarr"
 FRAME_KEY_WIDTH = 6  # frame_000000 .. frame_999999
@@ -380,9 +380,6 @@ class RunStore:
         correspondences by default, falling back to the ``ptv_is`` linkage,
         then to any camera's targets.
         """
-        candidates = []
-        if source is not None:
-            candidates = [("correspondences" if source == "correspondences" else None)]
         for grp_path in (
             [source] if source else ["correspondences", "linkage/ptv_is"]
         ):

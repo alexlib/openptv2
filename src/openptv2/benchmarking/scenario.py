@@ -16,7 +16,6 @@ Supported realism knobs:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 import numpy as np
 
@@ -87,7 +86,6 @@ def generate_scenario(
         missing from a frame it was dropped from) and ghost particles.
     """
     rng = np.random.default_rng(spec.seed)
-    c = np.array([0.0, 0.0, 0.0])
     half = np.array(spec.domain) / 2.0
 
     true_tracks: dict[int, list[tuple[int, float, float, float]]] = {}
@@ -139,8 +137,6 @@ def generate_scenario(
 
     # ── 2. Engineered crossings ──────────────────────────────────────
     for cr in spec.crossings:
-        base_id = next_pid
-        half_len = spec.num_frames // 2
         # two tracks approaching perpendicularly, meeting at at_frame
         p1 = rng.uniform(-half[0], half[0])
         p2 = rng.uniform(-half[1], half[1])

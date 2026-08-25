@@ -23,6 +23,8 @@ wheels/
 venv/
 ENV/
 env/
+# accidental venvs created with a package-like name at repo root
+/openptv2/
 
 # IDE
 .vscode/
@@ -140,3 +142,11 @@ tests_execution_log.txt
 
 # marimo cache
 __marimo__/
+
+# coverage and scratch artifacts
+.coverage
+.coverage.*
+/htmlcov
+/scratch/
+/.slim/
+/scratch_fbf_exp/

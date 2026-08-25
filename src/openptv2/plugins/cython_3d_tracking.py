@@ -7,10 +7,11 @@ segment linking cascade for ultra-fast 3D position-space trajectory reconstructi
 from __future__ import annotations
 
 import logging
+
 import numpy as np
 
-from openptv2.algorithms.track_kernels_track3d import track3d_loop_fast
 from openptv2.algorithms.constants import NEXT_NONE, PREV_NONE
+from openptv2.algorithms.track_kernels_track3d import track3d_loop_fast
 
 log = logging.getLogger("openptv2.cython_3d_tracking")
 
@@ -173,7 +174,7 @@ class Cython3DTracker:
                 # Trace chain forward through next_links
                 curr_t = t
                 curr_i = i
-                
+
                 tr_pos = []
                 tr_time = []
 
@@ -195,7 +196,7 @@ class Cython3DTracker:
                 if len(tr_pos) >= 2:
                     pos_arr = np.array(tr_pos, dtype=np.float64)
                     time_arr = np.array(tr_time, dtype=np.float64) * self.dt
-                    
+
                     # Estimate velocities along the track
                     vel_arr = np.zeros_like(pos_arr)
                     if len(pos_arr) > 1:

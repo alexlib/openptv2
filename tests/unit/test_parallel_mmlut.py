@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -17,7 +18,6 @@ from openptv2.algorithms.track_kernels_batch import (
 )
 from openptv2.gui.experiment import Experiment
 from openptv2.gui.ptv import py_start_proc_c
-
 
 REPO_ROOT = Path(__file__).parent.parent.parent
 TEST_DATA = REPO_ROOT / "test_data" / "test_cavity"
@@ -157,7 +157,10 @@ def test_run_store_mmlut_caching_roundtrip(cavity_params, tmp_path):
 
 def test_get_mmf_from_mmlut_batch_parity(cavity_params):
     """Test that get_mmf_from_mmlut_batch matches scalar get_mmf_from_mmlut bit-exact."""
-    from openptv2.algorithms.multimed import get_mmf_from_mmlut, get_mmf_from_mmlut_batch
+    from openptv2.algorithms.multimed import (
+        get_mmf_from_mmlut,
+        get_mmf_from_mmlut_batch,
+    )
 
     exp, cpar, spar, vpar, cals = cavity_params
     prepare_mmluts(vpar, cpar, cals)

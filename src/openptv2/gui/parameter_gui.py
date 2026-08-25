@@ -12,10 +12,7 @@ from traitsui.api import (
 )
 
 from openptv2.tracking_presets import (
-    DIRECTION_CHOICES,
     TRACKER_CHOICES,
-    TRACKER_SUPPORTS_BACKWARD,
-    TRACKER_SUPPORTS_POSTPROCESS,
     apply_tracker,
     infer_direction,
     infer_tracker,

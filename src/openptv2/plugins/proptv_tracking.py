@@ -233,7 +233,6 @@ class ProPTVTracker:
         radius = np.where(seeded, cfg.maxvel, cfg.maxvel)
 
         # Cost matrix: distance + velocity + acceleration continuity.
-        n_pred = num_active
         n_cand = len(cand)
         last_v = np.array([tr["vel"][-1] for tr in active])
         last_acc = np.array([tr["acc"][-1] for tr in active])
@@ -254,7 +253,6 @@ class ProPTVTracker:
         for r, c in zip(row_ind, col_ind):
             tr = active[r]
             new_p = cand[c].copy()
-            dt_eff = (f - tr["time"][-1]) * max(1, cfg.dt)
             tr["pos"].append(new_p)
             tr["time"].append(f)
             tr["gap"] = 0
@@ -351,7 +349,7 @@ class Tracking:
         maxvel = float(proptv_cfg.get("maxvel", unified_velocity_bound(track_cfg)))
         angle = float(proptv_cfg.get("angle", unified_angle_deg(track_cfg, default_deg=30.0)))
         t_init = int(proptv_cfg.get("t_init", 4))
-        
+
         from openptv2.tracking_presets import infer_direction
         direction = infer_direction(track_cfg, proptv_cfg)
         backtracking = bool(proptv_cfg.get("backtracking", False)) or (direction == "forward_backward")
@@ -451,9 +449,9 @@ class Tracking:
         if track_cfg.get("postprocess", True) and num_frames > 1:
             from openptv2.tracking_postprocess import (
                 count_links,
-                seed_cold_start,
-                relink_trajectory_gaps,
                 enforce_reciprocity,
+                relink_trajectory_gaps,
+                seed_cold_start,
             )
             base = linkage_base
             first, last = frame_numbers[0], frame_numbers[-1]

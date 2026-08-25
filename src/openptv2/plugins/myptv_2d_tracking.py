@@ -240,6 +240,10 @@ class Tracking:
         linkage_base = str(res_dir / "ptv_is")
         prio_base = str(res_dir / "added")
 
+        from openptv2.gui.ptv import _open_run_store
+
+        store = _open_run_store(self.exp)
+
         frame_numbers = list(range(first_frame, last_frame + 1))
         num_frames = len(frame_numbers)
 
@@ -366,9 +370,9 @@ class Tracking:
         if track_cfg.get("postprocess", True) and num_frames > 1:
             from openptv2.tracking_postprocess import (
                 count_links,
-                seed_cold_start,
-                relink_trajectory_gaps,
                 enforce_reciprocity,
+                relink_trajectory_gaps,
+                seed_cold_start,
             )
             base = linkage_base
             first, last = frame_numbers[0], frame_numbers[-1]

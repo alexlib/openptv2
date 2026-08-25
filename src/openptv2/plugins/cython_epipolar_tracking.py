@@ -10,8 +10,8 @@ import logging
 
 import numpy as np
 
+from openptv2.algorithms.parameters import ControlPar, SequencePar, TrackPar, VolumePar
 from openptv2.tracker import Tracker
-from openptv2.algorithms.parameters import ControlPar, VolumePar, TrackPar, SequencePar
 
 log = logging.getLogger("openptv2.cython_epipolar_tracking")
 

@@ -16,7 +16,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from openptv2.storage import RunStore, RunStoreError, export_run, import_run, needs_reseal, seal
+from openptv2.storage import (
+    RunStore,
+    RunStoreError,
+    export_run,
+    import_run,
+    needs_reseal,
+    seal,
+)
 from openptv2.storage.run_store import resolve_store_path
 from tests._support import find_test_data_root
 

@@ -251,7 +251,12 @@ def run_liboptv_tracker(
     into the same comparison tables/metrics.
     """
     from optv.calibration import Calibration as CCalibration
-    from optv.parameters import ControlParams, SequenceParams, TrackingParams, VolumeParams
+    from optv.parameters import (
+        ControlParams,
+        SequenceParams,
+        TrackingParams,
+        VolumeParams,
+    )
     from optv.tracker import Tracker as CTracker
 
     from openptv2.gui.parameter_manager import ParameterManager
@@ -352,11 +357,10 @@ def per_tracker_overrides(
     parameter names/scales entirely -- see tracking_registry.py's
     ParameterGuide per tracker).
     """
+    from openptv2.algorithms.tracking_frame_buf import Frame
+    from openptv2.storage import RunStore
     from openptv2.tracking_recommender import _suggest_params, compute_dataset_stats
     from openptv2.tracking_registry import TRACKER_REGISTRY
-    from openptv2.storage import RunStore
-
-    from openptv2.algorithms.tracking_frame_buf import Frame
 
     res_dir = Path(src) / "res"
     store = None

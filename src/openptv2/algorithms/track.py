@@ -625,7 +625,7 @@ def sort_candidates_by_freq(items, num_cams):
         ftnr_i = items[i][0]
         for j in range(num_cams):
             for m in range(MAX_CANDS):
-                if ftnr_i == items[4 * j + m][0]:
+                if ftnr_i == items[MAX_CANDS * j + m][0]:
                     items[i][2][j] = 1
 
     for i in range(n):
