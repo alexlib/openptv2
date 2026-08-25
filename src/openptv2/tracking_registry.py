@@ -662,6 +662,89 @@ PROPTV_INFO = TrackerInfo(
 )
 
 
+HYBRID_DELTAT_3D_INFO = TrackerInfo(
+    name="hybrid_deltat_3d",
+    display_name="Hybrid Multi-Delta-t (Python)",
+    short_description=(
+        "Coarse-to-fine tracking for slow flows: link every N-th frame first, "
+        "then refine through the intermediate frames"
+    ),
+    algorithm_summary=(
+        "For datasets where per-frame displacement is smaller than the 3D "
+        "reconstruction noise (poorly-conditioned), links particle clouds "
+        "across a larger time step N first -- displacement grows N-fold while "
+        "the noise floor stays put -- then re-walks the intermediate frames, "
+        "attaching detections that lie within refine_gate_mm of a cubic-Hermite "
+        "prediction built from the coarse segment's endpoints."
+    ),
+    algorithm_detail=(
+        "Coarse pass uses the predictive Hungarian tracker (MyPTV3DTracker) on "
+        "the strided clouds with stride-scaled search radii; the refine pass "
+        "chains consecutive-frame detections along each segment. Chains break "
+        "where no intermediate detection fits the prediction; postptv "
+        "stitching can re-glue those small gaps downstream."
+    ),
+    citation=(
+        "Concept: multi-step / variable-Delta-t Lagrangian PTV for slow flows "
+        "(cf. Cierpka et al., volumetric PTV via multi-frame tracking)."
+    ),
+    supports_backward=False,
+    supports_new_particles=True,
+    supports_2d=False,
+    supports_postprocessing=False,
+    supports_gap_relinking=True,
+    supports_multimedia=False,
+    supports_splitter=False,
+    supports_cost_weights=False,
+    speed_ranking="moderate",
+    density_ranking="low_to_moderate",
+    accuracy_ranking="high",
+    parameters=(
+        ParameterGuide(
+            name="stride",
+            type="int",
+            default="5",
+            description="Coarse-pass step N: link frames i and i+N before refining.",
+            how_to_choose=(
+                "Pick N so displacement over N frames exceeds the z-noise floor "
+                "reported by the tracking-conditioning diagnostic (ratio < ~1): "
+                "N >= z_noise_mm / per_frame_displacement_mm. Cap N at roughly "
+                "half the median inter-particle spacing divided by the "
+                "per-frame displacement so the coarse search stays unambiguous."
+            ),
+            typical_range="2 – 20",
+            unit="frames",
+        ),
+        ParameterGuide(
+            name="refine_gate_mm",
+            type="float",
+            default="0.8",
+            description=(
+                "Maximum distance between a Hermite-predicted intermediate "
+                "position and a detection for attachment."
+            ),
+            how_to_choose=(
+                "About 1-2x the reconstruction noise floor from the conditioning "
+                "report. Too small: chains fragment at every noisy frame. Too "
+                "large: wrong particles get attached in dense regions."
+            ),
+            typical_range="0.1 – 5",
+            unit="mm",
+        ),
+    ),
+    default_preset="",
+    best_for=(
+        "High-frame-rate recordings of slow flow (z-noise/motion ratio > 1) "
+        "where standard trackers produce only 2-6 frame fragments."
+    ),
+    avoid_when=(
+        "Well-conditioned data -- use priority_segment_3d or the Cython default; "
+        "very high particle density where coarse-step ambiguity is high."
+    ),
+    typical_datasets="High-speed camera PTV of slow physiological / micro flows.",
+)
+
+
 def _build_registry() -> None:
     entries: list[TrackerInfo] = [
         PRIORITY_SEGMENT_3D_INFO,
@@ -673,6 +756,7 @@ def _build_registry() -> None:
         MYPTV_2D_INFO,
         SPLITTER_INFO,
         PROPTV_INFO,
+        HYBRID_DELTAT_3D_INFO,
     ]
     for info in entries:
         TRACKER_REGISTRY[info.name] = info
@@ -683,6 +767,7 @@ def _build_registry() -> None:
     TRACKER_REGISTRY["myptv_3d_tracking"] = MYPTV_3D_INFO
     TRACKER_REGISTRY["proptv_tracking"] = PROPTV_INFO
     TRACKER_REGISTRY["trackcorr"] = FULL_MULTIPASS_INFO
+    TRACKER_REGISTRY["multi_deltat_3d"] = HYBRID_DELTAT_3D_INFO
 
 
 _build_registry()
@@ -695,6 +780,7 @@ def get_tracker_info(name: str) -> TrackerInfo | None:
         "fast": "priority_segment_3d",
         "myptv_3d_tracking": "nearest_hungarian_3d",
         "proptv_tracking": "predictive_gmm_3d",
+        "multi_deltat_3d": "hybrid_deltat_3d",
     }
     key = alias_map.get(name, name)
     return TRACKER_REGISTRY.get(key)

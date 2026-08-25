@@ -51,6 +51,8 @@ BUILTIN_TRACKING_PLUGINS = {
     "four_be": "openptv2.plugins.four_be_tracking",
     "nearest_hungarian_3d": "openptv2.plugins.nearest_hungarian_3d",
     "myptv_3d_tracking": "openptv2.plugins.myptv_3d_tracking",
+    "hybrid_deltat_3d": "openptv2.plugins.hybrid_deltat_3d",
+    "multi_deltat_3d": "openptv2.plugins.hybrid_deltat_3d",
     "myptv_2d_tracking": "openptv2.plugins.myptv_2d_tracking",
     "predictive_gmm_3d": "openptv2.plugins.predictive_gmm_3d",
     "proptv_tracking": "openptv2.plugins.proptv_tracking",
