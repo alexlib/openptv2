@@ -9,6 +9,8 @@ import pytest
 from openptv2.storage.legacy import convert_ascii_to_zarr, import_run, main
 from openptv2.storage.run_store import RunStore
 
+pytestmark = pytest.mark.ci
+
 
 @pytest.fixture
 def temp_run_folder(tmp_path):

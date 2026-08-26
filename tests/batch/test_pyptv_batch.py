@@ -18,7 +18,7 @@ def _read_correspondences(res_dir: Path, frame: int):
     are store-only now (no rt_is.* ASCII), see
     docs/plans/2026-08-15-zarr-only-transition-plan.md. Returns (None, None)
     if nothing was written for this frame."""
-    store = RunStore(resolve_store_path(res_dir), mode="r")
+    store = RunStore.open(res_dir, mode="r")
     if not store.has_correspondences(frame):
         return None, None
     return store.read_correspondences(frame)
@@ -111,7 +111,7 @@ def test_pyptv_batch_full_tracking_links(test_data_dir):
 
     # 1. Parse final post-processed link counts from the RunStore's linkage
     #    (ptv_is is no longer written to ASCII for a store-backed run):
-    store = RunStore(resolve_store_path(res_dir), mode="r")
+    store = RunStore.open(res_dir, mode="r")
     step_links = {}
     for frame in range(start_frame, end_frame):
         assert store.has_linkage(frame, "ptv_is"), (

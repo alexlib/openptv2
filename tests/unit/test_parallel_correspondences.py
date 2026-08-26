@@ -18,6 +18,8 @@ from openptv2.orientation import point_positions
 from openptv2.storage import RunStore
 from openptv2.tracking_framebuf import TargetArray
 
+pytestmark = pytest.mark.ci
+
 REPO_ROOT = Path(__file__).parent.parent.parent
 TEST_DATA = REPO_ROOT / "test_data" / "test_cavity"
 FIXTURE_STORE = TEST_DATA / "run.zarr"

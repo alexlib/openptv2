@@ -36,7 +36,7 @@ def test_batch_runs_without_any_par_files(tmp_path):
     # Run the batch sequence purely from YAML.
     pyptv_batch.main(str(ds / "parameters_Run1.yaml"), 10000, 10001, mode="sequence")
 
-    store = RunStore(resolve_store_path(ds / "res"), mode="r")
+    store = RunStore.open(ds / "res", mode="r")
     for frame in (10000, 10001):
         assert store.has_correspondences(frame), (
             f"correspondences for frame {frame} not produced from YAML-only run"

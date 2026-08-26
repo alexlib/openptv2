@@ -383,17 +383,20 @@ def _read_positions(rt_is_path: Path, frame: Optional[int] = None) -> np.ndarray
     if not rt_is_path.exists():
         # Fallback to the unified RunStore for this run.
         if frame is not None:
-            from openptv2.storage import RunStore, resolve_store_path
+            from openptv2.storage import RunStore, find_existing_store
 
-            zarr_path = resolve_store_path(rt_is_path.parent)
-            if zarr_path.exists():
-                try:
-                    store = RunStore(zarr_path, mode="r")
-                    if store.has_correspondences(frame):
-                        pos_3d, _ = store.read_correspondences(frame)
-                        return pos_3d
-                except Exception:
-                    pass
+            # The rt_is file's parent may be res/, the experiment root, or
+            # the store itself -- let find_existing_store disambiguate.
+            zarr_path = find_existing_store(rt_is_path.parent) or (
+                find_existing_store(rt_is_path.parent.parent)
+                if rt_is_path.parent.name == "res"
+                else None
+            )
+            if zarr_path is not None:
+                store = RunStore(zarr_path, mode="r")
+                if store.has_correspondences(frame):
+                    pos_3d, _ = store.read_correspondences(frame)
+                    return np.asarray(pos_3d, dtype=float)
 
     try:
         rows = ptv.read_rt_is_file(str(rt_is_path))  # [[x, y, z, p0..p3], ...]

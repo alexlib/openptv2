@@ -199,10 +199,10 @@ def test_py_sequence_loop_writes_through_run_store(tmp_path):
 
         ptv.py_sequence_loop(exp)
 
-        zarr_path = temp_dir / "res" / "run.zarr"
-        assert zarr_path.exists()
-
-        store = RunStore(zarr_path, mode="r")
+        # RunStore.open prefers an existing store (the committed fixture
+        # store at the dataset root) over creating a fresh res/run.zarr --
+        # read back whatever store the pipeline actually used.
+        store = RunStore.open(temp_dir, mode="r")
         assert store.has_targets(cam=0, frame=10000)
 
         pos_3d, cam_ids = store.read_correspondences(10000)

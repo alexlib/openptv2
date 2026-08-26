@@ -23,6 +23,7 @@ import numpy as np
 
 from openptv2.algorithms.constants import TR_UNUSED
 from openptv2.benchmarking.camera_rig import CameraRig, project_to_pixels
+from openptv2.tracking_framebuf import TargetArray
 
 
 @dataclass
@@ -149,4 +150,80 @@ def write_dataset(
                 )
 
 
-__all__ = ["DatasetSpec", "write_dataset"]
+def write_dataset_store(
+    rig: CameraRig,
+    frame_gt: dict[int, list[tuple[int, float, float, float]]],
+    spec: DatasetSpec,
+    store=None,
+):
+    """Write the same ground-truth dataset as :func:`write_dataset`, but into
+    a RunStore (zarr is the database of record). The per-frame content is
+    identical to the ASCII writer's output, parsed:
+
+    * targets: ``pnr`` = y-sorted index, ``tnr`` = particle slot (or
+      ``TR_UNUSED`` for ghosts),
+    * correspondences: identity ``p[]`` = y-sorted target index per camera,
+    * linkage ``ptv_is`` + ``added``: unlinked (prev=-1, next=-2, prio=4).
+
+    Args:
+        rig: camera setup.
+        frame_gt: per-frame ground truth, same format as :func:`write_dataset`.
+        spec: output location/naming (``res_sub``/``img_sub`` ignored).
+        store: optional pre-opened RunStore; default opens
+            ``<spec.dir>/run.zarr`` in append mode.
+
+    Returns:
+        The RunStore written to.
+    """
+    if store is None:
+        from openptv2.storage import RunStore
+
+        store = RunStore(spec.dir / "run.zarr", mode="a")
+
+    for rel_f, particles in sorted(frame_gt.items()):
+        fnum = spec.first_frame + rel_f
+        n = len(particles)
+        pos3d = np.array([(x, y, z) for _, x, y, z in particles])
+        px = project_to_pixels(rig, pos3d)
+
+        # y-sorted per-camera target order, mirroring write_dataset exactly
+        cam_entries = []
+        for cam in range(spec.num_cams):
+            entries = [
+                (slot, float(px[cam][slot, 0]), float(px[cam][slot, 1]))
+                for slot in range(n)
+            ]
+            entries.sort(key=lambda t: t[2])
+            cam_entries.append(entries)
+
+        for cam in range(spec.num_cams):
+            tarr = TargetArray(len(cam_entries[cam]))
+            for targ_pnr, (slot, pxv, pyv) in enumerate(cam_entries[cam]):
+                pid = particles[slot][0]
+                t = tarr[targ_pnr]
+                t.set_pnr(targ_pnr)
+                t.set_pos((pxv, pyv))
+                t.set_pixel_counts(100, 10, 10)
+                t.set_sum_grey_value(1000)
+                t.set_tnr(slot if pid >= 0 else TR_UNUSED)
+            store.write_targets(cam, fnum, tarr)
+
+        pos = np.array([(x, y, z) for _, x, y, z in particles], dtype=np.float64)
+        cam_ids = np.zeros((n, spec.num_cams), dtype=np.int32)
+        for cam in range(spec.num_cams):
+            s2t = {slot: idx for idx, (slot, _, _) in enumerate(cam_entries[cam])}
+            for slot in range(n):
+                cam_ids[slot, cam] = s2t[slot]
+        store.write_correspondences(fnum, pos, cam_ids)
+
+        prev = np.full(n, -1, dtype=np.int32)
+        nxt = np.full(n, -2, dtype=np.int32)
+        store.write_linkage(fnum, prev, nxt, pos, name="ptv_is")
+        store.write_linkage(
+            fnum, prev, nxt, pos, name="added", prio=np.full(n, 4, dtype=np.int32)
+        )
+
+    return store
+
+
+__all__ = ["DatasetSpec", "write_dataset", "write_dataset_store"]

@@ -247,16 +247,19 @@ class Tracking:
         frame_numbers = list(range(first_frame, last_frame + 1))
         num_frames = len(frame_numbers)
 
-        # 1. Fill database using Frame objects reading ONLY input rt_is.# files
+        # 1. Fill database using Frame objects; reads through the RunStore
+        # when it holds the frame (zarr is the database of record), with the
+        # rt_is.# ASCII files as fallback.
         frames = []
         for fn in frame_numbers:
             frame = Frame(num_cams, max_targets)
             frame.read(
-                corres_base,  # INPUT: res/rt_is
+                corres_base,  # INPUT: res/rt_is (ascii fallback only)
                 "",  # Do NOT read existing ptv_is as input
                 prio_file_base=prio_base,
                 target_file_base="",
                 frame_num=fn,
+                store=store,
             )
             frames.append(frame)
 
@@ -323,7 +326,8 @@ class Tracking:
                         frame_curr.path_next[r] = c
                         frame_next.path_prev[c] = r
 
-        # 5. Sync SoA to Pathinfo & Write Frame database out to ptv_is.# (OUTPUT)
+        # 5. Sync SoA to Pathinfo & Write Frame database out (OUTPUT: the
+        # RunStore when attached, res/ptv_is.# ASCII otherwise)
         total_links = 0
         total_particles = 0
 
@@ -338,6 +342,7 @@ class Tracking:
                 prio_file_base=prio_base,
                 target_file_base="",
                 frame_num=fn,
+                store=store,
             )
 
             if f_idx < num_frames - 1:

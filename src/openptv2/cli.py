@@ -311,7 +311,7 @@ def main():
                 "rt_is_dir",
                 nargs="?",
                 default="res",
-                help="Directory containing rt_is.# files (default: res)",
+                help="Directory containing rt_is.# files, or the experiment root / run store (default: res)",
             )
             parser.add_argument(
                 "--first", type=int, default=None, help="First frame"

@@ -23,6 +23,7 @@ reads the sealed ``trajectories/`` / ``traj/`` groups it produces.
 
 from __future__ import annotations
 
+import threading
 import time
 from pathlib import Path
 from typing import Any, Optional, Union
@@ -143,6 +144,14 @@ class RunStore:
 
     def __init__(self, store_path: Union[str, Path], mode: str = "a"):
         self.store_path = Path(store_path)
+        # Coarse in-process lock: parallel tracking stages, chunked workers
+        # and GUI viewers share one RunStore instance across threads, and
+        # zarr's directory listing is not atomic w.r.t. concurrent writes
+        # (frames can be listed while still partial, and .partial temp
+        # objects leak into group listings). Serializing every public call
+        # through one re-entrant lock makes each operation atomic; the lock
+        # granularity is per-frame-array, so throughput stays I/O-bound.
+        self._lock = threading.RLock()
         try:
             self.root = zarr.open_group(str(self.store_path), mode=mode)
         except Exception as exc:
@@ -185,8 +194,44 @@ class RunStore:
                             raise
                         time.sleep(0.02 * (attempt + 1))
 
+        self._wrap_public_methods_with_lock()
+
+    def _wrap_public_methods_with_lock(self) -> None:
+        """Bind every public method through ``self._lock`` (see __init__)."""
+        for name in dir(type(self)):
+            if name.startswith("_"):
+                continue
+            attr = getattr(type(self), name)
+            if isinstance(attr, (classmethod, staticmethod, property)):
+                continue
+            if not callable(attr):
+                continue
+
+            def make_locked(fn):
+                # Stored as an instance attribute, so Python will NOT bind
+                # self automatically -- inject it from the closure.
+                def locked(*args, **kwargs):
+                    with self._lock:
+                        return fn(self, *args, **kwargs)
+
+                locked.__name__ = getattr(fn, "__name__", "locked")
+                return locked
+
+            setattr(self, name, make_locked(attr))
+
     @classmethod
     def open(cls, experiment_root: Union[str, Path], mode: str = "a") -> "RunStore":
+        """Open the run store for an experiment, creating it if needed.
+
+        Prefers an EXISTING store found under the experiment root (canonical
+        ``res/run.zarr`` or fixture-style ``<root>/run.zarr``) so every entry
+        point -- GUI, batch, plugins -- converges on the same data; only when
+        none exists is a fresh store created at the canonical location.
+        """
+        if mode != "w":
+            existing = find_existing_store(experiment_root)
+            if existing is not None:
+                return cls(existing, mode=mode)
         return cls(resolve_store_path(experiment_root), mode=mode)
 
     # -- meta -----------------------------------------------------------

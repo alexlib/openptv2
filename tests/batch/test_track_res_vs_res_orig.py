@@ -23,7 +23,7 @@ def _count_particle_lines(res_dir: Path, last_frame: int) -> int:
 
     from openptv2.storage import RunStore
 
-    store = RunStore(res_dir / "run.zarr", mode="r")
+    store = RunStore.open(res_dir, mode="r")
     if not store.has_correspondences(last_frame):
         return 0
     pos_3d, _ = store.read_correspondences(last_frame)
