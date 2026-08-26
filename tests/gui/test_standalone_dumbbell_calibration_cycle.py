@@ -104,7 +104,12 @@ def test_standalone_dumbbell_calibration_cycle_zarr(tmp_path: Path):
 
     src = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
     work = tmp_path / "cavity"
-    _copy_tree(src, work)
+    # Exclude res*: earlier tests in a full-suite session can leave a stale
+    # res/run.zarr in the shared checkout; this test is about the shipped
+    # fixture store at the dataset root.
+    if work.exists():
+        shutil.rmtree(work)
+    shutil.copytree(src, work, ignore=shutil.ignore_patterns("res*"))
 
     # Remove every committed ASCII target file: only the RunStore carries
     # targets now.
