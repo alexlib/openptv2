@@ -31,8 +31,11 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libegl1 libgl1 libxkbcommon0
 
-      - name: Run tests (not slow)
-        run: uv run pytest -m "not slow" --tb=short
+      - name: Run CI-gate tests (marker: ci)
+        # Minimal correctness gate -- see docs/plans/2026-08-26-zarr-only-v0.5.6-plan.md
+        # (Phase 3c). The full suite runs locally / nightly via
+        # scripts/run_regression_tests.py, not on every push.
+        run: uv run pytest -m ci --tb=short -q
         env:
           # Headless linux runners have no display; without this every
           # tests/gui import dies at collection ("No pyface.toolkits

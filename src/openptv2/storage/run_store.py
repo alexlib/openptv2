@@ -221,6 +221,17 @@ class RunStore:
 
     @classmethod
     def open(cls, experiment_root: Union[str, Path], mode: str = "a") -> "RunStore":
+        """Open the run store for an experiment, creating it if needed.
+
+        Prefers an EXISTING store found under the experiment root (canonical
+        ``res/run.zarr`` or fixture-style ``<root>/run.zarr``) so every entry
+        point -- GUI, batch, plugins -- converges on the same data; only when
+        none exists is a fresh store created at the canonical location.
+        """
+        if mode != "w":
+            existing = find_existing_store(experiment_root)
+            if existing is not None:
+                return cls(existing, mode=mode)
         return cls(resolve_store_path(experiment_root), mode=mode)
 
     # -- meta -----------------------------------------------------------

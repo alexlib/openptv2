@@ -256,3 +256,50 @@ def test_compute_physics_metrics_bundles_both():
         "mean_track_length", "frac_tracks_over_10", "frac_tracks_over_30",
         "n_tracks", "acceleration_kurtosis", "n_acceleration_samples",
     }
+
+
+def test_write_dataset_store_matches_ascii_writer():
+    """The native store writer must produce exactly what the ASCII writer
+    writes, parsed (zarr is the database of record; ASCII is interchange)."""
+    from openptv2.storage import RunStore
+    from openptv2.storage.legacy import _load_rt_is
+
+    spec = bm.ScenarioSpec(num_particles=12, num_frames=5, velocity=1.0, seed=7)
+    _tt, fg = bm.generate_scenario(spec)
+    rig = bm.make_standard_rig(refract=False)
+
+    d_ascii = Path(tempfile.mkdtemp()) / "ascii"
+    bm.write_dataset(rig, fg, bm.DatasetSpec(dir=d_ascii))
+
+    d_store = Path(tempfile.mkdtemp()) / "store"
+    bm.write_dataset_store(rig, fg, bm.DatasetSpec(dir=d_store))
+
+    store = RunStore(d_store / "run.zarr", mode="r")
+    for rel_f in sorted(fg):
+        fnum = 10001 + rel_f
+        apos, aids = _load_rt_is(d_ascii / "res" / f"rt_is.{fnum}")
+        spos, sids = store.read_correspondences(fnum)
+        # the ascii writer quantizes positions to %9.3f
+        assert np.allclose(apos, spos, atol=1e-3), f"pos mismatch frame {fnum}"
+        assert np.array_equal(aids, sids), f"cam-id mismatch frame {fnum}"
+
+        for cam in range(4):
+            ascii_targs = np.loadtxt(
+                d_ascii / "img" / f"cam{cam + 1}.{fnum}_targets", skiprows=1, ndmin=2
+            )
+            stargs = store.read_targets(cam, fnum)
+            assert len(stargs) == len(ascii_targs)
+            for i, row in enumerate(ascii_targs):
+                t = stargs[i]
+                assert int(t.pnr()) == int(row[0])
+                assert abs(float(t.x()) - row[1]) < 1e-4
+                assert abs(float(t.y()) - row[2]) < 1e-4
+                assert int(t.tnr()) == int(row[7])
+
+        prev, nxt, lpos = store.read_linkage(fnum, "ptv_is")
+        assert (prev == -1).all() and (nxt == -2).all()
+        assert np.allclose(lpos, apos, atol=1e-3)
+
+        assert not store.read_prio(fnum, "ptv_is")
+        prio_added = store.read_prio(fnum, "added")
+        assert prio_added is not None and (prio_added == 4).all()
