@@ -393,13 +393,10 @@ def _read_positions(rt_is_path: Path, frame: Optional[int] = None) -> np.ndarray
                 else None
             )
             if zarr_path is not None:
-                try:
-                    store = RunStore(zarr_path, mode="r")
-                    if store.has_correspondences(frame):
-                        pos_3d, _ = store.read_correspondences(frame)
-                        return np.asarray(pos_3d, dtype=float)
-                except Exception:
-                    pass
+                store = RunStore(zarr_path, mode="r")
+                if store.has_correspondences(frame):
+                    pos_3d, _ = store.read_correspondences(frame)
+                    return np.asarray(pos_3d, dtype=float)
 
     try:
         rows = ptv.read_rt_is_file(str(rt_is_path))  # [[x, y, z, p0..p3], ...]
