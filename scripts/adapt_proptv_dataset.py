@@ -80,10 +80,13 @@ def _prepare_scaffold(scaffold: Path, out: Path):
     # Scaffold's own res/ and img/ are that dataset's leftover ascii/zarr
     # output (added.*, ptv_is.*, rt_is.*, run.zarr, camN.<frame>_targets,
     # ...) -- none of it applies to this dataset; wipe both clean rather
-    # than pick individual globs.
-    shutil.rmtree(res)
+    # than pick individual globs. The fresh git checkout ships without
+    # them (generated data is gitignored), so tolerate absence.
+    if res.exists():
+        shutil.rmtree(res)
     res.mkdir()
-    shutil.rmtree(img)
+    if img.exists():
+        shutil.rmtree(img)
     img.mkdir()
 
     yaml_path = out / "parameters_Run1.yaml"

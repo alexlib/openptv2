@@ -20,6 +20,7 @@ from openptv2.tracking_framebuf import TargetArray
 
 REPO_ROOT = Path(__file__).parent.parent.parent
 TEST_DATA = REPO_ROOT / "test_data" / "test_cavity"
+FIXTURE_STORE = TEST_DATA / "run.zarr"
 
 
 @pytest.fixture
@@ -42,28 +43,26 @@ def cavity_params():
 
 @pytest.fixture
 def sample_targets(cavity_params):
-    """Load targets from test_cavity for frames 10001..10004."""
+    """Load targets from test_cavity for frames 10001..10004.
+
+    Zarr is the database of record: targets come from the committed fixture
+    store (the ASCII ``img/*_targets`` files are gitignored working-copy
+    artifacts and are absent on fresh CI checkouts).
+    """
     exp, cpar, spar, vpar, cals = cavity_params
     num_cams = len(cals)
     frames = [10001, 10002, 10003, 10004]
+    if not FIXTURE_STORE.exists():
+        pytest.skip("test_cavity run.zarr fixture not present")
+
+    store = RunStore(FIXTURE_STORE, mode="r")
     targets_per_frame = {}
-
-    from openptv2.algorithms.tracking_frame_buf import (
-        read_targets as read_targets_ascii,
-    )
-
     for frame in frames:
         frame_targs = []
         for cam in range(num_cams):
-            file_base = str(TEST_DATA / "img" / f"cam{cam + 1}.")
-            targs = read_targets_ascii(file_base, frame, cam_idx=cam)
-            tarr = TargetArray(len(targs))
-            for i, t in enumerate(targs):
-                tarr[i].set_pnr(t.pnr)
-                tarr[i].set_pos((t.x, t.y))
-                tarr[i].set_pixel_counts(t.n, t.nx, t.ny)
-                tarr[i].set_sum_grey_value(t.sumg)
-                tarr[i].set_tnr(t.tnr)
+            tarr = store.read_targets(cam, frame)
+            # keep the canonical sort-by-y ordering the ascii flow used
+            tarr.sort_y()
             frame_targs.append(tarr)
         targets_per_frame[frame] = frame_targs
 

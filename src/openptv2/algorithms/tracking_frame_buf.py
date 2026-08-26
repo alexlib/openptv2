@@ -402,10 +402,28 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_n
     if store is not None and store.has_correspondences(frame_num):
         pos_3d, cam_ids = store.read_correspondences(frame_num)
 
-        link_name = Path(linkage_file_base).name if linkage_file_base else "ptv_is"
-        if store.has_linkage(frame_num, link_name):
+        # An empty linkage/prio base means the caller asked NOT to read links
+        # (Framebuf.read_frame_at_end(read_links=False) passes "" -- this is
+        # how a fresh forward pass primes its buffers). The store branch must
+        # honour that exactly like the ascii branch does, instead of falling
+        # back to the default "ptv_is" name and reading back stale linkage
+        # (from a previous tracking run baked into the store) as
+        # already-linked state.
+        link_name = Path(linkage_file_base).name if linkage_file_base else ""
+        if link_name and store.has_linkage(frame_num, link_name):
             prevs, nexts, _ = store.read_linkage(frame_num, link_name)
             prio_arr = store.read_prio(frame_num, link_name)
+            # Legacy-ingested stores keep the prio column under the "added"
+            # linkage name (import_run), while pipeline-written stores embed
+            # it directly in the ptv_is group -- accept both conventions.
+            if prio_arr is None and len(pos_3d) > 0:
+                added_prio = (
+                    store.read_prio(frame_num, "added")
+                    if store.has_linkage(frame_num, "added")
+                    else None
+                )
+                if added_prio is not None and len(added_prio) == len(pos_3d):
+                    prio_arr = added_prio
         else:
             prevs = np.full(len(pos_3d), PREV_NONE, dtype=np.int32)
             nexts = np.full(len(pos_3d), NEXT_NONE, dtype=np.int32)
