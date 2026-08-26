@@ -7,11 +7,14 @@ import sys
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from openptv2.gui.dumbbell_ground_truth import (
     DumbbellGTSpec,
     generate_dumbbell_target_files,
 )
+
+pytestmark = pytest.mark.ci
 
 
 def _copy_tree(src: Path, dst: Path) -> None:

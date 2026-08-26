@@ -1035,25 +1035,33 @@ def _load_tracer_frame_data(base: Path, cpar, frames):
     seq_bases = [str(base / s.replace("%d", "")) for s in seq]
 
     n_cams = cpar.num_cams
-    store = None
-    zarr_path = base / "res" / "run.zarr"
-    ascii_ptv_files = sorted(
-        (base / "res").glob("ptv_is.*"), key=lambda p: int(p.suffix.lstrip("."))
-    )
-    if not ascii_ptv_files and zarr_path.exists():
-        from openptv2.storage import RunStore
 
-        store = RunStore(zarr_path, mode="r")
+    # Zarr is the database of record: prefer a run store that actually holds
+    # tracked linkage (a bare res/run.zarr created by an unrelated writer does
+    # not count); ASCII ptv_is.* remains the fallback for legacy runs.
+    store = None
+    from openptv2.storage import RunStore, find_existing_store
+
+    store_path = find_existing_store(base)
+    if store_path is not None and store_path.exists():
+        candidate = RunStore(store_path, mode="r")
+        if any(
+            candidate.has_linkage(f, "ptv_is") for f in candidate.frames()
+        ):
+            store = candidate
 
     if store is not None:
         frame_nums = [f for f in store.frames() if store.has_linkage(f, "ptv_is")]
     else:
+        ascii_ptv_files = sorted(
+            (base / "res").glob("ptv_is.*"), key=lambda p: int(p.suffix.lstrip("."))
+        )
         frame_nums = [int(p.suffix.lstrip(".")) for p in ascii_ptv_files]
     if frames is not None:
         wanted = set(frames)
         frame_nums = [f for f in frame_nums if f in wanted]
     if not frame_nums:
-        return None, "no res/ptv_is.* frames"
+        return None, "no tracked-linkage frames (store or res/ptv_is.*)"
 
     frame_data = []
     for frame in frame_nums:

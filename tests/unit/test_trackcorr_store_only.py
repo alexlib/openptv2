@@ -29,6 +29,8 @@ from openptv2.algorithms.tracking_frame_buf import Target
 from openptv2.algorithms.trafo import metric_to_pixel
 from openptv2.storage import RunStore
 
+pytestmark = pytest.mark.ci
+
 SCAFFOLD = Path(__file__).resolve().parents[2] / "test_data" / "synthetic_turbulent"
 FIRST = 10001
 NUM_CAMS = 4

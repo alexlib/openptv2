@@ -20,6 +20,8 @@ from openptv2.algorithms.track import (
 from openptv2.algorithms.tracking_run import TrackingRun
 from openptv2.storage import RunStore
 
+pytestmark = pytest.mark.ci
+
 REPO_ROOT = Path(__file__).parent.parent.parent
 FIXTURE_STORE = REPO_ROOT / "test_data" / "test_cavity" / "run.zarr"
 

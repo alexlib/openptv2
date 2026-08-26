@@ -1,7 +1,11 @@
 """Unit tests for openptv2 self-check diagnostic runner."""
 
+import pytest
+
 from openptv2.self_check import SelfChecker
 from openptv2.self_check import main as self_check_main
+
+pytestmark = pytest.mark.ci
 
 
 def test_self_check_runner():

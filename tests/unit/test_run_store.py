@@ -27,6 +27,8 @@ from openptv2.storage import (
 from openptv2.storage.run_store import resolve_store_path
 from tests._support import find_test_data_root
 
+pytestmark = pytest.mark.ci
+
 TEST_DATA_ROOT = find_test_data_root()
 CAVITY_DIR = TEST_DATA_ROOT / "test_cavity"
 
