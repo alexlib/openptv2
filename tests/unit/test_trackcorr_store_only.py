@@ -40,9 +40,13 @@ def _build_dataset(out: Path, set_tnr: bool) -> None:
         pytest.skip("test_data/synthetic_turbulent scaffold not present")
     shutil.copytree(SCAFFOLD, out)
     res, img = out / "res", out / "img"
-    shutil.rmtree(res)
+    # The scaffold ships without generated res/img (gitignored) -- tolerate
+    # both the fresh-checkout case and a previously-populated copy.
+    if res.exists():
+        shutil.rmtree(res)
     res.mkdir()
-    shutil.rmtree(img)
+    if img.exists():
+        shutil.rmtree(img)
     img.mkdir()
 
     yaml_path = out / "parameters_Run1.yaml"

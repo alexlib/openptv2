@@ -17,6 +17,7 @@ import numpy as np
 
 from openptv2.calibration import Calibration
 from openptv2.imgcoord import image_coordinates
+from openptv2.storage import RunStore, find_existing_store
 from openptv2.tracking_framebuf import TargetArray
 from openptv2.transforms import convert_arr_metric_to_pixel
 
@@ -78,10 +79,15 @@ def _write_two_targets(
     frame: int,
     xy2: np.ndarray,
     *,
+    store=None,
+    cam: int | None = None,
     sum_grey: int = 1000,
     pix_counts=(9, 9, 9),
 ) -> None:
-    """Write exactly two targets to the standard OpenPTV target file via ptv.write_targets."""
+    """Write exactly two targets to the standard OpenPTV target file via
+    ptv.write_targets, mirroring them into the experiment's RunStore when
+    ``store`` is given (zarr is the database of record; the ASCII file stays
+    as the interchange format calibration tooling can also read)."""
 
     xy2 = np.asarray(xy2, dtype=float)
     if xy2.shape != (2, 2):
@@ -98,6 +104,8 @@ def _write_two_targets(
 
     short_base.parent.mkdir(parents=True, exist_ok=True)
     ptv.write_targets(targs, str(short_base), int(frame))
+    if store is not None:
+        store.write_targets(cam, frame, targs)
 
 
 def _project_points_px(xyz: np.ndarray, cal, cpar) -> np.ndarray:
@@ -174,6 +182,15 @@ def generate_dumbbell_target_files(
     imx = int(pm.get_parameter("ptv")["imx"])
     imy = int(pm.get_parameter("ptv")["imy"])
 
+    # Mirror generated targets into the experiment's RunStore when one exists
+    # at the output root (created by a prior sequence step or shipped fixture).
+    store = None
+    store_root = Path(out_root) if out_root is not None else yaml_path.parent
+    store_path = find_existing_store(store_root)
+    if store_path is not None:
+        store = RunStore(store_path, mode="a")
+        print(f"Mirroring dumbbell targets into RunStore: {store_path}")
+
     rng = np.random.default_rng(spec.seed)
 
     frames = list(range(spec.first, spec.last + 1))
@@ -224,7 +241,7 @@ def generate_dumbbell_target_files(
 
             # Write files
             for cam in range(num_cams):
-                _write_two_targets(bases[cam], frame, xy_by_cam[cam])
+                _write_two_targets(bases[cam], frame, xy_by_cam[cam], store=store, cam=cam)
 
             ok = True
             written += 1

@@ -78,6 +78,38 @@ def resolve_store_path(experiment_root: Union[str, Path]) -> Path:
     return root / "res" / STORE_DIRNAME
 
 
+def find_existing_store(experiment_root: Union[str, Path]) -> Optional[Path]:
+    """Return the path of an existing run store for this experiment, or None.
+
+    Checks the canonical ``<root>/res/run.zarr`` first, then the legacy
+    ``<root>/run.zarr`` location used by shipped dataset fixtures (which must
+    survive test copies that exclude ``res*`` directories).
+
+    When several candidates exist, prefers one that actually holds frames:
+    test suites that run experiments in place can leave behind an empty or
+    stale ``res/run.zarr`` next to the shipped fixture store, and picking it
+    blindly would read/write the wrong data.
+    """
+    root = Path(experiment_root)
+    candidates = [resolve_store_path(root), root / STORE_DIRNAME]
+    if root.name == "res":
+        candidates.append(root.parent / STORE_DIRNAME)
+    existing = [cand for cand in candidates if cand.exists()]
+    if not existing:
+        return None
+
+    def _has_frames(path: Path) -> bool:
+        try:
+            return len(RunStore(path, mode="r").frames()) > 0
+        except Exception:
+            return False
+
+    for cand in existing:
+        if _has_frames(cand):
+            return cand
+    return existing[0]
+
+
 class RunStoreError(RuntimeError):
     """A RunStore operation failed.
 

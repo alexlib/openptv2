@@ -1,4 +1,8 @@
+# Working-copy run artifacts are not committed; the Zarr fixture store and
+# the calibration targets (ASCII, read by calibration tooling) are tracked.
 *_targets
+!cal/*_targets
+!img/*_targets
 added*
 ptv_is*
 rt_is*

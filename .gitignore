@@ -53,6 +53,8 @@ ptv_is.*
 rt_is.*
 *_targets
 res/
+# committed ASCII fixtures: track dataset's baseline run inputs
+!test_data/track/res_orig/*
 
 # Build artifacts
 *.o
@@ -112,6 +114,9 @@ test_data/**/parameters__test_new.yaml
 test_data/**/tracking_run_summary.csv
 /gui/notebooks/__marimo__
 **/**/*.*_targets
+# committed ASCII fixtures: calibration targets and track/img_orig inputs
+!test_data/**/cal/*_targets
+!test_data/track/img_orig/*_targets
 **/*.nbc
 **/*.nbi
 .claude/worktrees/agent-a0801fc3/
