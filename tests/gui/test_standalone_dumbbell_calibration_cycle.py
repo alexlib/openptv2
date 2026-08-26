@@ -94,3 +94,69 @@ def test_standalone_dumbbell_calibration_cycle(tmp_path: Path):
     assert fun_final < fun_start * 0.5, (
         f"Residuals not improved enough: start={fun_start}, final={fun_final}"
     )
+
+
+def test_standalone_dumbbell_calibration_cycle_zarr(tmp_path: Path):
+    """Same cycle, but with the ASCII img targets removed: the dumbbell
+    generator must mirror its targets into the experiment's RunStore and the
+    standalone calibration must read them back through it (zarr is the
+    database of record)."""
+
+    src = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
+    work = tmp_path / "cavity"
+    _copy_tree(src, work)
+
+    # Remove every committed ASCII target file: only the RunStore carries
+    # targets now.
+    for t in (work / "img").glob("*_targets"):
+        t.unlink()
+
+    yaml_path = work / "parameters_Run1.yaml"
+    assert yaml_path.exists()
+    assert (work / "run.zarr").exists(), "fixture store expected"
+
+    summary = generate_dumbbell_target_files(
+        yaml_path,
+        out_root=None,
+        spec=DumbbellGTSpec(
+            first=10001,
+            last=10002,
+            length=25.0,
+            noise_sigma_px=0.0,
+            seed=0,
+            max_tries_per_frame=2000,
+        ),
+    )
+    assert summary["frames_written"] == 2
+
+    from openptv2.storage import RunStore
+
+    store = RunStore(work / "run.zarr", mode="r")
+    for frame in (10001, 10002):
+        for cam in range(4):
+            assert len(store.read_targets(cam, frame)) == 2
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "openptv2.gui.standalone_dumbbell_calibration",
+            str(yaml_path),
+            "--fixed-cams",
+            "0",
+            "2",
+            "3",
+            "--maxiter",
+            "200",
+        ],
+        cwd=str(work),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    assert proc.returncode == 0, proc.stdout
+    assert "RunStore" in proc.stdout, proc.stdout
+
+    match = re.search(r"n_frames_used=(\d+), n_frames_total=(\d+)", proc.stdout)
+    assert match, f"Expected frame counts in output. Output:\n{proc.stdout}"
+    assert int(match.group(1)) >= 1

@@ -30,6 +30,7 @@ from scipy.optimize import least_squares
 from openptv2.gui import ptv
 from openptv2.gui.parameter_manager import ParameterManager
 from openptv2.gui.ptv_calibration import dumbbell_ba_jac_sparsity, dumbbell_ba_residuals
+from openptv2.storage import RunStore, find_existing_store
 from openptv2.transforms import convert_arr_pixel_to_metric
 
 
@@ -57,8 +58,13 @@ def _read_dumbbell_targets_metric(
     step: int,
     num_cams: int,
     cpar,
+    store: RunStore | None = None,
 ) -> tuple[np.ndarray, int, int]:
-    """Read dumbbell targets from files and return metric coords.
+    """Read dumbbell targets (RunStore when given and holding them, else the
+    ASCII files) and return metric coords.
+
+    Frames whose targets are missing or do not number exactly 2 per camera
+    are skipped.
 
     Returns
     - targets_metric: (C, T, 2) where T = 2 * n_frames_used
@@ -77,7 +83,12 @@ def _read_dumbbell_targets_metric(
         frame_targets: list[list[list[float]]] = []
         valid = True
         for cam in range(num_cams):
-            targs = ptv.read_targets(str(target_bases[cam]), frame)
+            try:
+                targs = ptv.read_targets(
+                    str(target_bases[cam]), frame, store=store, cam_idx=cam
+                )
+            except FileNotFoundError:
+                targs = []
             if len(targs) != 2:
                 valid = False
                 break
@@ -174,6 +185,15 @@ def run_dumbbell_calibration(
             base_path = (yaml_path.parent / base_path).resolve()
         resolved_bases.append(base_path)
 
+    # Zarr is the database of record: prefer the experiment's RunStore when it
+    # exists (targets may not be on disk as ASCII at all); ASCII files remain
+    # the fallback for stores without the frame's targets.
+    store = None
+    store_path = find_existing_store(yaml_path.parent)
+    if store_path is not None:
+        store = RunStore(store_path, mode="r")
+        print(f"Reading dumbbell targets through RunStore: {store_path}")
+
     all_targs_metric, n_used, n_total = _read_dumbbell_targets_metric(
         target_bases=resolved_bases,
         first_frame=first_frame,
@@ -181,6 +201,7 @@ def run_dumbbell_calibration(
         step=step,
         num_cams=num_cams,
         cpar=cpar,
+        store=store,
     )
     if db_eps > 0:
         from openptv2.orientation import multi_cam_point_positions

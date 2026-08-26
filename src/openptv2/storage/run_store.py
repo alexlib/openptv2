@@ -78,6 +78,23 @@ def resolve_store_path(experiment_root: Union[str, Path]) -> Path:
     return root / "res" / STORE_DIRNAME
 
 
+def find_existing_store(experiment_root: Union[str, Path]) -> Optional[Path]:
+    """Return the path of an existing run store for this experiment, or None.
+
+    Checks the canonical ``<root>/res/run.zarr`` first, then the legacy
+    ``<root>/run.zarr`` location used by shipped dataset fixtures (which must
+    survive test copies that exclude ``res*`` directories).
+    """
+    root = Path(experiment_root)
+    candidates = [resolve_store_path(root), root / STORE_DIRNAME]
+    if root.name == "res":
+        candidates.append(root.parent / STORE_DIRNAME)
+    for cand in candidates:
+        if cand.exists():
+            return cand
+    return None
+
+
 class RunStoreError(RuntimeError):
     """A RunStore operation failed.
 
