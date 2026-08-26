@@ -227,6 +227,7 @@ def track3d_loop_fast(
     max_cands: cython.int,
     dacc: cython.double = 0.0,
     dist_weight: cython.double = LEVEL1_DIST_WEIGHT,
+    cold_start_gate: cython.double = 0.0,
 ):
     """Full track3d loop (3 levels) — single compiled entry.
 
@@ -276,6 +277,12 @@ def track3d_loop_fast(
     match. The three levels still run as a strict cascade (level 2 only
     sees particles level 1 left unclaimed, etc.) — only the claim order
     *within* a level changed.
+
+    ``cold_start_gate`` (default 0.0 = off, liboptv parity): when > 0, level
+    3 rejects candidates farther than this from the LOCAL-FLOW prediction
+    (neighbour-average velocity; falls back to static when no seeded
+    neighbours exist). Approximates track.c's cold-start conservatism in
+    pure 3D — kills full-window jump trajectories at volume edges.
 
     Returns count1 (number of links established).
     """
@@ -516,6 +523,18 @@ def track3d_loop_fast(
                 count1 += 1
 
     # ===== Level 3: No previous link, no neighbors — static prediction =====
+    # With ``cold_start_gate > 0``, level 3 additionally rejects candidates
+    # whose displacement is inconsistent with the LOCAL FLOW FIELD: the
+    # candidate must satisfy |cand - curr - v_local| <= cold_start_gate, where
+    # v_local is the average velocity of level-2's neighbours (the same
+    # neighbour sum computed above, reused via a second pass). This mirrors
+    # track.c's cold-start conservatism (search unused 2D targets within 3px
+    # of the flow-consistent prediction, quali>=2, re-triangulate, acc/angle
+    # gates): track3d.c's bare "link to any unclaimed particle within dv" is
+    # the dominant source of full-window jump trajectories at volume edges,
+    # where the true continuation often went undetected. Pure 3D, no targets
+    # needed. 0.0 disables the gate (liboptv parity).
+    use_csg: cython.bint = cold_start_gate > 0.0
     n_edges = 0
     for i in range(orig_parts):
         if path_prev_1[i] >= 0 or path_next_1[i] >= 0:
@@ -526,6 +545,35 @@ def track3d_loop_fast(
         pred_y = path_x_1[i, 1]
         pred_z = path_x_1[i, 2]
 
+        if use_csg:
+            # local flow field around this particle (same window as L2)
+            vel_x = 0.0
+            vel_y = 0.0
+            vel_z = 0.0
+            nvel = 0
+            cx = path_x_1[i, 0]
+            cy = path_x_1[i, 1]
+            cz = path_x_1[i, 2]
+            for j in range(orig_parts):
+                if j == i:
+                    continue
+                if (
+                    abs(path_x_1[j, 0] - cx) < dx
+                    and abs(path_x_1[j, 1] - cy) < dy
+                    and abs(path_x_1[j, 2] - cz) < dz
+                    and path_prev_1[j] >= 0
+                ):
+                    pj = path_prev_1[j]
+                    vel_x += path_x_1[j, 0] - path_x_0[pj, 0]
+                    vel_y += path_x_1[j, 1] - path_x_0[pj, 1]
+                    vel_z += path_x_1[j, 2] - path_x_0[pj, 2]
+                    nvel += 1
+            if nvel > 0:
+                inv_nvel = 1.0 / nvel
+                pred_x = cx + vel_x * inv_nvel
+                pred_y = cy + vel_y * inv_nvel
+                pred_z = cz + vel_z * inv_nvel
+
         n_cands = _find_closest_in_3d_grid(
             path_x_2, np2, pred_x, pred_y, pred_z, dx, dy, dz,
             max_cands, cand_inds, cand_dists,
@@ -533,12 +581,16 @@ def track3d_loop_fast(
         )
         for ci in range(n_cands):
             k = cand_inds[ci]
-            # No velocity estimate: pred == curr, so this is plain distance.
+            # Cost: distance from the (possibly flow-corrected) prediction.
+            # Without the gate this is plain distance from curr (pred==curr),
+            # matching track3d.c.
             d0 = path_x_2[k, 0] - pred_x
             d1 = path_x_2[k, 1] - pred_y
             d2 = path_x_2[k, 2] - pred_z
-            acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
-            edge_cost[n_edges] = acc
+            dist = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
+            if use_csg and dist > cold_start_gate:
+                continue  # inconsistent with the local flow field: reject
+            edge_cost[n_edges] = dist
             edge_i[n_edges] = i
             edge_k[n_edges] = k
             n_edges += 1
