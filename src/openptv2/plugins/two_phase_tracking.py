@@ -174,7 +174,7 @@ class TwoPhaseTracker:
         self,
         frame_particles: list[np.ndarray],
         frame_leaves: list[np.ndarray] | None = None,
-    ) -> list[dict]:
+    ) -> list[tuple[int, int, int, int]]:
         """Track particles across frames using two-phase matching.
 
         Parameters
@@ -188,7 +188,7 @@ class TwoPhaseTracker:
         Returns
         -------
         links : list of (t0, pid0, t1, pid1) tuples
-            Frame-to-frame particle links.
+            Frame-to-frame particle links (0-based time indices).
         """
         num_frames = len(frame_particles)
         if num_frames < 2:
@@ -213,3 +213,90 @@ class TwoPhaseTracker:
                 all_links.append((t0, pid0, t1, pid1))
 
         return all_links
+
+
+class Tracking:
+    """Plugin interface for the GUI/batch pipeline.
+
+    Reads ``leaf_weight`` and ``dvxmax`` (as v_max) from the experiment's
+    ``track`` parameter section, loads 3D positions + 2D leaves from the
+    RunStore, runs two-phase matching, and writes links back.
+    """
+
+    def __init__(self, ptv=None, exp=None):
+        self.ptv = ptv
+        self.exp = exp
+
+    def do_tracking(self) -> None:
+        if self.exp is None:
+            raise ValueError("No experiment object provided")
+
+        pm = getattr(self.exp, "pm", None)
+        if pm is None and hasattr(self.exp, "exp1"):
+            pm = getattr(self.exp.exp1, "pm", None)
+
+        track_cfg = pm.parameters.get("track", {}) if pm else {}
+        leaf_weight = float(track_cfg.get("leaf_weight", 0.0))
+        v_max = float(track_cfg.get("dvxmax", 15.5))
+
+        store = getattr(self.exp, "_store", None)
+        if store is None:
+            print(
+                "TwoPhaseTracker requires a RunStore (zarr) with "
+                "correspondences and targets. Falling back to default tracker."
+            )
+            tracker = self.ptv.py_trackcorr_init(self.exp)
+            self.exp.tracker = tracker
+            tracker.full_forward()
+            return
+
+        frames = sorted(store.frames())
+        num_cams = len(store.cam_ids)
+
+        frame_particles = []
+        frame_leaves = []
+        for f in frames:
+            pos_3d, _ = store.read_correspondences(f)
+            pos_3d = np.asarray(pos_3d)
+            frame_particles.append(pos_3d)
+
+            n = len(pos_3d)
+            cam_ids = np.asarray(
+                store.root[f"correspondences/frame_{f:06d}"]
+            )[:, 3:].astype(int)
+            xy = np.full((n, num_cams, 2), np.nan)
+            for c in range(num_cams):
+                key = f"targets/cam_{c}/frame_{f:06d}"
+                if key in store.root:
+                    t = np.asarray(store.root[key])
+                    valid = cam_ids[:, c] >= 0
+                    xy[valid, c] = t[cam_ids[valid, c], 1:3]
+            frame_leaves.append(np.nan_to_num(xy.reshape(n, -1)))
+
+        cfg = TwoPhaseTrackerConfig(v_max=v_max, leaf_weight=leaf_weight)
+        tracker = TwoPhaseTracker(cfg)
+        links = tracker.track_frames(frame_particles, frame_leaves)
+
+        from openptv2.algorithms.constants import NEXT_NONE, PREV_NONE
+
+        for t0, p0, t1, p1 in links:
+            f0 = frames[t0]
+            f1 = frames[t1]
+            linkage_key = f"linkage/{f1:06d}"
+            if linkage_key not in store.root:
+                continue
+            prev_arr = np.asarray(store.root[linkage_key][:, 0], dtype=np.int32)
+            prev_arr[p1] = p0
+            store.root[linkage_key][:, 0] = prev_arr
+
+            linkage_key0 = f"linkage/{f0:06d}"
+            if linkage_key0 not in store.root:
+                continue
+            nxt_arr = np.asarray(store.root[linkage_key0][:, 1], dtype=np.int32)
+            nxt_arr[p0] = p1
+            store.root[linkage_key0][:, 1] = nxt_arr
+
+        print(
+            f"TwoPhaseTracker: {len(links)} links across {len(frames)} frames "
+            f"(leaf_weight={leaf_weight}, v_max={v_max})"
+        )
