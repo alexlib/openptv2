@@ -143,6 +143,19 @@ The weight `alpha` controls the balance between 3D kinematic consistency and 2D 
 
 **Conclusion**: When 3D is noisy, ND tracking with clean 2D data significantly improves precision (0.881 vs 0.509). The 2D leaf information compensates for 3D reconstruction noise.
 
+### Why ND doesn't beat 3D on clean data
+
+1. **Scale mismatch**: 3D distances (mm) and 2D distances (pixels) are in different units. KD-tree Euclidean distance mixes them incorrectly.
+2. **On clean data**: 3D is near-perfect (96.6% prec, 98.1% rec). The 2D adds noise without disambiguating.
+3. **On noisy data**: ND is dramatically better. At 1mm noise: ND prec=0.894 vs 3D prec=0.518. At 2mm noise: ND prec=0.963 vs 3D prec=0.149.
+
+| Noise | 3D-only (rad=2) | ND alpha=0.1 (rad=2) | ND alpha=0.5 (rad=5) |
+|-------|-----------------|---------------------|---------------------|
+| 0.0mm | 0.966/0.981 | 0.977/0.812 | 0.963/0.812 |
+| 0.5mm | 0.893/0.867 | 0.966/0.759 | 0.965/0.812 |
+| 1.0mm | 0.518/0.319 | 0.894/0.331 | 0.967/0.804 |
+| 2.0mm | 0.149/0.060 | 0.780/0.064 | 0.963/0.492 |
+
 ## Files to create/modify
 
 - `src/openptv2/storage/unified_table.py` — new UnifiedParticleTable class
