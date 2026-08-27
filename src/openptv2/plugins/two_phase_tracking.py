@@ -247,7 +247,7 @@ class Tracking:
             from openptv2.storage.run_store import find_existing_store
             zarr_path = find_existing_store(Path.cwd())
             if zarr_path is not None:
-                store = RunStore(zarr_path, mode="r+")
+                store = RunStore(zarr_path, mode="a")
             else:
                 print(
                     "TwoPhaseTracker requires a RunStore (zarr) with "
@@ -288,24 +288,29 @@ class Tracking:
         tracker = TwoPhaseTracker(cfg)
         links = tracker.track_frames(frame_particles, frame_leaves)
 
-        from openptv2.algorithms.constants import NEXT_NONE, PREV_NONE
-
+        # Collect changes per frame, then write each frame once
+        from collections import defaultdict
+        nxt_changes = defaultdict(dict)
+        prev_changes = defaultdict(dict)
         for t0, p0, t1, p1 in links:
             f0 = frames[t0]
             f1 = frames[t1]
-            linkage_key = f"linkage/{f1:06d}"
-            if linkage_key not in store.root:
-                continue
-            prev_arr = np.asarray(store.root[linkage_key][:, 0], dtype=np.int32)
-            prev_arr[p1] = p0
-            store.root[linkage_key][:, 0] = prev_arr
+            nxt_changes[f0][p0] = p1
+            prev_changes[f1][p1] = p0
 
-            linkage_key0 = f"linkage/{f0:06d}"
-            if linkage_key0 not in store.root:
-                continue
-            nxt_arr = np.asarray(store.root[linkage_key0][:, 1], dtype=np.int32)
-            nxt_arr[p0] = p1
-            store.root[linkage_key0][:, 1] = nxt_arr
+        for f in frames:
+            nxt_key = f"linkage/ptv_is/frame_{f:06d}/next"
+            if nxt_key in store.root and f in nxt_changes:
+                arr = np.array(store.root[nxt_key])
+                for p0, p1 in nxt_changes[f].items():
+                    arr[p0] = p1
+                store.root[nxt_key][:] = arr
+            prev_key = f"linkage/ptv_is/frame_{f:06d}/prev"
+            if prev_key in store.root and f in prev_changes:
+                arr = np.array(store.root[prev_key])
+                for p1, p0 in prev_changes[f].items():
+                    arr[p1] = p0
+                store.root[prev_key][:] = arr
 
         print(
             f"TwoPhaseTracker: {len(links)} links across {len(frames)} frames "
