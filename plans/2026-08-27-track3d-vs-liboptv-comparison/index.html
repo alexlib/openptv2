@@ -1,0 +1,1830 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Comparison: liboptv track3d.c vs openptv2 track3d_loop_fast - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#comparison-liboptv-track3dc-vs-openptv2-track3d_loop_fast" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Comparison: liboptv track3d.c vs openptv2 track3d_loop_fast
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-architecture-identical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Architecture (IDENTICAL)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-prediction-method-identical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Prediction Method (IDENTICAL)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-cost-function-level-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Cost Function — Level 1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Cost Function — Level 1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#liboptv-track3dc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        liboptv track3d.c
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openptv2-track3d_loop_fast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        openptv2 track3d_loop_fast
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-liboptv-has-curr-2cand-prev-openptv2-has-cand-2curr-prev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUG: liboptv has curr - 2*cand + prev, openptv2 has cand - 2*curr + prev
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openptv2-also-adds-dist_weight-dist_from_curr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        openptv2 also adds dist_weight * dist_from_curr
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cost-function-level-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cost Function — Level 2
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Cost Function — Level 2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#liboptv-track3dc_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        liboptv track3d.c
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openptv2-track3d_loop_fast_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        openptv2 track3d_loop_fast
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-liboptv-has-curr-2cand-predicted-openptv2-has-cand-predicted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUG: liboptv has curr - 2*cand + predicted, openptv2 has cand - predicted
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cost-function-level-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cost Function — Level 3
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Cost Function — Level 3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#liboptv-track3dc_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        liboptv track3d.c
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openptv2-track3d_loop_fast_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        openptv2 track3d_loop_fast
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-is-harmless-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug is harmless here
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-candidate-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Candidate Search
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Candidate Search">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#liboptv-find_candidates_in_3d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        liboptv find_candidates_in_3d
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openptv2-_find_closest_in_3d_grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        openptv2 _find_closest_in_3d_grid
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-conflict-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Conflict Resolution
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Conflict Resolution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#liboptv-track3dc_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        liboptv track3d.c
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openptv2-track3d_loop_fast_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        openptv2 track3d_loop_fast
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-search-box-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Search Box Parameter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Search Box Parameter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#liboptv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        liboptv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openptv2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        openptv2
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-additional-features-in-openptv2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Additional Features in openptv2
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Additional Features in openptv2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cold_start_gate-level-3-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cold_start_gate (Level 3 only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dist_weight-level-1-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dist_weight (Level 1 only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-summary-of-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Summary of Differences
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-to-make-openptv2-100-compatible-with-liboptv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. To Make openptv2 100% Compatible with liboptv
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-recommended-action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Recommended Action
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="comparison-liboptv-track3dc-vs-openptv2-track3d_loop_fast">Comparison: liboptv <code>track3d.c</code> vs openptv2 <code>track3d_loop_fast</code><a class="headerlink" href="#comparison-liboptv-track3dc-vs-openptv2-track3d_loop_fast" title="Permanent link">&para;</a></h1>
+<p><strong>Date</strong>: 2026-08-27
+<strong>Reference</strong>: https://github.com/alexlib/openptv/blob/f7dfafe4840d6097893e043191015fd1a3be9bb8/liboptv/src/track3d.c
+<strong>openptv2</strong>: <code>src/openptv2/algorithms/track_kernels_track3d.py</code> (function <code>track3d_loop_fast</code>)</p>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>Both are pure 3D-position-space trackers with a 3-level cascade (Level 1: has-prev, Level 2: neighbor velocity, Level 3: cold start). They share the same architecture but differ in the cost function formula, candidate search implementation, and conflict resolution strategy.</p>
+<p><strong>CRITICAL BUG in liboptv</strong>: The acceleration residual formula is <code>curr - 2*cand + predicted</code> when it should be <code>cand - 2*curr + predicted</code>. This produces incorrect costs for non-constant-velocity motion. openptv2 has the correct formula.</p>
+<h2 id="1-architecture-identical">1. Architecture (IDENTICAL)<a class="headerlink" href="#1-architecture-identical" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>liboptv <code>track3d.c</code></th>
+<th>openptv2 <code>track3d_loop_fast</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Search space</td>
+<td>Pure 3D position space</td>
+<td>Pure 3D position space</td>
+</tr>
+<tr>
+<td>Camera knowledge</td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Cascade levels</td>
+<td>3 (has-prev / neighbor-vel / cold)</td>
+<td>3 (has-prev / neighbor-vel / cold)</td>
+</tr>
+<tr>
+<td>Backward tracking</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Particle addition</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-prediction-method-identical">2. Prediction Method (IDENTICAL)<a class="headerlink" href="#2-prediction-method-identical" title="Permanent link">&para;</a></h2>
+<p>Both use constant-velocity extrapolation:
+<div class="language-c highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// liboptv track3d.c</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">predicted</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">curr_path_inf</span><span class="o">-&gt;</span><span class="n">x</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">prev_path_inf</span><span class="o">-&gt;</span><span class="n">x</span><span class="p">[</span><span class="n">d</span><span class="p">];</span>
+</span></code></pre></div></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># openptv2 track_kernels_track3d.py line 410-412</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">pred_x</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">path_x_1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">path_x_0</span><span class="p">[</span><span class="n">prev_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">pred_y</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">path_x_1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">path_x_0</span><span class="p">[</span><span class="n">prev_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">pred_z</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">path_x_1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">path_x_0</span><span class="p">[</span><span class="n">prev_idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</span></code></pre></div>
+<h2 id="3-cost-function-level-1">3. Cost Function — Level 1<a class="headerlink" href="#3-cost-function-level-1" title="Permanent link">&para;</a></h2>
+<h3 id="liboptv-track3dc">liboptv <code>track3d.c</code><a class="headerlink" href="#liboptv-track3dc" title="Permanent link">&para;</a></h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kt">float</span><span class="w"> </span><span class="n">diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr_path_inf</span><span class="o">-&gt;</span><span class="n">x</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">next</span><span class="o">-&gt;</span><span class="n">path_info</span><span class="p">[</span><span class="n">cand_indices</span><span class="p">[</span><span class="n">k</span><span class="p">]].</span><span class="n">x</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">prev_path_inf</span><span class="o">-&gt;</span><span class="n">x</span><span class="p">[</span><span class="n">d</span><span class="p">];</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">acc</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">diff</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">diff</span><span class="p">;</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">decis</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sqrtf</span><span class="p">(</span><span class="n">acc</span><span class="p">);</span>
+</span></code></pre></div>
+<p>Formula: <code>cost = sqrt(sum((curr - 2*cand + prev)^2))</code></p>
+<h3 id="openptv2-track3d_loop_fast">openptv2 <code>track3d_loop_fast</code><a class="headerlink" href="#openptv2-track3d_loop_fast" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">d0</span> <span class="o">=</span> <span class="n">path_x_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">path_x_1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">path_x_0</span><span class="p">[</span><span class="n">prev_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">d1</span> <span class="o">=</span> <span class="n">path_x_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">path_x_1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">path_x_0</span><span class="p">[</span><span class="n">prev_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">d2</span> <span class="o">=</span> <span class="n">path_x_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">path_x_1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">path_x_0</span><span class="p">[</span><span class="n">prev_idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">acc</span> <span class="o">=</span> <span class="n">c_sqrt</span><span class="p">(</span><span class="n">d0</span> <span class="o">*</span> <span class="n">d0</span> <span class="o">+</span> <span class="n">d1</span> <span class="o">*</span> <span class="n">d1</span> <span class="o">+</span> <span class="n">d2</span> <span class="o">*</span> <span class="n">d2</span><span class="p">)</span>
+</span></code></pre></div>
+<p>Formula: <code>cost = sqrt(sum((cand - 2*curr + prev)^2))</code></p>
+<h3 id="bug-liboptv-has-curr-2cand-prev-openptv2-has-cand-2curr-prev">BUG: liboptv has <code>curr - 2*cand + prev</code>, openptv2 has <code>cand - 2*curr + prev</code><a class="headerlink" href="#bug-liboptv-has-curr-2cand-prev-openptv2-has-cand-2curr-prev" title="Permanent link">&para;</a></h3>
+<p>These are different! For constant velocity (prev=0, curr=1, cand=2):
+- liboptv: <code>1 - 2*2 + 0 = -3</code> → cost = 3 (WRONG, should be 0)
+- openptv2: <code>2 - 2*1 + 0 = 0</code> → cost = 0 (CORRECT)</p>
+<p>The correct acceleration residual is <code>cand - 2*curr + prev</code> (= <code>x[n+1] - 2*x[n] + x[n-1]</code>). liboptv has the terms swapped.</p>
+<h3 id="openptv2-also-adds-dist_weight-dist_from_curr">openptv2 also adds <code>dist_weight * dist_from_curr</code><a class="headerlink" href="#openptv2-also-adds-dist_weight-dist_from_curr" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">dc0</span> <span class="o">=</span> <span class="n">path_x_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">path_x_1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">dc1</span> <span class="o">=</span> <span class="n">path_x_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">path_x_1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">dc2</span> <span class="o">=</span> <span class="n">path_x_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">path_x_1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">dist_from_curr</span> <span class="o">=</span> <span class="n">c_sqrt</span><span class="p">(</span><span class="n">dc0</span> <span class="o">*</span> <span class="n">dc0</span> <span class="o">+</span> <span class="n">dc1</span> <span class="o">*</span> <span class="n">dc1</span> <span class="o">+</span> <span class="n">dc2</span> <span class="o">*</span> <span class="n">dc2</span><span class="p">)</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">edge_cost</span><span class="p">[</span><span class="n">n_edges</span><span class="p">]</span> <span class="o">=</span> <span class="n">acc</span> <span class="o">+</span> <span class="n">dist_weight</span> <span class="o">*</span> <span class="n">dist_from_curr</span>
+</span></code></pre></div>
+<p>This term does NOT exist in liboptv. It was added to break near-ties in acceleration residual toward the physically smaller jump.</p>
+<h2 id="4-cost-function-level-2">4. Cost Function — Level 2<a class="headerlink" href="#4-cost-function-level-2" title="Permanent link">&para;</a></h2>
+<h3 id="liboptv-track3dc_1">liboptv <code>track3d.c</code><a class="headerlink" href="#liboptv-track3dc_1" title="Permanent link">&para;</a></h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">d</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="n">predicted</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr_path_inf</span><span class="o">-&gt;</span><span class="n">x</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">vel</span><span class="p">[</span><span class="n">d</span><span class="p">];</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1">// ...</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="kt">float</span><span class="w"> </span><span class="n">diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr_path_inf</span><span class="o">-&gt;</span><span class="n">x</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">next</span><span class="o">-&gt;</span><span class="n">path_info</span><span class="p">[</span><span class="n">cand_indices</span><span class="p">[</span><span class="n">k</span><span class="p">]].</span><span class="n">x</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">predicted</span><span class="p">[</span><span class="n">d</span><span class="p">];</span>
+</span></code></pre></div>
+<p>Formula: <code>cost = sqrt(sum((curr - 2*cand + predicted)^2))</code> where <code>predicted = curr + avg_vel</code></p>
+<h3 id="openptv2-track3d_loop_fast_1">openptv2 <code>track3d_loop_fast</code><a class="headerlink" href="#openptv2-track3d_loop_fast_1" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">pred_x</span> <span class="o">=</span> <span class="n">cx</span> <span class="o">+</span> <span class="n">vel_x</span> <span class="o">*</span> <span class="n">inv_nvel</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1"># ...</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">d0</span> <span class="o">=</span> <span class="n">path_x_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pred_x</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">d1</span> <span class="o">=</span> <span class="n">path_x_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pred_y</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">d2</span> <span class="o">=</span> <span class="n">path_x_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">pred_z</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="n">acc</span> <span class="o">=</span> <span class="n">c_sqrt</span><span class="p">(</span><span class="n">d0</span> <span class="o">*</span> <span class="n">d0</span> <span class="o">+</span> <span class="n">d1</span> <span class="o">*</span> <span class="n">d1</span> <span class="o">+</span> <span class="n">d2</span> <span class="o">*</span> <span class="n">d2</span><span class="p">)</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">edge_cost</span><span class="p">[</span><span class="n">n_edges</span><span class="p">]</span> <span class="o">=</span> <span class="n">acc</span>
+</span></code></pre></div>
+<p>Formula: <code>cost = sqrt(sum((cand - predicted)^2))</code> where <code>predicted = curr + avg_vel</code></p>
+<h3 id="bug-liboptv-has-curr-2cand-predicted-openptv2-has-cand-predicted">BUG: liboptv has <code>curr - 2*cand + predicted</code>, openptv2 has <code>cand - predicted</code><a class="headerlink" href="#bug-liboptv-has-curr-2cand-predicted-openptv2-has-cand-predicted" title="Permanent link">&para;</a></h3>
+<p>For a candidate exactly on the prediction (cand = predicted):
+- liboptv: <code>curr - 2*predicted + predicted = curr - predicted</code> → nonzero (WRONG)
+- openptv2: <code>predicted - predicted = 0</code> → zero (CORRECT)</p>
+<h2 id="5-cost-function-level-3">5. Cost Function — Level 3<a class="headerlink" href="#5-cost-function-level-3" title="Permanent link">&para;</a></h2>
+<h3 id="liboptv-track3dc_2">liboptv <code>track3d.c</code><a class="headerlink" href="#liboptv-track3dc_2" title="Permanent link">&para;</a></h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">predicted</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr_path_inf</span><span class="o">-&gt;</span><span class="n">x</span><span class="p">[</span><span class="n">d</span><span class="p">];</span><span class="w">  </span><span class="c1">// static prediction</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="c1">// ...</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="kt">float</span><span class="w"> </span><span class="n">diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr_path_inf</span><span class="o">-&gt;</span><span class="n">x</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">next</span><span class="o">-&gt;</span><span class="n">path_info</span><span class="p">[</span><span class="n">cand_indices</span><span class="p">[</span><span class="n">k</span><span class="p">]].</span><span class="n">x</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">predicted</span><span class="p">[</span><span class="n">d</span><span class="p">];</span>
+</span></code></pre></div>
+<p>Formula: <code>cost = sqrt(sum((curr - 2*cand + curr)^2)) = sqrt(sum((2*curr - 2*cand)^2)) = 2 * sqrt(sum((curr - cand)^2))</code></p>
+<h3 id="openptv2-track3d_loop_fast_2">openptv2 <code>track3d_loop_fast</code><a class="headerlink" href="#openptv2-track3d_loop_fast_2" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">pred_x</span> <span class="o">=</span> <span class="n">path_x_1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># static prediction</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1"># ...</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">d0</span> <span class="o">=</span> <span class="n">path_x_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pred_x</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="n">d1</span> <span class="o">=</span> <span class="n">path_x_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pred_y</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">d2</span> <span class="o">=</span> <span class="n">path_x_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">pred_z</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="n">dist</span> <span class="o">=</span> <span class="n">c_sqrt</span><span class="p">(</span><span class="n">d0</span> <span class="o">*</span> <span class="n">d0</span> <span class="o">+</span> <span class="n">d1</span> <span class="o">*</span> <span class="n">d1</span> <span class="o">+</span> <span class="n">d2</span> <span class="o">*</span> <span class="n">d2</span><span class="p">)</span>
+</span></code></pre></div>
+<p>Formula: <code>cost = sqrt(sum((cand - curr)^2))</code></p>
+<h3 id="bug-is-harmless-here">Bug is harmless here<a class="headerlink" href="#bug-is-harmless-here" title="Permanent link">&para;</a></h3>
+<p>liboptv's cost is exactly 2x openptv2's cost. Since both just sort by cost, the ordering is identical. The bug doesn't affect Level 3 results.</p>
+<h2 id="6-candidate-search">6. Candidate Search<a class="headerlink" href="#6-candidate-search" title="Permanent link">&para;</a></h2>
+<h3 id="liboptv-find_candidates_in_3d">liboptv <code>find_candidates_in_3d</code><a class="headerlink" href="#liboptv-find_candidates_in_3d" title="Permanent link">&para;</a></h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">find_candidates_in_3d</span><span class="p">(</span><span class="n">frame</span><span class="w"> </span><span class="o">*</span><span class="n">frm</span><span class="p">,</span><span class="w"> </span><span class="n">vec3d</span><span class="w"> </span><span class="n">pos</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">dx</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">dy</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">dz</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">indices</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_cands</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">frm</span><span class="o">-&gt;</span><span class="n">num_parts</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fabs</span><span class="p">(</span><span class="n">frm</span><span class="o">-&gt;</span><span class="n">path_info</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dx</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">            </span><span class="n">fabs</span><span class="p">(</span><span class="n">frm</span><span class="o">-&gt;</span><span class="n">path_info</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dy</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">            </span><span class="n">fabs</span><span class="p">(</span><span class="n">frm</span><span class="o">-&gt;</span><span class="n">path_info</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">dz</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">count</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">max_cands</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">                </span><span class="n">indices</span><span class="p">[</span><span class="n">count</span><span class="o">++</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">            </span><span class="p">}</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">count</span><span class="p">;</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Linear scan, returns candidates in insertion order (not sorted by distance). Up to <code>max_cands</code> (=32) candidates.</p>
+<h3 id="openptv2-_find_closest_in_3d_grid">openptv2 <code>_find_closest_in_3d_grid</code><a class="headerlink" href="#openptv2-_find_closest_in_3d_grid" title="Permanent link">&para;</a></h3>
+<p>Uses a spatial hash grid for O(1) cell lookup. Returns candidates sorted by Euclidean distance (closest first). Up to <code>max_cands</code> candidates.</p>
+<p><strong>openptv2 is faster</strong> for large particle counts due to the grid acceleration structure.</p>
+<h2 id="7-conflict-resolution">7. Conflict Resolution<a class="headerlink" href="#7-conflict-resolution" title="Permanent link">&para;</a></h2>
+<h3 id="liboptv-track3dc_3">liboptv <code>track3d.c</code><a class="headerlink" href="#liboptv-track3dc_3" title="Permanent link">&para;</a></h3>
+<p>Per-particle, sequential:
+1. For each particle, sort its candidates by cost
+2. Link to best candidate if unclaimed
+3. If already claimed: first-come-first-served (no comparison)</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">num_cands</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">next</span><span class="o">-&gt;</span><span class="n">path_info</span><span class="p">[</span><span class="n">linkdecis</span><span class="p">[</span><span class="mi">0</span><span class="p">]].</span><span class="n">prev</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="n">curr_path_inf</span><span class="o">-&gt;</span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linkdecis</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="n">next</span><span class="o">-&gt;</span><span class="n">path_info</span><span class="p">[</span><span class="n">linkdecis</span><span class="p">[</span><span class="mi">0</span><span class="p">]].</span><span class="n">prev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="n">count1</span><span class="o">++</span><span class="p">;</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="p">}</span>
+</span></code></pre></div>
+<h3 id="openptv2-track3d_loop_fast_3">openptv2 <code>track3d_loop_fast</code><a class="headerlink" href="#openptv2-track3d_loop_fast_3" title="Permanent link">&para;</a></h3>
+<p>Global edge-based:
+1. Collect all (particle, candidate) edges with costs
+2. Sort edges by cost globally
+3. Claim in ascending cost order: first claim wins</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">if</span> <span class="n">n_edges</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="n">_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">_edge_cost</span><span class="p">[:</span><span class="n">n_edges</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="k">for</span> <span class="n">oi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_edges</span><span class="p">):</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>        <span class="n">e</span> <span class="o">=</span> <span class="n">order</span><span class="p">[</span><span class="n">oi</span><span class="p">]</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>        <span class="n">i</span> <span class="o">=</span> <span class="n">edge_i</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>        <span class="n">k</span> <span class="o">=</span> <span class="n">edge_k</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>        <span class="k">if</span> <span class="n">path_next_1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">path_prev_2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>            <span class="n">path_next_1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>            <span class="n">path_prev_2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>            <span class="n">count1</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></code></pre></div>
+<p><strong>Key difference</strong>: liboptv processes particles in index order (particle 0 always wins contested candidates over particle 500). openptv2 claims globally by cost (cheapest edge wins regardless of particle index).</p>
+<h2 id="8-search-box-parameter">8. Search Box Parameter<a class="headerlink" href="#8-search-box-parameter" title="Permanent link">&para;</a></h2>
+<h3 id="liboptv">liboptv<a class="headerlink" href="#liboptv" title="Permanent link">&para;</a></h3>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kt">double</span><span class="w"> </span><span class="n">dx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tpar</span><span class="o">-&gt;</span><span class="n">dvxmax</span><span class="p">;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="kt">double</span><span class="w"> </span><span class="n">dy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tpar</span><span class="o">-&gt;</span><span class="n">dvymax</span><span class="p">;</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="kt">double</span><span class="w"> </span><span class="n">dz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tpar</span><span class="o">-&gt;</span><span class="n">dvzmax</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Always uses <code>dvxmax/dvymax/dvzmax</code> as the search box. No <code>dacc</code> parameter.</p>
+<h3 id="openptv2">openptv2<a class="headerlink" href="#openptv2" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">ax</span> <span class="o">=</span> <span class="n">dacc</span> <span class="k">if</span> <span class="n">dacc</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="n">dx</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="n">ay</span> <span class="o">=</span> <span class="n">dacc</span> <span class="k">if</span> <span class="n">dacc</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="n">dy</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="n">az</span> <span class="o">=</span> <span class="n">dacc</span> <span class="k">if</span> <span class="n">dacc</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="n">dz</span>
+</span></code></pre></div>
+<p>Uses <code>dacc</code> as the search box when &gt; 0, otherwise falls back to <code>dvxmax/dvymax/dvzmax</code>. This allows tighter Level 1/2 search without starving Level 3.</p>
+<h2 id="9-additional-features-in-openptv2">9. Additional Features in openptv2<a class="headerlink" href="#9-additional-features-in-openptv2" title="Permanent link">&para;</a></h2>
+<h3 id="cold_start_gate-level-3-only"><code>cold_start_gate</code> (Level 3 only)<a class="headerlink" href="#cold_start_gate-level-3-only" title="Permanent link">&para;</a></h3>
+<p>Optional gate that rejects Level 3 candidates farther than a threshold from the local flow prediction. Not present in liboptv.</p>
+<h3 id="dist_weight-level-1-only"><code>dist_weight</code> (Level 1 only)<a class="headerlink" href="#dist_weight-level-1-only" title="Permanent link">&para;</a></h3>
+<p>Tiebreak weight for distance from current position. Not present in liboptv.</p>
+<h2 id="10-summary-of-differences">10. Summary of Differences<a class="headerlink" href="#10-summary-of-differences" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Aspect</th>
+<th>liboptv <code>track3d.c</code></th>
+<th>openptv2 <code>track3d_loop_fast</code></th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>L1 cost formula</strong></td>
+<td><code>curr - 2*cand + prev</code> (BUG)</td>
+<td><code>cand - 2*curr + prev</code> (CORRECT)</td>
+<td><strong>Critical</strong>: wrong cost ordering</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>L2 cost formula</strong></td>
+<td><code>curr - 2*cand + predicted</code> (BUG)</td>
+<td><code>cand - predicted</code> (CORRECT)</td>
+<td><strong>Critical</strong>: wrong cost ordering</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>L3 cost formula</strong></td>
+<td><code>2*(curr - cand)</code> (harmless bug)</td>
+<td><code>cand - curr</code></td>
+<td>None (same ordering)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>L1 dist_weight</strong></td>
+<td>Not present</td>
+<td><code>acc + dist_weight * dist</code></td>
+<td>Moderate: breaks near-ties</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Candidate search</strong></td>
+<td>Linear scan, insertion order</td>
+<td>Grid加速, distance-sorted</td>
+<td>Performance only</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Conflict resolution</strong></td>
+<td>Per-particle sequential</td>
+<td>Global cost-ordered greedy</td>
+<td>Moderate: different claims</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Search box</strong></td>
+<td>Always <code>dvxmax/dvymax/dvzmax</code></td>
+<td><code>dacc</code> when &gt; 0</td>
+<td>Tunability</td>
+</tr>
+</tbody>
+</table>
+<h2 id="11-to-make-openptv2-100-compatible-with-liboptv">11. To Make openptv2 100% Compatible with liboptv<a class="headerlink" href="#11-to-make-openptv2-100-compatible-with-liboptv" title="Permanent link">&para;</a></h2>
+<p>If the goal is to reproduce liboptv's behavior exactly (bugs and all):</p>
+<ol>
+<li>
+<p><strong>Remove <code>dist_weight</code> term from Level 1</strong>: Change <code>edge_cost[n_edges] = acc + dist_weight * dist_from_curr</code> to <code>edge_cost[n_edges] = acc</code></p>
+</li>
+<li>
+<p><strong>Change Level 1 cost formula</strong>: Change <code>d0 = path_x_2[k, 0] - 2.0 * path_x_1[i, 0] + path_x_0[prev_idx, 0]</code> to <code>d0 = path_x_1[i, 0] - 2.0 * path_x_2[k, 0] + path_x_0[prev_idx, 0]</code> (swap cand and curr terms)</p>
+</li>
+<li>
+<p><strong>Change Level 2 cost formula</strong>: Change from <code>cand - predicted</code> to <code>curr - 2*cand + predicted</code></p>
+</li>
+<li>
+<p><strong>Change Level 3 cost formula</strong>: Change from <code>cand - curr</code> to <code>2*(curr - cand)</code> (harmless, same ordering)</p>
+</li>
+<li>
+<p><strong>Change conflict resolution</strong>: Replace global edge-based greedy with per-particle sequential claiming</p>
+</li>
+<li>
+<p><strong>Remove <code>dacc</code> as search box</strong>: Always use <code>dvxmax/dvymax/dvzmax</code></p>
+</li>
+<li>
+<p><strong>Remove <code>cold_start_gate</code></strong>: Not present in liboptv</p>
+</li>
+</ol>
+<p><strong>However</strong>: Steps 1-3 would make openptv2 WORSE, not better, because liboptv's formulas are buggy. The correct approach is to FIX liboptv, not to introduce bugs into openptv2.</p>
+<h2 id="12-recommended-action">12. Recommended Action<a class="headerlink" href="#12-recommended-action" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Keep openptv2's cost formulas</strong> — they are correct, liboptv's are buggy</li>
+<li><strong>Keep <code>dist_weight</code></strong> — it's an improvement</li>
+<li><strong>Keep global cost-ordered greedy</strong> — it's fairer than sequential</li>
+<li><strong>Optionally</strong> make the search box configurable (it already is via <code>dacc</code>)</li>
+<li><strong>Report the liboptv bug</strong> to the upstream project</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
