@@ -23,11 +23,9 @@ class Cython3DTracker:
     def __init__(
         self,
         v_max: float = 0.015,
-        a_max: float = 0.010,
         max_cands: int = MAX_CANDS,
         dt: float = 1.0,
-        dist_weight: float | None = None,
-        cold_start_gate: float = 0.0,
+        cold_start_gate: float = 1.0,
         ptv=None,
         exp=None,
     ):
@@ -36,29 +34,18 @@ class Cython3DTracker:
         ----------
         v_max : float
             Maximum expected velocity (search box half-width dx=dy=dz).
-        a_max : float
-            Maximum expected acceleration bound (dacc in Cython kernel).
-            ``a_max=0`` restores exact liboptv track3d.c behaviour: the
-            seeded-step search box falls back to dv (see
-            track_kernels_track3d.track3d_loop_fast).
         max_cands : int
             Maximum number of candidate neighbors evaluated per particle (default 32).
         dt : float
             Frame time step interval.
-        dist_weight : float, optional
-            Level-1 distance tiebreak weight. ``None`` (default) keeps the
-            current behaviour -- the kernel's LEVEL1_DIST_WEIGHT (1.0), since
-            this plugin path does not run the data-driven
-            ``track3d.estimate_level1_dist_weight``. Pass ``0.0`` together
-            with ``a_max=0`` for exact liboptv track3d.c parity.
+        cold_start_gate : float, optional
+            Level 3 local-flow-consistency gate. 0.0 disables (liboptv parity).
         ptv, exp : optional
             OpenPTV2 module and experiment objects for pipeline plugin runner.
         """
         self.v_max = float(v_max)
-        self.a_max = float(a_max)
         self.max_cands = int(max_cands)
         self.dt = float(dt)
-        self.dist_weight = None if dist_weight is None else float(dist_weight)
         self.cold_start_gate = float(cold_start_gate)
         self.ptv = ptv
         self.exp = exp
@@ -163,10 +150,6 @@ class Cython3DTracker:
             next_2 = next_links[t + 1]
 
             # Execute compiled Cython track3d_loop_fast kernel!
-            # dist_weight=None -> kernel default (LEVEL1_DIST_WEIGHT);
-            # explicit value (e.g. 0.0 for liboptv parity) is passed through.
-            # cold_start_gate>0 enables the level-3 local-flow-consistency
-            # gate (track.c-like cold-start conservatism in pure 3D).
             track3d_loop_fast(
                 n1,
                 pos_0, prev_0, n0,
@@ -174,9 +157,7 @@ class Cython3DTracker:
                 pos_2, prev_2, next_2, n2,
                 self.v_max, self.v_max, self.v_max,
                 self.max_cands,
-                self.a_max,
-                *( [self.dist_weight] if self.dist_weight is not None else [] ),
-                *( [self.cold_start_gate] if self.cold_start_gate else [] ),
+                self.cold_start_gate,
             )
 
         # Assemble individual tracks from next_links graph

@@ -365,7 +365,6 @@ def run_multi_tracker_benchmark(
 
         # Step through frames using compiled C track3d_loop_fast
         v_max = 3.0
-        a_max = 1.5
         for step in range(1, num_frames - 1):
             f0, f1, f2 = step - 1, step, step + 1
             n0, n1, n2 = num_parts_arr[f0], num_parts_arr[f1], num_parts_arr[f2]
@@ -387,7 +386,6 @@ def run_multi_tracker_benchmark(
                     v_max,
                     v_max,  # dx, dy, dz velocity bounds
                     32,  # max_cands
-                    a_max,  # dacc acceleration bound
                 )
 
         t_cython = max(time.perf_counter() - t0, 1e-6)

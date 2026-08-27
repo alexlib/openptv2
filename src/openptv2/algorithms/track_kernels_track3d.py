@@ -5,30 +5,6 @@ import numpy as np
 
 from openptv2.algorithms.constants import NEXT_NONE
 
-# Level 1 candidate cost = acceleration_residual + dist_weight *
-# |candidate - current_position| (see track3d_loop_fast's dist_weight
-# parameter). It exists purely to break near-ties in acceleration residual
-# toward the physically smaller jump -- it must stay low enough that a
-# genuine accelerating/curving continuation (large acceleration gap vs a
-# near-but-wrong decoy) still wins on acceleration alone; see
-# test_track3d_level1_ranks_by_forward_acceleration_not_decoy_behind, whose
-# fixture requires this weight to stay under 3.0.
-#
-# LEVEL1_DIST_WEIGHT is the static fallback for callers that don't supply
-# their own dist_weight. track3d_loop (the driver used by the default
-# tracker) instead estimates a per-dataset value from the first two frames
-# via track3d.estimate_level1_dist_weight: the right balance depends on how
-# large true motion is relative to particle spacing, which is measurable
-# before any acceleration assumption is made and varies a lot between
-# datasets (a slow, densely-seeded flow wants a much higher weight than a
-# fast, sparse one -- a single fixed constant can't serve both).
-LEVEL1_DIST_WEIGHT = 1.0
-
-# Cost offset applied to a 4BE candidate that has no real particle near its
-# two-frames-ahead estimate (see track4be_loop_fast). It only has to exceed
-# the largest possible supported cost, which is bounded by the search box
-# diagonal, so any round number far above millimetre scale keeps the two
-# tiers strictly ordered.
 UNSUPPORTED_PENALTY = 1e6
 
 if cython.compiled:
@@ -225,64 +201,27 @@ def track3d_loop_fast(
     dy: cython.double,
     dz: cython.double,
     max_cands: cython.int,
-    dacc: cython.double = 0.0,
-    dist_weight: cython.double = LEVEL1_DIST_WEIGHT,
-    cold_start_gate: cython.double = 0.0,
+    cold_start_gate: cython.double = 1.0,
 ):
     """Full track3d loop (3 levels) — single compiled entry.
 
-    Level 1: particles with previous links — predict from velocity (search box = dacc).
-    Level 2: no prev link — average velocity from neighbors (search box = dacc).
-    Level 3: no prev link, no neighbor info — use current position (search box = dx,dy,dz).
+    Faithful port of liboptv's track3d.c with the same 3-level cascade:
+    Level 1: particles with previous links — constant-velocity prediction.
+    Level 2: no prev link — average velocity from neighbors.
+    Level 3: no prev link, no neighbor info — use current position.
 
-    **``dacc`` is the knob that controls seeded-step search.** This is where
-    the port deliberately diverges from ``track3d.c``, which passes
-    ``dvxmax/dvymax/dvzmax`` at all three levels and never uses ``dacc`` as a
-    gate. ``dacc = 0`` restores that C behaviour exactly (``ax = dx`` below),
-    and ``dacc`` feeds nothing else here, so the two are the same code path
-    whenever ``dacc == dvxmax``.
+    Search box is dx/dy/dz (= dvxmax/dvymax/dvzmax) at all three levels,
+    matching liboptv exactly.
 
-    Carrying C-era intuition here is a trap: tuning ``dvxmax`` changes
-    *nothing* for particles that are already being tracked — it only widens
-    level 3, the cold search for particles with no velocity history.
+    Cost function: acceleration residual = sqrt(sum((cand - 2*curr + prev)^2))
+    for Level 1, distance from prediction for Levels 2 and 3.
 
-    Measured on the two ground-truth synthetic sets (``priority_segment_3d``,
-    postprocess off). Link precision / yield — both endpoints matched, so
-    neither is inflated by fragmentation the way ``pmt`` is:
+    Candidates are claimed in ascending cost order across ALL particles
+    within each level (global cost-ordered greedy), not particle-by-particle
+    in index order.
 
-    ===========================  ===============  ===============
-    config                       220/frame        970/frame
-    ===========================  ===============  ===============
-    port ``dacc=3  dvxmax=6``    0.977 / 0.885    0.944 / 0.874
-    port ``dacc=4  dvxmax=6``    0.975 / 0.895    0.935 / 0.871
-    C    ``dacc=0  dvxmax=4``    0.977 / 0.867    0.945 / 0.877
-    C    ``dacc=0  dvxmax=6``    0.967 / 0.894    0.916 / 0.867
-    C    ``dacc=0  dvxmax=10``   0.943 / 0.891    0.876 / 0.862
-    ===========================  ===============  ===============
-
-    What actually drives quality is the *size* of the seeded box, not which
-    parameter names it: the wide-box C configs (``dvxmax`` 6 and 10) are the
-    worst rows at both densities. The port's advantage is that it can tighten
-    level 1 without also starving level 3's cold search — worth ~3 points of
-    yield at 220/frame (0.895 vs 0.867 at equal precision), and roughly
-    parity at 970/frame. Modest, but it costs nothing.
-
-    Note mean track length moves *against* quality here: ``dvxmax=10`` gives
-    the longest tracks and the worst precision. Longer but wronger.
-
-    Within each level, candidates are claimed in ascending cost order across
-    ALL of that level's particles at once (one sort per level), not
-    particle-by-particle in index order: otherwise particle 0 always wins a
-    contested candidate over particle 500 regardless of which is the better
-    match. The three levels still run as a strict cascade (level 2 only
-    sees particles level 1 left unclaimed, etc.) — only the claim order
-    *within* a level changed.
-
-    ``cold_start_gate`` (default 0.0 = off, liboptv parity): when > 0, level
-    3 rejects candidates farther than this from the LOCAL-FLOW prediction
-    (neighbour-average velocity; falls back to static when no seeded
-    neighbours exist). Approximates track.c's cold-start conservatism in
-    pure 3D — kills full-window jump trajectories at volume edges.
+    ``cold_start_gate`` (default 1.0): when > 0, level 3 rejects
+    candidates farther than this from the local-flow prediction.
 
     Returns count1 (number of links established).
     """
@@ -310,9 +249,6 @@ def track3d_loop_fast(
     cz: cython.double
     pj: cython.int
     inv_nvel: cython.double
-    ax: cython.double
-    ay: cython.double
-    az: cython.double
     n_edges: cython.int
     max_edges: cython.int
     oi: cython.int
@@ -321,9 +257,6 @@ def track3d_loop_fast(
 
     count1 = 0
     np2 = num_parts_2
-    ax = dacc if dacc > 0.0 else dx
-    ay = dacc if dacc > 0.0 else dy
-    az = dacc if dacc > 0.0 else dz
 
     _cand_inds = np.empty(max_cands, dtype=np.int32)
     _cand_dists = np.empty(max_cands, dtype=np.float64)
@@ -361,9 +294,9 @@ def track3d_loop_fast(
         min_y = 0.0; max_y = 1.0
         min_z = 0.0; max_z = 1.0
 
-    cell_x: cython.double = ax if ax > 0.5 else dx
-    cell_y: cython.double = ay if ay > 0.5 else dy
-    cell_z: cython.double = az if az > 0.5 else dz
+    cell_x: cython.double = dx if dx > 0.5 else 1.0
+    cell_y: cython.double = dy if dy > 0.5 else 1.0
+    cell_z: cython.double = dz if dz > 0.5 else 1.0
     if cell_x < 0.1: cell_x = 1.0
     if cell_y < 0.1: cell_y = 1.0
     if cell_z < 0.1: cell_z = 1.0
@@ -412,7 +345,7 @@ def track3d_loop_fast(
         pred_z = 2.0 * path_x_1[i, 2] - path_x_0[prev_idx, 2]
 
         n_cands = _find_closest_in_3d_grid(
-            path_x_2, np2, pred_x, pred_y, pred_z, ax, ay, az,
+            path_x_2, np2, pred_x, pred_y, pred_z, dx, dy, dz,
             max_cands, cand_inds, cand_dists,
             grid_head, grid_next, min_x, min_y, min_z, cell_x, cell_y, cell_z, nx, ny, nz
         )
@@ -422,24 +355,7 @@ def track3d_loop_fast(
             d1 = path_x_2[k, 1] - 2.0 * path_x_1[i, 1] + path_x_0[prev_idx, 1]
             d2 = path_x_2[k, 2] - 2.0 * path_x_1[i, 2] + path_x_0[prev_idx, 2]
             acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
-            # Acceleration residual alone ranks by fit to the (possibly
-            # noisy) constant-velocity extrapolation, with no penalty for
-            # how far the candidate actually sits from the particle's last
-            # known position -- so once the gate is wider than the true
-            # particle spacing, a distant candidate that happens to align
-            # with a noisy prediction outranks a much closer, physically
-            # plausible one (observed: a farther candidate beat a closer
-            # available one in ~51% of links on a loosely-gated dataset).
-            # Add a raw-displacement term, weighted below the acceleration
-            # term (LEVEL1_DIST_WEIGHT < 1) so the existing decoy-vs-true-
-            # continuation ordering (large acceleration gap) still wins --
-            # this only breaks near-ties in acceleration toward the smaller
-            # jump.
-            dc0 = path_x_2[k, 0] - path_x_1[i, 0]
-            dc1 = path_x_2[k, 1] - path_x_1[i, 1]
-            dc2 = path_x_2[k, 2] - path_x_1[i, 2]
-            dist_from_curr = c_sqrt(dc0 * dc0 + dc1 * dc1 + dc2 * dc2)
-            edge_cost[n_edges] = acc + dist_weight * dist_from_curr
+            edge_cost[n_edges] = acc
             edge_i[n_edges] = i
             edge_k[n_edges] = k
             n_edges += 1
@@ -495,7 +411,7 @@ def track3d_loop_fast(
         pred_z = cz + vel_z * inv_nvel
 
         n_cands = _find_closest_in_3d_grid(
-            path_x_2, np2, pred_x, pred_y, pred_z, ax, ay, az,
+            path_x_2, np2, pred_x, pred_y, pred_z, dx, dy, dz,
             max_cands, cand_inds, cand_dists,
             grid_head, grid_next, min_x, min_y, min_z, cell_x, cell_y, cell_z, nx, ny, nz
         )
@@ -523,17 +439,6 @@ def track3d_loop_fast(
                 count1 += 1
 
     # ===== Level 3: No previous link, no neighbors — static prediction =====
-    # With ``cold_start_gate > 0``, level 3 additionally rejects candidates
-    # whose displacement is inconsistent with the LOCAL FLOW FIELD: the
-    # candidate must satisfy |cand - curr - v_local| <= cold_start_gate, where
-    # v_local is the average velocity of level-2's neighbours (the same
-    # neighbour sum computed above, reused via a second pass). This mirrors
-    # track.c's cold-start conservatism (search unused 2D targets within 3px
-    # of the flow-consistent prediction, quali>=2, re-triangulate, acc/angle
-    # gates): track3d.c's bare "link to any unclaimed particle within dv" is
-    # the dominant source of full-window jump trajectories at volume edges,
-    # where the true continuation often went undetected. Pure 3D, no targets
-    # needed. 0.0 disables the gate (liboptv parity).
     use_csg: cython.bint = cold_start_gate > 0.0
     n_edges = 0
     for i in range(orig_parts):

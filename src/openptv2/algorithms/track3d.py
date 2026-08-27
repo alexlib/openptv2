@@ -148,27 +148,10 @@ def track3d_loop(run_info, step):
     dx = tpar.dvxmax
     dy = tpar.dvymax
     dz = tpar.dvzmax
-    dacc = float(getattr(tpar, "dacc", 0.0))
 
     fb.buf[0]._sync_path_to_soa()
     fb.buf[1]._sync_path_to_soa()
     fb.buf[2]._sync_path_to_soa()
-
-    dist_weight = getattr(run_info, "_level1_dist_weight", None)
-    if dist_weight is None:
-        # buf[0] ("previous frame") is empty on the very first step of a
-        # forward run -- there is no frame before the first one. buf[1] and
-        # buf[2] (the actual first real frame pair) are always populated by
-        # the time this runs, and are the pair Level 1 will condition its
-        # very next prediction on anyway.
-        try:
-            dist_weight = estimate_level1_dist_weight(
-                fb.buf[1].path_x[: fb.buf[1].num_parts],
-                fb.buf[2].path_x[: fb.buf[2].num_parts],
-            )
-        except Exception:
-            dist_weight = 1.0
-        run_info._level1_dist_weight = dist_weight
 
     count1 = _track3d_loop_fast(
         orig_parts,
@@ -187,8 +170,6 @@ def track3d_loop(run_info, step):
         dy,
         dz,
         MAX_CANDS,
-        dacc,
-        dist_weight,
     )
 
     _sync_soa_to_aos(fb.buf[1])
