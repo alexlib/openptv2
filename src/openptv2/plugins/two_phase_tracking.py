@@ -12,6 +12,7 @@ This exploits the tree-forest architecture: 3D positions are the "trunk"
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 from scipy.optimize import linear_sum_assignment
@@ -236,22 +237,32 @@ class Tracking:
             pm = getattr(self.exp.exp1, "pm", None)
 
         track_cfg = pm.parameters.get("track", {}) if pm else {}
-        leaf_weight = float(track_cfg.get("leaf_weight", 0.0))
+        leaf_weight = float(track_cfg.get("leaf_weight", 1.0))
         v_max = float(track_cfg.get("dvxmax", 15.5))
 
+        # Find the zarr store: try _store first, then look in cwd/res/run.zarr
         store = getattr(self.exp, "_store", None)
         if store is None:
-            print(
-                "TwoPhaseTracker requires a RunStore (zarr) with "
-                "correspondences and targets. Falling back to default tracker."
-            )
-            tracker = self.ptv.py_trackcorr_init(self.exp)
-            self.exp.tracker = tracker
-            tracker.full_forward()
-            return
+            from openptv2.storage import RunStore
+            from openptv2.storage.run_store import find_existing_store
+            zarr_path = find_existing_store(Path.cwd())
+            if zarr_path is not None:
+                store = RunStore(zarr_path, mode="r+")
+            else:
+                print(
+                    "TwoPhaseTracker requires a RunStore (zarr) with "
+                    "correspondences and targets. Falling back to default tracker."
+                )
+                tracker = self.ptv.py_trackcorr_init(self.exp)
+                self.exp.tracker = tracker
+                tracker.full_forward()
+                return
 
         frames = sorted(store.frames())
-        num_cams = len(store.cam_ids)
+        # Infer num_cams from correspondences shape: (N, 3+C) where C = num_cams
+        first_frame = frames[0]
+        corr_shape = store.root[f"correspondences/frame_{first_frame:06d}"].shape
+        num_cams = corr_shape[1] - 3
 
         frame_particles = []
         frame_leaves = []
