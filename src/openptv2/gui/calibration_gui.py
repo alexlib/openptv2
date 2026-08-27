@@ -480,6 +480,15 @@ class CalibrationGUI(HasTraits):
         calib_params_gui = Calib_Params(experiment=self.experiment)
         calib_params_gui.edit_traits(view="Calib_Params_View", kind="livemodal")
 
+        # The dialog writes cal_splitter into self.experiment.pm directly
+        # (parameter_gui.py's Calib_Params save logic) but self._cal_splitter
+        # was only ever seeded once, at __init__ -- without this, editing and
+        # saving "Split calibration image into 4?" in that dialog leaves this
+        # screen's own checkbox (and the runtime behavior at
+        # _button_showimg_fired, which reads self._cal_splitter) silently
+        # showing the old value until the whole GUI is reloaded from YAML.
+        self._cal_splitter = bool(self.get_parameter("cal_ori").get("cal_splitter"))
+
     def _button_showimg_fired(self):
 
         print("Loading images/parameters \n")

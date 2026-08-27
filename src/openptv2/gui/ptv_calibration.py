@@ -777,8 +777,19 @@ def calib_particles(exp):
         num_cams = exp.num_cams
         cpar = exp.cpar
         spar = exp.spar
+    elif hasattr(exp, "experiment") and hasattr(exp.experiment, "pm"):
+        # CalibrationGUI object - parameters live under .experiment.pm, and
+        # (unlike the two branches above) cpar/spar are not kept as
+        # attributes, so derive them the same way calib_dumbbell does for
+        # this same object shape.
+        from .ptv import py_start_proc_c
+
+        pm = exp.experiment.pm
+        cpar, spar, _vpar, _track_par, _tpar, _cals, _epar = py_start_proc_c(pm)
     else:
-        raise ValueError("Object must have either pm or exp1.pm attribute")
+        raise ValueError(
+            "Object must have a pm, exp1.pm, or experiment.pm attribute"
+        )
 
     num_cams = cpar.get_num_cams()
     calibs = _read_calibrations(cpar, num_cams)
