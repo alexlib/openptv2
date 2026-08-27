@@ -121,6 +121,28 @@ The weight `alpha` controls the balance between 3D kinematic consistency and 2D 
 2. Distinguish "3D jump + leaf jump" (real event) from "3D jump + leaf smooth" (correspondence error)
 3. Measure improvement on wp1 GT
 
+## Test results (wp1_10_images, res/run.zarr, 10 frames)
+
+### Clean data (no artificial noise)
+
+| method | alpha | rad | links | TP | FP | FN | prec | rec |
+|--------|-------|-----|-------|----|----|----|----|-----|
+| 3D | - | 2.0 | 14533 | 14036 | 497 | 270 | 0.966 | 0.981 |
+| ND | 0.1 | 2.0 | 11908 | 11629 | 279 | 2677 | 0.977 | 0.813 |
+| ND | 0.5 | 2.0 | 11001 | 10879 | 122 | 3427 | 0.989 | 0.760 |
+
+**Conclusion**: On clean data, 3D is better (higher recall). ND is more conservative (higher precision, lower recall) because the 2D dimensions expand the search space.
+
+### Noisy 3D (1mm Gaussian noise added)
+
+| method | alpha | rad | links | TP | FP | FN | prec | rec |
+|--------|-------|-----|-------|----|----|----|----|-----|
+| 3D+noise (no 2D) | - | 2.0 | 8745 | 4448 | 4297 | 9858 | 0.509 | 0.311 |
+| ND(noisy3D+clean2D) | 0.1 | 2.0 | 5274 | 4649 | 625 | 9657 | 0.881 | 0.325 |
+| ND(noisy3D+clean2D) | 0.1 | 5.0 | 13473 | 9469 | 4004 | 4837 | 0.703 | 0.662 |
+
+**Conclusion**: When 3D is noisy, ND tracking with clean 2D data significantly improves precision (0.881 vs 0.509). The 2D leaf information compensates for 3D reconstruction noise.
+
 ## Files to create/modify
 
 - `src/openptv2/storage/unified_table.py` — new UnifiedParticleTable class
