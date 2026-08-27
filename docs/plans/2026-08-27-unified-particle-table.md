@@ -123,6 +123,29 @@ The weight `alpha` controls the balance between 3D kinematic consistency and 2D 
 
 ## Test results (wp1_10_images, res/run.zarr, 10 frames)
 
+### Key finding: Two-phase approach (3D search + 2D ranking)
+
+Don't add 2D to the KD-tree distance metric. Instead:
+1. Use 3D KD-tree to find candidates within radius
+2. Use 2D distances as cost in Hungarian assignment within candidates
+
+| Noise | 3D-only rad=2 | 3D+2D rad=2 | 3D-only rad=5 | 3D+2D rad=5 |
+|-------|--------------|-------------|--------------|-------------|
+| 0.0mm | 0.966/0.981 | **0.969/0.983** | 0.734/0.857 | **0.848/0.957** |
+| 0.5mm | 0.893/0.866 | **0.956/0.922** | 0.664/0.776 | **0.825/0.941** |
+| 1.0mm | 0.532/0.330 | **0.680/0.410** | 0.430/0.504 | **0.786/0.905** |
+| 2.0mm | 0.145/0.060 | **0.208/0.084** | 0.135/0.155 | **0.401/0.457** |
+
+This is the tree-forest architecture: 3D is the "trunk" (structural search), 2D leaves are the "signature" (disambiguation).
+
+### Why ND-in-KD-tree doesn't work
+
+Adding 2D to the KD-tree Euclidean distance mixes units (mm vs pixels) and dilutes the 3D signal. The 2D noise floor (~0.5 pixel) overwhelms the discriminative information.
+
+### Why two-phase works
+
+When 3D is noisy, multiple candidates fall within the search radius. The 2D leaf positions provide independent evidence to pick the right one. The Hungarian algorithm makes globally optimal assignments across all competing candidates.
+
 ### Clean data (no artificial noise)
 
 | method | alpha | rad | links | TP | FP | FN | prec | rec |
