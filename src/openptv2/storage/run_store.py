@@ -504,6 +504,26 @@ class RunStore:
             raise RunStoreError("No trajectory index -- run seal() first.")
         return {k: np.asarray(grp[k]) for k in ("trajid", "first", "last", "length")}
 
+    # -- unified particle table -------------------------------------------
+
+    def write_unified_table(self, table) -> None:
+        """Write a UnifiedParticleTable to zarr under ``particle_table/``."""
+        from openptv2.storage.unified_table import UnifiedParticleTable
+        grp = _require_group(self.root, "particle_table")
+        d = table.to_dict()
+        for key, val in d.items():
+            grp.create_array(key, data=np.asarray(val), overwrite=True)
+
+    def read_unified_table(self):
+        """Read a UnifiedParticleTable from zarr ``particle_table/`` group."""
+        from openptv2.storage.unified_table import UnifiedParticleTable
+        grp = self.root["particle_table"]
+        d = {k: np.asarray(grp[k]) for k in grp.keys()}
+        return UnifiedParticleTable.from_dict(d)
+
+    def has_unified_table(self) -> bool:
+        return "particle_table" in self.root and len(self.root["particle_table"].keys()) > 0
+
     # -- trajectories (derived flat cache, written by seal) --------------
 
     def write_trajectories(
