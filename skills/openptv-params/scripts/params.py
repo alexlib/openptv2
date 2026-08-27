@@ -147,6 +147,20 @@ def cmd_validate(args) -> int:
     else:
         warnings.append("cal_ori.fixp_name missing")
 
+    # eps0: legacy 3dptv .par eps0 is a dimensionless per-particle multiplier
+    # (see docs/algorithms/correspondence-eps0-semantics.md); openptv2 uses
+    # it as a flat mm tolerance. A raw legacy value copied verbatim is
+    # almost always << 0.06mm (3dptv's own effective floor), which starves
+    # correspondence recall.
+    eps0 = data.get("criteria", {}).get("eps0")
+    if eps0 is not None and float(eps0) < 0.06:
+        warnings.append(
+            f"criteria.eps0={eps0} — looks like a raw legacy 3dptv value "
+            "copied verbatim (dimensionless multiplier, not mm). Convert it "
+            "first: see docs/algorithms/correspondence-eps0-semantics.md "
+            "(3dptv's own effective floor is 0.06mm for typical tracer sizes)"
+        )
+
     # tracking params sanity
     track = data.get("track", {})
     for ax in ("dvxmin", "dvymin", "dvzmin"):
