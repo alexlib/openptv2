@@ -178,6 +178,7 @@ TRACKER_CHOICES = [
     ("nearest_hungarian_3d", "MyPTV 3D (Nearest-Neighbor Hungarian)"),
     ("myptv_2d_tracking", "MyPTV 2D (Image-Space Assignment)"),
     ("predictive_gmm_3d", "proPTV (Predictive GMM - Optional)"),
+    ("two_phase", "Two-Phase 3D+2D Leaf Ranking"),
 ]
 
 DIRECTION_CHOICES = [
@@ -193,6 +194,7 @@ TRACKER_SUPPORTS_BACKWARD: Dict[str, bool] = {
     "nearest_hungarian_3d": True,
     "myptv_2d_tracking": True,
     "predictive_gmm_3d": True,
+    "two_phase": False,
 }
 
 # Trackers whose do_tracking() supports post-processing (reciprocity + cold start + gap relinking).

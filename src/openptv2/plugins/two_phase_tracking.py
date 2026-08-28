@@ -259,6 +259,15 @@ class Tracking:
                 return
 
         frames = sorted(store.frames())
+        # Only process the first contiguous block (avoid mixing different runs)
+        if len(frames) > 1:
+            contiguous = [frames[0]]
+            for i in range(1, len(frames)):
+                if frames[i] == contiguous[-1] + 1:
+                    contiguous.append(frames[i])
+                else:
+                    break
+            frames = contiguous
         # Infer num_cams from correspondences shape: (N, 3+C) where C = num_cams
         first_frame = frames[0]
         corr_shape = store.root[f"correspondences/frame_{first_frame:06d}"].shape
@@ -302,14 +311,18 @@ class Tracking:
             nxt_key = f"linkage/ptv_is/frame_{f:06d}/next"
             if nxt_key in store.root and f in nxt_changes:
                 arr = np.array(store.root[nxt_key])
+                sz = len(arr)
                 for p0, p1 in nxt_changes[f].items():
-                    arr[p0] = p1
+                    if p0 < sz and p1 < sz:
+                        arr[p0] = p1
                 store.root[nxt_key][:] = arr
             prev_key = f"linkage/ptv_is/frame_{f:06d}/prev"
             if prev_key in store.root and f in prev_changes:
                 arr = np.array(store.root[prev_key])
+                sz = len(arr)
                 for p1, p0 in prev_changes[f].items():
-                    arr[p1] = p0
+                    if p1 < sz and p0 < sz:
+                        arr[p1] = p0
                 store.root[prev_key][:] = arr
 
         print(
