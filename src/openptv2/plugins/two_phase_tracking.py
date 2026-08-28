@@ -279,6 +279,12 @@ class Tracking:
                     else:
                         break
                 frames = contiguous
+        if not frames:
+            print("TwoPhaseTracker: no frames to process, falling back to default tracker.")
+            tracker = self.ptv.py_trackcorr_init(self.exp)
+            self.exp.tracker = tracker
+            tracker.full_forward()
+            return
         # Infer num_cams from correspondences shape: (N, 3+C) where C = num_cams
         first_frame = frames[0]
         corr_shape = store.root[f"correspondences/frame_{first_frame:06d}"].shape

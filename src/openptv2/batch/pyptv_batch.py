@@ -225,16 +225,6 @@ def run_batch(
         # directory must exist before any of them run.
         Path("res").mkdir(exist_ok=True)
 
-        # If --output specified, backup existing run.zarr before overwriting
-        _zarr_default = Path("res") / "run.zarr"
-        _zarr_backup = None
-        if output and _zarr_default.exists():
-            _zarr_backup = _zarr_default.with_suffix(".zarr.bak")
-            if _zarr_backup.exists():
-                import shutil
-                shutil.rmtree(_zarr_backup)
-            _zarr_default.rename(_zarr_backup)
-
         from openptv2.plugins import run_sequence_plugin, run_tracking_plugin
 
         plugins_dir = exp_path / "plugins"
@@ -262,17 +252,16 @@ def run_batch(
             except Exception as exc:
                 print(f"Warning: seal failed: {exc}")
 
-        # If --output specified, move result to output path and restore backup
-        if output and _zarr_default.exists():
+        # If --output specified, copy result to output path
+        if output:
             import shutil
+            _zarr_default = Path("res") / "run.zarr"
             output_path = Path("res") / output
-            if output_path.exists():
-                shutil.rmtree(output_path)
-            _zarr_default.rename(output_path)
-            print(f"Output saved to: {output_path}")
-            if _zarr_backup and _zarr_backup.exists():
-                _zarr_backup.rename(_zarr_default)
-                print(f"Original restored from backup")
+            if _zarr_default.exists():
+                if output_path.exists():
+                    shutil.rmtree(output_path)
+                shutil.copytree(_zarr_default, output_path)
+                print(f"Output copied to: {output_path}")
 
         print("Batch processing completed successfully")
 
