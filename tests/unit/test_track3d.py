@@ -232,21 +232,12 @@ def track3d_test_cavity():
 
         assert run.npart == 2082
         # 1765 -> 1753 after fixing the Level 1/2 acceleration-residual sign
-        # bug (candidates were ranked by proximity to a point behind the
-        # particle instead of the forward prediction). 1753 -> 1736 after
-        # Stage 1b: candidates are now claimed in ascending cost order
-        # across a whole level instead of particle-by-particle in index
-        # order, so some links that only existed because an earlier-index
-        # particle grabbed a candidate first no longer form -- the fewer,
-        # remaining links are the ones cost-ordering actually prefers.
-        # 1736 -> 1748 after adding a raw-displacement tie-breaker to the
-        # Level 1 cost (acc_residual + LEVEL1_DIST_WEIGHT * |cand - curr|):
-        # pure acceleration-residual ranking picked a farther candidate over
-        # a closer available one in ~51% of links on a loosely-gated dataset
-        # (a large-volume prediction can align with a distant candidate by
-        # chance); a few previously-blocked links now form because the
-        # tie-break changes which candidate wins a multi-claimant contest.
-        assert run.nlinks == 1748
+        # bug. 1753 -> 1736 after Stage 1b cost-ordered claiming. 1736 -> 1748
+        # after LEVEL1_DIST_WEIGHT tie-breaker. 1748 -> 1518 after aligning
+        # track3d_loop_fast with liboptv track3d.c (6e86c138): strict 3D box
+        # search and correct acceleration metric per liboptv, fewer but more
+        # accurate links.
+        assert run.nlinks == 1518
 
     finally:
         os.chdir(original)
@@ -291,8 +282,8 @@ def test_tracker_full_forward_3d_test_cavity():
         tracker.full_forward_3d()
 
         assert tracker.npart == 2082
-        # See the matching note in track3d_test_cavity above: 1765 -> 1753 -> 1736 -> 1748.
-        assert tracker.nlinks == 1748
+        # See track3d_test_cavity above: 1765 -> ... -> 1748 -> 1518 after liboptv alignment.
+        assert tracker.nlinks == 1518
     finally:
         os.chdir(original)
 

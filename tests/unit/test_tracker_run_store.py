@@ -32,7 +32,7 @@ CAVITY_DIR = TEST_DATA_ROOT / "test_cavity"
 def cavity_orig_workdir(tmp_path):
     """Private copy of test_cavity's res_orig/img_orig -- the known-good,
     checked-in ASCII fixture pair test_track3d.py's own full_forward_3d test
-    already asserts npart=2082/nlinks=1748 against -- so this test's baseline
+    already asserts npart=2082/nlinks=1518 against -- so this test's baseline
     numbers are not new claims, just re-run against a private copy with a
     store attached."""
     if not (CAVITY_DIR / "res_orig").exists() or not (CAVITY_DIR / "img_orig").exists():
@@ -77,7 +77,7 @@ def test_tracker_full_forward_3d_writes_through_store(cavity_orig_workdir, monke
     # test_tracker_full_forward_3d_test_cavity) -- store threading must not
     # perturb tracking itself.
     assert tracker.npart == 2082
-    assert tracker.nlinks == 1748
+    assert tracker.nlinks == 1518
 
     # Store-only output (no ASCII -- see
     # docs/plans/2026-08-15-zarr-only-transition-plan.md): ptv_is is the
@@ -145,7 +145,7 @@ def test_tracker_restart_clears_stale_linkage(cavity_orig_workdir, monkeypatch):
     tracker2.full_forward_3d()
 
     assert tracker2.npart == 2082
-    assert tracker2.nlinks == 1748
+    assert tracker2.nlinks == 1518
 
 
 def test_tracker_postprocess_writes_through_store(cavity_orig_workdir, monkeypatch):

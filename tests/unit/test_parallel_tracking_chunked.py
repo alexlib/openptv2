@@ -101,7 +101,7 @@ def test_chunked_tracking_cavity_parity_store(cavity_test_env):
     serial_npart = serial_tracker.npart
     serial_nlinks = serial_tracker.nlinks
     assert serial_npart == 2082
-    assert serial_nlinks == 1748
+    assert serial_nlinks == 1518
 
     # 2. Parallel Chunked Tracking (2 workers on 4 frames)
     parallel_store = RunStore("res/parallel_run.zarr", mode="w")
