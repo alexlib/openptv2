@@ -237,6 +237,18 @@ def run_batch(
             print(f"Running tracking plugin: {tracking_plugin}")
             run_tracking_plugin(tracking_plugin, proc_exp, plugins_dir)
 
+            # Seal: walk linkage -> trajectories/ cache
+            try:
+                from openptv2.storage import RunStore
+                from openptv2.storage.seal import seal
+                zarr_path = Path.cwd() / "res" / "run.zarr"
+                if zarr_path.exists():
+                    store = RunStore(zarr_path, mode="a")
+                    info = seal(store)
+                    print(f"Sealed: {info}")
+            except Exception as exc:
+                print(f"Warning: seal failed: {exc}")
+
         print("Batch processing completed successfully")
 
     except Exception as e:
