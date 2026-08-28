@@ -24,8 +24,8 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    import numpy as np
     import matplotlib.pyplot as plt
+    import numpy as np
 
     return mo, np, plt
 
@@ -163,8 +163,9 @@ def _(
     zoom_ui,
 ):
 
-    from openptv2.algorithms.segmentation import targ_rec
     from matplotlib.patches import Rectangle
+
+    from openptv2.algorithms.segmentation import targ_rec
 
     _ = gvthres_uis[cam_idx].value
     _ = discont_ui.value

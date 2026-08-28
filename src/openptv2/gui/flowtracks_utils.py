@@ -1,4 +1,3 @@
-from pathlib import Path
 
 import numpy as np
 from flowtracks.io import trajectories_ptvis  # Expose for testing/monkeypatching

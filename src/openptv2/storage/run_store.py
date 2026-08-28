@@ -514,7 +514,6 @@ class RunStore:
 
     def write_unified_table(self, table) -> None:
         """Write a UnifiedParticleTable to zarr under ``particle_table/``."""
-        from openptv2.storage.unified_table import UnifiedParticleTable
         grp = _require_group(self.root, "particle_table")
         d = table.to_dict()
         for key, val in d.items():

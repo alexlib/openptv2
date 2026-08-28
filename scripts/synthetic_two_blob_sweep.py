@@ -7,8 +7,8 @@ exactly where the two diverge on "is this 1 blob or 2".
 See docs/plans/2026-08-27-verified-pipeline-ghost-particle-study-plan.md,
 Phase 1 step 4 (revised approach).
 """
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import numpy as np
 
