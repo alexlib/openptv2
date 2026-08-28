@@ -258,28 +258,27 @@ class Tracking:
                 tracker.full_forward()
                 return
 
-        frames = sorted(store.frames())
-        # Only process the first contiguous block (avoid mixing different runs)
-        if len(frames) > 1:
-            contiguous = [frames[0]]
-            for i in range(1, len(frames)):
-                if frames[i] == contiguous[-1] + 1:
-                    contiguous.append(frames[i])
-                else:
-                    break
-            frames = contiguous
-
-        # If linkage exists, only process frames that don't yet have linkage
+        # Use linkage frames as source of truth (batch runner sets these)
         if "linkage/ptv_is" in store.root:
-            existing = set(
+            frames = sorted(
                 int(k.split("_", 1)[1])
                 for k in store.root["linkage/ptv_is"].keys()
                 if k.startswith("frame_")
             )
-            frames = [f for f in frames if f not in existing]
             if not frames:
-                print("TwoPhaseTracker: all frames already linked, nothing to do.")
+                print("TwoPhaseTracker: no linkage frames found, nothing to do.")
                 return
+        else:
+            frames = sorted(store.frames())
+            # Only process the first contiguous block
+            if len(frames) > 1:
+                contiguous = [frames[0]]
+                for i in range(1, len(frames)):
+                    if frames[i] == contiguous[-1] + 1:
+                        contiguous.append(frames[i])
+                    else:
+                        break
+                frames = contiguous
         # Infer num_cams from correspondences shape: (N, 3+C) where C = num_cams
         first_frame = frames[0]
         corr_shape = store.root[f"correspondences/frame_{first_frame:06d}"].shape
