@@ -268,6 +268,18 @@ class Tracking:
                 else:
                     break
             frames = contiguous
+
+        # If linkage exists, only process frames that don't yet have linkage
+        if "linkage/ptv_is" in store.root:
+            existing = set(
+                int(k.split("_", 1)[1])
+                for k in store.root["linkage/ptv_is"].keys()
+                if k.startswith("frame_")
+            )
+            frames = [f for f in frames if f not in existing]
+            if not frames:
+                print("TwoPhaseTracker: all frames already linked, nothing to do.")
+                return
         # Infer num_cams from correspondences shape: (N, 3+C) where C = num_cams
         first_frame = frames[0]
         corr_shape = store.root[f"correspondences/frame_{first_frame:06d}"].shape

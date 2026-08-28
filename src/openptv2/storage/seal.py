@@ -70,11 +70,13 @@ def needs_reseal(store: RunStore, name: str = "ptv_is") -> bool:
     return store.root["meta"].attrs.get("source_hash") != compute_source_hash(store, name)
 
 
-def seal(store: RunStore, name: str = "ptv_is", force: bool = False) -> dict:
+def seal(store: RunStore, name: str = "ptv_is", force: bool = False, min_length: int = 1) -> dict:
     """Run the seal pass. Returns a small summary dict.
 
     ``name`` selects which linkage stream is the trajectory backbone
     (``"ptv_is"`` by default; pass ``"added"`` for the second tracking pass).
+
+    ``min_length``: discard trajectories shorter than this many frames.
     """
     if f"linkage/{name}" not in store.root:
         raise RunStoreError(f"No linkage '{name}' to seal.")
@@ -184,7 +186,8 @@ def seal(store: RunStore, name: str = "ptv_is", force: bool = False) -> dict:
     first_time = time_all[first_idx].astype(np.int32)
 
     store.write_traj_index(
-        unique_ids.astype(np.int32), first_time, last_time, counts.astype(np.int32)
+        unique_ids.astype(np.int32), first_time, last_time, counts.astype(np.int32),
+        first_row=first_idx.astype(np.int64),
     )
 
     vel = np.zeros_like(pos_all)
