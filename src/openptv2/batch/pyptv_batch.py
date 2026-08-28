@@ -247,7 +247,10 @@ def run_batch(
                 zarr_path = Path.cwd() / "res" / "run.zarr"
                 if zarr_path.exists():
                     store = RunStore(zarr_path, mode="a")
-                    info = seal(store)
+                    # Read min_length from YAML tracking params
+                    _track_cfg = proc_exp.pm.parameters.get("tracking", proc_exp.pm.parameters.get("track", {}))
+                    _min_length = int(_track_cfg.get("min_trajectory_length", 5))
+                    info = seal(store, min_length=_min_length)
                     print(f"Sealed: {info}")
             except Exception as exc:
                 print(f"Warning: seal failed: {exc}")

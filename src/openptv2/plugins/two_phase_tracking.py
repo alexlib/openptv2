@@ -258,27 +258,18 @@ class Tracking:
                 tracker.full_forward()
                 return
 
-        # Use linkage frames as source of truth (batch runner sets these)
-        if "linkage/ptv_is" in store.root:
-            frames = sorted(
-                int(k.split("_", 1)[1])
-                for k in store.root["linkage/ptv_is"].keys()
-                if k.startswith("frame_")
-            )
-            if not frames:
-                print("TwoPhaseTracker: no linkage frames found, nothing to do.")
-                return
-        else:
-            frames = sorted(store.frames())
-            # Only process the first contiguous block
-            if len(frames) > 1:
-                contiguous = [frames[0]]
-                for i in range(1, len(frames)):
-                    if frames[i] == contiguous[-1] + 1:
-                        contiguous.append(frames[i])
-                    else:
-                        break
-                frames = contiguous
+        frames = sorted(store.frames())
+
+        # Only process the first contiguous block
+        if len(frames) > 1:
+            contiguous = [frames[0]]
+            for i in range(1, len(frames)):
+                if frames[i] == contiguous[-1] + 1:
+                    contiguous.append(frames[i])
+                else:
+                    break
+            frames = contiguous
+
         if not frames:
             print("TwoPhaseTracker: no frames to process, falling back to default tracker.")
             tracker = self.ptv.py_trackcorr_init(self.exp)
