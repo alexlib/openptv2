@@ -1,179 +1,109 @@
-# Zarr + HDF5 Storage Guide in OpenPTV2
+# Zarr Storage Guide in OpenPTV2
 
-OpenPTV2 includes a high-performance **Zarr + HDF5 Storage System** (`openptv2.storage.ZarrFrameStore`). This system replaces legacy per-frame ASCII text files (`*_targets`, `rt_is.*`, `ptv_is.*`, `added.*`) with a single, highly compressed, cloud-native Zarr dataset (`res/run.zarr`).
+OpenPTV2 uses a single **Zarr v3 store** `res/run.zarr` (`openptv2.storage.RunStore`, `openptv2.storage.ZarrFrameStore`) as the sole database for 2D targets, 3D correspondences, linkage, and trajectories. Legacy per-frame ASCII files (`*_targets`, `rt_is.*`, `ptv_is.*`) are **not written**.
 
 ---
 
-## Why Zarr + HDF5?
+## Why Zarr?
 
-- **Eliminates File System Bottlenecks**: High-frame-rate, multi-camera PTV experiments typically produce tens of thousands of small text files. Zarr consolidates everything into a clean chunked store.
-- **Cloud & Cluster Parallelism**: Multiple parallel worker processes or cloud nodes (e.g., AWS Lambda, GCP Cloud Run) can process different frames and write to distinct chunk keys simultaneously without file locking or storage contention.
-- **Flowtracks & HDF5 Native Bridge**: Direct export to Flowtracks-compliant HDF5 files (`.h5`) for 3D Lagrangian trajectory analysis, turbulence statistics, and ParaView exports.
-- **Transparent ASCII Inspection**: Built-in CLI and Python inspectors allow humans to view binary Zarr frame data formatted as traditional ASCII text at any time.
+- **Single store** replaces tens of thousands of text files — chunked, compressed, cloud-native.
+- **Parallelism** — workers write distinct `frame_*` keys without file locking.
+- **Flowtracks bridge** — `trajectories/` layout matches `flowtracks.ZarrScene` / `openptv2.storage.seal` output.
 
 ---
 
 ## Data Architecture inside `res/run.zarr`
 
-Inside a `.zarr` directory (e.g., `res/run.zarr`), data is organized into logical subgroups:
-
-| Zarr Path / Group | Legacy Text Equivalent | Description |
+| Zarr Path | Legacy Equivalent | Description |
 | :--- | :--- | :--- |
-| `targets/cam_<idx>/frame_<num>` | `cam1.10000_targets` | 2D detected targets per camera ($x, y, n, nx, ny, \text{sumg}, \text{tnr}$). |
-| `correspondences/frame_<num>` | `res/rt_is.10000` | 3D stereo-matched particle coordinates ($x, y, z$ in mm) and camera target IDs. |
-| `linkage/ptv_is/frame_<num>` | `res/ptv_is.10000` | 3D particle tracking linkage links ($\text{prev}, \text{next}, x, y, z$). |
-| `linkage/added/frame_<num>` | `res/added.10000` | Multi-pass tracking added particle linkages ($\text{prev}, \text{next}, x, y, z$). |
-| `trajectories/` | Flowtracks dataset | Consolidated particle tracks ($\text{pos}, \text{vel}, \text{acc}, \text{frame}, \text{trajid}$). |
+| `targets/cam_<c>/frame_<n>` | `cam1.10000_targets` | 2D targets per camera `(x,y,n,nx,ny,sumg)` |
+| `correspondences/frame_<n>` | `res/rt_is.10000` | 3D positions `(x,y,z [mm], cam_ids)` — `(N,3+C)` |
+| `linkage/ptv_is/frame_<n>/{prev,next,pos}` | `res/ptv_is.10000` | Linkage: `prev/next` (int32, -1=none) + `pos` (m) per particle |
+| `linkage/added/frame_<n>/{prev,next,pos}` | `res/added.10000` | Second pass (unused by default) |
+| `trajectories/{pos,vel,accel,time,trajid}` | Flowtracks | **Flat cache** — `pos` in **meters** (`mm*1e-3`), sorted by `(trajid,time)` (`run_store.py:530`) |
+| `traj/{trajid,first,last,length,first_row}` | — | **Index** — per-trajectory summary, `first_row` = row offset in `trajectories/pos` (`run_store.py:480`) |
+| `meta/{sealed,source_hash}` | — | Seal provenance; `sealed=False` before `seal()` |
 
----
+Example (`run.zarr` with `seal(min_length=5)`): 5005 frames → `trajectories` 5,791,200 rows, `traj` 301,733 entries (median 10, mean 19.2).
 
-## Storage Modes (`OPENPTV_STORAGE`)
-
-You can control storage behavior using the `OPENPTV_STORAGE` environment variable:
-
-```bash
-export OPENPTV_STORAGE=zarr        # DEFAULT mode
-export OPENPTV_STORAGE=zarr_only   # High-performance cloud mode
-export OPENPTV_STORAGE=legacy      # Legacy text-file-only mode
-```
-
-### Mode Comparison
-
-1. **`zarr` (DEFAULT)**:
-   - Writes all targets, correspondences, and tracking linkages to `res/run.zarr`.
-   - **Dual-writes** legacy text files to disk so existing legacy tools, scripts, and tests continue to work without modification.
-
-2. **`zarr_only` (Cloud Mode)**:
-   - Writes **ONLY** to `res/run.zarr`.
-   - **Creates 0 text files on disk**, completely eliminating disk write I/O overhead. Ideal for distributed cloud workflows (`openptv-cloud`).
-
-3. **`legacy`**:
-   - Writes only legacy ASCII text files (`*_targets`, `rt_is.*`, `ptv_is.*`).
-
----
-
-## How to Inspect & "Peek In" Data
-
-### 1. Terminal Inspector Tool (CLI)
-
-You do not need to write Python code to view frame data inside `res/run.zarr`. Use the built-in CLI inspector:
-
-```bash
-# View 2D targets for Camera 0 at Frame 10000
-uv run python -m openptv2.storage.zarr_store res/run.zarr --frame 10000 --type targets --cam 0
-
-# View 3D correspondences (rt_is) at Frame 10000
-uv run python -m openptv2.storage.zarr_store res/run.zarr --frame 10000 --type rt_is
-
-# View 3D tracking links (ptv_is) at Frame 10000
-uv run python -m openptv2.storage.zarr_store res/run.zarr --frame 10000 --type ptv_is
-
-# View added particles from multi-pass tracking at Frame 10000
-uv run python -m openptv2.storage.zarr_store res/run.zarr --frame 10000 --type added
-```
-
-#### Example Output (`rt_is` inspection):
-```
-12
-   0   -12.450    34.120   120.450    1    3    0   -1
-   1    45.120   -10.330   118.900    2    1    5    4
-...
-```
-
----
-
-### 2. Python Inspection API (`ZarrFrameStore`)
-
-In Python, print or format any frame directly:
+### Seal: Linkage → Flat Cache
 
 ```python
-from openptv2.storage import ZarrFrameStore
-
-store = ZarrFrameStore("res/run.zarr", mode="r")
-
-# Print 3D correspondences directly to console in legacy ASCII format
-store.dump_frame_text(frame=10000, dataset_type="rt_is")
-
-# Print 2D targets for camera 0
-store.dump_frame_text(frame=10000, dataset_type="targets", cam_idx=0)
-
-# Get the formatted text as a string
-text_str = store.export_frame_text(frame=10000, dataset_type="ptv_is")
+from openptv2.storage import RunStore
+from openptv2.storage.seal import seal  # seal.py:73
+store = RunStore("res/run.zarr", mode="a")
+seal(store, min_length=5)  # walks linkage, assigns trajid, writes traj+trajectories
+# Batch does this automatically after tracking: batch/pyptv_batch.py:246
 ```
+
+- Filters `length < min_length` *before* writing; `n_dropped` in return.
+- `source_hash` memoizes — skips if linkage unchanged.
+- `first_row` enables `pos[lo:hi]` without loading 66 MB `trajid` + `searchsorted` (`notebooks/marimo_trajectory_viewer.py:33`).
 
 ---
 
-### 3. Direct NumPy / Zarr Tree Access
+## Inspecting Data
 
-Access raw arrays directly for custom analysis or inspect the tree structure:
+### 1. Python `zarr` API (recommended)
 
 ```python
-import zarr
-
-root = zarr.open("res/run.zarr", mode="r")
-
-# Print directory hierarchy
+import zarr, numpy as np
+root = zarr.open_group("res/run.zarr", mode="r")
 print(root.tree())
 
-# Read 3D particle positions as a NumPy array (N, 3)
-pos_3d = root["correspondences/frame_10000/pos"][:]
-print("Frame 10000 3D positions shape:", pos_3d.shape)
+# Flat trajectories — top 100 longest without loading 135 MB
+traj = root["traj"]; tid = np.asarray(traj["trajid"]); ln = np.asarray(traj["length"]); fr = np.asarray(traj["first_row"])
+order = np.argsort(ln)[::-1][:100]
+for tid_i, fr_i, ln_i in zip(tid[order], fr[order], ln[order]):
+    pts = np.asarray(root["trajectories/pos"][fr_i:fr_i+ln_i])  # [m]
+
+# Per-frame linkage
+prev, nxt, pos = np.asarray(root["linkage/ptv_is/frame_000001/prev"]), np.asarray(root["linkage/ptv_is/frame_000001/next"]), np.asarray(root["linkage/ptv_is/frame_000001/pos"])
 ```
 
----
-
-### 4. Flowtracks HDF5 Export
-
-Export full trajectory datasets directly to Flowtracks-compliant HDF5 files (converting coordinates from mm to meters):
+### 2. `ZarrFrameStore` helpers
 
 ```python
 from openptv2.storage import ZarrFrameStore
-
 store = ZarrFrameStore("res/run.zarr", mode="r")
-store.to_flowtracks_h5("res/trajectories.h5")
+store.dump_frame_text(frame=10000, dataset_type="rt_is")  # legacy ASCII view
 ```
 
----
-
-## Running Batch Processing in Zarr Mode
-
-To run batch sequence processing in Zarr mode from Python or CLI:
+### 3. CLI (if installed)
 
 ```bash
-# Enable multi-process target detection + Zarr storage
-export OPENPTV_PARALLEL_PREPROCESS=True
-export OPENPTV_STORAGE=zarr_only
-
-# Run batch sequence
-pyptv_batch tests/test_cavity/parameters_Run1.yaml 10000 10004
+uv run python -m openptv2.storage.zarr_store res/run.zarr --frame 10000 --type rt_is
 ```
 
-Or from Python API:
+### 4. Copying Trajectories Only (Dropbox)
 
-```python
-import os
-from openptv2.batch.pyptv_batch import main
-
-os.environ["OPENPTV_STORAGE"] = "zarr_only"
-main("tests/test_cavity/parameters_Run1.yaml", 10000, 10004)
+```bash
+# Standalone zarrs (137 MB vs 1637 MB full store)
+uv run python C:/Users/alex/Downloads/TT13_aorta/wp1/copy_trajectories.py --include-traj --overwrite --verify
+# Creates trajectories.zarr (135 MB) + traj.zarr (1.9 MB) — filesystem copy of run.zarr subgroups
 ```
 
 ---
 
-## Chunked Image Input Store (`res/images.zarr`) for Batch & Cloud Performance
+## Batch Processing with Zarr
 
-To maximize local batch and cloud worker throughput, OpenPTV2 supports reading raw camera frames directly from a **chunked Zstandard Zarr image store (`res/images.zarr`)**:
+```bash
+uv run openptv2-batch <exp_or_yaml> <first> <last> --mode both
+uv run openptv2-batch <exp> 1 50 --mode tracking --tracking-plugin two_phase --output bench_two_phase.zarr  # preserves run.zarr
+```
 
-### Dual Image Access Architecture
+From Python: `from openptv2.batch.pyptv_batch import main; main(yaml, 1, 5005, mode="tracking", output="bench.zarr")` (`batch/pyptv_batch.py:264`)
 
-1. **Interactive GUI / PyPTV Mode**:
-   When `res/images.zarr` is absent, OpenPTV2 reads loose `.tif` files directly from `img/` as usual.
+---
 
-2. **Batch & Cloud Performance Mode**:
-   When `res/images.zarr` exists (generated by `convert_to_zarr.py`), `openptv2` reads image frames directly from `res/images.zarr` in memory.
+## Chunked Images (`res/images.zarr`) — Optional
 
-### Key Performance Benefits
-- **Zero Disk TIFF Calls**: Bypasses loose file IO and format string parsing.
-- **78% Storage Compression**: Reduces raw image payload from 5.0 GB down to ~1.2 GB with Blosc Zstd compression.
-- **Container RAM Optimization**: Loads 50-frame chunks on demand (~12 MB RAM), preventing container RAM Out-of-Memory (`exit 137`) errors on GCP Cloud Run.
+When `res/images.zarr` exists (Zstd, ~1.2 GB vs 5 GB TIFF), batch reads frames from zarr chunks instead of `img/*.tif` — zero TIFF I/O, lower RAM. GUI falls back to `img/` if absent.
 
+---
+
+## Migration Notes
+
+- **HDF5 / `OPENPTV_STORAGE` env** removed — single `res/run.zarr` is the only store.
+- **Text files** not written; use `zarr` API or `ZarrFrameStore.export_frame_text` for ASCII.
+- **Units**: `correspondences/linkage pos` in mm; `trajectories/pos` in meters (flowtracks convention).

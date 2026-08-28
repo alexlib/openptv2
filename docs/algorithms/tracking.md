@@ -209,6 +209,20 @@ track3d.c:  track3d step: 10001, curr: 1, next: 1, links: 0
 
 ---
 
+## Seal: Linkage → Flat Trajectories (`src/openptv2/storage/seal.py:73`)
+
+Tracking writes per-frame `linkage/ptv_is/frame_*/{prev,next,pos}` (`RunStore.write_linkage`, `run_store.py:364`). `seal()` materializes the flat cache:
+
+1. Walks `linkage` with `history` window (`seal.py:92`) to resolve `prev` (gap-bridging `MAX_LINK_STEP`), assigns contiguous `trajid`, handles multi-claim disambiguation.
+2. Concatenates all frames, `lexsort` by `(trajid,time)`, `np.unique` to get `trajid/length/first_row` (`seal.py:179`).
+3. Filters `length < min_trajectory_length` (default 5 from `track.min_trajectory_length`, `batch/pyptv_batch.py:246`) before writing.
+4. Writes `trajectories/{pos,vel,accel,time,trajid}` (`run_store.py:530`, `pos` in meters) + `traj/{trajid,length,first,last,first_row}` (`run_store.py:480`).
+5. Memoizes via `source_hash` — skips if linkage unchanged unless `force=True`; sets `meta/sealed`.
+
+`traj/first_row` enables O(1) `pos[lo:hi]` without loading 66 MB `trajid` (`notebooks/marimo_trajectory_viewer.py:33`). `copy_trajectories.py` filesystem-copies `run.zarr/traj` → `traj.zarr` and `run.zarr/trajectories` → `trajectories.zarr`.
+
+---
+
 ## When to Use Which
 
 | Scenario | Use |
