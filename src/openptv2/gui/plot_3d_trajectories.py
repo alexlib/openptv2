@@ -202,8 +202,10 @@ def create_3d_trajectories_panel(
         effective_last = first_frame + 49
 
     trajectories = []
-    zarr_store = Path(exp_path) / "res" / "run.zarr"
-    if zarr_store.exists():
+    from openptv2.storage import find_existing_store
+
+    zarr_store = find_existing_store(exp_path)
+    if zarr_store is not None:
         try:
             from openptv2.storage import RunStore
 

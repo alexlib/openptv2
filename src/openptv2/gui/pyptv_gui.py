@@ -896,9 +896,11 @@ class TreeMenuHandler(Handler):
         ):
             frame = ptv._extract_frame_num(ptv_params["img_name"][0])
 
+        from openptv2.storage import find_existing_store
+
         rt_is_path = Path(mainGui.exp_path) / "res" / f"rt_is.{frame}"
-        zarr_store = Path(mainGui.exp_path) / "res" / "run.zarr"
-        if not rt_is_path.exists() and not zarr_store.exists():
+        zarr_store = find_existing_store(mainGui.exp_path)
+        if not rt_is_path.exists() and zarr_store is None:
             warning(
                 info.ui.control,
                 f"No 3D positions found for frame {frame}.\n\n"
@@ -936,10 +938,12 @@ class TreeMenuHandler(Handler):
         seq_first = seq_params["first"]
         seq_last = seq_params["last"]
 
+        from openptv2.storage import find_existing_store
+
         res_dir = Path(mainGui.exp_path) / "res"
         ptv_is_files = list(res_dir.glob("ptv_is.*"))
-        zarr_store = res_dir / "run.zarr"
-        if not ptv_is_files and not zarr_store.exists():
+        zarr_store = find_existing_store(mainGui.exp_path)
+        if not ptv_is_files and zarr_store is None:
             warning(
                 info.ui.control,
                 f"No 3D trajectory files (ptv_is.* or run.zarr) found in {res_dir}.\n\n"

@@ -1788,13 +1788,13 @@ def _read_correspondences_from_zarr_fallback(p: Path, frame: int):
     Returns the parsed [x, y, z, p1, p2, p3, p4] rows on success, or None if
     no candidate store has this frame (falls back to the ascii rt_is file).
     """
-    from openptv2.storage import ZarrFrameStore
+    from openptv2.storage import ZarrFrameStore, find_existing_store
 
-    zarr_candidates = [
-        p.parent / "run.zarr",
-        p.parent / "targets.zarr",
-        p.parent.parent / "res" / "run.zarr",
-    ]
+    exp_root = p.parent.parent
+    zarr_store = find_existing_store(exp_root)
+    zarr_candidates = [p.parent / "targets.zarr"]
+    if zarr_store is not None:
+        zarr_candidates.insert(0, zarr_store)
     for zpath in zarr_candidates:
         if not zpath.exists():
             continue
