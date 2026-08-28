@@ -240,7 +240,6 @@ class Tracking:
         leaf_weight = float(track_cfg.get("leaf_weight", 1.0))
         v_max = float(track_cfg.get("dvxmax", 15.5))
 
-        # Find the zarr store: try _store first, then look in cwd/res/run.zarr
         store = getattr(self.exp, "_store", None)
         if store is None:
             from openptv2.storage import RunStore
@@ -259,6 +258,26 @@ class Tracking:
                 return
 
         frames = sorted(store.frames())
+
+        # Honor batch requested range if available via exp.spar
+        _seq_first = _seq_last = None
+        _spar = getattr(self.exp, "spar", None) or getattr(self.exp, "seq_par", None)
+        if _spar is not None:
+            try:
+                _seq_first = int(_spar.get_first())
+                _seq_last = int(_spar.get_last())
+            except Exception:
+                try:
+                    _seq_first = int(getattr(_spar, "first"))
+                    _seq_last = int(getattr(_spar, "last"))
+                except Exception:
+                    pass
+        if _seq_first is None:
+            _seq_cfg = pm.parameters.get("sequence", {}) if pm else {}
+            if "first" in _seq_cfg and "last" in _seq_cfg:
+                _seq_first, _seq_last = int(_seq_cfg["first"]), int(_seq_cfg["last"])
+        if _seq_first is not None and _seq_last is not None:
+            frames = [f for f in frames if _seq_first <= f <= _seq_last]
 
         # Only process the first contiguous block
         if len(frames) > 1:
@@ -304,6 +323,19 @@ class Tracking:
         cfg = TwoPhaseTrackerConfig(v_max=v_max, leaf_weight=leaf_weight)
         tracker = TwoPhaseTracker(cfg)
         links = tracker.track_frames(frame_particles, frame_leaves)
+
+        # Per-step progress like trackcorr (track3d step: curr/next/links)
+        from collections import Counter
+        _cnt = Counter(t0 for t0, _, _, _ in links)
+        for _i in range(len(frames) - 1):
+            _curr = len(frame_particles[_i])
+            _nxt = len(frame_particles[_i + 1])
+            _links = _cnt.get(_i, 0)
+            print(f"two_phase step: {frames[_i]}, curr: {_curr}, next: {_nxt}, links: {_links}")
+        if frames:
+            _avg_parts = sum(len(p) for p in frame_particles) / len(frame_particles)
+            _avg_links = len(links) / max(len(frames) - 1, 1)
+            print(f"Average over sequence, particles: {_avg_parts:.1f}, links: {_avg_links:.1f}, lost: {_avg_parts - _avg_links:.1f}")
 
         # Build prev/next arrays per frame from links
         from collections import defaultdict
