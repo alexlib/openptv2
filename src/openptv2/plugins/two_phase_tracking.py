@@ -297,54 +297,26 @@ class Tracking:
         tracker = TwoPhaseTracker(cfg)
         links = tracker.track_frames(frame_particles, frame_leaves)
 
-        # Collect changes per frame
+        # Build prev/next arrays per frame from links
         from collections import defaultdict
-        nxt_changes = defaultdict(dict)
-        prev_changes = defaultdict(dict)
+        nxt_map = defaultdict(lambda: defaultdict(lambda: -1))
+        prv_map = defaultdict(lambda: defaultdict(lambda: -1))
         for t0, p0, t1, p1 in links:
-            f0 = frames[t0]
-            f1 = frames[t1]
-            nxt_changes[f0][p0] = p1
-            prev_changes[f1][p1] = p0
+            f0, f1 = frames[t0], frames[t1]
+            nxt_map[f0][p0] = p1
+            prv_map[f1][p1] = p0
 
-        # Read all linkage arrays into memory, then close store before writing
-        import gc
-        arr_cache = {}
-        for f in frames:
-            for key_name, changes in [("next", nxt_changes), ("prev", prev_changes)]:
-                if f in changes:
-                    zarr_key = f"linkage/ptv_is/frame_{f:06d}/{key_name}"
-                    if zarr_key in store.root:
-                        arr_cache[zarr_key] = np.array(store.root[zarr_key])
-
-        # Drop all zarr references to release file handles
-        store_path = store.store_path
-        del store
-        gc.collect()
-
-        # Apply changes to cached arrays
-        for f, chg in nxt_changes.items():
-            k = f"linkage/ptv_is/frame_{f:06d}/next"
-            if k in arr_cache:
-                sz = len(arr_cache[k])
-                for p0, p1 in chg.items():
-                    if p0 < sz and p1 < sz:
-                        arr_cache[k][p0] = p1
-        for f, chg in prev_changes.items():
-            k = f"linkage/ptv_is/frame_{f:06d}/prev"
-            if k in arr_cache:
-                sz = len(arr_cache[k])
-                for p1, p0 in chg.items():
-                    if p1 < sz and p0 < sz:
-                        arr_cache[k][p1] = p0
-
-        # Open fresh store and write
-        from openptv2.storage import RunStore
-        w_store = RunStore(store_path, mode="a")
-        for k, arr in arr_cache.items():
-            w_store.root[k][:] = arr
-        del w_store
-        gc.collect()
+        for i, f in enumerate(frames):
+            n = len(frame_particles[i])
+            nxt = np.full(n, -1, dtype=np.int32)
+            prv = np.full(n, -1, dtype=np.int32)
+            for p0, p1 in nxt_map[f].items():
+                if p0 < n and p1 < n:
+                    nxt[p0] = p1
+            for p1, p0 in prv_map[f].items():
+                if p1 < n and p0 < n:
+                    prv[p1] = p0
+            store.write_linkage(f, prv, nxt, frame_particles[i], name="ptv_is")
 
         print(
             f"TwoPhaseTracker: {len(links)} links across {len(frames)} frames "
