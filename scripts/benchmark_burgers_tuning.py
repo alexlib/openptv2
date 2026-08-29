@@ -4,12 +4,14 @@ Each tracker is swept over dvxmax/dacc/angle and ranked by long+ smooth:
 score = mean_len - 0.02*kurtosis .  Prints the best per tracker/dataset.
 """
 
-from pathlib import Path
 import time
-import pandas as pd
+from pathlib import Path
+
 import numpy as np
-from openptv2.benchmarking.runner import run_tracker
+import pandas as pd
+
 from openptv2.benchmarking.metrics import compute_physics_metrics
+from openptv2.benchmarking.runner import run_tracker
 from openptv2.tracking_registry import TRACKER_REGISTRY
 
 ALL_TRACKERS = [t for t in ["priority_segment_3d","4be","full_multipass","standard_forward","two_directional","nearest_hungarian_3d","predictive_gmm_3d","hybrid_deltat_3d","two_phase"] if t in TRACKER_REGISTRY]
