@@ -50,6 +50,7 @@ dependencies = [
     "pydantic-ai-slim>=2.34.0",
     "scikit-image>=0.20.0",
     "scipy>=1.10.0",
+    "xarray>=2024.0",
     "zarr>=2.16.0",
     "marimo>=0.24.0",
 ]

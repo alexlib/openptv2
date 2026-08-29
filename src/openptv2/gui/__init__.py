@@ -75,4 +75,8 @@ def __getattr__(name):
         from .__version__ import __version__
 
         return __version__
+    if name in gui_submodules:
+        return importlib.import_module(f"openptv2.gui.{name}")
+    if name in submodule_mapping:
+        return importlib.import_module(submodule_mapping[name])
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
