@@ -69,6 +69,7 @@ def build_3d_trajectories_figure(
         cmap = plt.cm.get_cmap("tab20")
 
     valid_trajs = []
+    all_pos = []
     for traj in trajectories:
         tid = getattr(traj, "trajid", lambda: 1)() if hasattr(traj, "trajid") else 1
         if callable(tid):
@@ -83,6 +84,7 @@ def build_3d_trajectories_figure(
         for idx, traj in enumerate(valid_trajs):
             pos = _extract_xyz_mm(traj)
             if pos.shape[0] > 0:
+                all_pos.append(pos)
                 t = None
                 if hasattr(traj, "time"):
                     try:
@@ -118,27 +120,39 @@ def build_3d_trajectories_figure(
                 color = cmap(idx % 20)
                 for seg in segments:
                     if seg.shape[0] > 0:
+                        # Default view (see ax.view_init below) puts mpl's
+                        # y-axis on our z (depth, near-camera = positive) and
+                        # mpl's z-axis on our y (vertical) -- feed the plot
+                        # accordingly: (x, z, y) not (x, y, z).
                         ax.plot(
                             seg[:, 0],
-                            seg[:, 1],
                             seg[:, 2],
+                            seg[:, 1],
                             linewidth=1.5,
                             color=color,
                             alpha=0.8,
                         )
 
-
-
     if bounds is not None:
         (xlo, xhi), (ylo, yhi), (zlo, zhi) = bounds
-        _draw_fov_box(ax, xlo, xhi, ylo, yhi, zlo, zhi)
+    elif all_pos:
+        pts = np.concatenate(all_pos, axis=0)
+        xlo, xhi = float(pts[:, 0].min()), float(pts[:, 0].max())
+        ylo, yhi = float(pts[:, 1].min()), float(pts[:, 1].max())
+        zlo, zhi = float(pts[:, 2].min()), float(pts[:, 2].max())
+    else:
+        xlo = xhi = ylo = yhi = zlo = zhi = None
+
+    if xlo is not None:
+        if bounds is not None:
+            _draw_fov_box(ax, xlo, xhi, zlo, zhi, ylo, yhi)
+            ax.legend(loc="upper left", fontsize=8)
         mx = (xhi - xlo) * 0.05 or 1.0
         my = (yhi - ylo) * 0.05 or 1.0
         mz = (zhi - zlo) * 0.05 or 1.0
         ax.set_xlim(xlo - mx, xhi + mx)
-        ax.set_ylim(ylo - my, yhi + my)
-        ax.set_zlim(zlo - mz, zhi + mz)
-        ax.legend(loc="upper left", fontsize=8)
+        ax.set_ylim(zlo - mz, zhi + mz)
+        ax.set_zlim(ylo - my, yhi + my)
 
     # Equal physical aspect: without this mpl stretches each axis to fill the
     # plot cube independently, which visually exaggerates z-motion in shallow
@@ -149,8 +163,12 @@ def build_3d_trajectories_figure(
     ax.set_box_aspect((xhi - xlo or 1.0, yhi - ylo or 1.0, zhi - zlo or 1.0))
 
     ax.set_xlabel("x (mm)")
-    ax.set_ylabel("y (mm)")
-    ax.set_zlabel("z (mm)")
+    ax.set_ylabel("z (mm)")
+    ax.set_zlabel("y (mm)")
+
+    # Default view: x left-right, y bottom-up, z close to camera = positive.
+    ax.view_init(elev=20, azim=100)
+    ax.invert_xaxis()
 
     if first_frame is not None and last_frame is not None:
         if total_frames_requested is not None and total_frames_requested > 50:

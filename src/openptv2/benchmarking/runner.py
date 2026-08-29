@@ -43,12 +43,12 @@ def _read_path_info(res_dir: str | Path, first: int, last: int, num_cams: int):
     list of dicts with keys 'prev' (list) and 'next' (list) aligning to each
     particle slot in that frame, plus 'x' (N,3) positions.
     """
-    from openptv2.storage import RunStore, RunStoreError, resolve_store_path
+    from openptv2.storage import RunStore, RunStoreError, find_existing_store
 
     store = None
     try:
-        store_path = resolve_store_path(res_dir)
-        if store_path.exists():
+        store_path = find_existing_store(res_dir)
+        if store_path is not None:
             store = RunStore(store_path, mode="r")
     except RunStoreError:
         store = None

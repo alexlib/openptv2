@@ -6,6 +6,7 @@
 #     "pandas",
 #     "matplotlib",
 #     "scipy",
+#     "openptv2==0.5.6",
 # ]
 # ///
 
@@ -17,16 +18,14 @@ app = marimo.App(width="medium")
 
 @app.cell
 def _():
-    import marimo as mo
-    import numpy as np
-    import pandas as pd
     import time
     from pathlib import Path
 
-    from openptv2.benchmarking.runner import run_tracker
+    import marimo as mo
+
     from openptv2.benchmarking.metrics import compute_physics_metrics
+    from openptv2.benchmarking.runner import run_tracker
     from openptv2.gui.plot_3d_trajectories import build_3d_trajectories_figure
-    import matplotlib.pyplot as plt
 
 
     return (
@@ -97,48 +96,103 @@ def _():
 
 @app.cell
 def _(mo):
-    last_clicked, set_last_clicked = mo.state((None, 0))
-    return
-
-
-@app.cell
-def _(mo):
     min_len_input = mo.ui.text(value="5", label="Min length to plot (frames)")
     min_len_input
     return (min_len_input,)
 
 
 @app.cell
-def _(
-    ALL_TRACKERS,
-    dataset_picker,
-    defaults_burgers,
-    defaults_cavity,
-    min_len_input,
-    mo,
-):
+def _(ALL_TRACKERS, dataset_picker, mo):
     is_burgers = "burgers" in dataset_picker.value
-    src = defaults_burgers if is_burgers else defaults_cavity
     mode_label = "Burgers (vortex)" if is_burgers else "test_cavity (sparse)"
-    uis = {}
-    _rows = []
 
-    for _name in ALL_TRACKERS:
-        _dv, _da, _ang = src[_name]
-        _dv_in = mo.ui.text(value=_dv, label="dvxmax")
-        _dacc_in = mo.ui.text(value=_da, label="dacc")
-        _ang_in = mo.ui.text(value=_ang, label="angle")
-        _btn = mo.ui.button(label=f"Run {_name}")
-        uis[_name] = {"dv": _dv_in, "dacc": _dacc_in, "ang": _ang_in, "btn": _btn}
-        _rows.append(mo.hstack([mo.md(f"**{_name}**"), _dv_in, _dacc_in, _ang_in, _btn], justify="start", gap=0.5))
-
-    panel = mo.vstack([mo.md(f"**Good params for {mode_label}** (edit, Run per tracker):"), mo.vstack(_rows, gap=0.5), mo.md(f"Filter ≥ {min_len_input.value} fr")], gap=0.4)
-    panel
-    return (uis,)
+    # Select the tracker first (own cell: its .value can't be read here)
+    tracker_dropdown = mo.ui.dropdown(
+        options=ALL_TRACKERS,
+        value=ALL_TRACKERS[0] if ALL_TRACKERS else "priority_segment_3d",
+        label="Select Tracker",
+    )
+    mo.vstack([mo.md(f"### {mode_label}"), tracker_dropdown], gap=0.5)
+    return is_burgers, tracker_dropdown
 
 
 @app.cell
-def _():
+def _(
+    defaults_burgers,
+    defaults_cavity,
+    is_burgers,
+    min_len_input,
+    mo,
+    tracker_dropdown,
+):
+    src = defaults_burgers if is_burgers else defaults_cavity
+
+    # Params for the selected tracker
+    selected_tracker = tracker_dropdown.value
+    _dv_def, _da_def, _ang_def = src.get(selected_tracker, ("2.0", "0.5", "60"))
+
+    dv_in = mo.ui.text(value=_dv_def, label="dvxmax")
+    dacc_in = mo.ui.text(value=_da_def, label="dacc")
+    ang_in = mo.ui.text(value=_ang_def, label="angle")
+
+    btn = mo.ui.run_button(label=f"Run {selected_tracker}", kind="success")
+
+    panel = mo.vstack([
+        mo.hstack([dv_in, dacc_in, ang_in, btn], justify="start", align="center", gap=1.0),
+        mo.md(f"Filter ≥ {min_len_input.value} fr")
+    ], gap=0.5)
+
+    panel
+    return ang_in, btn, dacc_in, dv_in, selected_tracker
+
+
+@app.cell
+def _(
+    ang_in,
+    btn,
+    dacc_in,
+    dataset_picker,
+    dv_in,
+    min_len_input,
+    mo,
+    parse_float,
+    resolve_dataset,
+    run_one,
+    selected_tracker,
+    tracks_to_plotly,
+):
+    yaml_path, dlabel = resolve_dataset(dataset_picker.value)
+    try:
+        min_len = int(min_len_input.value.strip())
+    except Exception:
+        min_len = 5
+
+    if btn.value:
+        _dv = parse_float(dv_in, 2.0)
+        _dacc = parse_float(dacc_in, 0.5)
+        _ang = parse_float(ang_in, 60.0)
+
+        _info = run_one(yaml_path, selected_tracker, _dv, _dacc, _ang)
+
+        if _info["error"]:
+            _result = mo.vstack([
+                mo.md(f"### {selected_tracker} — ERROR"),
+                mo.md(f"`{_info['error']}`")
+            ])
+        else:
+            _pm = _info["pm"]
+            _header = f"### {selected_tracker} — dv={_dv} dacc={_dacc} ang={_ang} → mean_len={_pm.mean_track_length:.2f} frac10={_pm.frac_tracks_over_10:.2f} kurt={_pm.acceleration_kurtosis:.1f} n={_pm.n_tracks} t={_info['time_s']}s"
+            _detail = f"Output: {dlabel} dv={_dv} dacc={_dacc} ang={_ang} tracks={_pm.n_tracks} mean={_pm.mean_track_length:.2f} plotted ≥{min_len}fr"
+            _fig = tracks_to_plotly(_info["pred"], f"{selected_tracker} {dlabel} ({len(_info['pred'])} tracks)", min_len=min_len)
+            _result = mo.vstack([
+                mo.md(_header),
+                mo.md(f"`{_detail}`"),
+                mo.mpl.interactive(_fig)
+            ], gap=0.5)
+    else:
+        _result = mo.md("_Select a tracker from the dropdown list, adjust parameters, and click **Run**._")
+
+    _result
     return
 
 
@@ -199,57 +253,6 @@ def _(
         print(f"[script] burgers {demo['pm'].mean_track_length if demo['pm'] else 'ERR'}")
         _script_demo=demo
     return parse_float, resolve_dataset, run_one, tracks_to_plotly
-
-
-@app.cell
-def _(
-    ALL_TRACKERS,
-    dataset_picker,
-    is_script,
-    last_clicked,
-    min_len_input,
-    mo,
-    parse_float,
-    resolve_dataset,
-    run_one,
-    tracks_to_plotly,
-    uis,
-):
-    yaml_path,dlabel = resolve_dataset(dataset_picker.value)
-    try:
-        min_len=int(min_len_input.value.strip())
-    except Exception:
-        min_len=5
-    _outputs=[]
-    _auto=is_script
-    _any_clicked=any(uis[_n]["btn"].value for _n in ALL_TRACKERS)
-    _show_demo=not _any_clicked
-    for _name in ALL_TRACKERS:
-        _ui=uis[_name]
-        _triggered=_auto or _ui["btn"].value or (_show_demo and _name==ALL_TRACKERS[0])
-        if _auto and _name!=ALL_TRACKERS[0]:
-            if _ui["btn"].value==0:
-                continue
-            _auto=False
-        if _show_demo and _name!=ALL_TRACKERS[0]:
-            continue
-        if not _triggered:
-            continue
-        if _auto:
-            _auto=False
-        _dv=parse_float(_ui["dv"],2.0); _dacc=parse_float(_ui["dacc"],0.5); _ang=parse_float(_ui["ang"],60)
-        _info=run_one(yaml_path,_name,_dv,_dacc,_ang)
-        if _info["error"]:
-            _outputs.append(mo.vstack([mo.md(f"### {_name} — ERROR"),mo.md(f"`{_info['error']}`")]))
-            continue
-        _pm=_info["pm"]
-        _header=f"### {_name} — dv={_dv} dacc={_dacc} ang={_ang} → mean_len={_pm.mean_track_length:.2f} frac10={_pm.frac_tracks_over_10:.2f} kurt={_pm.acceleration_kurtosis:.1f} n={_pm.n_tracks} t={_info['time_s']}s"
-        _detail=f"Output: {dlabel} dv={_dv} dacc={_dacc} ang={_ang} tracks={_pm.n_tracks} mean={_pm.mean_track_length:.2f} plotted ≥{min_len}fr"
-        _fig=tracks_to_plotly(_info["pred"],f"{_name} {dlabel} ({len(_info['pred'])} tracks)",min_len=min_len)
-        _outputs.append(mo.vstack([mo.md(_header),mo.md(f"`{_detail}`"),mo.mpl.interactive(_fig)],gap=0.5))
-    _result=mo.vstack([mo.md("_Edit text boxes, Run per tracker — 3D tight to cloud._"), mo.vstack(_outputs,gap=1) if _outputs else mo.md("*Press Run*")],gap=0.8)
-    _result
-    return
 
 
 @app.cell
