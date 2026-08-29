@@ -148,31 +148,39 @@ def _(Path, go, is_script, mo, np, pd, time):
             info = {"error": str(e)[:600], "pred": {}, "pm": None, "time_s": round(time.perf_counter()-t0,2)}
         return info
 
-    # script-mode smoke: one run without waiting for button
+    # script-mode: print to terminal and also keep for notebook display
+    _script_demo = None
     if is_script:
         yp,_ = resolve_dataset("burgers (5 frames, vortex)")
         demo = run_one(yp, "priority_segment_3d", 2.0, 0.5, 60)
-        print("[script] burgers priority_segment_3d:", demo["pm"].mean_track_length if demo["pm"] else demo["error"])
-    return Path, go, parse_float, resolve_dataset, run_one, tracks_to_plotly
+        _msg = f"[script] burgers priority_segment_3d: mean_len={demo['pm'].mean_track_length if demo['pm'] else 'ERR'}"
+        print(_msg)
+        _script_demo = demo
+    return Path, _script_demo, go, parse_float, resolve_dataset, run_one, tracks_to_plotly
 
 
 @app.cell
 def _(ALL_TRACKERS, Path, dataset_picker, go, is_script, mo, parse_float, resolve_dataset, run_one, tracks_to_plotly, uis):
-    # React to any Run button (or script auto-run for first tracker)
     yaml_path, dlabel = resolve_dataset(dataset_picker.value)
     _outputs = []
-    # In script mode, auto-run the first tracker so `uv run notebook.py` shows a plot
     _auto = is_script
+    _any_clicked = any(uis[_n]["btn"].value for _n in ALL_TRACKERS)
+    # Auto-demo in interactive too so user sees output immediately (then can tweak)
+    _show_demo = not _any_clicked
     for _name in ALL_TRACKERS:
         _ui = uis[_name]
-        _triggered = _auto or _ui["btn"].value
-        if _auto:
-            # only auto-run first tracker in script to keep <30s
-            if _name != ALL_TRACKERS[0]:
+        _triggered = _auto or _ui["btn"].value or (_show_demo and _name == ALL_TRACKERS[0])
+        if _auto and _name != ALL_TRACKERS[0]:
+            # script: only first tracker
+            if _ui["btn"].value == 0:
                 continue
-            _auto = False  # only once
+            _auto = False
+        if _show_demo and _name != ALL_TRACKERS[0]:
+            continue
         if not _triggered:
             continue
+        if _auto:
+            _auto = False
         _dv = parse_float(_ui["dv"], 2.0)
         _dacc = parse_float(_ui["dacc"], 0.5)
         _ang = parse_float(_ui["ang"], 60)
@@ -181,11 +189,16 @@ def _(ALL_TRACKERS, Path, dataset_picker, go, is_script, mo, parse_float, resolv
             _outputs.append(mo.vstack([mo.md(f"### {_name} — ERROR"), mo.md(f"`{_info['error']}`")]))
             continue
         _pm = _info["pm"]
+        # printed output in cell (header) + interactive 3D plot
         _header = f"### {_name} — dv={_dv} dacc={_dacc} ang={_ang} → mean_len={_pm.mean_track_length:.2f} frac10={_pm.frac_tracks_over_10:.2f} kurt={_pm.acceleration_kurtosis:.1f} n_tracks={_pm.n_tracks} t={_info['time_s']}s"
+        _detail = f"Output: tracker={_name}, dataset={dlabel}, dvxmax={_dv}, dacc={_dacc}, angle={_ang}, tracks={_pm.n_tracks}, mean_len={_pm.mean_track_length:.2f}, kurt={_pm.acceleration_kurtosis:.1f}"
         _fig = tracks_to_plotly(_info["pred"], f"{_name} {dlabel} ({len(_info['pred'])} tracks)")
-        _outputs.append(mo.vstack([mo.md(_header), _fig]))
+        _outputs.append(mo.vstack([mo.md(_header), mo.md(f"`{_detail}`"), _fig], gap=0.5))
 
-    _result = mo.md("_Edit dvxmax/dacc/angle in the text boxes above and press **Run** per tracker to see 3D trajectories. In script mode (`uv run notebook.py`) the first tracker auto-runs._") if not _outputs else mo.vstack(_outputs, gap=1)
+    _result = mo.vstack([
+        mo.md("_Edit **dvxmax/dacc/angle** in the **text boxes** above and press **Run** per tracker. The cell below prints the output and then shows the interactive 3D plot (Plotly, mouse-rotatable)."),
+        mo.vstack(_outputs, gap=1) if _outputs else mo.md("*No run yet — showing demo for first tracker above. Press any Run button to re-run with your edits.*")
+    ], gap=0.8)
     _result
     return
 
