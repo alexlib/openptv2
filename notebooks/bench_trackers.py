@@ -49,10 +49,13 @@ def _(mo):
 @app.cell
 def _(mo):
     mo.md("""
-    # Tracker Bench — Burgers / test_cavity / synthetic_turbulent_1k
+    # Tracker Bench
 
     Pick a **dataset**, then a **tracker**, then tune **dv / dacc / angle** and press **Run**.
-    Plot shows **only ≥ min_len** 3D trajectories with tight limits.
+    Plot shows **only ≥ min_len** 3D trajectories with tight limits. Sparse and
+    dense datasets share one flow: a few datasets have hand-tuned starting
+    params (table at the bottom); everything else starts from a generic
+    sparse/dense default and is meant to be dialed in with **Auto-tune** below.
 
     `proptv_500_25`/`_30` are **not** in this list: they have no calibration in
     this repo and aren't run through `run_tracker` at all — they're consumed
@@ -64,14 +67,28 @@ def _(mo):
 
 
 @app.cell
-def _(mo):
+def _():
+    # key -> (folder name under test_data/, display label, is_dense)
+    #
+    # test_data/synthetic, tracking_synthetic, and tracking_synthetic_dense
+    # are NOT here: their parameters_Run1.yaml is missing the `targ_rec`
+    # section py_start_proc_c requires (KeyError before tracking even
+    # starts) -- a real gap in those fixtures, not a param-tuning issue.
+    DATASET_REGISTRY = {
+        "burgers": ("burgers", "burgers (5 fr, sparse vortex)", False),
+        "test_cavity": ("test_cavity", "test_cavity (4 fr, sparse)", False),
+        "test_cavity_small": ("test_cavity_small", "test_cavity_small (5 fr, sparse)", False),
+        "synthetic_turbulent": ("synthetic_turbulent", "synthetic_turbulent (30 fr, dense)", True),
+        "synthetic_turbulent_1k": ("synthetic_turbulent_1k", "synthetic_turbulent_1k (10 of 20 fr, 1k/frame, dense)", True),
+    }
+    return (DATASET_REGISTRY,)
+
+
+@app.cell
+def _(DATASET_REGISTRY, mo):
     dataset_picker = mo.ui.dropdown(
-        options=[
-            "burgers (5 fr, vortex)",
-            "test_cavity (4 fr, sparse)",
-            "synthetic_turbulent_1k (10 fr, 1k/frame)",
-        ],
-        value="burgers (5 fr, vortex)",
+        options=[label for _folder, label, _dense in DATASET_REGISTRY.values()],
+        value=DATASET_REGISTRY["burgers"][1],
         label="Dataset",
     )
     dataset_picker
@@ -82,6 +99,11 @@ def _(mo):
 def _():
     from openptv2.tracking_registry import TRACKER_REGISTRY
     ALL_TRACKERS = [t for t in ["priority_segment_3d","4be","full_multipass","standard_forward","two_directional","nearest_hungarian_3d","predictive_gmm_3d","hybrid_deltat_3d","two_phase"] if t in TRACKER_REGISTRY]
+
+    # Hand-tuned starting points for a few datasets (from prior sweeps). Every
+    # other dataset falls back to FALLBACK_SPARSE / FALLBACK_DENSE by density
+    # (see DATASET_REGISTRY) -- a reasonable starting guess, refine with
+    # Auto-tune below rather than hand-tuning every dataset up front.
     defaults_burgers = {
         "priority_segment_3d": ("2.0","0.5","60"),
         "4be": ("2.0","0.5","60"),
@@ -115,7 +137,14 @@ def _():
         "hybrid_deltat_3d": ("8.0","0.8","60"),
         "two_phase": ("8.0","5.0","60"),
     }
-    return ALL_TRACKERS, defaults_1k, defaults_burgers, defaults_cavity
+    DEFAULT_PARAMS = {
+        "burgers": defaults_burgers,
+        "test_cavity": defaults_cavity,
+        "synthetic_turbulent_1k": defaults_1k,
+    }
+    FALLBACK_SPARSE = defaults_burgers
+    FALLBACK_DENSE = defaults_1k
+    return ALL_TRACKERS, DEFAULT_PARAMS, FALLBACK_DENSE, FALLBACK_SPARSE, defaults_1k, defaults_burgers, defaults_cavity
 
 
 @app.cell
@@ -126,16 +155,12 @@ def _(mo):
 
 
 @app.cell
-def _(ALL_TRACKERS, dataset_picker, mo):
-    if "burgers" in dataset_picker.value:
-        dataset_key = "burgers"
-        mode_label = "Burgers (vortex)"
-    elif "test_cavity" in dataset_picker.value:
-        dataset_key = "test_cavity"
-        mode_label = "test_cavity (sparse)"
-    else:
-        dataset_key = "synthetic_1k"
-        mode_label = "synthetic_turbulent_1k (dense)"
+def _(DATASET_REGISTRY, ALL_TRACKERS, dataset_picker, mo):
+    dataset_key = next(
+        key for key, (_folder, label, _dense) in DATASET_REGISTRY.items()
+        if label == dataset_picker.value
+    )
+    _folder, mode_label, is_dense = DATASET_REGISTRY[dataset_key]
 
     # Select the tracker first (own cell: its .value can't be read here)
     tracker_dropdown = mo.ui.dropdown(
@@ -144,20 +169,21 @@ def _(ALL_TRACKERS, dataset_picker, mo):
         label="Select Tracker",
     )
     mo.vstack([mo.md(f"### {mode_label}"), tracker_dropdown], gap=0.5)
-    return dataset_key, tracker_dropdown
+    return dataset_key, is_dense, tracker_dropdown
 
 
 @app.cell
 def _(
+    DEFAULT_PARAMS,
+    FALLBACK_DENSE,
+    FALLBACK_SPARSE,
     dataset_key,
-    defaults_1k,
-    defaults_burgers,
-    defaults_cavity,
+    is_dense,
     min_len_input,
     mo,
     tracker_dropdown,
 ):
-    src = {"burgers": defaults_burgers, "test_cavity": defaults_cavity, "synthetic_1k": defaults_1k}[dataset_key]
+    src = DEFAULT_PARAMS.get(dataset_key, FALLBACK_DENSE if is_dense else FALLBACK_SPARSE)
 
     # Params for the selected tracker
     selected_tracker = tracker_dropdown.value
@@ -303,6 +329,7 @@ def _(
 
 @app.cell
 def _(
+    DATASET_REGISTRY,
     Path,
     build_3d_trajectories_figure,
     compute_physics_metrics,
@@ -312,13 +339,11 @@ def _(
 ):
     def resolve_dataset(label):
         root = Path("test_data").resolve()
-        if "burgers" in label:
-            name = "burgers"
-        elif "test_cavity" in label:
-            name = "test_cavity"
-        else:
-            name = "synthetic_turbulent_1k"
-        return (root / name / "parameters_Run1.yaml").resolve(), name
+        folder = next(
+            (f for f, lbl, _dense in DATASET_REGISTRY.values() if lbl == label),
+            next(f for f, _lbl, _dense in DATASET_REGISTRY.values() if f in label),
+        )
+        return (root / folder / "parameters_Run1.yaml").resolve(), folder
 
     def parse_float(txt, default):
         try:
@@ -369,7 +394,12 @@ def _(ALL_TRACKERS, defaults_1k, defaults_burgers, defaults_cavity, mo):
     rows=[]
     for _n in ALL_TRACKERS:
         rows.append(f"| `{_n}` | {'/'.join(defaults_burgers[_n])} | {'/'.join(defaults_cavity[_n])} | {'/'.join(defaults_1k[_n])} |")
-    mo.md("**Good params kept in notebook** (auto-switch on Dataset):\n\n"+hdr+"\n".join(rows))
+    mo.md(
+        "**Hand-tuned starting params** (auto-switch on Dataset; every other "
+        "dataset falls back to the Burgers row if sparse or the "
+        "synthetic_1k row if dense -- use **Auto-tune** to refine):\n\n"
+        + hdr + "\n".join(rows)
+    )
     return
 
 
