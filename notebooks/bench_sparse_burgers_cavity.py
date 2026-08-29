@@ -47,9 +47,16 @@ def _(mo):
 @app.cell
 def _(mo):
     mo.md("""
-    # Sparse Bench — Burgers + test_cavity
+    # Tracker Bench — Burgers / test_cavity / synthetic_turbulent_1k
 
-    Tight, smooth, low-density. Text boxes (not sliders) per tracker + **Run** per tracker. Plot shows **only ≥ min_len** 3D trajectories with tight limits.
+    Pick a **dataset**, then a **tracker**, then tune **dv / dacc / angle** and press **Run**.
+    Plot shows **only ≥ min_len** 3D trajectories with tight limits.
+
+    `proptv_500_25`/`_30` are **not** in this list: they have no calibration in
+    this repo and aren't run through `run_tracker` at all — they're consumed
+    directly by `openptv2.plugins.proptv_tracking.ProPTVTracker` from
+    pre-triangulated 3D positions (`origin_*.txt`), a different tracker with a
+    different parameter surface (`Vmin`/`Vmax`/`maxvel`/... not dv/dacc/angle).
     """)
     return
 
@@ -57,9 +64,13 @@ def _(mo):
 @app.cell
 def _(mo):
     dataset_picker = mo.ui.dropdown(
-        options=["burgers (5 fr, vortex)", "test_cavity (4 fr, sparse)"],
+        options=[
+            "burgers (5 fr, vortex)",
+            "test_cavity (4 fr, sparse)",
+            "synthetic_turbulent_1k (10 fr, 1k/frame)",
+        ],
         value="burgers (5 fr, vortex)",
-        label="Sparse dataset",
+        label="Dataset",
     )
     dataset_picker
     return (dataset_picker,)
@@ -91,7 +102,18 @@ def _():
         "hybrid_deltat_3d": ("2.0","0.8","60"),
         "two_phase": ("2.0","0.8","60"),
     }
-    return ALL_TRACKERS, defaults_burgers, defaults_cavity
+    defaults_1k = {
+        "priority_segment_3d": ("10.0","5.0","120"),
+        "4be": ("10.0","5.0","120"),
+        "full_multipass": ("8.0","3.0","60"),
+        "standard_forward": ("8.0","3.0","60"),
+        "two_directional": ("8.0","3.0","60"),
+        "nearest_hungarian_3d": ("8.0","5.0","45"),
+        "predictive_gmm_3d": ("8.0","5.0","30"),
+        "hybrid_deltat_3d": ("8.0","0.8","60"),
+        "two_phase": ("8.0","5.0","60"),
+    }
+    return ALL_TRACKERS, defaults_1k, defaults_burgers, defaults_cavity
 
 
 @app.cell
@@ -103,8 +125,15 @@ def _(mo):
 
 @app.cell
 def _(ALL_TRACKERS, dataset_picker, mo):
-    is_burgers = "burgers" in dataset_picker.value
-    mode_label = "Burgers (vortex)" if is_burgers else "test_cavity (sparse)"
+    if "burgers" in dataset_picker.value:
+        dataset_key = "burgers"
+        mode_label = "Burgers (vortex)"
+    elif "test_cavity" in dataset_picker.value:
+        dataset_key = "test_cavity"
+        mode_label = "test_cavity (sparse)"
+    else:
+        dataset_key = "synthetic_1k"
+        mode_label = "synthetic_turbulent_1k (dense)"
 
     # Select the tracker first (own cell: its .value can't be read here)
     tracker_dropdown = mo.ui.dropdown(
@@ -113,19 +142,20 @@ def _(ALL_TRACKERS, dataset_picker, mo):
         label="Select Tracker",
     )
     mo.vstack([mo.md(f"### {mode_label}"), tracker_dropdown], gap=0.5)
-    return is_burgers, tracker_dropdown
+    return dataset_key, tracker_dropdown
 
 
 @app.cell
 def _(
+    dataset_key,
+    defaults_1k,
     defaults_burgers,
     defaults_cavity,
-    is_burgers,
     min_len_input,
     mo,
     tracker_dropdown,
 ):
-    src = defaults_burgers if is_burgers else defaults_cavity
+    src = {"burgers": defaults_burgers, "test_cavity": defaults_cavity, "synthetic_1k": defaults_1k}[dataset_key]
 
     # Params for the selected tracker
     selected_tracker = tracker_dropdown.value
@@ -208,9 +238,12 @@ def _(
     def resolve_dataset(label):
         root = Path("test_data").resolve()
         if "burgers" in label:
-            return (root / "burgers" / "parameters_Run1.yaml").resolve(), "burgers"
+            name = "burgers"
+        elif "test_cavity" in label:
+            name = "test_cavity"
         else:
-            return (root / "test_cavity" / "parameters_Run1.yaml").resolve(), "test_cavity"
+            name = "synthetic_turbulent_1k"
+        return (root / name / "parameters_Run1.yaml").resolve(), name
 
     def parse_float(txt, default):
         try:
@@ -256,11 +289,11 @@ def _(
 
 
 @app.cell
-def _(ALL_TRACKERS, defaults_burgers, defaults_cavity, mo):
-    hdr="| tracker | Burgers dv/dacc/ang | test_cavity dv/dacc/ang |\n|---|---|---|\n"
+def _(ALL_TRACKERS, defaults_1k, defaults_burgers, defaults_cavity, mo):
+    hdr="| tracker | Burgers dv/dacc/ang | test_cavity dv/dacc/ang | synthetic_1k dv/dacc/ang |\n|---|---|---|---|\n"
     rows=[]
     for _n in ALL_TRACKERS:
-        rows.append(f"| `{_n}` | {'/'.join(defaults_burgers[_n])} | {'/'.join(defaults_cavity[_n])} |")
+        rows.append(f"| `{_n}` | {'/'.join(defaults_burgers[_n])} | {'/'.join(defaults_cavity[_n])} | {'/'.join(defaults_1k[_n])} |")
     mo.md("**Good params kept in notebook** (auto-switch on Dataset):\n\n"+hdr+"\n".join(rows))
     return
 

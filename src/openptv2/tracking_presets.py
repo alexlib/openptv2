@@ -110,7 +110,7 @@ def infer_preset(
         "two_directional",
         "standard_forward",
     ):
-        return selected_tracking
+        return str(selected_tracking)
     if selected_tracking != "default":
         return TrackingPreset.CUSTOM_PLUGIN.value
 
