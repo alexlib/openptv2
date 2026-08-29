@@ -122,19 +122,35 @@ def _(Path, go, is_script, mo, np, pd, time):
             return default
 
     def tracks_to_plotly(pred, title):
-        # pred: {tid: [(frame,x,y,z)]} -> plotly 3D lines, color by tid
+        # pred: {tid: [(frame,x,y,z)]} -> plotly 3D lines + markers; singletons shown as markers so synthetic fragmented case is not empty
         fig = go.Figure()
-        # sample up to 200 tracks for readability
-        tids = list(pred.keys())[:200]
+        tids = list(pred.keys())[:300]
+        has_lines = False
+        # collect singleton points for a separate scatter
+        sx, sy, sz, stext = [], [], [], []
         for tid in tids:
             pts = sorted(pred[tid], key=lambda p: p[0])
             if len(pts) < 2:
+                # singleton: show as marker (first point only, since len 1)
+                if pts:
+                    sx.append(pts[0][1]); sy.append(pts[0][2]); sz.append(pts[0][3])
+                    stext.append(f"tr{tid} f{pts[0][0]} singleton")
                 continue
+            has_lines = True
             xs = [p[1] for p in pts]
             ys = [p[2] for p in pts]
             zs = [p[3] for p in pts]
             fig.add_trace(go.Scatter3d(x=xs, y=ys, z=zs, mode="lines", line=dict(width=3), name=f"tr{tid}", showlegend=False, hoverinfo="text", text=[f"f{f}" for f,_,_,_ in pts]))
-        fig.update_layout(title=title, scene=dict(xaxis_title="x mm", yaxis_title="y mm", zaxis_title="z mm", aspectmode="data"), height=520, margin=dict(l=0,r=0,b=0,t=40))
+        if sx:
+            fig.add_trace(go.Scatter3d(x=sx, y=sy, z=sz, mode="markers", marker=dict(size=3, color="rgba(200,0,0,0.6)"), name=f"{len(sx)} singletons", hoverinfo="text", text=stext))
+        if not has_lines and not sx:
+            fig.add_annotation(text="No tracks to display", x=0.5, y=0.5, showarrow=False)
+        # if only singletons, explain fragmentation
+        if not has_lines and sx:
+            fig.update_layout(title=title + " — fragmented (all singletons, no links) — try larger dvxmax/dacc")
+        else:
+            fig.update_layout(title=title)
+        fig.update_layout(scene=dict(xaxis_title="x mm", yaxis_title="y mm", zaxis_title="z mm", aspectmode="data"), height=520, margin=dict(l=0,r=0,b=0,t=40))
         return fig
 
     def run_one(yaml_path, tracker, dv, dacc, ang):
