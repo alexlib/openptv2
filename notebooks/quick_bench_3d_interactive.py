@@ -4,7 +4,7 @@
 #     "marimo",
 #     "numpy",
 #     "pandas",
-#     "plotly",
+#     "matplotlib",
 #     "scipy",
 # ]
 # ///
@@ -22,9 +22,7 @@ def _():
     import pandas as pd
     import time
     from pathlib import Path
-    import plotly.graph_objects as go
-
-    return Path, go, mo, time
+    return mo, np, pd, time, Path
 
 
 @app.cell
@@ -126,7 +124,7 @@ def _(
 
 
 @app.cell
-def _(Path, go, is_script, time):
+def _(Path, is_script, time):
     from openptv2.benchmarking.runner import run_tracker
     from openptv2.benchmarking.metrics import compute_physics_metrics
 
@@ -143,66 +141,19 @@ def _(Path, go, is_script, time):
         except Exception:
             return default
 
-    def tracks_to_plotly(pred, title, min_len=5):
-        # pred: {tid: [(frame,x,y,z)]} -> plotly 3D; only len>=min_len as 3D lines, shorter as faint markers (or hidden if min_len>1)
-        fig = go.Figure()
+    def tracks_to_plotly(pred, title, min_len=2):
+        # Use Visualize 3D trajectories (openptv2.gui.plot_3d_trajectories:39) – matplotlib Figure, tight to cloud
+        import numpy as np
+        from openptv2.gui.plot_3d_trajectories import build_3d_trajectories_figure
         tids = list(pred.keys())
-        if len(tids) > 2000:
-            tids = tids[:2000]
-        has_lines = False
-        sx, sy, sz, stext = [], [], [], []
-        kept = 0
-        all_x, all_y, all_z = [], [], []
-        for tid in tids:
-            pts = sorted(pred[tid], key=lambda p: p[0])
-            if len(pts) < min_len:
-                if 1 < len(pts) < min_len:
-                    # short but >1: faint markers to hint at fragmentation
-                    for p in pts:
-                        sx.append(p[1]); sy.append(p[2]); sz.append(p[3])
-                    all_x.extend([p[1] for p in pts]); all_y.extend([p[2] for p in pts]); all_z.extend([p[3] for p in pts])
-                elif len(pts) == 1:
-                    sx.append(pts[0][1]); sy.append(pts[0][2]); sz.append(pts[0][3])
-                    stext.append(f"tr{tid} f{pts[0][0]} singleton")
-                    all_x.append(pts[0][1]); all_y.append(pts[0][2]); all_z.append(pts[0][3])
-                continue
-            has_lines = True
-            kept += 1
-            xs = [p[1] for p in pts]
-            ys = [p[2] for p in pts]
-            zs = [p[3] for p in pts]
-            all_x.extend(xs); all_y.extend(ys); all_z.extend(zs)
-            fig.add_trace(go.Scatter3d(x=xs, y=ys, z=zs, mode="lines", line=dict(width=4), name=f"tr{tid}", showlegend=False, hoverinfo="text", text=[f"f{f}" for f,_,_,_ in pts]))
-        if sx:
-            # hide singletons when min_len>1 and we have lines, unless user wants to see them
-            if has_lines and min_len > 1:
-                # don't flood plot with 19k singletons; just note count
-                pass
-            else:
-                fig.add_trace(go.Scatter3d(x=sx, y=sy, z=sz, mode="markers", marker=dict(size=2, color="rgba(200,0,0,0.35)"), name=f"{len(sx)} short (<{min_len})", hoverinfo="text", text=stext))
-        if not has_lines and not sx:
-            fig.add_annotation(text="No tracks to display", x=0.5, y=0.5, showarrow=False)
-        _t = title + (f" — {kept}/{len(tids)} kept (≥{min_len} fr)" if has_lines or sx else "")
-        if not has_lines and sx:
-            _t += " — fragmented — try larger dvxmax/dacc or lower min_len to 1"
-        if all_x:
-            xmin, xmax = min(all_x), max(all_x)
-            ymin, ymax = min(all_y), max(all_y)
-            zmin, zmax = min(all_z), max(all_z)
-            pad = 0.07
-            xr = (xmax - xmin) or 1.0
-            yr = (ymax - ymin) or 1.0
-            zr = (zmax - zmin) or 1.0
-            scene = dict(
-                xaxis=dict(title="x mm", range=[xmin - pad*xr, xmax + pad*xr]),
-                yaxis=dict(title="y mm", range=[ymin - pad*yr, ymax + pad*yr]),
-                zaxis=dict(title="z mm", range=[zmin - pad*zr, zmax + pad*zr]),
-                aspectmode="data",
-                camera=dict(eye=dict(x=1.6, y=1.6, z=0.9)),
-            )
-        else:
-            scene = dict(xaxis_title="x mm", yaxis_title="y mm", zaxis_title="z mm", aspectmode="data", camera=dict(eye=dict(x=1.6, y=1.6, z=0.9)))
-        fig.update_layout(title=_t, scene=scene, height=560, margin=dict(l=0,r=0,b=0,t=40))
+        filt = [pts for pts in pred.values() if len(pts) >= min_len]
+        if not filt:
+            filt = [pts for pts in pred.values() if pts]
+        if len(filt) > 800:
+            filt = filt[:800]
+        trajs = [np.array([[x, y, z] for _, x, y, z in sorted(pts, key=lambda p: p[0])]) for pts in filt]
+        fig = build_3d_trajectories_figure(trajs)
+        fig.suptitle(title + f" — {len(filt)}/{len(tids)} kept (≥{min_len}fr)", fontsize=10)
         return fig
 
     def run_one(yaml_path, tracker, dv, dacc, ang):
