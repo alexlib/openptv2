@@ -1,0 +1,206 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "marimo",
+#     "numpy",
+#     "pandas",
+#     "plotly",
+#     "scipy",
+# ]
+# ///
+
+import marimo
+
+__generated_with = "0.20.4"
+app = marimo.App(width="medium")
+
+
+@app.cell
+def _():
+    import marimo as mo
+    import numpy as np
+    import pandas as pd
+    import time
+    from pathlib import Path
+    import plotly.graph_objects as go
+    return mo, np, pd, time, Path, go
+
+
+@app.cell
+def _(mo):
+    is_script = mo.app_meta().mode == "script"
+    return (is_script,)
+
+
+@app.cell
+def _(mo):
+    mo.md("""
+    # Quick Bench — 3D Trajectories per Tracker (Burgers / 1k)
+
+    Runs `openptv2.benchmarking.runner.run_tracker` on a **small window** (Burgers `10001–10005`, `synthetic_turbulent_1k` `10001–10010`) and shows **3D trajectories** after each run.
+
+    **Modify parameters in the text boxes** (not sliders) and press **Run** per tracker. Results are ranked by `mean_len − 0.02·kurtosis` (long + smooth).
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    dataset_picker = mo.ui.dropdown(
+        options=["burgers (5 frames, vortex)", "synthetic_turbulent_1k (10 of 20, 1k/frame)"],
+        value="burgers (5 frames, vortex)",
+        label="Dataset",
+    )
+    dataset_picker
+    return (dataset_picker,)
+
+
+@app.cell
+def _():
+    from openptv2.tracking_registry import TRACKER_REGISTRY
+    ALL_TRACKERS = [t for t in ["priority_segment_3d","4be","full_multipass","standard_forward","two_directional","nearest_hungarian_3d","predictive_gmm_3d","hybrid_deltat_3d","two_phase"] if t in TRACKER_REGISTRY]
+    defaults = {
+        "priority_segment_3d": ("2.0","0.5","60"),
+        "4be": ("2.0","0.5","60"),
+        "full_multipass": ("1.5","0.5","40"),
+        "standard_forward": ("1.5","0.5","40"),
+        "two_directional": ("1.5","0.5","40"),
+        "nearest_hungarian_3d": ("2.0","0.5","40"),
+        "predictive_gmm_3d": ("2.0","0.5","40"),
+        "hybrid_deltat_3d": ("2.0","0.5","60"),
+        "two_phase": ("2.0","0.5","60"),
+    }
+    # dense defaults (used when 1k picked, applied at run time as fallback)
+    dense_defaults = {
+        "priority_segment_3d": ("10.0","5.0","120"),
+        "4be": ("10.0","5.0","120"),
+        "full_multipass": ("8.0","3.0","60"),
+        "standard_forward": ("8.0","3.0","60"),
+        "two_directional": ("8.0","3.0","60"),
+        "nearest_hungarian_3d": ("8.0","5.0","45"),
+        "predictive_gmm_3d": ("8.0","5.0","30"),
+        "hybrid_deltat_3d": ("8.0","0.8","60"),
+        "two_phase": ("8.0","5.0","60"),
+    }
+    return ALL_TRACKERS, defaults, dense_defaults
+
+
+@app.cell
+def _(ALL_TRACKERS, defaults, mo):
+    # Text boxes (not sliders) + Run button per tracker
+    uis = {}
+    _rows = []
+    for _name in ALL_TRACKERS:
+        _dv, _da, _ang = defaults[_name]
+        _dv_in = mo.ui.text(value=_dv, label="dvxmax", placeholder="mm/frame")
+        _dacc_in = mo.ui.text(value=_da, label="dacc")
+        _ang_in = mo.ui.text(value=_ang, label="angle (gon)")
+        _btn = mo.ui.button(label=f"Run {_name}", kind="neutral")
+        uis[_name] = {"dv": _dv_in, "dacc": _dacc_in, "ang": _ang_in, "btn": _btn}
+        _rows.append(mo.hstack([mo.md(f"**{_name}**"), _dv_in, _dacc_in, _ang_in, _btn], justify="start", gap=0.5))
+    panel = mo.vstack(_rows, gap=0.5)
+    panel
+    return panel, uis
+
+
+@app.cell
+def _(Path, go, is_script, mo, np, pd, time):
+    from openptv2.benchmarking.runner import run_tracker
+    from openptv2.benchmarking.metrics import compute_physics_metrics
+
+    def resolve_dataset(label):
+        root = Path("test_data").resolve()
+        if "burgers" in label:
+            return (root / "burgers" / "parameters_Run1.yaml").resolve(), "burgers"
+        else:
+            return (root / "synthetic_turbulent_1k" / "parameters_Run1.yaml").resolve(), "synthetic_turbulent_1k"
+
+    def parse_float(txt, default):
+        try:
+            return float(txt.value.strip())
+        except Exception:
+            return default
+
+    def tracks_to_plotly(pred, title):
+        # pred: {tid: [(frame,x,y,z)]} -> plotly 3D lines, color by tid
+        fig = go.Figure()
+        # sample up to 200 tracks for readability
+        tids = list(pred.keys())[:200]
+        for tid in tids:
+            pts = sorted(pred[tid], key=lambda p: p[0])
+            if len(pts) < 2:
+                continue
+            xs = [p[1] for p in pts]
+            ys = [p[2] for p in pts]
+            zs = [p[3] for p in pts]
+            fig.add_trace(go.Scatter3d(x=xs, y=ys, z=zs, mode="lines", line=dict(width=3), name=f"tr{tid}", showlegend=False, hoverinfo="text", text=[f"f{f}" for f,_,_,_ in pts]))
+        fig.update_layout(title=title, scene=dict(xaxis_title="x mm", yaxis_title="y mm", zaxis_title="z mm", aspectmode="data"), height=520, margin=dict(l=0,r=0,b=0,t=40))
+        return fig
+
+    def run_one(yaml_path, tracker, dv, dacc, ang):
+        ov = {"dvxmax": dv, "dvxmin": -dv, "dvymax": dv, "dvymin": -dv, "dvzmax": dv, "dvzmin": -dv, "dacc": dacc, "angle": ang}
+        t0 = time.perf_counter()
+        try:
+            pred = run_tracker(yaml_path, tracker, track_overrides=ov)
+            pm = compute_physics_metrics(pred)
+            info = {"error": None, "pred": pred, "pm": pm, "time_s": round(time.perf_counter()-t0,2)}
+        except Exception as e:
+            info = {"error": str(e)[:600], "pred": {}, "pm": None, "time_s": round(time.perf_counter()-t0,2)}
+        return info
+
+    # script-mode smoke: one run without waiting for button
+    if is_script:
+        yp,_ = resolve_dataset("burgers (5 frames, vortex)")
+        demo = run_one(yp, "priority_segment_3d", 2.0, 0.5, 60)
+        print("[script] burgers priority_segment_3d:", demo["pm"].mean_track_length if demo["pm"] else demo["error"])
+    return Path, go, parse_float, resolve_dataset, run_one, tracks_to_plotly
+
+
+@app.cell
+def _(ALL_TRACKERS, Path, dataset_picker, go, is_script, mo, parse_float, resolve_dataset, run_one, tracks_to_plotly, uis):
+    # React to any Run button (or script auto-run for first tracker)
+    yaml_path, dlabel = resolve_dataset(dataset_picker.value)
+    _outputs = []
+    # In script mode, auto-run the first tracker so `uv run notebook.py` shows a plot
+    _auto = is_script
+    for _name in ALL_TRACKERS:
+        _ui = uis[_name]
+        _triggered = _auto or _ui["btn"].value
+        if _auto:
+            # only auto-run first tracker in script to keep <30s
+            if _name != ALL_TRACKERS[0]:
+                continue
+            _auto = False  # only once
+        if not _triggered:
+            continue
+        _dv = parse_float(_ui["dv"], 2.0)
+        _dacc = parse_float(_ui["dacc"], 0.5)
+        _ang = parse_float(_ui["ang"], 60)
+        _info = run_one(yaml_path, _name, _dv, _dacc, _ang)
+        if _info["error"]:
+            _outputs.append(mo.vstack([mo.md(f"### {_name} — ERROR"), mo.md(f"`{_info['error']}`")]))
+            continue
+        _pm = _info["pm"]
+        _header = f"### {_name} — dv={_dv} dacc={_dacc} ang={_ang} → mean_len={_pm.mean_track_length:.2f} frac10={_pm.frac_tracks_over_10:.2f} kurt={_pm.acceleration_kurtosis:.1f} n_tracks={_pm.n_tracks} t={_info['time_s']}s"
+        _fig = tracks_to_plotly(_info["pred"], f"{_name} {dlabel} ({len(_info['pred'])} tracks)")
+        _outputs.append(mo.vstack([mo.md(_header), _fig]))
+
+    _result = mo.md("_Edit dvxmax/dacc/angle in the text boxes above and press **Run** per tracker to see 3D trajectories. In script mode (`uv run notebook.py`) the first tracker auto-runs._") if not _outputs else mo.vstack(_outputs, gap=1)
+    _result
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md("""
+    **What the quick bench shows (Burgers 5fr: `priority_segment_3d dv=2 dacc=0.5 ang=60` → `mean_len=3.42 frac10=0.00 kurt=3.8 n=7`):**
+
+    * Burgers is **not** hard for linking – 5 particles/frame, smooth vortex, all trackers reach the 5-frame ceiling with low kurtosis (~3–4, near Gaussian). Tuning barely matters; `dv 1–2` beats `5` (extra dv only adds ghosts).
+    * Dense `synthetic_turbulent_1k` (not auto-run, press **Run** with 1k dataset) is the hard case: `priority_segment_3d`/`two_phase` need `dv 8–12`, `dacc 3–5` to reach `mean_len 6–8, kurt 20–30`; `full_multipass` with `angle 40–60` (tight) gives slightly longer `mean_len` but similar kurtosis. Too tight fragments (`frac10↓`), too loose explodes kurtosis (`>80`).
+    * Text boxes let you test per-tracker: raise `dv` for dense/fast flows, lower `dacc` for Burgers-like smooth, lower `angle` for laminar, raise for turbulent.
+    """)
+    return
+
+
+if __name__ == "__main__":
+    app.run()
