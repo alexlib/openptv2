@@ -18,19 +18,19 @@
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>2026-08-25 Code Review Fix Plan - OpenPTV2 Documentation</title>
+        <title>Plan: fix v0.5.5 CI failures + store-fed tracking parity - OpenPTV2 Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,7 +49,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#2026-08-25-code-review-fix-plan" class="md-skip">
+        <a href="#plan-fix-v055-ci-failures-store-fed-tracking-parity" class="md-skip">
           Skip to content
         </a>
       
@@ -88,7 +88,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+    <a href="../../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              2026-08-25 Code Review Fix Plan
+              Plan: fix v0.5.5 CI failures + store-fed tracking parity
             
           </span>
         </div>
@@ -221,7 +221,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -240,7 +240,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../installation/" class="md-tabs__link">
+      <a href="../../../installation/" class="md-tabs__link">
         
   
   
@@ -259,7 +259,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../first_steps/" class="md-tabs__link">
+      <a href="../../../first_steps/" class="md-tabs__link">
         
   
   
@@ -280,7 +280,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+        <a href="../../../zarr-hdf5-storage/" class="md-tabs__link">
           
   
   
@@ -298,7 +298,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../tests/" class="md-tabs__link">
+      <a href="../../../tests/" class="md-tabs__link">
         
   
   
@@ -319,7 +319,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../developer_guide/building/" class="md-tabs__link">
+        <a href="../../../developer_guide/building/" class="md-tabs__link">
           
   
   
@@ -339,7 +339,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../algorithms/tracking/" class="md-tabs__link">
+        <a href="../../../algorithms/tracking/" class="md-tabs__link">
           
   
   
@@ -373,7 +373,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+    <a href="../../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -403,7 +403,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -430,7 +430,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/" class="md-nav__link">
+      <a href="../../../installation/" class="md-nav__link">
         
   
   
@@ -457,7 +457,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../first_steps/" class="md-nav__link">
+      <a href="../../../first_steps/" class="md-nav__link">
         
   
   
@@ -538,7 +538,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+      <a href="../../../zarr-hdf5-storage/" class="md-nav__link">
         
   
   
@@ -566,7 +566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tracking_guide/" class="md-nav__link">
+      <a href="../../../tracking_guide/" class="md-nav__link">
         
   
   
@@ -594,7 +594,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calibration_best_practices/" class="md-nav__link">
+      <a href="../../../calibration_best_practices/" class="md-nav__link">
         
   
   
@@ -622,7 +622,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+      <a href="../../../tutorials/batch_processing/" class="md-nav__link">
         
   
   
@@ -650,7 +650,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+      <a href="../../../tutorials/tracking_visualization/" class="md-nav__link">
         
   
   
@@ -678,7 +678,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+      <a href="../../../tutorials/tracking_debug_visualization/" class="md-nav__link">
         
   
   
@@ -713,7 +713,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/" class="md-nav__link">
+      <a href="../../../tests/" class="md-nav__link">
         
   
   
@@ -794,7 +794,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/building/" class="md-nav__link">
+      <a href="../../../developer_guide/building/" class="md-nav__link">
         
   
   
@@ -822,7 +822,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+      <a href="../../../developer_guide/cython_and_pure_python/" class="md-nav__link">
         
   
   
@@ -850,7 +850,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+      <a href="../../../developer_guide/documentation_workflow/" class="md-nav__link">
         
   
   
@@ -878,7 +878,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+      <a href="../../../developer_guide/packaging_and_releases/" class="md-nav__link">
         
   
   
@@ -906,7 +906,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+      <a href="../../../HOW_TO_TEST_GUI/" class="md-nav__link">
         
   
   
@@ -995,7 +995,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../algorithms/tracking/" class="md-nav__link">
+      <a href="../../../algorithms/tracking/" class="md-nav__link">
         
   
   
@@ -1023,7 +1023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+      <a href="../../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
         
   
   
@@ -1078,22 +1078,33 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#fixed-in-this-pass" class="md-nav__link">
+  <a href="#0-resolved-2026-08-26-parity-bug-root-causes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Fixed in this pass
+        0. RESOLVED 2026-08-26 — parity bug root causes
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Fixed in this pass">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-where-we-are" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Where we are
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Where we are">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-packaging-wheel-omits-storage-benchmarking-high" class="md-nav__link">
+  <a href="#solved-root-cause-of-all-10-ci-failures-identified" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Packaging: wheel omits storage / benchmarking (HIGH)
+        SOLVED — root cause of all 10 CI failures identified
       
     </span>
   </a>
@@ -1101,65 +1112,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-ci-no-testlint-gating-high" class="md-nav__link">
+  <a href="#open-store-fed-tracking-kernel-parity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. CI: no test/lint gating (HIGH)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-scratch-buffer-overflow-in-clique-matching-high" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Scratch-buffer overflow in clique matching (HIGH)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-hardcoded-max_targets1000-in-public-correspondences-path-high" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Hardcoded max_targets=1000 in public correspondences path (HIGH)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-max_cands-stride-bug-in-sort_candidates_by_freq-high" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. MAX_CANDS stride bug in sort_candidates_by_freq (HIGH)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6-nmax-off-by-one-guards-medium" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. NMAX off-by-one guards (MEDIUM)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#7-working-tree-hygiene-high" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Working-tree hygiene (HIGH)
+        OPEN — store-fed tracking kernel parity
       
     </span>
   </a>
@@ -1172,10 +1128,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#planned-for-later" class="md-nav__link">
+  <a href="#2-investigation-plan-for-the-parity-bug-tomorrow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Planned for later
+        2. Investigation plan for the parity bug (tomorrow)
       
     </span>
   </a>
@@ -1183,10 +1139,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#verification" class="md-nav__link">
+  <a href="#3-landing-checklist-after-parity-resolved" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Verification
+        3. Landing checklist (after parity resolved)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-open-questions-for-alex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Open questions for Alex
       
     </span>
   </a>
@@ -1213,155 +1180,192 @@
   
 
 
-<h1 id="2026-08-25-code-review-fix-plan">2026-08-25 Code Review Fix Plan<a class="headerlink" href="#2026-08-25-code-review-fix-plan" title="Permanent link">&para;</a></h1>
-<p>Findings from the full-repo review of 2026-08-25, split into what is fixed
-now and what is planned for later implementation.</p>
-<h2 id="fixed-in-this-pass">Fixed in this pass<a class="headerlink" href="#fixed-in-this-pass" title="Permanent link">&para;</a></h2>
-<h3 id="1-packaging-wheel-omits-storage-benchmarking-high">1. Packaging: wheel omits <code>storage</code> / <code>benchmarking</code> (HIGH)<a class="headerlink" href="#1-packaging-wheel-omits-storage-benchmarking-high" title="Permanent link">&para;</a></h3>
-<p><code>[tool.setuptools] packages</code> in <code>pyproject.toml</code> listed only
-<code>openptv2</code>, <code>.algorithms</code>, <code>.gui</code>, <code>.batch</code>, <code>.plugins</code>. The <code>storage/</code>
-and <code>benchmarking/</code> subpackages were silently excluded from wheels,
-breaking the declared <code>openptv2-convert-legacy</code> entry point
-(<code>openptv2.storage.legacy:main</code>) for pip-installed users.</p>
-<p><strong>Fix:</strong> add <code>openptv2.storage</code> and <code>openptv2.benchmarking</code> to the
-package list. Verify with a wheel build + import smoke test before the
-next release.</p>
-<h3 id="2-ci-no-testlint-gating-high">2. CI: no test/lint gating (HIGH)<a class="headerlink" href="#2-ci-no-testlint-gating-high" title="Permanent link">&para;</a></h3>
-<p>Only <code>cibuildwheel.yml</code> and <code>deploy_docs.yml</code> existed; pytest, ruff and
-mypy never ran on PRs, and the PyPI-publish verification job is disabled
-(<code>if: "false"</code>).</p>
-<p><strong>Fix:</strong> add <code>.github/workflows/ci.yml</code> running <code>uv run pytest -m
-"not slow"</code> plus ruff on ubuntu/windows across supported Python versions.
-(A mypy job was attempted but the codebase has ~4k pre-existing mypy
-errors; type-check gating is a follow-up — see the table below. Enabling
-the release <code>test_package</code> job is also left as a follow-up.)</p>
-<h3 id="3-scratch-buffer-overflow-in-clique-matching-high">3. Scratch-buffer overflow in clique matching (HIGH)<a class="headerlink" href="#3-scratch-buffer-overflow-in-clique-matching-high" title="Permanent link">&para;</a></h3>
-<p><code>src/openptv2/algorithms/correspondences.py</code>: scratch arrays are
-allocated with <code>num_cams * NMAX</code> rows but downstream stages were invoked
-with <code>scratch_size=4*NMAX</code>; writes past the allocation corrupt memory in
-compiled mode (<code>boundscheck(False)</code>).</p>
-<p><strong>Fix:</strong> cap the per-stage scratch size at the actual allocation.</p>
-<h3 id="4-hardcoded-max_targets1000-in-public-correspondences-path-high">4. Hardcoded <code>max_targets=1000</code> in public correspondences path (HIGH)<a class="headerlink" href="#4-hardcoded-max_targets1000-in-public-correspondences-path-high" title="Permanent link">&para;</a></h3>
-<p><code>src/openptv2/correspondences.py</code> builds an <code>AlgoFrame(max_targets=1000)</code>
-and assigns targets wholesale; &gt;1000 targets/camera overruns fixed SoA
-buffers in compiled mode. <code>tracker.py</code> already sizes dynamically — this
-call site was missed.</p>
-<p><strong>Fix:</strong> size the frame from actual target counts (dynamic capacity).</p>
-<h3 id="5-max_cands-stride-bug-in-sort_candidates_by_freq-high">5. <code>MAX_CANDS</code> stride bug in <code>sort_candidates_by_freq</code> (HIGH)<a class="headerlink" href="#5-max_cands-stride-bug-in-sort_candidates_by_freq-high" title="Permanent link">&para;</a></h3>
-<p><code>src/openptv2/algorithms/track.py</code>: hardcoded stride 4 while
-<code>constants.MAX_CANDS = 32</code>; inner scan crosses candidate-group
-boundaries whenever <code>MAX_CANDS != 4</code>.</p>
-<p><strong>Fix:</strong> use <code>constants.MAX_CANDS</code> as the stride.</p>
-<h3 id="6-nmax-off-by-one-guards-medium">6. NMAX off-by-one guards (MEDIUM)<a class="headerlink" href="#6-nmax-off-by-one-guards-medium" title="Permanent link">&para;</a></h3>
-<p>Guards of the form <code>if p1 &gt; NMAX: continue</code> allow <code>p1 == NMAX</code>, which
-indexes one row past <code>tusage[num_cams, NMAX]</code> in compiled mode.</p>
-<p><strong>Fix:</strong> change to <code>&gt;= NMAX</code>.</p>
-<h3 id="7-working-tree-hygiene-high">7. Working-tree hygiene (HIGH)<a class="headerlink" href="#7-working-tree-hygiene-high" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Stray untracked venv directory <code>openptv2/</code> at repo root (not covered
-  by <code>.gitignore</code>, hidden by local <code>status.showUntrackedFiles=false</code>).</li>
-<li>Tracked artifacts: <code>.coverage</code>, <code>scratch/</code>, <code>.slim/</code>,
-  <code>diagnose_fast3d_vs_myptv.py</code>.</li>
-</ul>
-<p><strong>Fix:</strong> delete the stray venv; untrack artifacts via <code>git rm --cached</code>
-and extend <code>.gitignore</code>; remove the local git override.</p>
-<h2 id="planned-for-later">Planned for later<a class="headerlink" href="#planned-for-later" title="Permanent link">&para;</a></h2>
-<p>These review findings are recorded but intentionally not addressed yet:</p>
+<h1 id="plan-fix-v055-ci-failures-store-fed-tracking-parity">Plan: fix v0.5.5 CI failures + store-fed tracking parity<a class="headerlink" href="#plan-fix-v055-ci-failures-store-fed-tracking-parity" title="Permanent link">&para;</a></h1>
+<p>Date: 2026-08-25 (session start ~18:00 UTC) — continuation planned 2026-08-26
+Branch: <code>ci-debug/zero-links</code> (local, uncommitted work in tree)</p>
+<h2 id="0-resolved-2026-08-26-parity-bug-root-causes">0. RESOLVED 2026-08-26 — parity bug root causes<a class="headerlink" href="#0-resolved-2026-08-26-parity-bug-root-causes" title="Permanent link">&para;</a></h2>
+<p>The store-fed tracking divergence (113/591 links vs ASCII 532) had THREE
+stacked causes; none involved parallel zarr I/O:</p>
+<ol>
+<li><strong>Contaminated fixture store.</strong> <code>test_cavity/run.zarr</code> was ingested from a
+   working-copy <code>res/</code> that already held a previous tracking pass output:
+   <code>ptv_is</code>+<code>added</code> linkage with 642/520/586 seeded links and prio columns,
+   which <code>res_orig</code> does NOT contain (it ships rt_is only). Store-fed runs
+   started from already-linked state.</li>
+<li><strong><code>read_links=False</code> ignored by the store branch of <code>read_path_frame</code>.</strong>
+   With empty <code>linkage_file_base</code>, the fallback <code>else "ptv_is"</code> still read
+   stale linkage back as prev/next state, while the ascii branch correctly
+   seeded -1/-2. Fixed: link_name defaults to "" (no linkage read) unless an
+   explicit base is given; prio now falls back to the "added" group so
+   legacy-ingested stores match pipeline-written ones
+   (algorithms/tracking_frame_buf.py).</li>
+<li><strong>Stale compiled extension.</strong> The <code>.pyd</code> predated the fix, masking the
+   first re-measurement. Always <code>uv run python setup.py build_ext --inplace</code>
+   after touching algorithms/.</li>
+</ol>
+<p>Also done on 2026-08-26:
+- Regenerated <code>test_cavity/run.zarr</code> cleanly (targets + correspondences only;
+  verified bit-exact vs res_orig; zero linkage groups). Deleted unused,
+  contaminated <code>test_data/track/run.zarr</code> (no consumer; track tests are
+  pure-ASCII over res_orig/img_orig).
+- Bumped cython 3.2.9 -&gt; 3.3.0 via uv lock (constraint unchanged &gt;=3,&lt;4);
+  rebuilt extensions on py3.11 and py3.13.
+- Verification: A/B harness (same params/cal) gives npart=2082 nlinks=1596
+  for ascii AND store at BOTH 1 and 4 threads; post-priming buffer state
+  bit-identical across modes; affected unit tests green on py3.11+3.13;
+  full <code>-m "not slow"</code> suite green modulo env-only issues (flowtracks/matplotlib
+  extras) fixed with <code>uv sync --all-extras</code>.</p>
+<h2 id="1-where-we-are">1. Where we are<a class="headerlink" href="#1-where-we-are" title="Permanent link">&para;</a></h2>
+<h3 id="solved-root-cause-of-all-10-ci-failures-identified">SOLVED — root cause of all 10 CI failures identified<a class="headerlink" href="#solved-root-cause-of-all-10-ci-failures-identified" title="Permanent link">&para;</a></h3>
+<p>Every CI failure has ONE cause: fixture data that exists only in developers'
+working copies. <code>.gitignore</code> excludes <code>*_targets</code>, <code>res/</code>,
+<code>test_data/**/res/</code> — so fresh CI checkouts lack files the tests read.
+Locally everything passes; on CI everything fails, deterministically, on all
+4 matrix jobs (ubuntu/windows × py3.11/3.13).</p>
 <table>
 <thead>
 <tr>
-<th>#</th>
-<th>Finding</th>
-<th>Where</th>
-<th>Severity</th>
+<th>failing test</th>
+<th>missing on CI</th>
+<th>fix</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>1</td>
-<td>Delete/deprecate legacy duplicate store</td>
-<td><code>src/openptv2/storage/zarr_store.py</code> (unpadded frame keys, crash in <code>inspect_zarr_store</code> at :474)</td>
-<td>HIGH</td>
+<td><code>test_parallel_tracking.*</code> (2)</td>
+<td><code>test_cavity/img/*_targets</code></td>
+<td>zarr migration (below, step B)</td>
 </tr>
 <tr>
-<td>2</td>
-<td>Parallel-safety contract for sequence plugins</td>
-<td><code>batch/pyptv_batch_parallel.py</code> + plugin Protocol (shared side files like <code>res/mask_areas.csv</code> race)</td>
-<td>MEDIUM</td>
+<td><code>test_parallel_correspondences</code> (3 incl. parity/zarr variants)</td>
+<td>same</td>
+<td>zarr migration (step B)</td>
 </tr>
 <tr>
-<td>3</td>
-<td>proptv plugin ignores its config</td>
-<td><code>plugins/proptv_tracking.py:233</code> no-op <code>np.where</code>, <code>:240</code> hardcoded cost weights</td>
-<td>MEDIUM</td>
+<td><code>test_trackcorr_store_only</code> ×2 (<code>adapt_proptv_*</code>)</td>
+<td><code>synthetic_turbulent/res</code> rmtree'd unconditionally</td>
+<td>DONE: guarded rmtree</td>
 </tr>
 <tr>
-<td>4</td>
-<td>Deduplicate compiled vs Python four-camera matching</td>
-<td><code>algorithms/correspondences.py:416</code> vs <code>:531</code> (numerically divergent zero-distance guard)</td>
-<td>MEDIUM</td>
+<td><code>test_tracker_3d_compat.*</code> (2)</td>
+<td>entire <code>test_data/track</code> untracked</td>
+<td>commit zarr store + minimal params/cal</td>
 </tr>
 <tr>
-<td>5</td>
-<td>Factor shared tracking-plugin scaffolding into base class</td>
-<td><code>myptv_3d_tracking.py</code> / <code>myptv_2d_tracking.py</code> / <code>proptv_tracking.py</code></td>
-<td>MEDIUM</td>
-</tr>
-<tr>
-<td>6</td>
-<td>Broad exception swallowing</td>
-<td><code>zarr_store.py:25,47</code>, <code>cython_3d_tracking.py:75-97</code> silent success when tracker None</td>
-<td>MEDIUM</td>
-</tr>
-<tr>
-<td>7</td>
-<td>Replace hot-loop <code>print()</code> with logging</td>
-<td><code>algorithms/track.py:1178-1207</code></td>
-<td>LOW</td>
-</tr>
-<tr>
-<td>8</td>
-<td>Dead code cleanup</td>
-<td><code>track.py</code> unused <code>dmin</code>, discarded arrays, duplicate candidate-search kernels</td>
-<td>LOW</td>
-</tr>
-<tr>
-<td>9</td>
-<td>Store <code>close()</code> / context-manager protocol; stop reaching into <code>_open_run_store</code></td>
-<td><code>storage/run_store.py</code>, plugins</td>
-<td>LOW</td>
-</tr>
-<tr>
-<td>10</td>
-<td>Remove empty stub packages or populate them</td>
-<td><code>autoresearch/</code>, <code>differentiable/</code></td>
-<td>LOW</td>
-</tr>
-<tr>
-<td>11</td>
-<td>Enable PyPI-release <code>test_package</code> job</td>
-<td><code>.github/workflows/cibuildwheel.yml</code></td>
-<td>MEDIUM</td>
-</tr>
-<tr>
-<td>12</td>
-<td>Reconcile dual dev dependency declarations</td>
-<td><code>pyproject.toml</code> extras vs dependency-groups</td>
-<td>LOW</td>
-</tr>
-<tr>
-<td>13</td>
-<td>Clean up ~4k pre-existing mypy errors, then add a mypy job to <code>ci.yml</code> (mypy <code>python_version</code> bumped to 3.12 in this pass so numpy stubs parse)</td>
-<td><code>src/openptv2/</code></td>
-<td>MEDIUM</td>
+<td><code>test_standalone_dumbbell_calibration_cycle</code></td>
+<td><code>cal/camN.tif_targets</code></td>
+<td>commit 4 small ASCII cal-targets (calibration tooling is ASCII by design)</td>
 </tr>
 </tbody>
 </table>
-<h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<p>Also done: lint job fixed (F841 in new script), <code>scripts/run_regression_tests.py</code>
+added (<code>--tier1</code>, <code>--py 3.13</code>).</p>
+<h3 id="open-store-fed-tracking-kernel-parity">OPEN — store-fed tracking kernel parity<a class="headerlink" href="#open-store-fed-tracking-kernel-parity" title="Permanent link">&para;</a></h3>
+<p>Migrating <code>test_parallel_tracking.py</code> to Zarr fixtures works mechanically
+(data flows, linking happens) but results diverge from the ASCII baseline:</p>
+<table>
+<thead>
+<tr>
+<th>input source</th>
+<th>npart</th>
+<th>nlinks @1 thread</th>
+<th>nlinks @4 threads</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ASCII <code>res_orig</code> (reference)</td>
+<td>2082</td>
+<td><strong>532</strong></td>
+<td><strong>532</strong> (deterministic ✓)</td>
+</tr>
+<tr>
+<td>Zarr store-fed <code>TrackingRun(store=…)</code></td>
+<td>2082</td>
+<td><strong>113</strong></td>
+<td><strong>591</strong> ⚠</td>
+</tr>
+</tbody>
+</table>
+<p>Both wrong AND thread-dependent. This is a real openptv2 bug (or ingestion
+bug), not a test artifact.</p>
+<h2 id="2-investigation-plan-for-the-parity-bug-tomorrow">2. Investigation plan for the parity bug (tomorrow)<a class="headerlink" href="#2-investigation-plan-for-the-parity-bug-tomorrow" title="Permanent link">&para;</a></h2>
+<p>Working repro: rewritten <code>tests/unit/test_parallel_tracking.py</code> on the branch
++ <code>uv run --python 3.13 -m pytest tests/unit/test_parallel_tracking.py -q</code>.
+ASCII reference: <code>git show HEAD:tests/unit/test_parallel_tracking.py</code>.</p>
+<p>Hypotheses, ordered by likelihood:</p>
+<p><strong>H1 — targets buffer not fed from the store during tracking-only runs.</strong>
+The epipolar search needs per-frame 2D TargetArrays. In the ASCII flow the
+kernel loads them from <code>img/camN.&lt;frame&gt;_targets</code>. With <code>store=</code> attached,
+check which code path populates target buffers:
+- grep compiled-side calls: does <code>trackcorr_c_loop</code>/<code>track_forward_start</code> go
+  through <code>tracking_frame_buf.read_targets(..., store=run.store)</code>?
+- Experiment: point <code>spar.img_base_name</code> at a directory WITH the ASCII
+  targets while feeding correspondences from the store. If links jump to
+  ~532 → H1 confirmed: targets silently missing in pure-store mode.</p>
+<p><strong>H2 — cam_target_ids round-trip damage at ingestion.</strong>
+<code>convert_ascii_to_zarr</code> → <code>write_correspondences(frame, pos_3d, cam_ids)</code>.
+Verify dtype/sentinels survive:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.storage</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunStore</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.algorithms.tracking_frame_buf</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_path_frame</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">store</span> <span class="o">=</span> <span class="n">RunStore</span><span class="p">(</span><span class="s1">'test_data/test_cavity/run.zarr'</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'r'</span><span class="p">)</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">cor_s</span><span class="p">,</span> <span class="n">path_s</span> <span class="o">=</span> <span class="n">read_path_frame</span><span class="p">(</span><span class="s1">'res/rt_is'</span><span class="p">,</span><span class="s1">'res/ptv_is'</span><span class="p">,</span><span class="s1">'res/added'</span><span class="p">,</span><span class="mi">10001</span><span class="p">,</span><span class="n">store</span><span class="o">=</span><span class="n">store</span><span class="p">)</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># compare cor_s[i].p against ASCII rt_is columns 5..8 for frame 10001</span>
+</span></code></pre></div>
+Check: int32 vs int64, -1 sentinels preserved, ordering (rt_is row order vs
+sorted-by-y), pnr/tnr remapping. NOTE: standalone <code>read_path_frame(...,
+store=None)</code> returns 0 rows even against a populated <code>res/</code> — understand WHY
+(likely linkage/prio file absence handling) before trusting it as oracle;
+the old test's flow primes buffers inside <code>track_forward_start</code>.</p>
+<p><strong>H3 — float precision shift flips gate decisions.</strong>
+Positions pass through zarr round-trip; cavity gates are tight. Diff
+store-read vs ascii-read Pathinfo.x bit-exactly (<code>np.array_equal</code>, not
+allclose). If tiny diffs exist, check whether ingestion writes float32.</p>
+<p><strong>H4 — lazy per-frame store reads race with OpenMP search (explains 113≠591).</strong>
+If H1/H2/H3 check out but 1T≠4T persists with identical inputs, the
+num_threads&gt;1 path races on lazy buffer population. Look at
+<code>trackcorr_c_loop</code>'s buffer advance: is <code>read_path_frame</code> called inside the
+parallel region? Fix would be eager priming under lock or before the region.</p>
+<p><strong>H5 — prev/next linkage seeding differs.</strong>
+Store without linkage seeds <code>prev=-1,next=-1</code>; ASCII res_orig ptv_is may or
+may not exist pre-tracking. Verify both paths start from identical
+prev/next/prio state.</p>
+<p>Suggested order: H2 (pure data diff, fast) → H3 → H1 → H5 → H4.
+Decision rule: if any hypothesis shows data damage, fix ingestion/read path
+first and re-measure the table above; only touch kernel threading last.</p>
+<h2 id="3-landing-checklist-after-parity-resolved">3. Landing checklist (after parity resolved)<a class="headerlink" href="#3-landing-checklist-after-parity-resolved" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Regenerate fixture stores cleanly:
+   <code>convert_ascii_to_zarr('test_data/test_cavity', store_path='test_data/test_cavity/run.zarr')</code>
+   (same for track). Current ones were built from local working copies —
+   verify against <code>res_orig</code> content before committing (track's came from
+   generated <code>res/</code>, not <code>res_orig</code>!).</li>
+<li>Commit: both <code>run.zarr</code> fixture stores; 4 × <code>cal/camN.tif_targets</code>;
+   minimal <code>test_data/track</code> non-generated files (parameters/, cal/,
+   conf.yaml); rewritten tests; rmtree guards; regression script.
+   Do NOT commit: generated <code>res/</code>, <code>img/</code> working copies, ASCII run data.</li>
+<li>Rewrite remaining consumers:</li>
+<li><code>tests/unit/test_parallel_correspondences.py</code>: source targets from
+     store (<code>RunStore.read_targets</code>), keep in-memory + zarr_store variants.</li>
+<li><code>tests/unit/test_tracker_3d_compat.py</code>: copy <code>run.zarr</code> instead of
+     <code>res_orig</code>/<code>img_orig</code> dirs; keep legacy <code>.par</code> parameter reading (that
+     IS the compat surface under test).</li>
+<li>Full suite green locally on py3.11 AND 3.13
+   (<code>scripts/run_regression_tests.py</code>, then <code>pytest -m "not slow"</code>).</li>
+<li>Push branch → CI must be green on fresh checkout → merge to main.</li>
+<li>Then resume the TT13_aorta cloud benchmark (wp1 tracking phase relaunch
+   needs this fixed image if we want store-fed parallel tracking in-cloud;
+   sequential fallback already works).</li>
+</ol>
+<h2 id="4-open-questions-for-alex">4. Open questions for Alex<a class="headerlink" href="#4-open-questions-for-alex" title="Permanent link">&para;</a></h2>
 <ul>
-<li><code>uv run pytest tests/unit/test_correspondences.py tests/unit/test_track.py tests/unit/test_track3d.py -v</code></li>
-<li><code>uv run pytest -m "not slow"</code> (full suite)</li>
-<li>Wheel build smoke test: packages present, <code>openptv2-convert-legacy --help</code></li>
+<li>Cal-image <code>_targets</code>: stay ASCII (calibration GUI tools read them), or
+  migrate into RunStore too? (I kept them committed as ASCII.)</li>
+<li>Should <code>tr_new()</code> gain an explicit <code>store=</code> passthrough (currently only
+  <code>TrackingRun(...)</code> ctor takes it)? The asymmetry bit us.</li>
+<li>Is 4-thread-vs-1-thread link-count divergence expected to be EXACTLY zero
+  on well-formed input? (The determinism test assumes yes.)</li>
 </ul>
 
 
@@ -1418,10 +1422,10 @@ and extend <code>.gitignore</code>; remove the local git override.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

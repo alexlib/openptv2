@@ -1,0 +1,1456 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Remove prange/OpenMP from track_kernels_corr and track.py - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#remove-prangeopenmp-from-track_kernels_corr-and-trackpy" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Remove prange/OpenMP from track_kernels_corr and track.py
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-evidence-not-a-hunch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why: evidence, not a hunch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-remove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to remove
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What to remove">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#srcopenptv2algorithmstrack_kernels_corrpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        src/openptv2/algorithms/track_kernels_corr.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#srcopenptv2algorithmstrackpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        src/openptv2/algorithms/track.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setuppy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        setup.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#downstream-openptv-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Downstream: openptv-cloud
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing strategy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisions-needed-before-implementing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decisions needed before implementing
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="remove-prangeopenmp-from-track_kernels_corr-and-trackpy">Remove <code>prange</code>/OpenMP from <code>track_kernels_corr</code> and <code>track.py</code><a class="headerlink" href="#remove-prangeopenmp-from-track_kernels_corr-and-trackpy" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> proposed, not started. Written for a follow-up implementation
+session (possibly a different/cheaper model — self-contained for handoff).</p>
+<h2 id="scope">Scope<a class="headerlink" href="#scope" title="Permanent link">&para;</a></h2>
+<p>Remove the <code>cython.parallel.prange</code>/<code>nogil</code> parallel section from
+<code>src/openptv2/algorithms/track_kernels_corr.py</code> (the trackback pass), the
+<code>num_threads</code>/<code>OPENPTV_NUM_THREADS</code> plumbing that feeds it from
+<code>src/openptv2/algorithms/track.py</code>, and the per-platform <code>-fopenmp</code>/<code>/openmp</code>
+compiler+linker flags in <code>setup.py</code> that exist only to build it. Nothing else
+about the tracking algorithm's output changes — this is a build/perf
+simplification, not an algorithm change.</p>
+<h2 id="why-evidence-not-a-hunch">Why: evidence, not a hunch<a class="headerlink" href="#why-evidence-not-a-hunch" title="Permanent link">&para;</a></h2>
+<p><code>ADR-001-cython-optimization-plan.md</code>'s Phase 4 section proposed this
+parallelization with an <strong>estimated</strong> 2-4× speedup (table: "Est. Speedup"),
+cumulative with phases 1-3 into a projected 7-17× vs. a pure-Python baseline.
+Those were pre-implementation estimates, never a measured benchmark of the
+parallel section in isolation.</p>
+<p>Two things found during real-workload testing from <code>openptv-cloud</code>
+(2026-08-24) argue for removing it rather than trying to make it pay off:</p>
+<ol>
+<li><strong>It is never actually multi-threaded in production.</strong> The <code>prange</code> call
+   (<code>track_kernels_corr.py:1302-1303</code>) takes <code>num_threads</code> from
+   <code>trackcorr_c_loop()</code> (<code>track.py:1049-1053</code>):</li>
+</ol>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">trackcorr_c_loop</span><span class="p">(</span><span class="n">run_info</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="k">if</span> <span class="n">num_threads</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        <span class="n">num_threads</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"OPENPTV_NUM_THREADS"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">))</span>
+</span></code></pre></div>
+<p><code>OPENPTV_NUM_THREADS</code> is read in exactly this one place in the whole repo
+   and is never set anywhere else — not by any CLI flag, any GUI control, any
+   test default, any doc. <code>openptv-cloud</code> (the only real caller of this code
+   in production) never sets it either. So <code>num_threads=1</code> unconditionally,
+   in every real deployment today. The parallel section runs, but always with
+   one thread — all the <code>nogil</code>/lock-free/thread-local-buffer machinery
+   is active for a loop that never has more than one worker.</p>
+<p>(Cython's <code>prange(num_threads=...)</code> kwarg — not the standard OpenMP
+   <code>OMP_NUM_THREADS</code> env var — controls this, which is an easy trap: setting
+   <code>OMP_NUM_THREADS</code> has <strong>no effect</strong> here, since the explicit kwarg
+   overrides it.)</p>
+<ol>
+<li><strong>Even forcing it on measured no benefit.</strong> <code>openptv-cloud</code>'s <code>wp4</code>/<code>wp5</code>
+   example dataset (<code>examples/lv-300</code>, ~700-750 particles/frame, 50 frames)
+   was reconfigured to actually exercise the backward pass
+   (<code>plugins.selected_tracking: default</code> + <code>track.run_backward: true</code>,
+   confirmed via the reversed-order <code>step: 8 → step: 2</code> log lines) and timed
+   end to end with <code>OMP_NUM_THREADS=1</code> vs. unset:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Run</th>
+<th><code>OMP_NUM_THREADS=1</code></th>
+<th>unset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>wp4</td>
+<td>185.05s</td>
+<td>200.04s</td>
+</tr>
+<tr>
+<td>wp5</td>
+<td>222.20s</td>
+<td>224.09s</td>
+</tr>
+</tbody>
+</table>
+<p>No speedup — wp4 was <em>slower</em> with the env var unset, wp5 was a wash. (As
+   point 1 explains, this env var doesn't even reach the kernel; the
+   real-world number that matters is that both conditions ran at
+   <code>num_threads=1</code> regardless, and thread-spawn/sync overhead for a ~700-750
+   particle problem size may not be worth paying even if a caller did wire
+   <code>OPENPTV_NUM_THREADS</code> up.)</p>
+<p><strong>Conclusion:</strong> this is real, paid-for complexity (build flags on every
+platform, a Homebrew <code>libomp</code> runtime dependency on macOS, <code>libgomp1</code> as an
+explicit apt dependency in every consumer's Docker image) for a code path
+that has never actually run multi-threaded in production and shows no
+measured benefit even when forced to.</p>
+<h2 id="what-to-remove">What to remove<a class="headerlink" href="#what-to-remove" title="Permanent link">&para;</a></h2>
+<h3 id="srcopenptv2algorithmstrack_kernels_corrpy"><code>src/openptv2/algorithms/track_kernels_corr.py</code><a class="headerlink" href="#srcopenptv2algorithmstrack_kernels_corrpy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>from cython.parallel import prange, threadid</code> (line 40) and the <code>prange</code>
+  loop (~line 1302-1303) → replace with a plain <code>for h in range(orig_parts_1)</code>
+  serial loop.</li>
+<li>The <code>num_threads</code> parameter (line 1120) and its validation (lines
+  1180-1182) become dead — either drop it from the signature (breaking
+  change for direct callers) or keep it accepted-but-ignored for one release
+  (see Decisions below).</li>
+<li>The thread-local/pre-allocated-per-thread buffer bookkeeping that exists
+  only to make the parallel section safe (comments at lines ~1174, ~1214,
+  ~1243) — once serial, these collapse to single buffers, which is a real
+  simplification, not just flag removal. Expect this file to shrink
+  meaningfully, not just lose two lines.</li>
+</ul>
+<h3 id="srcopenptv2algorithmstrackpy"><code>src/openptv2/algorithms/track.py</code><a class="headerlink" href="#srcopenptv2algorithmstrackpy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>trackcorr_c_loop()</code> (line 1049): drop the <code>num_threads</code> parameter and the
+  <code>OPENPTV_NUM_THREADS</code> env read (line 1053), or keep <code>num_threads</code> accepted
+  but unused for compatibility (see Decisions).</li>
+</ul>
+<h3 id="setuppy"><code>setup.py</code><a class="headerlink" href="#setuppy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>_windows_compile_args</code>: drop <code>/openmp</code> (line 258).</li>
+<li><code>_darwin_compile_args</code> (lines 259-274): drop <code>-Xpreprocessor -fopenmp</code>,
+  the <code>libomp</code> include/link flags, and — check <code>_libomp_prefix()</code> — if
+  nothing else needs Homebrew <code>libomp</code>, delete that helper and the
+  build-time Homebrew dependency entirely. This is the biggest packaging win:
+  no more relying on <code>libomp</code> being present via Homebrew on macOS CI/dev
+  machines, no more <code>delocate</code> bundling <code>libomp.dylib</code> into the wheel.
+  Double-check <code>delocate</code> config (<code>pyproject.toml</code> / CI workflow) for
+  anything that references <code>libomp</code> specifically.</li>
+<li><code>_posix_compile_args</code> (lines 276-288): drop <code>-fopenmp</code> from both
+  <code>extra_compile_args</code> and <code>extra_link_args</code>.</li>
+<li>Since the comment at <code>_platform_compile_args</code> says "same for every
+  module," confirm no other extension module accidentally <em>needs</em>
+  <code>-fopenmp</code>/<code>/openmp</code> to link (grep for <code>prange</code>/<code>parallel</code> repo-wide,
+  found only in <code>track_kernels_corr.py</code> as of this writing — but re-check
+  before deleting, since this flag currently applies unconditionally to
+  every extension in <code>get_extensions()</code>).</li>
+</ul>
+<h3 id="docs">Docs<a class="headerlink" href="#docs" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>docs/decisions/ADR-001-cython-optimization-plan.md</code>: Phase 4's numbers
+  are now known-estimates that didn't pan out in production; add a note
+  (don't rewrite history) pointing at this plan and its measurements.</li>
+<li><code>docs/algorithms/tracking.md</code>, <code>docs/cloud-batch.md</code>: grep for <code>OpenMP</code>/
+  <code>prange</code>/<code>OPENPTV_NUM_THREADS</code> and remove or correct any user-facing claims
+  about multi-core tracking.</li>
+</ul>
+<h3 id="downstream-openptv-cloud">Downstream: <code>openptv-cloud</code><a class="headerlink" href="#downstream-openptv-cloud" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>Dockerfile.job</code> installs <code>libgomp1</code> specifically because "openptv2's
+  compiled kernels are built with <code>-fopenmp</code>". Once this lands and a new
+  <code>openptv2</code> release is pulled in, that <code>apt-get install libgomp1</code> line (and
+  its comment) can be deleted — small further image-size/build-step win on
+  top of the size fixes already done there.</li>
+</ul>
+<h2 id="testing-strategy">Testing strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>tests/unit/test_parallel_tracking.py</code>: currently asserts <em>determinism</em>
+  across <code>num_threads in [1, 2, 4, 8]</code> — the whole point of the test was to
+  prove the parallel section doesn't change results. After removal there is
+  only one code path, so this test either collapses to a single-threaded
+  regression check (delete the multi-<code>num_threads</code> parametrization, keep the
+  reference-output assertions) or gets deleted if fully redundant with
+  existing tracking correctness tests. Don't delete without confirming no
+  unique reference-output coverage lives only here.</li>
+<li><code>tests/unit/test_track_kernels_tracking_coverage.py</code>: same audit — check
+  what it's actually covering before touching.</li>
+<li>Full test suite (242+ tests per ADR-001) must still pass, particularly
+  <code>test_cavity</code> nlinks / trajectory-count assertions (the existing bar for
+  "did the algorithm change").</li>
+<li>Rebuild on all three platforms (Windows/macOS/Linux CI) to confirm the
+  compiler-flag removal doesn't break the build in either direction —
+  removing <code>-fopenmp</code> should make Linux/macOS builds <em>less</em> fragile (no
+  <code>libomp</code> availability dependency on macOS), but verify.</li>
+</ul>
+<h2 id="decisions-needed-before-implementing">Decisions needed before implementing<a class="headerlink" href="#decisions-needed-before-implementing" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong><code>num_threads</code> parameter: delete or deprecate-in-place?</strong></li>
+<li><strong>(a) Delete outright.</strong> Cleanest, but a breaking change for anyone
+     calling <code>trackcorr_c_loop(..., num_threads=N)</code> or
+     <code>trackback_loop_fast(..., num_threads=N)</code> directly (not through the
+     <code>default</code> tracking plugin). Grep for external callers before choosing
+     this.</li>
+<li><strong>(b) Keep the parameter, ignore it, warn once if set &gt;1.</strong> Softer
+     migration, avoids a breaking API change, costs a few lines of
+     dead-parameter noise. Given <code>OPENPTV_NUM_THREADS</code> was never wired to
+     anything reachable from a released CLI/GUI path, (a) is likely safe —
+     but confirm via a repo-wide grep for <code>num_threads=</code> call sites before
+     committing to it.</li>
+<li><strong>Keep <code>OPENPTV_NUM_THREADS</code> as a no-op env var for one release</strong> (to
+   avoid a silent behavior change for anyone who <em>did</em> set it expecting
+   multi-threading), or remove it immediately since it was never documented
+   as a public interface? Given no <code>docs/</code> file mentions it (confirmed by
+   grep), immediate removal is likely fine.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

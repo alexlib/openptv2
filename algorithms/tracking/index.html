@@ -1339,6 +1339,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#seal-linkage-flat-trajectories-srcopenptv2storagesealpy73" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seal: Linkage → Flat Trajectories (src/openptv2/storage/seal.py:73)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#when-to-use-which" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1897,6 +1908,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#seal-linkage-flat-trajectories-srcopenptv2storagesealpy73" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seal: Linkage → Flat Trajectories (src/openptv2/storage/seal.py:73)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#when-to-use-which" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2357,6 +2379,17 @@
 <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>track.c:    step: 10000, curr: 998, next: 1043, links: 453, lost: 545, add: 1
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>track3d.c:  track3d step: 10001, curr: 1, next: 1, links: 0
 </span></code></pre></div>
+<hr />
+<h2 id="seal-linkage-flat-trajectories-srcopenptv2storagesealpy73">Seal: Linkage → Flat Trajectories (<code>src/openptv2/storage/seal.py:73</code>)<a class="headerlink" href="#seal-linkage-flat-trajectories-srcopenptv2storagesealpy73" title="Permanent link">&para;</a></h2>
+<p>Tracking writes per-frame <code>linkage/ptv_is/frame_*/{prev,next,pos}</code> (<code>RunStore.write_linkage</code>, <code>run_store.py:364</code>). <code>seal()</code> materializes the flat cache:</p>
+<ol>
+<li>Walks <code>linkage</code> with <code>history</code> window (<code>seal.py:92</code>) to resolve <code>prev</code> (gap-bridging <code>MAX_LINK_STEP</code>), assigns contiguous <code>trajid</code>, handles multi-claim disambiguation.</li>
+<li>Concatenates all frames, <code>lexsort</code> by <code>(trajid,time)</code>, <code>np.unique</code> to get <code>trajid/length/first_row</code> (<code>seal.py:179</code>).</li>
+<li>Filters <code>length &lt; min_trajectory_length</code> (default 5 from <code>track.min_trajectory_length</code>, <code>batch/pyptv_batch.py:246</code>) before writing.</li>
+<li>Writes <code>trajectories/{pos,vel,accel,time,trajid}</code> (<code>run_store.py:530</code>, <code>pos</code> in meters) + <code>traj/{trajid,length,first,last,first_row}</code> (<code>run_store.py:480</code>).</li>
+<li>Memoizes via <code>source_hash</code> — skips if linkage unchanged unless <code>force=True</code>; sets <code>meta/sealed</code>.</li>
+</ol>
+<p><code>traj/first_row</code> enables O(1) <code>pos[lo:hi]</code> without loading 66 MB <code>trajid</code> (<code>notebooks/marimo_trajectory_viewer.py:33</code>). <code>copy_trajectories.py</code> filesystem-copies <code>run.zarr/traj</code> → <code>traj.zarr</code> and <code>run.zarr/trajectories</code> → <code>trajectories.zarr</code>.</p>
 <hr />
 <h2 id="when-to-use-which">When to Use Which<a class="headerlink" href="#when-to-use-which" title="Permanent link">&para;</a></h2>
 <table>

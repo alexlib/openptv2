@@ -18,19 +18,19 @@
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Storage formats as built (2026-08-14) — backward-compatibility reference - OpenPTV2 Documentation</title>
+        <title>2026-08-25 Code Review Fix Plan - OpenPTV2 Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,7 +49,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#storage-formats-as-built-2026-08-14-backward-compatibility-reference" class="md-skip">
+        <a href="#2026-08-25-code-review-fix-plan" class="md-skip">
           Skip to content
         </a>
       
@@ -88,7 +88,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+    <a href="../../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Storage formats as built (2026-08-14) — backward-compatibility reference
+              2026-08-25 Code Review Fix Plan
             
           </span>
         </div>
@@ -221,7 +221,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -240,7 +240,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../installation/" class="md-tabs__link">
+      <a href="../../../installation/" class="md-tabs__link">
         
   
   
@@ -259,7 +259,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../first_steps/" class="md-tabs__link">
+      <a href="../../../first_steps/" class="md-tabs__link">
         
   
   
@@ -280,7 +280,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+        <a href="../../../zarr-hdf5-storage/" class="md-tabs__link">
           
   
   
@@ -298,7 +298,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../tests/" class="md-tabs__link">
+      <a href="../../../tests/" class="md-tabs__link">
         
   
   
@@ -319,7 +319,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../developer_guide/building/" class="md-tabs__link">
+        <a href="../../../developer_guide/building/" class="md-tabs__link">
           
   
   
@@ -339,7 +339,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../algorithms/tracking/" class="md-tabs__link">
+        <a href="../../../algorithms/tracking/" class="md-tabs__link">
           
   
   
@@ -373,7 +373,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+    <a href="../../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -403,7 +403,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -430,7 +430,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/" class="md-nav__link">
+      <a href="../../../installation/" class="md-nav__link">
         
   
   
@@ -457,7 +457,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../first_steps/" class="md-nav__link">
+      <a href="../../../first_steps/" class="md-nav__link">
         
   
   
@@ -538,7 +538,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+      <a href="../../../zarr-hdf5-storage/" class="md-nav__link">
         
   
   
@@ -566,7 +566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tracking_guide/" class="md-nav__link">
+      <a href="../../../tracking_guide/" class="md-nav__link">
         
   
   
@@ -594,7 +594,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calibration_best_practices/" class="md-nav__link">
+      <a href="../../../calibration_best_practices/" class="md-nav__link">
         
   
   
@@ -622,7 +622,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+      <a href="../../../tutorials/batch_processing/" class="md-nav__link">
         
   
   
@@ -650,7 +650,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+      <a href="../../../tutorials/tracking_visualization/" class="md-nav__link">
         
   
   
@@ -678,7 +678,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+      <a href="../../../tutorials/tracking_debug_visualization/" class="md-nav__link">
         
   
   
@@ -713,7 +713,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/" class="md-nav__link">
+      <a href="../../../tests/" class="md-nav__link">
         
   
   
@@ -794,7 +794,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/building/" class="md-nav__link">
+      <a href="../../../developer_guide/building/" class="md-nav__link">
         
   
   
@@ -822,7 +822,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+      <a href="../../../developer_guide/cython_and_pure_python/" class="md-nav__link">
         
   
   
@@ -850,7 +850,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+      <a href="../../../developer_guide/documentation_workflow/" class="md-nav__link">
         
   
   
@@ -878,7 +878,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+      <a href="../../../developer_guide/packaging_and_releases/" class="md-nav__link">
         
   
   
@@ -906,7 +906,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+      <a href="../../../HOW_TO_TEST_GUI/" class="md-nav__link">
         
   
   
@@ -995,7 +995,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../algorithms/tracking/" class="md-nav__link">
+      <a href="../../../algorithms/tracking/" class="md-nav__link">
         
   
   
@@ -1023,7 +1023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+      <a href="../../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
         
   
   
@@ -1078,10 +1078,104 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#layer-1-legacy-per-frame-ascii-the-canonical-format-everything-else-is-derived" class="md-nav__link">
+  <a href="#fixed-in-this-pass" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Layer 1 — legacy per-frame ASCII (the canonical format; everything else is derived)
+        Fixed in this pass
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fixed in this pass">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-packaging-wheel-omits-storage-benchmarking-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Packaging: wheel omits storage / benchmarking (HIGH)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-ci-no-testlint-gating-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. CI: no test/lint gating (HIGH)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-scratch-buffer-overflow-in-clique-matching-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Scratch-buffer overflow in clique matching (HIGH)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-hardcoded-max_targets1000-in-public-correspondences-path-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Hardcoded max_targets=1000 in public correspondences path (HIGH)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-max_cands-stride-bug-in-sort_candidates_by_freq-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. MAX_CANDS stride bug in sort_candidates_by_freq (HIGH)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-nmax-off-by-one-guards-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. NMAX off-by-one guards (MEDIUM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-working-tree-hygiene-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Working-tree hygiene (HIGH)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#planned-for-later" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planned for later
       
     </span>
   </a>
@@ -1089,54 +1183,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#layer-2-zarr-mirror-resrunzarr-gated-by-openptv_storage" class="md-nav__link">
+  <a href="#verification" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Layer 2 — Zarr mirror (res/run.zarr), gated by OPENPTV_STORAGE
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#layer-3-hdf5-flowtracks-export-end" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Layer 3 — HDF5 / flowtracks (export end)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#layer-4-resimageszarr-input-images" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Layer 4 — res/images.zarr (input images)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pipeline-graph" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pipeline graph
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#known-defects-in-the-as-built-design" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Known defects in the as-built design
+        Verification
       
     </span>
   </a>
@@ -1163,160 +1213,156 @@
   
 
 
-<h1 id="storage-formats-as-built-2026-08-14-backward-compatibility-reference">Storage formats as built (2026-08-14) — backward-compatibility reference<a class="headerlink" href="#storage-formats-as-built-2026-08-14-backward-compatibility-reference" title="Permanent link">&para;</a></h1>
-<p>Snapshot of how openptv2 stores data <strong>today</strong>, captured before redesigning the
-storage layer. Its purpose is backward compatibility: any new format must be
-able to import from, and (on request) export to, everything described here.</p>
-<p>Verified against <code>main</code> @ <code>74c9604</code>.</p>
-<hr />
-<h2 id="layer-1-legacy-per-frame-ascii-the-canonical-format-everything-else-is-derived">Layer 1 — legacy per-frame ASCII (the canonical format; everything else is derived)<a class="headerlink" href="#layer-1-legacy-per-frame-ascii-the-canonical-format-everything-else-is-derived" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>File</th>
-<th>Written by</th>
-<th>Format</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>img/cam&lt;N&gt;.&lt;frame&gt;_targets</code></td>
-<td><code>algorithms/tracking_frame_buf.py:215</code> <code>write_targets</code></td>
-<td>count line, then <code>pnr x y n nx ny sumg tnr</code></td>
-</tr>
-<tr>
-<td><code>res/rt_is.&lt;frame&gt;</code></td>
-<td><code>gui/ptv.py:763</code> (<code>py_determination_proc_c</code>), <code>tracking_frame_buf.py:574</code> (<code>write_path_frame</code>)</td>
-<td>count, then <code>nr X Y Z p0 p1 p2 p3</code> — mm; <code>p&lt;i&gt;</code> = target id in camera i, <code>-1</code> = not seen</td>
-</tr>
-<tr>
-<td><code>res/ptv_is.&lt;frame&gt;</code></td>
-<td><code>tracking_frame_buf.py:569</code></td>
-<td>count, then <code>prev next X Y Z</code> — <strong>frame-local</strong> 0-based indices; <code>prev == -1</code>, <code>next == -2</code> mean no link</td>
-</tr>
-<tr>
-<td><code>res/added.&lt;frame&gt;</code></td>
-<td>same writer, different <code>linkage_file_base</code></td>
-<td>identical 5 columns; second tracking pass</td>
-</tr>
-<tr>
-<td>prio file (optional)</td>
-<td><code>tracking_frame_buf.py:579</code></td>
-<td>ptv_is columns + <code>prio</code></td>
-</tr>
-</tbody>
-</table>
-<p>Exact format strings (must be reproducible by any exporter):</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># targets</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">pnr</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">x</span><span class="si">:</span><span class="s2">9.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">y</span><span class="si">:</span><span class="s2">9.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">n</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">nx</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">ny</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">sumg</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">tnr</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># rt_is</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="s2">"</span><span class="si">%4d</span><span class="s2"> </span><span class="si">%9.3f</span><span class="s2"> </span><span class="si">%9.3f</span><span class="s2"> </span><span class="si">%9.3f</span><span class="s2"> </span><span class="si">%4d</span><span class="s2"> </span><span class="si">%4d</span><span class="s2"> </span><span class="si">%4d</span><span class="s2"> </span><span class="si">%4d</span><span class="se">\n</span><span class="s2">"</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># ptv_is</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">prev</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">next_idx</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">10.3f</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
-</span></code></pre></div>
-<p>Filenames are positional-by-convention. <code>_resolve_file_base</code> (<code>:156</code>) supports
-<code>%d</code> templates, a <code>{frame:04d}</code> fallback, and — on a read miss — a regex that
-guesses the camera index back out of the filename (<code>:195</code>).</p>
-<p><code>Frame</code> / <code>FrameBuf</code> (<code>tracking_frame_buf.py:630</code>, <code>:936</code>) read and write these
-directly; this is the format the Cython tracker actually sees.</p>
-<h2 id="layer-2-zarr-mirror-resrunzarr-gated-by-openptv_storage">Layer 2 — Zarr mirror (<code>res/run.zarr</code>), gated by <code>OPENPTV_STORAGE</code><a class="headerlink" href="#layer-2-zarr-mirror-resrunzarr-gated-by-openptv_storage" title="Permanent link">&para;</a></h2>
-<p><code>src/openptv2/storage/zarr_store.py</code>, class <code>ZarrFrameStore</code>.</p>
-<table>
-<thead>
-<tr>
-<th>Mode</th>
-<th>Behaviour</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>zarr</code> (<strong>default</strong>)</td>
-<td>dual-write: ASCII <strong>and</strong> Zarr</td>
-</tr>
-<tr>
-<td><code>zarr_only</code></td>
-<td>writes both, then <code>os.remove</code>s the text files (<code>write_path_frame:616</code>)</td>
-</tr>
-<tr>
-<td><code>legacy</code></td>
-<td>ASCII only</td>
-</tr>
-</tbody>
-</table>
-<p>Reads prefer ASCII; Zarr is a fallback when the file is missing or zero-length
-(<code>read_targets:190</code>, <code>read_path_frame:360</code>).</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>run.zarr/
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  targets/cam_&lt;i&gt;/frame_&lt;n&gt;              (N,8) float64      # unpadded frame key
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  correspondences/frame_&lt;n&gt;              (N, 3+ncams) float64, xyz hstacked with cam ids cast to float
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  linkage/&lt;ptv_is|added&gt;/frame_&lt;n:05d&gt;/  {prev:int32, next:int32, pos:float64}   # zero-padded key
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  trajectories/                          {pos, vel, acc, frame, trajid}
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  metadata/                              created empty, never written
-</span></code></pre></div>
-<h2 id="layer-3-hdf5-flowtracks-export-end">Layer 3 — HDF5 / flowtracks (export end)<a class="headerlink" href="#layer-3-hdf5-flowtracks-export-end" title="Permanent link">&para;</a></h2>
+<h1 id="2026-08-25-code-review-fix-plan">2026-08-25 Code Review Fix Plan<a class="headerlink" href="#2026-08-25-code-review-fix-plan" title="Permanent link">&para;</a></h1>
+<p>Findings from the full-repo review of 2026-08-25, split into what is fixed
+now and what is planned for later implementation.</p>
+<h2 id="fixed-in-this-pass">Fixed in this pass<a class="headerlink" href="#fixed-in-this-pass" title="Permanent link">&para;</a></h2>
+<h3 id="1-packaging-wheel-omits-storage-benchmarking-high">1. Packaging: wheel omits <code>storage</code> / <code>benchmarking</code> (HIGH)<a class="headerlink" href="#1-packaging-wheel-omits-storage-benchmarking-high" title="Permanent link">&para;</a></h3>
+<p><code>[tool.setuptools] packages</code> in <code>pyproject.toml</code> listed only
+<code>openptv2</code>, <code>.algorithms</code>, <code>.gui</code>, <code>.batch</code>, <code>.plugins</code>. The <code>storage/</code>
+and <code>benchmarking/</code> subpackages were silently excluded from wheels,
+breaking the declared <code>openptv2-convert-legacy</code> entry point
+(<code>openptv2.storage.legacy:main</code>) for pip-installed users.</p>
+<p><strong>Fix:</strong> add <code>openptv2.storage</code> and <code>openptv2.benchmarking</code> to the
+package list. Verify with a wheel build + import smoke test before the
+next release.</p>
+<h3 id="2-ci-no-testlint-gating-high">2. CI: no test/lint gating (HIGH)<a class="headerlink" href="#2-ci-no-testlint-gating-high" title="Permanent link">&para;</a></h3>
+<p>Only <code>cibuildwheel.yml</code> and <code>deploy_docs.yml</code> existed; pytest, ruff and
+mypy never ran on PRs, and the PyPI-publish verification job is disabled
+(<code>if: "false"</code>).</p>
+<p><strong>Fix:</strong> add <code>.github/workflows/ci.yml</code> running <code>uv run pytest -m
+"not slow"</code> plus ruff on ubuntu/windows across supported Python versions.
+(A mypy job was attempted but the codebase has ~4k pre-existing mypy
+errors; type-check gating is a follow-up — see the table below. Enabling
+the release <code>test_package</code> job is also left as a follow-up.)</p>
+<h3 id="3-scratch-buffer-overflow-in-clique-matching-high">3. Scratch-buffer overflow in clique matching (HIGH)<a class="headerlink" href="#3-scratch-buffer-overflow-in-clique-matching-high" title="Permanent link">&para;</a></h3>
+<p><code>src/openptv2/algorithms/correspondences.py</code>: scratch arrays are
+allocated with <code>num_cams * NMAX</code> rows but downstream stages were invoked
+with <code>scratch_size=4*NMAX</code>; writes past the allocation corrupt memory in
+compiled mode (<code>boundscheck(False)</code>).</p>
+<p><strong>Fix:</strong> cap the per-stage scratch size at the actual allocation.</p>
+<h3 id="4-hardcoded-max_targets1000-in-public-correspondences-path-high">4. Hardcoded <code>max_targets=1000</code> in public correspondences path (HIGH)<a class="headerlink" href="#4-hardcoded-max_targets1000-in-public-correspondences-path-high" title="Permanent link">&para;</a></h3>
+<p><code>src/openptv2/correspondences.py</code> builds an <code>AlgoFrame(max_targets=1000)</code>
+and assigns targets wholesale; &gt;1000 targets/camera overruns fixed SoA
+buffers in compiled mode. <code>tracker.py</code> already sizes dynamically — this
+call site was missed.</p>
+<p><strong>Fix:</strong> size the frame from actual target counts (dynamic capacity).</p>
+<h3 id="5-max_cands-stride-bug-in-sort_candidates_by_freq-high">5. <code>MAX_CANDS</code> stride bug in <code>sort_candidates_by_freq</code> (HIGH)<a class="headerlink" href="#5-max_cands-stride-bug-in-sort_candidates_by_freq-high" title="Permanent link">&para;</a></h3>
+<p><code>src/openptv2/algorithms/track.py</code>: hardcoded stride 4 while
+<code>constants.MAX_CANDS = 32</code>; inner scan crosses candidate-group
+boundaries whenever <code>MAX_CANDS != 4</code>.</p>
+<p><strong>Fix:</strong> use <code>constants.MAX_CANDS</code> as the stride.</p>
+<h3 id="6-nmax-off-by-one-guards-medium">6. NMAX off-by-one guards (MEDIUM)<a class="headerlink" href="#6-nmax-off-by-one-guards-medium" title="Permanent link">&para;</a></h3>
+<p>Guards of the form <code>if p1 &gt; NMAX: continue</code> allow <code>p1 == NMAX</code>, which
+indexes one row past <code>tusage[num_cams, NMAX]</code> in compiled mode.</p>
+<p><strong>Fix:</strong> change to <code>&gt;= NMAX</code>.</p>
+<h3 id="7-working-tree-hygiene-high">7. Working-tree hygiene (HIGH)<a class="headerlink" href="#7-working-tree-hygiene-high" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>ZarrFrameStore.to_flowtracks_h5()</code> (<code>:303</code>) — flat <code>pos/vel/acc/frame/trajid</code>, mm→m.</li>
-<li><code>read_zarr_trajectories()</code> (<code>:538</code>) — builds flowtracks <code>Trajectory</code> objects.
-  Case 1 reads <code>trajectories/</code>; Case 2 <strong>walks the linkage graph</strong> and is the
-  path actually taken, because <code>trajectories/</code> is a stale cache written by
-  openptv-cloud post-processing and not refreshed by a re-track (comment at <code>:560</code>).</li>
-<li><code>gui/flowtracks_utils.py</code> falls back to <code>flowtracks.io.trajectories_ptvis("res/ptv_is.%d")</code>.</li>
-<li>The real trajectory database (<code>trajectories.h5</code>) is produced downstream by
-  <strong>postptv/flowtracks</strong> via openptv-cloud's <code>post_process.py</code>, not here.</li>
+<li>Stray untracked venv directory <code>openptv2/</code> at repo root (not covered
+  by <code>.gitignore</code>, hidden by local <code>status.showUntrackedFiles=false</code>).</li>
+<li>Tracked artifacts: <code>.coverage</code>, <code>scratch/</code>, <code>.slim/</code>,
+  <code>diagnose_fast3d_vs_myptv.py</code>.</li>
 </ul>
-<h2 id="layer-4-resimageszarr-input-images">Layer 4 — <code>res/images.zarr</code> (input images)<a class="headerlink" href="#layer-4-resimageszarr-input-images" title="Permanent link">&para;</a></h2>
-<p>Read-only in this repo (<code>gui/ptv.py:825</code>); expects a <code>raw_images</code> array, shape
-<code>(N,h,w)</code> or <code>(N,cams,h,w)</code>, 50-frame Blosc-Zstd chunks. The writer
-(<code>convert_to_zarr.py</code>) lives in <strong>openptv-cloud/docker</strong> — it does not exist in
-openptv2, despite <code>docs/zarr-hdf5-storage.md:173</code> implying otherwise.</p>
-<h2 id="pipeline-graph">Pipeline graph<a class="headerlink" href="#pipeline-graph" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>img/*.tif ──┬─→ (openptv-cloud) convert_to_zarr.py → res/images.zarr ─┐
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>            └──────────────────────────────────────────────────────┬─┘
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>                                                                   ↓
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>                          detection   → img/*_targets  +  targets/cam_i/frame_n
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>                          correspond  → res/rt_is.*    +  correspondences/frame_n
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>                          tracking    → res/ptv_is.*   +  linkage/ptv_is/frame_n
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>                                                                   ↓
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>                                   read_zarr_trajectories (walks linkage)
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>                                                                   ↓
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>                                   flowtracks Trajectory → trajectories.h5 (postptv)
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>                                                                   ↓
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>                                   matlab_to_python_3dptv → Eulerian grid → VTK
-</span></code></pre></div>
-<hr />
-<h2 id="known-defects-in-the-as-built-design">Known defects in the as-built design<a class="headerlink" href="#known-defects-in-the-as-built-design" title="Permanent link">&para;</a></h2>
-<p>Recorded so the redesign does not reproduce them.</p>
-<ol>
-<li><strong>Two sources of truth that diverge silently.</strong> <code>write_path_frame:607</code> wraps
-   the whole Zarr write in a bare <code>except: pass</code>. A run can produce a store with
-   missing frames and report success.</li>
-<li><strong>Inconsistent frame keys</strong> — <code>frame_10000</code> for targets/correspondences,
-   <code>frame_{n:05d}</code> for linkage. Six-digit frame numbers break the lexical sorts
-   in <code>inspect_zarr_store</code> and <code>read_zarr_trajectories</code>.</li>
-<li><strong><code>inspect_zarr_store:474</code> reads <code>trajectories/time</code>; <code>write_trajectories:246</code>
-   writes <code>frame</code>.</strong> It raises. It also never reports the <code>linkage/</code> group — the
-   one group holding the tracking result.</li>
-<li><strong><code>write_trajectories()</code> has no caller in this repo.</strong> Only openptv-cloud
-   writes <code>trajectories/</code>, which is why <code>read_zarr_trajectories</code> distrusts it.</li>
-<li><strong>Integer target ids stored as float64</strong> (<code>write_correspondences:188</code> hstack),
-   forcing a cast on every read.</li>
-<li><strong>One Zarr group per frame per camera</strong> — the small-files problem, moved
-   inside a directory store. <code>_get_or_create_group</code> needs a 10-attempt retry loop
-   with sleeps to survive concurrent workers; that retry loop is the symptom.</li>
-<li><strong><code>Path("res/run.zarr")</code> is CWD-relative</strong> (<code>gui/ptv.py:745</code>, the plugins).
-   Only works because the pipeline chdirs into the experiment folder.</li>
-<li><strong>mm↔m conversion scattered across call sites</strong> (<code>zarr_store.py:314</code>, <code>:572</code>,
-   <code>:637</code>; <code>flowtracks_utils.py:49</code>). No units are recorded anywhere.</li>
-<li><strong><code>prev</code>/<code>next</code> are frame-local indices</strong>, so every consumer must re-derive
-   "which frame does this index address". <code>read_zarr_trajectories:640-650</code> has
-   three separate guard clauses for the ways that goes wrong (frame gap, row-count
-   mismatch, multi-claim ambiguity).</li>
-<li><strong>No run statistics are persisted.</strong> <code>correspondences()</code> returns
-    <code>match_counts = [quads, triplets, pairs, total]</code>
-    (<code>algorithms/correspondences.py:901</code>); <code>gui/ptv.py:1381</code> and <code>:707</code> print it
-    to stdout and drop it. Per-frame target counts, quad/triplet/pair counts,
-    per-camera participation, and link counts are all recoverable only by
-    re-reading the entire run.</li>
-</ol>
+<p><strong>Fix:</strong> delete the stray venv; untrack artifacts via <code>git rm --cached</code>
+and extend <code>.gitignore</code>; remove the local git override.</p>
+<h2 id="planned-for-later">Planned for later<a class="headerlink" href="#planned-for-later" title="Permanent link">&para;</a></h2>
+<p>These review findings are recorded but intentionally not addressed yet:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Finding</th>
+<th>Where</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Delete/deprecate legacy duplicate store</td>
+<td><code>src/openptv2/storage/zarr_store.py</code> (unpadded frame keys, crash in <code>inspect_zarr_store</code> at :474)</td>
+<td>HIGH</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Parallel-safety contract for sequence plugins</td>
+<td><code>batch/pyptv_batch_parallel.py</code> + plugin Protocol (shared side files like <code>res/mask_areas.csv</code> race)</td>
+<td>MEDIUM</td>
+</tr>
+<tr>
+<td>3</td>
+<td>proptv plugin ignores its config</td>
+<td><code>plugins/proptv_tracking.py:233</code> no-op <code>np.where</code>, <code>:240</code> hardcoded cost weights</td>
+<td>MEDIUM</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Deduplicate compiled vs Python four-camera matching</td>
+<td><code>algorithms/correspondences.py:416</code> vs <code>:531</code> (numerically divergent zero-distance guard)</td>
+<td>MEDIUM</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Factor shared tracking-plugin scaffolding into base class</td>
+<td><code>myptv_3d_tracking.py</code> / <code>myptv_2d_tracking.py</code> / <code>proptv_tracking.py</code></td>
+<td>MEDIUM</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Broad exception swallowing</td>
+<td><code>zarr_store.py:25,47</code>, <code>cython_3d_tracking.py:75-97</code> silent success when tracker None</td>
+<td>MEDIUM</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Replace hot-loop <code>print()</code> with logging</td>
+<td><code>algorithms/track.py:1178-1207</code></td>
+<td>LOW</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Dead code cleanup</td>
+<td><code>track.py</code> unused <code>dmin</code>, discarded arrays, duplicate candidate-search kernels</td>
+<td>LOW</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Store <code>close()</code> / context-manager protocol; stop reaching into <code>_open_run_store</code></td>
+<td><code>storage/run_store.py</code>, plugins</td>
+<td>LOW</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Remove empty stub packages or populate them</td>
+<td><code>autoresearch/</code>, <code>differentiable/</code></td>
+<td>LOW</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Enable PyPI-release <code>test_package</code> job</td>
+<td><code>.github/workflows/cibuildwheel.yml</code></td>
+<td>MEDIUM</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Reconcile dual dev dependency declarations</td>
+<td><code>pyproject.toml</code> extras vs dependency-groups</td>
+<td>LOW</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Clean up ~4k pre-existing mypy errors, then add a mypy job to <code>ci.yml</code> (mypy <code>python_version</code> bumped to 3.12 in this pass so numpy stubs parse)</td>
+<td><code>src/openptv2/</code></td>
+<td>MEDIUM</td>
+</tr>
+</tbody>
+</table>
+<h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>uv run pytest tests/unit/test_correspondences.py tests/unit/test_track.py tests/unit/test_track3d.py -v</code></li>
+<li><code>uv run pytest -m "not slow"</code> (full suite)</li>
+<li>Wheel build smoke test: packages present, <code>openptv2-convert-legacy --help</code></li>
+</ul>
 
 
 
@@ -1372,10 +1418,10 @@ openptv2, despite <code>docs/zarr-hdf5-storage.md:173</code> implying otherwise.
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
