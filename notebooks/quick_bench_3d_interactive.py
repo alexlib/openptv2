@@ -11,7 +11,7 @@
 
 import marimo
 
-__generated_with = "0.20.4"
+__generated_with = "0.24.0"
 app = marimo.App(width="medium")
 
 
@@ -23,7 +23,8 @@ def _():
     import time
     from pathlib import Path
     import plotly.graph_objects as go
-    return mo, np, pd, time, Path, go
+
+    return Path, go, mo, time
 
 
 @app.cell
@@ -82,7 +83,7 @@ def _():
         "hybrid_deltat_3d": ("8.0","0.8","60"),
         "two_phase": ("8.0","5.0","60"),
     }
-    return ALL_TRACKERS, defaults, dense_defaults
+    return ALL_TRACKERS, defaults
 
 
 @app.cell
@@ -100,11 +101,11 @@ def _(ALL_TRACKERS, defaults, mo):
         _rows.append(mo.hstack([mo.md(f"**{_name}**"), _dv_in, _dacc_in, _ang_in, _btn], justify="start", gap=0.5))
     panel = mo.vstack(_rows, gap=0.5)
     panel
-    return panel, uis
+    return (uis,)
 
 
 @app.cell
-def _(Path, go, is_script, mo, np, pd, time):
+def _(Path, go, is_script, time):
     from openptv2.benchmarking.runner import run_tracker
     from openptv2.benchmarking.metrics import compute_physics_metrics
 
@@ -122,16 +123,14 @@ def _(Path, go, is_script, mo, np, pd, time):
             return default
 
     def tracks_to_plotly(pred, title):
-        # pred: {tid: [(frame,x,y,z)]} -> plotly 3D lines + markers; singletons shown as markers so synthetic fragmented case is not empty
+        # pred: {tid: [(frame,x,y,z)]} -> plotly 3D lines + markers; singletons as red markers so synthetic fragmented case is not empty 2D
         fig = go.Figure()
         tids = list(pred.keys())[:300]
         has_lines = False
-        # collect singleton points for a separate scatter
         sx, sy, sz, stext = [], [], [], []
         for tid in tids:
             pts = sorted(pred[tid], key=lambda p: p[0])
             if len(pts) < 2:
-                # singleton: show as marker (first point only, since len 1)
                 if pts:
                     sx.append(pts[0][1]); sy.append(pts[0][2]); sz.append(pts[0][3])
                     stext.append(f"tr{tid} f{pts[0][0]} singleton")
@@ -140,17 +139,13 @@ def _(Path, go, is_script, mo, np, pd, time):
             xs = [p[1] for p in pts]
             ys = [p[2] for p in pts]
             zs = [p[3] for p in pts]
-            fig.add_trace(go.Scatter3d(x=xs, y=ys, z=zs, mode="lines", line=dict(width=3), name=f"tr{tid}", showlegend=False, hoverinfo="text", text=[f"f{f}" for f,_,_,_ in pts]))
+            fig.add_trace(go.Scatter3d(x=xs, y=ys, z=zs, mode="lines", line=dict(width=4), name=f"tr{tid}", showlegend=False, hoverinfo="text", text=[f"f{f}" for f,_,_,_ in pts]))
         if sx:
-            fig.add_trace(go.Scatter3d(x=sx, y=sy, z=sz, mode="markers", marker=dict(size=3, color="rgba(200,0,0,0.6)"), name=f"{len(sx)} singletons", hoverinfo="text", text=stext))
+            fig.add_trace(go.Scatter3d(x=sx, y=sy, z=sz, mode="markers", marker=dict(size=3, color="rgba(200,0,0,0.7)"), name=f"{len(sx)} singletons", hoverinfo="text", text=stext))
         if not has_lines and not sx:
             fig.add_annotation(text="No tracks to display", x=0.5, y=0.5, showarrow=False)
-        # if only singletons, explain fragmentation
-        if not has_lines and sx:
-            fig.update_layout(title=title + " — fragmented (all singletons, no links) — try larger dvxmax/dacc")
-        else:
-            fig.update_layout(title=title)
-        fig.update_layout(scene=dict(xaxis_title="x mm", yaxis_title="y mm", zaxis_title="z mm", aspectmode="data"), height=520, margin=dict(l=0,r=0,b=0,t=40))
+        _t = title + (" — fragmented (all singletons) — try larger dvxmax/dacc" if not has_lines and sx else "")
+        fig.update_layout(title=_t, scene=dict(xaxis_title="x mm", yaxis_title="y mm", zaxis_title="z mm", aspectmode="data", camera=dict(eye=dict(x=1.6, y=1.6, z=0.9))), height=560, margin=dict(l=0,r=0,b=0,t=40))
         return fig
 
     def run_one(yaml_path, tracker, dv, dacc, ang):
@@ -172,11 +167,21 @@ def _(Path, go, is_script, mo, np, pd, time):
         _msg = f"[script] burgers priority_segment_3d: mean_len={demo['pm'].mean_track_length if demo['pm'] else 'ERR'}"
         print(_msg)
         _script_demo = demo
-    return Path, _script_demo, go, parse_float, resolve_dataset, run_one, tracks_to_plotly
+    return parse_float, resolve_dataset, run_one, tracks_to_plotly
 
 
 @app.cell
-def _(ALL_TRACKERS, Path, dataset_picker, go, is_script, mo, parse_float, resolve_dataset, run_one, tracks_to_plotly, uis):
+def _(
+    ALL_TRACKERS,
+    dataset_picker,
+    is_script,
+    mo,
+    parse_float,
+    resolve_dataset,
+    run_one,
+    tracks_to_plotly,
+    uis,
+):
     yaml_path, dlabel = resolve_dataset(dataset_picker.value)
     _outputs = []
     _auto = is_script
