@@ -24,6 +24,7 @@ def _():
     import marimo as mo
 
     from openptv2.benchmarking.metrics import compute_physics_metrics
+    from openptv2.benchmarking.param_search import find_smooth_params
     from openptv2.benchmarking.runner import run_tracker
     from openptv2.gui.plot_3d_trajectories import build_3d_trajectories_figure
 
@@ -32,6 +33,7 @@ def _():
         Path,
         build_3d_trajectories_figure,
         compute_physics_metrics,
+        find_smooth_params,
         mo,
         run_tracker,
         time,
@@ -174,6 +176,79 @@ def _(
 
     panel
     return ang_in, btn, dacc_in, dv_in, selected_tracker
+
+
+@app.cell
+def _(mo):
+    mo.md("""
+    #### How to tune dv / dacc / angle (manually, or via **Auto-tune** below)
+
+    There's no gradient here — the tracker is a discrete, non-differentiable
+    black box, so nudging a parameter can jump the result discontinuously.
+    Search it like you'd tune any noisy black box: **start small, grow until
+    it stops helping, then back off a step or two.**
+
+    1. Start with **dv small** (tighter than you think you need) and
+       **dacc, angle also small**.
+    2. Increase **dv** a step at a time (e.g. ×1.5 each time). Watch
+       `mean_len` and `kurt` in the result header. `mean_len` should climb;
+       once it stops climbing (or `kurt` — acceleration kurtosis, ~3 is
+       Gaussian/smooth — starts climbing steeply instead) you've hit
+       saturation: more `dv` is now buying you spurious long-jump links, not
+       real ones.
+    3. **Stop and back up 1–2 steps** from where it saturated. That's your
+       working `dv`.
+    4. Repeat the same climb-then-back-off for **dacc**, then **angle**,
+       holding the others fixed at what you just picked.
+    5. Note: `angle` is a no-op for `priority_segment_3d`/`4be`/`two_phase`
+       (the 3D-only search box has no angle gate) — only the `dv*` box and,
+       via postprocess gap-relinking, `dacc` matter for those. It's fully
+       active for `standard_forward`/`two_directional`/`full_multipass`.
+
+    **Auto-tune** runs exactly this procedure for you (`dv` → `dacc` →
+    `angle`, each grown ×1.6 per step, 2-step patience, 1-step back-off),
+    scoring by `mean_track_length` penalized for acceleration kurtosis above
+    ~3 — i.e. it favors long trajectories that don't secretly contain
+    physically-impossible mid-track jumps.
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    autotune_btn = mo.ui.run_button(label="Auto-tune dv / dacc / angle", kind="warn")
+    autotune_btn
+    return (autotune_btn,)
+
+
+@app.cell
+def _(
+    autotune_btn,
+    dataset_picker,
+    find_smooth_params,
+    resolve_dataset,
+    selected_tracker,
+    mo,
+):
+    if autotune_btn.value:
+        _yaml_path, _dlabel = resolve_dataset(dataset_picker.value)
+        _result = find_smooth_params(_yaml_path, selected_tracker)
+        _rows = "\n".join(
+            f"| {_s.param} | {_s.value:.3g} | {_s.score:.3g} |" for _s in _result.history
+        )
+        _out = mo.vstack([
+            mo.md(
+                f"### Auto-tuned {selected_tracker} on {_dlabel} → "
+                f"**dv={_result.dv:.3g} dacc={_result.dacc:.3g} angle={_result.angle:.3g}** "
+                f"(score={_result.score:.3g})"
+            ),
+            mo.md("Copy these into the dv / dacc / angle boxes above, then press Run to plot them."),
+            mo.md("| param | value tried | score |\n|---|---|---|\n" + _rows),
+        ], gap=0.4)
+    else:
+        _out = mo.md("_Press **Auto-tune** to search dv/dacc/angle for the selected dataset + tracker._")
+    _out
+    return
 
 
 @app.cell
