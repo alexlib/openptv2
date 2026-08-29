@@ -83,23 +83,44 @@ def _():
         "hybrid_deltat_3d": ("8.0","0.8","60"),
         "two_phase": ("8.0","5.0","60"),
     }
-    return ALL_TRACKERS, defaults
+    return ALL_TRACKERS, defaults, dense_defaults
 
 
 @app.cell
-def _(ALL_TRACKERS, defaults, mo):
-    # Text boxes (not sliders) + Run button per tracker
+def _(mo):
+    min_len_input = mo.ui.text(value="5", label="Min length to plot (frames)")
+    min_len_input
+    return (min_len_input,)
+
+
+@app.cell
+def _(
+    ALL_TRACKERS,
+    dataset_picker,
+    defaults,
+    dense_defaults,
+    min_len_input,
+    mo,
+):
+    # Text boxes auto-switch to good params for the selected dataset; kept in notebook as `defaults` / `dense_defaults`
+    is_burgers = "burgers" in dataset_picker.value
+    src = defaults if is_burgers else dense_defaults
+    mode_label = "Burgers (tight, smooth)" if is_burgers else "synthetic_turbulent_1k (dense, turbulent)"
     uis = {}
     _rows = []
     for _name in ALL_TRACKERS:
-        _dv, _da, _ang = defaults[_name]
+        _dv, _da, _ang = src[_name]
         _dv_in = mo.ui.text(value=_dv, label="dvxmax", placeholder="mm/frame")
         _dacc_in = mo.ui.text(value=_da, label="dacc")
         _ang_in = mo.ui.text(value=_ang, label="angle (gon)")
         _btn = mo.ui.button(label=f"Run {_name}", kind="neutral")
         uis[_name] = {"dv": _dv_in, "dacc": _dacc_in, "ang": _ang_in, "btn": _btn}
         _rows.append(mo.hstack([mo.md(f"**{_name}**"), _dv_in, _dacc_in, _ang_in, _btn], justify="start", gap=0.5))
-    panel = mo.vstack(_rows, gap=0.5)
+    panel = mo.vstack([
+        mo.md(f"**Good params for {mode_label}** (edit text boxes, press Run per tracker):"),
+        mo.vstack(_rows, gap=0.5),
+        mo.md(f"Plot filter: only trajectories ≥ {min_len_input.value} frames are drawn as 3D lines (shorter as faint markers or hidden). Change **Min length** above to 1 to see singletons."),
+    ], gap=0.4)
     panel
     return (uis,)
 
@@ -122,35 +143,48 @@ def _(Path, go, is_script, time):
         except Exception:
             return default
 
-    def tracks_to_plotly(pred, title):
-        # pred: {tid: [(frame,x,y,z)]} -> plotly 3D lines + markers; show all (was [:300] truncated 430 -> now all, capped at 2000 for perf)
+    def tracks_to_plotly(pred, title, min_len=5):
+        # pred: {tid: [(frame,x,y,z)]} -> plotly 3D; only len>=min_len as 3D lines, shorter as faint markers (or hidden if min_len>1)
         fig = go.Figure()
         tids = list(pred.keys())
         if len(tids) > 2000:
             tids = tids[:2000]
         has_lines = False
         sx, sy, sz, stext = [], [], [], []
+        kept = 0
         all_x, all_y, all_z = [], [], []
         for tid in tids:
             pts = sorted(pred[tid], key=lambda p: p[0])
-            if len(pts) < 2:
-                if pts:
+            if len(pts) < min_len:
+                if 1 < len(pts) < min_len:
+                    # short but >1: faint markers to hint at fragmentation
+                    for p in pts:
+                        sx.append(p[1]); sy.append(p[2]); sz.append(p[3])
+                    all_x.extend([p[1] for p in pts]); all_y.extend([p[2] for p in pts]); all_z.extend([p[3] for p in pts])
+                elif len(pts) == 1:
                     sx.append(pts[0][1]); sy.append(pts[0][2]); sz.append(pts[0][3])
                     stext.append(f"tr{tid} f{pts[0][0]} singleton")
                     all_x.append(pts[0][1]); all_y.append(pts[0][2]); all_z.append(pts[0][3])
                 continue
             has_lines = True
+            kept += 1
             xs = [p[1] for p in pts]
             ys = [p[2] for p in pts]
             zs = [p[3] for p in pts]
             all_x.extend(xs); all_y.extend(ys); all_z.extend(zs)
             fig.add_trace(go.Scatter3d(x=xs, y=ys, z=zs, mode="lines", line=dict(width=4), name=f"tr{tid}", showlegend=False, hoverinfo="text", text=[f"f{f}" for f,_,_,_ in pts]))
         if sx:
-            fig.add_trace(go.Scatter3d(x=sx, y=sy, z=sz, mode="markers", marker=dict(size=3, color="rgba(200,0,0,0.7)"), name=f"{len(sx)} singletons", hoverinfo="text", text=stext))
+            # hide singletons when min_len>1 and we have lines, unless user wants to see them
+            if has_lines and min_len > 1:
+                # don't flood plot with 19k singletons; just note count
+                pass
+            else:
+                fig.add_trace(go.Scatter3d(x=sx, y=sy, z=sz, mode="markers", marker=dict(size=2, color="rgba(200,0,0,0.35)"), name=f"{len(sx)} short (<{min_len})", hoverinfo="text", text=stext))
         if not has_lines and not sx:
             fig.add_annotation(text="No tracks to display", x=0.5, y=0.5, showarrow=False)
-        _t = title + (" — fragmented (all singletons) — try larger dvxmax/dacc" if not has_lines and sx else "")
-        # tight limits to where trajectories actually are (burgers already tight; synthetic 1k spans ~ -40..40 but cloud may be ~10mm)
+        _t = title + (f" — {kept}/{len(tids)} kept (≥{min_len} fr)" if has_lines or sx else "")
+        if not has_lines and sx:
+            _t += " — fragmented — try larger dvxmax/dacc or lower min_len to 1"
         if all_x:
             xmin, xmax = min(all_x), max(all_x)
             ymin, ymax = min(all_y), max(all_y)
@@ -198,6 +232,7 @@ def _(
     ALL_TRACKERS,
     dataset_picker,
     is_script,
+    min_len_input,
     mo,
     parse_float,
     resolve_dataset,
@@ -206,6 +241,10 @@ def _(
     uis,
 ):
     yaml_path, dlabel = resolve_dataset(dataset_picker.value)
+    try:
+        min_len = int(min_len_input.value.strip())
+    except Exception:
+        min_len = 5
     _outputs = []
     _auto = is_script
     _any_clicked = any(uis[_n]["btn"].value for _n in ALL_TRACKERS)
@@ -233,10 +272,10 @@ def _(
             _outputs.append(mo.vstack([mo.md(f"### {_name} — ERROR"), mo.md(f"`{_info['error']}`")]))
             continue
         _pm = _info["pm"]
-        # printed output in cell (header) + interactive 3D plot
+        # printed output in cell (header) + interactive 3D plot (filtered to >=min_len)
         _header = f"### {_name} — dv={_dv} dacc={_dacc} ang={_ang} → mean_len={_pm.mean_track_length:.2f} frac10={_pm.frac_tracks_over_10:.2f} kurt={_pm.acceleration_kurtosis:.1f} n_tracks={_pm.n_tracks} t={_info['time_s']}s"
-        _detail = f"Output: tracker={_name}, dataset={dlabel}, dvxmax={_dv}, dacc={_dacc}, angle={_ang}, tracks={_pm.n_tracks}, mean_len={_pm.mean_track_length:.2f}, kurt={_pm.acceleration_kurtosis:.1f}"
-        _fig = tracks_to_plotly(_info["pred"], f"{_name} {dlabel} ({len(_info['pred'])} tracks)")
+        _detail = f"Output: tracker={_name}, dataset={dlabel}, dvxmax={_dv}, dacc={_dacc}, angle={_ang}, tracks={_pm.n_tracks}, mean_len={_pm.mean_track_length:.2f}, kurt={_pm.acceleration_kurtosis:.1f}, plotted ≥{min_len} fr"
+        _fig = tracks_to_plotly(_info["pred"], f"{_name} {dlabel} ({len(_info['pred'])} tracks)", min_len=min_len)
         _outputs.append(mo.vstack([mo.md(_header), mo.md(f"`{_detail}`"), _fig], gap=0.5))
 
     _result = mo.vstack([
@@ -248,13 +287,23 @@ def _(
 
 
 @app.cell
-def _(mo):
-    mo.md("""
-    **What the quick bench shows (Burgers 5fr: `priority_segment_3d dv=2 dacc=0.5 ang=60` → `mean_len=3.42 frac10=0.00 kurt=3.8 n=7`):**
+def _(ALL_TRACKERS, defaults, dense_defaults, mo):
+    # Keep good parameter sets visible in notebook (as requested)
+    hdr = "| tracker | Burgers dv/dacc/ang | 1k dv/dacc/ang |\n|---|---|---|\n"
+    rows = []
+    for _n in ALL_TRACKERS:
+        b = "/".join(defaults[_n])
+        d = "/".join(dense_defaults[_n])
+        rows.append(f"| `{_n}` | {b} | {d} |")
+    tbl = hdr + "\n".join(rows)
+    mo.md(f"""
+    **Good parameters kept in notebook** (`defaults` for Burgers, `dense_defaults` for `synthetic_turbulent_1k`) — text boxes auto-switch when you change **Dataset** above:
 
-    * Burgers is **not** hard for linking – 5 particles/frame, smooth vortex, all trackers reach the 5-frame ceiling with low kurtosis (~3–4, near Gaussian). Tuning barely matters; `dv 1–2` beats `5` (extra dv only adds ghosts).
-    * Dense `synthetic_turbulent_1k` (not auto-run, press **Run** with 1k dataset) is the hard case: `priority_segment_3d`/`two_phase` need `dv 8–12`, `dacc 3–5` to reach `mean_len 6–8, kurt 20–30`; `full_multipass` with `angle 40–60` (tight) gives slightly longer `mean_len` but similar kurtosis. Too tight fragments (`frac10↓`), too loose explodes kurtosis (`>80`).
-    * Text boxes let you test per-tracker: raise `dv` for dense/fast flows, lower `dacc` for Burgers-like smooth, lower `angle` for laminar, raise for turbulent.
+    {tbl}
+
+    **What the quick bench shows (Burgers 5fr: `priority_segment_3d dv=2 dacc=0.5 ang=60` → `mean_len=3.42`):**
+    * Burgers: smooth, `dv 1–2` beats `5` (extra dv adds ghosts), all trackers hit ceiling `kurt 3–4`.
+    * 1k dense: needs `dv 8–12, dacc 3–5` for `mean_len 6–8, kurt 20–30`; `full_multipass` prefers tighter `angle 40–60`.
     """)
     return
 
