@@ -6,7 +6,7 @@
 #     "pandas",
 #     "matplotlib",
 #     "scipy",
-#     "openptv2==0.5.6",
+#     "openptv2==0.5.7",
 # ]
 # ///
 
