@@ -123,29 +123,50 @@ def _(Path, go, is_script, time):
             return default
 
     def tracks_to_plotly(pred, title):
-        # pred: {tid: [(frame,x,y,z)]} -> plotly 3D lines + markers; singletons as red markers so synthetic fragmented case is not empty 2D
+        # pred: {tid: [(frame,x,y,z)]} -> plotly 3D lines + markers; limits tight to trajectory cloud (not full -50..50) and 3D oblique view
         fig = go.Figure()
         tids = list(pred.keys())[:300]
         has_lines = False
         sx, sy, sz, stext = [], [], [], []
+        all_x, all_y, all_z = [], [], []
         for tid in tids:
             pts = sorted(pred[tid], key=lambda p: p[0])
             if len(pts) < 2:
                 if pts:
                     sx.append(pts[0][1]); sy.append(pts[0][2]); sz.append(pts[0][3])
                     stext.append(f"tr{tid} f{pts[0][0]} singleton")
+                    all_x.append(pts[0][1]); all_y.append(pts[0][2]); all_z.append(pts[0][3])
                 continue
             has_lines = True
             xs = [p[1] for p in pts]
             ys = [p[2] for p in pts]
             zs = [p[3] for p in pts]
+            all_x.extend(xs); all_y.extend(ys); all_z.extend(zs)
             fig.add_trace(go.Scatter3d(x=xs, y=ys, z=zs, mode="lines", line=dict(width=4), name=f"tr{tid}", showlegend=False, hoverinfo="text", text=[f"f{f}" for f,_,_,_ in pts]))
         if sx:
             fig.add_trace(go.Scatter3d(x=sx, y=sy, z=sz, mode="markers", marker=dict(size=3, color="rgba(200,0,0,0.7)"), name=f"{len(sx)} singletons", hoverinfo="text", text=stext))
         if not has_lines and not sx:
             fig.add_annotation(text="No tracks to display", x=0.5, y=0.5, showarrow=False)
         _t = title + (" — fragmented (all singletons) — try larger dvxmax/dacc" if not has_lines and sx else "")
-        fig.update_layout(title=_t, scene=dict(xaxis_title="x mm", yaxis_title="y mm", zaxis_title="z mm", aspectmode="data", camera=dict(eye=dict(x=1.6, y=1.6, z=0.9))), height=560, margin=dict(l=0,r=0,b=0,t=40))
+        # tight limits to where trajectories actually are (burgers already tight; synthetic 1k spans ~ -40..40 but cloud may be ~10mm)
+        if all_x:
+            xmin, xmax = min(all_x), max(all_x)
+            ymin, ymax = min(all_y), max(all_y)
+            zmin, zmax = min(all_z), max(all_z)
+            pad = 0.07
+            xr = (xmax - xmin) or 1.0
+            yr = (ymax - ymin) or 1.0
+            zr = (zmax - zmin) or 1.0
+            scene = dict(
+                xaxis=dict(title="x mm", range=[xmin - pad*xr, xmax + pad*xr]),
+                yaxis=dict(title="y mm", range=[ymin - pad*yr, ymax + pad*yr]),
+                zaxis=dict(title="z mm", range=[zmin - pad*zr, zmax + pad*zr]),
+                aspectmode="data",
+                camera=dict(eye=dict(x=1.6, y=1.6, z=0.9)),
+            )
+        else:
+            scene = dict(xaxis_title="x mm", yaxis_title="y mm", zaxis_title="z mm", aspectmode="data", camera=dict(eye=dict(x=1.6, y=1.6, z=0.9)))
+        fig.update_layout(title=_t, scene=scene, height=560, margin=dict(l=0,r=0,b=0,t=40))
         return fig
 
     def run_one(yaml_path, tracker, dv, dacc, ang):
