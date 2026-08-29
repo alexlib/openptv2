@@ -167,8 +167,8 @@ def build_3d_trajectories_figure(
     ax.set_zlabel("y (mm)")
 
     # Default view: x left-right, y bottom-up, z close to camera = positive.
-    ax.view_init(elev=20, azim=100)
-    ax.invert_xaxis()
+    ax.view_init(elev=20, azim=-100)
+    ax.invert_yaxis()
 
     if first_frame is not None and last_frame is not None:
         if total_frames_requested is not None and total_frames_requested > 50:
