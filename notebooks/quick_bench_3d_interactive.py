@@ -123,9 +123,11 @@ def _(Path, go, is_script, time):
             return default
 
     def tracks_to_plotly(pred, title):
-        # pred: {tid: [(frame,x,y,z)]} -> plotly 3D lines + markers; limits tight to trajectory cloud (not full -50..50) and 3D oblique view
+        # pred: {tid: [(frame,x,y,z)]} -> plotly 3D lines + markers; show all (was [:300] truncated 430 -> now all, capped at 2000 for perf)
         fig = go.Figure()
-        tids = list(pred.keys())[:300]
+        tids = list(pred.keys())
+        if len(tids) > 2000:
+            tids = tids[:2000]
         has_lines = False
         sx, sy, sz, stext = [], [], [], []
         all_x, all_y, all_z = [], [], []
