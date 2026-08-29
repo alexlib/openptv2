@@ -745,6 +745,80 @@ HYBRID_DELTAT_3D_INFO = TrackerInfo(
 )
 
 
+TWO_PHASE_INFO = TrackerInfo(
+    name="two_phase",
+    display_name="Two-Phase 3D+2D Leaf Ranking",
+    short_description="3D KD-tree candidate search refined by 2D per-camera leaf-distance Hungarian assignment",
+    algorithm_summary=(
+        "Phase 1: a 3D KD-tree finds every frame-(t+1) particle within a velocity-derived "
+        "search radius of each frame-t particle. Phase 2: within each connected component of "
+        "candidates, per-camera 2D pixel distances ('leaf' positions) become a cost matrix and "
+        "Hungarian assignment picks the globally best match. Exploits the tree-forest storage "
+        "layout: 3D positions are the structural 'trunk', 2D leaf positions the disambiguating "
+        "'signature' when 3D candidates are ambiguous or noisy."
+    ),
+    algorithm_detail=(
+        "Pure Python/NumPy/SciPy (cKDTree + scipy.sparse.csgraph.connected_components + "
+        "linear_sum_assignment). Implemented in plugins/two_phase_tracking.py "
+        "(TwoPhaseTracker/TwoPhaseTrackerConfig). Falls back to pure 3D matching if no leaf "
+        "features are supplied (leaf_weight=0)."
+    ),
+    supports_backward=False,
+    supports_new_particles=True,
+    supports_2d=True,
+    supports_postprocessing=False,
+    supports_gap_relinking=True,
+    supports_multimedia=False,
+    supports_splitter=False,
+    supports_cost_weights=True,
+    speed_ranking="fast",
+    density_ranking="moderate",
+    accuracy_ranking="standard",
+    parameters=(
+        ParameterGuide(
+            name="v_max",
+            type="float",
+            default="5.0",
+            description="Maximum velocity (mm/frame); 3D KD-tree search radius for phase 1.",
+            how_to_choose="Set just above max observed displacement, same guidance as other trackers' velocity bound.",
+            typical_range="1 – 100",
+            unit="mm/frame",
+        ),
+        ParameterGuide(
+            name="leaf_weight",
+            type="float",
+            default="1.0",
+            description="Weight of 2D per-camera leaf distances in the phase-2 cost matrix. 0 falls back to pure 3D matching.",
+            how_to_choose="Raise when 3D positions are noisy/ambiguous (e.g. weak calibration) but 2D detections are clean; 0 to disable.",
+            typical_range="0 – 2",
+            unit="",
+        ),
+        ParameterGuide(
+            name="max_gap",
+            type="int",
+            default="2",
+            description="Number of frames a track can go unmatched before being terminated.",
+            how_to_choose="Match expected occlusion length in the experiment.",
+            typical_range="1 – 5",
+            unit="frames",
+        ),
+        ParameterGuide(
+            name="dt",
+            type="float",
+            default="1.0",
+            description="Time step between frames, used for velocity computation.",
+            how_to_choose="Leave at 1.0 unless frames are unevenly spaced.",
+            typical_range="",
+            unit="",
+        ),
+    ),
+    default_preset="",
+    best_for="Datasets where 3D triangulation is ambiguous or noisy (weak calibration, dense scenes) but per-camera 2D detections are clean enough to disambiguate.",
+    avoid_when="Well-conditioned 3D data where the extra 2D leaf-ranking pass adds cost without improving on 3D-only trackers, or when a backward pass / post-processing is required.",
+    typical_datasets="Tree-forest-storage experiments with per-camera leaf/2D data retained alongside 3D positions.",
+)
+
+
 def _build_registry() -> None:
     entries: list[TrackerInfo] = [
         PRIORITY_SEGMENT_3D_INFO,
@@ -757,6 +831,7 @@ def _build_registry() -> None:
         SPLITTER_INFO,
         PROPTV_INFO,
         HYBRID_DELTAT_3D_INFO,
+        TWO_PHASE_INFO,
     ]
     for info in entries:
         TRACKER_REGISTRY[info.name] = info

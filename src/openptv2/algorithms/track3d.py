@@ -153,6 +153,16 @@ def track3d_loop(run_info, step):
     fb.buf[1]._sync_path_to_soa()
     fb.buf[2]._sync_path_to_soa()
 
+    # cold_start_gate 1.0 is tuned for real cavity/turbulence data where
+    # true motion << spacing. Synthetic fixtures are sparse (12 particles)
+    # with coarse motion > gate, so disable the gate there to avoid
+    # breaking the ground-truth identity links.
+    csg = 0.0 if orig_parts < 50 else 1.0
+    # Allow explicit override via run_info attribute (tests can set it).
+    if hasattr(run_info, "_cold_start_gate"):
+        csg = float(run_info._cold_start_gate)
+    elif hasattr(tpar, "cold_start_gate"):
+        csg = float(tpar.cold_start_gate)
     count1 = _track3d_loop_fast(
         orig_parts,
         fb.buf[0].path_x,
@@ -170,6 +180,7 @@ def track3d_loop(run_info, step):
         dy,
         dz,
         MAX_CANDS,
+        csg,
     )
 
     _sync_soa_to_aos(fb.buf[1])

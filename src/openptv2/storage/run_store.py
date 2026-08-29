@@ -483,6 +483,7 @@ class RunStore:
         first: np.ndarray,
         last: np.ndarray,
         length: np.ndarray,
+        first_row: Optional[np.ndarray] = None,
     ) -> None:
         """Note: unlike the legacy readers (``storage/zarr_store.py``'s
         ``read_zarr_trajectories``, and flowtracks itself), this index labels
@@ -491,18 +492,42 @@ class RunStore:
         store. A caller that wants flowtracks' contract (trajectories of at
         least 2 points) filters on ``length >= 2`` -- see
         ``test_traj_index_matches_legacy_reader_after_singleton_filter`` in
-        ``tests/unit/test_run_store.py`` for the exact equivalence."""
+        ``tests/unit/test_run_store.py`` for the exact equivalence.
+
+        ``first_row``: optional row offset into trajectories/pos for each
+        trajectory, enabling direct slicing without searchsorted."""
         grp = self.root["traj"]
         grp.create_array("trajid", data=np.asarray(trajid, dtype=np.int32), overwrite=True)
         grp.create_array("first", data=np.asarray(first, dtype=np.int32), overwrite=True)
         grp.create_array("last", data=np.asarray(last, dtype=np.int32), overwrite=True)
         grp.create_array("length", data=np.asarray(length, dtype=np.int32), overwrite=True)
+        if first_row is not None:
+            grp.create_array("first_row", data=np.asarray(first_row, dtype=np.int64), overwrite=True)
 
     def traj_index(self) -> dict[str, np.ndarray]:
         grp = self.root["traj"]
         if "trajid" not in grp:
             raise RunStoreError("No trajectory index -- run seal() first.")
         return {k: np.asarray(grp[k]) for k in ("trajid", "first", "last", "length")}
+
+    # -- unified particle table -------------------------------------------
+
+    def write_unified_table(self, table) -> None:
+        """Write a UnifiedParticleTable to zarr under ``particle_table/``."""
+        grp = _require_group(self.root, "particle_table")
+        d = table.to_dict()
+        for key, val in d.items():
+            grp.create_array(key, data=np.asarray(val), overwrite=True)
+
+    def read_unified_table(self):
+        """Read a UnifiedParticleTable from zarr ``particle_table/`` group."""
+        from openptv2.storage.unified_table import UnifiedParticleTable
+        grp = self.root["particle_table"]
+        d = {k: np.asarray(grp[k]) for k in grp.keys()}
+        return UnifiedParticleTable.from_dict(d)
+
+    def has_unified_table(self) -> bool:
+        return "particle_table" in self.root and len(self.root["particle_table"].keys()) > 0
 
     # -- trajectories (derived flat cache, written by seal) --------------
 

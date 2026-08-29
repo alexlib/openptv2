@@ -172,6 +172,7 @@ class TrackParams(SectionModel):
     flagNewParticles: bool = True
     track_mode: int = 0
     postprocess: bool = True
+    leaf_weight: float = 1.0
 
 
 class MaskingParams(SectionModel):

@@ -425,6 +425,7 @@ class Tracking_Params(HasTraits):
     dvzmax = Float()
     angle = Float()
     dacc = Float()
+    leaf_weight = Float()
 
     def __init__(self, experiment: Experiment):
         super(Tracking_Params, self).__init__()
@@ -441,6 +442,7 @@ class Tracking_Params(HasTraits):
         self.angle = float(tracking_params.get("angle", 120.0))
         self.dacc = float(tracking_params.get("dacc", 5.0))
         self.postprocess = bool(tracking_params.get("postprocess", True))
+        self.leaf_weight = float(tracking_params.get("leaf_weight", 1.0))
 
         self.tracker = infer_tracker(plugins_params)
         dir_val = infer_direction(tracking_params, plugins_params)
@@ -480,6 +482,9 @@ class Tracking_Params(HasTraits):
             HGroup(
                 Item(name="angle", label="Angle [gon]:"),
                 Item(name="dacc", label="dacc:"),
+            ),
+            HGroup(
+                Item(name="leaf_weight", label="2D leaf weight (0=off):"),
             ),
             show_border=True,
             label="Search Box & Kinematic Limits",

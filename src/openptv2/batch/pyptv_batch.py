@@ -171,13 +171,14 @@ def _warn_if_tracking_poorly_conditioned(proc_exp, seq_first: int, seq_last: int
 
 
 def run_batch(
-    yaml_file: Path,
+    yaml_file: Union[str, Path],
     seq_first: int,
     seq_last: int,
     mode: str = "both",
     track3d: bool = False,
     sequence_plugin: str | None = None,
     tracking_plugin: str | None = None,
+    output: str | None = None,
 ) -> None:
     """Run batch processing for a sequence of frames.
 
@@ -191,6 +192,8 @@ def run_batch(
             YAML ``plugins.selected_sequence`` selection
         tracking_plugin: Tracking plugin name; None (default) uses the
             YAML ``plugins.selected_tracking`` selection
+        output: Output zarr store name under res/ (e.g. "run_two_phase.zarr").
+            None (default) uses "run.zarr".
 
     Raises:
         ProcessingError: If processing fails
@@ -237,6 +240,32 @@ def run_batch(
             print(f"Running tracking plugin: {tracking_plugin}")
             run_tracking_plugin(tracking_plugin, proc_exp, plugins_dir)
 
+            # Seal: walk linkage -> trajectories/ cache
+            try:
+                from openptv2.storage import RunStore
+                from openptv2.storage.seal import seal
+                zarr_path = Path.cwd() / "res" / "run.zarr"
+                if zarr_path.exists():
+                    store = RunStore(zarr_path, mode="a")
+                    # Read min_length from YAML tracking params
+                    _track_cfg = proc_exp.pm.parameters.get("tracking", proc_exp.pm.parameters.get("track", {}))
+                    _min_length = int(_track_cfg.get("min_trajectory_length", 5))
+                    info = seal(store, min_length=_min_length)
+                    print(f"Sealed: {info}")
+            except Exception as exc:
+                print(f"Warning: seal failed: {exc}")
+
+        # If --output specified, copy result to output path
+        if output:
+            import shutil
+            _zarr_default = Path("res") / "run.zarr"
+            output_path = Path("res") / output
+            if _zarr_default.exists():
+                if output_path.exists():
+                    shutil.rmtree(output_path)
+                shutil.copytree(_zarr_default, output_path)
+                print(f"Output copied to: {output_path}")
+
         print("Batch processing completed successfully")
 
     except Exception as e:
@@ -258,6 +287,7 @@ def main(
     track3d: bool = False,
     sequence_plugin: str | None = None,
     tracking_plugin: str | None = None,
+    output: str | None = None,
 ) -> None:
     """Run PyPTV batch processing.
 
@@ -323,6 +353,7 @@ def main(
                 track3d=track3d,
                 sequence_plugin=sequence_plugin,
                 tracking_plugin=tracking_plugin,
+                output=output,
             )
         elapsed_time = time.time() - start_time
         print(f"Total processing time: {elapsed_time:.2f} seconds")
@@ -404,6 +435,15 @@ def parse_command_line_args(
         ),
     )
     parser.add_argument(
+        "--output",
+        "-o",
+        default=None,
+        help=(
+            "Output zarr store path (relative to experiment dir). "
+            "Default: res/run.zarr. Use this to avoid overwriting existing results."
+        ),
+    )
+    parser.add_argument(
         "--debug-mode",
         action="store_true",
         help="Deprecated compatibility flag. Ignored in the single-engine runtime.",
@@ -461,6 +501,7 @@ def parse_command_line_args(
     track3d = args.track3d
     sequence_plugin = args.sequence_plugin
     tracking_plugin = args.tracking_plugin
+    output = args.output
 
     return (
         yaml_file,
@@ -470,6 +511,7 @@ def parse_command_line_args(
         track3d,
         sequence_plugin,
         tracking_plugin,
+        output,
     )
 
 
@@ -487,6 +529,7 @@ def main_cli() -> None:
             track3d,
             sequence_plugin,
             tracking_plugin,
+            output,
         ) = parse_command_line_args()
         main(
             yaml_file,
@@ -496,6 +539,7 @@ def main_cli() -> None:
             track3d=track3d,
             sequence_plugin=sequence_plugin,
             tracking_plugin=tracking_plugin,
+            output=output,
         )
 
         print("Batch processing completed successfully")

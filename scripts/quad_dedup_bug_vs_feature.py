@@ -33,16 +33,16 @@ THE SHARP QUESTION, and what this script actually measures:
 Ground truth is synthetic particle identity, so "correct quad" is exact:
 all 4 targets must come from the same true particle.
 """
-from pathlib import Path
 import os
 import sys
+from pathlib import Path
 
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
 FIX = HERE.parent / "test_data" / "tracking_synthetic_dense"
 sys.path.insert(0, str(FIX))
-from generate import BASE_FIXTURE, NCAM, build_scene  # noqa: E402
+from generate import BASE_FIXTURE, NCAM  # noqa: E402
 
 from openptv2.algorithms.calibration import Calibration  # noqa: E402
 from openptv2.algorithms.constants import TR_UNUSED  # noqa: E402

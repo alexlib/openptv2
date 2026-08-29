@@ -1,269 +1,193 @@
 # OpenPTV2 Tracking Pipeline & Results Guide
 
-This guide explains how particle tracking works in **OpenPTV2**, how to configure tracking parameters in the GUI or YAML, how the multi-pass tracking pipeline operates, and how to interpret the resulting trajectory files.
+This guide explains how particle tracking works in **OpenPTV2**, how to configure tracking parameters in the GUI or YAML, how the multi-pass pipeline and `seal` step operate, and how to interpret trajectory results in `res/run.zarr`.
 
 ---
 
 ## 1. Overview of the Tracking Pipeline
 
-Tracking in OpenPTV2 links 3D particle positions across consecutive time steps (frames) to reconstruct Lagrangian fluid trajectories. 
-
-The tracking framework is designed to run locally in the **PyPTV GUI** for parameter tuning and interactive preview, or headlessly in **Batch / Cloud Mode** using the exported `parameters.yaml`.
+Tracking in OpenPTV2 links 3D particle positions across consecutive frames to reconstruct Lagrangian trajectories. The store-native pipeline writes all results to `res/run.zarr`.
 
 ```
                     ┌───────────────────────────────┐
-                    │  3D Particles (res/rt_is.#)   │
+                    │  3D Particles (zarr)          │
+                    │  correspondences/frame_*       │
+                    │  targets/cam_*/frame_*         │
                     └───────────────┬───────────────┘
                                     │
                                     ▼
        ┌──────────────────────────────────────────────────────────┐
-       │ PASS 1: Forward Tracking (full_forward / step_forward)   │
-       │ Predicts velocity, acceleration, & angle over 4 frames   │
+       │ PASS 1: Forward Tracking (full_forward)                  │
+       │ Predicts velocity/angle over 4 frames                    │
        └────────────────────────────┬─────────────────────────────┘
                                     │
                                     ▼
        ┌──────────────────────────────────────────────────────────┐
        │ PASS 2: Backward Tracking (full_backward)                │
-       │ Re-scans sequence in reverse to find missing seeds      │
+       │ Reverse scan for cold-start seeds                       │
        └────────────────────────────┬─────────────────────────────┘
                                     │
                                     ▼
        ┌──────────────────────────────────────────────────────────┐
        │ PASS 3: Link Pruning & Post-Processing (postprocess)    │
-       │ Verifies link reciprocity & merges recovered fragments   │
+       │ Reciprocity check, fragment merge                        │
        └────────────────────────────┬─────────────────────────────┘
                                     │
                                     ▼
                     ┌───────────────────────────────┐
-                    │ Trajectories (res/ptv_is.#)   │
+                    │ Linkage (zarr)                │
+                    │ linkage/ptv_is/frame_*/{prev, │
+                    │  next,pos}                    │
+                    └───────────────┬───────────────┘
+                                    │
+                                    ▼
+                    ┌───────────────────────────────┐
+                    │ Seal: linkage → trajectories  │
+                    │ trajectories/{pos,time,trajid}│
+                    │ traj/{trajid,length,first_row}│
                     └───────────────────────────────┘
 ```
+
+> **Legacy `res/ptv_is.#` text files no longer exist.** All tracking reads/writes `res/run.zarr` via `RunStore` (`src/openptv2/storage/run_store.py:364` `write_linkage`). Use `zarr.open_group("res/run.zarr")` or `ZarrFrameStore` for inspection (`docs/zarr-hdf5-storage.md`).
 
 ---
 
 ## 2. Parameter Reference (`parameters.yaml`)
 
-Tracking configuration is stored under the `track:` section of your `parameters.yaml` file (and in `plugins:` for algorithm selection).
-
 ```yaml
 track:
-  preset: "full_multipass" # Preset: "priority_segment_3d", "standard_forward", "full_multipass", or "custom_plugin"
-  dvxmin: -10.0      # Min velocity search step in X [mm/frame]
-  dvxmax: 10.0       # Max velocity search step in X [mm/frame]
-  dvymin: -10.0      # Min velocity search step in Y [mm/frame]
-  dvymax: 10.0       # Max velocity search step in Y [mm/frame]
-  dvzmin: -10.0      # Min velocity search step in Z [mm/frame]
-  dvzmax: 10.0       # Max velocity search step in Z [mm/frame]
-  angle: 120.0       # Max angular deviation between steps [gon] (400 gon = 360 deg)
-  dacc: 5.0          # Max acceleration limit [mm/frame^2]
-  flagNewParticles: true  # Allow new unlinked particles to seed new tracks mid-sequence
-  track_mode: 0      # 0 = Standard (4-frame predictor), 1 = 3D Segment mode
-  postprocess: true  # Automatically run Pass 3 post-processing after backward tracking
+  preset: "full_multipass"
+  dvxmin: -10.0
+  dvxmax: 10.0
+  dvymin: -10.0
+  dvymax: 10.0
+  dvzmin: -10.0
+  dvzmax: 10.0
+  angle: 120.0       # gon (400 gon = 360°)
+  dacc: 5.0          # [mm/frame²]
+  flagNewParticles: true
+  track_mode: 0      # 0=Standard, 1=3D Segment
+  postprocess: true
+  leaf_weight: 1.0   # two_phase only: 2D leaf weight
+  min_trajectory_length: 5  # seal filter: drop <5-frame traj
 
 plugins:
-  selected_tracking: default  # Algorithm: "default" (trackcorr), "splitter_tracking", etc.
+  selected_tracking: default  # default, two_phase, myptv_3d_tracking, ...
 ```
 
-### High-Level Presets (`preset`)
+### Presets
 
-OpenPTV2 provides high-level preset profiles to simplify pipeline configuration:
+| Preset | Passes | Recommended |
+| :--- | :--- | :--- |
+| `standard_forward` | Forward only | Fast preview |
+| `full_multipass` | Forward→Backward→Postprocess | **Recommended** |
 
-| Preset Key | Display Name | Pipeline Description | Recommended Use Case |
-| :--- | :--- | :--- | :--- |
-| **`priority_segment_3d`** | Fast 3D-Only (No added particles) | Single-pass forward tracking (`track_mode=1`). Uses only 3D coordinates from `rt_is.#`. | Quick sanity checks, low density / low noise data. |
-| **`standard_forward`** | Fast Standard (Forward only, with added particles) | Single-pass forward tracking (`track_mode=0`, `flagNewParticles=true`). | Fast processing when backward tracking is not required. |
-| **`full_multipass`** | Standard 3-Pass (Forward + Backward + Post-process) | Full 3-pass pipeline: Forward $\rightarrow$ Backward $\rightarrow$ Pass 3 reciprocity pruning. | **Recommended for maximum accuracy & trajectory recovery.** |
-| **`custom_plugin`** | Custom Plugin / Splitter | Delegates pipeline execution to a user-specified plugin (e.g. `splitter_tracking`). | Quad-view splitters or specialized custom tracking algorithms. |
+> `priority_segment_3d` was removed. Use `default` or `two_phase`.
 
-### Detailed Parameter Reference
+### Detailed Parameters
 
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| **`preset`** | `str` | `"full_multipass"` | Active tracking strategy preset (`priority_segment_3d`, `standard_forward`, `full_multipass`, `custom_plugin`). |
-| **`dvxmin` / `dvxmax`** | `float` | `-10.0` / `10.0` | Velocity search box along X axis in physical units [mm/frame]. Limits max displacement between frame $t$ and $t+1$. |
-| **`dvymin` / `dvymax`** | `float` | `-10.0` / `10.0` | Velocity search box along Y axis [mm/frame]. |
-| **`dvzmin` / `dvzmax`** | `float` | `-10.0` / `10.0` | Velocity search box along Z axis [mm/frame]. |
-| **`angle`** | `float` | `120.0` | Maximum direction change between velocity vector $\mathbf{v}_1 = \mathbf{x}_{t} - \mathbf{x}_{t-1}$ and $\mathbf{v}_2 = \mathbf{x}_{t+1} - \mathbf{x}_t$ measured in **gon** ($100\text{ gon} = 90^\circ, 400\text{ gon} = 360^\circ$). |
-| **`dacc`** | `float` | `5.0` | Maximum allowed change in velocity magnitude $\|\mathbf{v}_2 - \mathbf{v}_1\|$ [mm/frame$^2$]. |
-| **`flagNewParticles`**| `bool` | `true` | When `true`, particles appearing mid-sequence (e.g. entering FOV) are initialized as new trajectory seeds. When `false`, only particles present in the initial seed frame are tracked. |
-| **`track_mode`** | `int` | `0` | `0` = Standard 4-frame linear prediction (`step_forward`). `1` = 3D Segment Mode (`step_forward_3d`). |
-| **`postprocess`** | `bool` | `true` | Enables Pass 3 link reciprocity verification and cold-start seed recovery during backward tracking. |
-| **`selected_tracking`**| `str` | `"default"` | Algorithm selection: `"default"` (core OpenPTV C engine wrapper), `"splitter_tracking"`, or custom plugin. |
+| `dvxmin/dvxmax` etc. | float | ±10.0 | Velocity search box [mm/frame] |
+| `angle` | float | 120.0 | Max direction change [gon] |
+| `dacc` | float | 5.0 | Max acceleration [mm/frame²] |
+| `flagNewParticles` | bool | true | Seed new tracks mid-sequence |
+| `track_mode` | int | 0 | 0=Standard, 1=3D Segment |
+| `postprocess` | bool | true | Pass 3 reciprocity |
+| `leaf_weight` | float | 1.0 | `two_phase` 2D ranking weight (0=3D-only) |
+| `min_trajectory_length` | int | 5 | `seal` discards shorter traj (`src/openptv2/storage/seal.py:73`) |
+| `selected_tracking` | str | `default` | `default` (trackcorr), `two_phase` (3D→2D Hungarian), `myptv_3d_tracking`, … |
 
 ---
 
 ## 3. The 3-Pass Tracking Pipeline
 
-To maximize trajectory length and eliminate false-positive links, OpenPTV2 supports a 3-pass tracking pipeline:
+### Pass 1: Forward (`full_forward`)
+Frame-by-frame prediction `2*curr - prev`, 3D search box (`dv`), angle/acc tests.
 
-### Pass 1: Forward Tracking (`full_forward`)
-1. Starts at frame $N_1$ (`sequence.first`) and progresses frame-by-frame to $N_{\text{last}}$ (`sequence.last`).
-2. Uses existing 2-frame links to predict position at $t+1$.
-3. Evaluates candidates using velocity bounds (`dv`), acceleration limit (`dacc`), and angle (`angle`).
-4. Selects the candidate that minimizes total tracking cost.
-5. Writes forward link pointers into `ptv_is.#` result files.
+### Pass 2: Backward (`full_backward`)
+Reverse scan for cold-start seeds missed forward.
 
-### Pass 2: Backward Tracking (`full_backward`)
-1. Re-scans the sequence in reverse order from $N_{\text{last}}-1$ down to $N_1$.
-2. Uses backward velocity predictions to discover particles that were missed during forward initialization ("cold-start seeds").
-3. Connects backwards links to fill gaps caused by temporary particle occlusions or high-shear regions.
+### Pass 3: Post-Processing (`postprocess`)
+Reciprocity: `A→B` at `t→t+1` requires `B→A` at `t+1→t`. Merges backward links.
 
-### Pass 3: Post-Processing & Reciprocity (`postprocess`)
-1. **Link Reciprocity Check**: Verifies that if particle $A$ at frame $t$ links forward to particle $B$ at $t+1$, particle $B$ at $t+1$ also links backward to $A$ at $t$.
-2. **False Link Removal**: Unlinks candidates that failed candidate reciprocity.
-3. **Seed Recovery**: Merges backward-discovered links into unified, continuous trajectories.
+### Seal — Linkage to Flat Trajectories
+After tracking, `seal()` (`src/openptv2/storage/seal.py:73`, called from `src/openptv2/batch/pyptv_batch.py:246`) walks `linkage/ptv_is` to assign `trajid`:
 
-> **Why use Pass 3?** Backward tracking without post-processing can accumulate redundant or non-reciprocal links. Pass 3 ensures that only mutually consistent forward-backward links are retained.
+```python
+# seal builds flat cache
+store.write_trajectories(pos, vel, accel, time, trajid)  # run_store.py:530
+store.write_traj_index(trajid, first, last, length, first_row)  # run_store.py:480
+```
 
-### Empirical Strategy Benchmark Comparison
+- `trajectories/{pos,time,trajid}` — sorted by `(trajid,time)`, `pos` in **meters** (mm→m `*1e-3`)
+- `traj/{length,first_row}` — per-trajectory index for O(1) `pos[lo:hi]` without loading 66 MB `trajid` (`notebooks/marimo_trajectory_viewer.py:33`)
+- `min_trajectory_length` filters short traj *before* writing; `n_dropped` in return dict
+- `source_hash` memoizes — skips if linkage unchanged unless `force=True`
 
-The tables below show typical trajectory recovery performance across the 3 main tracking strategy presets tested on a standard 4-camera dataset (`aorta`, 10 frames, ~1,858 particles/frame):
-
-#### Overall Performance Summary
-
-| Tracking Preset | Algorithm / Passes | Total Links | Trajectories Count | OVERALL Mean Length | Max Length | Relative Time |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| **`priority_segment_3d`** | Fast 3D-Only (`track_mode=1`) | 14,010 | 4,540 | **4.09 frames** | 10 | **1.0$\times$** (Fastest) |
-| **`standard_forward`** | Fast Standard (Forward only) | 13,631 | 4,919 | **3.77 frames** | 10 | **1.2$\times$** |
-| **`full_multipass`** | Standard 3-Pass (Forward + Backward + Postprocess) | 13,667 | 4,883 | **3.80 frames** | 10 | **1.8$\times$** (Most Accurate) |
-
-#### Trajectory Seed Origin Breakdown (Frame 1 vs. Mid-Sequence Entry)
-
-To understand why `priority_segment_3d` shows a higher raw *overall* mean length than multi-pass tracking, we must inspect trajectories by their **point of origin**:
-
-| Tracking Preset | Total Trajectories | Frame 1 Seeds Count | Frame 1 **Mean Length** | Mid-Entry Seeds Count | Mid-Entry **Mean Length** |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **`priority_segment_3d`** | 4,540 | 1,846 | **6.80 frames** | 2,694 | 2.23 frames |
-| **`standard_forward`** | 4,919 | 1,846 | **6.69 frames** | 3,073 | 2.02 frames |
-| **`full_multipass`** | 4,883 | 1,846 | **6.72 frames** | 3,037 | 2.03 frames |
-
-#### Why Multi-Pass Tracking is More Accurate
-1. **Mid-Sequence Particle Seeding (`flagNewParticles=true`)**:
-   * `standard_forward` and `full_multipass` seed unlinked particles entering the field of view mid-sequence (frames 2..10), capturing **~379 additional short trajectories** (3,037 vs 2,694).
-   * Adding these short 1- to 2-frame trajectories near domain boundaries increases the denominator and **drags down the overall arithmetic mean**, even though long trajectories are fully preserved.
-2. **True Trajectory Lengthening (`full_multipass` vs `standard_forward`)**:
-   * Comparing long-term trajectories (Frame 1 seeds): `full_multipass` increases mean length from **6.69 to 6.72 frames** over forward-only tracking by repairing broken tracks during backward pass (`full_backward`).
-3. **Pass 3 Reciprocity Pruning**:
-   * `full_multipass` severs **36 false unidirectional track fragments** (reducing mid-entry count from 3,073 to 3,037) while increasing valid total links (from 13,631 to 13,667).
-4. **Preventing 3D "Cross-Over" Jumps in `priority_segment_3d`**:
-   * `priority_segment_3d` tracks purely by 3D distance without 2D epipolar or candidate reciprocity checks. In dense regions, it can falsely "cross over" adjacent particles, artificially stitching two distinct tracks together. `full_multipass` enforces 2D+3D candidate reciprocity, ensuring 100% physical validity.
+> See `docs/zarr-hdf5-storage.md` and `docs/algorithms/tracking.md` §Seal.
 
 ---
 
 ## 4. Tracking Algorithms & Plugins
 
-OpenPTV2 supports extensible tracking algorithms selected via `plugins.selected_tracking`:
+| Plugin | Description |
+| :--- | :--- |
+| `default` (trackcorr) | Cython 3 `track3d_loop_fast` — 3D box search, angle+acc |
+| `two_phase` | **New** — Phase 1: 3D KD-tree candidates within `v_max`; Phase 2: per-camera 2D leaf mean distance → Hungarian assignment (`src/openptv2/plugins/two_phase_tracking.py`). `leaf_weight=0` ≡ 3D-only. **74% more multi-frame traj** on TT13 aorta (poorly-conditioned). |
+| `myptv_3d_tracking` | MyPTV kinematic predictor |
+| `cython_epipolar` etc. | Epipolar variants |
 
-* **`priority_segment_3d`**:
-  High-speed Cythonized 3D segment-priority engine with grid spatial indexing.
-* **`default` (`trackcorr`)**:
-  Standard OpenPTV Lagrangian tracking engine. Works best for 3D PTV setups with 2-4 cameras.
-* **`splitter_tracking`**:
-  Specialized algorithm for single-sensor image splitters (quad-view cameras).
-* **Custom Plugins**:
-  Users can drop custom tracking python modules into `<experiment>/plugins/` implementing `BaseTrackingPlugin`.
+Select via GUI **Plugins** or `plugins.selected_tracking`. Custom plugins implement `BaseTrackingPlugin` (`docs/developer_guide/custom_tracking_plugins.md`).
 
 ---
 
-## 5. Understanding Result Files (`res/ptv_is.#`)
+## 5. Understanding Results in `res/run.zarr`
 
-Tracking outputs are written to the experiment's `res/` folder as `ptv_is.<frame_number>` text files.
+### Reading Linkage & Trajectories
 
-### File Structure of `ptv_is.#`
-
-Each row in `ptv_is.#` represents a tracked 3D particle at that frame:
-
-```
-[prev_link] [next_link] [X] [Y] [Z] [cam1_targ] [cam2_targ] [cam3_targ] [cam4_targ]
-```
-
-* **`prev_link`**: Index of this particle in the **previous** frame's `ptv_is.(t-1)` file (`-1` if trajectory starts here).
-* **`next_link`**: Index of this particle in the **next** frame's `ptv_is.(t+1)` file (`-2` if trajectory ends here).
-* **`X, Y, Z`**: Reconstructed 3D position in physical space [mm].
-* **`cam1..4_targ`**: Target indices in the original 2D detection files (`img/` or `targets/`).
-
-### Interpreting Trajectory Statistics
-
-When Pass 3 post-processing completes, OpenPTV2 reports trajectory statistics:
-
-* **`links_before`**: Total forward links established before post-processing.
-* **`links_after`**: Total valid links remaining after Pass 3 reciprocity pruning.
-* **`trajectories_count`**: Number of distinct continuous particle trajectories.
-* **`mean_length`**: Average trajectory length (in frames).
-
----
-
-## 6. GUI to Cloud Batch Workflow
-
-To prepare tracking parameters in the GUI and run large-scale jobs in the cloud:
-
-1. **GUI Parameter Tuning (PyPTV)**:
-   * Open PyPTV GUI: `uv run pyptv <path_to_experiment>`
-   * Configure parameters under `Parameters -> Tracking` (set `dv`, `angle`, `dacc`, `flagNewParticles`, and `postprocess`).
-   * Test tracking interactively using `Tracking -> Debugging with display`.
-   * Click **OK** in the Tracking Parameters dialog to persist settings to `parameters.yaml`.
-
-2. **Shipping to Cloud / Batch Mode**:
-   * Commit and push your `parameters.yaml` (along with calibration files in `cal/` or `res/`).
-   * Run headless batch execution in the cloud:
-     ```bash
-     uv run python -m openptv2.batch --yaml parameters.yaml --track
-     ```
-   * Or use the Python API:
-     ```python
-     from openptv2.tracker import Tracker
-     from openptv2.gui.parameter_manager import ParameterManager
-
-     pm = ParameterManager()
-     pm.from_yaml("parameters.yaml")
-
-     tracker = Tracker.from_parameter_manager(pm)
-     tracker.full_forward()
-     tracker.full_backward()
-     if pm.parameters.get("track", {}).get("postprocess", True):
-         tracker.postprocess()
-     ```
-
----
-
-## 7. Extra Tracking Plugins: MyPTV Trackers
-
-OpenPTV2 provides built-in plugin wrappers for **MyPTV** particle tracking algorithms, making it easy to swap tracking engines without modifying your dataset structure.
-
-### Available MyPTV Plugins
-
-| Plugin Name | Tracking Level | Algorithm & Features |
-| :--- | :--- | :--- |
-| **`nearest_hungarian_3d`** | 3D Physical Space | Uses MyPTV's 3D kinematic velocity and acceleration predictor ($\mathbf{X}_{\text{pred}} = \mathbf{X}_t + \mathbf{V}_t \Delta t + \frac{1}{2}\mathbf{A}_t \Delta t^2$) coupled with SciPy Hungarian bipartite assignment (`scipy.optimize.linear_sum_assignment`) for global collision-free candidate matching and gap recovery. |
-| **`myptv_2d_tracking`** | 2D Pixel Space | Performs 2D frame-to-frame particle trajectory tracking directly in camera image coordinates $(x_i, y_i)$ for each camera view independently. Useful for 2D-PTV or pre-triangulation 2D trajectory stereo matching. |
-
-### How to Use
-
-#### 1. In the PyPTV GUI
-In the **Parameters** dialog under **Plugins**, select **`nearest_hungarian_3d`** or **`myptv_2d_tracking`** from the **Tracking Plugin** (`track_alg`) dropdown menu.
-
-#### 2. In `parameters.yaml`
-Specify the tracking plugin in your YAML configuration:
-```yaml
-plugins:
-  selected_tracking: "nearest_hungarian_3d"  # or "myptv_2d_tracking"
-  selected_sequence: "default"
-```
-
-#### 3. In Python CLI / Batch Execution
 ```python
-from openptv2.plugins import run_tracking_plugin
-
-# Run MyPTV 3D tracking plugin programmatically
-run_tracking_plugin("nearest_hungarian_3d", experiment)
+import zarr, numpy as np
+root = zarr.open_group("res/run.zarr", mode="r")
+# Linkage per frame
+prev, nxt, pos = root["linkage/ptv_is/frame_000001/prev"][:], root["linkage/ptv_is/frame_000001/next"][:], root["linkage/ptv_is/frame_000001/pos"][:]
+# Flat trajectories (sealed)
+traj = root["traj"]; idx_tid, idx_len, idx_row = np.asarray(traj["trajid"]), np.asarray(traj["length"]), np.asarray(traj["first_row"])
+# Top 100 longest
+order = np.argsort(idx_len)[::-1][:100]
+for tid, fr, ln in zip(idx_tid[order], idx_row[order], idx_len[order]):
+    pts = np.asarray(root["trajectories/pos"][fr:fr+ln])  # [m]
 ```
+
+### Copying to Dropbox
+
+```bash
+uv run python copy_trajectories.py --include-traj --overwrite  # creates trajectories.zarr + traj.zarr (137 MB vs 1637 MB)
+```
+
+See `C:\Users\alex\Downloads\TT13_aorta\wp1\copy_trajectories.py` and `docs/zarr-hdf5-storage.md`.
 
 ---
 
-## 8. Developing Custom Tracking Plugins
+## 6. GUI to Batch Workflow
 
-To create your own custom 2D or 3D particle tracking plugin or adapt external trackers (such as MyPTV, Trackpy, or custom machine learning models), see the comprehensive developer guide:
+1. **GUI tuning**: `uv run pyptv <exp>` → Parameters → Tracking → OK (writes `parameters.yaml`)
+2. **Batch**:
+   ```bash
+   uv run openptv2-batch <exp_or_yaml> <first> <last> --mode both
+   # Benchmark without overwriting:
+   uv run openptv2-batch <exp> 1 50 --mode tracking --tracking-plugin two_phase --output bench_two_phase.zarr
+   ```
+   API: `from openptv2.batch.pyptv_batch import main; main(yaml, 1, 5005, mode="tracking", output="bench.zarr")` (`src/openptv2/batch/pyptv_batch.py:264`)
 
-* [**Developer Guide: Custom Tracking Plugins**](file:///C:/Users/alex/projects/openptv2/docs/developer_guide/custom_tracking_plugins.md)
+---
 
+## 7. Interpreting Statistics
 
+`seal` reports `n_trajectories`, `n_rows`, `n_dropped`. With `z-noise/motion≈19` (TT13 aorta) expect short fragments (median ~10 with `min_length=5`, median 1 without filter). For Eulerian `velocity` fields use `flowtracks`/`postptv`, not long Lagrangian `trajid`.
+
+---
+
+## 8. Developing Custom Plugins
+
+See `docs/developer_guide/custom_tracking_plugins.md`.

@@ -177,7 +177,7 @@ def test_track3d_ignores_dacc_and_dangle(tmp_path):
     so it still recovers all links where trackcorr would have dropped some."""
     c_acc, w_acc, _ = _run(tmp_path / "acc", "track3d", dacc=0.4)
     c_ang, w_ang, _ = _run(tmp_path / "ang", "track3d", dangle=20.0)
-    assert (c_acc, w_acc) == (44, 0)
+    assert (c_acc, w_acc) == (MAX_LINKS, 0)
     assert (c_ang, w_ang) == (MAX_LINKS, 0)
 
 

@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.10.0"
+__generated_with = "0.24.0"
 app = marimo.App(
     width="full",
     app_title="3D Calibration Target Visualizer - Marimo Notebook",
@@ -13,27 +13,23 @@ def _():
     import numpy as np
     import plotly.graph_objects as go
 
-    return mo, np, go
+    return go, mo, np
 
 
 @app.cell
 def _(mo):
-    mo.md(
-        """
-        # 🎯 3D Calibration Target Visualizer
-        Interactive visualization and spatial analysis of calibration
-        targets (OpenPTV format).
-        """
-    )
+    mo.md("""
+    # 🎯 3D Calibration Target Visualizer
+    Interactive visualization and spatial analysis of calibration
+    targets (OpenPTV format).
+    """)
     return
 
 
 @app.cell
 def _(mo):
     cal_file_input = mo.ui.text(
-        value=(
-            r"C:\Users\alex\Downloads\hidimaging_test\LV\calibration\cal"
-            r"\calblock_90deg_clockwise.txt"
+        value=(       r"C:\Users\alex\Downloads\TT13_aorta\calibration\atrium_calblock_new.txt"
         ),
         label="Calibration File Path",
         full_width=True,
@@ -59,7 +55,6 @@ def _(mo):
         value="Plasma",
         label="Color Palette",
     )
-
     return (
         cal_file_input,
         colorscale_dropdown,
@@ -121,7 +116,7 @@ def _(cal_file_input, np):
     except Exception as e:
         data = np.array([])
         load_error = str(e)
-    return data, file_path, load_error
+    return data, load_error
 
 
 @app.cell
@@ -152,7 +147,7 @@ def _(data, load_error, mo, np):
             - **Z Depth Bounds:** `{zs.min():.1f}` to `{zs.max():.1f}` mm
             """
         )
-    return pids, stats_view, u_x, u_y, u_z, xs, ys, zs
+    return pids, stats_view, u_x, u_y, xs, ys, zs
 
 
 @app.cell
@@ -168,7 +163,6 @@ def _(
     go,
     marker_size_slider,
     mo,
-    np,
     opacity_slider,
     pids,
     show_surface,
@@ -295,8 +289,7 @@ def _(
         )
 
         plot_view = mo.ui.plotly(fig)
-
-    return fig, plot_view
+    return (plot_view,)
 
 
 @app.cell
