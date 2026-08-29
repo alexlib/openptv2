@@ -23,7 +23,20 @@ def _():
     import time
     from pathlib import Path
 
-    return mo, np, pd, time, Path
+    from openptv2.benchmarking.runner import run_tracker
+    from openptv2.benchmarking.metrics import compute_physics_metrics
+    from openptv2.gui.plot_3d_trajectories import build_3d_trajectories_figure
+    import matplotlib.pyplot as plt
+
+
+    return (
+        Path,
+        build_3d_trajectories_figure,
+        compute_physics_metrics,
+        mo,
+        run_tracker,
+        time,
+    )
 
 
 @app.cell
@@ -84,6 +97,12 @@ def _():
 
 @app.cell
 def _(mo):
+    last_clicked, set_last_clicked = mo.state((None, 0))
+    return
+
+
+@app.cell
+def _(mo):
     min_len_input = mo.ui.text(value="5", label="Min length to plot (frames)")
     min_len_input
     return (min_len_input,)
@@ -103,6 +122,7 @@ def _(
     mode_label = "Burgers (vortex)" if is_burgers else "test_cavity (sparse)"
     uis = {}
     _rows = []
+
     for _name in ALL_TRACKERS:
         _dv, _da, _ang = src[_name]
         _dv_in = mo.ui.text(value=_dv, label="dvxmax")
@@ -111,28 +131,39 @@ def _(
         _btn = mo.ui.button(label=f"Run {_name}")
         uis[_name] = {"dv": _dv_in, "dacc": _dacc_in, "ang": _ang_in, "btn": _btn}
         _rows.append(mo.hstack([mo.md(f"**{_name}**"), _dv_in, _dacc_in, _ang_in, _btn], justify="start", gap=0.5))
+
     panel = mo.vstack([mo.md(f"**Good params for {mode_label}** (edit, Run per tracker):"), mo.vstack(_rows, gap=0.5), mo.md(f"Filter ≥ {min_len_input.value} fr")], gap=0.4)
     panel
     return (uis,)
 
 
 @app.cell
-def _(Path, is_script, time):
-    from openptv2.benchmarking.runner import run_tracker
-    from openptv2.benchmarking.metrics import compute_physics_metrics
-    from openptv2.gui.plot_3d_trajectories import build_3d_trajectories_figure
-    import matplotlib.pyplot as plt
+def _():
+    return
+
+
+@app.cell
+def _(
+    Path,
+    build_3d_trajectories_figure,
+    compute_physics_metrics,
+    is_script,
+    run_tracker,
+    time,
+):
     def resolve_dataset(label):
         root = Path("test_data").resolve()
         if "burgers" in label:
             return (root / "burgers" / "parameters_Run1.yaml").resolve(), "burgers"
         else:
             return (root / "test_cavity" / "parameters_Run1.yaml").resolve(), "test_cavity"
+
     def parse_float(txt, default):
         try:
             return float(txt.value.strip())
         except Exception:
             return default
+
     def tracks_to_plotly(pred, title, min_len=2):
         # Use Visualize 3D trajectories (openptv2.gui.plot_3d_trajectories:39) – matplotlib Figure, tight to cloud
         import numpy as np
@@ -150,6 +181,7 @@ def _(Path, is_script, time):
         # title + tight 3D view (burgers already tight)
         fig.suptitle(title + f" — {len(filt)}/{len(tids)} kept (≥{min_len}fr)", fontsize=10)
         return fig
+
     def run_one(yaml_path, tracker, dv, dacc, ang):
         ov={"dvxmax":dv,"dvxmin":-dv,"dvymax":dv,"dvymin":-dv,"dvzmax":dv,"dvzmin":-dv,"dacc":dacc,"angle":ang}
         t0=time.perf_counter()
@@ -160,6 +192,7 @@ def _(Path, is_script, time):
         except Exception as e:
             return {"error":str(e)[:600],"pred":{},"pm":None,"time_s":round(time.perf_counter()-t0,2)}
     _script_demo=None
+
     if is_script:
         yp,_=resolve_dataset("burgers (5 frames, vortex)")
         demo=run_one(yp,"priority_segment_3d",2.0,0.5,60)
@@ -173,6 +206,7 @@ def _(
     ALL_TRACKERS,
     dataset_picker,
     is_script,
+    last_clicked,
     min_len_input,
     mo,
     parse_float,
@@ -212,7 +246,7 @@ def _(
         _header=f"### {_name} — dv={_dv} dacc={_dacc} ang={_ang} → mean_len={_pm.mean_track_length:.2f} frac10={_pm.frac_tracks_over_10:.2f} kurt={_pm.acceleration_kurtosis:.1f} n={_pm.n_tracks} t={_info['time_s']}s"
         _detail=f"Output: {dlabel} dv={_dv} dacc={_dacc} ang={_ang} tracks={_pm.n_tracks} mean={_pm.mean_track_length:.2f} plotted ≥{min_len}fr"
         _fig=tracks_to_plotly(_info["pred"],f"{_name} {dlabel} ({len(_info['pred'])} tracks)",min_len=min_len)
-        _outputs.append(mo.vstack([mo.md(_header),mo.md(f"`{_detail}`"),_fig],gap=0.5))
+        _outputs.append(mo.vstack([mo.md(_header),mo.md(f"`{_detail}`"),mo.mpl.interactive(_fig)],gap=0.5))
     _result=mo.vstack([mo.md("_Edit text boxes, Run per tracker — 3D tight to cloud._"), mo.vstack(_outputs,gap=1) if _outputs else mo.md("*Press Run*")],gap=0.8)
     _result
     return

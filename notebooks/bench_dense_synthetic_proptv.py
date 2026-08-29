@@ -83,6 +83,12 @@ def _():
 
 @app.cell
 def _(mo):
+    last_clicked, set_last_clicked = mo.state((None, 0))
+    return last_clicked, set_last_clicked
+
+
+@app.cell
+def _(mo):
     min_len_input = mo.ui.text(value="2", label="Min length to plot (frames)")
     min_len_input
     return (min_len_input,)
@@ -107,7 +113,7 @@ def _(
         _dv_in=mo.ui.text(value=_dv,label="dvxmax")
         _dacc_in=mo.ui.text(value=_da,label="dacc")
         _ang_in=mo.ui.text(value=_ang,label="angle")
-        _btn=mo.ui.button(label=f"Run {_name}")
+        _btn=mo.ui.button(value=0, on_click=lambda v, n=_name: (set_last_clicked((n, v+1)), v+1)[1], label=f"Run {_name}")
         uis[_name]={"dv":_dv_in,"dacc":_dacc_in,"ang":_ang_in,"btn":_btn}
         _rows.append(mo.hstack([mo.md(f"**{_name}**"),_dv_in,_dacc_in,_ang_in,_btn],justify="start",gap=0.5))
     panel=mo.vstack([mo.md(f"**Good params for {label}**:"),mo.vstack(_rows,gap=0.5),mo.md(f"Filter ≥ {min_len_input.value} fr")],gap=0.4)
@@ -165,6 +171,7 @@ def _(
     ALL_TRACKERS,
     dataset_picker,
     is_script,
+    last_clicked,
     min_len_input,
     mo,
     parse_float,

@@ -86,6 +86,12 @@ def _():
 
 @app.cell
 def _(mo):
+    last_clicked, set_last_clicked = mo.state((None, 0))
+    return last_clicked, set_last_clicked
+
+
+@app.cell
+def _(mo):
     min_len_input = mo.ui.text(value="2", label="Min length to plot (frames)")
     min_len_input
     return (min_len_input,)
@@ -99,6 +105,7 @@ def _(
     dense_defaults,
     min_len_input,
     mo,
+    set_last_clicked,
 ):
     # Text boxes auto-switch to good params for the selected dataset; kept in notebook as `defaults` / `dense_defaults`
     is_burgers = "burgers" in dataset_picker.value
@@ -111,7 +118,7 @@ def _(
         _dv_in = mo.ui.text(value=_dv, label="dvxmax", placeholder="mm/frame")
         _dacc_in = mo.ui.text(value=_da, label="dacc")
         _ang_in = mo.ui.text(value=_ang, label="angle (gon)")
-        _btn = mo.ui.button(label=f"Run {_name}", kind="neutral")
+        _btn = mo.ui.button(value=0, on_click=lambda v, n=_name: (set_last_clicked((n, v+1)), v+1)[1], label=f"Run {_name}", kind="neutral")
         uis[_name] = {"dv": _dv_in, "dacc": _dacc_in, "ang": _ang_in, "btn": _btn}
         _rows.append(mo.hstack([mo.md(f"**{_name}**"), _dv_in, _dacc_in, _ang_in, _btn], justify="start", gap=0.5))
     panel = mo.vstack([
@@ -183,6 +190,7 @@ def _(
     ALL_TRACKERS,
     dataset_picker,
     is_script,
+    last_clicked,
     min_len_input,
     mo,
     parse_float,
@@ -195,15 +203,15 @@ def _(
     try:
         min_len = int(min_len_input.value.strip())
     except Exception:
-        min_len = 5
+        min_len = 2
     _outputs = []
     _auto = is_script
-    _any_clicked = any(uis[_n]["btn"].value for _n in ALL_TRACKERS)
-    # Auto-demo in interactive too so user sees output immediately (then can tweak)
-    _show_demo = not _any_clicked
+    _clicked_name = last_clicked[0] if last_clicked and last_clicked[0] else None
+    _any_clicked = _clicked_name is not None
+    _show_demo = not _any_clicked and not _auto
     for _name in ALL_TRACKERS:
         _ui = uis[_name]
-        _triggered = _auto or _ui["btn"].value or (_show_demo and _name == ALL_TRACKERS[0])
+        _triggered = _auto or (_clicked_name == _name) or (_show_demo and _name == ALL_TRACKERS[0])
         if _auto and _name != ALL_TRACKERS[0]:
             # script: only first tracker
             if _ui["btn"].value == 0:
