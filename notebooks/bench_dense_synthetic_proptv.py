@@ -11,7 +11,7 @@
 
 import marimo
 
-__generated_with = "0.20.4"
+__generated_with = "0.24.0"
 app = marimo.App(width="medium")
 
 
@@ -23,7 +23,8 @@ def _():
     import time
     from pathlib import Path
     import plotly.graph_objects as go
-    return mo, np, pd, time, Path, go
+
+    return Path, go, mo, time
 
 
 @app.cell
@@ -84,13 +85,20 @@ def _():
 
 @app.cell
 def _(mo):
-    min_len_input = mo.ui.text(value="5", label="Min length to plot (frames)")
+    min_len_input = mo.ui.text(value="2", label="Min length to plot (frames)")
     min_len_input
     return (min_len_input,)
 
 
 @app.cell
-def _(ALL_TRACKERS, dataset_picker, defaults_1k, defaults_proptv, min_len_input, mo):
+def _(
+    ALL_TRACKERS,
+    dataset_picker,
+    defaults_1k,
+    defaults_proptv,
+    min_len_input,
+    mo,
+):
     is_dense1k = "synthetic" in dataset_picker.value
     src = defaults_1k if is_dense1k else defaults_proptv
     label = "synthetic_turbulent_1k (1k, turbulent)" if is_dense1k else "proptv_500_25 (500, 25fr)"
@@ -172,7 +180,18 @@ def _(Path, go, is_script, time):
 
 
 @app.cell
-def _(ALL_TRACKERS, dataset_picker, is_script, min_len_input, mo, parse_float, resolve_dataset, run_one, tracks_to_plotly, uis):
+def _(
+    ALL_TRACKERS,
+    dataset_picker,
+    is_script,
+    min_len_input,
+    mo,
+    parse_float,
+    resolve_dataset,
+    run_one,
+    tracks_to_plotly,
+    uis,
+):
     yaml_path,dlabel=resolve_dataset(dataset_picker.value)
     try:
         min_len=int(min_len_input.value.strip())

@@ -88,7 +88,7 @@ def _():
 
 @app.cell
 def _(mo):
-    min_len_input = mo.ui.text(value="5", label="Min length to plot (frames)")
+    min_len_input = mo.ui.text(value="2", label="Min length to plot (frames)")
     min_len_input
     return (min_len_input,)
 
