@@ -55,11 +55,11 @@ def _identify_L(coded_xy: np.ndarray, pitch: float):
             e_y = (y_pt - c) / float(np.linalg.norm(y_pt - c))
             e_x = (x_pt - c) / float(np.linalg.norm(x_pt - c))
             best = (corner, e_x, e_y, y_pt, x_pt)
-    if best is None or best_err > 0.45:
+    if best is None or best_err > 0.85:
         raise ValueError(f"L identification failed: best_err={best_err:.3f} "
                          f"coded points {coded_xy.tolist()} do not form the expected 1:2 right angle")
     corner, e_x, e_y, y_pt, x_pt = best
-    if abs(float(np.dot(e_x, e_y))) > 0.20:
+    if abs(float(np.dot(e_x, e_y))) > 0.45:
         raise ValueError(f"L legs not orthogonal: dot={float(np.dot(e_x, e_y)):.3f}")
     return corner, e_x, e_y
 
@@ -92,14 +92,7 @@ def label_coded_6x7(
     pitch = float((pitch_x + pitch_y) / 2.0)
     corner, e_x, e_y = _identify_L(coded_xy, pitch)
 
-    # Project every centroid onto the L bases — solve via the
-    # affine basis [vx, vy] where vx = (x_pt-corner)/2, vy = y_pt-corner.
-    # This handles slight shear (ex,ey not perfectly orthogonal) by using the
-    # full 2×2 inverse instead of separate dot-products.
-    # Re-identify which coded pt is which for scale
-    # coded_xy order arbitrary: find the two non-corner pts again
-    # (corner already known from _identify_L)
-    # Determine y_pt (short leg) and x_pt (long leg) by distance
+    # Project every centroid onto the L bases
     cand = [p for p in coded_xy if not np.allclose(p, corner)]
     d0 = float(np.linalg.norm(cand[0] - corner))
     d1 = float(np.linalg.norm(cand[1] - corner))
@@ -115,22 +108,35 @@ def label_coded_6x7(
         raise ValueError(f"L basis degenerate (det={det:.2e}); cannot invert")
     Minv = np.linalg.inv(M)
     rel = centroids - corner
-    coeffs = (Minv @ rel.T).T  # (n,2) where col0=ix_f, col1=iy_f
-    ix_f = coeffs[:, 0]
-    iy_f = coeffs[:, 1]
+    coeffs = (Minv @ rel.T).T  # (n,2) where col0=ix_rel_f, col1=iy_rel_f
+    ix_rel_f = coeffs[:, 0]
+    iy_rel_f = coeffs[:, 1]
+    ix_rel = np.round(ix_rel_f).astype(int)
+    iy_rel = np.round(iy_rel_f).astype(int)
+
+    # The L corner may be anywhere in the grid (e.g. at (3, 3) or (2, 3)),
+    # so shift the integer grid by its minimum so that indices span [0..nx-1] x [0..ny-1].
+    tol = 0.35
+    snapped = (np.abs(ix_rel_f - ix_rel) < tol) & (np.abs(iy_rel_f - iy_rel) < tol)
+    if not np.any(snapped):
+        return np.zeros((0, 2)), np.zeros((0, 3)), np.zeros((0, 2), int)
+
+    min_x = int(np.min(ix_rel[snapped]))
+    min_y = int(np.min(iy_rel[snapped]))
+    ix_f = ix_rel_f - min_x
+    iy_f = iy_rel_f - min_y
     ix = np.round(ix_f).astype(int)
     iy = np.round(iy_f).astype(int)
 
-    # Keep only points that snap within tolerance and lie inside the 6×7 rectangle
-    tol = 0.35
+    # Keep only points that snap within tolerance and lie inside the nx x ny rectangle
     keep = (
         (np.abs(ix_f - ix) < tol) & (np.abs(iy_f - iy) < tol) &
         (ix >= 0) & (ix < nx) & (iy >= 0) & (iy < ny)
     )
     idx = np.column_stack([ix[keep], iy[keep]])
     img_pts = centroids[keep]
+
     # Deduplicate by (ix,iy): keep the closest reprojection
-    # If duplicates, keep the one with smallest residual
     seen: dict[tuple[int, int], int] = {}
     order = []
     for k, (xi, yi) in enumerate(idx):
@@ -139,15 +145,56 @@ def label_coded_6x7(
             seen[key] = k
             order.append(k)
         else:
-            # keep the one nearer to its grid node
             prev = seen[key]
             if (abs(ix_f[keep][k] - xi) + abs(iy_f[keep][k] - yi)) < (abs(ix_f[keep][prev] - int(idx[prev, 0])) + abs(iy_f[keep][prev] - int(idx[prev, 1]))):
-                # replace
                 order[order.index(prev)] = k
                 seen[key] = k
     if order:
         idx = idx[order]
         img_pts = img_pts[order]
+
+    # If perspective distortion is strong and we have at least 12 points,
+    # fit a homography from (ix, iy) to img_pts and re-snap all centroids for 100% recovery
+    if len(img_pts) >= 12 and len(img_pts) < nx * ny and len(centroids) >= nx * ny:
+        try:
+            # Fit H from grid (ix, iy) -> image (x, y)
+            A_mat = []
+            for (g_x, g_y), (p_x, p_y) in zip(idx, img_pts):
+                A_mat.append([g_x, g_y, 1, 0, 0, 0, -p_x * g_x, -p_x * g_y, -p_x])
+                A_mat.append([0, 0, 0, g_x, g_y, 1, -p_y * g_x, -p_y * g_y, -p_y])
+            _, _, Vt = np.linalg.svd(np.array(A_mat))
+            H_grid_to_img = Vt[-1].reshape(3, 3)
+            H_img_to_grid = np.linalg.inv(H_grid_to_img)
+
+            # Project all centroids to grid
+            cent_h = np.column_stack([centroids, np.ones(len(centroids))])
+            proj_grid = (cent_h @ H_img_to_grid.T)
+            proj_grid = proj_grid[:, :2] / proj_grid[:, 2:3]
+
+            ix_h_f = proj_grid[:, 0]
+            iy_h_f = proj_grid[:, 1]
+            ix_h = np.round(ix_h_f).astype(int)
+            iy_h = np.round(iy_h_f).astype(int)
+
+            keep_h = (
+                (np.abs(ix_h_f - ix_h) < tol) & (np.abs(iy_h_f - iy_h) < tol) &
+                (ix_h >= 0) & (ix_h < nx) & (iy_h >= 0) & (iy_h < ny)
+            )
+            idx_h = np.column_stack([ix_h[keep_h], iy_h[keep_h]])
+            img_pts_h = centroids[keep_h]
+
+            seen_h: dict[tuple[int, int], int] = {}
+            order_h = []
+            for k, (xi, yi) in enumerate(idx_h):
+                key = (int(xi), int(yi))
+                if key not in seen_h:
+                    seen_h[key] = k
+                    order_h.append(k)
+            if len(order_h) > len(order):
+                idx = idx_h[order_h]
+                img_pts = img_pts_h[order_h]
+        except Exception:
+            pass
 
     ref_pts = np.array([[xi * pitch_x, yi * pitch_y * y_sign, 0.0] for xi, yi in idx], dtype=float)
     return img_pts, ref_pts, idx

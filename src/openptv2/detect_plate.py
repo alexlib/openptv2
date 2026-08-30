@@ -45,26 +45,32 @@ def plate_tpar_from_yaml(yaml_path: str | Path, key: str = "detect_plate") -> Ta
     else:
         cfg = {}
 
-    def _int(k, default):
-        v = cfg.get(k, default)
+    def _int(k, alt_k, default):
+        v = cfg.get(k, cfg.get(alt_k, default))
         try:
             return int(v)
         except Exception:
             return default
 
-    gv = cfg.get("gvthres", [30, 30, 30, 30])
-    if isinstance(gv, (int, float)):
+    gv = cfg.get("gvthres")
+    if gv is None:
+        gv = [
+            cfg.get(f"gvth_{i}", cfg.get(f"gvthres_{i}", 20))
+            for i in range(1, 5)
+        ]
+    elif isinstance(gv, (int, float)):
         gv = [int(gv)] * 4
+
     return TargetPar(
-        discont=_int("discont", cfg.get("tol_dis", 80)),
-        nnmin=_int("nnmin", cfg.get("min_npix", 3)),
-        nnmax=_int("nnmax", cfg.get("max_npix", 500)),
-        nxmin=_int("nxmin", cfg.get("min_npix_x", 2)),
-        nxmax=_int("nxmax", cfg.get("max_npix_x", 40)),
-        nymin=_int("nymin", cfg.get("min_npix_y", 2)),
-        nymax=_int("nymax", cfg.get("max_npix_y", 40)),
-        sumg_min=_int("sumg_min", cfg.get("sum_grey", 200)),
-        cr_sz=_int("cr_sz", cfg.get("size_cross", 3)),
+        discont=_int("discont", "tol_dis", 80),
+        nnmin=_int("nnmin", "min_npix", 10),
+        nnmax=_int("nnmax", "max_npix", 5000),
+        nxmin=_int("nxmin", "min_npix_x", 8),
+        nxmax=_int("nxmax", "max_npix_x", 80),
+        nymin=_int("nymin", "min_npix_y", 8),
+        nymax=_int("nymax", "max_npix_y", 80),
+        sumg_min=_int("sumg_min", "sum_grey", 5000),
+        cr_sz=_int("cr_sz", "size_cross", 3),
         gvthres=list(map(int, gv[:4])),
     )
 
@@ -72,42 +78,102 @@ def plate_tpar_from_yaml(yaml_path: str | Path, key: str = "detect_plate") -> Ta
 def _classify_coded(image: np.ndarray, targets: list[Target], thr: float = 40.0) -> np.ndarray:
     """White-in-black (bright centre + dark ring) classifier.
 
-    For each target, samples a 5×5 centre mean ``I_c`` and an annulus
-    ``r±2px`` mean ``I_r`` on the *raw* (pre-hp) image.  Coded ⇔
-    ``I_c - I_r > thr`` and ``I_c`` in the upper quartile. Threshold is a
-    YAML param ``coded_thr``.
+    For each target, samples a centre mean ``I_c`` and an annulus
+    ``r≈5px`` mean ``I_r`` on the *raw* (pre-hp) image.
     """
     if image.ndim == 3:
-        # Use first channel or mean — plate TIFFs are mono; keep it simple
         image = np.mean(image, axis=2).astype(image.dtype)
     mask = np.zeros(len(targets), dtype=bool)
+    if not targets:
+        return mask
+
     h, w = image.shape
-    # Robust scale for coded decision — upper quartile
-    vals = []
+    contrasts = []
     for t in targets:
         x, y = int(round(t.x)), int(round(t.y))
-        if 2 <= x < w - 2 and 2 <= y < h - 2:
-            patch = image[max(0, y - 2): y + 3, max(0, x - 2): x + 3]
-            vals.append(float(patch.mean()))
-    hi = float(np.percentile(vals, 75)) if vals else float(image.max()) * 0.7
-
-    for i, t in enumerate(targets):
-        x, y = int(round(t.x)), int(round(t.y))
-        if not (2 <= x < w - 2 and 2 <= y < h - 2):
+        if not (6 <= x < w - 6 and 6 <= y < h - 6):
+            contrasts.append(-1.0)
             continue
         centre = image[y - 2:y + 3, x - 2:x + 3].astype(float)
         Ic = float(centre.mean())
-        # annulus: 8 neighbours at r≈3
-        coords = [(y-3, x), (y+3, x), (y, x-3), (y, x+3),
-                  (y-2, x-2), (y-2, x+2), (y+2, x-2), (y+2, x+2)]
-        ring_vals = []
-        for ry, rx in coords:
-            if 0 <= ry < h and 0 <= rx < w:
-                ring_vals.append(float(image[ry, rx]))
+        # annulus at radius 5-6
+        coords = [
+            (y - 6, x), (y + 6, x), (y, x - 6), (y, x + 6),
+            (y - 5, x - 5), (y - 5, x + 5), (y + 5, x - 5), (y + 5, x + 5),
+            (y - 4, x - 4), (y - 4, x + 4), (y + 4, x - 4), (y + 4, x + 4),
+        ]
+        ring_vals = [float(image[ry, rx]) for ry, rx in coords if 0 <= ry < h and 0 <= rx < w]
         Ir = float(np.mean(ring_vals)) if ring_vals else Ic
-        if Ic > hi and (Ic - Ir) > thr:
-            mask[i] = True
+        contrasts.append(Ic - Ir)
+
+    contrasts_arr = np.array(contrasts, dtype=float)
+    # If 3 distinct peaks above threshold exist, pick them
+    if (contrasts_arr > thr).sum() == 3:
+        mask[contrasts_arr > thr] = True
+    elif len(contrasts_arr) >= 3:
+        top3 = np.argsort(contrasts_arr)[-3:]
+        # Check that top3 contrast is distinctly above background
+        if contrasts_arr[top3[0]] > (thr * 0.5):
+            mask[top3] = True
     return mask
+
+
+def find_plate_roi(
+    work8: np.ndarray,
+    sigma: float = 25.0,
+    pad: float = 0.07,
+) -> tuple[int, int, int, int]:
+    """Find bounding ROI of the calibration plate within the full image."""
+    from scipy.ndimage import gaussian_filter, label as nd_label
+
+    imy, imx = work8.shape
+    blurred = gaussian_filter(work8.astype(float), sigma=sigma)
+    hist, _ = np.histogram(blurred, bins=256, range=(0, 255))
+    total = blurred.size
+    sum_tot = float((hist * np.arange(256)).sum())
+    sumB = 0.0
+    wB = 0.0
+    max_var = 0.0
+    thresh = 0
+    for t in range(256):
+        wB += hist[t]
+        if wB == 0:
+            continue
+        wF = total - wB
+        if wF == 0:
+            break
+        sumB += t * hist[t]
+        mB = sumB / wB
+        mF = (sum_tot - sumB) / wF
+        var = wB * wF * (mB - mF) ** 2
+        if var > max_var:
+            max_var = var
+            thresh = t
+
+    bw = (blurred > thresh).astype(np.uint8) * 255
+    labeled, n = nd_label(bw)
+    if n == 0:
+        return 1, imx - 1, 1, imy - 1
+
+    areas = []
+    for i in range(1, n + 1):
+        ys, xs = np.where(labeled == i)
+        if len(xs) == 0:
+            continue
+        x0, x1 = int(xs.min()), int(xs.max())
+        y0, y1 = int(ys.min()), int(ys.max())
+        areas.append((len(xs), (x0, y0, x1 - x0 + 1, y1 - y0 + 1)))
+
+    if not areas:
+        return 1, imx - 1, 1, imy - 1
+
+    areas.sort(reverse=True)
+    _, (x, y, w, h) = areas[0]
+    x0 = int(max(1, x - w * pad))
+    y0 = int(max(1, y - h * pad))
+    x1 = int(min(imx - 1, x + w + w * pad))
+    y1 = int(min(imy - 1, y + h + h * pad))
+    return x0, x1, y0, y1
 
 
 def detect_plate_targets(
@@ -118,6 +184,7 @@ def detect_plate_targets(
     *,
     coded_thr: float = 40.0,
     raw_for_coded: np.ndarray | None = None,
+    use_roi: bool = True,
 ) -> PlateDetectionResult:
     """Detect plate dots and classify coded ones.
 
@@ -131,24 +198,49 @@ def detect_plate_targets(
 
     # Normalize 16-bit to 8-bit for legacy pipeline (target_recognition expects uint8-ish)
     work = image
+    if work.ndim == 3:
+        work = np.mean(work, axis=2).astype(work.dtype)
+
     if work.dtype == np.uint16:
-        # Scale via percentile to keep dots in range, similar to GUI autoscale
         lo, hi = float(np.percentile(work, 1)), float(np.percentile(work, 99.5))
         if hi <= lo:
             hi = float(work.max()) or 1.0
         work8 = np.clip((work.astype(float) - lo) / (hi - lo) * 255, 0, 255).astype(np.uint8)
     else:
-        work8 = work.astype(np.uint8) if work.dtype != np.uint8 else work
+        work8 = work.astype(np.uint8) if work.dtype != np.uint8 else work.copy()
+
+    # ROI detection
+    subrange_x = None
+    subrange_y = None
+    if use_roi:
+        xmin, xmax, ymin, ymax = find_plate_roi(work8)
+        subrange_x = (xmin, xmax)
+        subrange_y = (ymin, ymax)
+        roi_mean = float(np.mean(work8[ymin:ymax, xmin:xmax]))
+    else:
+        roi_mean = float(np.mean(work8))
+
+    # Dark dots on bright background: invert for target_recognition
+    is_negative = getattr(cpar, "negative", False) or (roi_mean > 80.0)
+    work_for_rec = (255 - work8) if is_negative else work8
 
     # hp_flag governs high-pass; plate images benefit from it
-    hp = preprocess_image(work8, cpar.hp_flag or 1, cpar, 25)
+    hp = preprocess_image(work_for_rec, cpar.hp_flag or 1, cpar, 25)
+
     # target_recognition returns list[Target] with pnr, x, y, sumg, etc.
-    raw_targets = target_recognition(hp, tpar, cam, cpar)
+    raw_targets = target_recognition(
+        hp,
+        tpar,
+        cam,
+        cpar,
+        subrange_x=subrange_x,
+        subrange_y=subrange_y,
+    )
     # Filter sentinel
     targets = [t for t in raw_targets if getattr(t, "pnr", -999) != 1 or len(raw_targets) == 1]
     # Fallback: if sentinel slipped through (single dummy), drop it
     if len(targets) == 1 and getattr(targets[0], "n", 0) == 1 and targets[0].x == 1.0 and targets[0].y == 1.0:
         targets = []
 
-    coded = _classify_coded(raw_for_coded if raw_for_coded is not None else work, targets, thr=coded_thr)
+    coded = _classify_coded(raw_for_coded if raw_for_coded is not None else work8, targets, thr=coded_thr)
     return PlateDetectionResult(targets=targets, coded_mask=coded)
