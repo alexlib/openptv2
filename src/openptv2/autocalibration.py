@@ -360,6 +360,79 @@ def _tpar_from_dataset(base: Path):
     return None
 
 
+def _refine_and_select(
+    cam: int,
+    cal: Calibration,
+    cpar,
+    fix: np.ndarray,
+    nfix: int,
+    eps: int,
+    pix: list,
+    *,
+    presorted: bool = False,
+) -> CamResult:
+    """Refine an already-seeded calibration and pick the best distortion flag-set.
+
+    `cal` must already hold a reasonably-close pose -- sortgrid needs to
+    match most of `pix` against `fix` within `eps` pixels to make progress.
+    Shared by every calibration source (see
+    `openptv2.calibration_registry.CALIBRATION_SOURCE_REGISTRY`): only how
+    `cal`/`fix`/`pix` get built differs. `calibrate_camera` below builds
+    them from a calblock + manual/existing seed; `calibrate_from_source`
+    builds them from any other registered source.
+
+    When ``presorted=True`` the point sets are already matched
+    (``pix[i].pnr == i`` and aligned with ``fix[i]``) — skip all
+    ``sortgrid`` calls and the coarse pre-pass, then go straight to the
+    ``CANDIDATE_FLAGS`` loop.
+    """
+    if presorted:
+        # Already matched: pix is index-aligned with fix via _target_from_xy
+        sorted_pix = pix
+        n_matched = len(pix)
+    else:
+        # Coarse sortgrid pass to align overall plate orientation
+        sp_coarse = sortgrid(cal, cpar, nfix, fix, len(pix), max(15, eps), pix)
+        try:
+            full_calibration(cal, fix, sp_coarse, cpar, ["cc", "xh", "yh"])
+        except (ValueError, RuntimeError):
+            pass
+
+        # Refine exterior at target radius: sortgrid -> fit -> re-sortgrid until matches stabilize.
+        sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
+        n_matched = sum(1 for t in sorted_pix if t.pnr >= 0)
+        for _ in range(REFINE_ITERS + 2):
+            try:
+                full_calibration(cal, fix, sorted_pix, cpar, ["cc", "xh", "yh"])
+            except (ValueError, RuntimeError):
+                break
+            sp = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
+            n = sum(1 for t in sp if t.pnr >= 0)
+            sorted_pix = sp
+            if n <= n_matched:
+                n_matched = n
+                break
+            n_matched = n
+
+    # Final bundle adjustment: pick the flag-set with lowest reprojection RMS starting from refined cal.
+    best = None
+    for flags in CANDIDATE_FLAGS:
+        trial = copy.deepcopy(cal)
+        try:
+            full_calibration(trial, fix, sorted_pix, cpar, flags)
+        except (ValueError, RuntimeError):
+            continue
+        ref, det, rep = _matched_pairs(trial, cpar, fix, sorted_pix)
+        r = rms_px(det, rep)
+        if best is None or r < best[0]:
+            best = (r, trial, flags, ref, det, rep)
+
+    if best is None:
+        raise RuntimeError(f"cam{cam + 1}: no flag-set converged")
+    r, cal_best, flags, ref, det, rep = best
+    return CamResult(cam, n_matched, nfix, r, flags, cal_best, ref, det, rep)
+
+
 def calibrate_camera(
     cam: int,
     base: Path,
@@ -422,46 +495,87 @@ def calibrate_camera(
     if n_test < 10:
         cal = _seeded()
 
-    # Coarse sortgrid pass to align overall plate orientation
-    sp_coarse = sortgrid(cal, cpar, nfix, fix, len(pix), max(15, eps), pix)
-    try:
-        full_calibration(cal, fix, sp_coarse, cpar, ["cc", "xh", "yh"])
-    except (ValueError, RuntimeError):
-        pass
+    return _refine_and_select(cam, cal, cpar, fix, nfix, eps, pix)
 
-    # Refine exterior at target radius: sortgrid -> fit -> re-sortgrid until matches stabilize.
-    sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
-    n_matched = sum(1 for t in sorted_pix if t.pnr >= 0)
-    for _ in range(REFINE_ITERS + 2):
-        try:
-            full_calibration(cal, fix, sorted_pix, cpar, ["cc", "xh", "yh"])
-        except (ValueError, RuntimeError):
-            break
-        sp = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
-        n = sum(1 for t in sp if t.pnr >= 0)
-        sorted_pix = sp
-        if n <= n_matched:
-            n_matched = n
-            break
-        n_matched = n
 
-    # Final bundle adjustment: pick the flag-set with lowest reprojection RMS starting from refined cal.
-    best = None
-    for flags in CANDIDATE_FLAGS:
-        trial = copy.deepcopy(cal)
-        try:
-            full_calibration(trial, fix, sorted_pix, cpar, flags)
-        except (ValueError, RuntimeError):
-            continue
-        ref, det, rep = _matched_pairs(trial, cpar, fix, sorted_pix)
-        r = rms_px(det, rep)
-        if best is None or r < best[0]:
-            best = (r, trial, flags, ref, det, rep)
+def calibrate_from_source(
+    source_name: str,
+    cam: int,
+    cpar,
+    point_set,
+    eps: int = 15,
+    *,
+    initial_cal: Calibration | None = None,
+    fix4: np.ndarray | None = None,
+    pix4: np.ndarray | None = None,
+    presorted: bool = False,
+) -> CamResult:
+    """Calibrate one camera from any registered calibration source.
 
-    if best is None:
-        raise RuntimeError(f"cam{cam + 1}: no flag-set converged")
-    r, cal_best, flags, ref, det, rep = best
-    return CamResult(cam, n_matched, nfix, r, flags, cal_best, ref, det, rep)
+    `point_set` is a `openptv2.calibration_registry.CalibrationPointSet`
+    (ref_pts/img_pts/optional seed) produced by the named source. Three ways
+    to get a starting pose, tried in order:
+
+    1. `point_set.seed` -- the source already recovered a usable pose (e.g.
+        a homography-derived seed) and no further bootstrapping is needed.
+        Use this for doors that carry a converted distortion model (OpenCV
+        ``k1..p2``): ``external_calibration``/``raw_orient`` zeroes all
+        distortion before solving (``orientation.py:540-546``), so path 2
+        would **destroy** the imported model — door B must use path 1.
+    2. `initial_cal` + `fix4`/`pix4` -- an approximate interior guess
+        (camera constant/principal point; `external_calibration` only
+        adjusts the 6 exterior parameters, so `cc`/`xh`/`yh` must already be
+        plausible on `initial_cal`, e.g. from an existing .ori or a rough
+        guess from the sensor size) plus a 4-point manual/known seed,
+        matching today's calblock path (`calibrate_camera`'s `_seeded()`).
+    3. Neither -- raises, rather than bootstrapping from a Calibration()
+        with cc=0.0 (Interior's default), which external_calibration cannot
+        usefully refine (division-by-camera-constant is undefined there).
+
+    ``presorted`` skips ``sortgrid`` (point sets already matched, e.g. door A
+    ``read_xyXYZ`` output) and is threaded to ``_refine_and_select``.
+
+    This is the multi-source counterpart to `calibrate_camera`: same
+    `_refine_and_select` core, different (and pluggable) point acquisition.
+    """
+    from openptv2.calibration_registry import get_source_info
+
+    get_source_info(source_name)  # KeyError if unregistered -- fail fast
+
+    ref_pts = np.asarray(point_set.ref_pts, float)
+    img_pts = np.asarray(point_set.img_pts, float)
+    nfix = ref_pts.shape[0]
+    if nfix == 0:
+        raise RuntimeError(f"cam{cam + 1}: {source_name} produced no correspondences")
+
+    pix = [_target_from_xy(i, xy[0], xy[1]) for i, xy in enumerate(img_pts)]
+
+    if point_set.seed is not None:
+        cal = copy.deepcopy(point_set.seed)
+    elif initial_cal is not None and fix4 is not None and pix4 is not None:
+        cal = copy.deepcopy(initial_cal)
+        if not external_calibration(cal, np.asarray(fix4, float), np.asarray(pix4, float), cpar):
+            raise RuntimeError(f"cam{cam + 1}: external_calibration did not converge")
+    else:
+        raise RuntimeError(
+            f"cam{cam + 1}: {source_name} has no seed pose; pass either a "
+            "point_set with .seed set, or initial_cal + fix4 + pix4"
+        )
+
+    return _refine_and_select(cam, cal, cpar, ref_pts, nfix, eps, pix, presorted=presorted)
+
+
+def _target_from_xy(pnr: int, x: float, y: float):
+    """Build a Target with the given pixel coordinates (helper for
+    calibrate_from_source, which starts from plain (n,2) arrays rather than
+    a `_targets` file)."""
+    from openptv2.algorithms.tracking_frame_buf import Target
+
+    t = Target()
+    t.pnr = pnr
+    t.x = x
+    t.y = y
+    return t
 
 
 def calibrate_dataset(

@@ -117,16 +117,13 @@ def dlt_resection(ref_pts: np.ndarray, metric_pts: np.ndarray):
 
 def rotation_matrix_to_angles(dm: np.ndarray) -> tuple[float, float, float]:
     """Invert Calibration.Exterior.compute_rotation_matrix()'s omega/phi/kappa
-    convention (see src/openptv2/algorithms/calibration.py)."""
-    phi = np.arcsin(np.clip(dm[0, 2], -1.0, 1.0))
-    cp = np.cos(phi)
-    if abs(cp) < 1e-8:
-        omega = 0.0
-        kappa = np.arctan2(-dm[1, 0], dm[1, 1])
-    else:
-        omega = np.arctan2(-dm[1, 2], dm[2, 2])
-        kappa = np.arctan2(-dm[0, 1], dm[0, 0])
-    return omega, phi, kappa
+    convention (see src/openptv2/algorithms/calibration.py).
+
+    Canonical implementation now lives in :mod:`openptv2.calibration_seed`
+    (``angles_from_dm``) — this shim is kept so the script remains standalone.
+    """
+    from openptv2.calibration_seed import angles_from_dm as _afd
+    return _afd(dm)
 
 
 def _self_test():
