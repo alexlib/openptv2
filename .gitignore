@@ -163,3 +163,5 @@ __marimo__/
 /.slim/
 /scratch_fbf_exp/
 /test_data/burgers/run.zarr
+/test_data/test_cavity/run.zarr
+
