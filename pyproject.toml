@@ -53,6 +53,7 @@ dependencies = [
     "xarray>=2024.0",
     "zarr>=2.16.0",
     "marimo>=0.24.0",
+    "nbformat>=5.11.1",
 ]
 
 [project.optional-dependencies]
