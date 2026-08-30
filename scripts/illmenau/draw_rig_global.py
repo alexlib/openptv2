@@ -13,11 +13,17 @@ import numpy as np
 import yaml
 
 matplotlib.use("Agg")
+import os
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-base = Path(__file__).parent
+# Dataset location; override with ILLMENAU_RAW / ILLMENAU_DIR.
+ILLMENAU_RAW = os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau")
+ILLMENAU_DIR = os.environ.get("ILLMENAU_DIR",
+                              os.path.join(ILLMENAU_RAW, "openptv_illmenau_4cam"))
+
+base = Path(ILLMENAU_DIR)
 plate = yaml.safe_load((base / "plate.yaml").read_text())["plate"]
 R = plate["test_section"]["radius"]
 H = plate["test_section"]["height"]
