@@ -370,13 +370,16 @@ class CameraWindow(HasTraits):
         ny2 = y1 + u2 * dy
         return nx1, ny1, nx2, ny2
 
-    def drawline(self, str_x, str_y, x1, y1, x2, y2, color1):
+    def drawline(self, str_x, str_y, x1, y1, x2, y2, color1, band_px=0.0):
         """drawline draws 1 line on the screen by using lineplot x1,y1->x2,y2
         parameters:
             str_x - label of x coordinate
             str_y - label of y coordinate
             x1,y1,x2,y2 - start and end coordinates of the line
             color1 - color of the line
+            band_px - half-width of a tolerance band to draw either side, in
+                PIXELS. Pass eps0/pix_x to show the epipolar band the matcher
+                actually searches.
         example usage:
             drawline("x_coord","y_coord",100,100,200,200,red)
             draws a red line 100,100->200,200
@@ -393,6 +396,38 @@ class CameraWindow(HasTraits):
         self._plot_data.set_data(str_y, [y1, y2])
         self._plot.plot((str_x, str_y), type="line", color=color1)
 
+        # The band is the point of this: eps0 is a flat MILLIMETRE tolerance, so
+        # at a 5 um pixel an eps0 of 0.5 is a +-100 PIXEL corridor.  Drawing only
+        # the centre line makes the search look far tighter than it is, and a
+        # calibration then gets blamed for what is a band-width setting.
+        if band_px and band_px > 0.5:
+            dx, dy = x2 - x1, y2 - y1
+            length = float(np.hypot(dx, dy))
+            if length < 1e-9:
+                return
+            nx, ny = -dy / length * band_px, dx / length * band_px
+            for sign, tag in ((1.0, "_hi"), (-1.0, "_lo")):
+                self._plot_data.set_data(str_x + tag,
+                                         [x1 + sign * nx, x2 + sign * nx])
+                self._plot_data.set_data(str_y + tag,
+                                         [y1 + sign * ny, y2 + sign * ny])
+                self._plot.plot((str_x + tag, str_y + tag), type="line",
+                                color=color1, line_style="dash", line_width=1)
+
+
+
+def _eps0_band_px(vpar, cpar):
+    """eps0 in PIXELS, for drawing the band the matcher searches.
+
+    ``vpar.eps0`` is a flat millimetre tolerance on the sensor plane, so the
+    conversion is a division by the pixel pitch -- and it is usually a much
+    bigger number than people expect.
+    """
+    try:
+        pix = 0.5 * (float(cpar.pix_x) + float(cpar.pix_y))
+        return float(vpar.eps0) / pix if pix > 0 else 0.0
+    except Exception:
+        return 0.0
 
 # ------------------------------------------
 # Message Window System for capturing print statements
@@ -1610,6 +1645,7 @@ class MainGUI(HasTraits):
                             pts[-1, 0],
                             pts[-1, 1],
                             self.camera_list[i].cam_color,
+                            band_px=_eps0_band_px(vpar, cpar),
                         )
 
                 self.camera_list[i].rclicked = 0
