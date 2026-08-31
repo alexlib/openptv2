@@ -186,6 +186,7 @@ def detect_plate_targets(
     coded_thr: float = 40.0,
     raw_for_coded: np.ndarray | None = None,
     use_roi: bool = True,
+    scaling: dict | None = None,
 ) -> PlateDetectionResult:
     """Detect plate dots and classify coded ones.
 
@@ -202,13 +203,16 @@ def detect_plate_targets(
     if work.ndim == 3:
         work = np.mean(work, axis=2).astype(work.dtype)
 
-    if work.dtype == np.uint16:
-        lo, hi = float(np.percentile(work, 1)), float(np.percentile(work, 99.5))
-        if hi <= lo:
-            hi = float(work.max()) or 1.0
-        work8 = np.clip((work.astype(float) - lo) / (hi - lo) * 255, 0, 255).astype(np.uint8)
-    else:
-        work8 = work.astype(np.uint8) if work.dtype != np.uint8 else work.copy()
+    # Grey scaling decides what every threshold below MEANS.  The default stays
+    # the per-image percentile stretch this function has always used, so nothing
+    # changes unless a caller asks; pass `scaling` (from
+    # openptv2.image_scaling.from_parameters) to make it explicit and fixed.
+    # See docs/plans/2026-08-31-16bit-image-handling.md.
+    from openptv2.image_scaling import to_uint8
+
+    _rule = scaling or {"mode": "stretch"}
+    work8 = to_uint8(work, _rule.get("mode", "stretch"),
+                     lo=_rule.get("lo"), hi=_rule.get("hi"))
 
     # ROI detection
     subrange_x = None
