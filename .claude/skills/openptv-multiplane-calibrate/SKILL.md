@@ -172,9 +172,34 @@ Illmenau work. Also assert the projected ray is monotone (straight) inside the
 sensor. Illmenau final: 0.11–0.30 px median, 0.93 px worst, straight for all
 points of all 12 pairs.
 
-Then sweep every frame (`check_all_frames.py`) to characterise accuracy versus
-distance from the reference plane, and set the observation volume to the range
-where it is acceptable.
+**Gate C — the whole dataset, and the thing planarity hides**
+(`plot_frame_triangulation.py`). Apply the finished model to every frame,
+fitting nothing, and read three numbers per frame:
+
+| number | measures | a bad value means |
+|---|---|---|
+| deviation from the rigid grid (Kabsch-fit the ideal pattern onto the triangulated dots) | did the pattern come back as the pattern | the **labeller** mis-assigned dots |
+| ray-convergence miss (RCM) — closest approach of the sight lines of one dot | do the rays actually meet | uses **no** plate model, so the grid cannot fool it: a bad RCM with a good grid is a **calibration** error |
+| planarity RMS | is the plate flat | little — a systematic model error distorts a plane consistently and still looks flat |
+
+**Planarity alone will mislead you.** On Illmenau, frame `00000030` has a
+textbook grid (1.7 mm median deviation), 0.90 mm planarity and the right pitch —
+and a 10.6 mm RCM at 2131 mm from the anchor plane. Nothing is mislabelled; the
+rays genuinely do not meet.
+
+Because the extrinsics are solved on one reference frame, the model is exact on
+that plane by construction and the error grows linearly away from it. Illmenau
+measured **RCM ≈ 0.58 % of the distance from the anchor plane**, consistent
+across 19 clean frames. Expect the same shape on any rig calibrated this way,
+and quote it as the accuracy floor of the volume.
+
+If that floor is too high, the fix is **not** distortion and **not** `cc` (both
+were swept against RCM on Illmenau and neither collapses it; refitting
+per-camera intrinsics over all planes even improves reprojection RMS while
+making RCM worse). The fix is to stop anchoring to one plane: a joint bundle
+adjustment over the clean frames whose unknowns are the camera poses, the shared
+`cc`, and one 6-dof plate pose per frame. Feed it only frames that pass the
+grid-deviation gate — a bundle fed mislabelled frames diverges.
 
 ## The observation volume and the epipolar display
 
@@ -190,6 +215,29 @@ walking the ray to `Z = Zmin_lay` and `Z = Zmax_lay`, interpolated in X across
   gave a 49 911 px segment, `±1500` was correct.
 - If lines look "too short", widen `Zmin/Zmax` — but never past the cameras.
 - Keep both layer values of each bound equal so the X interpolation is constant.
+
+Three distinct effects hide behind "the box moved my epipolar line", and only
+one is a bug:
+
+1. **Truncation** — the segment covers only the Z range you asked for. Expected.
+2. **Chord error** — the GUI draws the straight chord between the two endpoints,
+   which equals the true curve only for a pinhole. A non-zero `.addpar` bends
+   the curve, worst in the *middle* of a long segment because the endpoints get
+   dragged to the image periphery. **This is why shrinking the box can appear to
+   fix a calibration** — it hides bad distortion instead of fixing it. With zero
+   `.addpar` the miss is box-independent to numerical precision (Illmenau: 0.08
+   px at every box from ±500 to ±3000 mm).
+3. **Horizon flip** — past the plane through the second camera's projection
+   centre the depth changes sign, the endpoint lands on the far side of the
+   sensor and the chord is thrown across the image. Solve for it in closed form
+   (depth along the ray is affine in Z) rather than guessing: Illmenau's binding
+   pair horizons at Z = 3479 mm, so Zmax ≤ ~2780 mm with a 20 % margin, and the
+   ±4000 box that started the whole investigation was past it for six of twelve
+   pairs. → `check_epipolar_volume.py`
+
+Note this is a *configuration* limit, not a library bug: `epi_mm` reproduces the
+C original, whose parity tests deliberately place cameras inside the volume.
+Clamping inside `epi_mm` was tried on openptv2 and backed out for that reason.
 
 ## Failure modes, and how to tell them apart
 

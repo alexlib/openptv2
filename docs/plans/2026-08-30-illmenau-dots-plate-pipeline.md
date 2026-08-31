@@ -1,6 +1,6 @@
 # Illmenau dots-plate pipeline: hand-held multi-plane → OpenCV → openPTV
 
-**Status (2026-08-31):** cameras **1–4 are calibrated and accepted**. The route
+**Status (2026-08-31, validated over all 48 planes — see §5):** cameras **1–4 are calibrated and accepted**. The route
 taken differs from the original plan in two substantive ways — see §0. The
 delivered procedure is `docs/illmenau-4cam-calibration.md` (tutorial, numbers)
 and `.claude/skills/openptv-multiplane-calibrate/SKILL.md` (reusable recipe);
@@ -106,34 +106,76 @@ changes; the box picks which piece is drawn. **`Zmax` must stay well below the
 nearest camera** — past the camera plane the endpoint projects to absurd
 coordinates and throws the segment across the image.
 
-`parameters_Run1.yaml` is set to `X_lay ±1500`, `Zmin_lay −1500`,
-`Zmax_lay +1500`, layer values equal. Measured for the origin dot, pair 1→2:
-±500 → 300 px segment (hits), **±1500 → 786 px (hits)**, ±2500 → 49 911 px (misses).
+With the delivered zero-`.addpar` files the epipolar miss is **0.08 px at every
+box size from ±500 to ±3000 mm** — the box only truncates. The earlier apparent
+coupling was the chord-vs-curve error of the bad `.addpar`, worst in the middle
+of a long segment; shrinking the box was hiding Trap (a), not fixing it.
 
-## 5) Known limitation — the labeller
+The hard limit is the **horizon**, solved in closed form by
+`check_epipolar_volume.py`: the binding pair is 3→4 at **Z = 3479 mm**, so
+`Zmax_lay` may go to ≈2780 mm with a 20 % margin. `parameters_Run1.yaml` uses
+±1500 (conservative — ±2500 is safe); the original ±4000 box was past the
+horizon for six of the twelve pairs.
 
-Over all 48 frames the planarity RMS median is 17.5 mm, but that is a labelling
-problem, not calibration. Splitting by a per-camera PnP fit of the rigid plate
-(no cross-camera information):
+Clamping the endpoint to that horizon inside `epi_mm` was tried and **backed
+out**: it changes results for configurations `test_epi_mm` and
+`test_epi_mm_perpendicular` deliberately encode (cameras inside the volume,
+matching the C original). The limit is reported by the diagnostic, not enforced
+by the library.
 
-| | n | planarity RMS median |
-|---|---|---|
-| labelling self-consistent (PnP < 1 px) | 23 | 2.70 mm |
-| labelling broken (PnP ≥ 1 px) | 24 | 26.57 mm |
+## 5) Validation over all 48 planes, and the accuracy floor
 
-Roughly half the captured data is wasted. The 180° relabelling failure mode
-(`id → 43 − id` maps a 6×7 grid onto itself) was checked for and does **not**
-occur; the errors are individual dots misassigned on steeply tilted or partly
-occluded views. **Improving `label_coded_6x7` for tilted views is the
-highest-value next change** — it would roughly double the usable frames and
-tighten the `cc` fit (current median cross-camera spread at the optimum is still
-33.6 mm).
+`plot_frame_triangulation.py` applies the delivered `.ori`/`.addpar` to every
+frame (fitting nothing) and writes a 3D + face-on figure per frame. Three
+numbers separate the two failure modes: deviation from the rigid 6x7 grid
+(labeller), ray-convergence miss (calibration — uses no plate model, so the
+grid cannot fool it), and planarity (weak, a systematic error stays flat).
+
+29 of 48 frames are mislabelled (grid deviation 40–1150 mm) and say nothing
+about the calibration. The 19 clean frames show the real limit:
+
+| plate distance from the anchor plane | frames | planarity RMS | ray-convergence miss |
+|---|---|---|---|
+| 0 – 1000 mm | 2 | 0.36 mm | 0.36 mm |
+| 1000 – 2000 mm | 2 | 0.87 mm | 6.1 mm |
+| 2000 – 3000 mm | 6 | 1.83 mm | 11.1 mm |
+| 3000 – 5000 mm | 9 | 3.19 mm | 18.0 mm |
+
+**RCM ~= 0.58 % of the distance from the anchor plane**, consistent frame to
+frame (0.30–0.66 %). Frame `00000030` makes it unambiguous: perfect grid,
+0.90 mm planarity, 10.6 mm RCM at 2131 mm. This is a calibration limit, not a
+labelling one — §3's table above understated it because planarity was the only
+statistic reported.
+
+Cause: all four extrinsics are solved on frame `00000000` alone, so the model is
+exact on that plane by construction and the relative-orientation error grows
+linearly away from it. Ruled out as causes: `cc` (sweeping it against RCM gives
+a shallow minimum near 8.8 mm, 15.5 -> 12.8 mm, no collapse) and intrinsics
+(per-camera `cv2.calibrateCamera` over all planes improves reprojection RMS to
+0.38–0.44 px and makes RCM *worse*, 20–30 mm — a clean demonstration that
+reprojection RMS is the wrong objective here). Per the user's decision, `cc`
+stays at 8.5858 mm, which is what frame `00000000` verifies by hand in the GUI.
+
+**Proposed fix, not implemented:** a joint bundle adjustment over the 19 clean
+frames — unknowns are the four camera poses, the shared `cc`, and one 6-dof
+plate pose per frame. The earlier `bundle_shared_cc.py` attempt failed only
+because it was fed all 48 frames including the mislabelled ones; the
+grid-deviation gate now provides the clean set it needed. Fixing the labeller
+pays twice, since it roughly doubles the frames available to that bundle.
+
+## 5b) Known limitation — the labeller
+
+Roughly half the hand-held frames are mislabelled. The 180° relabelling failure
+mode (`id -> 43 - id` maps a 6x7 grid onto itself) was checked for and does
+**not** occur; the errors are individual dots misassigned on steeply tilted or
+partly occluded views. **Improving `label_coded_6x7` for tilted views is the
+highest-value next change.**
 
 ## 6) Files
 
 *Delivered:* `scripts/illmenau/{detect_plate_frames, fit_plate_cc,
 refit_plate_pinhole, check_plate_triangulation, check_epipolar, check_all_frames,
-draw_rig_global}.py`, `docs/illmenau-4cam-calibration.md`,
+plot_frame_triangulation, check_epipolar_volume, draw_rig_global}.py`, `docs/illmenau-4cam-calibration.md`,
 `.claude/skills/openptv-multiplane-calibrate/SKILL.md`. Dataset paths come from
 `ILLMENAU_RAW` / `ILLMENAU_DIR`. OpenCV is not a project dependency — the two
 scripts that need it run under `uv run --with opencv-python-headless`.
@@ -155,7 +197,11 @@ path for cameras 1–4 (but Kabsch is still needed for 5–8, see below), and
 3. `fit_plate_cc.py` shows a clean single minimum. A flat curve means the frames do not span enough depth — capture more.
 4. Gate A: planarity < 1 mm, pitch within a few tenths of a percent, absolute error ~1 mm.
 5. Gate B: every ordered pair under ~1 px median **and** straight inside the sensor.
-6. Set the observation volume to the depth range where §3's accuracy table is acceptable.
+6. `plot_frame_triangulation.py` over the whole dataset: split frames by
+   grid deviation (labeller) and read ray-convergence miss vs plate distance
+   (calibration). **Never judge this from planarity alone** — §5.
+7. `check_epipolar_volume.py` for the horizon, then set the observation volume
+   below it and inside the depth range where §5's RCM is acceptable.
 
 ## 8) Next: cameras 5–8 (−Z wall)
 

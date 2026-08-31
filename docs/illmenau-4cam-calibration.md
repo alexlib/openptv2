@@ -1,8 +1,9 @@
 # Calibrating the Illmenau 4-camera rig from a hand-held dots plate
 
 How the `.ori` files for cameras 1–4 of the Illmenau barrel were produced, why the
-first few attempts failed the epipolar test even at 0.5 px reprojection RMS, and
-what to run next time. Cameras 5–8 follow the same recipe (see the last section).
+first few attempts failed the epipolar test even at 0.5 px reprojection RMS, how
+far the resulting model can be trusted, and what to run next time. Cameras 5–8
+follow the same recipe (see the last section).
 
 Dataset: `C:\Users\alex\Downloads\Illmenau` — `Kalibrierung_1..4` hold 48
 synchronised frames each of a hand-held 6×7 dot plate at unknown depths;
@@ -67,7 +68,72 @@ Grid is `ix = 0…5` left→right, `iy = 0…6` bottom→top, pitch 120 mm both 
 **The origin is point id 21** — line 21 of `calibration_block.txt` is `21 0.0 0.0 0.0`.
 The block runs from `1 -240 -360 0` to `42 360 360 0`.
 
-## 3. The two traps
+## 3. From a grid at an arbitrary position to an `.ori` file
+
+This is the whole chain, with nothing hidden. Only two of these steps involve any
+fitting; the rest is bookkeeping and algebra.
+
+**3.1 — each detected dot gets a plate coordinate.** The labeller gives every dot
+an `(ix, iy)`. Because the plate is rigid and its pitch is known, that fixes the
+dot's position in a coordinate system attached to *the plate*, with the datum dot
+at the origin and the plate lying in `z = 0`:
+
+```python
+obj = [(ix - DATUM_IX) * pitch_x, (iy - DATUM_IY) * pitch_y, 0.0]      # = ref_pts
+```
+
+`DATUM_IX, DATUM_IY = 2, 3` for this plate. Nothing about where the plate is being
+held enters here — this is the plate's own geometry, identical in every frame.
+
+**3.2 — one frame is promoted to *the* world.** Pick a reference frame (here
+`00000000`) and *declare* that in that frame the plate coordinate system **is** the
+world coordinate system. That single declaration is what pins the world to a piece
+of plastic. Every other frame's plate position is then an unknown to be measured,
+not an input.
+
+**3.3 — each camera's pose is solved from that one frame.** With object points
+from 3.1 and their pixels in camera *i*, `cv2.solvePnP` + `solvePnPRefineLM` return
+`(rvec, tvec)`: the rigid transform taking world points into camera *i*'s frame,
+`x_cam = R·X_world + t`, with `R = Rodrigues(rvec)`. This is the first fit. It
+needs no seed and no initial guess — six unknowns from ~42 points.
+
+**3.4 — the intrinsic matrix.** `K = [[cc/pix_x, 0, imx/2], [0, cc/pix_y, imy/2], [0,0,1]]`
+with the principal point at the sensor centre and **zero distortion**. `cc` is the
+one number that cannot be obtained from a single plane (§4, Trap 2) — it comes from
+step 3.6, and 3.3–3.5 are simply re-run for each trial value.
+
+**3.5 — convert OpenCV's `[R|t]` into openptv2's `.ori`.** Pure algebra, in
+`calibration_import.calibration_from_opencv`:
+
+| OpenCV | openptv2 `.ori` | why |
+|---|---|---|
+| `R`, `t` | `dm = Rᵀ · S`, with `S = diag(1, −1, −1)` applied **on the right** | OpenCV's camera frame is x-right, y-**down**, z-**forward**; openptv2's is x-right, y-**up**, z-**backward** (the camera views along `−dm[:,2]`). `S` flips those two axes. |
+| `R`, `t` | `C = −Rᵀ·t` | the projection centre in world coordinates — the `x0 y0 z0` line of the `.ori` |
+| `dm` | `ω, φ, κ` via `angles_from_dm` | the `.ori` stores angles; `dm` is written under them and is what the code actually reads |
+| `fx` | `cc = fx · pix_x` | pixels → mm |
+| `cx, cy` | `xh, yh` (as an offset from the sensor centre) | principal point |
+| `distCoeffs` | `.addpar` `k1 k2 k3 p1 p2 scx she` | **left at zero here** — see §4, Trap 1 |
+
+Then `Calibration.to_file` writes `cal/camN.tif.ori` and `cal/camN.tif.addpar`.
+There is no bundle adjustment, no GUI orientation clicking, and no `sortgrid`: the
+L code already gave every dot its identity, which is what `sortgrid` normally has
+to guess (`autocalibration._refine_and_select(presorted=True)`).
+
+**3.6 — where `cc` came from.** The one genuinely global fit. For a trial `cc`,
+run 3.3–3.5 to get four poses, then take *another* frame and ask each camera
+**separately** where the plate is now (`solvePnP` again, per camera, in that
+camera's own world frame). If `cc` is right the four answers coincide; if it is
+wrong each camera's world sits at the wrong distance and the answers spread apart.
+Minimising the median spread over the usable frames is a clean 1-D problem →
+`fit_plate_cc.py`, §4 Trap 2.
+
+**In one line:** the plate's own geometry gives object points; one frame is
+declared to be the world; `solvePnP` turns each camera's view of that frame into a
+pose; a change of basis turns the pose into an `.ori`; and the focal length — the
+only quantity a single plane cannot see — is fixed by requiring the four cameras to
+agree about *other* plate positions.
+
+## 4. The two traps
 
 These cost most of the debugging, and both are invisible to per-camera
 reprojection RMS, which sat at a healthy 0.5 px throughout.
@@ -102,11 +168,7 @@ triangulated pitch by 0.02 mm. That is not insensitivity, it is exact degeneracy
 a single plane re-fit at a different focal length gives a **self-similar**
 reconstruction. `cc` is unobservable there.
 
-It *is* observable from multiple planes. Fit each camera's pose on the reference
-frame, then ask each camera separately where the plate is in some other frame. If
-`cc` is right the four answers coincide; if it is wrong each camera's world frame
-sits at the wrong distance and the answers spread apart, the more so the further
-the plate is from the reference plane. Minimising that spread over 23 frames:
+It *is* observable from multiple planes, by the procedure in §3.6:
 
 | cc [mm] | 8.20 | 8.40 | **8.586** | 8.80 | 9.00 | 9.44 |
 |---|---|---|---|---|---|---|
@@ -114,7 +176,7 @@ the plate is from the reference plane. Minimising that spread over 23 frames:
 
 A clean minimum. **The fitted focal length is 8.586 mm, not the nominal 9.44 mm.**
 
-## 4. The recipe
+## 5. The recipe
 
 ```bash
 cd "$ILLMENAU_DIR"
@@ -136,40 +198,65 @@ uv run --project <openptv2> --with opencv-python-headless \
 uv run --project <openptv2> python <openptv2>/scripts/illmenau/check_plate_triangulation.py
 uv run --project <openptv2> python <openptv2>/scripts/illmenau/check_epipolar.py
 
-# 5. optional: the whole-dataset sweep and the frame diagram
+# 5. validate over the whole dataset, and look at the pictures
 uv run --project <openptv2> python <openptv2>/scripts/illmenau/check_all_frames.py
+uv run --project <openptv2> python <openptv2>/scripts/illmenau/plot_frame_triangulation.py
+uv run --project <openptv2> python <openptv2>/scripts/illmenau/check_epipolar_volume.py
 uv run --project <openptv2> python <openptv2>/scripts/illmenau/draw_rig_global.py
 ```
 
 Steps 2 and 3 are the only ones that touch the calibration; step 1 is cached, so
 re-running 2–4 with a different `cc` costs seconds.
 
-## 5. Set the observation volume before opening the GUI
+## 6. Set the observation volume before opening the GUI
 
 `src/openptv2/algorithms/epi.py:129` (`epi_mm`) does **not** compute a line. It
 computes two *endpoints*, by walking the ray to `Z = Zmin_lay` and `Z = Zmax_lay`
-(interpolated in X across `X_lay`). The epipolar line never changes; the box
-decides **which piece of it gets drawn**. Two consequences:
+(interpolated in X across `X_lay`) and projecting those two 3D points into the
+second camera. The GUI then draws the straight chord between them. So the box can
+change what you see in three different ways, and only one of them is a bug:
 
-- Change `Xmin/Xmax/Zmin/Zmax` and the segment appears to move. It has not — you
-  are drawing a different portion.
-- **`Zmax` must stay well below the nearest camera.** With cameras at Z ≈ 3000–3060
-  and the old `±4000` box, the far endpoint was computed *behind* the camera and
-  projected to absurd coordinates, throwing the segment across the image.
+**Truncation** — the segment covers only the Z range you asked for. If the true
+depth is outside it the segment stops short of the matching dot. Expected, and the
+usual reason lines "do not reach". Widen the box.
 
-Measured segment behaviour for the dot at the origin:
+**Chord error** — the drawn chord equals the true epipolar curve only if that curve
+is straight. It is straight for a pinhole; a non-zero `.addpar` bends it, worst in
+the *middle* of a long segment, because the endpoints get dragged out to the image
+periphery where the distortion polynomial is largest. **This is why shrinking the
+box appeared to fix the calibration** back when `.addpar` was non-zero — it was
+hiding Trap 1, not fixing it. With the delivered zero-`.addpar` files this term is
+identically zero, and `check_epipolar_volume.py` confirms the miss distance is
+**0.08 px at every box size from ±500 to ±3000 mm**. The line really is the same
+line; only its length changes.
 
-| pair | Z box | segment length | passes through the dot? |
-|---|---|---|---|
-| 1→2 | ±500 | 300 px | yes |
-| 1→2 | **±1500** | **786 px** | **yes** |
-| 1→2 | ±2500 | 49 911 px | no — endpoint past the camera |
+**Horizon flip** — the hard failure. Once the sampled point passes the plane
+through the second camera's projection centre, the depth that projection divides by
+goes through zero and changes sign: the endpoint lands on the far side of the
+sensor and the chord is thrown across the image. Nothing is wrong with the
+calibration; the box asked for a point behind the camera.
+`check_epipolar_volume.py` solves for that horizon in closed form:
 
-`parameters_Run1.yaml` is set to `X_lay ±1500`, `Zmin_lay −1500`, `Zmax_lay +1500`,
-with both layer values of each bound equal so the X interpolation stays constant.
-If the lines look too short, widen `Zmin/Zmax` — but never past ~2500.
+| A→B | 1→2 | 1→3 | 1→4 | 2→1 | 2→3 | 2→4 | 3→1 | 3→2 | 3→4 | 4→1 | 4→2 | 4→3 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| horizon Z [mm] | 3499 | 3695 | 4294 | 3592 | 4554 | 3600 | 3795 | 4307 | 3479 | 4669 | 3595 | 3489 |
 
-## 6. What the result looks like
+**The binding limit is Z = 3479 mm** (pair 3→4). With a 20 % margin, `Zmax_lay` may
+go up to **≈ 2780 mm** — so a `±2500` box is fine and a `±4000` box (the one that
+produced the original "epipolar lines are wrong" report) is past the horizon for
+six of the twelve pairs. `parameters_Run1.yaml` currently uses `±1500`, which is
+conservative; you can safely open it up to `±2500` if you need the depth.
+
+Keep both layer values of each bound equal (`Zmin_lay: [-z, -z]`) so the X
+interpolation stays constant across the volume.
+
+*Not fixed in the library:* clamping the endpoint to the horizon inside `epi_mm`
+was tried and backed out. It changes results for configurations the existing parity
+tests (`test_epi_mm`, `test_epi_mm_perpendicular`) deliberately encode — those
+fixtures place cameras inside the volume and expect the C original's behaviour. The
+limit is reported by the diagnostic instead of enforced by the library.
+
+## 7. What the result looks like
 
 Final calibration, `cc = 8.586 mm` shared, zero distortion:
 
@@ -193,30 +280,73 @@ the correct dot is **0.11–0.30 px median, 0.93 px worst case**, and the curve 
 straight inside the sensor for **every** point of **every** pair. Camera 2, the
 worst before, is now the best.
 
-**Accuracy away from the reference plane** (frames whose labelling is
-self-consistent):
+## 8. Validating the model on all 48 planes
 
-| distance from reference plane | n | planarity RMS median / max |
+`plot_frame_triangulation.py` triangulates every frame with the delivered
+`.ori`/`.addpar` — it fits nothing — and writes `triangulation/frame_XXXXXXXX.png`
+plus `summary.png` and `summary.csv`. Each figure has a 3D panel (dots coloured by
+distance from the best-fit plane, with the cameras and the world origin) and a
+face-on panel showing the dots against the ideal rigid 6×7 grid Kabsch-fitted onto
+them.
+
+**Three numbers separate the two things that can go wrong**, which is the point of
+the exercise:
+
+| number | what it measures | what a bad value means |
 |---|---|---|
-| 0 – 1000 mm | 2 | 0.36 / 0.41 mm |
-| 1000 – 2000 mm | 2 | 0.87 / 1.33 mm |
-| 2000 – 3000 mm | 7 | 2.17 / 21.99 mm |
-| 3000 – 5000 mm | 12 | 3.87 / 29.28 mm |
+| deviation from the rigid grid | does the labelled 6×7 pattern come back as a 6×7 pattern | > ~30 mm ⇒ the **labeller** mis-assigned dots |
+| ray-convergence miss (RCM) | do the sight lines of a dot actually meet | uses **no** plate model, so it cannot be fooled by the grid — a bad value with a good grid is a **calibration** error |
+| planarity RMS | does the plate come back flat | weak: a systematic model error can distort a plane consistently and still look flat |
 
-Sub-millimetre inside the ±1500 mm observation box, degrading beyond it. Set the
-box to the volume you actually measure in.
+29 of the 48 frames are mislabelled (grid deviation 40–1150 mm) — the plate is
+steeply tilted or partly occluded and `label_coded_6x7` gives up. Those frames say
+nothing about the calibration. Frame `00000002` is the clearest example, and its
+face-on panel makes the scrambling obvious at a glance.
 
-## 7. Known limitation — the labeller, not the calibration
+**The 19 correctly-labelled frames are the real test, and they show a limitation
+the earlier write-up missed.** The plate comes back flat and at the right pitch
+everywhere, but the sight lines stop meeting as the plate moves away from the
+reference plane:
 
-Over all 48 frames the planarity RMS median is 17.5 mm, and only 9 frames come in
-under 2 mm. That is **not** calibration error. Splitting the frames by a
-per-camera PnP fit of the rigid 6×7 plate — a test that uses no cross-camera
-information at all:
+| distance of the plate from the world origin | frames | planarity RMS | ray-convergence miss |
+|---|---|---|---|
+| 0 – 1000 mm | 2 | 0.36 mm | **0.36 mm** |
+| 1000 – 2000 mm | 2 | 0.87 mm | **6.1 mm** |
+| 2000 – 3000 mm | 6 | 1.83 mm | **11.1 mm** |
+| 3000 – 5000 mm | 9 | 3.19 mm | **18.0 mm** |
 
-| | n | planarity RMS median |
-|---|---|---|
-| labelling self-consistent (PnP < 1 px) | 23 | 2.70 mm |
-| labelling broken (PnP ≥ 1 px) | 24 | 26.57 mm |
+A least-squares fit over those 19 frames gives **RCM ≈ 0.58 % of the distance from
+the anchor plane**, and it is remarkably consistent frame to frame (0.30–0.66 %).
+Frame `00000030` is the cleanest illustration: a textbook grid (median deviation
+1.7 mm), planarity 0.90 mm, pitch 121.03 mm — and an RCM of 10.6 mm at 2131 mm.
+Nothing is mislabelled there; the rays genuinely do not meet.
+
+**Where that comes from.** All four extrinsics are solved on frame `00000000`
+alone (§3.3), so the model is exact *on that plane* by construction and any small
+error in the relative orientation between cameras is absorbed there and grows
+linearly with distance from it. `cc` was checked and is not the cause: sweeping it
+against this same RCM objective gives a shallow minimum near 8.8 mm that only moves
+the median from 15.5 to 12.8 mm — it does not collapse. Refitting per-camera
+intrinsics over all planes with `cv2.calibrateCamera` (including `k1`) *improves*
+reprojection RMS to 0.38–0.44 px and makes RCM **worse** (20–30 mm), which is a
+clean demonstration that reprojection RMS is the wrong objective for this rig.
+
+**Practical consequence.** The delivered calibration is sub-millimetre within about
+1.5 m of the reference plane, and degrades to ~1–2 cm at 3–4 m. If you measure in a
+volume that big, this is the accuracy floor, and no `.addpar` will fix it.
+
+**The fix, if that accuracy is not enough** (not implemented): stop anchoring the
+extrinsics to one plane. Run a joint bundle adjustment whose unknowns are the four
+camera poses, the shared `cc`, and one 6-dof plate pose per frame, minimising
+reprojection over all correctly-labelled frames at once. That spreads the
+orientation error over the whole volume instead of concentrating it far from the
+anchor. An earlier attempt at this (`bundle_shared_cc.py`) converged badly, but it
+was fed all 48 frames including the 29 mislabelled ones; with the 19-frame clean
+set and the grid-deviation gate above it is worth retrying. Doing so also makes
+**fixing the labeller** valuable twice over, since it would roughly double the
+frames available to the bundle.
+
+## 9. Known limitation — the labeller
 
 Half the hand-held frames are mislabelled. The obvious failure mode — a 180°
 relabelling, which a 6×7 grid admits since `id → 43 − id` maps it onto itself —
@@ -226,10 +356,10 @@ wrong ids when the plate is steeply tilted or partly occluded. Frames 2, 3, 14 a
 
 This does not affect the delivered `.ori`, because `fit_plate_cc.py` admits a frame
 only when all four cameras fit it below 1.5 px. It does mean roughly half the
-captured data is wasted, so improving `label_coded_6x7` for tilted views is the
-highest-value next change.
+captured data is wasted, so improving `label_coded_6x7` for tilted views remains
+the highest-value next change.
 
-## 8. Next time / cameras 5–8
+## 10. Next time / cameras 5–8
 
 Cameras 5–8 sit on the opposite wall at −Z and see the **back** face of the plate,
 so two things change:
@@ -248,5 +378,7 @@ so two things change:
 
 The recipe itself is unchanged: cache detections, fit one shared `cc` from
 multi-plane consistency, write a pure-pinhole `.ori`, then gate on
-`check_plate_triangulation.py` and `check_epipolar.py`. Expect the fitted `cc` to
-land near 8.59 mm again if the lenses are the same.
+`check_plate_triangulation.py` and `check_epipolar.py`, and validate with
+`plot_frame_triangulation.py`. Expect the fitted `cc` to land near 8.59 mm again if
+the lenses are the same, and expect the same ~0.6 %-of-distance RCM growth unless
+the joint bundle of §8 is done first.
