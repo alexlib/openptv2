@@ -165,3 +165,6 @@ __marimo__/
 /test_data/burgers/run.zarr
 /test_data/test_cavity/run.zarr
 
+
+# mkdocs build output
+site/

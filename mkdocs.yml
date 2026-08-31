@@ -58,10 +58,16 @@ nav:
   - User Guides:
     - Zarr & HDF5 Storage: zarr-hdf5-storage.md
     - Tracking Pipeline & Results: tracking_guide.md
-    - Calibration Best Practices: calibration_best_practices.md
     - Command-Line Batch Processing: tutorials/batch_processing.md
     - Tracking Visualization: tutorials/tracking_visualization.md
     - Debug Visualization: tutorials/tracking_debug_visualization.md
+  - Calibration:
+    - Plate Calibration How-To: plate-calibration-howto.md
+    - Illmenau 4-Camera Case Study: illmenau-4cam-calibration.md
+    - Best Practices: calibration_best_practices.md
+    - Reprojection RMS vs Ray Convergence: calibration-rms-vs-rcm.md
+    - Bundle Adjustment: calibration-bundle-adjustment.md
+    - Tracer Self-Calibration: tracer-self-calibration.md
   - Running Tests: tests.md
   - Developer Guide:
     - Building from Source: developer_guide/building.md
