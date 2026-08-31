@@ -1,10 +1,11 @@
 """One 3D PNG per calibration frame: what the delivered .ori/.addpar actually
 reconstruct for that plate position.
 
-The calibration model itself is fixed (cc = 8.5858 mm shared, zero distortion,
-poses anchored to frame 00000000, verified by hand in the GUI).  This script
-does not fit anything -- it only *shows* how well that one model reconstructs
-each of the other 47 plate positions.
+This script **fits nothing**.  It reads whatever cal/camN.tif.ori currently say
+and shows how well that one model reconstructs every plate position, so it is
+the honest check on both refit_plate_pinhole.py and bundle_plate_poses.py.  The
+`cc` and the model description in the summary figure are read out of the .ori
+rather than assumed, so the figure cannot go stale against the files.
 
 Per frame, two panels:
   left   3D view in the global frame -- triangulated dots coloured by their
@@ -40,7 +41,10 @@ ILLMENAU_DIR = os.environ.get("ILLMENAU_DIR",
 out = Path(ILLMENAU_DIR)
 dst = out / "triangulation"
 dst.mkdir(exist_ok=True)
-PITCH, NX, NY = 120.0, 6, 7
+PITCH, NX, NY, REF = 120.0, 6, 7, "00000000"
+# Above this, a frame's triangulated pattern is not the plate: the labeller
+# assigned dots wrongly.  Below it, what is left is the calibration model.
+GRID_DEV_MISLABELLED_MM = 30.0
 
 cpar = ControlPar(num_cams=4, imx=2560, imy=2048, pix_x=0.005, pix_y=0.005,
                   mm=MmNp(n1=1.0, n2=[1.0], d=[0.0], n3=1.0), chfield=0, tiff_flag=1,
@@ -52,6 +56,7 @@ for ci in range(4):
     c.from_file(str(out / f"cal/cam{ci+1}.tif.ori"), str(out / f"cal/cam{ci+1}.tif.addpar"))
     cals.append(c)
 cam_C = np.array([[c.ext_par.x0, c.ext_par.y0, c.ext_par.z0] for c in cals])
+CC_MM = round(float(cals[0].int_par.cc), 4)   # reported, never assumed
 
 d = np.load(out / "cal" / "labelled_all_frames.npz")
 views = {}
@@ -187,11 +192,16 @@ for ax, col, lab in zip(axs, [r[:, 0], r[:, 2], r[:, 3]],
     ax.semilogy(r[:, 4], col, "o")
     ax.set(xlabel="plate centre distance from the world origin [mm]", ylabel=lab)
     ax.grid(alpha=.3, which="both")
-axs[2].axhline(20, color="crimson", ls="--", lw=1)
-axs[2].text(0.02, .93, "above the line = mislabelled frame", color="crimson", fontsize=8,
-            transform=axs[2].transAxes)
-fig.suptitle("Delivered cc = 8.5858 mm pinhole model, poses anchored to frame 00000000, "
-             "applied to all 48 plate positions")
+n_bad = int((r[:, 3] > GRID_DEV_MISLABELLED_MM).sum())
+axs[2].axhline(GRID_DEV_MISLABELLED_MM, color="crimson", ls="--", lw=1)
+axs[2].text(0.02, .93,
+            f"{GRID_DEV_MISLABELLED_MM:.0f} mm: above this a frame is mislabelled "
+            f"({n_bad} of {len(rows)})" if n_bad else
+            f"{GRID_DEV_MISLABELLED_MM:.0f} mm mislabelling threshold — no frame exceeds it,\n"
+            "so everything above the smallest points is model error, not labelling",
+            color="crimson", fontsize=8, va="top", transform=axs[2].transAxes)
+fig.suptitle(f"Delivered cc = {CC_MM} mm pinhole model, joint bundle over all plate poses "
+             f"(gauge = frame {REF}), applied to all {len(rows)} plate positions")
 fig.tight_layout()
 fig.savefig(dst / "summary.png", dpi=120)
 plt.close(fig)
