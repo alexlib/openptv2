@@ -178,39 +178,65 @@ A clean minimum. **The fitted focal length is 8.586 mm, not the nominal 9.44 mm.
 
 ## 5. The recipe
 
+`OPTV=<path to openptv2>`. Everything runs from the working folder; the dataset
+is found through `ILLMENAU_RAW` / `ILLMENAU_DIR`. Only steps 1-3 and 5 change the
+calibration; the rest only measure it.
+
 ```bash
 cd "$ILLMENAU_DIR"
 
-# 1. detect + L-code label every frame of all four cameras, cache to npz
-#    (~192 images, a few minutes; writes cal/labelled_all_frames.npz)
-uv run --project <openptv2> python <openptv2>/scripts/illmenau/detect_plate_frames.py
+# --- 1. DETECT + LABEL every frame of all four cameras, cached to npz.
+# ~192 images, a few minutes -> cal/labelled_all_frames.npz.  Hands the labeller
+# the two things one image cannot settle: the datum's grid index, and the image
+# direction of world +Y from the current .ori (section 9).  On a brand-new rig
+# with no .ori yet, run once with ILLMENAU_NO_HINT=1, then re-run after step 3.
+uv run --project $OPTV python $OPTV/scripts/illmenau/detect_plate_frames.py
 
-# 2. fit the ONE shared cc from multi-plane cross-camera consistency
-uv run --project <openptv2> --with opencv-python-headless \
-    python <openptv2>/scripts/illmenau/fit_plate_cc.py
+# --- 2. FIT the one shared cc, from multi-plane cross-camera consistency.
+# The only quantity a single plane cannot see (section 4, Trap 2).
+uv run --project $OPTV --with opencv-python-headless \
+    python $OPTV/scripts/illmenau/fit_plate_cc.py
 
-# 3. write the .ori: pure pinhole at that cc, pose from the reference frame,
-#    zero distortion in .addpar
-uv run --project <openptv2> --with opencv-python-headless \
-    python <openptv2>/scripts/illmenau/refit_plate_pinhole.py 8.5858
+# --- 3. WRITE the .ori: pure pinhole at that cc, poses from the reference
+# frame, zero distortion in .addpar (section 4, Trap 1).
+uv run --project $OPTV --with opencv-python-headless \
+    python $OPTV/scripts/illmenau/refit_plate_pinhole.py 8.5858
 
-# 4. verify -- these two are the acceptance gate
-uv run --project <openptv2> python <openptv2>/scripts/illmenau/check_plate_triangulation.py
-uv run --project <openptv2> python <openptv2>/scripts/illmenau/check_epipolar.py
+# --- 4. GATE.  These two decide whether the calibration is usable.  Never gate
+# on per-camera reprojection RMS -- it stayed at 0.5 px through every wrong
+# intermediate result of this work.
+uv run --project $OPTV python $OPTV/scripts/illmenau/check_plate_triangulation.py
+uv run --project $OPTV python $OPTV/scripts/illmenau/check_epipolar.py
 
-# 5. validate over the whole dataset, and look at the pictures
-# 5b. joint bundle over all clean plate positions (section 8b) -- omit --write
-#     for a dry run that changes nothing
-uv run --project <openptv2> --with opencv-python-headless     python <openptv2>/scripts/illmenau/bundle_plate_poses.py 8.5858 --write
+# --- 5. BUNDLE: re-solve all camera poses together with one plate pose per
+# frame, so the model is no longer exact on the reference plane and drifting
+# away from it (section 8b).  cc stays fixed; the reference plate pose is the
+# gauge.  Omit --write for a dry run that changes nothing.
+uv run --project $OPTV --with opencv-python-headless \
+    python $OPTV/scripts/illmenau/bundle_plate_poses.py 8.5858 --write
 
-uv run --project <openptv2> python <openptv2>/scripts/illmenau/check_all_frames.py
-uv run --project <openptv2> python <openptv2>/scripts/illmenau/plot_frame_triangulation.py
-uv run --project <openptv2> python <openptv2>/scripts/illmenau/check_epipolar_volume.py
-uv run --project <openptv2> python <openptv2>/scripts/illmenau/draw_rig_global.py
+# --- 6. RE-GATE (step 4 again), then validate over the whole dataset and look
+# at the pictures.  plot_frame_triangulation.py fits nothing: it shows what the
+# .ori on disk actually reconstruct, one figure per plate position.
+uv run --project $OPTV python $OPTV/scripts/illmenau/check_plate_triangulation.py
+uv run --project $OPTV python $OPTV/scripts/illmenau/check_epipolar.py
+uv run --project $OPTV python $OPTV/scripts/illmenau/plot_frame_triangulation.py
+uv run --project $OPTV python $OPTV/scripts/illmenau/check_all_frames.py
+
+# --- 7. SET THE OBSERVATION VOLUME before opening the GUI (section 6).
+# Reports the largest safe Zmax for this rig; it is a display and search
+# parameter, not a calibration one, and the usual cause of "the epipolar lines
+# are wrong".
+uv run --project $OPTV python $OPTV/scripts/illmenau/check_epipolar_volume.py
+
+# --- optional: draw the rig against the global frame, as a sanity check that
+# the cameras came out where they physically are.
+uv run --project $OPTV python $OPTV/scripts/illmenau/draw_rig_global.py
 ```
 
-Steps 2 and 3 are the only ones that touch the calibration; step 1 is cached, so
-re-running 2–4 with a different `cc` costs seconds.
+Step 1 is cached, so re-running 2-5 with a different `cc` costs seconds. After
+step 5 it is worth re-running step 1 once: the labeller uses the `.ori` for its
+up-hint, so a better calibration can rescue frames it previously mislabelled.
 
 ## 6. Set the observation volume before opening the GUI
 
