@@ -8,6 +8,8 @@ from pathlib import Path
 import numpy as np
 import yaml
 
+from openptv2.image_scaling import to_uint8
+
 # chaco.overlays.data_label has an ASCII-art docstring with backslashes in a
 # non-raw string -- a SyntaxWarning at compile time (Python 3.12+), from
 # chaco's own vendored code, not ours. Nothing to fix on our side; silencing
@@ -211,9 +213,9 @@ class CameraWindow(HasTraits):
         #     is_float = False
 
         if is_float:
-            self._plot_data.set_data("imagedata", image.astype(np.float32))
+            self._plot_data.set_data("imagedata", np.asarray(image, dtype=np.float32))
         else:
-            self._plot_data.set_data("imagedata", image.astype(np.uint8))
+            self._plot_data.set_data("imagedata", to_uint8(image, "fixed"))
 
         # if not hasattr(
         #         self,

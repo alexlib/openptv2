@@ -27,6 +27,7 @@ from traits.api import Bool, Button, HasTraits, Instance, Int, Str
 from traitsui.api import HGroup, Item, ListEditor, VGroup, View
 
 from openptv2.calibration import Calibration
+from openptv2.image_scaling import to_uint8
 from openptv2.imgcoord import image_coordinates
 from openptv2.orientation import (
     external_calibration,
@@ -226,10 +227,20 @@ class PlotWindow(HasTraits):
             self._plot.overlays.append(ovlay)
 
     def update_image(self, image, is_float=False):
+        """Push an image to the Chaco plot.
+
+        The non-float branch used to be ``image.astype(np.uint8)``, an unsafe
+        cast that WRAPS for anything wider than 8 bits: a 16-bit frame with
+        values 2112..65520 displays as 64..240 with the bright parts folded
+        round to dark, which reads as a broken camera rather than a broken
+        conversion.  ``to_uint8`` applies the same fixed full-range mapping the
+        loaders and the detectors use, so what you see is what the algorithm
+        sees.
+        """
         if is_float:
-            self._plot_data.set_data("imagedata", image.astype(float))
+            self._plot_data.set_data("imagedata", np.asarray(image, dtype=np.float32))
         else:
-            self._plot_data.set_data("imagedata", image.astype(np.uint8))
+            self._plot_data.set_data("imagedata", to_uint8(image, "fixed"))
 
         self._img_plt = self._plot.img_plot("imagedata", colormap=gray)[0]
         self._plot.request_redraw()
@@ -1323,7 +1334,7 @@ class CalibrationGUI(HasTraits):
         for i, cam in enumerate(self.camera):
             cam._plot.delplot(*list(cam._plot.plots.keys())[0:])
             cam._plot.overlays = []
-            cam._plot_data.set_data("imagedata", self.cal_images[i].astype(np.uint8))
+            cam._plot_data.set_data("imagedata", to_uint8(self.cal_images[i], "fixed"))
 
             cam._img_plot = cam._plot.img_plot("imagedata", colormap=gray)[0]
             cam._x = []
