@@ -156,12 +156,28 @@ a shallow minimum near 8.8 mm, 15.5 -> 12.8 mm, no collapse) and intrinsics
 reprojection RMS is the wrong objective here). Per the user's decision, `cc`
 stays at 8.5858 mm, which is what frame `00000000` verifies by hand in the GUI.
 
-**Proposed fix, not implemented:** a joint bundle adjustment over the 19 clean
-frames — unknowns are the four camera poses, the shared `cc`, and one 6-dof
-plate pose per frame. The earlier `bundle_shared_cc.py` attempt failed only
-because it was fed all 48 frames including the mislabelled ones; the
-grid-deviation gate now provides the clean set it needed. Fixing the labeller
-pays twice, since it roughly doubles the frames available to that bundle.
+**Fixed by the joint bundle** (`scripts/illmenau/bundle_plate_poses.py`, done):
+four camera poses + one 6-dof plate pose per frame, `cc` fixed at 8.5858 mm,
+reference plate pose held at identity as the gauge so the datum cannot drift.
+Three gates reject outliers *before* the fit rather than relying on robust loss
+afterwards — per-camera PnP < 1 px, plate vertical within 5 deg, and per-dot
+cross-camera agreement < 100 mm (per dot, not per centre: a scramble can
+preserve the centroid, which is how frames 39 and 42 passed an earlier version).
+
+Result: RCM vs distance **0.58 % -> 0.159 %**, RCM at 3-5 m **18.0 -> 4.75 mm**,
+planarity at 3-5 m **3.19 -> 1.39 mm**, median X pitch **+0.75 % -> +0.24 %**.
+Paid for with frame 0: epipolar median 0.11-0.30 -> 0.58-1.45 px, absolute error
+1.09 -> 1.52 mm. The anchored fit was not more accurate, it was concentrating
+its accuracy on one plane. Old files kept as `cal/camN.tif.ori.prebundle`.
+
+The plate is held vertical (normal within 0.83 deg of horizontal, up within
+1.23 deg of world +Y, yaw +-30 deg), used as the 5 deg gate and as a soft
+penalty on the two off-yaw rotation components. The penalty changes nothing
+measurable on this dataset — 44 frames already pin the poses — but it justifies
+the gate and should matter for cameras 5-8 if they yield fewer clean frames.
+
+Fixing the labeller still pays twice, since it roughly doubles the frames
+available to the bundle.
 
 ## 5b) Known limitation — the labeller
 

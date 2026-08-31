@@ -199,6 +199,10 @@ uv run --project <openptv2> python <openptv2>/scripts/illmenau/check_plate_trian
 uv run --project <openptv2> python <openptv2>/scripts/illmenau/check_epipolar.py
 
 # 5. validate over the whole dataset, and look at the pictures
+# 5b. joint bundle over all clean plate positions (section 8b) -- omit --write
+#     for a dry run that changes nothing
+uv run --project <openptv2> --with opencv-python-headless     python <openptv2>/scripts/illmenau/bundle_plate_poses.py 8.5858 --write
+
 uv run --project <openptv2> python <openptv2>/scripts/illmenau/check_all_frames.py
 uv run --project <openptv2> python <openptv2>/scripts/illmenau/plot_frame_triangulation.py
 uv run --project <openptv2> python <openptv2>/scripts/illmenau/check_epipolar_volume.py
@@ -335,16 +339,83 @@ clean demonstration that reprojection RMS is the wrong objective for this rig.
 1.5 m of the reference plane, and degrades to ~1–2 cm at 3–4 m. If you measure in a
 volume that big, this is the accuracy floor, and no `.addpar` will fix it.
 
-**The fix, if that accuracy is not enough** (not implemented): stop anchoring the
-extrinsics to one plane. Run a joint bundle adjustment whose unknowns are the four
-camera poses, the shared `cc`, and one 6-dof plate pose per frame, minimising
-reprojection over all correctly-labelled frames at once. That spreads the
-orientation error over the whole volume instead of concentrating it far from the
-anchor. An earlier attempt at this (`bundle_shared_cc.py`) converged badly, but it
-was fed all 48 frames including the 29 mislabelled ones; with the 19-frame clean
-set and the grid-deviation gate above it is worth retrying. Doing so also makes
-**fixing the labeller** valuable twice over, since it would roughly double the
-frames available to the bundle.
+## 8b. The joint bundle — spreading the error over the volume
+
+`scripts/illmenau/bundle_plate_poses.py` removes the single-plane anchoring.
+Unknowns are the four camera poses and one 6-dof plate pose per frame; `cc`
+stays at 8.5858 mm, distortion stays zero, the principal point stays at the
+sensor centre, and **the reference frame's plate pose is held at identity**.
+That last one is the gauge: the world stays pinned to the coded L-corner dot of
+frame `00000000`, so `calibration_block.txt`, `plate.yaml:datum` and any manual
+GUI check of that frame remain valid, and with the gauge fixed there is no free
+similarity, so scale cannot drift even though `cc` is not fitted.
+
+### Rejecting outliers before the fit, not during it
+
+A bundle fed mislabelled views diverges — that is what sank the first
+`bundle_shared_cc.py`. Robust loss plus residual trimming is not enough on its
+own, because a bad view still drags the early iterations. Three gates run
+first, each catching something the previous one cannot see:
+
+1. **Per-camera PnP < 1 px.** Fits the rigid plate to one camera's own labelled
+   points, using no cross-camera information, so its residual is a pure
+   labelling test for that one view. 155/192 views pass.
+2. **Plate vertical within 5°.** See below. Catches 2 views (frames 02 and 14,
+   camera 4) that are off by ~89° — grossly mislabelled but internally
+   self-consistent.
+3. **Cross-camera agreement < 100 mm, per dot.** Each surviving view implies
+   where every dot of the plate must be in the world; correct labellings agree.
+   Compared **per dot, not per plate centre** — a scrambled labelling can leave
+   the centroid roughly where it belongs while the pattern around it is wrong,
+   which is how frames 39 and 42 passed an earlier centre-only version of this
+   test. 140 views across 44 frames survive.
+
+Then the bundle itself trims dots above 3x the median residual over six rounds
+(6215 → 4964 dots). Tightening any of these gates further *improves*
+reprojection RMS while making planarity **worse** — it starves the fit. Same
+trap as §8: reprojection RMS is not the objective.
+
+### The plate is held vertical
+
+Measured over the well-labelled frames: the plate normal is within **0.83° of
+horizontal** (median 0.23°), the plate's own up axis within **1.23° of world
++Y** (median 0.70°), and the yaw about +Y spans −24° to +30°. So the plate really
+is vertical and rotated only about Y, to about a degree.
+
+That is used as an outlier gate (above) and as a **soft** penalty on the two
+off-yaw rotation components, `R_f[1,0]` and `R_f[1,2]`, which vanish for a pure
+yaw. Soft rather than hard because the departure is ~0.2-1.2°, not zero — the
+plate is hand-held, and forcing it to zero would bias the far corners of a
+720 mm plate by ~15 mm.
+
+**Honest result: the prior changes nothing measurable here** (RCM 2.67 vs
+2.71 mm with it disabled). 44 frames already determine the plate poses. It is
+kept because it costs nothing, because it is what justifies the 5° outlier gate,
+and because it should matter on a sparser dataset — cameras 5-8 may well yield
+fewer clean frames. `BUNDLE_VERT_PX=0` disables it.
+
+### What the bundle bought
+
+| | anchored to frame 0 | joint bundle |
+|---|---|---|
+| RCM vs distance | **0.58 %** | **0.159 %** |
+| RCM, 3-5 m | 18.0 mm | **4.75 mm** |
+| planarity, 3-5 m | 3.19 mm | **1.39 mm** |
+| planarity, median over frames | 1.83 mm | **0.60 mm** |
+| recovered X pitch, median | 120.90 mm (+0.75 %) | **120.29 mm (+0.24 %)** |
+| frame 0 epipolar, median range | **0.11-0.30 px** | 0.58-1.45 px |
+| frame 0 absolute error | **1.09 mm** | 1.52 mm |
+| camera positions | — | moved 24-39 mm |
+
+**A 3.7x improvement in ray convergence across the volume, paid for by giving up
+some of frame 0's perfection.** That is the trade the anchored fit was hiding:
+it was not more accurate, it was concentrating all its accuracy on one plane.
+Every epipolar pair is still under 1.5 px median and straight inside the sensor,
+so the GUI check on frame 0 still passes — just less spectacularly.
+
+Both sets of files are kept: `cal/camN.tif.ori` is the bundled result and
+`cal/camN.tif.ori.prebundle` the anchored one. Re-run
+`refit_plate_pinhole.py 8.5858` to get back to the anchored fit.
 
 ## 9. Known limitation — the labeller
 
