@@ -1,11 +1,13 @@
 import argparse
 from pathlib import Path
+
+import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-import matplotlib.pyplot as plt
-from openptv2.detect_plate import detect_plate_targets, plate_tpar_from_yaml
-from openptv2.plate_labeler import label_coded_6x7, label_uncoded_grid
+
 from openptv2.algorithms.parameters import ControlPar, MmNp
+from openptv2.detect_plate import detect_plate_targets, plate_tpar_from_yaml
+
 
 def main():
     parser = argparse.ArgumentParser(description='Interactive Plate Grid Clicker')

@@ -124,7 +124,8 @@ def find_plate_roi(
     pad: float = 0.07,
 ) -> tuple[int, int, int, int]:
     """Find bounding ROI of the calibration plate within the full image."""
-    from scipy.ndimage import gaussian_filter, label as nd_label
+    from scipy.ndimage import gaussian_filter
+    from scipy.ndimage import label as nd_label
 
     imy, imx = work8.shape
     blurred = gaussian_filter(work8.astype(float), sigma=sigma)

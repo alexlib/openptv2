@@ -33,11 +33,14 @@ def load_pairs(out_cal: Path, ci: int):
     if p.exists():
         d = np.load(p, allow_pickle=True)
         frames = d["frames"].tolist() if "frames" in d else []
-        refs = []; imgs = []
+        refs = []
+        imgs = []
         # refs are stored as ref_0, ref_1, ...
         idx = 0
         while f"ref_{idx}" in d:
-            refs.append(d[f"ref_{idx}"]); imgs.append(d[f"img_{idx}"]); idx+=1
+            refs.append(d[f"ref_{idx}"])
+            imgs.append(d[f"img_{idx}"])
+            idx+=1
         return list(zip(refs, imgs, frames))
     # fallback collections.npz
     c = out_cal / "collections.npz"
@@ -55,7 +58,8 @@ def main():
     ap.add_argument("--out", type=str, default=r"C:\Users\alex\Downloads\Illmenau\openptv_illmenau_4cam")
     ap.add_argument("--update-rig", action="store_true", help="overwrite rig.yaml with calibrated extrinsics")
     args = ap.parse_args()
-    out = Path(args.out); out_cal = out / "cal"
+    out = Path(args.out)
+    out_cal = out / "cal"
     if not out_cal.exists():
         raise FileNotFoundError(f"{out_cal} missing — run Part 1 first")
     try:
@@ -79,43 +83,55 @@ def main():
         pairs = load_pairs(out_cal, ci)
         if len(pairs) < 6:
             msg = f"cam{ci+1}: not enough pairs ({len(pairs)}) skip"
-            print(msg); report.append(msg); continue
+            print(msg)
+            report.append(msg)
+            continue
         refs_list = [np.asarray(r, dtype=np.float32) for r, _, _ in pairs]
         imgs_list = [np.asarray(p, dtype=np.float32) for _, p, _ in pairs]
         frames = [f for _, _, f in pairs]
         print(f"\ncam{ci+1}: {len(pairs)} frames, {sum(len(r) for r in refs_list)} points e.g. {frames[:3]}")
 
         if has_cv2:
-            objp = refs_list; imgp = imgs_list
+            objp = refs_list
+            imgp = imgs_list
             ret, K, dist, rvecs, tvecs = cv2.calibrateCamera(objp, imgp, (2560, 2048), None, None,
                                                              flags=cv2.CALIB_FIX_K3 if len(objp) < 10 else 0)
             msg = f"cam{ci+1} cv2 RMS {ret:.3f} K {K[0,0]:.1f},{K[1,1]:.1f} cx {K[0,2]:.1f} cy {K[1,2]:.1f} dist {dist.ravel()[:4].tolist()}"
-            print(msg); report.append(msg)
+            print(msg)
+            report.append(msg)
             target_frame = "00000000"
             idx0 = next((i for i, f in enumerate(frames) if f == target_frame), 0)
-            rvec0 = rvecs[idx0].ravel(); tvec0 = tvecs[idx0].ravel()
+            rvec0 = rvecs[idx0].ravel()
+            tvec0 = tvecs[idx0].ravel()
             cal, pix_y = calibration_from_opencv(K, dist.ravel(), rvec0, tvec0, imx=2560, imy=2048, pix_x=0.005)
             import scipy.spatial.transform
             Rs = [scipy.spatial.transform.Rotation.from_rotvec(r.ravel()).as_matrix() for r in rvecs]
             Cs = [ -R.T @ t.ravel() for R, t in zip(Rs, tvecs) ]
             Cmean = np.mean(Cs, axis=0)
             msg2 = f"  cam{ci+1} C mean {Cmean.tolist()} first {Cs[idx0].tolist()} cc {cal.int_par.cc:.2f}"
-            print(msg2); report.append(msg2)
+            print(msg2)
+            report.append(msg2)
         else:
-            all_ref = []; all_img = []
+            all_ref = []
+            all_img = []
             for pi, (r, im, _) in enumerate(pairs):
-                rr = r.astype(float).copy(); rr[:, 2] = pi * 200.0
-                all_ref.append(rr); all_img.append(im)
-            all_ref = np.vstack(all_ref); all_img = np.vstack(all_img)
+                rr = r.astype(float).copy()
+                rr[:, 2] = pi * 200.0
+                all_ref.append(rr)
+                all_img.append(im)
+            all_ref = np.vstack(all_ref)
+            all_img = np.vstack(all_img)
             cal = seed_from_dlt(all_ref, all_img, cpar_dummy)
             msg = f"cam{ci+1} DLT cc {cal.int_par.cc:.2f} C {cal.ext_par.x0:.0f},{cal.ext_par.y0:.0f},{cal.ext_par.z0:.0f}"
-            print(msg); report.append(msg)
+            print(msg)
+            report.append(msg)
 
         ori_path = out_cal / f"cam{ci+1}.tif.ori"
         addpar_path = out_cal / f"cam{ci+1}.tif.addpar"
         ori_path.parent.mkdir(parents=True, exist_ok=True)
         cal.to_file(str(ori_path), str(addpar_path))
-        print(f"  wrote {ori_path}"); report.append(f"wrote {ori_path}")
+        print(f"  wrote {ori_path}")
+        report.append(f"wrote {ori_path}")
 
     # ensure rig.yaml exists
     rig_path = out / "rig.yaml"

@@ -46,15 +46,13 @@ def solve_opencv_multiview(
     solved ``Z`` and ``Zs`` is the per-plane ``Z`` offset (``Zs[0]==0``).
     """
     try:
-        import cv2  # type: ignore
+        import cv2 as _cv2  # type: ignore
     except ImportError as exc:
         raise ImportError(
             "solve_opencv_multiview needs OpenCV (pip install opencv-python or "
             "uv add --optional opencv).  Use method='dlt' for the pure-Python "
             "path."
         ) from exc
-
-    import cv2 as _cv2  # for type checkers
 
     num_cams = len(views_per_cam)
     num_planes = len(refs_per_plane)
@@ -69,7 +67,10 @@ def solve_opencv_multiview(
     for cam in range(num_cams):
         img_pts = [np.asarray(views_per_cam[cam][p], dtype=np.float32) for p in range(num_planes)]
         ret, M, dist, rvec, tvec = _cv2.calibrateCamera(XYZ0, img_pts, (imx, imy), None, None)
-        Ms.append(M); dists.append(dist); rvecs.append(rvec); tvecs.append(tvec)
+        Ms.append(M)
+        dists.append(dist)
+        rvecs.append(rvec)
+        tvecs.append(tvec)
 
     # Build projection matrices relative to cam0 via stereoCalibrate on plane 0
     # (matches multiview_calibration.py P_c construction)
@@ -118,7 +119,8 @@ def solve_opencv_multiview(
             Ps = Pc[:len(xys)]
             # pad to 4 if needed by duplicating — or just use available cams
             while len(Ps) < 4:
-                Ps.append(Ps[-1]); xys.append(xys[-1])
+                Ps.append(Ps[-1])
+                xys.append(xys[-1])
             plane_3d.append(_dlt(Ps, xys))
         P_planes.append(np.asarray(plane_3d, dtype=np.float32))
     # Keep plane 0 at Z=0 as reference (hub: P[0]=XYZ0)

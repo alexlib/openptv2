@@ -16,18 +16,17 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-import numpy as np
-from PIL import Image
-import yaml
 
-from openptv2.detect_plate import detect_plate_targets, plate_tpar_from_yaml
-from openptv2.plate_labeler import label_plate
+import numpy as np
+import yaml
+from PIL import Image
+
+import openptv2.algorithms.trafo as tr
+from openptv2.algorithms.imgcoord import img_coord
 from openptv2.algorithms.parameters import ControlPar, MmNp
 from openptv2.calibration_import import calibration_from_opencv
-from openptv2.algorithms.calibration import Calibration
-from openptv2.algorithms.imgcoord import img_coord
-import openptv2.algorithms.trafo as tr
-
+from openptv2.detect_plate import detect_plate_targets, plate_tpar_from_yaml
+from openptv2.plate_labeler import label_plate
 
 # Labeller grid index of the coded L-corner dot = the world origin (see plate.yaml datum)
 DATUM_IX, DATUM_IY = 2, 3

@@ -97,7 +97,7 @@ def _find_model_files(model_dir: Path, num_cams: int) -> list[Path]:
                 break
         else:
             # glob fallback
-            matches = sorted(model_dir.glob(f"*c{cam}*calib*.txt")) + sorted(model_dir.glob(f"*calib*.txt"))
+            matches = sorted(model_dir.glob(f"*c{cam}*calib*.txt")) + sorted(model_dir.glob("*calib*.txt"))
             if matches:
                 cands.append(matches[cam] if cam < len(matches) else matches[0])
             else:
@@ -128,7 +128,9 @@ def _run_import(args) -> int:
     model_dir: Path | None = getattr(args, "model_dir", None)
     points_dir: Path | None = getattr(args, "points_dir", None)
     num_cams: int = int(getattr(args, "num_cams", 4) or 4)
-    imx = int(args.imx); imy = int(args.imy); pix = float(args.pix)
+    imx = int(args.imx)
+    imy = int(args.imy)
+    pix = float(args.pix)
     pix_y = getattr(args, "pix_y", None)
     out: Path = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -180,7 +182,6 @@ def _run_import(args) -> int:
         return 0
 
     # Refine per cam on all points (presorted)
-    from openptv2.autocalibration import calibrate_from_source
     results = []
     for cam in range(num_cams):
         img_pts, ref_pts = read_xyXYZ(points_files[cam])
@@ -232,7 +233,13 @@ def _run_seed(args) -> int:
 
     rig = Path(args.rig)
     dataset = Path(args.dataset)
-    out = Path(args.out) if getattr(args, "out", None) else None
+    if getattr(args, "out", None):
+        # write_rig_ori resolves its paths inside dataset_dir via cam_files, so
+        # there is nowhere to put an override.  This used to be parsed and then
+        # dropped on the floor, quietly writing to the dataset instead.
+        print("error: seed --out is not implemented; .ori are written into the "
+              "dataset via cam_files", file=sys.stderr)
+        return 2
     overwrite = bool(getattr(args, "overwrite", False))
     dry_run = bool(getattr(args, "dry_run", False))
 

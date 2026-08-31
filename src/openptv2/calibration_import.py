@@ -66,8 +66,10 @@ def calibration_from_opencv(
     K_a = np.asarray(K, float)
     if K_a.shape != (3, 3):
         raise ValueError(f"K must be 3x3, got {K_a.shape}")
-    fx = float(K_a[0, 0]); fy = float(K_a[1, 1])
-    cx = float(K_a[0, 2]); cy = float(K_a[1, 2])
+    fx = float(K_a[0, 0])
+    fy = float(K_a[1, 1])
+    cx = float(K_a[0, 2])
+    cy = float(K_a[1, 2])
     if fx <= 0 or fy <= 0:
         raise ValueError(f"fx/fy must be >0, got fx={fx} fy={fy}")
     if pixel_origin == "centre":
@@ -184,9 +186,11 @@ def opencv_from_calibration(
     Uses the same verified relations; round-trip must reproduce projections
     within 1e-9 px when xh=yh=0 and distortion is modest.
     """
-    pix_x_f = float(pix_x); pix_y_f = float(pix_y)
+    pix_x_f = float(pix_x)
+    pix_y_f = float(pix_y)
     cc = float(cal.int_par.cc)
-    xh = float(cal.int_par.xh); yh = float(cal.int_par.yh)
+    xh = float(cal.int_par.xh)
+    yh = float(cal.int_par.yh)
     # K
     fx = cc / pix_x_f
     fy = cc / pix_y_f

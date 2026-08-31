@@ -31,7 +31,6 @@ from tests.unit.test_synthetic_calibration import (
     make_targets,
 )
 
-
 # ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
@@ -87,6 +86,7 @@ class TestRefineAndSelect:
         # the 1280x1024 sensor (the bare make_calibration() angles put the
         # origin near the edge with the default 64-point cube).
         import numpy as np_mod
+
         from openptv2.algorithms.calibration import Exterior, Glass, Interior, MmLut
 
         def _dm_from_lookat(C, target, up=(0.0, 0.0, 1.0)):

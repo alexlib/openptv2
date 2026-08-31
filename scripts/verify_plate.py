@@ -77,7 +77,8 @@ def main() -> int:
             for n in [f"c{cam}_xyXYZ.txt", f"c{cam+1}_xyXYZ.txt"]:
                 q = args.points_dir / n
                 if q.exists():
-                    pfile = q; break
+                    pfile = q
+                    break
             if pfile is None:
                 pfile = candidates[cam] if cam < len(candidates) else candidates[0]
             img_pts, ref_pts = read_xyXYZ(pfile)
@@ -116,7 +117,7 @@ def main() -> int:
 
     # Cross-camera RCM if we can build a joint set from points files
     if args.points_dir is not None:
-        from openptv2.autocalibration import cross_camera_rcm, CamResult
+        from openptv2.autocalibration import CamResult, cross_camera_rcm
         # Build CamResults synthetically for RCM (need det/rep/ref)
         results = []
         for cam in range(args.num_cams):
@@ -124,7 +125,8 @@ def main() -> int:
             for n in [f"c{cam}_xyXYZ.txt", f"c{cam+1}_xyXYZ.txt"]:
                 q = args.points_dir / n
                 if q.exists():
-                    pfile = q; break
+                    pfile = q
+                    break
             if pfile is None or not pfile.exists():
                 continue
             img_pts, ref_pts = read_xyXYZ(pfile)

@@ -821,11 +821,33 @@ def _frame_image_name(base_name, frame: int) -> Path:
     """Format a sequence base name into the image path for one frame."""
     base_name = _safe_decode(base_name)
     try:
-        return Path(base_name % frame)
+        p = Path(base_name % frame)
     except (TypeError, ValueError):
         # No usable % placeholder: append the frame number (legacy naming).
         base_path = Path(base_name)
-        return base_path.parent / f"{base_path.stem}_{frame:04d}{base_path.suffix}"
+        p = base_path.parent / f"{base_path.stem}_{frame:04d}{base_path.suffix}"
+
+    if p.exists():
+        return p
+
+    # If the exact path does not exist, look for matching prefix files (e.g. 00001901_000000007383A010.tiff)
+    if p.parent.exists():
+        candidates = list(p.parent.glob(f"{p.name}*"))
+        if not candidates and p.suffix:
+            candidates = list(p.parent.glob(f"{p.stem}*"))
+        if not candidates:
+            candidates = list(p.parent.glob(f"{frame:08d}*"))
+        if not candidates:
+            candidates = list(p.parent.glob(f"{frame:04d}*"))
+        if candidates:
+            img_cands = [
+                c
+                for c in candidates
+                if c.suffix.lower() in (".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp")
+            ]
+            return img_cands[0] if img_cands else candidates[0]
+
+    return p
 
 
 def _read_gray_uint8(imname: Path) -> np.ndarray:
