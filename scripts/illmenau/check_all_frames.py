@@ -18,49 +18,35 @@ planarity stays sub-millimetre at every plate distance, the calibration model
 holds over the whole volume and the wide-spread numbers are the labeller.
 """
 import os
-from pathlib import Path
+import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _config as CFG  # noqa: E402
 import numpy as np
 
-from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.orientation import COORD_UNUSED
-from openptv2.algorithms.parameters import ControlPar, MmNp
 from openptv2.algorithms.trafo import dist_to_flat, pixel_to_metric
 from openptv2.orientation import multi_cam_point_positions
 
-ILLMENAU_RAW = os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau")
-ILLMENAU_DIR = os.environ.get("ILLMENAU_DIR",
-                              os.path.join(ILLMENAU_RAW, "openptv_illmenau_4cam"))
-out = Path(ILLMENAU_DIR)
-PITCH, NX, REF = 120.0, 6, "00000000"
+out = CFG.DIR
+PITCH, NX, REF = CFG.PITCH, CFG.NX, CFG.REF
 RCM_TOL = 1.0        # [mm] a dot whose sight lines miss by more than this is not one dot
 
-cpar = ControlPar(num_cams=4, imx=2560, imy=2048, pix_x=0.005, pix_y=0.005,
-                  mm=MmNp(n1=1.0, n2=[1.0], d=[0.0], n3=1.0), chfield=0, tiff_flag=1,
-                  hp_flag=1, allCam_flag=0, img_base_name=[""] * 4, cal_img_base_name=[""] * 4)
-cals = []
-for ci in range(4):
-    c = Calibration()
-    c.from_file(str(out / f"cal/cam{ci+1}.tif.ori"), str(out / f"cal/cam{ci+1}.tif.addpar"))
-    cals.append(c)
+cpar = CFG.control_par()
+cals = CFG.load_calibrations()
 
-d = np.load(out / "cal" / "labelled_all_frames.npz")
-views = {}
-for k in d.files:
-    if k.endswith("_ids"):
-        c, fr, _ = k.split("_")
-        views[(int(c[1:]), fr)] = (d[k], d[f"{c}_{fr}_px"])
+views = CFG.load_views()
 
 
 def triangulate(fr):
     """-> positions, point ids, per-dot ray-convergence miss [mm], n cameras."""
     per = {ci: dict(zip(views[(ci, fr)][0].tolist(), views[(ci, fr)][1].tolist()))
-           for ci in range(4) if (ci, fr) in views}
+           for ci in range(CFG.NCAM) if (ci, fr) in views}
     ids = [i for i in sorted({i for m in per.values() for i in m})
            if sum(i in m for m in per.values()) >= 2]
     if len(ids) < 12:
         return None, None, None, 0
-    t = np.full((len(ids), 4, 2), COORD_UNUSED)
+    t = np.full((len(ids), CFG.NCAM, 2), COORD_UNUSED)
     for k, pid in enumerate(ids):
         for ci, m in per.items():
             if pid in m:

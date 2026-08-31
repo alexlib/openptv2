@@ -8,28 +8,19 @@ wrong distance and the answers spread apart, the more so the further the plate
 is from the reference plane.  Minimise that spread.
 """
 import os
-from pathlib import Path
+import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _config as CFG  # noqa: E402
 import cv2
 import numpy as np
 
-# Dataset location; override with ILLMENAU_RAW / ILLMENAU_DIR.
-ILLMENAU_RAW = os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau")
-ILLMENAU_DIR = os.environ.get("ILLMENAU_DIR",
-                              os.path.join(ILLMENAU_RAW, "openptv_illmenau_4cam"))
+out = CFG.DIR
+PITCH, NX, PIX, IMX, IMY, REF = (CFG.PITCH, CFG.NX, CFG.PIX,
+                                 CFG.IMX, CFG.IMY, CFG.REF)
+views = CFG.load_views()
 
-out = Path(ILLMENAU_DIR)
-PITCH, NX, PIX, IMX, IMY, REF = 120.0, 6, 0.005, 2560, 2048, "00000000"
-d = np.load(out / "cal" / "labelled_all_frames.npz")
-views = {}
-for k in d.files:
-    if k.endswith("_ids"):
-        c, fr, _ = k.split("_")
-        views[(int(c[1:]), fr)] = (d[k], d[f"{c}_{fr}_px"])
-
-def obj_of(ids):
-    ix, iy = (np.asarray(ids)-1) % NX, (np.asarray(ids)-1)//NX
-    return np.stack([(ix-2)*PITCH, (iy-3)*PITCH, np.zeros(len(ix))], 1).astype(float)
+obj_of = CFG.obj_of
 
 def pose(K, ids, px):
     o = obj_of(ids)
@@ -43,12 +34,12 @@ def pose(K, ids, px):
     return rv, tv, float(np.sqrt(np.mean(np.sum((rep.reshape(-1,2)-px)**2, 1))))
 
 frames = [f for f in sorted({f for _, f in views})
-          if all((ci, f) in views and len(views[(ci, f)][0]) >= 12 for ci in range(4))]
+          if all((ci, f) in views and len(views[(ci, f)][0]) >= 12 for ci in range(CFG.NCAM))]
 
 def spread(cc, detail=False):
     K = np.array([[cc/PIX, 0, IMX/2], [0, cc/PIX, IMY/2], [0, 0, 1.0]])
     ref = {}
-    for ci in range(4):
+    for ci in range(CFG.NCAM):
         p = pose(K, *views[(ci, REF)])
         if p is None:
             return np.inf, []
@@ -58,7 +49,7 @@ def spread(cc, detail=False):
         if fr == REF:
             continue
         ts = []
-        for ci in range(4):
+        for ci in range(CFG.NCAM):
             p = pose(K, *views[(ci, fr)])
             if p is None or p[2] > 1.5:
                 ts = None

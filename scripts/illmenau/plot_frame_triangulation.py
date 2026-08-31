@@ -21,59 +21,44 @@ Written to $ILLMENAU_DIR/triangulation/frame_XXXXXXXX.png, plus summary.png and
 summary.csv of the per-frame numbers.
 """
 import os
-from pathlib import Path
+import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _config as CFG  # noqa: E402
 import matplotlib
 import numpy as np
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.orientation import COORD_UNUSED
-from openptv2.algorithms.parameters import ControlPar, MmNp
 from openptv2.algorithms.trafo import dist_to_flat, pixel_to_metric
 from openptv2.orientation import multi_cam_point_positions
 
-ILLMENAU_RAW = os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau")
-ILLMENAU_DIR = os.environ.get("ILLMENAU_DIR",
-                              os.path.join(ILLMENAU_RAW, "openptv_illmenau_4cam"))
-out = Path(ILLMENAU_DIR)
+out = CFG.DIR
 dst = out / "triangulation"
 dst.mkdir(exist_ok=True)
-PITCH, NX, NY, REF = 120.0, 6, 7, "00000000"
+PITCH, NX, NY, REF = CFG.PITCH, CFG.NX, CFG.NY, CFG.REF
 # Above this, a frame's triangulated pattern is not the plate: the labeller
 # assigned dots wrongly.  Below it, what is left is the calibration model.
 GRID_DEV_MISLABELLED_MM = 30.0
 
-cpar = ControlPar(num_cams=4, imx=2560, imy=2048, pix_x=0.005, pix_y=0.005,
-                  mm=MmNp(n1=1.0, n2=[1.0], d=[0.0], n3=1.0), chfield=0, tiff_flag=1,
-                  hp_flag=1, allCam_flag=0, img_base_name=[""] * 4,
-                  cal_img_base_name=[""] * 4)
-cals = []
-for ci in range(4):
-    c = Calibration()
-    c.from_file(str(out / f"cal/cam{ci+1}.tif.ori"), str(out / f"cal/cam{ci+1}.tif.addpar"))
-    cals.append(c)
+cpar = CFG.control_par()
+cals = CFG.load_calibrations()
 cam_C = np.array([[c.ext_par.x0, c.ext_par.y0, c.ext_par.z0] for c in cals])
 CC_MM = round(float(cals[0].int_par.cc), 4)   # reported, never assumed
 
-d = np.load(out / "cal" / "labelled_all_frames.npz")
-views = {}
-for k in d.files:
-    if k.endswith("_ids"):
-        c, fr, _ = k.split("_")
-        views[(int(c[1:]), fr)] = (d[k], d[f"{c}_{fr}_px"])
+views = CFG.load_views()
 
 
 def triangulate(fr):
     per = {ci: dict(zip(views[(ci, fr)][0].tolist(), views[(ci, fr)][1].tolist()))
-           for ci in range(4) if (ci, fr) in views}
+           for ci in range(CFG.NCAM) if (ci, fr) in views}
     ids = [i for i in sorted({i for m in per.values() for i in m})
            if sum(i in m for m in per.values()) >= 2]
     if len(ids) < 8:
         return None
-    t = np.full((len(ids), 4, 2), COORD_UNUSED)
+    t = np.full((len(ids), CFG.NCAM, 2), COORD_UNUSED)
     for k, pid in enumerate(ids):
         for ci, m in per.items():
             if pid in m:
@@ -90,9 +75,8 @@ def triangulate(fr):
 
 
 def ideal_grid(ids):
-    """Nominal plate coordinates of those ids, datum dot (ix,iy)=(2,3) at 0."""
-    ix, iy = (ids - 1) % NX, (ids - 1) // NX
-    return np.stack([(ix - 2) * PITCH, (iy - 3) * PITCH, np.zeros(len(ids))], 1).astype(float)
+    """Nominal plate coordinates of those ids, with the datum dot at the origin."""
+    return CFG.obj_of(ids)
 
 
 def kabsch(A, B):
@@ -148,9 +132,10 @@ for fr in sorted({f for _, f in views}):
                       (a.min(), b.max()), (a.min(), b.min())]])
     ax.plot(*mpl(quad), color="tab:green", lw=1.2, alpha=.8)
     ax.scatter(*mpl(cam_C), c="crimson", marker="^", s=60, depthshade=False)
-    for ci, C in enumerate(cam_C):
-        ax.plot(*mpl(np.array([C, ctr])), color="crimson", lw=.5, alpha=.45)
-        ax.text(C[0], C[2], C[1], f" cam{ci+1}", color="crimson", fontsize=8)
+    for ci, cc_pos in enumerate(cam_C):
+        ax.plot(*mpl(np.array([cc_pos, ctr])), color="crimson", lw=.5, alpha=.45)
+        ax.text(cc_pos[0], cc_pos[2], cc_pos[1], f" cam{CFG.cam_number(ci)}",
+                color="crimson", fontsize=8)
     ax.scatter(*mpl(np.zeros(3)), c="gold", marker="*", s=170, edgecolors="k",
                depthshade=False)
     for v, col in ((np.eye(3)[0], "r"), (np.eye(3)[1], "g"), (np.eye(3)[2], "b")):

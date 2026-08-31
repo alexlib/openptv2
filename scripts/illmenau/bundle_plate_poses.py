@@ -30,6 +30,8 @@ import shutil
 import sys
 from pathlib import Path
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _config as CFG  # noqa: E402
 import cv2
 import numpy as np
 
@@ -44,14 +46,11 @@ from openptv2.plate_bundle import (
     tilt_off_vertical_deg,
 )
 
-ILLMENAU_RAW = os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau")
-ILLMENAU_DIR = os.environ.get("ILLMENAU_DIR",
-                              os.path.join(ILLMENAU_RAW, "openptv_illmenau_4cam"))
-out = Path(ILLMENAU_DIR)
-
-PITCH, NX, PIX, IMX, IMY, REF = 120.0, 6, 0.005, 2560, 2048, "00000000"
-DATUM_IX, DATUM_IY = 2, 3
-NCAM, MIN_DOTS = 4, 12
+out = CFG.DIR
+PITCH, NX, PIX = CFG.PITCH, CFG.NX, CFG.PIX
+IMX, IMY, REF = CFG.IMX, CFG.IMY, CFG.REF
+DATUM_IX, DATUM_IY = CFG.DATUM_IX, CFG.DATUM_IY
+NCAM, MIN_DOTS = CFG.NCAM, 12
 VIEW_GATE_PX = float(os.environ.get("BUNDLE_VIEW_GATE_PX", 1.0))
 AGREE_MM = float(os.environ.get("BUNDLE_AGREE_MM", 100.0))
 TILT_GATE_DEG = float(os.environ.get("BUNDLE_TILT_GATE_DEG", 5.0))
@@ -65,22 +64,12 @@ WRITE = "--write" in sys.argv
 K = np.array([[CC / PIX, 0, IMX / 2], [0, CC / PIX, IMY / 2], [0, 0, 1.0]])
 D0 = np.zeros(5)
 
-d = np.load(out / "cal" / "labelled_all_frames.npz")
-views = {}
-for k in d.files:
-    if k.endswith("_ids"):
-        c, fr, _ = k.split("_")
-        views[(int(c[1:]), fr)] = (d[k], d[f"{c}_{fr}_px"])
+views = CFG.load_views()
 frames_all = sorted({f for _, f in views})
 
 
-def obj_of(ids):
-    ix, iy = (np.asarray(ids) - 1) % NX, (np.asarray(ids) - 1) // NX
-    return np.stack([(ix - DATUM_IX) * PITCH, (iy - DATUM_IY) * PITCH,
-                     np.zeros(len(ix))], 1).astype(float)
-
-
-GRID = obj_of(np.arange(1, 43))
+obj_of = CFG.obj_of
+GRID = obj_of(np.arange(1, CFG.NX * CFG.NY + 1))
 
 
 def pnp(ids, px):
@@ -153,7 +142,7 @@ print(f"cc fixed at {CC} mm, zero distortion, gauge = plate pose of frame {REF}"
 print(f"gate 1  per-camera PnP < {VIEW_GATE_PX} px:            {n_pnp}/{NCAM*len(frames_all)} views")
 print(f"gate 2  plate vertical within {TILT_GATE_DEG:.0f} deg:         "
       f"{len(tilt_rejects)} views rejected"
-      + ("  " + ", ".join(f"{fr[-2:]}/cam{ci+1} {t:.0f}deg"
+      + ("  " + ", ".join(f"{fr[-2:]}/cam{CFG.cam_number(ci)} {t:.0f}deg"
                           for fr, ci, t in sorted(tilt_rejects, key=lambda r: -r[2])[:8])
          if tilt_rejects else ""))
 print(f"gate 3  per-dot agreement < {AGREE_MM:.0f} mm:         {len(good)} views, "
@@ -213,13 +202,13 @@ print("\ncam        anchored (X,Y,Z)              bundled (X,Y,Z)              m
 for ci in range(NCAM):
     a = -rodrigues(cam_rvec0[ci]).T @ cam_tvec0[ci]
     b = res.camera_centre(ci)
-    print(f" {ci+1}   ({a[0]:8.1f},{a[1]:7.1f},{a[2]:8.1f})   "
+    print(f" {CFG.cam_number(ci)}   ({a[0]:8.1f},{a[1]:7.1f},{a[2]:8.1f})   "
           f"({b[0]:8.1f},{b[1]:7.1f},{b[2]:8.1f})   {np.linalg.norm(b-a):7.1f} mm")
 print("\npairwise camera distances (frame-invariant)   anchored / bundled [mm]")
-for a, b in ((0, 2), (1, 3), (0, 1), (2, 3)):
+for a, b in [(x, y) for x in range(NCAM) for y in range(x + 1, NCAM)]:
     def cen0(ci):
         return -rodrigues(cam_rvec0[ci]).T @ cam_tvec0[ci]
-    print(f"  cam{a+1}-cam{b+1}: {np.linalg.norm(cen0(a)-cen0(b)):7.1f} / "
+    print(f"  cam{CFG.cam_number(a)}-cam{CFG.cam_number(b)}: {np.linalg.norm(cen0(a)-cen0(b)):7.1f} / "
           f"{np.linalg.norm(res.camera_centre(a)-res.camera_centre(b)):7.1f}")
 print(f"\nreference plate pose held at identity -- the world origin is still the "
       f"L-corner dot of frame {REF}")
@@ -227,14 +216,13 @@ print(f"\nreference plate pose held at identity -- the world origin is still the
 if WRITE:
     for ci in range(NCAM):
         for ext in ("ori", "addpar"):
-            src = out / "cal" / f"cam{ci+1}.tif.{ext}"
+            src = Path(CFG.cam_ori(ci)[0 if ext == "ori" else 1])
             if src.exists() and not src.with_suffix(f".{ext}.prebundle").exists():
                 shutil.copy2(src, src.with_suffix(f".{ext}.prebundle"))
         cal, _ = calibration_from_opencv(K, D0, res.cam_rvec[ci], res.cam_tvec[ci],
                                          imx=IMX, imy=IMY, pix_x=PIX,
                                          pixel_origin="corner")
-        cal.to_file(str(out / "cal" / f"cam{ci+1}.tif.ori"),
-                    str(out / "cal" / f"cam{ci+1}.tif.addpar"))
+        cal.to_file(*CFG.cam_ori(ci))
     np.savez(out / "cal" / "bundle_plate_poses.npz", frames=np.array(free),
              plate_rvec=res.plate_rvec, plate_tvec=res.plate_tvec, cc=CC)
     print("\nwrote .ori + zeroed .addpar (first run kept the old ones as *.prebundle)")

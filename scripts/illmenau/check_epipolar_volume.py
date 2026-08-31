@@ -33,36 +33,27 @@ This script measures all three for the delivered calibration, and prints the
 largest safe Zmax for every ordered camera pair.
 """
 import os
-from pathlib import Path
+import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _config as CFG  # noqa: E402
 import numpy as np
 
-from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.epi import epi_mm
 from openptv2.algorithms.imgcoord import img_coord
-from openptv2.algorithms.parameters import ControlPar, MmNp, VolumePar
+from openptv2.algorithms.parameters import VolumePar
 from openptv2.algorithms.ray_tracing import ray_tracing
 from openptv2.algorithms.trafo import dist_to_flat, metric_to_pixel, pixel_to_metric
 
-ILLMENAU_RAW = os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau")
-ILLMENAU_DIR = os.environ.get("ILLMENAU_DIR",
-                              os.path.join(ILLMENAU_RAW, "openptv_illmenau_4cam"))
-out = Path(ILLMENAU_DIR)
+out = CFG.DIR
 IMX, IMY, REF = 2560, 2048, "00000000"
 
-cpar = ControlPar(num_cams=4, imx=IMX, imy=IMY, pix_x=0.005, pix_y=0.005,
-                  mm=MmNp(n1=1.0, n2=[1.0], d=[0.0], n3=1.0), chfield=0, tiff_flag=1,
-                  hp_flag=1, allCam_flag=0, img_base_name=[""] * 4,
-                  cal_img_base_name=[""] * 4)
-cals = []
-for ci in range(4):
-    c = Calibration()
-    c.from_file(str(out / f"cal/cam{ci+1}.tif.ori"), str(out / f"cal/cam{ci+1}.tif.addpar"))
-    cals.append(c)
+cpar = CFG.control_par()
+cals = CFG.load_calibrations()
 
 d = np.load(out / "cal" / "labelled_all_frames.npz")
 det = [dict(zip(d[f"c{ci}_{REF}_ids"].tolist(), d[f"c{ci}_{REF}_px"].tolist()))
-       for ci in range(4)]
+       for ci in range(CFG.NCAM)]
 
 
 def sight_ray(ci, pix):
@@ -84,8 +75,8 @@ print("   plane.  Zmax_lay must stay clearly BELOW the smallest of these, or the
 print("   endpoint is computed behind camera B and the drawn chord is nonsense.\n")
 print("   A->B      Z of the horizon [mm]  (worst over all dots of frame 00000000)")
 horizons = {}
-for a in range(4):
-    for b in range(4):
+for a in range(CFG.NCAM):
+    for b in range(CFG.NCAM):
         if a == b:
             continue
         cb = cals[b]
@@ -117,8 +108,8 @@ for zb in (500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0):
     vpar = VolumePar(X_lay=[-zb, zb], Zmin_lay=[-zb, -zb], Zmax_lay=[zb, zb],
                      cn=0.0, cnx=0.0, cny=0.0, csumg=0.0, corrmin=0.0, eps0=0.0)
     seg, miss, bend = [], [], []
-    for a in range(4):
-        for b in range(4):
+    for a in range(CFG.NCAM):
+        for b in range(CFG.NCAM):
             if a == b:
                 continue
             for pid, pix in det[a].items():
