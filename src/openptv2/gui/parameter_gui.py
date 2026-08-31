@@ -468,20 +468,20 @@ class Tracking_Params(HasTraits):
         ),
         VGroup(
             HGroup(
-                Item(name="dvxmin", label="dvxmin:"),
-                Item(name="dvxmax", label="dvxmax:"),
+                Item(name="dvxmin", label="dvxmin (mm/frame):"),
+                Item(name="dvxmax", label="dvxmax (mm/frame):"),
             ),
             HGroup(
-                Item(name="dvymin", label="dvymin:"),
-                Item(name="dvymax", label="dvymax:"),
+                Item(name="dvymin", label="dvymin (mm/frame):"),
+                Item(name="dvymax", label="dvymax (mm/frame):"),
             ),
             HGroup(
-                Item(name="dvzmin", label="dvzmin:"),
-                Item(name="dvzmax", label="dvzmax:"),
+                Item(name="dvzmin", label="dvzmin (mm/frame):"),
+                Item(name="dvzmax", label="dvzmax (mm/frame):"),
             ),
             HGroup(
                 Item(name="angle", label="Angle [gon]:"),
-                Item(name="dacc", label="dacc:"),
+                Item(name="dacc", label="dacc (mm/frame2):"),
             ),
             HGroup(
                 Item(name="leaf_weight", label="2D leaf weight (0=off):"),
@@ -527,26 +527,26 @@ class Main_Params(HasTraits):
     Cali_3_Image = Str(label="Calibration data for 3. image")
     Cali_4_Image = Str(label="Calibration data for 4. image")
 
-    Refr_Air = Float(label="Air:")
-    Refr_Glass = Float(label="Glass:")
-    Refr_Water = Float(label="Water:")
-    Thick_Glass = Float(label="Thickness of glass:")
+    Refr_Air = Float(label="Air (n):")
+    Refr_Glass = Float(label="Glass (n):")
+    Refr_Water = Float(label="Water (n):")
+    Thick_Glass = Float(label="Glass thickness (mm):")
 
     # New panel 2: ImageProcessing
     HighPass = Bool(label="High pass filter")
-    Gray_Tresh_1 = Int(label="1st image")
-    Gray_Tresh_2 = Int(label="2nd image")
-    Gray_Tresh_3 = Int(label="3rd image")
-    Gray_Tresh_4 = Int(label="4th image")
-    Min_Npix = Int(label="min npix")
-    Max_Npix = Int(label="max npix")
-    Min_Npix_x = Int(label="min npix x")
-    Max_Npix_x = Int(label="max npix x")
-    Min_Npix_y = Int(label="min npix y")
-    Max_Npix_y = Int(label="max npix y")
-    Sum_Grey = Int(label="Sum of grey value")
-    Tol_Disc = Int(label="Tolerable discontinuity")
-    Size_Cross = Int(label="Size of crosses")
+    Gray_Tresh_1 = Int(label="1st image (0-255)")
+    Gray_Tresh_2 = Int(label="2nd image (0-255)")
+    Gray_Tresh_3 = Int(label="3rd image (0-255)")
+    Gray_Tresh_4 = Int(label="4th image (0-255)")
+    Min_Npix = Int(label="min npix (px)")
+    Max_Npix = Int(label="max npix (px)")
+    Min_Npix_x = Int(label="min npix x (px)")
+    Max_Npix_x = Int(label="max npix x (px)")
+    Min_Npix_y = Int(label="min npix y (px)")
+    Max_Npix_y = Int(label="max npix y (px)")
+    Sum_Grey = Int(label="Sum of grey (0-255 sum)")
+    Tol_Disc = Int(label="Tolerable discont. (grey)")
+    Size_Cross = Int(label="Size of crosses (px)")
     Subtr_Mask = Bool(label="Subtract mask")
     Base_Name_Mask = Str(label="Base name for the mask")
     Existing_Target = Bool(label="Use existing_target files?")
@@ -563,12 +563,12 @@ class Main_Params(HasTraits):
     Num_Workers = Int(label="Number of workers (0 for auto)")
 
     # Panel 4: ObservationVolume
-    Xmin = Float(label="Xmin")
-    Xmax = Float(label="Xmax")
-    Zmin1 = Float(label="Zmin")
-    Zmin2 = Float(label="Zmin")
-    Zmax1 = Float(label="Zmax")
-    Zmax2 = Float(label="Zmax")
+    Xmin = Float(label="Xmin (mm)")
+    Xmax = Float(label="Xmax (mm)")
+    Zmin1 = Float(label="Zmin (mm)")
+    Zmin2 = Float(label="Zmin (mm)")
+    Zmax1 = Float(label="Zmax (mm)")
+    Zmax2 = Float(label="Zmax (mm)")
 
     # Panel 5: ParticleDetection
     Min_Corr_nx = Float(label="min corr for ratio nx")
@@ -576,7 +576,7 @@ class Main_Params(HasTraits):
     Min_Corr_npix = Float(label="min corr for ratio npix")
     Sum_gv = Float(label="sum of gv")
     Min_Weight_corr = Float(label="min for weighted correlation")
-    Tol_Band = Float(lable="Tolerance of epipolar band [mm]")
+    Tol_Band = Float(label="eps0, epipolar band (mm)")
 
     Group1 = Group(
         Group(
@@ -900,18 +900,18 @@ class Calib_Params(HasTraits):
     v_pixel_size = Float(label="Pixel size vertical")
 
     grey_value_treshold_1 = Int(label="First Image")
-    grey_value_treshold_2 = Int(label="Second Image")
-    grey_value_treshold_3 = Int(label="Third Image")
-    grey_value_treshold_4 = Int(label="Forth Image")
-    tolerable_discontinuity = Int(label="Tolerable discontinuity")
-    min_npix = Int(label="min npix")
-    min_npix_x = Int(label="min npix in x")
-    min_npix_y = Int(label="min npix in y")
-    max_npix = Int(label="max npix")
-    max_npix_x = Int(label="max npix in x")
-    max_npix_y = Int(label="max npix in y")
-    sum_of_grey = Int(label="Sum of greyvalue")
-    size_of_crosses = Int(label="Size of crosses")
+    grey_value_treshold_2 = Int(label="Second Image (0-255)")
+    grey_value_treshold_3 = Int(label="Third Image (0-255)")
+    grey_value_treshold_4 = Int(label="Forth Image (0-255)")
+    tolerable_discontinuity = Int(label="Tolerable discont. (grey)")
+    min_npix = Int(label="min npix (px)")
+    min_npix_x = Int(label="min npix in x (px)")
+    min_npix_y = Int(label="min npix in y (px)")
+    max_npix = Int(label="max npix (px)")
+    max_npix_x = Int(label="max npix in x (px)")
+    max_npix_y = Int(label="max npix in y (px)")
+    sum_of_grey = Int(label="Sum of grey (0-255 sum)")
+    size_of_crosses = Int(label="Size of crosses (px)")
 
     Group2_1 = Group(
         Item(name="h_image_size"),
@@ -1098,8 +1098,8 @@ class Calib_Params(HasTraits):
         label="Calibration Orientation Param.",
     )
 
-    dumbbell_eps = Float(label="dumbbell epsilon")
-    dumbbell_scale = Float(label="dumbbell scale")
+    dumbbell_eps = Float(label="dumbbell epsilon (mm)")
+    dumbbell_scale = Float(label="dumbbell scale (mm)")
     dumbbell_gradient_descent = Float(label="dumbbell gradient descent factor")
     dumbbell_penalty_weight = Float(label="weight for dumbbell penalty")
     dumbbell_step = Int(label="step size through sequence")
