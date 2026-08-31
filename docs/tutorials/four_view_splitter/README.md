@@ -7,7 +7,7 @@ you get correct 3D correspondences and tracks.
 
 It is grounded in the working reference dataset shipped with the repo,
 [`test_data/test_splitter/`](https://github.com/alexlib/openptv2/blob/main/test_data/test_splitter), and uses the
-demo assets in [`images/`](images/).
+demo assets in `images/` -- [the splitter layout](images/quadrant_mapping.png) and [a demo frame](images/demo_4view.tif).
 
 ---
 

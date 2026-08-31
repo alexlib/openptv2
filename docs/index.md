@@ -32,11 +32,7 @@ Welcome to the openptv2 documentation.
 - [Documentation Workflow](developer_guide/documentation_workflow.md) - Editing documentation and deploying to GitHub Pages
 - [Packaging & Releases](developer_guide/packaging_and_releases.md) - Building binary wheels and releasing them on PyPI and GitHub
 - [GUI Testing Guide](HOW_TO_TEST_GUI.md) - How to test the GUI
-- [Development Workflow](developer_guide/building.md#development-workflow) - How to develop
-
-### Migration
-
-- [From optv/pyptv](index.md#migration-from-optvpyptv) - Migrating from legacy packages
+- [Development Workflow](developer_guide/building.md#4-development-workflow-commands) - How to develop
 
 ---
 
@@ -95,8 +91,8 @@ docs/
 
 1. **Build Setup**: See [building.md](developer_guide/building.md)
 2. **Cython & Pure Python modes**: See [cython_and_pure_python.md](developer_guide/cython_and_pure_python.md)
-3. **Development Workflow**: See [building.md#development-workflow](developer_guide/building.md#development-workflow)
-4. **Testing**: See [building.md#testing](developer_guide/building.md#testing)
+3. **Development Workflow**: See [building.md#development-workflow](developer_guide/building.md#4-development-workflow-commands)
+4. **Testing**: See [building.md#running-tests](developer_guide/building.md#running-tests)
 
 ## For Contributors
 
