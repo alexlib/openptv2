@@ -511,26 +511,103 @@ recorded datum index, or the calibration. Where neither can settle it, fail
 loudly. A labeller that guesses produces exactly the errors reprojection RMS
 cannot see.
 
-## 10. Next time / cameras 5–8
+## 10. Cameras 5–8 — the far wall, calibrated as its own rig
 
-Cameras 5–8 sit on the opposite wall at −Z and see the **back** face of the plate,
-so two things change:
+**Done.** Working folder `openptv_illmenau_5678/`, its own `cal/`, its own
+`parameters_Run1.yaml` (cameras named cam5..cam8), its own `plate.yaml`.
 
-1. Viewed from behind, the plate is mirrored — `+X` of the printed grid runs
-   right→left in those images. Either pass `y_sign`/an axis flip to the labeller
-   or relabel `ix → 5 − ix`, and confirm the L code still resolves to the same
-   physical dot as id 21. Verify before fitting: the datum dot must be the same
-   piece of plastic for both camera groups, or the two halves will not share a
-   world.
-2. They need their own reference frame in which all four of them see the plate.
-   If cameras 1–8 ever see the plate simultaneously, use that frame for both
-   groups and the whole rig lands in one frame directly. Otherwise calibrate
-   group 5–8 in its own frame and tie the two together with a Kabsch fit on the
-   plate points they share (`calibration_import.similarity_from_correspondences`).
+### Why a separate world
 
-The recipe itself is unchanged: cache detections, fit one shared `cc` from
-multi-plane consistency, write a pure-pinhole `.ori`, then gate on
-`check_plate_triangulation.py` and `check_epipolar.py`, and validate with
-`plot_frame_triangulation.py`. Expect the fitted `cc` to land near 8.59 mm again if
-the lenses are the same, and expect the same ~0.6 %-of-distance RCM growth unless
-the joint bundle of §8 is done first.
+Cameras 5–8 see the **back** face of the plate, and the back face carries a
+*different* dot pattern with its own ids — there is no dot-to-dot correspondence
+with the front to exploit. So the two groups are calibrated independently, each
+anchored to its own reference frame's coded L-corner dot. Merging them is a
+later job, and the plate is what makes it possible: the two dot planes are
+parallel and **6 mm apart** (the plate's thickness), so the per-frame plate poses
+already solved for cams 1–4 describe the same physical positions. The recipe is
+recorded in `openptv_illmenau_5678/plate.yaml:relation_to_front_rig` — offset a
+cams 1–4 plate pose by −6 mm along its normal, then solve the 3-dof in-plane
+placement (yaw about the normal + 2D shift) shared across all frames. Heavily
+over-determined, and it needs no Kabsch fit.
+
+*The earlier guess in this section was wrong on both counts it made:* the grid is
+**not** mirrored (the L code names the corner and its +X/+Y partners by leg
+length, which are properties of the plate, not of the side you view it from), and
+there is **no** frame in which all eight cameras see the plate.
+
+### Running it
+
+Every driver is camera-group agnostic via `scripts/illmenau/_config.py`:
+
+```bash
+export ILLMENAU_DIR="$ILLMENAU_RAW/openptv_illmenau_5678"
+export ILLMENAU_CAMS=5,6,7,8
+# then §5's recipe verbatim, plus these two first:
+python $OPTV/scripts/illmenau/find_datum.py             # read the datum off the data
+python $OPTV/scripts/illmenau/make_calibration_block.py # block from the same obj_of
+```
+
+The first detection pass has no `.ori` to take an up-hint from, so run
+`ILLMENAU_NO_HINT=1 detect_plate_frames.py --cams 5,6,7,8` once, then re-run it
+after the first `.ori` exist.
+
+### The datum was tested, not inherited
+
+The back face's coded L corner turns out to sit at the same grid node as the
+front's, **(2,3)**, but that was established rather than assumed. `find_datum.py`
+needs a view showing the complete 42-dot lattice, and the far wall rarely gives
+one, so the cheaper cross-check settled it: label all 193 back-face views with
+the candidate index and look at the id histogram. A wrong index pushes part of
+the lattice outside the `nx × ny` rectangle, where the labeller silently drops
+it. With (2,3) nothing is clipped — all 42 ids seen, per-id counts 110/191/193,
+lattice edges covered 1309/1326/1147/962, against the front face's 106/192/192
+and 1303/1316/1149/962.
+
+### Result
+
+`cc = 8.6313 mm` shared — within 0.5 % of the front wall's 8.5858 mm, which is
+independent corroboration, since nothing constrained the two groups to agree.
+
+| cam | C (X, Y, Z) mm | | cam | C (X, Y, Z) mm |
+|---|---|---|---|---|
+| 5 | (−1444, 128, −2998) | | 1 | (1454, 122, 3052) |
+| 6 | (−1443, 2290, −3038) | | 2 | (1451, 2266, 2990) |
+| 7 | (1460, 105, −3023) | | 3 | (−1456, 126, 2959) |
+| 8 | (1455, 2253, −2987) | | 4 | (−1470, 2268, 2994) |
+
+A clean mirror of the near wall across Z = 0 — also not constrained.
+
+| | cams 1–4 (front) | cams 5–8 (back) |
+|---|---|---|
+| Gate A planarity / absolute error | 0.337 / 1.353 mm | 0.887 / 2.507 mm |
+| frames passing the grid gate | 48/48 | 47/49 |
+| RCM vs distance | 0.126 % | **0.026 %** |
+| median RCM | 4.54 mm | **2.47 mm** |
+| median planarity | 1.364 mm | **0.796 mm** |
+| recovered X pitch | 120.16 mm | 120.20 mm |
+
+The far wall is the *better* of the two across the volume — its ray convergence
+is nearly flat with distance. Its Gate B is correspondingly looser on the
+reference frame (0.56–3.46 px median against 0.10–0.31 px before the bundle),
+which is the §8b trade in its usual direction: accuracy spread over the volume
+instead of concentrated on one plane.
+
+### What went wrong, and what it cost
+
+Two scripts re-detected and re-labelled the reference frame *themselves*, through
+`label_plate()` with no `corner_index` — the unsafe anchoring path of §9.1. On
+the near wall the reference view shows the whole lattice, so their private
+labelling agreed with the cache by luck and this was invisible for the entire
+cams 1–4 calibration. On the far wall it is not:
+
+- `refit_plate_pinhole.py` put cameras 5, 6 and 8 at 2.9–4.5 px with centres
+  metres from the wall they are bolted to, and Gate A reported **59 mm**
+  planarity for a calibration that was fine;
+- `check_epipolar.py` reported **100–400 px** misses on every pair involving
+  cam7, on 25–35 matched dots instead of 41 — it was comparing dot 7 of one
+  camera against dot 8 of another.
+
+Both now read the detection cache. **One labelling, produced once by
+`detect_plate_frames.py` with the datum and the up-hint, used by everything.**
+A check that re-derives its own ground truth can fail in exactly the way it
+exists to detect, and it will look like the calibration's fault.
