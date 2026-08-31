@@ -33,10 +33,13 @@ from openptv2.detect_plate import (  # noqa: E402
 )
 from openptv2.plate_labeler import label_plate  # noqa: E402
 
-MAX_FRAMES = 8
+MAX_FRAMES = 8          # complete views to collect per camera
+MAX_SCAN = 12           # images to open per camera before giving up
 for i, a in enumerate(sys.argv):
     if a == "--frames":
         MAX_FRAMES = int(sys.argv[i + 1])
+    elif a == "--scan":
+        MAX_SCAN = int(sys.argv[i + 1])
 
 CODED_THR = (30, 25, 20, 15, 10)
 tpar = plate_tpar_from_yaml(CFG.DIR / "parameters_Run1.yaml")
@@ -49,10 +52,14 @@ print("  cam  frame       dots   coded L corner at (ix, iy)")
 
 votes = Counter()
 for ci in range(CFG.NCAM):
-    seen = 0
+    seen = scanned = 0
     for f in sorted(CFG.image_dir(ci).glob("*.tif*")):
-        if seen >= MAX_FRAMES:
+        # Bounded on BOTH counts.  A camera group whose views never show the
+        # complete lattice -- the far wall of this rig is one -- would otherwise
+        # open every image at five detector thresholds and look like a hang.
+        if seen >= MAX_FRAMES or scanned >= MAX_SCAN:
             break
+        scanned += 1
         fr = f.name.split("_")[0]
         try:
             img = np.array(Image.open(f))
@@ -81,7 +88,7 @@ for ci in range(CFG.NCAM):
         ixiy = (int(idx[k, 0]), int(idx[k, 1]))
         votes[ixiy] += 1
         seen += 1
-        print(f"  {CFG.cam_number(ci)}    {fr}   {len(ip):4d}   {ixiy}")
+        print(f"  {CFG.cam_number(ci)}    {fr}   {len(ip):4d}   {ixiy}", flush=True)
 
 print()
 if not votes:
