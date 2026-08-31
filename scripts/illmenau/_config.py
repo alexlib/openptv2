@@ -60,6 +60,40 @@ if _pl.exists():
         DATUM_IX, DATUM_IY = int(_d["ix"]), int(_d["iy"])
 
 
+def _check_group_matches_folder() -> None:
+    """Refuse to mix a camera group with another group's working folder.
+
+    Each group is a separate world with its own calibration, and the folders are
+    the only thing keeping them apart.  ILLMENAU_DIR defaults to the cameras 1-4
+    folder, so forgetting to set it while working on 5-8 -- or running a
+    write-script "just to check" -- silently overwrites a good calibration with
+    one fitted from the wrong cameras.  That happened once here: a regression
+    check against cams 1-4 clobbered their bundled .ori.
+
+    parameters_Run1.yaml names its cameras (cal/cam5.tif.ori ...), so the folder
+    states which group it belongs to.  Disagreement is a mistake, not a use case.
+    """
+    par = DIR / "parameters_Run1.yaml"
+    if not par.exists():
+        return
+    import re
+    names = set(re.findall(r"cam(\d+)\.tif\.ori", par.read_text(encoding="utf-8")))
+    if not names:
+        return
+    want = {str(c) for c in CAMS}
+    if names != want:
+        raise SystemExit(
+            f"camera group / working folder mismatch.\n"
+            f"  ILLMENAU_CAMS = {sorted(int(c) for c in want)}\n"
+            f"  {par} describes cameras {sorted(int(n) for n in names)}\n"
+            f"These are separate calibrations of separate worlds; writing one into "
+            f"the other's folder destroys it.\nSet ILLMENAU_DIR and ILLMENAU_CAMS "
+            f"together, or fix parameters_Run1.yaml if the folder is genuinely new.")
+
+
+_check_group_matches_folder()
+
+
 def cam_number(ci: int) -> int:
     """Physical camera number for group index `ci`."""
     return CAMS[ci]
