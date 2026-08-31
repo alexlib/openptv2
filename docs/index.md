@@ -73,22 +73,22 @@ docs/
 ### Developer Guide
 - [Building from Source](developer_guide/building.md) - Full build instructions
 - [Cython & Pure Python Modes](developer_guide/cython_and_pure_python.md) - Seamlessly switch between C-level speed and pure python debugging
-- [Building Binary Wheels](../../BUILDING_BINARY_WHEELS.md) - manylinux/macOS/Windows wheels
+- [Building Binary Wheels](https://github.com/alexlib/openptv2/blob/main/BUILDING_BINARY_WHEELS.md) - manylinux/macOS/Windows wheels
 
 ### GUI
 - [Testing the GUI](HOW_TO_TEST_GUI.md) - How to test the GUI
 
 ### Scripts
-- [scripts/build_wheel.sh](../../scripts/build_wheel.sh) - Build binary wheel
-- [scripts/install_wheel.sh](../../scripts/install_wheel.sh) - Install wheel in clean venv
-- [scripts/run_tests.sh](../../scripts/run_tests.sh) - Run test suite
+- [scripts/build_wheel.sh](https://github.com/alexlib/openptv2/blob/main/scripts/build_wheel.sh) - Build binary wheel
+- [scripts/install_wheel.sh](https://github.com/alexlib/openptv2/blob/main/scripts/install_wheel.sh) - Install wheel in clean venv
+- [scripts/run_tests.sh](https://github.com/alexlib/openptv2/blob/main/scripts/run_tests.sh) - Run test suite
 
 ---
 
 ## For Users
 
-1. **Installation**: See [README.md](../../README.md#installation)
-2. **Basic Usage**: See [README.md](../../README.md#usage)
+1. **Installation**: See [README.md](https://github.com/alexlib/openptv2/blob/main/README.md#installation)
+2. **Basic Usage**: See [README.md](https://github.com/alexlib/openptv2/blob/main/README.md#usage)
 3. **GUI Usage**: Launch `openptv2-gui` and explore the interface
 
 ## For Developers

@@ -593,7 +593,7 @@ Based on this analysis, proposed improvements:
 
 ### trackcorr Last-Resort Link (Problematic)
 
-[algorithms/track.py Line 1343](../../../algorithms/track.py#L1343)
+[algorithms/track.py Line 1343](https://github.com/alexlib/openptv2/blob/main/src/openptv2/algorithms/track.py#L1343)
 
 ```python
 # try to link if kk is not found/good enough and prev exist
@@ -607,7 +607,7 @@ if curr_path_inf.inlist == 0 and curr_path_inf.prev_frame >= 0:
 
 ### track3d Level 3 Fallback (Robust)
 
-[algorithms/track.py Line 1673](../../../algorithms/track.py#L1673)
+[algorithms/track.py Line 1673](https://github.com/alexlib/openptv2/blob/main/src/openptv2/algorithms/track.py#L1673)
 
 ```python
 # Level 3: No previous link, no neighbors with previous links
