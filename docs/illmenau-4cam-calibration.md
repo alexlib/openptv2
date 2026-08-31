@@ -417,18 +417,73 @@ Both sets of files are kept: `cal/camN.tif.ori` is the bundled result and
 `cal/camN.tif.ori.prebundle` the anchored one. Re-run
 `refit_plate_pinhole.py 8.5858` to get back to the anchored fit.
 
-## 9. Known limitation — the labeller
+## 9. The labeller — three bugs, and what the calibration paid for them
 
-Half the hand-held frames are mislabelled. The obvious failure mode — a 180°
-relabelling, which a 6×7 grid admits since `id → 43 − id` maps it onto itself —
-was checked for and does **not** occur; the errors are individual dots assigned to
-wrong ids when the plate is steeply tilted or partly occluded. Frames 2, 3, 14 and
-37 are the clearest cases (recovered pitch 87, 144, 88 and 849 mm).
+Half the frames used to be unusable. None of the three causes was a detector
+tuning problem, and all three produced labellings that were **wrong yet
+internally self-consistent** — a per-camera PnP fit of the rigid plate to them
+has a sub-pixel residual, so no single-view check can see any of them. They
+surface only as a cross-camera disagreement, long after the damage is done.
 
-This does not affect the delivered `.ori`, because `fit_plate_cc.py` admits a frame
-only when all four cameras fit it below 1.5 px. It does mean roughly half the
-captured data is wasted, so improving `label_coded_6x7` for tilted views remains
-the highest-value next change.
+### 9.1 The grid was anchored to whatever the view happened to see
+
+`label_coded_6x7` shifted the grid so the smallest detected index became 0. A
+view that could not see the leftmost column or the bottom row therefore labelled
+**every dot one step off**. Fixed by anchoring on the coded corner instead:
+
+```python
+label_plate(..., corner_index=(DATUM_IX, DATUM_IY))
+```
+
+Pass it whenever you know it — which is always, since the datum has to be
+recorded anyway. Regression tests: `tests/unit/test_plate_labeler_anchor.py`.
+
+### 9.2 The coded L could resolve to the wrong corner
+
+The three coded dots form a 1:2 right angle, but taking the `+1·pitch` dot as
+the corner *also* gives legs at a near-1:2 ratio and a near-right angle. Under
+strong perspective that spurious optimum can win, rotating the whole grid.
+
+The plate is held vertical, so its own +Y is world +Y — and the calibration
+knows where world +Y points in each image. `plate_labeler.image_up_direction`
+computes that direction and `up_hint` rejects candidates whose +Y is more than
+60° away. **This is what "use the calibration in detection" means concretely.**
+Requiring merely the same half-plane is not enough: a 90° error sits exactly on
+that boundary.
+
+### 9.3 A failed coded detection fell through to the uncoded labeller
+
+The worst of the three. With `coded_thr` fixed at 30, two views found **zero**
+coded dots; `label_plate` then dispatched on `n_coded == 3` being false and
+silently used `label_uncoded_grid`, which has no origin and no orientation
+anchor. It returned a confidently labelled grid rotated by 90°. Two fixes:
+
+- `label_plate` now **raises** when a coded plate yields other than 3 coded
+  dots, instead of falling back to a labeller with no datum;
+- the plate has exactly three coded dots, so the driver *searches* for the
+  threshold that finds three (`CODED_THR = (30, 25, 20, 15, 10)`) rather than
+  fixing one. Both failing views were fine at 15.
+
+### What the fixes bought
+
+| | before | after |
+|---|---|---|
+| frames whose triangulated grid is correct | **20/48** | **48/48** |
+| views passing the per-camera PnP gate | 155/192 | 189/192 |
+| views entering the bundle | 143 | 180 |
+| dots in the bundle | 6215 | 7352 |
+| non-vertical plate poses | 3/192 | 1/192 (3.2°, real tilt) |
+| RCM vs distance | 0.159 % | **0.126 %** |
+
+Frame `00000037` is the clearest case: 19 scattered points with a 1148 mm grid
+deviation and a nonsense 849 mm recovered pitch, now a complete 42-dot grid at
+12 mm deviation. Every frame in `triangulation/` is now worth looking at.
+
+**The general lesson:** on a coded plate, every labelling decision the image
+alone cannot settle should be settled by something outside the image — the
+recorded datum index, or the calibration. Where neither can settle it, fail
+loudly. A labeller that guesses produces exactly the errors reprojection RMS
+cannot see.
 
 ## 10. Next time / cameras 5–8
 

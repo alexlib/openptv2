@@ -196,10 +196,54 @@ and quote it as the accuracy floor of the volume.
 If that floor is too high, the fix is **not** distortion and **not** `cc` (both
 were swept against RCM on Illmenau and neither collapses it; refitting
 per-camera intrinsics over all planes even improves reprojection RMS while
-making RCM worse). The fix is to stop anchoring to one plane: a joint bundle
-adjustment over the clean frames whose unknowns are the camera poses, the shared
-`cc`, and one 6-dof plate pose per frame. Feed it only frames that pass the
-grid-deviation gate — a bundle fed mislabelled frames diverges.
+making RCM worse). The fix is to stop anchoring to one plane.
+
+### The joint bundle — `openptv2.plate_bundle`
+
+`bundle_plate_poses` solves every camera pose together with one rigid plate pose
+per frame. Keep `cc` and the distortion fixed (they are not what is wrong), and
+**hold the reference frame's plate pose at identity**. That last point is the
+gauge, and it matters twice: the world stays pinned to the physical dot that
+defines it, so the calibration block, the datum record and any manual check of
+that frame stay valid; and with the gauge fixed there is no free similarity, so
+scale cannot drift even though `cc` is not being fitted.
+
+Gate the views *before* the bundle, not during it. A robust loss plus residual
+trimming still lets a bad view drag the early iterations — that is what sinks
+naive attempts. Three gates, each seeing what the previous cannot:
+
+1. per-camera PnP residual — uses no cross-camera information, so it is a pure
+   labelling test for one view;
+2. a known plate orientation, if you have one — a grossly mislabelled view
+   yields a plate pose tens of degrees off while still fitting its own points;
+3. per-dot cross-camera agreement (`plate_bundle.agreeing_views`) — **per dot,
+   not per plate centre**: a scramble can leave the centroid roughly in place
+   while the pattern around it is wrong.
+
+Then trim on the bundle's own residuals. Resist tightening the gates to chase
+reprojection RMS: on Illmenau every tightening improved RMS while making
+planarity worse, because it starved the fit.
+
+Illmenau result: RCM went from 0.58 % of distance to **0.126 %** — 18 mm down to
+under 5 mm at 3-5 m — planarity at 3-5 m from 3.19 to 1.50 mm, recovered pitch
+from +0.75 % to +0.13 %. The price is the reference frame, whose epipolar error
+rises from 0.11-0.30 px to 0.7-1.9 px. **That trade is the point:** the anchored
+fit was not more accurate, it was concentrating all of its accuracy on one plane.
+
+### Using a known plate orientation
+
+If the plate is held vertical (or any known orientation), measure the departure
+before imposing anything — on Illmenau the normal was within 0.83° of horizontal
+and the plate's up within 1.23° of world +Y, with the yaw spanning ±30°. Then
+use it as a **soft** penalty on the off-yaw rotation components, never a hard
+constraint: a hand-held plate really is a degree off, and forcing that to zero
+biases a 720 mm plate's corners by ~15 mm.
+
+Be honest about what it buys. On Illmenau the penalty changed nothing measurable
+(RCM 2.67 vs 2.71 mm without it) because 44 frames already pinned the poses. Its
+real value was elsewhere: as the *outlier gate* above, and as the thing that let
+the detector fix its own labelling (see the failure modes below). Keep it for a
+sparse dataset, and say plainly that it is inert on a rich one.
 
 ## The observation volume and the epipolar display
 
@@ -243,10 +287,38 @@ Clamping inside `epi_mm` was tried on openptv2 and backed out for that reason.
 
 **Labelling error vs calibration error.** Fit the rigid plate to each camera's
 own labelled points with PnP. That uses no cross-camera information, so a bad
-fit means bad labelling. On Illmenau this split 48 frames into 23 good
-(planarity 2.70 mm) and 24 mislabelled (26.57 mm) — the whole-dataset median of
-17.5 mm was a labeller problem, not a calibration one. Admit a frame to the fit
-only when all cameras clear the gate.
+fit means bad labelling. Admit a frame to the fit only when all cameras clear
+the gate.
+
+That test is necessary but not sufficient: the labelling failures that matter
+are **wrong yet internally self-consistent**, and those fit their own points to
+a sub-pixel residual. Three of them cost the Illmenau run half its data, and all
+three are avoidable by construction:
+
+1. **Never let the labeller anchor the grid on what it happened to detect.** If
+   it shifts indices so the smallest detected one becomes 0, any view missing
+   the first column or row relabels the entire plate one step off. Pass the
+   coded corner's grid index (`corner_index=` in `label_coded_6x7`) — you have
+   to record the datum anyway.
+2. **Settle the coded L with the calibration, not the geometry.** Three dots at
+   a 1:2 right angle have a second, spurious solution — taking the `1·pitch` dot
+   as the corner gives a near-1:2 ratio and a near-right angle too — and
+   perspective lets it win, rotating the whole grid 90°. If the plate's
+   orientation is known (held vertical, say), project that axis into the image
+   with `plate_labeler.image_up_direction` and pass it as `up_hint`. Require
+   real agreement, not just the same half-plane: a 90° error sits exactly on
+   that boundary.
+3. **Never fall back from the coded labeller to the uncoded one.** The uncoded
+   path has no origin and no orientation anchor, so it returns a confidently
+   labelled grid that can be rotated and offset arbitrarily. If the coded
+   detection does not find exactly the expected number of coded dots, that is a
+   detection failure — raise. And rather than fixing one `coded_thr`, search for
+   the threshold that finds the right number; the count is known a priori.
+
+Together these took Illmenau from 20/48 to 48/48 frames reconstructing
+correctly. The general rule: **any labelling decision the image alone cannot
+settle must be settled from outside the image — the recorded datum, or the
+calibration — and where neither can, fail loudly.**
 
 **180° relabelling.** A grid that maps onto itself under 180° (`id → nx·ny+1−id`
 for the row-major convention) lets one camera label the plate the opposite way

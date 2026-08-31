@@ -18,12 +18,29 @@ from __future__ import annotations
 import numpy as np
 
 
-def _identify_L(coded_xy: np.ndarray, pitch: float):
+def _identify_L(coded_xy: np.ndarray, pitch: float, up_hint: np.ndarray | None = None,
+                up_hint_max_deg: float = 60.0):
     """Find L corner / axes from 3 coded centroids.
 
     Returns (corner, e_x, e_y) where ``e_x``/``e_y`` are unit vectors in
     image space pointing +X / +Y.  Uses *ratios* so it works in image space
     regardless of world-scale ``pitch``.
+
+    ``up_hint`` is an optional unit 2-vector giving the image direction of the
+    plate's +Y axis, from :func:`image_up_direction`.  Under strong perspective
+    the 1:2 leg ratio and the right angle are both distorted enough that the
+    wrong coded dot can win on geometry alone, which silently rotates or
+    reflects the entire grid.  When the hint is supplied, a candidate whose
+    ``e_y`` disagrees with it by more than ``up_hint_max_deg`` is rejected
+    outright and the rest are scored on how well they agree, which the plate's
+    own geometry cannot decide.
+
+    The default 60 deg is deliberately generous -- the hint comes from the
+    camera's own calibration at the dots' own image position, so a correct
+    candidate agrees to within a few degrees, while the failure this exists to
+    stop is a 90 deg rotation of the whole grid.  Merely requiring the same
+    half-plane is NOT enough: a 90 deg error sits right at the boundary and
+    slips through on the wrong side of the noise.
     """
     if coded_xy.shape != (3, 2):
         raise ValueError(f"need 3 coded points, got {coded_xy.shape}")
@@ -45,6 +62,13 @@ def _identify_L(coded_xy: np.ndarray, pitch: float):
         v1 = others[1] - c
         cosang = float(np.dot(v0, v1) / (np.linalg.norm(v0) * np.linalg.norm(v1)))
         err = ratio_err + abs(cosang)  # both dimensionless
+        if up_hint is not None:
+            cand_y = (others[0] if d0 < d1 else others[1]) - c
+            cand_y = cand_y / max(float(np.linalg.norm(cand_y)), 1e-9)
+            align = float(np.dot(cand_y, up_hint))
+            if align < np.cos(np.radians(up_hint_max_deg)):
+                continue                      # +Y too far from vertical: impossible
+            err += 2.0 * (1.0 - align)
         if err < best_err:
             best_err = err
             if d0 < d1:
@@ -73,6 +97,9 @@ def label_coded_6x7(
     nx: int = 6,
     ny: int = 7,
     y_sign: int = 1,
+    corner_index: tuple[int, int] | None = None,
+    up_hint: np.ndarray | None = None,
+    up_hint_max_deg: float = 60.0,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """L-anchored labeling for the small 6×7 plate.
 
@@ -80,6 +107,18 @@ def label_coded_6x7(
     ``ref_pts`` is (n,3) with ``Z=0``, and ``index`` is (n,2) ``(ix,iy)`` grid
     indices.  ``n`` is the number of detected dots that snap to a grid node
     within ``0.35·pitch``.
+
+    ``corner_index`` is the ``(ix, iy)`` the coded L corner occupies on the
+    physical plate.  **Supply it whenever you know it.**  Without it the grid is
+    re-anchored to ``min(ix)`` over the dots this view happened to detect, so a
+    view that misses the leftmost column or the bottom row labels every dot one
+    step off — wrong, yet perfectly self-consistent, so neither a per-camera PnP
+    residual nor any single-view check can see it.  It only shows up as a
+    cross-camera disagreement much later.  With ``corner_index`` the anchor is
+    the coded dot itself and which dots were detected no longer matters.
+
+    ``up_hint`` is an optional unit 2-vector giving the image direction of the
+    plate's +Y, from :func:`image_up_direction`; see :func:`_identify_L`.
     """
     centroids = np.asarray(centroids, float)
     coded_mask = np.asarray(coded_mask, bool)
@@ -90,7 +129,8 @@ def label_coded_6x7(
     if coded_xy.shape[0] != 3:
         raise ValueError(f"coded 6×7 needs exactly 3 coded dots, got {coded_xy.shape[0]}")
     pitch = float((pitch_x + pitch_y) / 2.0)
-    corner, e_x, e_y = _identify_L(coded_xy, pitch)
+    corner, e_x, e_y = _identify_L(coded_xy, pitch, up_hint=up_hint,
+                                   up_hint_max_deg=up_hint_max_deg)
 
     # Project every centroid onto the L bases
     cand = [p for p in coded_xy if not np.allclose(p, corner)]
@@ -114,17 +154,24 @@ def label_coded_6x7(
     ix_rel = np.round(ix_rel_f).astype(int)
     iy_rel = np.round(iy_rel_f).astype(int)
 
-    # The L corner may be anywhere in the grid (e.g. at (3, 3) or (2, 3)),
-    # so shift the integer grid by its minimum so that indices span [0..nx-1] x [0..ny-1].
+    # The L corner may be anywhere in the grid (e.g. at (3, 3) or (2, 3)), so the
+    # indices relative to it have to be shifted onto [0..nx-1] x [0..ny-1].
     tol = 0.35
     snapped = (np.abs(ix_rel_f - ix_rel) < tol) & (np.abs(iy_rel_f - iy_rel) < tol)
     if not np.any(snapped):
         return np.zeros((0, 2)), np.zeros((0, 3)), np.zeros((0, 2), int)
 
-    min_x = int(np.min(ix_rel[snapped]))
-    min_y = int(np.min(iy_rel[snapped]))
-    ix_f = ix_rel_f - min_x
-    iy_f = iy_rel_f - min_y
+    if corner_index is not None:
+        # Anchor on the coded corner: independent of which dots were detected.
+        off_x, off_y = int(corner_index[0]), int(corner_index[1])
+    else:
+        # Fall back to the detected extent.  This is only correct when the view
+        # actually sees the leftmost column and the bottom row — see the note in
+        # the docstring; pass corner_index instead whenever you can.
+        off_x = -int(np.min(ix_rel[snapped]))
+        off_y = -int(np.min(iy_rel[snapped]))
+    ix_f = ix_rel_f + off_x
+    iy_f = iy_rel_f + off_y
     ix = np.round(ix_f).astype(int)
     iy = np.round(iy_f).astype(int)
 
@@ -312,6 +359,9 @@ def label_plate(
     ny: int | None = None,
     y_sign: int | None = None,
     profile: str | None = None,
+    corner_index: tuple[int, int] | None = None,
+    up_hint: np.ndarray | None = None,
+    up_hint_max_deg: float = 60.0,
 ):
     """Auto-dispatch to coded vs uncoded labeler.
 
@@ -326,13 +376,81 @@ def label_plate(
     else:
         n_coded = 0
 
+    if (profile == "small_6x7_coded" or corner_index is not None) and n_coded != 3:
+        # Falling through to the uncoded labeller here would be silently
+        # catastrophic: it has no origin and no orientation anchor, so it
+        # returns a confidently labelled grid that can be rotated 90 deg and
+        # offset arbitrarily, with a sub-pixel per-camera PnP residual to match.
+        # That is exactly how frames 02 and 14 of the Illmenau set were ruined.
+        # A coded plate with the wrong number of coded dots is a DETECTION
+        # failure -- say so, and let the caller retune or drop the view.
+        raise ValueError(
+            f"coded plate expected exactly 3 coded dots, found {n_coded}; "
+            "lower coded_thr or drop this view -- refusing to fall back to the "
+            "uncoded labeller, which has no datum"
+        )
     if profile == "small_6x7_coded" or (profile is None and n_coded == 3):
         nx = nx if nx is not None else 6
         ny = ny if ny is not None else 7
         y_sign = y_sign if y_sign is not None else 1
-        return label_coded_6x7(centroids, coded_mask, pitch_x=pitch_x, pitch_y=pitch_y, nx=nx, ny=ny, y_sign=y_sign)
+        return label_coded_6x7(centroids, coded_mask, pitch_x=pitch_x, pitch_y=pitch_y,
+                               nx=nx, ny=ny, y_sign=y_sign, corner_index=corner_index,
+                               up_hint=up_hint, up_hint_max_deg=up_hint_max_deg)
     # uncoded path
     nx = nx if nx is not None else 25
     ny = ny if ny is not None else 19
     y_sign = y_sign if y_sign is not None else -1
     return label_uncoded_grid(centroids, pitch_x=pitch_x, pitch_y=pitch_y, nx=nx, ny=ny, y_sign=y_sign)
+
+
+def image_up_direction(cal, cpar, pixel, *, world_up=(0.0, 1.0, 0.0), depth=None):
+    """Image-space direction of a world axis, seen at ``pixel`` by ``cal``.
+
+    Returns a unit 2-vector in pixel coordinates, suitable as ``up_hint`` for
+    :func:`label_coded_6x7`.
+
+    This is what lets the *detector* use the calibration.  When the plate is
+    known to be held vertical -- its own +Y along world +Y, free only to yaw
+    about that axis -- the image direction of world +Y tells the labeller which
+    way is up on the plate.  The plate's own geometry cannot: the three coded
+    dots are a 1:2 right angle, and under strong perspective that shape is
+    distorted enough for the wrong dot to win, which rotates or reflects the
+    whole grid.
+
+    ``pixel`` is any point near the dots (their centroid is the natural choice).
+    A 3D point is needed to take the derivative, so the sight ray through
+    ``pixel`` is walked out to ``depth`` -- the distance from the camera to the
+    world origin when not given.  The result barely depends on that: the image
+    direction of a world axis varies slowly with range, and only its sign and
+    rough bearing are used, to pick between three discrete candidates.
+    """
+    import numpy as _np
+
+    from .algorithms.imgcoord import img_coord
+    from .algorithms.ray_tracing import ray_tracing
+    from .algorithms.trafo import dist_to_flat, metric_to_pixel, pixel_to_metric
+
+    ap = cal.added_par
+    mx, my = pixel_to_metric(float(pixel[0]), float(pixel[1]), cpar)
+    xf, yf = dist_to_flat(mx, my, cal.int_par.xh, cal.int_par.yh,
+                          ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she)
+    pos, v = ray_tracing(xf, yf, cal.ext_par.dm, cal.ext_par.x0, cal.ext_par.y0,
+                         cal.ext_par.z0, cal.int_par.cc, cal.glass_par.vec_x,
+                         cal.glass_par.vec_y, cal.glass_par.vec_z,
+                         cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0])
+    pos = _np.asarray(pos, float)
+    v = _np.asarray(v, float)
+    v = v / max(float(_np.linalg.norm(v)), 1e-12)
+    if depth is None:
+        depth = float(_np.linalg.norm(
+            [cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0]))
+    base = pos + depth * v
+    step = 0.02 * depth * _np.asarray(world_up, float)
+
+    p0 = _np.array(metric_to_pixel(*img_coord(base, cal, cpar.mm), cpar))
+    p1 = _np.array(metric_to_pixel(*img_coord(base + step, cal, cpar.mm), cpar))
+    d = p1 - p0
+    n = float(_np.linalg.norm(d))
+    if n < 1e-9:
+        raise ValueError("world_up projects to a point: it is along the sight ray")
+    return d / n
