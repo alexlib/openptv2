@@ -2178,6 +2178,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#7-resume-point-2026-09-01-session-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Resume point (2026-09-01 session end)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2395,6 +2406,56 @@ write <code>docs/reports/tracker-stress-YYYY-MM-DD.md</code> with:</p>
 Phase B (Group B: tests, reusing Phase A's scenarios): ~0.5 day
 Phase C (report generator): ~0.5-1 day
 Total: ~2-2.5 days, staged — Group A can ship and be reviewed before Group B.</p>
+<h2 id="7-resume-point-2026-09-01-session-end">7. Resume point (2026-09-01 session end)<a class="headerlink" href="#7-resume-point-2026-09-01-session-end" title="Permanent link">&para;</a></h2>
+<p>Not yet started writing <code>scripts/stress_scenarios.py</code> or the Group A test
+file — still in the "confirm the exact API before writing" step. Worked out
+and confirmed by reading source (no code written yet):</p>
+<ul>
+<li><strong><code>write_dataset_store</code> path gotcha</strong>: it writes to <code>spec.dir / "run.zarr"</code>
+  directly (<code>datawriter.py:176-179</code>), ignoring <code>spec.res_sub</code> — unlike
+  <code>write_dataset</code>, which writes ASCII to <code>spec.dir / spec.res_sub</code>
+  (<code>datawriter.py:60</code>). <code>benchmark_utils.per_tracker_overrides</code> and
+  <code>runner.py</code>'s <code>_read_path_info</code>/<code>find_existing_store</code> look for the store at
+  the <strong>canonical</strong> <code>&lt;experiment_root&gt;/res/run.zarr</code>. So the "always write a
+  store" generator wrapper must call
+  <code>bm.write_dataset_store(rig, frame_gt, DatasetSpec(dir=out_dir / "res", first_frame=first_frame, num_cams=len(rig.cals)))</code>
+  — i.e. pass <code>out_dir / "res"</code> as <code>spec.dir</code>, <strong>not</strong> <code>out_dir</code> — or the
+  store lands next to <code>res/</code>, at the legacy fallback path, instead of inside
+  it, and store discovery becomes order-dependent instead of guaranteed.</li>
+<li>Planned first concrete function, not yet written:
+  <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">write_experiment_with_store</span><span class="p">(</span><span class="n">rig</span><span class="p">,</span> <span class="n">frame_gt</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">first_frame</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="p">(</span><span class="mf">100.</span><span class="p">,</span><span class="mf">100.</span><span class="p">,</span><span class="mf">100.</span><span class="p">)):</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">yaml_path</span> <span class="o">=</span> <span class="n">bm</span><span class="o">.</span><span class="n">write_experiment</span><span class="p">(</span><span class="n">rig</span><span class="p">,</span> <span class="n">frame_gt</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">first_frame</span><span class="o">=</span><span class="n">first_frame</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="n">volume</span><span class="p">)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">bm</span><span class="o">.</span><span class="n">write_dataset_store</span><span class="p">(</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        <span class="n">rig</span><span class="p">,</span> <span class="n">frame_gt</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="n">bm</span><span class="o">.</span><span class="n">DatasetSpec</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"res"</span><span class="p">,</span> <span class="n">first_frame</span><span class="o">=</span><span class="n">first_frame</span><span class="p">,</span> <span class="n">num_cams</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">rig</span><span class="o">.</span><span class="n">cals</span><span class="p">)),</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="k">return</span> <span class="n">yaml_path</span>
+</span></code></pre></div>
+  This becomes the one call site every <code>stress_scenarios.py</code> generator uses
+  instead of <code>bm.write_experiment</code> directly (satisfies gotcha 1, "RunStore
+  always").</li>
+<li>On-sensor coverage check, not yet written — sketch:
+  <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">_assert_on_sensor_coverage</span><span class="p">(</span><span class="n">rig</span><span class="p">,</span> <span class="n">frame_gt</span><span class="p">,</span> <span class="n">min_frac</span><span class="o">=</span><span class="mf">0.8</span><span class="p">):</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="k">for</span> <span class="n">fr</span> <span class="ow">in</span> <span class="n">frame_gt</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="n">fr</span><span class="p">])</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        <span class="k">return</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">imx</span><span class="p">,</span> <span class="n">imy</span> <span class="o">=</span> <span class="n">rig</span><span class="o">.</span><span class="n">cpar</span><span class="o">.</span><span class="n">imx</span><span class="p">,</span> <span class="n">rig</span><span class="o">.</span><span class="n">cpar</span><span class="o">.</span><span class="n">imy</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="k">for</span> <span class="n">cam_px</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">project_to_pixels</span><span class="p">(</span><span class="n">rig</span><span class="p">,</span> <span class="n">pts</span><span class="p">):</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="n">frac</span> <span class="o">=</span> <span class="p">((</span><span class="n">cam_px</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">cam_px</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">imx</span><span class="p">)</span> <span class="o">&amp;</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                <span class="p">(</span><span class="n">cam_px</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">cam_px</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">imy</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        <span class="k">if</span> <span class="n">frac</span> <span class="o">&lt;</span> <span class="n">min_frac</span><span class="p">:</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"on-sensor coverage </span><span class="si">{</span><span class="n">frac</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> &lt; </span><span class="si">{</span><span class="n">min_frac</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span></code></pre></div>
+  Call right after <code>generate_scenario</code>, before <code>write_experiment_with_store</code>.</li>
+<li><strong>Next action tomorrow</strong>: write <code>scripts/stress_scenarios.py</code> starting with
+  <code>write_experiment_with_store</code> + <code>_assert_on_sensor_coverage</code> (above), then
+  <code>density_motion_scenario</code> (reuse the Trackability-Number formula from
+  <code>create_synthetic_turbulent.py:112-116</code>), verify end-to-end with one manual
+  run (<code>fast_3d</code> on a tiny generated scenario) before writing the other 3
+  generators or any pytest file — confirm the store-vs-ASCII behavior
+  difference empirically at that point, per §5's verification bullet, rather
+  than assuming it.</li>
+</ul>
 
 
 
