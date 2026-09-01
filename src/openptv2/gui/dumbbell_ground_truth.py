@@ -241,7 +241,9 @@ def generate_dumbbell_target_files(
 
             # Write files
             for cam in range(num_cams):
-                _write_two_targets(bases[cam], frame, xy_by_cam[cam], store=store, cam=cam)
+                _write_two_targets(
+                    bases[cam], frame, xy_by_cam[cam], store=store, cam=cam
+                )
 
             ok = True
             written += 1

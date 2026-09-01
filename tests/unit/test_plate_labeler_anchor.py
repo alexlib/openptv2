@@ -8,13 +8,14 @@ self-consistent -- a per-camera PnP fit of the rigid plate to those labels has a
 sub-pixel residual -- so it survives every single-view check and only surfaces
 much later as a cross-camera disagreement.
 """
+
 import numpy as np
 import pytest
 
 from openptv2.plate_labeler import _identify_L, label_coded_6x7
 
 NX, NY, PITCH = 6, 7, 120.0
-CORNER = (2, 3)          # grid index of the coded L corner on the Illmenau plate
+CORNER = (2, 3)  # grid index of the coded L corner on the Illmenau plate
 
 
 def synth_plate(*, drop_left_column=False, scale=7.0, origin=(400.0, 1300.0)):
@@ -24,8 +25,12 @@ def synth_plate(*, drop_left_column=False, scale=7.0, origin=(400.0, 1300.0)):
         for ix in range(NX):
             if drop_left_column and ix == 0:
                 continue
-            pts.append([origin[0] + ix * scale * PITCH / 10.0,
-                        origin[1] - iy * scale * PITCH / 10.0])
+            pts.append(
+                [
+                    origin[0] + ix * scale * PITCH / 10.0,
+                    origin[1] - iy * scale * PITCH / 10.0,
+                ]
+            )
             idx.append((ix, iy))
     pts = np.array(pts, float)
     idx = np.array(idx, int)
@@ -38,8 +43,9 @@ def synth_plate(*, drop_left_column=False, scale=7.0, origin=(400.0, 1300.0)):
 
 
 def label(pts, coded, **kw):
-    _, _, out = label_coded_6x7(pts, coded, pitch_x=PITCH, pitch_y=PITCH,
-                                nx=NX, ny=NY, y_sign=1, **kw)
+    _, _, out = label_coded_6x7(
+        pts, coded, pitch_x=PITCH, pitch_y=PITCH, nx=NX, ny=NY, y_sign=1, **kw
+    )
     return out
 
 
@@ -50,8 +56,9 @@ def test_full_grid_labels_the_same_either_way():
     assert len(got) == NX * NY
     np.testing.assert_array_equal(np.sort(got, axis=0), np.sort(idx, axis=0))
     # the fallback anchoring happens to be right here -- that is why the bug hid
-    np.testing.assert_array_equal(np.sort(label(pts, coded), axis=0),
-                                  np.sort(got, axis=0))
+    np.testing.assert_array_equal(
+        np.sort(label(pts, coded), axis=0), np.sort(got, axis=0)
+    )
 
 
 def test_missing_left_column_shifts_every_index_without_corner_index():

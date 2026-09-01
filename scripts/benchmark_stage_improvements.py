@@ -94,7 +94,12 @@ def _tracks_from_store(store, linkage_name: str, first: int, last: int) -> dict:
                 visited.add((cf, ci))
                 _p, _n, cxyz = frames[cf]
                 tracks.setdefault(tid, []).append(
-                    (cf - first, float(cxyz[ci, 0]), float(cxyz[ci, 1]), float(cxyz[ci, 2]))
+                    (
+                        cf - first,
+                        float(cxyz[ci, 0]),
+                        float(cxyz[ci, 1]),
+                        float(cxyz[ci, 2]),
+                    )
                 )
                 if cf not in frames:
                     break
@@ -105,13 +110,17 @@ def _tracks_from_store(store, linkage_name: str, first: int, last: int) -> dict:
     return tracks
 
 
-def _populate_store(store, scene_dir: Path, first: int, last: int, num_cams: int) -> None:
+def _populate_store(
+    store, scene_dir: Path, first: int, last: int, num_cams: int
+) -> None:
     for f in range(first, last + 1):
         rt = scene_dir / "res" / f"rt_is.{f}"
         if rt.exists():
             data = np.loadtxt(rt, skiprows=1, ndmin=2)
             if data.size:
-                store.write_correspondences(f, data[:, 1:4], data[:, 4:].astype(np.int32))
+                store.write_correspondences(
+                    f, data[:, 1:4], data[:, 4:].astype(np.int32)
+                )
         for c in range(num_cams):
             tp = scene_dir / "img" / f"cam{c + 1}.{f}_targets"
             if tp.exists():
@@ -120,9 +129,22 @@ def _populate_store(store, scene_dir: Path, first: int, last: int, num_cams: int
                     store.write_targets(c, f, tdata)
 
 
-def _run_condition(cpar, vpar, tpar, spar, cals, store, engine: str, linkage_name: str,
-                    corrective: bool) -> dict:
-    naming = {"corres": "res/rt_is", "linkage": f"res/{linkage_name}", "prio": "res/added"}
+def _run_condition(
+    cpar,
+    vpar,
+    tpar,
+    spar,
+    cals,
+    store,
+    engine: str,
+    linkage_name: str,
+    corrective: bool,
+) -> dict:
+    naming = {
+        "corres": "res/rt_is",
+        "linkage": f"res/{linkage_name}",
+        "prio": "res/added",
+    }
     tracker = Tracker(cpar, vpar, tpar, spar, cals, naming=naming, store=store)
     t0 = time.perf_counter()
     if engine == "priority_segment_3d":
@@ -131,15 +153,23 @@ def _run_condition(cpar, vpar, tpar, spar, cals, store, engine: str, linkage_nam
         tracker.full_forward()
         tracker.full_backward()
     if corrective:
-        run_corrective_pass(cpar, vpar, tpar, spar, cals, store, linkage_name=linkage_name, max_passes=2)
+        run_corrective_pass(
+            cpar, vpar, tpar, spar, cals, store, linkage_name=linkage_name, max_passes=2
+        )
     dt = time.perf_counter() - t0
 
     tracks = _tracks_from_store(store, linkage_name, spar.first, spar.last)
-    return {"tracks": tracks, "time_s": dt, "links": count_links(linkage_name, spar.first, spar.last, store=store)}
+    return {
+        "tracks": tracks,
+        "time_s": dt,
+        "links": count_links(linkage_name, spar.first, spar.last, store=store),
+    }
 
 
 def _score(tracks: dict, tt: dict, ghosts: dict) -> dict:
-    identity = bu.bm.compute_identity_metrics(tt, tracks, eps=1.0, ghost_pos_by_frame=ghosts)
+    identity = bu.bm.compute_identity_metrics(
+        tt, tracks, eps=1.0, ghost_pos_by_frame=ghosts
+    )
     link = calculate_tracking_metrics(tt, tracks, distance_tolerance=1.0)
     phys = compute_physics_metrics(tracks)
     return {**identity.to_dict(), **link.to_dict(), **phys.to_dict()}
@@ -156,10 +186,14 @@ def _print_row(label: str, m: dict, dt: float | None = None):
 
 
 def run_density(out_dir: Path, num_particles: int, num_frames: int, seed: int):
-    print(f"\n=== synthetic turbulent, {num_particles} particles/frame, {num_frames} frames ===")
+    print(
+        f"\n=== synthetic turbulent, {num_particles} particles/frame, {num_frames} frames ==="
+    )
     if out_dir.exists():
         shutil.rmtree(out_dir)
-    yaml_path = make_dataset(out_dir, num_particles=num_particles, num_frames=num_frames, seed=seed)
+    yaml_path = make_dataset(
+        out_dir, num_particles=num_particles, num_frames=num_frames, seed=seed
+    )
 
     frames_gt = bu.read_gt_frames(out_dir, first=10001, n_frames=num_frames)
     tt = bu.build_true_tracks(frames_gt, first=10001)
@@ -185,19 +219,45 @@ def run_density(out_dir: Path, num_particles: int, num_frames: int, seed: int):
             f"{'pmt':6s} {'trklen':7s} {'K_a':6s} | time"
         )
 
-        r = _run_condition(cpar, vpar, tpar_default, spar, cals, store, engine, f"base_{engine}", corrective=False)
+        r = _run_condition(
+            cpar,
+            vpar,
+            tpar_default,
+            spar,
+            cals,
+            store,
+            engine,
+            f"base_{engine}",
+            corrective=False,
+        )
         _print_row("BASELINE (default)", _score(r["tracks"], tt, ghosts), r["time_s"])
 
-        warm = run_warmup(cpar, vpar, tpar_default, spar, cals, store, frames=min(num_frames, 15), max_cycles=3)
-        tpar_tuned = TrackPar(
-            dvxmin=warm.track_par["dvxmin"], dvxmax=warm.track_par["dvxmax"],
-            dvymin=warm.track_par["dvymin"], dvymax=warm.track_par["dvymax"],
-            dvzmin=warm.track_par["dvzmin"], dvzmax=warm.track_par["dvzmax"],
-            dangle=warm.track_par["dangle"], dacc=warm.track_par["dacc"],
-            add=tpar_default.add, track_mode=tpar_default.track_mode,
+        warm = run_warmup(
+            cpar,
+            vpar,
+            tpar_default,
+            spar,
+            cals,
+            store,
+            frames=min(num_frames, 15),
+            max_cycles=3,
         )
-        print(f"  (warmup picked engine={warm.tracker}, agreement={warm.agreement_rate:.1%}, "
-              f"noise~{warm.noise_estimate_mm:.3f}mm, dvxmax {tpar_default.dvxmax:.1f}->{tpar_tuned.dvxmax:.2f})")
+        tpar_tuned = TrackPar(
+            dvxmin=warm.track_par["dvxmin"],
+            dvxmax=warm.track_par["dvxmax"],
+            dvymin=warm.track_par["dvymin"],
+            dvymax=warm.track_par["dvymax"],
+            dvzmin=warm.track_par["dvzmin"],
+            dvzmax=warm.track_par["dvzmax"],
+            dangle=warm.track_par["dangle"],
+            dacc=warm.track_par["dacc"],
+            add=tpar_default.add,
+            track_mode=tpar_default.track_mode,
+        )
+        print(
+            f"  (warmup picked engine={warm.tracker}, agreement={warm.agreement_rate:.1%}, "
+            f"noise~{warm.noise_estimate_mm:.3f}mm, dvxmax {tpar_default.dvxmax:.1f}->{tpar_tuned.dvxmax:.2f})"
+        )
         print(
             f"  PARAMS|{num_particles}|{engine}|default|"
             f"dvxmin={tpar_default.dvxmin:.3f}|dvxmax={tpar_default.dvxmax:.3f}|"
@@ -213,10 +273,30 @@ def run_density(out_dir: Path, num_particles: int, num_frames: int, seed: int):
             f"dangle={tpar_tuned.dangle:.3f}|dacc={tpar_tuned.dacc:.3f}"
         )
 
-        r = _run_condition(cpar, vpar, tpar_tuned, spar, cals, store, engine, f"warm_{engine}", corrective=False)
+        r = _run_condition(
+            cpar,
+            vpar,
+            tpar_tuned,
+            spar,
+            cals,
+            store,
+            engine,
+            f"warm_{engine}",
+            corrective=False,
+        )
         _print_row("WARMUP-tuned", _score(r["tracks"], tt, ghosts), r["time_s"])
 
-        r = _run_condition(cpar, vpar, tpar_tuned, spar, cals, store, engine, f"corr_{engine}", corrective=True)
+        r = _run_condition(
+            cpar,
+            vpar,
+            tpar_tuned,
+            spar,
+            cals,
+            store,
+            engine,
+            f"corr_{engine}",
+            corrective=True,
+        )
         _print_row("WARMUP + CORRECTIVE", _score(r["tracks"], tt, ghosts), r["time_s"])
 
 
@@ -248,15 +328,39 @@ def run_test_cavity():
     store = RunStore(str(tmp / "res" / "run.zarr"), mode="w")
     _populate_store(store, tmp, spar.first, spar.last, cpar.num_cams)
 
-    r_before = _run_condition(cpar, vpar, tpar, spar, cals, store, "priority_segment_3d", "cavity_base", corrective=False)
+    r_before = _run_condition(
+        cpar,
+        vpar,
+        tpar,
+        spar,
+        cals,
+        store,
+        "priority_segment_3d",
+        "cavity_base",
+        corrective=False,
+    )
     phys_before = compute_physics_metrics(r_before["tracks"])
-    print(f"  before corrective: links={r_before['links']} mean_track_len={phys_before.mean_track_length:.2f} "
-          f"K_a={phys_before.acceleration_kurtosis:.2f} (n={phys_before.n_acceleration_samples})")
+    print(
+        f"  before corrective: links={r_before['links']} mean_track_len={phys_before.mean_track_length:.2f} "
+        f"K_a={phys_before.acceleration_kurtosis:.2f} (n={phys_before.n_acceleration_samples})"
+    )
 
-    r_after = _run_condition(cpar, vpar, tpar, spar, cals, store, "priority_segment_3d", "cavity_corr", corrective=True)
+    r_after = _run_condition(
+        cpar,
+        vpar,
+        tpar,
+        spar,
+        cals,
+        store,
+        "priority_segment_3d",
+        "cavity_corr",
+        corrective=True,
+    )
     phys_after = compute_physics_metrics(r_after["tracks"])
-    print(f"  after corrective:  links={r_after['links']} mean_track_len={phys_after.mean_track_length:.2f} "
-          f"K_a={phys_after.acceleration_kurtosis:.2f} (n={phys_after.n_acceleration_samples})")
+    print(
+        f"  after corrective:  links={r_after['links']} mean_track_len={phys_after.mean_track_length:.2f} "
+        f"K_a={phys_after.acceleration_kurtosis:.2f} (n={phys_after.n_acceleration_samples})"
+    )
 
 
 def main():
@@ -271,9 +375,11 @@ def main():
     finally:
         os.chdir(original_cwd)
 
-    print("\nproPTV 500_25/500_30 (C:/Users/alex/Github/proPTV/data/): present locally but in "
-          "proPTV's own native format, not openptv2's rt_is/parameters.yaml convention -- no "
-          "converter exists in this repo yet. Not run; flagged as follow-up, not guessed at.")
+    print(
+        "\nproPTV 500_25/500_30 (C:/Users/alex/Github/proPTV/data/): present locally but in "
+        "proPTV's own native format, not openptv2's rt_is/parameters.yaml convention -- no "
+        "converter exists in this repo yet. Not run; flagged as follow-up, not guessed at."
+    )
 
 
 if __name__ == "__main__":

@@ -34,20 +34,30 @@ MODES: tuple[str, ...] = ("fixed", "stretch", "range")
 DEFAULT_PERCENTILES = (1.0, 99.5)
 
 
-def describe(mode: str, lo: float | None = None, hi: float | None = None,
-             percentiles: tuple[float, float] = DEFAULT_PERCENTILES) -> str:
+def describe(
+    mode: str,
+    lo: float | None = None,
+    hi: float | None = None,
+    percentiles: tuple[float, float] = DEFAULT_PERCENTILES,
+) -> str:
     """One line saying what a threshold on the result actually means."""
     if mode == "fixed":
-        return ("fixed full-range map (dtype max -> 255): a grey value always "
-                "maps to the same 8-bit value, so thresholds are comparable "
-                "across frames and cameras")
+        return (
+            "fixed full-range map (dtype max -> 255): a grey value always "
+            "maps to the same 8-bit value, so thresholds are comparable "
+            "across frames and cameras"
+        )
     if mode == "stretch":
-        return (f"per-image percentile stretch ({percentiles[0]}-{percentiles[1]} "
-                "-> 0-255): adapts to drifting illumination, so a threshold "
-                "means something slightly different in every frame")
+        return (
+            f"per-image percentile stretch ({percentiles[0]}-{percentiles[1]} "
+            "-> 0-255): adapts to drifting illumination, so a threshold "
+            "means something slightly different in every frame"
+        )
     if mode == "range":
-        return (f"explicit range [{lo}, {hi}] -> 0-255: absolute and tuned to "
-                "the sensor's real range")
+        return (
+            f"explicit range [{lo}, {hi}] -> 0-255: absolute and tuned to "
+            "the sensor's real range"
+        )
     raise ValueError(f"unknown grey-scaling mode {mode!r}; expected one of {MODES}")
 
 
@@ -133,7 +143,8 @@ def from_parameters(par: dict | None) -> dict:
     if mode not in MODES:
         raise ValueError(
             f"ptv.grey_scaling is {mode!r}; expected one of {MODES}. "
-            f"See docs/plans/2026-08-31-16bit-image-handling.md")
+            f"See docs/plans/2026-08-31-16bit-image-handling.md"
+        )
     rng = ptv.get("grey_range")
     lo, hi = (float(rng[0]), float(rng[1])) if rng else (None, None)
     if mode == "range" and (lo is None or hi is None):
@@ -141,12 +152,16 @@ def from_parameters(par: dict | None) -> dict:
     return {"mode": mode, "lo": lo, "hi": hi}
 
 
-def suggest_range(img, percentiles: tuple[float, float] = (0.5, 99.9)) -> tuple[int, int]:
+def suggest_range(
+    img, percentiles: tuple[float, float] = (0.5, 99.9)
+) -> tuple[int, int]:
     """A sensible ``grey_range`` for a dataset, from one representative image.
 
     Use it to turn an adaptive stretch into a fixed, reproducible mapping once
     the sensor's real range is known.
     """
     arr = np.asarray(img)
-    return (int(np.percentile(arr, percentiles[0])),
-            int(np.percentile(arr, percentiles[1])))
+    return (
+        int(np.percentile(arr, percentiles[0])),
+        int(np.percentile(arr, percentiles[1])),
+    )

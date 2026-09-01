@@ -129,7 +129,9 @@ def link_step(prev_of, k: int, i: int, j: int, max_step: int = MAX_LINK_STEP) ->
     return 0
 
 
-def back_link_step(next_of, k: int, j: int, i: int, max_step: int = MAX_LINK_STEP) -> int:
+def back_link_step(
+    next_of, k: int, j: int, i: int, max_step: int = MAX_LINK_STEP
+) -> int:
     """Mirror of :func:`link_step` for the backward link ``prev_k[j] == i``:
     smallest ``s`` with ``next[k-s][i] == j``, else 0."""
     for s in range(1, max_step + 1):

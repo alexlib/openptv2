@@ -153,7 +153,9 @@ def get_source_info(name: str) -> CalibrationSourceInfo:
         return CALIBRATION_SOURCE_REGISTRY[name]
     except KeyError:
         available = ", ".join(sorted(CALIBRATION_SOURCE_REGISTRY))
-        raise KeyError(f"Unknown calibration source {name!r}. Available: {available}") from None
+        raise KeyError(
+            f"Unknown calibration source {name!r}. Available: {available}"
+        ) from None
 
 
 def list_sources() -> list[str]:

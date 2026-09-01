@@ -34,17 +34,40 @@ DATUM_IX, DATUM_IY = 2, 3
 
 def parse_args():
     ap = argparse.ArgumentParser(description="Multi-camera plate calibration")
-    ap.add_argument("--base", type=str, default=r"C:\Users\alex\Downloads\Illmenau", help="Kalibrierung_1..4 parent folder")
-    ap.add_argument("--out", type=str, default=r"C:\Users\alex\Downloads\Illmenau\openptv_illmenau_4cam", help="OpenPTV2 dataset out folder")
-    ap.add_argument("--frame", type=str, default="00000000",
-                    help="Reference frame prefix -- its plate pose defines the world")
-    ap.add_argument("--all-frames", action="store_true",
-                    help="Fit intrinsics over every frame of each folder (multi-plane, "
-                         "focal free) instead of the single reference frame with cc pinned")
-    ap.add_argument("--min-dots", type=int, default=20,
-                    help="Drop a frame from the multi-plane fit below this many labelled dots")
+    ap.add_argument(
+        "--base",
+        type=str,
+        default=r"C:\Users\alex\Downloads\Illmenau",
+        help="Kalibrierung_1..4 parent folder",
+    )
+    ap.add_argument(
+        "--out",
+        type=str,
+        default=r"C:\Users\alex\Downloads\Illmenau\openptv_illmenau_4cam",
+        help="OpenPTV2 dataset out folder",
+    )
+    ap.add_argument(
+        "--frame",
+        type=str,
+        default="00000000",
+        help="Reference frame prefix -- its plate pose defines the world",
+    )
+    ap.add_argument(
+        "--all-frames",
+        action="store_true",
+        help="Fit intrinsics over every frame of each folder (multi-plane, "
+        "focal free) instead of the single reference frame with cc pinned",
+    )
+    ap.add_argument(
+        "--min-dots",
+        type=int,
+        default=20,
+        help="Drop a frame from the multi-plane fit below this many labelled dots",
+    )
     ap.add_argument("--pitch", type=float, default=120.0, help="Grid dot pitch in mm")
-    ap.add_argument("--focal-mm", type=float, default=9.44, help="Nominal lens focal length in mm")
+    ap.add_argument(
+        "--focal-mm", type=float, default=9.44, help="Nominal lens focal length in mm"
+    )
     ap.add_argument("--update-rig", action="store_true", help="Write rig.yaml")
     return ap.parse_args()
 
@@ -64,10 +87,18 @@ def main():
     yaml_path = out / "parameters_Run1.yaml"
     tpar = plate_tpar_from_yaml(yaml_path)
     cpar = ControlPar(
-        num_cams=4, imx=2560, imy=2048, pix_x=0.005, pix_y=0.005,
+        num_cams=4,
+        imx=2560,
+        imy=2048,
+        pix_x=0.005,
+        pix_y=0.005,
         mm=MmNp(n1=1.0, n2=[1.0], d=[0.0], n3=1.0),
-        chfield=0, tiff_flag=1, hp_flag=1, allCam_flag=0,
-        img_base_name=[""] * 4, cal_img_base_name=[""] * 4,
+        chfield=0,
+        tiff_flag=1,
+        hp_flag=1,
+        allCam_flag=0,
+        img_base_name=[""] * 4,
+        cal_img_base_name=[""] * 4,
     )
 
     print(f"=== Multi-Camera Plate Calibration (Frame {args.frame}) ===")
@@ -75,16 +106,22 @@ def main():
     ref_pts_all = []
 
     for ci, fld in enumerate(folders):
-        tifs = list(fld.glob(f"{args.frame}*.tiff")) + list(fld.glob(f"{args.frame}*.tif"))
+        tifs = list(fld.glob(f"{args.frame}*.tiff")) + list(
+            fld.glob(f"{args.frame}*.tif")
+        )
         if not tifs:
             raise FileNotFoundError(f"No image matching '{args.frame}*' in {fld}")
         img_path = tifs[0]
         raw = np.array(Image.open(img_path))
         res = detect_plate_targets(raw, tpar, cpar, cam=ci, coded_thr=30.0)
         img_pts, ref_pts, idx = label_plate(
-            res.centroids, res.coded_mask,
-            pitch_x=pitch_val, pitch_y=pitch_val,
-            nx=6, ny=7, y_sign=1,
+            res.centroids,
+            res.coded_mask,
+            pitch_x=pitch_val,
+            pitch_y=pitch_val,
+            nx=6,
+            ny=7,
+            y_sign=1,
         )
         # World origin (0,0,0) is the coded L-corner dot of frame 00000000:
         # 3rd column from the left, 4th row from top and from bottom, i.e.
@@ -95,10 +132,13 @@ def main():
         ref_pts[:, 1] -= DATUM_IY * pitch_val
         img_pts_all.append(img_pts)
         ref_pts_all.append(ref_pts)
-        print(f"Cam {ci+1}: Detected {len(res.targets)} dots | Labeled {len(img_pts)}/42 dots")
+        print(
+            f"Cam {ci + 1}: Detected {len(res.targets)} dots | Labeled {len(img_pts)}/42 dots"
+        )
 
     try:
         import cv2
+
         has_cv2 = True
     except ImportError:
         has_cv2 = False
@@ -108,27 +148,43 @@ def main():
     out_cal.mkdir(parents=True, exist_ok=True)
 
     f_px = focal_mm / 0.005
-    K_init = np.array([[f_px, 0, 1280.0], [0, f_px, 1024.0], [0, 0, 1.0]], dtype=np.float32)
+    K_init = np.array(
+        [[f_px, 0, 1280.0], [0, f_px, 1024.0], [0, 0, 1.0]], dtype=np.float32
+    )
 
     for cam in range(4):
         if has_cv2:
             obj = [ref_pts_all[cam].astype(np.float32)]
             img = [img_pts_all[cam].astype(np.float32)]
             ret, K, dist, rvecs, tvecs = cv2.calibrateCamera(
-                obj, img, (2560, 2048), K_init.copy(), None,
-                flags=cv2.CALIB_USE_INTRINSIC_GUESS | cv2.CALIB_FIX_PRINCIPAL_POINT | cv2.CALIB_FIX_ASPECT_RATIO | cv2.CALIB_FIX_FOCAL_LENGTH
+                obj,
+                img,
+                (2560, 2048),
+                K_init.copy(),
+                None,
+                flags=cv2.CALIB_USE_INTRINSIC_GUESS
+                | cv2.CALIB_FIX_PRINCIPAL_POINT
+                | cv2.CALIB_FIX_ASPECT_RATIO
+                | cv2.CALIB_FIX_FOCAL_LENGTH,
             )
             cal, _ = calibration_from_opencv(
-                K, dist, rvecs[0], tvecs[0],
-                imx=2560, imy=2048, pix_x=0.005, pixel_origin="corner",
+                K,
+                dist,
+                rvecs[0],
+                tvecs[0],
+                imx=2560,
+                imy=2048,
+                pix_x=0.005,
+                pixel_origin="corner",
             )
         else:
             from openptv2.calibration_seed import seed_from_dlt
+
             cal = seed_from_dlt(ref_pts_all[cam], img_pts_all[cam], cpar)
 
         cals.append(cal)
-        ori_path = out_cal / f"cam{cam+1}.tif.ori"
-        addpar_path = out_cal / f"cam{cam+1}.tif.addpar"
+        ori_path = out_cal / f"cam{cam + 1}.tif.ori"
+        addpar_path = out_cal / f"cam{cam + 1}.tif.addpar"
         cal.to_file(str(ori_path), str(addpar_path))
 
     print("\n=== Calibrated Camera Orientations ===")
@@ -141,7 +197,9 @@ def main():
             det_px, det_py = img_pts_all[ci][k]
             err = np.sqrt((px - det_px) ** 2 + (py - det_py) ** 2)
             errors.append(err)
-        print(f"Cam {ci+1}: Pos=({cal.ext_par.x0:7.1f}, {cal.ext_par.y0:7.1f}, {cal.ext_par.z0:7.1f}) mm | cc={cal.int_par.cc:.2f} mm | Reproj RMS={np.mean(errors):.3f} px (max {np.max(errors):.3f} px)")
+        print(
+            f"Cam {ci + 1}: Pos=({cal.ext_par.x0:7.1f}, {cal.ext_par.y0:7.1f}, {cal.ext_par.z0:7.1f}) mm | cc={cal.int_par.cc:.2f} mm | Reproj RMS={np.mean(errors):.3f} px (max {np.max(errors):.3f} px)"
+        )
 
     # Write rig.yaml
     rig_path = out / "rig.yaml"
@@ -150,12 +208,20 @@ def main():
         "cameras": [
             {
                 "id": ci + 1,
-                "position": [float(cal.ext_par.x0), float(cal.ext_par.y0), float(cal.ext_par.z0)],
+                "position": [
+                    float(cal.ext_par.x0),
+                    float(cal.ext_par.y0),
+                    float(cal.ext_par.z0),
+                ],
                 "focal_mm": float(cal.int_par.cc),
-                "orientation_angles_rad": [float(cal.ext_par.omega), float(cal.ext_par.phi), float(cal.ext_par.kappa)],
+                "orientation_angles_rad": [
+                    float(cal.ext_par.omega),
+                    float(cal.ext_par.phi),
+                    float(cal.ext_par.kappa),
+                ],
             }
             for ci, cal in enumerate(cals)
-        ]
+        ],
     }
     rig_path.write_text(yaml.safe_dump(rig, sort_keys=False))
     print(f"\nWrote calibration files to {out_cal}")

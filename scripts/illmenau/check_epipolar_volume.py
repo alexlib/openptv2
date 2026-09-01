@@ -32,6 +32,7 @@ can change the drawn segment in three different ways:
 This script measures all three for the delivered calibration, and prints the
 largest safe Zmax for every ordered camera pair.
 """
+
 import os
 import sys
 
@@ -52,8 +53,10 @@ cpar = CFG.control_par()
 cals = CFG.load_calibrations()
 
 d = np.load(out / "cal" / "labelled_all_frames.npz")
-det = [dict(zip(d[f"c{ci}_{REF}_ids"].tolist(), d[f"c{ci}_{REF}_px"].tolist()))
-       for ci in range(CFG.NCAM)]
+det = [
+    dict(zip(d[f"c{ci}_{REF}_ids"].tolist(), d[f"c{ci}_{REF}_px"].tolist()))
+    for ci in range(CFG.NCAM)
+]
 
 
 def sight_ray(ci, pix):
@@ -61,11 +64,25 @@ def sight_ray(ci, pix):
     ca = cals[ci]
     a = ca.added_par
     mx, my = pixel_to_metric(pix[0], pix[1], cpar)
-    xf, yf = dist_to_flat(mx, my, ca.int_par.xh, ca.int_par.yh,
-                          a.k1, a.k2, a.k3, a.p1, a.p2, a.scx, a.she)
-    pos, v = ray_tracing(xf, yf, ca.ext_par.dm, ca.ext_par.x0, ca.ext_par.y0,
-                         ca.ext_par.z0, ca.int_par.cc, ca.glass_par.vec_x,
-                         ca.glass_par.vec_y, ca.glass_par.vec_z, 1.0, 1.0, 1.0, 0.0)
+    xf, yf = dist_to_flat(
+        mx, my, ca.int_par.xh, ca.int_par.yh, a.k1, a.k2, a.k3, a.p1, a.p2, a.scx, a.she
+    )
+    pos, v = ray_tracing(
+        xf,
+        yf,
+        ca.ext_par.dm,
+        ca.ext_par.x0,
+        ca.ext_par.y0,
+        ca.ext_par.z0,
+        ca.int_par.cc,
+        ca.glass_par.vec_x,
+        ca.glass_par.vec_y,
+        ca.glass_par.vec_z,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+    )
     return np.asarray(pos, float), np.asarray(v, float)
 
 
@@ -81,7 +98,7 @@ for a in range(CFG.NCAM):
             continue
         cb = cals[b]
         Cb = np.array([cb.ext_par.x0, cb.ext_par.y0, cb.ext_par.z0])
-        axis = -np.asarray(cb.ext_par.dm)[:, 2]        # camera views along -dm[:,2]
+        axis = -np.asarray(cb.ext_par.dm)[:, 2]  # camera views along -dm[:,2]
         zs = []
         for pid, pix in det[a].items():
             pos, v = sight_ray(a, pix)
@@ -90,10 +107,14 @@ for a in range(CFG.NCAM):
                 continue
             zs.append(pos[2] - ((pos - Cb) @ axis) / k)
         horizons[(a, b)] = float(np.min(zs))
-        print(f"   {a+1}->{b+1}          {np.min(zs):8.0f}   (median {np.median(zs):8.0f})")
+        print(
+            f"   {a + 1}->{b + 1}          {np.min(zs):8.0f}   (median {np.median(zs):8.0f})"
+        )
 zsafe = min(horizons.values())
 print(f"\n   smallest horizon over all 12 ordered pairs: Z = {zsafe:.0f} mm")
-print(f"   => Zmax_lay must stay below it.  A 20 % margin gives Zmax <= {0.8*zsafe:.0f} mm.")
+print(
+    f"   => Zmax_lay must stay below it.  A 20 % margin gives Zmax <= {0.8 * zsafe:.0f} mm."
+)
 print("   The delivered parameters_Run1.yaml uses Zmax_lay = +1500 mm, which is safe;")
 print("   the +4000 box that produced the original 'epipolar lines are wrong' report")
 print("   was PAST the horizon for several pairs.")
@@ -103,10 +124,21 @@ print("\n\n2) TRUNCATION vs CHORD ERROR -- for every dot of frame 00000000 and e
 print("   ordered pair, compare the drawn chord against the densely sampled curve.")
 print("   With a pure pinhole (.addpar all zero) the two must agree exactly, so the")
 print("   box can only truncate the segment, never move it.\n")
-print("   Z box      segment length [px]   miss of the chord [px]   chord-vs-curve [px]")
+print(
+    "   Z box      segment length [px]   miss of the chord [px]   chord-vs-curve [px]"
+)
 for zb in (500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0):
-    vpar = VolumePar(X_lay=[-zb, zb], Zmin_lay=[-zb, -zb], Zmax_lay=[zb, zb],
-                     cn=0.0, cnx=0.0, cny=0.0, csumg=0.0, corrmin=0.0, eps0=0.0)
+    vpar = VolumePar(
+        X_lay=[-zb, zb],
+        Zmin_lay=[-zb, -zb],
+        Zmax_lay=[zb, zb],
+        cn=0.0,
+        cnx=0.0,
+        cny=0.0,
+        csumg=0.0,
+        corrmin=0.0,
+        eps0=0.0,
+    )
     seg, miss, bend = [], [], []
     for a in range(CFG.NCAM):
         for b in range(CFG.NCAM):
@@ -118,8 +150,19 @@ for zb in (500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0):
                 mx, my = pixel_to_metric(pix[0], pix[1], cpar)
                 ca = cals[a]
                 aa = ca.added_par
-                xf, yf = dist_to_flat(mx, my, ca.int_par.xh, ca.int_par.yh, aa.k1, aa.k2,
-                                      aa.k3, aa.p1, aa.p2, aa.scx, aa.she)
+                xf, yf = dist_to_flat(
+                    mx,
+                    my,
+                    ca.int_par.xh,
+                    ca.int_par.yh,
+                    aa.k1,
+                    aa.k2,
+                    aa.k3,
+                    aa.p1,
+                    aa.p2,
+                    aa.scx,
+                    aa.she,
+                )
                 x1, y1, x2, y2 = epi_mm(xf, yf, ca, cals[b], cpar.mm, vpar)
                 p1 = np.array(metric_to_pixel(x1, y1, cpar))
                 p2 = np.array(metric_to_pixel(x2, y2, cpar))
@@ -133,12 +176,15 @@ for zb in (500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0):
                 pos, v = sight_ray(a, pix)
                 Zs = np.linspace(-zb, zb, 41)
                 P = pos + ((Zs - pos[2]) / v[2])[:, None] * v
-                cur = np.array([metric_to_pixel(*img_coord(p, cals[b], cpar.mm), cpar)
-                                for p in P])
+                cur = np.array(
+                    [metric_to_pixel(*img_coord(p, cals[b], cpar.mm), cpar) for p in P]
+                )
                 n = np.array([-e[1], e[0]]) / np.linalg.norm(e)
                 bend.append(float(np.max(np.abs((cur - p1) @ n))))
-    print(f"   +-{zb:6.0f}   {np.median(seg):10.0f}          {np.median(miss):10.2f}"
-          f"          {np.median(bend):10.3f}")
+    print(
+        f"   +-{zb:6.0f}   {np.median(seg):10.0f}          {np.median(miss):10.2f}"
+        f"          {np.median(bend):10.3f}"
+    )
 
 print("\n   segment length grows with the box (truncation), the miss does not change")
 print("   (the line is the same line), and chord-vs-curve stays at numerical zero")

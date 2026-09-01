@@ -120,7 +120,9 @@ def calibration_from_opencv(
     rvec_a = np.asarray(rvec, float).ravel()
     tvec_a = np.asarray(tvec, float).ravel()
     if rvec_a.size != 3 or tvec_a.size != 3:
-        raise ValueError(f"rvec/tvec must be length-3, got {rvec_a.shape} / {tvec_a.shape}")
+        raise ValueError(
+            f"rvec/tvec must be length-3, got {rvec_a.shape} / {tvec_a.shape}"
+        )
 
     # Verified block (hub 108)
     S = np.diag([1.0, -1.0, -1.0])
@@ -146,9 +148,9 @@ def calibration_from_opencv(
     yh = (imy / 2.0 - cy) * pix_y_f  # sign flip: openPTV y UP
 
     # Distortion scaling: OpenCV r is normalised, openPTV r is mm
-    k1 = k1_cv / (cc ** 2) if cc != 0 else 0.0
-    k2 = k2_cv / (cc ** 4) if cc != 0 else 0.0
-    k3 = k3_cv / (cc ** 6) if cc != 0 else 0.0
+    k1 = k1_cv / (cc**2) if cc != 0 else 0.0
+    k2 = k2_cv / (cc**4) if cc != 0 else 0.0
+    k3 = k3_cv / (cc**6) if cc != 0 else 0.0
     # p1/p2 swap + sign (hub 124)
     p1 = p2_cv / cc if cc != 0 else 0.0
     p2 = -p1_cv / cc if cc != 0 else 0.0
@@ -164,12 +166,27 @@ def calibration_from_opencv(
     if n < 1e-12:
         raise ValueError("glass_vec must be non-zero")
     gv = gv / n
-    glass = Glass(vec_x=float(gv[0]), vec_y=float(gv[1]), vec_z=float(gv[2]),
-                  n1=float(n1), n2=float(n2), n3=float(n3), d=float(d))
-    ap = AddedPar(k1=float(k1), k2=float(k2), k3=float(k3),
-                  p1=float(p1), p2=float(p2), scx=float(scx), she=float(she))
-    cal = Calibration(ext_par=ext, int_par=int_par, glass_par=glass,
-                      added_par=ap, mmlut=MmLut())
+    glass = Glass(
+        vec_x=float(gv[0]),
+        vec_y=float(gv[1]),
+        vec_z=float(gv[2]),
+        n1=float(n1),
+        n2=float(n2),
+        n3=float(n3),
+        d=float(d),
+    )
+    ap = AddedPar(
+        k1=float(k1),
+        k2=float(k2),
+        k3=float(k3),
+        p1=float(p1),
+        p2=float(p2),
+        scx=float(scx),
+        she=float(she),
+    )
+    cal = Calibration(
+        ext_par=ext, int_par=int_par, glass_par=glass, added_par=ap, mmlut=MmLut()
+    )
     return cal, float(pix_y_f)
 
 
@@ -198,9 +215,9 @@ def opencv_from_calibration(
     cy = imy / 2.0 - yh / pix_y_f
     K = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1.0]], dtype=float)
     # dist
-    k1_cv = float(cal.added_par.k1) * (cc ** 2)
-    k2_cv = float(cal.added_par.k2) * (cc ** 4)
-    k3_cv = float(cal.added_par.k3) * (cc ** 6)
+    k1_cv = float(cal.added_par.k1) * (cc**2)
+    k2_cv = float(cal.added_par.k2) * (cc**4)
+    k3_cv = float(cal.added_par.k3) * (cc**6)
     # inverse of p swap: p1 = p2_cv/cc, p2 = -p1_cv/cc  →  p2_cv = p1*cc, p1_cv = -p2*cc
     p1_cv = -float(cal.added_par.p2) * cc
     p2_cv = float(cal.added_par.p1) * cc
@@ -261,10 +278,14 @@ def read_xyXYZ(path: str | Path, *, delimiter: str | None = None):
                 continue
             parts = s.replace(",", " ").split()
             if len(parts) < 5:
-                raise ValueError(f"{p}:{lineno}: need ≥5 columns x y X Y Z, got {len(parts)}: {line.strip()!r}")
+                raise ValueError(
+                    f"{p}:{lineno}: need ≥5 columns x y X Y Z, got {len(parts)}: {line.strip()!r}"
+                )
             break
     # If we got here with no 5-col success, raise with context
-    raise ValueError(f"{p}: could not parse as 5-column x y X Y Z (tried whitespace and comma)")
+    raise ValueError(
+        f"{p}: could not parse as 5-column x y X Y Z (tried whitespace and comma)"
+    )
 
 
 def read_opencv_flat15(path: str | Path) -> dict:
@@ -319,7 +340,9 @@ def similarity_from_correspondences(
     src_a = np.asarray(src, float)
     dst_a = np.asarray(dst, float)
     if src_a.shape != dst_a.shape or src_a.shape[1] != 3:
-        raise ValueError(f"src/dst must be (n,3) same shape, got {src_a.shape} / {dst_a.shape}")
+        raise ValueError(
+            f"src/dst must be (n,3) same shape, got {src_a.shape} / {dst_a.shape}"
+        )
     if src_a.shape[0] < 3:
         raise ValueError(f"need ≥3 correspondences, got {src_a.shape[0]}")
     cs = src_a.mean(axis=0)

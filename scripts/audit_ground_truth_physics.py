@@ -70,6 +70,8 @@ for src, label, first, n in [
     print(f"  velocity component rms   {v.std():.3f} mm/frame")
     print(f"  accel    component rms   {a.std():.3f} mm/frame^2")
     print(f"  velocity kurtosis        {kurt(v):.2f}   (Gaussian = 3)")
-    print(f"  ACCEL    kurtosis K_a    {kurt(a):.2f}   "
-          f"(Gaussian = 3; real turbulence at high Re ~ 10-60)")
+    print(
+        f"  ACCEL    kurtosis K_a    {kurt(a):.2f}   "
+        f"(Gaussian = 3; real turbulence at high Re ~ 10-60)"
+    )
     print(f"  vel autocorr lag 1..5    {' '.join(f'{r:+.3f}' for r in rho)}")

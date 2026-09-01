@@ -58,14 +58,24 @@ def test_init_mmlut_data_1layer_parallel_parity():
     # Serial reference
     ref_data = np.empty(nr * nz, dtype=np.float64)
     _init_mmlut_slice_1layer(
-        ref_data, 0, nr, nz, rw, cal_t_x0, cal_t_y0, cal_t_z0, Zmin_t,
-        mm_n1, mm_n2_0, mm_n3, mm_d0
+        ref_data,
+        0,
+        nr,
+        nz,
+        rw,
+        cal_t_x0,
+        cal_t_y0,
+        cal_t_z0,
+        Zmin_t,
+        mm_n1,
+        mm_n2_0,
+        mm_n3,
+        mm_d0,
     )
 
     # Parallel evaluation
     par_data = init_mmlut_data_fast(
-        nr, nz, rw, cal_t_x0, cal_t_y0, cal_t_z0, Zmin_t,
-        mm_n1, mm_n2_0, mm_n3, mm_d0
+        nr, nz, rw, cal_t_x0, cal_t_y0, cal_t_z0, Zmin_t, mm_n1, mm_n2_0, mm_n3, mm_d0
     )
 
     assert np.allclose(par_data, ref_data, atol=1e-12)
@@ -90,14 +100,25 @@ def test_init_mmlut_data_nlay_parallel_parity():
     # Serial reference
     ref_data = np.empty(nr * nz, dtype=np.float64)
     _init_mmlut_slice_nlay(
-        ref_data, 0, nr, nz, rw, cal_t_x0, cal_t_y0, cal_t_z0, Zmin_t,
-        mm_n1, mm_n3, n2, d, nlay
+        ref_data,
+        0,
+        nr,
+        nz,
+        rw,
+        cal_t_x0,
+        cal_t_y0,
+        cal_t_z0,
+        Zmin_t,
+        mm_n1,
+        mm_n3,
+        n2,
+        d,
+        nlay,
     )
 
     # Parallel evaluation
     par_data = init_mmlut_data_nlay_fast(
-        nr, nz, rw, cal_t_x0, cal_t_y0, cal_t_z0, Zmin_t,
-        mm_n1, mm_n3, n2, d, nlay
+        nr, nz, rw, cal_t_x0, cal_t_y0, cal_t_z0, Zmin_t, mm_n1, mm_n3, n2, d, nlay
     )
 
     assert np.allclose(par_data, ref_data, atol=1e-12)
@@ -168,7 +189,9 @@ def test_get_mmf_from_mmlut_batch_parity(cavity_params):
     cal = cals[0]
     # Generate 1,000 random test particles inside and around measurement volume
     np.random.seed(42)
-    positions = np.random.uniform(low=[-50.0, -50.0, -50.0], high=[50.0, 50.0, 50.0], size=(1000, 3))
+    positions = np.random.uniform(
+        low=[-50.0, -50.0, -50.0], high=[50.0, 50.0, 50.0], size=(1000, 3)
+    )
 
     # Scalar reference
     scalar_factors = np.empty(len(positions), dtype=np.float64)
@@ -194,5 +217,3 @@ def test_get_mmf_from_mmlut_batch_parity(cavity_params):
 
     assert np.allclose(batch_factors, scalar_factors, atol=1e-12)
     assert np.array_equal(batch_factors, scalar_factors)
-
-

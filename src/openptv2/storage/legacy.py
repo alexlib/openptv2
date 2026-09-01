@@ -106,7 +106,9 @@ def import_run(
     img_dir = root / "img"
     res_dir = root / "res"
     if not img_dir.is_dir() and not res_dir.is_dir():
-        raise RunStoreError(f"{root} does not look like a PTV run (missing img/ and res/)")
+        raise RunStoreError(
+            f"{root} does not look like a PTV run (missing img/ and res/)"
+        )
 
     cams = _discover_cams(img_dir) if img_dir.is_dir() else []
     frames_rt = _discover_frames(res_dir) if res_dir.is_dir() else []
@@ -146,7 +148,9 @@ def import_run(
         ptv_is = _load_linkage(ptv_is_path)
         if ptv_is is not None:
             p_prev, p_next, p_pos, p_prio = ptv_is
-            store.write_linkage(frame, p_prev, p_next, p_pos, name="ptv_is", prio=p_prio)
+            store.write_linkage(
+                frame, p_prev, p_next, p_pos, name="ptv_is", prio=p_prio
+            )
             files_to_remove.append(ptv_is_path)
 
         added_path = res_dir / f"added.{frame}"
@@ -157,7 +161,9 @@ def import_run(
             files_to_remove.append(added_path)
 
         n_targets = np.array(targets_per_cam, dtype=np.int32)
-        clique_size = (cam_ids != -1).sum(axis=1) if cam_ids.size else np.zeros(0, dtype=np.int32)
+        clique_size = (
+            (cam_ids != -1).sum(axis=1) if cam_ids.size else np.zeros(0, dtype=np.int32)
+        )
         n_quads = int((clique_size == 4).sum())
         n_trips = int((clique_size == 3).sum())
         n_pairs = int((clique_size == 2).sum())
@@ -221,7 +227,9 @@ def _write_linkage_ascii(
         f.write(f"{len(pos)}\n")
         if prio is None:
             for p_i, n_i, p in zip(prev, nxt, pos):
-                f.write(f"{int(p_i):4d} {int(n_i):4d} {p[0]:10.3f} {p[1]:10.3f} {p[2]:10.3f}\n")
+                f.write(
+                    f"{int(p_i):4d} {int(n_i):4d} {p[0]:10.3f} {p[1]:10.3f} {p[2]:10.3f}\n"
+                )
         else:
             for p_i, n_i, p, pr in zip(prev, nxt, pos, prio):
                 f.write(
@@ -246,7 +254,10 @@ def export_run(store: RunStore, experiment_root: Union[str, Path]) -> None:
         for cam in cams:
             targets = store.read_targets(cam, frame)
             arr = np.array(
-                [[t.pnr(), t.x(), t.y(), t.n, t.nx, t.ny, t.sumg, t.tnr()] for t in targets],
+                [
+                    [t.pnr(), t.x(), t.y(), t.n, t.nx, t.ny, t.sumg, t.tnr()]
+                    for t in targets
+                ],
                 dtype=np.float64,
             )
             _write_targets_ascii(img_dir / f"cam{cam + 1}.{frame}_targets", arr)
@@ -267,11 +278,15 @@ def export_run(store: RunStore, experiment_root: Union[str, Path]) -> None:
             if store.has_linkage(frame, "added"):
                 a_prev, a_nxt, a_pos = store.read_linkage(frame, "added")
                 a_prio = store.read_prio(frame, "added")
-                _write_linkage_ascii(res_dir / f"added.{frame}", a_prev, a_nxt, a_pos, a_prio)
+                _write_linkage_ascii(
+                    res_dir / f"added.{frame}", a_prev, a_nxt, a_pos, a_prio
+                )
             else:
                 prio = store.read_prio(frame, "ptv_is")
                 if prio is not None:
-                    _write_linkage_ascii(res_dir / f"added.{frame}", prev, nxt, pos, prio)
+                    _write_linkage_ascii(
+                        res_dir / f"added.{frame}", prev, nxt, pos, prio
+                    )
 
 
 def main(argv=None) -> int:
@@ -310,9 +325,13 @@ def main(argv=None) -> int:
         return 1
 
     try:
-        store = import_run(folder_path, store_path=args.store, remove_ascii=args.remove_ascii)
+        store = import_run(
+            folder_path, store_path=args.store, remove_ascii=args.remove_ascii
+        )
         n_frames = len(store.frames())
-        print(f"Successfully converted {n_frames} frames to Zarr store: {store.store_path}")
+        print(
+            f"Successfully converted {n_frames} frames to Zarr store: {store.store_path}"
+        )
         if args.remove_ascii:
             print("Legacy ASCII files removed successfully.")
         return 0
@@ -323,4 +342,5 @@ def main(argv=None) -> int:
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

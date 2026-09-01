@@ -15,6 +15,7 @@ check compared dot 7 of one camera against dot 8 of another and reported
 100-400 px misses for a calibration that was fine -- a false alarm that looks
 exactly like the real failure this script exists to catch.
 """
+
 import os
 import sys
 
@@ -32,14 +33,18 @@ views = CFG.load_views()
 det = []
 for ci in range(CFG.NCAM):
     if (ci, CFG.REF) not in views:
-        raise SystemExit(f"cam{CFG.cam_number(ci)} has no labelled reference frame "
-                         f"{CFG.REF} in the cache -- re-run detect_plate_frames.py")
+        raise SystemExit(
+            f"cam{CFG.cam_number(ci)} has no labelled reference frame "
+            f"{CFG.REF} in the cache -- re-run detect_plate_frames.py"
+        )
     ids, ip = views[(ci, CFG.REF)]
     det.append(dict(zip(ids.tolist(), ip.tolist())))
 
 Zs = np.linspace(-1500, 1500, 601)
-print("A->B   n   closest approach of the epipolar CURVE to the dot [px]     "
-      "curve monotone inside sensor?")
+print(
+    "A->B   n   closest approach of the epipolar CURVE to the dot [px]     "
+    "curve monotone inside sensor?"
+)
 print("           median      p90       max")
 for a in range(CFG.NCAM):
     for b in range(CFG.NCAM):
@@ -51,19 +56,39 @@ for a in range(CFG.NCAM):
             if pid not in det[b]:
                 continue
             mx, my = pixel_to_metric(pa[0], pa[1], cpar)
-            pos, v = ray_tracing(mx, my, ca.ext_par.dm, ca.ext_par.x0, ca.ext_par.y0,
-                                 ca.ext_par.z0, ca.int_par.cc, ca.glass_par.vec_x,
-                                 ca.glass_par.vec_y, ca.glass_par.vec_z, 1., 1., 1., 0.)
+            pos, v = ray_tracing(
+                mx,
+                my,
+                ca.ext_par.dm,
+                ca.ext_par.x0,
+                ca.ext_par.y0,
+                ca.ext_par.z0,
+                ca.int_par.cc,
+                ca.glass_par.vec_x,
+                ca.glass_par.vec_y,
+                ca.glass_par.vec_z,
+                1.0,
+                1.0,
+                1.0,
+                0.0,
+            )
             pos, v = np.asarray(pos), np.asarray(v)
             P = pos + ((Zs - pos[2]) / v[2])[:, None] * v
             q = np.array([metric_to_pixel(*img_coord(p, cb, cpar.mm), cpar) for p in P])
-            inside = (q[:,0] > -200) & (q[:,0] < 2760) & (q[:,1] > -200) & (q[:,1] < 2248)
+            inside = (
+                (q[:, 0] > -200)
+                & (q[:, 0] < 2760)
+                & (q[:, 1] > -200)
+                & (q[:, 1] < 2248)
+            )
             if inside.sum() < 3:
                 continue
             qi = q[inside]
             ds.append(float(np.min(np.linalg.norm(qi - np.array(det[b][pid]), axis=1))))
             step = np.diff(qi, axis=0)
-            mono += int(np.all(step @ step[0] > 0))       # curve does not double back
+            mono += int(np.all(step @ step[0] > 0))  # curve does not double back
         if ds:
-            print(f"{CFG.cam_number(a)}->{CFG.cam_number(b)}  {len(ds):3d}  {np.median(ds):8.2f} {np.percentile(ds,90):8.2f} "
-                  f"{np.max(ds):8.2f}          {mono}/{len(ds)}")
+            print(
+                f"{CFG.cam_number(a)}->{CFG.cam_number(b)}  {len(ds):3d}  {np.median(ds):8.2f} {np.percentile(ds, 90):8.2f} "
+                f"{np.max(ds):8.2f}          {mono}/{len(ds)}"
+            )

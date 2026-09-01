@@ -21,15 +21,17 @@ def test_label_coded_6x7_synthetic():
     grid_xy = np.array(grid_xy, dtype=float)
 
     # Synthetic perspective / projective warp
-    H = np.array([
-        [1.2, 0.1, 500.0],
-        [-0.05, 1.1, 400.0],
-        [0.0001, 0.00005, 1.0],
-    ])
+    H = np.array(
+        [
+            [1.2, 0.1, 500.0],
+            [-0.05, 1.1, 400.0],
+            [0.0001, 0.00005, 1.0],
+        ]
+    )
 
     # Project grid to image
     gh = np.column_stack([grid_xy, np.ones(len(grid_xy))])
-    proj = (gh @ H.T)
+    proj = gh @ H.T
     img_pts = proj[:, :2] / proj[:, 2:3]
 
     # Place coded dots at (ix=3, iy=3), (ix=3, iy=2), (ix=1, iy=3)
@@ -69,6 +71,8 @@ def test_label_uncoded_grid_synthetic():
             grid.append([ix * pitch + 100.0, iy * pitch + 100.0])
     pts = np.array(grid, dtype=float)
 
-    img_pts, ref_pts, idx = label_uncoded_grid(pts, pitch_x=pitch, pitch_y=pitch, nx=nx, ny=ny)
+    img_pts, ref_pts, idx = label_uncoded_grid(
+        pts, pitch_x=pitch, pitch_y=pitch, nx=nx, ny=ny
+    )
     assert len(img_pts) == nx * ny
     assert len(ref_pts) == nx * ny

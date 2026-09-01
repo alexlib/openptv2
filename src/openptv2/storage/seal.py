@@ -53,9 +53,13 @@ MM_TO_M = 1.0 / 1000.0
 def compute_source_hash(store: RunStore, name: str = "ptv_is") -> str:
     """Deterministic hash of one linkage stream's content, in frame order."""
     h = hashlib.sha256()
-    frames = sorted(
-        (_frame_num(k) for k in store.root[f"linkage/{name}"].keys()),
-    ) if f"linkage/{name}" in store.root else []
+    frames = (
+        sorted(
+            (_frame_num(k) for k in store.root[f"linkage/{name}"].keys()),
+        )
+        if f"linkage/{name}" in store.root
+        else []
+    )
     for frame in frames:
         prev, next_, pos = store.read_linkage(frame, name)
         h.update(prev.tobytes())
@@ -67,10 +71,14 @@ def compute_source_hash(store: RunStore, name: str = "ptv_is") -> str:
 def needs_reseal(store: RunStore, name: str = "ptv_is") -> bool:
     if not store.sealed:
         return True
-    return store.root["meta"].attrs.get("source_hash") != compute_source_hash(store, name)
+    return store.root["meta"].attrs.get("source_hash") != compute_source_hash(
+        store, name
+    )
 
 
-def seal(store: RunStore, name: str = "ptv_is", force: bool = False, min_length: int = 1) -> dict:
+def seal(
+    store: RunStore, name: str = "ptv_is", force: bool = False, min_length: int = 1
+) -> dict:
     """Run the seal pass. Returns a small summary dict.
 
     ``name`` selects which linkage stream is the trajectory backbone
@@ -82,7 +90,11 @@ def seal(store: RunStore, name: str = "ptv_is", force: bool = False, min_length:
         raise RunStoreError(f"No linkage '{name}' to seal.")
 
     source_hash = compute_source_hash(store, name)
-    if not force and store.sealed and store.root["meta"].attrs.get("source_hash") == source_hash:
+    if (
+        not force
+        and store.sealed
+        and store.root["meta"].attrs.get("source_hash") == source_hash
+    ):
         return {"skipped": True, "reason": "already sealed at this source_hash"}
 
     frame_keys = sorted(store.root[f"linkage/{name}"].keys(), key=_frame_num)
@@ -158,10 +170,17 @@ def seal(store: RunStore, name: str = "ptv_is", force: bool = False, min_length:
 
     if not pos_l:
         store.write_traj_index(
-            np.zeros(0, np.int32), np.zeros(0, np.int32), np.zeros(0, np.int32), np.zeros(0, np.int32)
+            np.zeros(0, np.int32),
+            np.zeros(0, np.int32),
+            np.zeros(0, np.int32),
+            np.zeros(0, np.int32),
         )
         store.write_trajectories(
-            np.zeros((0, 3)), np.zeros((0, 3)), np.zeros((0, 3)), np.zeros(0, np.int64), np.zeros(0, np.int64)
+            np.zeros((0, 3)),
+            np.zeros((0, 3)),
+            np.zeros((0, 3)),
+            np.zeros(0, np.int64),
+            np.zeros(0, np.int64),
         )
         store.root["meta"].attrs["sealed"] = True
         store.root["meta"].attrs["source_hash"] = source_hash
@@ -204,7 +223,10 @@ def seal(store: RunStore, name: str = "ptv_is", force: bool = False, min_length:
     first_time = time_all[first_idx].astype(np.int32)
 
     store.write_traj_index(
-        unique_ids.astype(np.int32), first_time, last_time, counts.astype(np.int32),
+        unique_ids.astype(np.int32),
+        first_time,
+        last_time,
+        counts.astype(np.int32),
         first_row=first_idx.astype(np.int64),
     )
 
@@ -215,5 +237,11 @@ def seal(store: RunStore, name: str = "ptv_is", force: bool = False, min_length:
     store.root["meta"].attrs["sealed"] = True
     store.root["meta"].attrs["source_hash"] = source_hash
 
-    n_dropped = int((~np.isin(unique_ids, list(keep_ids))).sum()) if min_length > 1 else 0
-    return {"n_trajectories": len(unique_ids), "n_rows": len(pos_all), "n_dropped": n_dropped}
+    n_dropped = (
+        int((~np.isin(unique_ids, list(keep_ids))).sum()) if min_length > 1 else 0
+    )
+    return {
+        "n_trajectories": len(unique_ids),
+        "n_rows": len(pos_all),
+        "n_dropped": n_dropped,
+    }

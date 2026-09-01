@@ -144,8 +144,14 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
     # buffers are indexed with boundscheck disabled in compiled kernels, so a
     # camera with more targets than max_targets would silently overrun them.
     max_targets = max(
-        (len(img_pts[cam]._targets if hasattr(img_pts[cam], "_targets") else img_pts[cam])
-         for cam in range(num_cams)),
+        (
+            len(
+                img_pts[cam]._targets
+                if hasattr(img_pts[cam], "_targets")
+                else img_pts[cam]
+            )
+            for cam in range(num_cams)
+        ),
         default=1000,
     )
 
@@ -302,16 +308,15 @@ def match_frame_correspondences(detections, cpar, cals, vpar):
 
     total_matches = sum(s.shape[1] for s in sorted_pos)
     if total_matches == 0:
-        return np.empty((0, 3), dtype=np.float64), np.empty((0, max(4, num_cams)), dtype=np.int32)
+        return np.empty((0, 3), dtype=np.float64), np.empty(
+            (0, max(4, num_cams)), dtype=np.int32
+        )
 
     sorted_pos = np.concatenate(sorted_pos, axis=1)
     sorted_corresp = np.concatenate(sorted_corresp, axis=1)
 
     flat = np.array(
-        [
-            corr.get_by_pnrs(corresp)
-            for corr, corresp in zip(corrected, sorted_corresp)
-        ]
+        [corr.get_by_pnrs(corresp) for corr, corresp in zip(corrected, sorted_corresp)]
     )
 
     pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
@@ -325,7 +330,9 @@ def match_frame_correspondences(detections, cpar, cals, vpar):
     return pos, print_corresp.T
 
 
-def _correspondence_worker_chunk(frames, targets_data, cpar, cals, vpar, zarr_store_path=None):
+def _correspondence_worker_chunk(
+    frames, targets_data, cpar, cals, vpar, zarr_store_path=None
+):
     """Worker function to process a chunk of frames in parallel."""
     results = []
     num_cams = len(cals)
@@ -333,6 +340,7 @@ def _correspondence_worker_chunk(frames, targets_data, cpar, cals, vpar, zarr_st
     store = None
     if zarr_store_path is not None and targets_data is None:
         from openptv2.storage import RunStore
+
         store = RunStore(zarr_store_path, mode="r")
 
     for frame in frames:
@@ -343,7 +351,9 @@ def _correspondence_worker_chunk(frames, targets_data, cpar, cals, vpar, zarr_st
         else:
             raise ValueError("Either targets_data or zarr_store_path must be provided")
 
-        pos_3d, cam_target_ids = match_frame_correspondences(detections, cpar, cals, vpar)
+        pos_3d, cam_target_ids = match_frame_correspondences(
+            detections, cpar, cals, vpar
+        )
         results.append((frame, pos_3d, cam_target_ids))
 
     return results
@@ -403,12 +413,13 @@ def match_correspondences_batch_parallel(
         # Split frames into roughly equal contiguous chunks
         chunk_size = (num_frames + n_workers - 1) // n_workers
         chunks = [
-            frames_list[i : i + chunk_size]
-            for i in range(0, num_frames, chunk_size)
+            frames_list[i : i + chunk_size] for i in range(0, num_frames, chunk_size)
         ]
 
         mp_ctx = multiprocessing.get_context("spawn")
-        with ProcessPoolExecutor(max_workers=len(chunks), mp_context=mp_ctx) as executor:
+        with ProcessPoolExecutor(
+            max_workers=len(chunks), mp_context=mp_ctx
+        ) as executor:
             futures = []
             for chunk in chunks:
                 chunk_targets = (
@@ -433,6 +444,7 @@ def match_correspondences_batch_parallel(
     # Write to store if requested
     if write_to_store and zarr_store_path is not None:
         from openptv2.storage import RunStore
+
         store = RunStore(zarr_store_path, mode="a")
         for frame in frames_list:
             if frame in results:

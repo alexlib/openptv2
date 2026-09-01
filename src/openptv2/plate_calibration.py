@@ -65,8 +65,13 @@ def solve_opencv_multiview(
     XYZ0 = [np.asarray(r, dtype=np.float32) for r in refs_per_plane]
     Ms, dists, rvecs, tvecs = [], [], [], []
     for cam in range(num_cams):
-        img_pts = [np.asarray(views_per_cam[cam][p], dtype=np.float32) for p in range(num_planes)]
-        ret, M, dist, rvec, tvec = _cv2.calibrateCamera(XYZ0, img_pts, (imx, imy), None, None)
+        img_pts = [
+            np.asarray(views_per_cam[cam][p], dtype=np.float32)
+            for p in range(num_planes)
+        ]
+        ret, M, dist, rvec, tvec = _cv2.calibrateCamera(
+            XYZ0, img_pts, (imx, imy), None, None
+        )
         Ms.append(M)
         dists.append(dist)
         rvecs.append(rvec)
@@ -75,6 +80,7 @@ def solve_opencv_multiview(
     # Build projection matrices relative to cam0 via stereoCalibrate on plane 0
     # (matches multiview_calibration.py P_c construction)
     from scipy.spatial.transform import Rotation as _R
+
     Rc = []
     posc = []
     Pc = []
@@ -88,8 +94,14 @@ def solve_opencv_multiview(
             Pc.append(Ms[0] @ RT)
         else:
             ret, CM0, d0, CM1, d1, R, T, *_ = _cv2.stereoCalibrate(
-                XYZ0[:1], [views_per_cam[0][0].astype(np.float32)], [views_per_cam[cam][0].astype(np.float32)],
-                Ms[0], dists[0], Ms[cam], dists[cam], (imx, imy),
+                XYZ0[:1],
+                [views_per_cam[0][0].astype(np.float32)],
+                [views_per_cam[cam][0].astype(np.float32)],
+                Ms[0],
+                dists[0],
+                Ms[cam],
+                dists[cam],
+                (imx, imy),
                 flags=_cv2.CALIB_FIX_INTRINSIC,
             )
             RT = np.concatenate([R @ Rc[0], (R @ tvecs[0][0] + T)], axis=1)
@@ -116,7 +128,7 @@ def solve_opencv_multiview(
         plane_3d = []
         for k in range(n):
             xys = [views_per_cam[c][p][k] for c in range(min(4, num_cams))]
-            Ps = Pc[:len(xys)]
+            Ps = Pc[: len(xys)]
             # pad to 4 if needed by duplicating — or just use available cams
             while len(Ps) < 4:
                 Ps.append(Ps[-1])
@@ -129,8 +141,15 @@ def solve_opencv_multiview(
     # Recalibrate with solved P
     for cam in range(num_cams):
         ret, M, dist, rvec, tvec = _cv2.calibrateCamera(
-            P_planes, [np.asarray(views_per_cam[cam][p], dtype=np.float32) for p in range(num_planes)],
-            (imx, imy), Ms[cam], dists[cam], flags=_cv2.CALIB_USE_INTRINSIC_GUESS,
+            P_planes,
+            [
+                np.asarray(views_per_cam[cam][p], dtype=np.float32)
+                for p in range(num_planes)
+            ],
+            (imx, imy),
+            Ms[cam],
+            dists[cam],
+            flags=_cv2.CALIB_USE_INTRINSIC_GUESS,
         )
         Ms[cam], dists[cam], rvecs[cam], tvecs[cam] = M, dist, rvec, tvec
 
@@ -149,5 +168,6 @@ def solve_dlt_per_cam(
     elsewhere and you simply want a pose+``cc``.
     """
     from openptv2.calibration_seed import seed_from_dlt
+
     cal = seed_from_dlt(ref_pts, img_pts, cpar)
     return cal

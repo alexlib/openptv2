@@ -22,8 +22,16 @@ def _frame(points, prev=None, nxt=None):
     """(path_x, path_prev, path_next, num_parts) for a list of xyz points."""
     x = np.ascontiguousarray(np.array(points, dtype=np.float64).reshape(-1, 3))
     n = len(x)
-    p = np.full(n, PREV_NONE, dtype=np.int32) if prev is None else np.array(prev, np.int32)
-    q = np.full(n, NEXT_NONE, dtype=np.int32) if nxt is None else np.array(nxt, np.int32)
+    p = (
+        np.full(n, PREV_NONE, dtype=np.int32)
+        if prev is None
+        else np.array(prev, np.int32)
+    )
+    q = (
+        np.full(n, NEXT_NONE, dtype=np.int32)
+        if nxt is None
+        else np.array(nxt, np.int32)
+    )
     return x, p, q, n
 
 
@@ -33,8 +41,25 @@ def _run(f0, f1, f2, f3, dv=BIG, **kw):
     x2, p2, n2, c2 = f2
     x3, _p3, _n3, c3 = f3
     links = track4be_loop_fast(
-        c1, x0, p0, c0, x1, p1, n1, c1, x2, p2, n2, c2, x3, c3,
-        dv, dv, dv, MAX_CANDS, **kw,
+        c1,
+        x0,
+        p0,
+        c0,
+        x1,
+        p1,
+        n1,
+        c1,
+        x2,
+        p2,
+        n2,
+        c2,
+        x3,
+        c3,
+        dv,
+        dv,
+        dv,
+        MAX_CANDS,
+        **kw,
     )
     return links, n1, p2
 

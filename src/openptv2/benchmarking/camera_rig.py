@@ -68,8 +68,12 @@ _BASE_CAMERAS = [
     # reproduce the rotation matrix exactly (compute_rotation_matrix), so the
     # rig can be serialised to .ori files and round-trip faithfully.
     dict(pos=(80.996, 13.130, -569.756), angle=(-56.54108642, 2.97742655, 56.53124852)),
-    dict(pos=(-123.459, 23.996, -575.191), angle=(0.02718932, -2.92335731, -0.01854668)),
-    dict(pos=(-110.557, 73.466, 584.364), angle=(-0.11212347, -0.19805209, -0.02811924)),
+    dict(
+        pos=(-123.459, 23.996, -575.191), angle=(0.02718932, -2.92335731, -0.01854668)
+    ),
+    dict(
+        pos=(-110.557, 73.466, 584.364), angle=(-0.11212347, -0.19805209, -0.02811924)
+    ),
     dict(pos=(126.369, 67.935, 573.047), angle=(-0.11906977, 0.23974137, 0.00947221)),
 ]
 
@@ -156,7 +160,9 @@ def make_standard_rig(
     center_arr = np.array(center, dtype=np.float64)
     n = num_cams
     if n > len(_BASE_CAMERAS):
-        raise ValueError(f"Only {len(_BASE_CAMERAS)} base camera orientations available")
+        raise ValueError(
+            f"Only {len(_BASE_CAMERAS)} base camera orientations available"
+        )
 
     # Multimedia parameters.
     if refract:
@@ -184,7 +190,12 @@ def make_standard_rig(
         X_lay=np.array([center_arr[0] - vx / 2.0, center_arr[0] + vx / 2.0]),
         Zmin_lay=np.array([center_arr[2] - vz / 2.0, center_arr[2] - vz / 2.0]),
         Zmax_lay=np.array([center_arr[2] + vz / 2.0, center_arr[2] + vz / 2.0]),
-        cnx=0.0, cny=0.0, cn=0.0, csumg=0.0, corrmin=0.0, eps0=0.0,
+        cnx=0.0,
+        cny=0.0,
+        cn=0.0,
+        csumg=0.0,
+        corrmin=0.0,
+        eps0=0.0,
     )
 
     # Glass vector: recompute sign from the viewing direction so refraction is
@@ -193,13 +204,14 @@ def make_standard_rig(
     for cam in range(n):
         base = _BASE_CAMERAS[cam]
         rot = _BASE_ROTATIONS[cam].copy()
-        pos = (base["pos"][0] + center_arr[0],
-               base["pos"][1] + center_arr[1],
-               base["pos"][2] + center_arr[2])
+        pos = (
+            base["pos"][0] + center_arr[0],
+            base["pos"][1] + center_arr[1],
+            base["pos"][2] + center_arr[2],
+        )
         om, ph, ka = base["angle"]
 
-        ext = Exterior(x0=pos[0], y0=pos[1], z0=pos[2],
-                       omega=om, phi=ph, kappa=ka)
+        ext = Exterior(x0=pos[0], y0=pos[1], z0=pos[2], omega=om, phi=ph, kappa=ka)
 
         cal = Calibration(
             ext_par=ext,
@@ -208,8 +220,12 @@ def make_standard_rig(
                 k1=0.0, k2=0.0, k3=0.0, p1=0.0, p2=0.0, scx=1.0, she=0.0, field=0
             ),
             glass_par=Glass(
-                vec_x=0.0, vec_y=0.0, vec_z=_GLASS_MAG,
-                n1=N_AIR, n2=N_GLASS, n3=N_WATER,
+                vec_x=0.0,
+                vec_y=0.0,
+                vec_z=_GLASS_MAG,
+                n1=N_AIR,
+                n2=N_GLASS,
+                n3=N_WATER,
                 d=glass_thickness,
             ),
         )

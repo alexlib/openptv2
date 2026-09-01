@@ -97,7 +97,9 @@ def test_tracer_selfcal_reads_store_backed_run(tmp_path):
     from openptv2.storage import RunStore
 
     base = tmp_path / "synth_store"
-    shutil.copytree(SYNTH, base, ignore=shutil.ignore_patterns("res", "img", "*_targets"))
+    shutil.copytree(
+        SYNTH, base, ignore=shutil.ignore_patterns("res", "img", "*_targets")
+    )
     (base / "img").mkdir()
     for f in (SYNTH / "img").glob("*.tif"):
         shutil.copy2(f, base / "img" / f.name)
@@ -106,7 +108,9 @@ def test_tracer_selfcal_reads_store_backed_run(tmp_path):
     n_cams = cpar_src.num_cams
 
     store = RunStore.open(base, mode="a")
-    for pf in sorted(SYNTH.glob("res/ptv_is.*"), key=lambda p: int(p.suffix.lstrip("."))):
+    for pf in sorted(
+        SYNTH.glob("res/ptv_is.*"), key=lambda p: int(p.suffix.lstrip("."))
+    ):
         frame = int(pf.suffix.lstrip("."))
         lines = pf.read_text().splitlines()
         nn = int(lines[0])
@@ -125,7 +129,9 @@ def test_tracer_selfcal_reads_store_backed_run(tmp_path):
             tlines = tf.read_text().splitlines()
             tn = int(tlines[0])
             rows = [[float(x) for x in tlines[i + 1].split()] for i in range(tn)]
-            store.write_targets(cam, frame, np.asarray(rows, float) if rows else np.empty((0, 8)))
+            store.write_targets(
+                cam, frame, np.asarray(rows, float) if rows else np.empty((0, 8))
+            )
 
     cwd = os.getcwd()
     try:

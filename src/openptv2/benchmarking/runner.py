@@ -19,10 +19,17 @@ from openptv2.tracking_postprocess import link_step
 
 # Tracker names recognised as presets by the default_tracking plugin.
 _CORE_PRESETS = {
-    "fast", "fast_3d", "priority_segment_3d", "trackcorr",
-    "standard_forward", "two_directional", "full_multipass",
-    "cython_epipolar_tracking", "openptv_epipolar",
-    "4be", "four_be",
+    "fast",
+    "fast_3d",
+    "priority_segment_3d",
+    "trackcorr",
+    "standard_forward",
+    "two_directional",
+    "full_multipass",
+    "cython_epipolar_tracking",
+    "openptv_epipolar",
+    "4be",
+    "four_be",
 }
 
 
@@ -57,11 +64,13 @@ def _read_path_info(res_dir: str | Path, first: int, last: int, num_cams: int):
     for fn in range(first, last + 1):
         if store is not None and store.has_linkage(fn, "ptv_is"):
             prev, nxt, x = store.read_linkage(fn, "ptv_is")
-            frames.append({
-                "prev": [int(p) for p in prev],
-                "next": [int(n) for n in nxt],
-                "x": np.asarray(x, dtype=np.float64),
-            })
+            frames.append(
+                {
+                    "prev": [int(p) for p in prev],
+                    "next": [int(n) for n in nxt],
+                    "x": np.asarray(x, dtype=np.float64),
+                }
+            )
             continue
 
         fpath = Path(res_dir) / f"ptv_is.{fn}"
@@ -118,7 +127,9 @@ def read_trajectories(
         for slot in range(len(fr["next"])):
             if fr["prev"][slot] < 0:  # start of a track
                 # walk forward
-                track_points = [(frame_num, fr["x"][slot][0], fr["x"][slot][1], fr["x"][slot][2])]
+                track_points = [
+                    (frame_num, fr["x"][slot][0], fr["x"][slot][1], fr["x"][slot][2])
+                ]
                 cur_frame = fi
                 cur_slot = slot
                 while True:
@@ -139,8 +150,12 @@ def read_trajectories(
                     if cur_slot >= len(nxt_fr["next"]):
                         break
                     track_points.append(
-                        (first + cur_frame, nxt_fr["x"][cur_slot][0],
-                         nxt_fr["x"][cur_slot][1], nxt_fr["x"][cur_slot][2])
+                        (
+                            first + cur_frame,
+                            nxt_fr["x"][cur_slot][0],
+                            nxt_fr["x"][cur_slot][1],
+                            nxt_fr["x"][cur_slot][2],
+                        )
                     )
                 if len(track_points) >= 1:
                     tracks[next_id] = track_points
@@ -187,6 +202,7 @@ def run_tracker(
 
     from openptv2.batch.pyptv_batch import build_processing_experiment
     from openptv2.plugins import run_tracking_plugin
+
     data = _yaml.safe_load(yaml_path.read_text())
     seq_first = int(data["sequence"]["first"])
     seq_last = int(data["sequence"]["last"])
@@ -203,10 +219,14 @@ def run_tracker(
     if track_overrides:
         tp = exp.track_par
         _map = {
-            "dvxmin": "set_dvxmin", "dvxmax": "set_dvxmax",
-            "dvymin": "set_dvymin", "dvymax": "set_dvymax",
-            "dvzmin": "set_dvzmin", "dvzmax": "set_dvzmax",
-            "angle": "set_dangle", "dacc": "set_dacc",
+            "dvxmin": "set_dvxmin",
+            "dvxmax": "set_dvxmax",
+            "dvymin": "set_dvymin",
+            "dvymax": "set_dvymax",
+            "dvzmin": "set_dvzmin",
+            "dvzmax": "set_dvzmax",
+            "angle": "set_dangle",
+            "dacc": "set_dacc",
         }
         for key, val in track_overrides.items():
             method = _map.get(key)
@@ -218,8 +238,18 @@ def run_tracker(
         try:
             pm_track = exp.pm.parameters.get("track", {})
             for key, val in track_overrides.items():
-                if key in ("dvxmin", "dvxmax", "dvymin", "dvymax", "dvzmin", "dvzmax",
-                           "dacc", "angle", "flagNewParticles", "postprocess"):
+                if key in (
+                    "dvxmin",
+                    "dvxmax",
+                    "dvymin",
+                    "dvymax",
+                    "dvzmin",
+                    "dvzmax",
+                    "dacc",
+                    "angle",
+                    "flagNewParticles",
+                    "postprocess",
+                ):
                     pm_track[key] = val
         except Exception:
             pass

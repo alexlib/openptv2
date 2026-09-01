@@ -25,6 +25,7 @@ Usage:  bundle_plate_poses.py [cc_mm] [--write]
 Without --write nothing is changed.  With it, the old files are kept as
 cal/camN.tif.ori.prebundle.
 """
+
 import os
 import shutil
 import sys
@@ -59,7 +60,11 @@ VERT_PX = float(os.environ.get("BUNDLE_VERT_PX", 10.0))
 TRIM_MAD = float(os.environ.get("BUNDLE_TRIM_MAD", 3.0))
 TRIM_ROUNDS = int(os.environ.get("BUNDLE_TRIM_ROUNDS", 6))
 
-CC = float(sys.argv[1]) if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else 8.5858
+CC = (
+    float(sys.argv[1])
+    if len(sys.argv) > 1 and not sys.argv[1].startswith("-")
+    else 8.5858
+)
 WRITE = "--write" in sys.argv
 K = np.array([[CC / PIX, 0, IMX / 2], [0, CC / PIX, IMY / 2], [0, 0, 1.0]])
 D0 = np.zeros(5)
@@ -81,8 +86,11 @@ def pnp(ids, px):
         return None
     rv, tv = cv2.solvePnPRefineLM(o, px.astype(float), K, D0, rv, tv)
     rep, _ = cv2.projectPoints(o, rv, tv, K, D0)
-    return rv.ravel(), tv.ravel(), float(
-        np.sqrt(np.mean(np.sum((rep.reshape(-1, 2) - px) ** 2, 1))))
+    return (
+        rv.ravel(),
+        tv.ravel(),
+        float(np.sqrt(np.mean(np.sum((rep.reshape(-1, 2) - px) ** 2, 1)))),
+    )
 
 
 # ------------------------------------------------- gate 1: per-camera labelling
@@ -126,8 +134,9 @@ for fr in frames_all:
         continue
     per = {ci: dots_in_world(ci, fr) for ci in vs}
     best = agreeing_views(per, AGREE_MM)
-    worst = max(np.linalg.norm(per[a] - per[b], axis=1).max()
-                for a in vs for b in vs if a < b)
+    worst = max(
+        np.linalg.norm(per[a] - per[b], axis=1).max() for a in vs for b in vs if a < b
+    )
     if not best:
         dropped.append((fr, vs, worst))
         continue
@@ -139,17 +148,31 @@ frames = sorted(kept)
 free = [fr for fr in frames if fr != REF]
 
 print(f"cc fixed at {CC} mm, zero distortion, gauge = plate pose of frame {REF}")
-print(f"gate 1  per-camera PnP < {VIEW_GATE_PX} px:            {n_pnp}/{NCAM*len(frames_all)} views")
-print(f"gate 2  plate vertical within {TILT_GATE_DEG:.0f} deg:         "
-      f"{len(tilt_rejects)} views rejected"
-      + ("  " + ", ".join(f"{fr[-2:]}/cam{CFG.cam_number(ci)} {t:.0f}deg"
-                          for fr, ci, t in sorted(tilt_rejects, key=lambda r: -r[2])[:8])
-         if tilt_rejects else ""))
-print(f"gate 3  per-dot agreement < {AGREE_MM:.0f} mm:         {len(good)} views, "
-      f"{len(frames)} frames")
+print(
+    f"gate 1  per-camera PnP < {VIEW_GATE_PX} px:            {n_pnp}/{NCAM * len(frames_all)} views"
+)
+print(
+    f"gate 2  plate vertical within {TILT_GATE_DEG:.0f} deg:         "
+    f"{len(tilt_rejects)} views rejected"
+    + (
+        "  "
+        + ", ".join(
+            f"{fr[-2:]}/cam{CFG.cam_number(ci)} {t:.0f}deg"
+            for fr, ci, t in sorted(tilt_rejects, key=lambda r: -r[2])[:8]
+        )
+        if tilt_rejects
+        else ""
+    )
+)
+print(
+    f"gate 3  per-dot agreement < {AGREE_MM:.0f} mm:         {len(good)} views, "
+    f"{len(frames)} frames"
+)
 for fr, vs, spread in sorted(dropped, key=lambda r: -r[2])[:10]:
-    print(f"          {fr}  cams {[c+1 for c in vs]}  worst per-dot {spread:7.0f} mm")
-print(f"unknowns: {NCAM} camera poses + {len(free)} plate poses = {6*(NCAM+len(free))}")
+    print(f"          {fr}  cams {[c + 1 for c in vs]}  worst per-dot {spread:7.0f} mm")
+print(
+    f"unknowns: {NCAM} camera poses + {len(free)} plate poses = {6 * (NCAM + len(free))}"
+)
 
 # ------------------------------------------------------------------ observations
 fidx = {fr: k for k, fr in enumerate(free)}
@@ -164,9 +187,13 @@ for fr in frames:
         frm_i.append(np.full(len(o), fidx.get(fr, -1)))
         objp.append(o)
         pixp.append(px.astype(float))
-obs = PlateObservations(np.concatenate(cam_i), np.concatenate(frm_i),
-                        np.concatenate(objp), np.concatenate(pixp))
-print(f"{len(obs.cam)} observations, {2*len(obs.cam)} residuals\n")
+obs = PlateObservations(
+    np.concatenate(cam_i),
+    np.concatenate(frm_i),
+    np.concatenate(objp),
+    np.concatenate(pixp),
+)
+print(f"{len(obs.cam)} observations, {2 * len(obs.cam)} residuals\n")
 
 cam_rvec0 = np.array([good[(ci, REF)][0] for ci in range(NCAM)])
 cam_tvec0 = np.array([good[(ci, REF)][1] for ci in range(NCAM)])
@@ -178,40 +205,70 @@ for fr in free:
     ptv0.append(ref_R[ci].T @ (tv - ref_t[ci]))
 prv0, ptv0 = np.array(prv0), np.array(ptv0)
 
-x0 = np.concatenate([cam_rvec0.ravel(), cam_tvec0.ravel(),
-                     np.column_stack([prv0, ptv0]).ravel()])
+x0 = np.concatenate(
+    [cam_rvec0.ravel(), cam_tvec0.ravel(), np.column_stack([prv0, ptv0]).ravel()]
+)
 e0 = np.linalg.norm(project(x0, obs, K, NCAM, len(free)) - obs.pix, axis=1)
-print(f"{'before (anchored)':22s} reproj RMS {np.sqrt(np.mean(e0**2)):6.3f} px   "
-      f"median {np.median(e0):6.3f}   max {e0.max():8.3f}")
+print(
+    f"{'before (anchored)':22s} reproj RMS {np.sqrt(np.mean(e0**2)):6.3f} px   "
+    f"median {np.median(e0):6.3f}   max {e0.max():8.3f}"
+)
 
-res = bundle_plate_poses(obs, cam_rvec0, cam_tvec0, prv0, ptv0, K,
-                         vertical_px=VERT_PX, vertical_sigma_deg=VERT_SIGMA_DEG,
-                         trim_rounds=TRIM_ROUNDS, trim_mad=TRIM_MAD)
+res = bundle_plate_poses(
+    obs,
+    cam_rvec0,
+    cam_tvec0,
+    prv0,
+    ptv0,
+    K,
+    vertical_px=VERT_PX,
+    vertical_sigma_deg=VERT_SIGMA_DEG,
+    trim_rounds=TRIM_ROUNDS,
+    trim_mad=TRIM_MAD,
+)
 for i, (n, rms, thr) in enumerate(res.trim_history):
-    print(f"  round {i}: {n:5d} dots in, reproj RMS {rms:7.3f} px  ->  trim at {thr:5.2f} px")
+    print(
+        f"  round {i}: {n:5d} dots in, reproj RMS {rms:7.3f} px  ->  trim at {thr:5.2f} px"
+    )
 e = res.residual_px[res.keep]
-print(f"\nconverged on {int(res.keep.sum())}/{len(obs.cam)} dots across {len(frames)} frames")
-print(f"{'after (bundled)':22s} reproj RMS {np.sqrt(np.mean(e**2)):6.3f} px   "
-      f"median {np.median(e):6.3f}   p99 {np.percentile(e, 99):7.3f}   max {e.max():8.3f}")
+print(
+    f"\nconverged on {int(res.keep.sum())}/{len(obs.cam)} dots across {len(frames)} frames"
+)
+print(
+    f"{'after (bundled)':22s} reproj RMS {np.sqrt(np.mean(e**2)):6.3f} px   "
+    f"median {np.median(e):6.3f}   p99 {np.percentile(e, 99):7.3f}   max {e.max():8.3f}"
+)
 
 tilts = np.array([tilt_off_vertical_deg(rodrigues(r)) for r in res.plate_rvec])
-print(f"plate tilt off vertical: median {np.median(tilts):.2f} deg, max {tilts.max():.2f} deg"
-      f"  (prior {VERT_PX} px per {VERT_SIGMA_DEG} deg; BUNDLE_VERT_PX=0 disables)")
+print(
+    f"plate tilt off vertical: median {np.median(tilts):.2f} deg, max {tilts.max():.2f} deg"
+    f"  (prior {VERT_PX} px per {VERT_SIGMA_DEG} deg; BUNDLE_VERT_PX=0 disables)"
+)
 
-print("\ncam        anchored (X,Y,Z)              bundled (X,Y,Z)              moved by")
+print(
+    "\ncam        anchored (X,Y,Z)              bundled (X,Y,Z)              moved by"
+)
 for ci in range(NCAM):
     a = -rodrigues(cam_rvec0[ci]).T @ cam_tvec0[ci]
     b = res.camera_centre(ci)
-    print(f" {CFG.cam_number(ci)}   ({a[0]:8.1f},{a[1]:7.1f},{a[2]:8.1f})   "
-          f"({b[0]:8.1f},{b[1]:7.1f},{b[2]:8.1f})   {np.linalg.norm(b-a):7.1f} mm")
+    print(
+        f" {CFG.cam_number(ci)}   ({a[0]:8.1f},{a[1]:7.1f},{a[2]:8.1f})   "
+        f"({b[0]:8.1f},{b[1]:7.1f},{b[2]:8.1f})   {np.linalg.norm(b - a):7.1f} mm"
+    )
 print("\npairwise camera distances (frame-invariant)   anchored / bundled [mm]")
 for a, b in [(x, y) for x in range(NCAM) for y in range(x + 1, NCAM)]:
+
     def cen0(ci):
         return -rodrigues(cam_rvec0[ci]).T @ cam_tvec0[ci]
-    print(f"  cam{CFG.cam_number(a)}-cam{CFG.cam_number(b)}: {np.linalg.norm(cen0(a)-cen0(b)):7.1f} / "
-          f"{np.linalg.norm(res.camera_centre(a)-res.camera_centre(b)):7.1f}")
-print(f"\nreference plate pose held at identity -- the world origin is still the "
-      f"L-corner dot of frame {REF}")
+
+    print(
+        f"  cam{CFG.cam_number(a)}-cam{CFG.cam_number(b)}: {np.linalg.norm(cen0(a) - cen0(b)):7.1f} / "
+        f"{np.linalg.norm(res.camera_centre(a) - res.camera_centre(b)):7.1f}"
+    )
+print(
+    f"\nreference plate pose held at identity -- the world origin is still the "
+    f"L-corner dot of frame {REF}"
+)
 
 if WRITE:
     for ci in range(NCAM):
@@ -219,14 +276,28 @@ if WRITE:
             src = Path(CFG.cam_ori(ci)[0 if ext == "ori" else 1])
             if src.exists() and not src.with_suffix(f".{ext}.prebundle").exists():
                 shutil.copy2(src, src.with_suffix(f".{ext}.prebundle"))
-        cal, _ = calibration_from_opencv(K, D0, res.cam_rvec[ci], res.cam_tvec[ci],
-                                         imx=IMX, imy=IMY, pix_x=PIX,
-                                         pixel_origin="corner")
+        cal, _ = calibration_from_opencv(
+            K,
+            D0,
+            res.cam_rvec[ci],
+            res.cam_tvec[ci],
+            imx=IMX,
+            imy=IMY,
+            pix_x=PIX,
+            pixel_origin="corner",
+        )
         cal.to_file(*CFG.cam_ori(ci))
-    np.savez(out / "cal" / "bundle_plate_poses.npz", frames=np.array(free),
-             plate_rvec=res.plate_rvec, plate_tvec=res.plate_tvec, cc=CC)
+    np.savez(
+        out / "cal" / "bundle_plate_poses.npz",
+        frames=np.array(free),
+        plate_rvec=res.plate_rvec,
+        plate_tvec=res.plate_tvec,
+        cc=CC,
+    )
     print("\nwrote .ori + zeroed .addpar (first run kept the old ones as *.prebundle)")
-    print("now re-run check_plate_triangulation.py, check_epipolar.py and "
-          "plot_frame_triangulation.py")
+    print(
+        "now re-run check_plate_triangulation.py, check_epipolar.py and "
+        "plot_frame_triangulation.py"
+    )
 else:
     print("\ndry run -- pass --write to overwrite cal/camN.tif.ori")

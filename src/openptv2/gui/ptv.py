@@ -615,6 +615,7 @@ def py_start_proc_c(
         exp_dir = getattr(pm, "exp_path", None)
         if exp_dir is None and getattr(pm, "yaml_path", None) is not None:
             from pathlib import Path
+
             exp_dir = Path(pm.yaml_path).resolve().parent
 
         cals = ptv_calibration._read_calibrations(cpar, num_cams, base_dir=exp_dir)
@@ -732,7 +733,11 @@ def py_correspondences_proc_c(exp):
     store = _open_run_store(exp)
     for i_cam in range(exp.num_cams):
         write_targets(
-            exp.detections[i_cam], short_file_bases[i_cam], frame, store=store, cam_idx=i_cam
+            exp.detections[i_cam],
+            short_file_bases[i_cam],
+            frame,
+            store=store,
+            cam_idx=i_cam,
         )
 
     print(f"Frame {frame} had {[s.shape[1] for s in sorted_pos]!r} correspondences.")
@@ -846,7 +851,8 @@ def _frame_image_name(base_name, frame: int) -> Path:
             img_cands = [
                 c
                 for c in candidates
-                if c.suffix.lower() in (".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp")
+                if c.suffix.lower()
+                in (".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp")
             ]
             return img_cands[0] if img_cands else candidates[0]
 
@@ -1104,7 +1110,9 @@ def py_sequence_loop(exp) -> None:
             detections, corrected, cals, vpar, cpar
         )
         for i_cam in range(num_cams):
-            write_targets(detections[i_cam], short_file_bases[i_cam], frame, store=store)
+            write_targets(
+                detections[i_cam], short_file_bases[i_cam], frame, store=store
+            )
 
         print(
             "Frame "
@@ -1657,7 +1665,9 @@ def write_targets(
     return True
 
 
-def read_targets(short_file_base: str, frame: int, store=None, cam_idx=None) -> TargetArray:
+def read_targets(
+    short_file_base: str, frame: int, store=None, cam_idx=None
+) -> TargetArray:
     """Read targets: from the unified RunStore when ``store`` is given and has targets,
     otherwise falls back to ASCII file."""
     filename = f"{short_file_base}.{frame:04d}_targets"

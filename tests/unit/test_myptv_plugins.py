@@ -63,7 +63,9 @@ def test_myptv_3d_tracker_max_angle_rejects_sharp_turn():
         np.array([[1.0, 0.0, 0.0]]),  # seeds velocity (1, 0, 0)
         np.array([[2.0, 0.0, 0.0], [1.0, 1.0, 0.0]]),  # straight vs. 90-deg turn
     ]
-    tracker = MyPTV3DTracker(v_max=5.0, a_max=5.0, max_gap=0, dt=1.0, max_angle_deg=30.0)
+    tracker = MyPTV3DTracker(
+        v_max=5.0, a_max=5.0, max_gap=0, dt=1.0, max_angle_deg=30.0
+    )
     results = tracker.track_frames(frames)
 
     assert len(results) == 1

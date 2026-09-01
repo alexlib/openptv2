@@ -133,9 +133,7 @@ class TestCameraWindowGeometry:
 
     def test_clip_line_to_rect_clips_to_bounds(self):
         # Line from inside to far outside the right edge must clip at width-1.
-        result = CameraWindow._clip_line_to_rect(
-            50, 50, 500, 50, width=100, height=100
-        )
+        result = CameraWindow._clip_line_to_rect(50, 50, 500, 50, width=100, height=100)
         assert result is not None
         nx1, ny1, nx2, ny2 = result
         assert nx1 == pytest.approx(50)
@@ -151,8 +149,12 @@ class TestCameraWindowGeometry:
         assert result is None
 
     def test_clip_line_to_rect_zero_size_returns_none(self):
-        assert CameraWindow._clip_line_to_rect(0, 0, 10, 10, width=0, height=100) is None
-        assert CameraWindow._clip_line_to_rect(0, 0, 10, 10, width=100, height=0) is None
+        assert (
+            CameraWindow._clip_line_to_rect(0, 0, 10, 10, width=0, height=100) is None
+        )
+        assert (
+            CameraWindow._clip_line_to_rect(0, 0, 10, 10, width=100, height=0) is None
+        )
 
 
 @pytest.mark.unit

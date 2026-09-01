@@ -38,7 +38,9 @@ def test_angles_roundtrip():
 
         om_rec, ph_rec, kp_rec = angles_from_dm(ext.dm)
 
-        ext_rec = Exterior(x0=0.0, y0=0.0, z0=0.0, omega=om_rec, phi=ph_rec, kappa=kp_rec)
+        ext_rec = Exterior(
+            x0=0.0, y0=0.0, z0=0.0, omega=om_rec, phi=ph_rec, kappa=kp_rec
+        )
         ext_rec.compute_rotation_matrix()
 
         assert np.allclose(ext.dm, ext_rec.dm, atol=1e-12)
@@ -96,9 +98,20 @@ def test_seed_from_dlt():
     pix = 0.01
 
     proj = []
-    cpar = ControlPar(num_cams=1, imx=1000, imy=1000, pix_x=pix, pix_y=pix,
-                      mm=MmNp(n1=1, n2=[1], d=[0], n3=1), chfield=0, tiff_flag=1, hp_flag=1, allCam_flag=0,
-                      img_base_name=[""], cal_img_base_name=[""])
+    cpar = ControlPar(
+        num_cams=1,
+        imx=1000,
+        imy=1000,
+        pix_x=pix,
+        pix_y=pix,
+        mm=MmNp(n1=1, n2=[1], d=[0], n3=1),
+        chfield=0,
+        tiff_flag=1,
+        hp_flag=1,
+        allCam_flag=0,
+        img_base_name=[""],
+        cal_img_base_name=[""],
+    )
 
     for pt in grid:
         rel = pt - C_true

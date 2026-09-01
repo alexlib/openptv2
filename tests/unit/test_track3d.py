@@ -136,14 +136,26 @@ def test_track3d_level1_ranks_by_forward_acceleration_not_decoy_behind():
 
     count = track3d_loop_fast(
         1,
-        px0, prev0, 1,
-        px1, prev1, next1, 1,
-        px2, prev2, next2, 2,
-        0.5, 0.5, 0.5,
+        px0,
+        prev0,
+        1,
+        px1,
+        prev1,
+        next1,
+        1,
+        px2,
+        prev2,
+        next2,
+        2,
+        0.5,
+        0.5,
+        0.5,
         4,
     )
     assert count == 1
-    assert next1[0] == 1, "linked to the decoy behind the particle, not the true continuation"
+    assert next1[0] == 1, (
+        "linked to the decoy behind the particle, not the true continuation"
+    )
 
 
 def test_track3d_no_add():
@@ -573,10 +585,20 @@ def test_track3d_unlinked_particle_keeps_the_next_none_sentinel():
 
     count = track3d_loop_fast(
         1,
-        px0, prev0, 1,
-        px1, prev1, next1, 1,
-        px2, prev2, next2, 1,
-        0.5, 0.5, 0.5,
+        px0,
+        prev0,
+        1,
+        px1,
+        prev1,
+        next1,
+        1,
+        px2,
+        prev2,
+        next2,
+        1,
+        0.5,
+        0.5,
+        0.5,
         4,
     )
     assert count == 0

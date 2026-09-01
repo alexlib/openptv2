@@ -91,7 +91,7 @@ tracker = MyPTV3DTracker(v_max=20.0, a_max=30.0, max_gap=1, dt=1.0)
 trajs = tracker.track_frames(frame_particles)
 
 # Compute velocity (diff) and acceleration (diff2)
-vels = [np.diff(tr['pos'], axis=0) for tr in trajs if len(tr['pos']) >= 2]
+vels = [np.diff(tr["pos"], axis=0) for tr in trajs if len(tr["pos"]) >= 2]
 accs = [np.diff(v, axis=0) for v in vels if len(v) >= 2]
 ```
 

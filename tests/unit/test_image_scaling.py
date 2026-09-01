@@ -5,6 +5,7 @@ Every threshold in openptv2 is written on a 0-255 scale while cameras deliver
 historical mappings exactly, because the whole point of centralising them is
 that no existing behaviour moved.
 """
+
 import numpy as np
 import pytest
 from skimage.util import img_as_ubyte
@@ -41,7 +42,9 @@ def test_stretch_reproduces_detect_plate():
     rng = np.random.default_rng(0)
     w = (rng.random((64, 64)) * 60000 + 2000).astype(np.uint16)
     lo, hi = float(np.percentile(w, 1)), float(np.percentile(w, 99.5))
-    expected = np.clip((w.astype(float) - lo) / (hi - lo) * 255, 0, 255).astype(np.uint8)
+    expected = np.clip((w.astype(float) - lo) / (hi - lo) * 255, 0, 255).astype(
+        np.uint8
+    )
     np.testing.assert_array_equal(to_uint8(w, "stretch"), expected)
 
 
@@ -50,7 +53,7 @@ def test_nothing_ever_wraps():
     240 and 32768 into 0, scrambling the image instead of scaling it."""
     a = np.array([[2112, 32768, 65520]], dtype=np.uint16)
     wrapped = a.astype(np.uint8)
-    assert list(wrapped[0]) == [64, 0, 240]          # what NOT to do
+    assert list(wrapped[0]) == [64, 0, 240]  # what NOT to do
     for mode in ("fixed", "stretch"):
         out = to_uint8(a, mode)
         assert out[0, 0] <= out[0, 1] <= out[0, 2], f"{mode} must stay monotone"
@@ -59,9 +62,9 @@ def test_nothing_ever_wraps():
 def test_range_is_absolute_and_clips():
     a = np.array([[0, 2112, 33816, 65520, 65535]], dtype=np.uint16)
     out = to_uint8(a, "range", lo=2112, hi=65520)
-    assert out[0, 0] == 0 and out[0, 1] == 0        # at or below lo
-    assert out[0, 3] == 255 and out[0, 4] == 255    # at or above hi clips
-    assert 120 <= out[0, 2] <= 135                  # midpoint lands mid-scale
+    assert out[0, 0] == 0 and out[0, 1] == 0  # at or below lo
+    assert out[0, 3] == 255 and out[0, 4] == 255  # at or above hi clips
+    assert 120 <= out[0, 2] <= 135  # midpoint lands mid-scale
 
 
 def test_uint8_passes_through_untouched():
@@ -135,6 +138,6 @@ def test_targ_rec_scaled_accepts_uint16():
     from openptv2.segmentation import targ_rec_scaled
 
     a = np.zeros((64, 64), dtype=np.uint16)
-    a[28:34, 28:34] = 60000                      # one bright blob
+    a[28:34, 28:34] = 60000  # one bright blob
     out = targ_rec_scaled(a, 20, 80, 4, 5000, 2, 40, 2, 40, 100)
     assert len(out) >= 1

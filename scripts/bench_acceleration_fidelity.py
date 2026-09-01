@@ -69,11 +69,15 @@ for label, src, first, n in DATASETS:
     v_rms_t, v_k_t = stats(v_t)
     a_rms_t, a_k_t = stats(a_t)
     print(f"\n=== {label} ===")
-    print(f"{'TRUTH':<22} {'v_rms':>7} {'a_rms':>7} {'K_a':>7} "
-          f"{'a_rms err':>10} {'|a|>5sig':>9} {'prec':>7} {'yield':>7}")
-    print(f"{'ground truth':<22} {v_rms_t:7.3f} {a_rms_t:7.3f} {a_k_t:7.2f} "
-          f"{'--':>10} {100 * np.mean(np.abs(a_t - a_t.mean()) > 5 * a_rms_t):8.3f}% "
-          f"{'--':>7} {'--':>7}")
+    print(
+        f"{'TRUTH':<22} {'v_rms':>7} {'a_rms':>7} {'K_a':>7} "
+        f"{'a_rms err':>10} {'|a|>5sig':>9} {'prec':>7} {'yield':>7}"
+    )
+    print(
+        f"{'ground truth':<22} {v_rms_t:7.3f} {a_rms_t:7.3f} {a_k_t:7.2f} "
+        f"{'--':>10} {100 * np.mean(np.abs(a_t - a_t.mean()) > 5 * a_rms_t):8.3f}% "
+        f"{'--':>7} {'--':>7}"
+    )
 
     for name, tracker, dacc, greedy, pp in RUNS:
         t4be.GREEDY_CONFLICTS = greedy
@@ -84,16 +88,24 @@ for label, src, first, n in DATASETS:
         except Exception as e:
             print(f"{name:<22} ERROR {e}")
             continue
-        pred0 = {k: [(f - first, x, y, z) for (f, x, y, z) in v]
-                 for k, v in pred.items()}
+        pred0 = {
+            k: [(f - first, x, y, z) for (f, x, y, z) in v] for k, v in pred.items()
+        }
         m = bu.combined_metrics(tt, pred0)
         v_p, a_p = kinematics(pred0)
         v_rms, _ = stats(v_p)
         a_rms, a_k = stats(a_p)
         # fraction of predicted accelerations beyond 5 sigma of the TRUE
         # distribution -- these are essentially all wrong-link artefacts
-        outl = 100 * np.mean(np.abs(a_p - a_t.mean()) > 5 * a_rms_t) if a_p.size else float("nan")
-        print(f"{name:<22} {v_rms:7.3f} {a_rms:7.3f} {a_k:7.2f} "
-              f"{100 * (a_rms / a_rms_t - 1):+9.1f}% {outl:8.3f}% "
-              f"{m['precision']:7.4f} {m['yield_recall']:7.4f}", flush=True)
+        outl = (
+            100 * np.mean(np.abs(a_p - a_t.mean()) > 5 * a_rms_t)
+            if a_p.size
+            else float("nan")
+        )
+        print(
+            f"{name:<22} {v_rms:7.3f} {a_rms:7.3f} {a_k:7.2f} "
+            f"{100 * (a_rms / a_rms_t - 1):+9.1f}% {outl:8.3f}% "
+            f"{m['precision']:7.4f} {m['yield_recall']:7.4f}",
+            flush=True,
+        )
     t4be.GREEDY_CONFLICTS = 0

@@ -13,10 +13,12 @@ PROPTV_DATA_DIR = r"C:\Users\alex\Github\proPTV\data\500_25"
 
 @pytest.mark.skipif(
     not os.path.exists(PROPTV_DATA_DIR),
-    reason="proPTV 500_25 test dataset not found on disk"
+    reason="proPTV 500_25 test dataset not found on disk",
 )
 def test_openptv2_proptv_500_25_accuracy():
-    origin_files = [f"{PROPTV_DATA_DIR}/origin/origin_{str(t).zfill(5)}.txt" for t in range(5)]
+    origin_files = [
+        f"{PROPTV_DATA_DIR}/origin/origin_{str(t).zfill(5)}.txt" for t in range(5)
+    ]
     frame_particles = []
     for filepath in origin_files:
         assert os.path.exists(filepath), f"Missing {filepath}"

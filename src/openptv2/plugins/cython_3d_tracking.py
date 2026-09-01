@@ -17,6 +17,7 @@ log = logging.getLogger("openptv2.cython_3d_tracking")
 
 MAX_CANDS = 32
 
+
 class Cython3DTracker:
     """Modular 3D tracker using OpenPTV2's compiled Cython segment-priority engine."""
 
@@ -84,6 +85,7 @@ class Cython3DTracker:
             plugins_cfg = pm.parameters.get("plugins", {}) if pm else {}
 
             from openptv2.tracking_presets import infer_direction
+
             direction = infer_direction(track_cfg, plugins_cfg)
 
             tracker.full_forward_3d()
@@ -94,7 +96,8 @@ class Cython3DTracker:
                 stats = tracker.postprocess()
                 log.info(
                     "Post-process links: %s -> %s",
-                    stats.get("links_before", 0), stats.get("links_after", 0),
+                    stats.get("links_before", 0),
+                    stats.get("links_after", 0),
                 )
 
     def track_frames(self, frame_particles: list[np.ndarray]) -> list[dict]:
@@ -152,10 +155,20 @@ class Cython3DTracker:
             # Execute compiled Cython track3d_loop_fast kernel!
             track3d_loop_fast(
                 n1,
-                pos_0, prev_0, n0,
-                pos_1, prev_1, next_1, n1,
-                pos_2, prev_2, next_2, n2,
-                self.v_max, self.v_max, self.v_max,
+                pos_0,
+                prev_0,
+                n0,
+                pos_1,
+                prev_1,
+                next_1,
+                n1,
+                pos_2,
+                prev_2,
+                next_2,
+                n2,
+                self.v_max,
+                self.v_max,
+                self.v_max,
                 self.max_cands,
                 self.cold_start_gate,
             )
@@ -203,12 +216,14 @@ class Cython3DTracker:
                         vel_arr[1:] = np.diff(pos_arr, axis=0) / self.dt
                         vel_arr[0] = vel_arr[1]
 
-                    tracks.append({
-                        "id": next_track_id,
-                        "pos": pos_arr,
-                        "time": time_arr,
-                        "vel": vel_arr,
-                    })
+                    tracks.append(
+                        {
+                            "id": next_track_id,
+                            "pos": pos_arr,
+                            "time": time_arr,
+                            "vel": vel_arr,
+                        }
+                    )
                     next_track_id += 1
 
         return tracks
@@ -216,4 +231,3 @@ class Cython3DTracker:
 
 # Plugin contract alias
 Tracking = Cython3DTracker
-

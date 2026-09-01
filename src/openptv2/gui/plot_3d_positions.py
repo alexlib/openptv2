@@ -198,21 +198,32 @@ def _project_to_pixels(ax, xyz: np.ndarray) -> np.ndarray:
     rotatable 3D axes, since mouse events only carry pixel coords."""
     from mpl_toolkits.mplot3d import proj3d
 
-    xs2d, ys2d, _ = proj3d.proj_transform(xyz[:, 0], xyz[:, 1], xyz[:, 2], ax.get_proj())
+    xs2d, ys2d, _ = proj3d.proj_transform(
+        xyz[:, 0], xyz[:, 1], xyz[:, 2], ax.get_proj()
+    )
     return ax.transData.transform(np.column_stack([xs2d, ys2d]))
 
 
-def _wire_measurement_events(fig: Figure, ax, all_xyz: np.ndarray, all_frame: np.ndarray) -> None:
+def _wire_measurement_events(
+    fig: Figure, ax, all_xyz: np.ndarray, all_frame: np.ndarray
+) -> None:
     """Hover to identify a dot (frame + xyz shown top-left); click to select
     up to 4 dots (highlighted + numbered) and print running
     displacement/velocity/(from the 3rd point on) acceleration between
     consecutively selected points, using the real frame-number gaps."""
     state = {"selected": []}  # list of (frame, x, y, z)
     hover_text = ax.text2D(
-        0.02, 0.98, "", transform=ax.transAxes, va="top", fontsize=9,
+        0.02,
+        0.98,
+        "",
+        transform=ax.transAxes,
+        va="top",
+        fontsize=9,
         bbox=dict(boxstyle="round", fc="white", alpha=0.8),
     )
-    picked_scatter = ax.scatter([], [], [], s=80, facecolors="none", edgecolors="red", linewidths=2)
+    picked_scatter = ax.scatter(
+        [], [], [], s=80, facecolors="none", edgecolors="red", linewidths=2
+    )
 
     def _nearest(event):
         if event.x is None or event.y is None or len(all_xyz) == 0:
@@ -229,7 +240,9 @@ def _wire_measurement_events(fig: Figure, ax, all_xyz: np.ndarray, all_frame: np
         if idx is None:
             return
         x, y, z = all_xyz[idx]
-        hover_text.set_text(f"frame {int(all_frame[idx])}: ({x:.2f}, {y:.2f}, {z:.2f}) mm")
+        hover_text.set_text(
+            f"frame {int(all_frame[idx])}: ({x:.2f}, {y:.2f}, {z:.2f}) mm"
+        )
         fig.canvas.draw_idle()
 
     def on_click(event):
@@ -246,16 +259,20 @@ def _wire_measurement_events(fig: Figure, ax, all_xyz: np.ndarray, all_frame: np
         fig.canvas.draw_idle()
 
         n = len(sel)
-        print(f"[3D measure] point {n}: frame {point[0]} = "
-              f"({point[1]:.3f}, {point[2]:.3f}, {point[3]:.3f}) mm")
+        print(
+            f"[3D measure] point {n}: frame {point[0]} = "
+            f"({point[1]:.3f}, {point[2]:.3f}, {point[3]:.3f}) mm"
+        )
         if n >= 2:
             f1, *p1 = sel[-2]
             f2, *p2 = sel[-1]
             p1, p2 = np.array(p1), np.array(p2)
             dist = float(np.linalg.norm(p2 - p1))
             dframe = f2 - f1
-            print(f"  displacement (pt{n - 1}->pt{n}): {dist:.4f} mm over {dframe} frame(s)"
-                  + (f"  ->  velocity {dist / dframe:.4f} mm/frame" if dframe else ""))
+            print(
+                f"  displacement (pt{n - 1}->pt{n}): {dist:.4f} mm over {dframe} frame(s)"
+                + (f"  ->  velocity {dist / dframe:.4f} mm/frame" if dframe else "")
+            )
         if n >= 3:
             f0, *p0 = sel[-3]
             f1b, *p1b = sel[-2]
@@ -266,7 +283,9 @@ def _wire_measurement_events(fig: Figure, ax, all_xyz: np.ndarray, all_frame: np
                 v1 = (p1b - p0) / dt1
                 v2 = (p2b - p1b) / dt2
                 accel = np.linalg.norm(v2 - v1) / ((dt1 + dt2) / 2.0)
-                print(f"  acceleration (pt{n - 2}->pt{n - 1}->pt{n}): {accel:.4f} mm/frame^2")
+                print(
+                    f"  acceleration (pt{n - 2}->pt{n - 1}->pt{n}): {accel:.4f} mm/frame^2"
+                )
         if n >= 4:
             print("  [4 points selected -- press 'c' to clear and start a new group]")
 
@@ -310,8 +329,12 @@ def build_sequence_figure(frames_points: dict, bounds=None) -> Figure:
                 continue
             color = cmap(i / max(len(frames) - 1, 1))
             ax.scatter(
-                pts[:, 0], pts[:, 1], pts[:, 2],
-                color=color, s=10, depthshade=True,
+                pts[:, 0],
+                pts[:, 1],
+                pts[:, 2],
+                color=color,
+                s=10,
+                depthshade=True,
                 label=f"frame {f}" if len(frames) <= 12 else None,
             )
             all_xyz_parts.append(pts)
@@ -341,16 +364,19 @@ def build_sequence_figure(frames_points: dict, bounds=None) -> Figure:
     n_total = int(all_xyz.shape[0])
     ax.set_title(
         f"3D positions — frames {frames[0]}..{frames[-1]} ({n_total} points)"
-        if frames else "3D positions — no data"
+        if frames
+        else "3D positions — no data"
     )
     if len(frames) <= 12 and frames:
         ax.legend(loc="upper left", fontsize=7)
 
     fig.text(
-        0.02, 0.02,
+        0.02,
+        0.02,
         "Hover: identify a dot. Click: select (up to 4) for displacement/"
         "velocity/acceleration, printed to the terminal. 'c': clear selection.",
-        fontsize=7, color="#555555",
+        fontsize=7,
+        color="#555555",
     )
     _wire_measurement_events(fig, ax, all_xyz, all_frame)
     # The measurement wiring always adds one (empty when unselected) scatter
@@ -424,7 +450,9 @@ def create_3d_positions_panel(rt_is_path, frame, bounds=None) -> Plot3DPositions
     return Plot3DPositions(figure=build_3d_figure(points, frame, bounds=bounds))
 
 
-def read_positions_sequence(exp_path, first: int, last: int, max_frames: int = 50) -> dict:
+def read_positions_sequence(
+    exp_path, first: int, last: int, max_frames: int = 50
+) -> dict:
     """Read per-frame 3D positions (rt_is file, falling back to the store)
     across a frame range, same source as _read_positions per frame. Caps at
     max_frames (keeping the first max_frames), matching
@@ -442,10 +470,14 @@ def read_positions_sequence(exp_path, first: int, last: int, max_frames: int = 5
     return frames_points
 
 
-def create_3d_positions_sequence_panel(exp_path, first: int, last: int, bounds=None, max_frames: int = 50) -> Plot3DPositions:
+def create_3d_positions_sequence_panel(
+    exp_path, first: int, last: int, bounds=None, max_frames: int = 50
+) -> Plot3DPositions:
     """Read positions across a frame range and return a ready-to-show
     Plot3DPositions window with the interactive multi-frame scatter
     (build_sequence_figure): hover to identify a dot, click to measure
     displacement/velocity/acceleration between selected dots."""
-    frames_points = read_positions_sequence(exp_path, first, last, max_frames=max_frames)
+    frames_points = read_positions_sequence(
+        exp_path, first, last, max_frames=max_frames
+    )
     return Plot3DPositions(figure=build_sequence_figure(frames_points, bounds=bounds))

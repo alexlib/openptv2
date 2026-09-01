@@ -374,7 +374,11 @@ class TrackHandler(Handler):
             if "proptv" not in experiment.pm.parameters:
                 experiment.pm.parameters["proptv"] = {}
 
-            direction = "forward_backward" if getattr(track_params, "run_backward", False) else "forward"
+            direction = (
+                "forward_backward"
+                if getattr(track_params, "run_backward", False)
+                else "forward"
+            )
             t_dict, p_dict, proptv_dict = apply_tracker(
                 track_params.tracker,
                 direction,
@@ -446,14 +450,16 @@ class Tracking_Params(HasTraits):
 
         self.tracker = infer_tracker(plugins_params)
         dir_val = infer_direction(tracking_params, plugins_params)
-        self.run_backward = (dir_val == "forward_backward")
+        self.run_backward = dir_val == "forward_backward"
 
     Tracking_Params_View = View(
         VGroup(
             Item(
                 name="tracker",
                 label="Tracker:",
-                editor=EnumEditor(values={key: label for key, label in TRACKER_CHOICES}),
+                editor=EnumEditor(
+                    values={key: label for key, label in TRACKER_CHOICES}
+                ),
             ),
             Item(
                 name="run_backward",

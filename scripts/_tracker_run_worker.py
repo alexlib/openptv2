@@ -31,11 +31,18 @@ def main() -> None:
     if tracker.startswith("liboptv:"):
         mode = tracker.split(":", 1)[1]
         pred, dt = bu.run_liboptv_tracker(
-            mode=mode, track_overrides=overrides, src=src, first=first, n_frames=n_frames,
+            mode=mode,
+            track_overrides=overrides,
+            src=src,
+            first=first,
+            n_frames=n_frames,
         )
     else:
         pred, dt = bu.run_single_tracker(
-            tracker, track_overrides=overrides, src=src, first=first,
+            tracker,
+            track_overrides=overrides,
+            src=src,
+            first=first,
         )
 
     result = {

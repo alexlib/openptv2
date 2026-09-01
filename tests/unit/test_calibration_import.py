@@ -27,12 +27,16 @@ def test_calibration_from_opencv_roundtrip():
     imx, imy = 2560, 2048
     pix_x = 0.005
 
-    cal, pix_y = calibration_from_opencv(K, dist, rvec, tvec, imx=imx, imy=imy, pix_x=pix_x)
+    cal, pix_y = calibration_from_opencv(
+        K, dist, rvec, tvec, imx=imx, imy=imy, pix_x=pix_x
+    )
     assert isinstance(cal, Calibration)
     assert cal.int_par.cc == pytest.approx(fx * pix_x)
 
     # Check roundtrip
-    K_rec, dist_rec, rvec_rec, tvec_rec = opencv_from_calibration(cal, imx=imx, imy=imy, pix_x=pix_x, pix_y=pix_y)
+    K_rec, dist_rec, rvec_rec, tvec_rec = opencv_from_calibration(
+        cal, imx=imx, imy=imy, pix_x=pix_x, pix_y=pix_y
+    )
     assert np.allclose(K, K_rec, atol=1e-6)
     assert np.allclose(rvec, rvec_rec, atol=1e-6)
     assert np.allclose(tvec, tvec_rec, atol=1e-6)

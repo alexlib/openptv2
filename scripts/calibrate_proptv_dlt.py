@@ -123,6 +123,7 @@ def rotation_matrix_to_angles(dm: np.ndarray) -> tuple[float, float, float]:
     (``angles_from_dm``) — this shim is kept so the script remains standalone.
     """
     from openptv2.calibration_seed import angles_from_dm as _afd
+
     return _afd(dm)
 
 
@@ -144,7 +145,9 @@ def _self_test():
     ext = Exterior(x0=0.3, y0=-0.2, z0=-5.0, omega=0.1, phi=-0.15, kappa=0.2)
     ext.compute_rotation_matrix()
     intp = Interior(xh=0.0, yh=0.0, cc=6.0)
-    cal = Calibration(ext_par=ext, int_par=intp, glass_par=Glass(), added_par=AddedPar())
+    cal = Calibration(
+        ext_par=ext, int_par=intp, glass_par=Glass(), added_par=AddedPar()
+    )
 
     rng = np.random.default_rng(0)
     pts = rng.uniform(-1, 2, size=(40, 3))
@@ -158,10 +161,21 @@ def _self_test():
     # rotation (verified empirically -- see module docstring), so the
     # dataclass's "dm" field itself is camera-to-world: dm = R.T.
     omega, phi, kappa = rotation_matrix_to_angles(R.T)
-    print("recovered angles:", omega, phi, kappa, "vs true:", ext.omega, ext.phi, ext.kappa)
+    print(
+        "recovered angles:",
+        omega,
+        phi,
+        kappa,
+        "vs true:",
+        ext.omega,
+        ext.phi,
+        ext.kappa,
+    )
 
 
-def load_camera_correspondences(origin_path: Path, cam: int) -> tuple[np.ndarray, np.ndarray]:
+def load_camera_correspondences(
+    origin_path: Path, cam: int
+) -> tuple[np.ndarray, np.ndarray]:
     """(N,3) world XYZ and (N,2) raw pixel xc,yc for one camera from a
     proPTV origin_*.txt frame, dropping rows where that camera didn't see
     the particle (xc/yc is NaN)."""
@@ -205,16 +219,22 @@ def calibrate_camera_from_scratch(cam: int, origin_path: Path, cpar):
     ext = Exterior(x0=C[0], y0=C[1], z0=C[2], omega=omega, phi=phi, kappa=kappa)
     ext.compute_rotation_matrix()
     intp = Interior(xh=0.0, yh=0.0, cc=cc)
-    cal = Calibration(ext_par=ext, int_par=intp, glass_par=Glass(), added_par=AddedPar())
+    cal = Calibration(
+        ext_par=ext, int_par=intp, glass_par=Glass(), added_par=AddedPar()
+    )
 
     ok = external_calibration(cal, xyz, pix, cpar)
     if not ok:
-        raise RuntimeError(f"cam{cam}: external_calibration (raw_orient) did not converge")
+        raise RuntimeError(
+            f"cam{cam}: external_calibration (raw_orient) did not converge"
+        )
 
     from openptv2.algorithms.tracking_frame_buf import Target
 
     targets = [Target(pnr=i, x=pix[i, 0], y=pix[i, 1]) for i in range(len(pix))]
-    residuals, used, _err = full_calibration(cal, xyz, targets, cpar, flags=["cc", "xh", "yh", "k1", "k2", "p1", "p2"])
+    residuals, used, _err = full_calibration(
+        cal, xyz, targets, cpar, flags=["cc", "xh", "yh", "k1", "k2", "p1", "p2"]
+    )
 
     reproj = np.array([img_coord(xyz[i], cal, cpar.mm) for i in used])
     obs_metric = metric[used]

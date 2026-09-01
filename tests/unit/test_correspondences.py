@@ -370,7 +370,9 @@ class TestNTupelIdentityTranslation:
         corrected = correct_frame(frm, calib, cpar, 0.0001)
         con, match_counts = correspondences(frm, corrected, vpar, cpar, calib)
 
-        assert match_counts[0] > 0, "expected at least some quads on a well-separated scatter"
+        assert match_counts[0] > 0, (
+            "expected at least some quads on a well-separated scatter"
+        )
 
         n_checked = 0
         for tup in con[: match_counts[0]]:  # quads are listed first

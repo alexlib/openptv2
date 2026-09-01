@@ -257,4 +257,3 @@ def create_3d_trajectories_panel(
         total_frames_requested=total_frames,
     )
     return Plot3DTrajectories(figure=fig)
-

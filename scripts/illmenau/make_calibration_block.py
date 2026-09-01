@@ -12,6 +12,7 @@ grid index comes from plate.yaml) sits at the origin.
 
     ILLMENAU_DIR=<folder> ILLMENAU_CAMS=5,6,7,8 python make_calibration_block.py
 """
+
 import os
 import sys
 
@@ -37,7 +38,9 @@ else:
 
 datum_id = CFG.DATUM_IY * CFG.NX + CFG.DATUM_IX + 1
 print(f"{len(ids)} points, {CFG.NX}x{CFG.NY} at {CFG.PITCH} mm pitch")
-print(f"datum grid ({CFG.DATUM_IX},{CFG.DATUM_IY}) -> point id {datum_id}: "
-      f"{lines[datum_id - 1]}")
+print(
+    f"datum grid ({CFG.DATUM_IX},{CFG.DATUM_IY}) -> point id {datum_id}: "
+    f"{lines[datum_id - 1]}"
+)
 assert np.allclose(xyz[datum_id - 1], 0.0), "datum dot is not at the origin"
 print(f"first: {lines[0]}\nlast:  {lines[-1]}")

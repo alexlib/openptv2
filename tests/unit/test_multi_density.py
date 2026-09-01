@@ -17,7 +17,10 @@ def test_default_tracker_is_priority_segment_3d():
     assert BUILTIN_TRACKING_PLUGINS["default"] == "openptv2.plugins.cython_3d_tracking"
     assert BUILTIN_TRACKING_PLUGINS["fast"] == "openptv2.plugins.cython_3d_tracking"
     assert BUILTIN_TRACKING_PLUGINS["fast_3d"] == "openptv2.plugins.cython_3d_tracking"
-    assert BUILTIN_TRACKING_PLUGINS["priority_segment_3d"] == "openptv2.plugins.cython_3d_tracking"
+    assert (
+        BUILTIN_TRACKING_PLUGINS["priority_segment_3d"]
+        == "openptv2.plugins.cython_3d_tracking"
+    )
 
 
 def test_fast_alias_mapping():

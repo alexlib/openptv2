@@ -97,8 +97,11 @@ Verify dtype/sentinels survive:
 from openptv2.storage import RunStore
 from openptv2.algorithms.tracking_frame_buf import read_path_frame
 import numpy as np
-store = RunStore('test_data/test_cavity/run.zarr', mode='r')
-cor_s, path_s = read_path_frame('res/rt_is','res/ptv_is','res/added',10001,store=store)
+
+store = RunStore("test_data/test_cavity/run.zarr", mode="r")
+cor_s, path_s = read_path_frame(
+    "res/rt_is", "res/ptv_is", "res/added", 10001, store=store
+)
 # compare cor_s[i].p against ASCII rt_is columns 5..8 for frame 10001
 ```
 Check: int32 vs int64, -1 sentinels preserved, ordering (rt_is row order vs

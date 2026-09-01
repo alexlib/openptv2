@@ -83,7 +83,10 @@ class _InMemoryLinkageStore:
     def __init__(self, source_store: Optional[RunStore] = None):
         self._source_store = source_store
         self.root: dict[str, Any] = {}
-        self._linkages: dict[tuple[str, int], tuple[np.ndarray, np.ndarray, np.ndarray, Optional[np.ndarray]]] = {}
+        self._linkages: dict[
+            tuple[str, int],
+            tuple[np.ndarray, np.ndarray, np.ndarray, Optional[np.ndarray]],
+        ] = {}
 
     def read_correspondences(self, frame: int) -> tuple[np.ndarray, np.ndarray]:
         if self._source_store is not None:
@@ -108,7 +111,9 @@ class _InMemoryLinkageStore:
     def write_targets(self, cam_idx: int, frame: int, targets) -> None:
         pass
 
-    def write_correspondences(self, frame: int, pos_3d: np.ndarray, cam_target_ids: np.ndarray) -> None:
+    def write_correspondences(
+        self, frame: int, pos_3d: np.ndarray, cam_target_ids: np.ndarray
+    ) -> None:
         pass
 
     def write_linkage(
@@ -223,8 +228,15 @@ def _track_single_chunk(
             sys.stdout = sys_stdout_orig
 
         link_name = Path(naming.get("linkage", "res/ptv_is")).name
-        linkages: dict[int, tuple[np.ndarray, np.ndarray, np.ndarray, Optional[np.ndarray]]] = {}
-        for (name, f), (prev_ids, next_ids, pos_3d, prio_arr) in local_store._linkages.items():
+        linkages: dict[
+            int, tuple[np.ndarray, np.ndarray, np.ndarray, Optional[np.ndarray]]
+        ] = {}
+        for (name, f), (
+            prev_ids,
+            next_ids,
+            pos_3d,
+            prio_arr,
+        ) in local_store._linkages.items():
             if name == link_name:
                 linkages[f] = (prev_ids, next_ids, pos_3d, prio_arr)
 
@@ -373,7 +385,9 @@ def track_sequence_chunked_parallel(
     if n_workers is None:
         n_workers = min(os.cpu_count() or 4, 8)
 
-    chunks = partition_tracking_chunks(first, last, n_workers=n_workers, overlap=overlap)
+    chunks = partition_tracking_chunks(
+        first, last, n_workers=n_workers, overlap=overlap
+    )
 
     store_path_str = str(store.store_path) if store is not None else None
     cwd = os.getcwd()
@@ -454,12 +468,18 @@ def track_sequence_chunked_parallel(
             relink_trajectory_gaps,
             seed_cold_start,
         )
+
         try:
             seed_cold_start(
                 naming["linkage"], first, last, float(tpar.dvxmax), store=store
             )
             relink_trajectory_gaps(
-                naming["linkage"], first, last, max_gap=2, max_accel_err=float(tpar.dacc), store=store
+                naming["linkage"],
+                first,
+                last,
+                max_gap=2,
+                max_accel_err=float(tpar.dacc),
+                store=store,
             )
             enforce_reciprocity(naming["linkage"], first, last, store=store)
         except Exception:

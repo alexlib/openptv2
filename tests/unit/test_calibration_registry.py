@@ -130,8 +130,13 @@ class TestRefineAndSelect:
         # 75/75 at eps60). Use a generous radius so the synthetic test can
         # exercise the refinement, not the sortgrid threshold.
         result = _refine_and_select(
-            cam=0, cal=cal, cpar=self.cpar, fix=self.ref_pts, nfix=nfix,
-            eps=60, pix=pix,
+            cam=0,
+            cal=cal,
+            cpar=self.cpar,
+            fix=self.ref_pts,
+            nfix=nfix,
+            eps=60,
+            pix=pix,
         )
 
         assert result.cam == 0
@@ -149,8 +154,13 @@ class TestRefineAndSelect:
         produce finite residuals)."""
         cal = make_calibration()
         result = _refine_and_select(
-            cam=2, cal=cal, cpar=self.cpar, fix=self.ref_pts,
-            nfix=len(self.ref_pts), eps=15, pix=[],
+            cam=2,
+            cal=cal,
+            cpar=self.cpar,
+            fix=self.ref_pts,
+            nfix=len(self.ref_pts),
+            eps=15,
+            pix=[],
         )
         assert result.matched == 0
         assert result.rms == float("inf")

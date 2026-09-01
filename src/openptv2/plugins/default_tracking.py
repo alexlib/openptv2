@@ -86,8 +86,13 @@ class Tracking:
 
                 linkage_name = Path(tracker._naming["linkage"]).name
                 stats = run_corrective_pass(
-                    self.exp.cpar, self.exp.vpar, self.exp.track_par, self.exp.spar,
-                    self.exp.cals, store, linkage_name=linkage_name,
+                    self.exp.cpar,
+                    self.exp.vpar,
+                    self.exp.track_par,
+                    self.exp.spar,
+                    self.exp.cals,
+                    store,
+                    linkage_name=linkage_name,
                     max_passes=corrective_passes,
                 )
                 print(

@@ -18,6 +18,7 @@ plate.yaml:datum.
 
     ILLMENAU_DIR=<folder> ILLMENAU_CAMS=5,6,7,8 python find_datum.py [--frames N]
 """
+
 import os
 import sys
 from collections import Counter
@@ -33,8 +34,8 @@ from openptv2.detect_plate import (  # noqa: E402
 )
 from openptv2.plate_labeler import label_plate  # noqa: E402
 
-MAX_FRAMES = 8          # complete views to collect per camera
-MAX_SCAN = 12           # images to open per camera before giving up
+MAX_FRAMES = 8  # complete views to collect per camera
+MAX_SCAN = 12  # images to open per camera before giving up
 for i, a in enumerate(sys.argv):
     if a == "--frames":
         MAX_FRAMES = int(sys.argv[i + 1])
@@ -47,7 +48,9 @@ cpar = CFG.control_par()
 full = CFG.NX * CFG.NY
 
 print(CFG.banner())
-print(f"\nlooking for views that see all {full} dots, so the grid anchors at a true 0\n")
+print(
+    f"\nlooking for views that see all {full} dots, so the grid anchors at a true 0\n"
+)
 print("  cam  frame       dots   coded L corner at (ix, iy)")
 
 votes = Counter()
@@ -72,10 +75,16 @@ for ci in range(CFG.NCAM):
             if res is None or len(res.centroids) < full:
                 continue
             # deliberately NO corner_index here: that is the whole point
-            ip, _, idx = label_plate(res.centroids, res.coded_mask,
-                                     pitch_x=CFG.PITCH, pitch_y=CFG.PITCH,
-                                     nx=CFG.NX, ny=CFG.NY, y_sign=1)
-        except Exception as e:                       # noqa: BLE001 - report and move on
+            ip, _, idx = label_plate(
+                res.centroids,
+                res.coded_mask,
+                pitch_x=CFG.PITCH,
+                pitch_y=CFG.PITCH,
+                nx=CFG.NX,
+                ny=CFG.NY,
+                y_sign=1,
+            )
+        except Exception as e:  # noqa: BLE001 - report and move on
             print(f"  {CFG.cam_number(ci)}    {fr}   {type(e).__name__}: {e}")
             continue
         if len(ip) < full:
@@ -95,14 +104,17 @@ if not votes:
     raise SystemExit(
         "no view saw the complete lattice, so the datum cannot be read off this way.\n"
         "Either capture a frame where the whole plate is visible in one camera, or "
-        "identify the corner dot by eye on one image and enter its (ix, iy) manually.")
-(best, n), = votes.most_common(1)
+        "identify the corner dot by eye on one image and enter its (ix, iy) manually."
+    )
+((best, n),) = votes.most_common(1)
 total = sum(votes.values())
 print(f"datum grid index = {best}   ({n}/{total} complete views agree)")
 if len(votes) > 1:
     print(f"  DISAGREEMENT: {dict(votes)}")
-    print("  Do not proceed until this is one value -- a split vote means the L code "
-          "is resolving to different dots in different views.")
+    print(
+        "  Do not proceed until this is one value -- a split vote means the L code "
+        "is resolving to different dots in different views."
+    )
 else:
     ix, iy = best
     print(f"  put this in {CFG.DIR / 'plate.yaml'} under plate.datum:")

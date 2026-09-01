@@ -18,8 +18,12 @@ from __future__ import annotations
 import numpy as np
 
 
-def _identify_L(coded_xy: np.ndarray, pitch: float, up_hint: np.ndarray | None = None,
-                up_hint_max_deg: float = 60.0):
+def _identify_L(
+    coded_xy: np.ndarray,
+    pitch: float,
+    up_hint: np.ndarray | None = None,
+    up_hint_max_deg: float = 60.0,
+):
     """Find L corner / axes from 3 coded centroids.
 
     Returns (corner, e_x, e_y) where ``e_x``/``e_y`` are unit vectors in
@@ -67,7 +71,7 @@ def _identify_L(coded_xy: np.ndarray, pitch: float, up_hint: np.ndarray | None =
             cand_y = cand_y / max(float(np.linalg.norm(cand_y)), 1e-9)
             align = float(np.dot(cand_y, up_hint))
             if align < np.cos(np.radians(up_hint_max_deg)):
-                continue                      # +Y too far from vertical: impossible
+                continue  # +Y too far from vertical: impossible
             err += 2.0 * (1.0 - align)
         if err < best_err:
             best_err = err
@@ -80,8 +84,10 @@ def _identify_L(coded_xy: np.ndarray, pitch: float, up_hint: np.ndarray | None =
             e_x = (x_pt - c) / float(np.linalg.norm(x_pt - c))
             best = (corner, e_x, e_y, y_pt, x_pt)
     if best is None or best_err > 0.85:
-        raise ValueError(f"L identification failed: best_err={best_err:.3f} "
-                         f"coded points {coded_xy.tolist()} do not form the expected 1:2 right angle")
+        raise ValueError(
+            f"L identification failed: best_err={best_err:.3f} "
+            f"coded points {coded_xy.tolist()} do not form the expected 1:2 right angle"
+        )
     corner, e_x, e_y, y_pt, x_pt = best
     if abs(float(np.dot(e_x, e_y))) > 0.45:
         raise ValueError(f"L legs not orthogonal: dot={float(np.dot(e_x, e_y)):.3f}")
@@ -127,10 +133,13 @@ def label_coded_6x7(
     # Auto-detect: expect 3 coded
     coded_xy = centroids[coded_mask]
     if coded_xy.shape[0] != 3:
-        raise ValueError(f"coded 6×7 needs exactly 3 coded dots, got {coded_xy.shape[0]}")
+        raise ValueError(
+            f"coded 6×7 needs exactly 3 coded dots, got {coded_xy.shape[0]}"
+        )
     pitch = float((pitch_x + pitch_y) / 2.0)
-    corner, e_x, e_y = _identify_L(coded_xy, pitch, up_hint=up_hint,
-                                   up_hint_max_deg=up_hint_max_deg)
+    corner, e_x, e_y = _identify_L(
+        coded_xy, pitch, up_hint=up_hint, up_hint_max_deg=up_hint_max_deg
+    )
 
     # Project every centroid onto the L bases
     cand = [p for p in coded_xy if not np.allclose(p, corner)]
@@ -141,7 +150,7 @@ def label_coded_6x7(
     else:
         y_pt, x_pt = cand[1], cand[0]
     vx = (x_pt - corner) / 2.0  # one pitch step in +X
-    vy = y_pt - corner          # one pitch step in +Y
+    vy = y_pt - corner  # one pitch step in +Y
     M = np.column_stack([vx, vy])  # 2×2
     det = float(np.linalg.det(M))
     if abs(det) < 1e-6:
@@ -177,8 +186,12 @@ def label_coded_6x7(
 
     # Keep only points that snap within tolerance and lie inside the nx x ny rectangle
     keep = (
-        (np.abs(ix_f - ix) < tol) & (np.abs(iy_f - iy) < tol) &
-        (ix >= 0) & (ix < nx) & (iy >= 0) & (iy < ny)
+        (np.abs(ix_f - ix) < tol)
+        & (np.abs(iy_f - iy) < tol)
+        & (ix >= 0)
+        & (ix < nx)
+        & (iy >= 0)
+        & (iy < ny)
     )
     idx = np.column_stack([ix[keep], iy[keep]])
     img_pts = centroids[keep]
@@ -193,7 +206,10 @@ def label_coded_6x7(
             order.append(k)
         else:
             prev = seen[key]
-            if (abs(ix_f[keep][k] - xi) + abs(iy_f[keep][k] - yi)) < (abs(ix_f[keep][prev] - int(idx[prev, 0])) + abs(iy_f[keep][prev] - int(idx[prev, 1]))):
+            if (abs(ix_f[keep][k] - xi) + abs(iy_f[keep][k] - yi)) < (
+                abs(ix_f[keep][prev] - int(idx[prev, 0]))
+                + abs(iy_f[keep][prev] - int(idx[prev, 1]))
+            ):
                 order[order.index(prev)] = k
                 seen[key] = k
     if order:
@@ -215,7 +231,7 @@ def label_coded_6x7(
 
             # Project all centroids to grid
             cent_h = np.column_stack([centroids, np.ones(len(centroids))])
-            proj_grid = (cent_h @ H_img_to_grid.T)
+            proj_grid = cent_h @ H_img_to_grid.T
             proj_grid = proj_grid[:, :2] / proj_grid[:, 2:3]
 
             ix_h_f = proj_grid[:, 0]
@@ -224,8 +240,12 @@ def label_coded_6x7(
             iy_h = np.round(iy_h_f).astype(int)
 
             keep_h = (
-                (np.abs(ix_h_f - ix_h) < tol) & (np.abs(iy_h_f - iy_h) < tol) &
-                (ix_h >= 0) & (ix_h < nx) & (iy_h >= 0) & (iy_h < ny)
+                (np.abs(ix_h_f - ix_h) < tol)
+                & (np.abs(iy_h_f - iy_h) < tol)
+                & (ix_h >= 0)
+                & (ix_h < nx)
+                & (iy_h >= 0)
+                & (iy_h < ny)
             )
             idx_h = np.column_stack([ix_h[keep_h], iy_h[keep_h]])
             img_pts_h = centroids[keep_h]
@@ -243,7 +263,9 @@ def label_coded_6x7(
         except Exception:
             pass
 
-    ref_pts = np.array([[xi * pitch_x, yi * pitch_y * y_sign, 0.0] for xi, yi in idx], dtype=float)
+    ref_pts = np.array(
+        [[xi * pitch_x, yi * pitch_y * y_sign, 0.0] for xi, yi in idx], dtype=float
+    )
     return img_pts, ref_pts, idx
 
 
@@ -270,6 +292,7 @@ def label_uncoded_grid(
         return pts, np.zeros((0, 3)), np.zeros((0, 2), int)
     # Estimate image-space pitch as median nearest-neighbour distance
     from scipy.spatial import cKDTree
+
     tree = cKDTree(pts)
     dists, _ = tree.query(pts, k=2)
     pitch_img = float(np.median(dists[:, 1]))
@@ -321,7 +344,13 @@ def label_uncoded_grid(
     gmin = grid[mask].min(axis=0)
     grid[mask] -= gmin
     # Filter to nx×ny
-    inside = mask & (grid[:, 0] >= 0) & (grid[:, 0] < nx) & (grid[:, 1] >= 0) & (grid[:, 1] < ny)
+    inside = (
+        mask
+        & (grid[:, 0] >= 0)
+        & (grid[:, 0] < nx)
+        & (grid[:, 1] >= 0)
+        & (grid[:, 1] < ny)
+    )
     img_pts = pts[inside]
     g = grid[inside]
     # RANSAC affine to reject mislabels: fit (ix,iy) → (x,y) linear + prune
@@ -345,7 +374,9 @@ def label_uncoded_grid(
     # Snap quality check: residual < tol·pitch_img was already applied
     idx = g
     # Completeness guard: caller should check len vs 0.85·nx·ny
-    ref_pts = np.array([[xi * pitch_x, yi * pitch_y * y_sign, 0.0] for xi, yi in idx], dtype=float)
+    ref_pts = np.array(
+        [[xi * pitch_x, yi * pitch_y * y_sign, 0.0] for xi, yi in idx], dtype=float
+    )
     return img_pts, ref_pts, idx
 
 
@@ -393,14 +424,25 @@ def label_plate(
         nx = nx if nx is not None else 6
         ny = ny if ny is not None else 7
         y_sign = y_sign if y_sign is not None else 1
-        return label_coded_6x7(centroids, coded_mask, pitch_x=pitch_x, pitch_y=pitch_y,
-                               nx=nx, ny=ny, y_sign=y_sign, corner_index=corner_index,
-                               up_hint=up_hint, up_hint_max_deg=up_hint_max_deg)
+        return label_coded_6x7(
+            centroids,
+            coded_mask,
+            pitch_x=pitch_x,
+            pitch_y=pitch_y,
+            nx=nx,
+            ny=ny,
+            y_sign=y_sign,
+            corner_index=corner_index,
+            up_hint=up_hint,
+            up_hint_max_deg=up_hint_max_deg,
+        )
     # uncoded path
     nx = nx if nx is not None else 25
     ny = ny if ny is not None else 19
     y_sign = y_sign if y_sign is not None else -1
-    return label_uncoded_grid(centroids, pitch_x=pitch_x, pitch_y=pitch_y, nx=nx, ny=ny, y_sign=y_sign)
+    return label_uncoded_grid(
+        centroids, pitch_x=pitch_x, pitch_y=pitch_y, nx=nx, ny=ny, y_sign=y_sign
+    )
 
 
 def image_up_direction(cal, cpar, pixel, *, world_up=(0.0, 1.0, 0.0), depth=None):
@@ -432,18 +474,40 @@ def image_up_direction(cal, cpar, pixel, *, world_up=(0.0, 1.0, 0.0), depth=None
 
     ap = cal.added_par
     mx, my = pixel_to_metric(float(pixel[0]), float(pixel[1]), cpar)
-    xf, yf = dist_to_flat(mx, my, cal.int_par.xh, cal.int_par.yh,
-                          ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she)
-    pos, v = ray_tracing(xf, yf, cal.ext_par.dm, cal.ext_par.x0, cal.ext_par.y0,
-                         cal.ext_par.z0, cal.int_par.cc, cal.glass_par.vec_x,
-                         cal.glass_par.vec_y, cal.glass_par.vec_z,
-                         cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0])
+    xf, yf = dist_to_flat(
+        mx,
+        my,
+        cal.int_par.xh,
+        cal.int_par.yh,
+        ap.k1,
+        ap.k2,
+        ap.k3,
+        ap.p1,
+        ap.p2,
+        ap.scx,
+        ap.she,
+    )
+    pos, v = ray_tracing(
+        xf,
+        yf,
+        cal.ext_par.dm,
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.int_par.cc,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        cpar.mm.n1,
+        cpar.mm.n2[0],
+        cpar.mm.n3,
+        cpar.mm.d[0],
+    )
     pos = _np.asarray(pos, float)
     v = _np.asarray(v, float)
     v = v / max(float(_np.linalg.norm(v)), 1e-12)
     if depth is None:
-        depth = float(_np.linalg.norm(
-            [cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0]))
+        depth = float(_np.linalg.norm([cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0]))
     base = pos + depth * v
     step = 0.02 * depth * _np.asarray(world_up, float)
 

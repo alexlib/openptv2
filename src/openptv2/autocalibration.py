@@ -554,7 +554,9 @@ def calibrate_from_source(
         cal = copy.deepcopy(point_set.seed)
     elif initial_cal is not None and fix4 is not None and pix4 is not None:
         cal = copy.deepcopy(initial_cal)
-        if not external_calibration(cal, np.asarray(fix4, float), np.asarray(pix4, float), cpar):
+        if not external_calibration(
+            cal, np.asarray(fix4, float), np.asarray(pix4, float), cpar
+        ):
             raise RuntimeError(f"cam{cam + 1}: external_calibration did not converge")
     else:
         raise RuntimeError(
@@ -562,7 +564,9 @@ def calibrate_from_source(
             "point_set with .seed set, or initial_cal + fix4 + pix4"
         )
 
-    return _refine_and_select(cam, cal, cpar, ref_pts, nfix, eps, pix, presorted=presorted)
+    return _refine_and_select(
+        cam, cal, cpar, ref_pts, nfix, eps, pix, presorted=presorted
+    )
 
 
 def _target_from_xy(pnr: int, x: float, y: float):
@@ -1159,9 +1163,7 @@ def _load_tracer_frame_data(base: Path, cpar, frames):
     store_path = find_existing_store(base)
     if store_path is not None and store_path.exists():
         candidate = RunStore(store_path, mode="r")
-        if any(
-            candidate.has_linkage(f, "ptv_is") for f in candidate.frames()
-        ):
+        if any(candidate.has_linkage(f, "ptv_is") for f in candidate.frames()):
             store = candidate
 
     if store is not None:
@@ -1260,7 +1262,9 @@ def tracer_self_calibrate(
     if skip_reason is not None:
         print(f"[tracer self-cal] skipped: {skip_reason}", flush=True)
         return cals, {"skipped": skip_reason}
-    print(f"[tracer self-cal] loaded {len(frame_data)} frames of tracked data", flush=True)
+    print(
+        f"[tracer self-cal] loaded {len(frame_data)} frames of tracked data", flush=True
+    )
 
     n_cams = cpar.num_cams
     free_cams = [c for c in range(n_cams) if c != hold_cam]
@@ -1390,7 +1394,10 @@ def tracer_self_calibrate(
         )
         fit = _fit(obs, seed, best_cals)
         if fit is None:
-            print(f"[tracer self-cal] iter {it + 1}/{iters}: solver failed, stopping", flush=True)
+            print(
+                f"[tracer self-cal] iter {it + 1}/{iters}: solver failed, stopping",
+                flush=True,
+            )
             break
         cand_cals, cand_success = fit
         cand_rcm = _tracer_rcm_median(obs, cand_cals, cpar)

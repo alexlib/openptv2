@@ -73,7 +73,9 @@ def cmd_dataset(
     )
     if crossings > 0:
         spec.crossings = [
-            __import__("openptv2.benchmarking.scenario", fromlist=["CrossingSpec"]).CrossingSpec(
+            __import__(
+                "openptv2.benchmarking.scenario", fromlist=["CrossingSpec"]
+            ).CrossingSpec(
                 at_frame=num_frames // 2, min_distance=0.0, speed=velocity * 2
             )
             for _ in range(crossings)
@@ -128,9 +130,12 @@ def cmd_sweep(
         if param.startswith("dv"):
             overrides.update(
                 {
-                    "dvxmax": val, "dvxmin": -val,
-                    "dvymax": val, "dvymin": -val,
-                    "dvzmax": val, "dvzmin": -val,
+                    "dvxmax": val,
+                    "dvxmin": -val,
+                    "dvymax": val,
+                    "dvymin": -val,
+                    "dvzmax": val,
+                    "dvzmin": -val,
                 }
             )
         elif param in ("dacc", "angle"):
@@ -172,8 +177,15 @@ def cmd_compare(
     yaml_path = write_experiment(rig, fg, out_dir, first_frame=10001)
     ghosts = ghost_positions_from_frame_gt(fg)
 
-    overrides = {"dvxmax": 3.0, "dvxmin": -3.0, "dvymax": 3.0, "dvymin": -3.0,
-                 "dvzmax": 3.0, "dvzmin": -3.0, "dacc": 3.0}
+    overrides = {
+        "dvxmax": 3.0,
+        "dvxmin": -3.0,
+        "dvymax": 3.0,
+        "dvymin": -3.0,
+        "dvzmax": 3.0,
+        "dvzmin": -3.0,
+        "dacc": 3.0,
+    }
 
     results = {}
     for tr in trackers:

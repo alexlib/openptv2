@@ -66,8 +66,14 @@ def exterior_from_rotation(C: np.ndarray, dm: np.ndarray) -> Exterior:
     if C.shape != (3,):
         raise ValueError(f"C must be length-3, got {C.shape}")
     omega, phi, kappa = angles_from_dm(dm)
-    ext = Exterior(x0=float(C[0]), y0=float(C[1]), z0=float(C[2]),
-                   omega=omega, phi=phi, kappa=kappa)
+    ext = Exterior(
+        x0=float(C[0]),
+        y0=float(C[1]),
+        z0=float(C[2]),
+        omega=omega,
+        phi=phi,
+        kappa=kappa,
+    )
     ext.compute_rotation_matrix()
     if float(np.abs(ext.dm - dm).max()) > 1e-12:
         raise AssertionError(
@@ -182,10 +188,22 @@ def seed_from_lookat(
         if n < 1e-12:
             raise ValueError("glass_vec must be non-zero")
         gv = gv / n
-    glass = Glass(vec_x=float(gv[0]), vec_y=float(gv[1]), vec_z=float(gv[2]),
-                  n1=float(n1), n2=float(n2), n3=float(n3), d=float(d))
-    cal = Calibration(ext_par=ext, int_par=int_par, glass_par=glass,
-                      added_par=AddedPar(), mmlut=MmLut())
+    glass = Glass(
+        vec_x=float(gv[0]),
+        vec_y=float(gv[1]),
+        vec_z=float(gv[2]),
+        n1=float(n1),
+        n2=float(n2),
+        n3=float(n3),
+        d=float(d),
+    )
+    cal = Calibration(
+        ext_par=ext,
+        int_par=int_par,
+        glass_par=glass,
+        added_par=AddedPar(),
+        mmlut=MmLut(),
+    )
     return cal
 
 
@@ -210,7 +228,9 @@ def _dlt_resection(ref_pts: np.ndarray, metric_pts: np.ndarray):
     if n < 6:
         raise ValueError(f"DLT needs ≥6 points, got {n}")
     if ref.shape[1] != 3 or met.shape[1] != 2:
-        raise ValueError(f"shapes: ref {ref.shape} need (n,3), metric {met.shape} need (n,2)")
+        raise ValueError(
+            f"shapes: ref {ref.shape} need (n,3), metric {met.shape} need (n,2)"
+        )
     # Coplanarity guard — DLT degenerate on a plane without a plausible wrong answer.
     centred = ref - ref.mean(axis=0)
     s = np.linalg.svd(centred, compute_uv=False)
@@ -248,7 +268,9 @@ def _dlt_resection(ref_pts: np.ndarray, metric_pts: np.ndarray):
         cc = -cc
     cam = (R @ (ref - C).T).T
     proj = -cc * cam[:, :2] / cam[:, 2:3]
-    if np.mean(np.sum((proj - met) ** 2, axis=1)) > np.mean(np.sum((-proj - met) ** 2, axis=1)):
+    if np.mean(np.sum((proj - met) ** 2, axis=1)) > np.mean(
+        np.sum((-proj - met) ** 2, axis=1)
+    ):
         cc = -cc
     return R, C, cc
 
@@ -270,6 +292,7 @@ def seed_from_dlt(
         raise ValueError(f"seed_from_dlt needs ≥6 points, got {ref.shape[0]}")
     # pixel → metric
     from openptv2.algorithms.trafo import pixel_to_metric as _p2m
+
     met = np.array([_p2m(float(x), float(y), cpar) for x, y in img], dtype=float)
     R, C, cc = _dlt_resection(ref, met)
     # Calibration stores dm as camera→world, i.e. Rᵀ
@@ -318,22 +341,31 @@ def read_rig(path: str | Path) -> dict[str, Any]:
         if "position" not in cam:
             raise ValueError(f"{p}: cameras[{i}] missing 'position'")
         if "focal_mm" not in cam:
-            raise ValueError(f"{p}: cameras[{i}] missing 'focal_mm' (M5: there is no safe default)")
+            raise ValueError(
+                f"{p}: cameras[{i}] missing 'focal_mm' (M5: there is no safe default)"
+            )
         try:
             pos = np.asarray(cam["position"], float).ravel()
             if pos.shape != (3,):
                 raise ValueError
         except Exception:
-            raise ValueError(f"{p}: cameras[{i}].position must be length-3, got {cam['position']!r}")
+            raise ValueError(
+                f"{p}: cameras[{i}].position must be length-3, got {cam['position']!r}"
+            )
         try:
             f = float(cam["focal_mm"])
         except Exception:
-            raise ValueError(f"{p}: cameras[{i}].focal_mm must be a number, got {cam['focal_mm']!r}")
+            raise ValueError(
+                f"{p}: cameras[{i}].focal_mm must be a number, got {cam['focal_mm']!r}"
+            )
         if f <= 0:
             raise ValueError(f"{p}: cameras[{i}].focal_mm must be >0, got {f}")
         if f < 1 or f > 2000:
             import warnings
-            warnings.warn(f"{p}: cameras[{i}].focal_mm={f} outside 1-2000 mm — did you mean mm?")
+
+            warnings.warn(
+                f"{p}: cameras[{i}].focal_mm={f} outside 1-2000 mm — did you mean mm?"
+            )
         # optional fields validation
         if "target" in cam:
             try:
@@ -341,19 +373,25 @@ def read_rig(path: str | Path) -> dict[str, Any]:
                 if t.shape != (3,):
                     raise ValueError
             except Exception:
-                raise ValueError(f"{p}: cameras[{i}].target must be length-3, got {cam['target']!r}")
+                raise ValueError(
+                    f"{p}: cameras[{i}].target must be length-3, got {cam['target']!r}"
+                )
         if "up" in cam:
             try:
                 u = np.asarray(cam["up"], float).ravel()
                 if u.shape != (3,):
                     raise ValueError
             except Exception:
-                raise ValueError(f"{p}: cameras[{i}].up must be length-3, got {cam['up']!r}")
+                raise ValueError(
+                    f"{p}: cameras[{i}].up must be length-3, got {cam['up']!r}"
+                )
         if "roll" in cam:
             try:
                 float(cam["roll"])
             except Exception:
-                raise ValueError(f"{p}: cameras[{i}].roll must be a number, got {cam['roll']!r}")
+                raise ValueError(
+                    f"{p}: cameras[{i}].roll must be a number, got {cam['roll']!r}"
+                )
     return raw
 
 
@@ -372,7 +410,11 @@ def seed_rig(
         raw = read_rig(path_or_spec)
     vol = np.asarray(raw.get("volume_centre", [0.0, 0.0, 0.0]), float).ravel()
     cams = raw["cameras"]
-    if cpar is not None and hasattr(cpar, "num_cams") and len(cams) != int(cpar.num_cams):
+    if (
+        cpar is not None
+        and hasattr(cpar, "num_cams")
+        and len(cams) != int(cpar.num_cams)
+    ):
         raise ValueError(
             f"rig.yaml has {len(cams)} cameras but ptv.par/YAML num_cams={cpar.num_cams}"
         )
@@ -386,8 +428,9 @@ def seed_rig(
         gv = cam.get("glass_vec")
         if gv is not None:
             gv = tuple(gv)
-        cal = seed_from_lookat(position=pos, target=tgt, focal_mm=f,
-                               up=up, roll=roll, glass_vec=gv)
+        cal = seed_from_lookat(
+            position=pos, target=tgt, focal_mm=f, up=up, roll=roll, glass_vec=gv
+        )
         out[i] = cal
     return out
 
@@ -413,6 +456,7 @@ def write_rig_ori(
     # resolve cpar if not given
     if cpar is None:
         from openptv2.autocalibration import _load_dataset_params, resolve_calblock
+
         try:
             cb = resolve_calblock(ds)
             dp = _load_dataset_params(ds, cb)
@@ -431,6 +475,7 @@ def write_rig_ori(
         ori.parent.mkdir(parents=True, exist_ok=True)
         if ori.exists() and overwrite:
             import shutil
+
             bck = Path(str(ori) + ".autobck")
             shutil.copy2(ori, bck)
             if addpar.exists():
@@ -443,6 +488,7 @@ def write_rig_ori(
 # ---------------------------------------------------------------------------
 # S1.5 zero-cc guard (imported by the three fallback call sites)
 # ---------------------------------------------------------------------------
+
 
 def guard_cc(cal: Calibration, context: str = "") -> None:
     """Raise if ``cal.int_par.cc <= 0`` — the imaging model divides by ``cc``.

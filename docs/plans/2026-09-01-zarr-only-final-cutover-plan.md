@@ -129,6 +129,7 @@ Per `2026-08-15:133` third sub-category (the only one that must move):
   data = np.loadtxt("res/rt_is.10000", skiprows=1)
   # after
   from openptv2.storage import RunStore
+
   store = RunStore("res/run.zarr", mode="r")
   pos, cam_ids = store.read_correspondences(10000)
   assert pos.shape[0] > 0

@@ -108,21 +108,21 @@ definitions. Both routes agree.
 ### OpenCV -> openptv2, exact to 1e-12 px when `xh=yh=0`
 
 ```python
-S    = np.diag([1.0, -1.0, -1.0])       # OpenCV cam frame -> photogrammetric cam frame
-R_cv = Rotation.from_rotvec(rvec).as_matrix()      # world -> camera
-C    = -R_cv.T @ tvec                   # camera centre -> ext.x0, y0, z0   [mm]
-dm   = R_cv.T @ S                       # NOTE: S on the RIGHT
+S = np.diag([1.0, -1.0, -1.0])  # OpenCV cam frame -> photogrammetric cam frame
+R_cv = Rotation.from_rotvec(rvec).as_matrix()  # world -> camera
+C = -R_cv.T @ tvec  # camera centre -> ext.x0, y0, z0   [mm]
+dm = R_cv.T @ S  # NOTE: S on the RIGHT
 
-cc    = fx * pix_x                      # [mm]
-pix_y = cc / fy                         # anisotropy MUST go here, not into scx
-xh    = (cx - imx/2.0) * pix_x          # [mm]
-yh    = (imy/2.0 - cy) * pix_y          # [mm]  <- sign flip: openptv2 y is UP
+cc = fx * pix_x  # [mm]
+pix_y = cc / fy  # anisotropy MUST go here, not into scx
+xh = (cx - imx / 2.0) * pix_x  # [mm]
+yh = (imy / 2.0 - cy) * pix_y  # [mm]  <- sign flip: openptv2 y is UP
 
-k1 = k1_cv / cc**2                      # OpenCV r is normalised, openptv2 r is mm
+k1 = k1_cv / cc**2  # OpenCV r is normalised, openptv2 r is mm
 k2 = k2_cv / cc**4
 k3 = k3_cv / cc**6
-p1 =  p2_cv / cc                        # SWAPPED
-p2 = -p1_cv / cc                        # SWAPPED *and* sign-flipped (the y inversion)
+p1 = p2_cv / cc  # SWAPPED
+p2 = -p1_cv / cc  # SWAPPED *and* sign-flipped (the y inversion)
 scx, she = 1.0, 0.0
 ```
 
@@ -130,7 +130,7 @@ scx, she = 1.0, 0.0
 compute_rotation_matrix`), so:
 
 ```python
-phi   = np.arcsin(np.clip(dm[0, 2], -1.0, 1.0))
+phi = np.arcsin(np.clip(dm[0, 2], -1.0, 1.0))
 kappa = np.arctan2(-dm[0, 1], dm[0, 0])
 omega = np.arctan2(-dm[1, 2], dm[2, 2])
 ```
@@ -143,8 +143,8 @@ left; both are wrong. Do not copy it.
 ### Frame change is absorbable into the exterior (3e-12 px)
 
 ```python
-dm_new = A @ dm_old                     # A: rotation from old lab frame to new
-C_new  = A @ C_old + b
+dm_new = A @ dm_old  # A: rotation from old lab frame to new
+C_new = A @ C_old + b
 ```
 
 Never transform the points; rotate the cameras. `A`, `b` from a Kabsch fit
@@ -271,9 +271,17 @@ Must `assert np.abs(ext.dm - dm).max() < 1e-12` before returning.
 
 ```python
 def calibration_from_opencv(
-    K, dist, rvec, tvec, *,
-    imx: int, imy: int, pix_x: float, pix_y: float | None = None,
-    glass_vec=(0.0, 0.0, 1.0), pixel_origin: str = "corner",
+    K,
+    dist,
+    rvec,
+    tvec,
+    *,
+    imx: int,
+    imy: int,
+    pix_x: float,
+    pix_y: float | None = None,
+    glass_vec=(0.0, 0.0, 1.0),
+    pixel_origin: str = "corner",
 ) -> tuple[Calibration, float]:
     """Convert an OpenCV calibration to openptv2's .ori/.addpar model.
 
@@ -845,11 +853,12 @@ user for the lens focal length** — it is printed on the barrel.
 ### M6 — look-at construction, verified exact
 
 ```python
-def dm_from_lookat(C, target, up=(0., 0., 1.), roll=0.0):
-    back = C - target; back /= norm(back)           # col2 points AWAY from the scene
+def dm_from_lookat(C, target, up=(0.0, 0.0, 1.0), roll=0.0):
+    back = C - target
+    back /= norm(back)  # col2 points AWAY from the scene
     right = cross(up, back)
-    if norm(right) < 1e-8:                          # up parallel to the axis
-        right = cross([1., 0., 0.], back)
+    if norm(right) < 1e-8:  # up parallel to the axis
+        right = cross([1.0, 0.0, 0.0], back)
     right /= norm(right)
     dm = column_stack([right, cross(back, right), back])
     return dm @ Rz(roll) if roll else dm
@@ -968,8 +977,9 @@ imports them from here, not the other way round.
 ### S1.2 Tier-3 seed
 
 ```python
-def seed_from_lookat(*, position, target, focal_mm, up=(0., 0., 1.), roll=0.0,
-                     glass_vec=None) -> Calibration:
+def seed_from_lookat(
+    *, position, target, focal_mm, up=(0.0, 0.0, 1.0), roll=0.0, glass_vec=None
+) -> Calibration:
     """Human-friendly rig seed: 'camera at P, looking at T, with an f mm lens'.
 
     cc = focal_mm, xh = yh = 0, AddedPar defaults. When glass_vec is None the

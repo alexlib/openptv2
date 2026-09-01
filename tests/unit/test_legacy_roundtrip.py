@@ -77,7 +77,9 @@ def test_import_export_roundtrip_matches_original(staged_legacy_run, tmp_path):
             assert np.array_equal(an, bn), f"{name} next mismatch frame {frame}"
             assert np.allclose(apos, bpos), f"{name} pos mismatch frame {frame}"
             if apr is None or bpr is None:
-                assert apr is None and bpr is None, f"{name} prio presence frame {frame}"
+                assert apr is None and bpr is None, (
+                    f"{name} prio presence frame {frame}"
+                )
             else:
                 assert np.array_equal(apr, bpr), f"{name} prio mismatch frame {frame}"
 

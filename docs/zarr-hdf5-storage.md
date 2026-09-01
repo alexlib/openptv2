@@ -31,6 +31,7 @@ Example (`run.zarr` with `seal(min_length=5)`): 5005 frames → `trajectories` 5
 ```python
 from openptv2.storage import RunStore
 from openptv2.storage.seal import seal  # seal.py:73
+
 store = RunStore("res/run.zarr", mode="a")
 seal(store, min_length=5)  # walks linkage, assigns trajid, writes traj+trajectories
 # Batch does this automatically after tracking: batch/pyptv_batch.py:246
@@ -48,23 +49,32 @@ seal(store, min_length=5)  # walks linkage, assigns trajid, writes traj+trajecto
 
 ```python
 import zarr, numpy as np
+
 root = zarr.open_group("res/run.zarr", mode="r")
 print(root.tree())
 
 # Flat trajectories — top 100 longest without loading 135 MB
-traj = root["traj"]; tid = np.asarray(traj["trajid"]); ln = np.asarray(traj["length"]); fr = np.asarray(traj["first_row"])
+traj = root["traj"]
+tid = np.asarray(traj["trajid"])
+ln = np.asarray(traj["length"])
+fr = np.asarray(traj["first_row"])
 order = np.argsort(ln)[::-1][:100]
 for tid_i, fr_i, ln_i in zip(tid[order], fr[order], ln[order]):
-    pts = np.asarray(root["trajectories/pos"][fr_i:fr_i+ln_i])  # [m]
+    pts = np.asarray(root["trajectories/pos"][fr_i : fr_i + ln_i])  # [m]
 
 # Per-frame linkage
-prev, nxt, pos = np.asarray(root["linkage/ptv_is/frame_000001/prev"]), np.asarray(root["linkage/ptv_is/frame_000001/next"]), np.asarray(root["linkage/ptv_is/frame_000001/pos"])
+prev, nxt, pos = (
+    np.asarray(root["linkage/ptv_is/frame_000001/prev"]),
+    np.asarray(root["linkage/ptv_is/frame_000001/next"]),
+    np.asarray(root["linkage/ptv_is/frame_000001/pos"]),
+)
 ```
 
 ### 2. `ZarrFrameStore` helpers
 
 ```python
 from openptv2.storage import ZarrFrameStore
+
 store = ZarrFrameStore("res/run.zarr", mode="r")
 store.dump_frame_text(frame=10000, dataset_type="rt_is")  # legacy ASCII view
 ```

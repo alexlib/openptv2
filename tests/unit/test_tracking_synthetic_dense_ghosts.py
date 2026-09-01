@@ -125,8 +125,13 @@ def test_ghost_fixture_actually_contains_ghosts():
 
     scene_dir = Path(tempfile.mkdtemp()) / "scene"
     _frames, row_gt = build_fixture_with_correspondence(
-        scene_dir, n_particles=200, spacing_mm=4.0, motion_mm=0.3,
-        noise_px=1.0, n_frames=5, seed=2,
+        scene_dir,
+        n_particles=200,
+        spacing_mm=4.0,
+        motion_mm=0.3,
+        noise_px=1.0,
+        n_frames=5,
+        seed=2,
     )
     total_ghosts = sum(1 for pids in row_gt.values() for p in pids if p < 0)
     assert total_ghosts > 0, (
@@ -143,22 +148,40 @@ def test_tracking_shows_wrong_links_from_ghosts(tmp_path):
     show -- every row there is correct by construction."""
     n_frames = 6
     scene_dir, row_gt = _make_scene(
-        tmp_path, n_particles=200, spacing_mm=4.0, motion_mm=0.3,
-        noise_px=1.0, n_frames=n_frames, seed=2,
+        tmp_path,
+        n_particles=200,
+        spacing_mm=4.0,
+        motion_mm=0.3,
+        noise_px=1.0,
+        n_frames=n_frames,
+        seed=2,
     )
     first, last = 10001, 10001 + n_frames - 1
 
     gate = 0.3 * 4  # matches test_tracking_synthetic_dense.py's convention
     linkage_base = _run_track3d(
-        tmp_path, scene_dir, first, last,
-        dvxmax=gate, dvxmin=-gate, dvymax=gate, dvymin=-gate,
-        dvzmax=gate, dvzmin=-gate, dacc=gate * 0.4, dangle=90.0,
+        tmp_path,
+        scene_dir,
+        first,
+        last,
+        dvxmax=gate,
+        dvxmin=-gate,
+        dvymax=gate,
+        dvymin=-gate,
+        dvzmax=gate,
+        dvzmin=-gate,
+        dacc=gate * 0.4,
+        dangle=90.0,
     )
     correct, wrong, lost = _validate_by_identity(linkage_base, row_gt, first, last)
-    print(f"\nghost-inclusive test_cavity-like: correct={correct} wrong={wrong} lost={lost}")
+    print(
+        f"\nghost-inclusive test_cavity-like: correct={correct} wrong={wrong} lost={lost}"
+    )
 
     total_ghost_rows = sum(1 for pids in row_gt.values() for p in pids if p < 0)
-    assert total_ghost_rows > 0, "fixture produced no ghosts -- test is not exercising anything"
+    assert total_ghost_rows > 0, (
+        "fixture produced no ghosts -- test is not exercising anything"
+    )
     assert wrong > 0, (
         "tracker produced zero wrong links despite ghost-contaminated "
         "correspondences -- either the fixture's ghosts aren't reaching the "

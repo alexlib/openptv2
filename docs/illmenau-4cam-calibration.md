@@ -79,7 +79,7 @@ dot's position in a coordinate system attached to *the plate*, with the datum do
 at the origin and the plate lying in `z = 0`:
 
 ```python
-obj = [(ix - DATUM_IX) * pitch_x, (iy - DATUM_IY) * pitch_y, 0.0]      # = ref_pts
+obj = [(ix - DATUM_IX) * pitch_x, (iy - DATUM_IY) * pitch_y, 0.0]  # = ref_pts
 ```
 
 `DATUM_IX, DATUM_IY = 2, 3` for this plate. Nothing about where the plate is being

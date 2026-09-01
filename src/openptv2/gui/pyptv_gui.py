@@ -407,13 +407,15 @@ class CameraWindow(HasTraits):
                 return
             nx, ny = -dy / length * band_px, dx / length * band_px
             for sign, tag in ((1.0, "_hi"), (-1.0, "_lo")):
-                self._plot_data.set_data(str_x + tag,
-                                         [x1 + sign * nx, x2 + sign * nx])
-                self._plot_data.set_data(str_y + tag,
-                                         [y1 + sign * ny, y2 + sign * ny])
-                self._plot.plot((str_x + tag, str_y + tag), type="line",
-                                color=color1, line_style="dash", line_width=1)
-
+                self._plot_data.set_data(str_x + tag, [x1 + sign * nx, x2 + sign * nx])
+                self._plot_data.set_data(str_y + tag, [y1 + sign * ny, y2 + sign * ny])
+                self._plot.plot(
+                    (str_x + tag, str_y + tag),
+                    type="line",
+                    color=color1,
+                    line_style="dash",
+                    line_width=1,
+                )
 
 
 def _eps0_band_px(vpar, cpar):
@@ -428,6 +430,7 @@ def _eps0_band_px(vpar, cpar):
         return float(vpar.eps0) / pix if pix > 0 else 0.0
     except Exception:
         return 0.0
+
 
 # ------------------------------------------
 # Message Window System for capturing print statements
@@ -988,7 +991,6 @@ class TreeMenuHandler(Handler):
             )
             return
 
-
         bounds = None
         try:
             bounds = compute_fov_bounds(mainGui.vpar, mainGui.cpar, mainGui.cals)
@@ -1036,7 +1038,9 @@ class TreeMenuHandler(Handler):
                 intx_green, inty_green = [], []
                 intx_blue, inty_blue = [], []
 
-                targets = ptv.read_targets(short_base_names[i_cam], i_seq, store=store, cam_idx=i_cam)
+                targets = ptv.read_targets(
+                    short_base_names[i_cam], i_seq, store=store, cam_idx=i_cam
+                )
 
                 for t in targets:
                     if t.tnr() > -1:

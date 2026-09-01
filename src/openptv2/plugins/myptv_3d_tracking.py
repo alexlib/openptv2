@@ -60,7 +60,9 @@ class MyPTV3DTracker:
             next_track_id += 1
         return tracks, next_track_id
 
-    def _advance_frame(self, f, cand_pts, active_tracks, completed_tracks, next_track_id):
+    def _advance_frame(
+        self, f, cand_pts, active_tracks, completed_tracks, next_track_id
+    ):
         """Match one frame's candidates against active tracks, return the updated state."""
         num_cands = len(cand_pts)
         num_active = len(active_tracks)
@@ -286,7 +288,11 @@ class Tracking:
 
         # 2. Run MyPTV 3D Kinematic Tracking
         tracker = MyPTV3DTracker(
-            v_max=dvxmax, a_max=dacc, max_gap=1, dt=1.0, max_angle_deg=max_angle_deg,
+            v_max=dvxmax,
+            a_max=dacc,
+            max_gap=1,
+            dt=1.0,
+            max_angle_deg=max_angle_deg,
         )
         trajectories = tracker.track_frames(frame_particles)
 
@@ -356,6 +362,7 @@ class Tracking:
         track_cfg = pm.parameters.get("track", {}) if pm else {}
         plugins_cfg = pm.parameters.get("plugins", {}) if pm else {}
         from openptv2.tracking_presets import infer_direction
+
         direction = infer_direction(track_cfg, plugins_cfg)
 
         if track_cfg.get("postprocess", True) and num_frames > 1:
@@ -365,15 +372,20 @@ class Tracking:
                 relink_trajectory_gaps,
                 seed_cold_start,
             )
+
             base = linkage_base
             first, last = frame_numbers[0], frame_numbers[-1]
             stats = {"links_before": count_links(base, first, last, store=store)}
-            stats["cold_start"] = seed_cold_start(base, first, last, float(dvxmax), store=store)
+            stats["cold_start"] = seed_cold_start(
+                base, first, last, float(dvxmax), store=store
+            )
             stats["gap_relinking"] = relink_trajectory_gaps(
                 base, first, last, max_gap=2, max_accel_err=float(dacc), store=store
             )
             if direction == "forward_backward":
-                stats["reciprocity"] = enforce_reciprocity(base, first, last, store=store)
+                stats["reciprocity"] = enforce_reciprocity(
+                    base, first, last, store=store
+                )
             stats["links_after"] = count_links(base, first, last, store=store)
             print(
                 f"Post-process links: {stats.get('links_before', 0)} -> {stats.get('links_after', 0)}"

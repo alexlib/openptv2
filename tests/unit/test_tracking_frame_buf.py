@@ -239,11 +239,22 @@ def test_read_raises_when_particle_count_exceeds_max_targets(tmp_path):
     for i in range(n_particles):
         writer.correspond[i] = Corres(nr=1, p=np.array([i, -1, -1, -1], dtype=np.int32))
         writer.path_info[i] = Pathinfo(
-            x=np.array([float(i), 0.0, 0.0]), prev=-1, next_idx=-2, prio=4,
-            finaldecis=1000000.0, inlist=0,
+            x=np.array([float(i), 0.0, 0.0]),
+            prev=-1,
+            next_idx=-2,
+            prio=4,
+            finaldecis=1000000.0,
+            inlist=0,
         )
         writer.targets[0][i] = Target(
-            pnr=i, x=float(i), y=0.0, n=1, nx=1, ny=1, sumg=1, tnr=i,
+            pnr=i,
+            x=float(i),
+            y=0.0,
+            n=1,
+            nx=1,
+            ny=1,
+            sumg=1,
+            tnr=i,
         )
     writer.num_parts = n_particles
     writer.num_targets[0] = n_particles
@@ -283,7 +294,9 @@ def test_reset_links():
     assert p.prio == 2  # PRIO_DEFAULT
 
 
-def test_read_path_frame_prefers_store_linkage_over_unrelated_ascii_correspondence_file(tmp_path):
+def test_read_path_frame_prefers_store_linkage_over_unrelated_ascii_correspondence_file(
+    tmp_path,
+):
     """Regression test for a real bug found while benchmarking Stage 1/2
     (docs/plans/2026-08-15-tracking-quality-overhaul.md): read_path_frame
     used to decide store-vs-ascii by checking whether the CORRESPONDENCE
@@ -326,7 +339,9 @@ def test_read_path_frame_prefers_store_linkage_over_unrelated_ascii_corresponden
         name="ptv_is",
     )
 
-    cor_buf, path_buf = read_path_frame(corres_base, linkage_base, "", frame, store=store)
+    cor_buf, path_buf = read_path_frame(
+        corres_base, linkage_base, "", frame, store=store
+    )
 
     assert len(path_buf) == 2
     assert path_buf[0].prev == -1

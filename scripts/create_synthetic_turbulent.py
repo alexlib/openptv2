@@ -44,7 +44,7 @@ BASE_SCENARIO_KWARGS = dict(
     num_particles=220,
     num_frames=30,
     velocity=2.0,
-    velocity_jitter=1.0,     # strong turbulence (high acceleration flips)
+    velocity_jitter=1.0,  # strong turbulence (high acceleration flips)
     gap_probability=0.08,
     noise_mm=0.08,
     ghost_ratio=0.04,
@@ -78,9 +78,18 @@ def make_dataset(
     Trackability Number M = (v * dt) / d_nn remains constant (M <= 0.2) as
     seeding density increases. Returns the written ``parameters_Run1.yaml`` path.
     """
-    scale = (220.0 / num_particles) ** (1.0 / 3.0) if (preserve_trackability and num_particles != 220) else 1.0
+    scale = (
+        (220.0 / num_particles) ** (1.0 / 3.0)
+        if (preserve_trackability and num_particles != 220)
+        else 1.0
+    )
     scaled_crossings = [
-        CrossingSpec(at_frame=cr.at_frame, min_distance=cr.min_distance, speed=cr.speed * scale, seed=cr.seed)
+        CrossingSpec(
+            at_frame=cr.at_frame,
+            min_distance=cr.min_distance,
+            speed=cr.speed * scale,
+            seed=cr.seed,
+        )
         for cr in BASE_SCENARIO_KWARGS["crossings"]
     ]
     kwargs = {
@@ -95,21 +104,29 @@ def make_dataset(
     spec = bm.ScenarioSpec(**kwargs)
     tt, fg = bm.generate_scenario(spec)
     rig = bm.make_standard_rig()
-    yaml_path = bm.write_experiment(rig, fg, out_dir, first_frame=first_frame, volume=volume)
+    yaml_path = bm.write_experiment(
+        rig, fg, out_dir, first_frame=first_frame, volume=volume
+    )
 
     n_per_frame = [len(fg[f]) for f in fg]
-    mean_d_nn = 0.554 * ((volume[0] * volume[1] * volume[2]) / num_particles) ** (1.0 / 3.0)
+    mean_d_nn = 0.554 * ((volume[0] * volume[1] * volume[2]) / num_particles) ** (
+        1.0 / 3.0
+    )
     eff_vel = BASE_SCENARIO_KWARGS["velocity"] * scale
     trackability_M = eff_vel / mean_d_nn
     print(f"Wrote turbulent experiment -> {out_dir}/")
     print(f"  parameters: {yaml_path.name}")
     print(f"  true trajectories: {len(tt)}")
-    print(f"  frames: {spec.num_frames} ({first_frame}..{first_frame + spec.num_frames - 1})")
+    print(
+        f"  frames: {spec.num_frames} ({first_frame}..{first_frame + spec.num_frames - 1})"
+    )
     print(
         f"  particles/frame: {min(n_per_frame)}-{max(n_per_frame)} "
         f"(mean {sum(n_per_frame) / len(n_per_frame):.0f})"
     )
-    print(f"  trackability: d_nn = {mean_d_nn:.2f} mm | v = {eff_vel:.2f} mm/frame | M = {trackability_M:.3f}")
+    print(
+        f"  trackability: d_nn = {mean_d_nn:.2f} mm | v = {eff_vel:.2f} mm/frame | M = {trackability_M:.3f}"
+    )
     return yaml_path
 
 

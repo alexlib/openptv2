@@ -31,7 +31,9 @@ def test_sequence_runs_without_parameters_dir(small_dir, small_yaml, tmp_path):
     pyptv_batch.main(work / "parameters_Run1.yaml", frame, frame, mode="sequence")
 
     store = RunStore(resolve_store_path(work / "res"), mode="r")
-    assert store.has_correspondences(frame), "sequence must produce correspondences from YAML alone"
+    assert store.has_correspondences(frame), (
+        "sequence must produce correspondences from YAML alone"
+    )
     pos, _ = store.read_correspondences(frame)
     assert len(pos) > 0, "YAML-only sequence found no correspondences"
 

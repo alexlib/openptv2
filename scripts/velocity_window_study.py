@@ -46,9 +46,13 @@ def main():
     # Signals: |v| magnitude, per-frame velocity-change (approx accel), so we
     # can judge error levels against physical scale.
     mags = [np.linalg.norm(np.diff(t, axis=0), axis=1) for t in tracks]
-    dvels = [np.linalg.norm(np.diff(np.diff(t, axis=0), axis=0), axis=1) for t in tracks]
-    print(f"signal scale: mean |v| = {np.mean([m.mean() for m in mags]):.3f} mm/frame, "
-          f"mean per-frame |dv| = {np.mean([d.mean() for d in dvels]):.3f}")
+    dvels = [
+        np.linalg.norm(np.diff(np.diff(t, axis=0), axis=0), axis=1) for t in tracks
+    ]
+    print(
+        f"signal scale: mean |v| = {np.mean([m.mean() for m in mags]):.3f} mm/frame, "
+        f"mean per-frame |dv| = {np.mean([d.mean() for d in dvels]):.3f}"
+    )
 
     print("\nNOISE AMPLIFICATION = RMS(v_est(noisy,w) - v_est(clean,w))")
     print(f"{'sigma':>6} | " + " | ".join(f"w={w:>2}" for w in windows))
@@ -65,14 +69,16 @@ def main():
                 vc = np.zeros_like(tr)
                 for d in range(3):
                     p = min(3, w - 1)
-                    v[:, d] = signal.savgol_filter(xn[:, d], w, p, deriv=1, mode="interp")
-                    vc[:, d] = signal.savgol_filter(tr[:, d], w, p, deriv=1, mode="interp")
+                    v[:, d] = signal.savgol_filter(
+                        xn[:, d], w, p, deriv=1, mode="interp"
+                    )
+                    vc[:, d] = signal.savgol_filter(
+                        tr[:, d], w, p, deriv=1, mode="interp"
+                    )
                 err = v - vc
-                rms_sq_num += float(np.sum(err ** 2))
+                rms_sq_num += float(np.sum(err**2))
                 rms_sq_den += err.size
-            cells.append(
-                f"{np.sqrt(rms_sq_num / max(rms_sq_den, 1)):6.3f}"
-            )
+            cells.append(f"{np.sqrt(rms_sq_num / max(rms_sq_den, 1)):6.3f}")
         print(f"{sigma:6.2} | " + " | ".join(cells))
 
     # Bias (smoothing truncation) on the clean signal vs wide-window reference.
@@ -87,7 +93,7 @@ def main():
                 p = min(3, w - 1)
                 v[:, d] = signal.savgol_filter(tr[:, d], w, p, deriv=1, mode="interp")
             err = v - vtrue
-            rms_num += float(np.sum(err ** 2))
+            rms_num += float(np.sum(err**2))
             rms_den += err.size
         cells.append(f"{np.sqrt(rms_num / max(rms_den, 1)):6.3f}")
     print(f"{'0.0':>6} | " + " | ".join(cells))
@@ -100,9 +106,9 @@ def main():
         xn = tr + noise
         d = np.diff(xn, axis=0)
         err = d - np.diff(tr, axis=0)
-        rms_num += np.sum(err ** 2)
+        rms_num += np.sum(err**2)
         rms_den += err.size
-    print(f"  RMS 1-frame velocity error = {np.sqrt(rms_num/max(rms_den,1)):.3f}")
+    print(f"  RMS 1-frame velocity error = {np.sqrt(rms_num / max(rms_den, 1)):.3f}")
 
 
 if __name__ == "__main__":

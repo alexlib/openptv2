@@ -38,7 +38,9 @@ class MyPTV2DTracker:
         trajectories : list of dict
             List of reconstructed trajectories containing 'pos', 'indices', 'time', and 'id'.
         """
-        frame_2d = [p[:, :2] if p.ndim == 2 and p.shape[1] >= 2 else p for p in frame_particles]
+        frame_2d = [
+            p[:, :2] if p.ndim == 2 and p.shape[1] >= 2 else p for p in frame_particles
+        ]
         trajs_2d = self.track_2d_blobs(frame_2d)
 
         trajectories = []
@@ -370,6 +372,7 @@ class Tracking:
         track_cfg = pm.parameters.get("track", {}) if pm else {}
         plugins_cfg = pm.parameters.get("plugins", {}) if pm else {}
         from openptv2.tracking_presets import infer_direction
+
         direction = infer_direction(track_cfg, plugins_cfg)
 
         if track_cfg.get("postprocess", True) and num_frames > 1:
@@ -379,17 +382,22 @@ class Tracking:
                 relink_trajectory_gaps,
                 seed_cold_start,
             )
+
             base = linkage_base
             first, last = frame_numbers[0], frame_numbers[-1]
             dvxmax = float(track_cfg.get("dvxmax", 10.0))
             dacc = float(track_cfg.get("dacc", 5.0))
             stats = {"links_before": count_links(base, first, last, store=store)}
-            stats["cold_start"] = seed_cold_start(base, first, last, float(dvxmax), store=store)
+            stats["cold_start"] = seed_cold_start(
+                base, first, last, float(dvxmax), store=store
+            )
             stats["gap_relinking"] = relink_trajectory_gaps(
                 base, first, last, max_gap=2, max_accel_err=float(dacc), store=store
             )
             if direction == "forward_backward":
-                stats["reciprocity"] = enforce_reciprocity(base, first, last, store=store)
+                stats["reciprocity"] = enforce_reciprocity(
+                    base, first, last, store=store
+                )
             stats["links_after"] = count_links(base, first, last, store=store)
             print(
                 f"Post-process links: {stats.get('links_before', 0)} -> {stats.get('links_after', 0)}"

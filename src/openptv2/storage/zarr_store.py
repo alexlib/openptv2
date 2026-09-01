@@ -569,10 +569,18 @@ def read_zarr_trajectories(
         trajid_arr = np.asarray(target_group["trajid"])
         time_key = "time" if "time" in target_group else "frame"
         time_arr = np.asarray(target_group[time_key])
-        pos_arr = np.asarray(target_group["pos"]) / 1000.0  # mm to meters for Flowtracks standard
+        pos_arr = (
+            np.asarray(target_group["pos"]) / 1000.0
+        )  # mm to meters for Flowtracks standard
 
-        vel_arr = np.asarray(target_group["vel"]) / 1000.0 if "vel" in target_group else None
-        accel_arr = np.asarray(target_group["accel"]) / 1000.0 if "accel" in target_group else None
+        vel_arr = (
+            np.asarray(target_group["vel"]) / 1000.0 if "vel" in target_group else None
+        )
+        accel_arr = (
+            np.asarray(target_group["accel"]) / 1000.0
+            if "accel" in target_group
+            else None
+        )
 
         mask = np.ones(len(time_arr), dtype=bool)
         if first is not None:
@@ -589,7 +597,9 @@ def read_zarr_trajectories(
             accel_arr = accel_arr[mask]
 
         unique_trids = np.unique(trajid_arr)
-        unique_trids = unique_trids[unique_trids > 0]  # trajid 0 is the unlinked particle bucket
+        unique_trids = unique_trids[
+            unique_trids > 0
+        ]  # trajid 0 is the unlinked particle bucket
         trajects = []
 
         for trid in unique_trids:
@@ -598,20 +608,25 @@ def read_zarr_trajectories(
                 continue
             order = np.argsort(time_arr[idx])
             idx = idx[order]
-            vel_val = vel_arr[idx] if vel_arr is not None else np.zeros_like(pos_arr[idx])
+            vel_val = (
+                vel_arr[idx] if vel_arr is not None else np.zeros_like(pos_arr[idx])
+            )
             kws = {}
             if accel_arr is not None:
                 kws["accel"] = accel_arr[idx]
 
-            trajects.append(Trajectory(pos_arr[idx], vel_val, time_arr[idx], int(trid), **kws))
+            trajects.append(
+                Trajectory(pos_arr[idx], vel_val, time_arr[idx], int(trid), **kws)
+            )
 
         return trajects
-
 
     # Case 2: Walk tracker linkage (linkage/<name>/frame_NNNNN)
     elif "linkage" in root:
         link_root = root["linkage"]
-        linkage_name = "ptv_is" if "ptv_is" in link_root else next(iter(link_root.keys()), None)
+        linkage_name = (
+            "ptv_is" if "ptv_is" in link_root else next(iter(link_root.keys()), None)
+        )
         link_group = link_root[linkage_name] if linkage_name else None
         frame_keys = (
             sorted(
@@ -642,8 +657,10 @@ def read_zarr_trajectories(
                 # this one, which we do not have, so the indices address the
                 # wrong particles. Break every chain across the gap.
                 prev_trajids = None
-            if prev_trajids is not None and prev_ids.size and prev_ids.max() >= len(
-                prev_trajids
+            if (
+                prev_trajids is not None
+                and prev_ids.size
+                and prev_ids.max() >= len(prev_trajids)
             ):
                 # Row counts disagree with the linkage (e.g. frames left over
                 # from an earlier run in an appended store) -- same hazard.
@@ -657,9 +674,7 @@ def read_zarr_trajectories(
                     prev_ids[prev_ids >= 0], return_counts=True
                 )
                 ambiguous = set(claimed[claim_counts > 1].tolist())
-                linked = np.array(
-                    [p >= 0 and p not in ambiguous for p in prev_ids]
-                )
+                linked = np.array([p >= 0 and p not in ambiguous for p in prev_ids])
                 trajids[linked] = prev_trajids[prev_ids[linked]]
                 n_new = int((~linked).sum())
                 trajids[~linked] = np.arange(next_trajid, next_trajid + n_new)
@@ -696,4 +711,3 @@ def read_zarr_trajectories(
 
 if __name__ == "__main__":
     main_cli()
-

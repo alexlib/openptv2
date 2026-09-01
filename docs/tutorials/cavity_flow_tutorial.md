@@ -69,7 +69,9 @@ cavity_dir = Path("test_data/test_cavity")
 results = calibrate_dataset(cavity_dir, write=True, overlays=False)
 
 for res in results:
-    print(f"Cam {res.cam}: {res.matched}/{res.nfix} points matched, RMS = {res.rms:.3f} px")
+    print(
+        f"Cam {res.cam}: {res.matched}/{res.nfix} points matched, RMS = {res.rms:.3f} px"
+    )
 ```
 
 ### Output Summary
@@ -131,7 +133,7 @@ print(f"RCM after:  {info['rcm_after']:.1f} um")
 for cam_idx, cal in enumerate(new_cals, 1):
     cal.write(
         str(cavity_dir / f"cal/cam{cam_idx}.tif.ori"),
-        str(cavity_dir / f"cal/cam{cam_idx}.tif.addpar")
+        str(cavity_dir / f"cal/cam{cam_idx}.tif.addpar"),
     )
 ```
 

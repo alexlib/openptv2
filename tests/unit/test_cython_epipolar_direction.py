@@ -48,7 +48,9 @@ def test_full_multipass_runs_backward_pass(monkeypatch):
 
 def test_trackcorr_forward_only_does_not_run_backward_pass(monkeypatch):
     calls = []
-    monkeypatch.setattr(Tracker, "full_backward", lambda self, *a, **kw: calls.append(1))
+    monkeypatch.setattr(
+        Tracker, "full_backward", lambda self, *a, **kw: calls.append(1)
+    )
 
     yaml_path = _tiny_yaml(Path(tempfile.mkdtemp()))
     bm.run_tracker(yaml_path, "trackcorr")
@@ -66,7 +68,9 @@ def test_cython_epipolar_tracking_runs_trackcorr_not_track3d(monkeypatch):
     "cython_epipolar_tracking" this way produced Fast-3D-identical metrics
     instead of trackcorr's."""
     calls = []
-    monkeypatch.setattr(Tracker, "full_forward_3d", lambda self, *a, **kw: calls.append(1))
+    monkeypatch.setattr(
+        Tracker, "full_forward_3d", lambda self, *a, **kw: calls.append(1)
+    )
 
     yaml_path = _tiny_yaml(Path(tempfile.mkdtemp()))
     bm.run_tracker(yaml_path, "cython_epipolar_tracking")

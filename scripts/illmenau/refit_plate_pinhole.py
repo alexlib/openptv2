@@ -17,6 +17,7 @@ to.  One labelling, used everywhere, is the fix.
 
     refit_plate_pinhole.py <cc_mm>
 """
+
 import os
 import sys
 
@@ -41,8 +42,10 @@ print(f"labels from cal/{CFG.NPZ} (the same ones every other step uses)\n")
 for ci in range(CFG.NCAM):
     cam = CFG.cam_number(ci)
     if (ci, CFG.REF) not in views:
-        raise SystemExit(f"cam{cam} has no labelled reference frame {CFG.REF} in the "
-                         f"cache -- re-run detect_plate_frames.py")
+        raise SystemExit(
+            f"cam{cam} has no labelled reference frame {CFG.REF} in the "
+            f"cache -- re-run detect_plate_frames.py"
+        )
     ids, ip = views[(ci, CFG.REF)]
     ip = ip.astype(np.float64)
     obj = CFG.obj_of(ids)
@@ -50,15 +53,20 @@ for ci in range(CFG.NCAM):
     if not ok:
         raise SystemExit(f"cam{cam}: solvePnP failed on {len(obj)} points")
     rvec, tvec = cv2.solvePnPRefineLM(obj, ip, K, np.zeros(5), rvec, tvec)
-    cal, _ = calibration_from_opencv(K, np.zeros(5), rvec, tvec,
-                                     imx=IMX, imy=IMY, pix_x=PIX, pixel_origin="corner")
+    cal, _ = calibration_from_opencv(
+        K, np.zeros(5), rvec, tvec, imx=IMX, imy=IMY, pix_x=PIX, pixel_origin="corner"
+    )
     rep = np.array([metric_to_pixel(*img_coord(p, cal, cpar.mm), cpar) for p in obj])
     err = np.linalg.norm(rep - ip, axis=1)
     e = cal.ext_par
-    print(f"cam{cam}: C=({e.x0:8.1f},{e.y0:7.1f},{e.z0:8.1f})  cc={cal.int_par.cc:.3f}  "
-          f"{len(obj):2d} dots  reproj RMS {np.sqrt(np.mean(err**2)):6.3f} px "
-          f"(max {err.max():.2f})")
+    print(
+        f"cam{cam}: C=({e.x0:8.1f},{e.y0:7.1f},{e.z0:8.1f})  cc={cal.int_par.cc:.3f}  "
+        f"{len(obj):2d} dots  reproj RMS {np.sqrt(np.mean(err**2)):6.3f} px "
+        f"(max {err.max():.2f})"
+    )
     cal.to_file(*CFG.cam_ori(ci))
 print("\nwrote .ori + zeroed .addpar")
-print("A reprojection RMS much above ~1 px here means the reference frame is "
-      "mislabelled for that camera, not that the pose is hard to fit.")
+print(
+    "A reprojection RMS much above ~1 px here means the reference frame is "
+    "mislabelled for that camera, not that the pose is hard to fit."
+)

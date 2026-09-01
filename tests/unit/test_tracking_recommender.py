@@ -131,7 +131,11 @@ def test_suggest_params_margin_not_clamped_back_to_raw_p95():
     from openptv2.tracking_registry import TRACKER_REGISTRY
 
     stats = DatasetStats()
-    stats.percentiles_displacement = (1.0, 1.5, 1.858)  # p95 = 1.858, like synthetic_turbulent
+    stats.percentiles_displacement = (
+        1.0,
+        1.5,
+        1.858,
+    )  # p95 = 1.858, like synthetic_turbulent
     stats.max_displacement = 1.858
     stats.mean_interparticle_distance = 2.788  # also like synthetic_turbulent
 

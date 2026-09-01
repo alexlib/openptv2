@@ -31,10 +31,16 @@ SRC = Path("test_data/synthetic_turbulent")
 FIRST = 10001
 N_FRAMES = 30
 LAST = FIRST + N_FRAMES - 1
-TRACKERS = ["priority_segment_3d", "trackcorr", "nearest_hungarian_3d", "predictive_gmm_3d"]
+TRACKERS = [
+    "priority_segment_3d",
+    "trackcorr",
+    "nearest_hungarian_3d",
+    "predictive_gmm_3d",
+]
 
-BASE_OVERRIDES = dict(dvxmax=6.0, dvxmin=-6.0, dvymax=6.0, dvymin=-6.0,
-                      dvzmax=6.0, dvzmin=-6.0, dacc=6.0)
+BASE_OVERRIDES = dict(
+    dvxmax=6.0, dvxmin=-6.0, dvymax=6.0, dvymin=-6.0, dvzmax=6.0, dvzmin=-6.0, dacc=6.0
+)
 
 
 def has_liboptv() -> bool:
@@ -50,7 +56,9 @@ def has_liboptv() -> bool:
 
 
 def read_gt_frames(
-    src: Path = SRC, first: int = FIRST, n_frames: int = N_FRAMES,
+    src: Path = SRC,
+    first: int = FIRST,
+    n_frames: int = N_FRAMES,
 ) -> dict[int, list[tuple[int, float, float, float]]]:
     """Reconstruct per-frame ground truth from origin_*.txt (proPTV-style)."""
     frames: dict[int, list] = {}
@@ -116,7 +124,9 @@ def combined_metrics(
     TRUE tracks and requires each to be reproduced exactly. ``e_track`` is
     only informative with gap bridging enabled -- see its docstring.
     """
-    identity = bm.compute_identity_metrics(tt, pred0, eps=eps, ghost_pos_by_frame=ghosts)
+    identity = bm.compute_identity_metrics(
+        tt, pred0, eps=eps, ghost_pos_by_frame=ghosts
+    )
     link = calculate_tracking_metrics(tt, pred0, distance_tolerance=eps)
     track = e_track(tt, pred0, eps=eps)
     return {**identity.to_dict(), **link.to_dict(), **track.to_dict()}
@@ -163,7 +173,10 @@ LIBOPTV_TRACKCORR_MAX_FRAMES = 5
 
 
 def make_density_capped_copy(
-    src: Path, max_particles: int, first: int, last: int,
+    src: Path,
+    max_particles: int,
+    first: int,
+    last: int,
 ) -> tuple[Path, Path]:
     """Isolated copy of `src` with every frame's rt_is.#/*_targets truncated
     to at most `max_particles`, index-remapped consistently so every
@@ -197,7 +210,9 @@ def make_density_capped_copy(
             old_ids = sorted(cam_referenced_ids[c])
             id_map = {old: new for new, old in enumerate(old_ids)}
             kept = [tlines[1 + old] for old in old_ids]
-            tpath.write_text(f"{len(kept)}\n" + "\n".join(kept) + ("\n" if kept else ""))
+            tpath.write_text(
+                f"{len(kept)}\n" + "\n".join(kept) + ("\n" if kept else "")
+            )
             cam_id_maps.append(id_map)
 
         new_rows = []
@@ -207,7 +222,9 @@ def make_density_capped_copy(
                 idx = int(row[4 + c])
                 new_row[4 + c] = str(cam_id_maps[c][idx]) if idx >= 0 else "-1"
             new_rows.append(" ".join(new_row))
-        rt_path.write_text(f"{len(new_rows)}\n" + "\n".join(new_rows) + ("\n" if new_rows else ""))
+        rt_path.write_text(
+            f"{len(new_rows)}\n" + "\n".join(new_rows) + ("\n" if new_rows else "")
+        )
 
     return run_dir, yaml_run
 
@@ -223,8 +240,7 @@ def run_single_tracker(
     t0 = time.perf_counter()
     pred = bm.run_tracker(yaml_run, tracker, track_overrides=track_overrides)
     dt = time.perf_counter() - t0
-    pred0 = {k: [(f - first, x, y, z) for (f, x, y, z) in v]
-             for k, v in pred.items()}
+    pred0 = {k: [(f - first, x, y, z) for (f, x, y, z) in v] for k, v in pred.items()}
     return pred0, dt
 
 
@@ -270,7 +286,9 @@ def run_liboptv_tracker(
         pm = ParameterManager()
         pm.from_yaml(yaml_run.name)
         num_cams = pm.num_cams
-        cpar_py, spar_py, vpar_py, track_py, _tpar_py, _cals_py, _epar = py_start_proc_c(pm)
+        cpar_py, spar_py, vpar_py, track_py, _tpar_py, _cals_py, _epar = (
+            py_start_proc_c(pm)
+        )
 
         cpar = ControlParams(num_cams)
         cpar.set_image_size(cpar_py.get_image_size())
@@ -334,7 +352,9 @@ def run_liboptv_tracker(
             tracker.full_forward_3d()
         dt = time.perf_counter() - t0
 
-        tracks = bm.read_trajectories(Path("res"), first, first + n_frames - 1, num_cams)
+        tracks = bm.read_trajectories(
+            Path("res"), first, first + n_frames - 1, num_cams
+        )
     finally:
         os.chdir(prev_cwd)
 
@@ -417,21 +437,36 @@ def run_all_trackers(
     results: dict[str, dict] = {}
     for tr in trackers:
         try:
-            pred0, dt = run_single_tracker(tr, track_overrides=overrides, src=src, first=first)
-            m = bm.compute_identity_metrics(tt, pred0, eps=1.0, ghost_pos_by_frame=ghosts)
-            row = {**m.to_dict(),
-                   **calculate_tracking_metrics(tt, pred0, distance_tolerance=1.0).to_dict()}
+            pred0, dt = run_single_tracker(
+                tr, track_overrides=overrides, src=src, first=first
+            )
+            m = bm.compute_identity_metrics(
+                tt, pred0, eps=1.0, ghost_pos_by_frame=ghosts
+            )
+            row = {
+                **m.to_dict(),
+                **calculate_tracking_metrics(
+                    tt, pred0, distance_tolerance=1.0
+                ).to_dict(),
+            }
             results[tr] = {"tracks": pred0, "metrics": m, "row": row, "time_s": dt}
         except Exception as e:  # surface error, keep going for other trackers
-            results[tr] = {"tracks": {}, "metrics": None, "row": None, "time_s": 0.0,
-                           "error": str(e)}
+            results[tr] = {
+                "tracks": {},
+                "metrics": None,
+                "row": None,
+                "time_s": 0.0,
+                "error": str(e),
+            }
         if not silent:
             m = results[tr].get("metrics")
             if m:
                 r = results[tr]["row"]
-                print(f"{tr:<22} | pmt {m.pmt:5.1f}% | purity {m.purity:.2f} | "
-                      f"yield {r['yield_recall']:.2f} | precision {r['precision']:.2f} | "
-                      f"ghost {m.ghost_capture_rate:.2%} | {results[tr]['time_s']:.1f}s")
+                print(
+                    f"{tr:<22} | pmt {m.pmt:5.1f}% | purity {m.purity:.2f} | "
+                    f"yield {r['yield_recall']:.2f} | precision {r['precision']:.2f} | "
+                    f"ghost {m.ghost_capture_rate:.2%} | {results[tr]['time_s']:.1f}s"
+                )
             else:
                 print(f"{tr:<22} | ERROR {results[tr].get('error')}")
     return results
@@ -444,7 +479,9 @@ def remap_gt_to_tracker_space(tt, gt_ids_to_show=None):
     return {k: v for k, v in tt.items() if k in gt_ids_to_show}
 
 
-def trajectory_shape_stats(tracks: dict[int, list[tuple[int, float, float, float]]]) -> dict:
+def trajectory_shape_stats(
+    tracks: dict[int, list[tuple[int, float, float, float]]],
+) -> dict:
     """Length and smoothness statistics computed directly from a predicted
     trajectory set -- no ground truth needed, so this always runs even
     where GT identity metrics don't apply (e.g. liboptv's own output).
@@ -459,9 +496,14 @@ def trajectory_shape_stats(tracks: dict[int, list[tuple[int, float, float, float
     lengths = [len(pts) for pts in tracks.values()]
     if not lengths:
         return {
-            "n_tracks": 0, "mean_length": 0.0, "median_length": 0.0,
-            "max_length": 0, "min_length": 0, "frac_short_lived": 0.0,
-            "mean_smoothness_deg": float("nan"), "n_smoothness_samples": 0,
+            "n_tracks": 0,
+            "mean_length": 0.0,
+            "median_length": 0.0,
+            "max_length": 0,
+            "min_length": 0,
+            "frac_short_lived": 0.0,
+            "mean_smoothness_deg": float("nan"),
+            "n_smoothness_samples": 0,
         }
 
     lengths_arr = np.array(lengths, dtype=float)
@@ -488,14 +530,26 @@ def trajectory_shape_stats(tracks: dict[int, list[tuple[int, float, float, float
         "max_length": int(np.max(lengths_arr)),
         "min_length": int(np.min(lengths_arr)),
         "frac_short_lived": frac_short,
-        "mean_smoothness_deg": float(np.mean(angle_devs)) if angle_devs else float("nan"),
+        "mean_smoothness_deg": float(np.mean(angle_devs))
+        if angle_devs
+        else float("nan"),
         "n_smoothness_samples": len(angle_devs),
     }
 
 
 __all__ = [
-    "SRC", "FIRST", "LAST", "N_FRAMES", "TRACKERS", "BASE_OVERRIDES",
-    "read_gt_frames", "build_true_tracks", "build_ghost_frames",
-    "combined_metrics", "run_single_tracker",
-    "run_all_trackers", "remap_gt_to_tracker_space", "trajectory_shape_stats",
+    "SRC",
+    "FIRST",
+    "LAST",
+    "N_FRAMES",
+    "TRACKERS",
+    "BASE_OVERRIDES",
+    "read_gt_frames",
+    "build_true_tracks",
+    "build_ghost_frames",
+    "combined_metrics",
+    "run_single_tracker",
+    "run_all_trackers",
+    "remap_gt_to_tracker_space",
+    "trajectory_shape_stats",
 ]

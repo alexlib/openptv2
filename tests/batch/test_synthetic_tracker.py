@@ -216,7 +216,9 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
     store = RunStore(resolve_store_path(test_dir / "res"), mode="r")
 
     for f in tracked_frames:
-        assert store.has_linkage(f, "ptv_is"), f"Tracking output for frame {f} was not created!"
+        assert store.has_linkage(f, "ptv_is"), (
+            f"Tracking output for frame {f} was not created!"
+        )
         prev, nxt, _ = store.read_linkage(f, "ptv_is")
         n = len(prev)
         assert n == num_particles, (

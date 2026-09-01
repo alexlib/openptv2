@@ -240,8 +240,7 @@ def recommend_tracker(
         speed_rank = {"fastest": 0, "fast": 1, "moderate": 2, "slow": 3}
         max_val = speed_rank.get(prefs["max_tracker_speed"], 3)
         candidates = [
-            c for c in candidates
-            if speed_rank.get(c.speed_ranking, 3) <= max_val
+            c for c in candidates if speed_rank.get(c.speed_ranking, 3) <= max_val
         ]
 
     # Score each candidate
@@ -295,7 +294,11 @@ def _score_tracker(info: TrackerInfo, stats: DatasetStats, priority: str) -> flo
     # Density match
     density_order = ["low", "low_to_moderate", "moderate", "high"]
     info_density = {"low": 0, "low_to_moderate": 1, "moderate": 2, "high": 3}
-    data_density = density_order.index(stats.density_category) if stats.density_category in density_order else 1
+    data_density = (
+        density_order.index(stats.density_category)
+        if stats.density_category in density_order
+        else 1
+    )
     info_val = info_density.get(info.density_ranking, 2)
     density_diff = abs(info_val - data_density)
     score += max(0, 3.0 - density_diff * 1.5)
@@ -308,7 +311,10 @@ def _score_tracker(info: TrackerInfo, stats: DatasetStats, priority: str) -> flo
             score -= 1.0
 
     # Particle consistency
-    if stats.particle_consistency == "dropping" or stats.particle_consistency == "erratic":
+    if (
+        stats.particle_consistency == "dropping"
+        or stats.particle_consistency == "erratic"
+    ):
         if info.supports_new_particles:
             score += 2.0
     if stats.particle_consistency == "growing":
@@ -332,9 +338,13 @@ def _explain_score(info: TrackerInfo, stats: DatasetStats) -> list[str]:
     lines.append(f"  Why: {info.short_description}")
 
     if stats.has_gaps and (info.supports_gap_relinking or info.supports_backward):
-        lines.append(f"  Good for gaps: Dataset has {stats.gap_fraction:.0%} particle dropout.")
+        lines.append(
+            f"  Good for gaps: Dataset has {stats.gap_fraction:.0%} particle dropout."
+        )
     if stats.particle_consistency != "stable" and info.supports_new_particles:
-        lines.append(f"  Handles variable particle count ({stats.particle_consistency}).")
+        lines.append(
+            f"  Handles variable particle count ({stats.particle_consistency})."
+        )
 
     return lines
 

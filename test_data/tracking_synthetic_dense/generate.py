@@ -96,9 +96,10 @@ def build_fixture(
             dst = os.path.join(outdir, "cal", f"cam{c + 1}.tif{ext}")
             with open(src) as f_in, open(dst, "w") as f_out:
                 f_out.write(f_in.read())
-    with open(os.path.join(BASE_FIXTURE, "parameters_Run1.yaml")) as f_in, open(
-        os.path.join(outdir, "parameters_Run1.yaml"), "w"
-    ) as f_out:
+    with (
+        open(os.path.join(BASE_FIXTURE, "parameters_Run1.yaml")) as f_in,
+        open(os.path.join(outdir, "parameters_Run1.yaml"), "w") as f_out,
+    ):
         f_out.write(f_in.read())
 
     cwd = os.getcwd()
@@ -219,9 +220,10 @@ def build_fixture_with_correspondence(
             dst = os.path.join(outdir, "cal", f"cam{c + 1}.tif{ext}")
             with open(src) as f_in, open(dst, "w") as f_out:
                 f_out.write(f_in.read())
-    with open(os.path.join(BASE_FIXTURE, "parameters_Run1.yaml")) as f_in, open(
-        os.path.join(outdir, "parameters_Run1.yaml"), "w"
-    ) as f_out:
+    with (
+        open(os.path.join(BASE_FIXTURE, "parameters_Run1.yaml")) as f_in,
+        open(os.path.join(outdir, "parameters_Run1.yaml"), "w") as f_out,
+    ):
         f_out.write(f_in.read())
 
     cwd = os.getcwd()
@@ -280,7 +282,9 @@ def build_fixture_with_correspondence(
                     )
 
         corrected = correct_frame(frm, cals, cpar, 0.0001)
-        by_pnr = [{c2d.pnr: (c2d.x, c2d.y) for c2d in corrected[c]} for c in range(NCAM)]
+        by_pnr = [
+            {c2d.pnr: (c2d.x, c2d.y) for c2d in corrected[c]} for c in range(NCAM)
+        ]
         con, _match_counts = _correspondences(frm, corrected, vpar, cpar, cals)
 
         rows_pid = []
@@ -294,12 +298,15 @@ def build_fixture_with_correspondence(
             # (verified against it directly: this is the convention that
             # gives 100% correct matches, not just some).
             p = [
-                corrected[c][tup.p[c]].pnr if tup.p[c] >= 0 else -1
-                for c in range(NCAM)
+                corrected[c][tup.p[c]].pnr if tup.p[c] >= 0 else -1 for c in range(NCAM)
             ]
 
             cam_pids = [pnr_to_pid[c][p[c]] for c in range(NCAM) if p[c] >= 0]
-            true_pid = cam_pids[0] if cam_pids and all(x == cam_pids[0] for x in cam_pids) else -1
+            true_pid = (
+                cam_pids[0]
+                if cam_pids and all(x == cam_pids[0] for x in cam_pids)
+                else -1
+            )
 
             targets_metric = np.full((NCAM, 2), COORD_UNUSED)
             for c in range(NCAM):

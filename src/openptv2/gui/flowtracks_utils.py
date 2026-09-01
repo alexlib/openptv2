@@ -1,4 +1,3 @@
-
 import numpy as np
 from flowtracks.io import trajectories_ptvis  # Expose for testing/monkeypatching
 
@@ -90,7 +89,6 @@ def export_ptv_is_to_paraview(
     if not dataset:
         dataset = trajectories_ptvis(ptv_is_pattern, xuap=xuap)
 
-
     dataframes = []
     for traj in dataset:
         dataframes.append(
@@ -116,4 +114,3 @@ def export_ptv_is_to_paraview(
     print(
         f"Saving trajectories to Paraview finished. {len(df_grouped)} frames exported."
     )
-

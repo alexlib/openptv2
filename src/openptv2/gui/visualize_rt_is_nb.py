@@ -177,12 +177,8 @@ def _(np, plt):
                     if store.has_correspondences(frame):
                         pos, _ = store.read_correspondences(frame)
                         # mimic rt_is columns: [nr, x, y, z] for common plotting below
-                        d = np.column_stack(
-                            [np.arange(len(pos)) + 1, np.asarray(pos)]
-                        )
-                        ax = plt.figure(figsize=(12, 10)).add_subplot(
-                            projection="3d"
-                        )
+                        d = np.column_stack([np.arange(len(pos)) + 1, np.asarray(pos)])
+                        ax = plt.figure(figsize=(12, 10)).add_subplot(projection="3d")
                         for row in d:
                             ax.plot(row[1], row[2], row[3], "ro")
                             ax.text(row[1], row[2], row[3], f"{row[0]:.0f}", None)

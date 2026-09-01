@@ -54,10 +54,7 @@ def plate_tpar_from_yaml(yaml_path: str | Path, key: str = "detect_plate") -> Ta
 
     gv = cfg.get("gvthres")
     if gv is None:
-        gv = [
-            cfg.get(f"gvth_{i}", cfg.get(f"gvthres_{i}", 20))
-            for i in range(1, 5)
-        ]
+        gv = [cfg.get(f"gvth_{i}", cfg.get(f"gvthres_{i}", 20)) for i in range(1, 5)]
     elif isinstance(gv, (int, float)):
         gv = [int(gv)] * 4
 
@@ -75,7 +72,9 @@ def plate_tpar_from_yaml(yaml_path: str | Path, key: str = "detect_plate") -> Ta
     )
 
 
-def _classify_coded(image: np.ndarray, targets: list[Target], thr: float = 40.0) -> np.ndarray:
+def _classify_coded(
+    image: np.ndarray, targets: list[Target], thr: float = 40.0
+) -> np.ndarray:
     """White-in-black (bright centre + dark ring) classifier.
 
     For each target, samples a centre mean ``I_c`` and an annulus
@@ -94,15 +93,26 @@ def _classify_coded(image: np.ndarray, targets: list[Target], thr: float = 40.0)
         if not (6 <= x < w - 6 and 6 <= y < h - 6):
             contrasts.append(-1.0)
             continue
-        centre = image[y - 2:y + 3, x - 2:x + 3].astype(float)
+        centre = image[y - 2 : y + 3, x - 2 : x + 3].astype(float)
         Ic = float(centre.mean())
         # annulus at radius 5-6
         coords = [
-            (y - 6, x), (y + 6, x), (y, x - 6), (y, x + 6),
-            (y - 5, x - 5), (y - 5, x + 5), (y + 5, x - 5), (y + 5, x + 5),
-            (y - 4, x - 4), (y - 4, x + 4), (y + 4, x - 4), (y + 4, x + 4),
+            (y - 6, x),
+            (y + 6, x),
+            (y, x - 6),
+            (y, x + 6),
+            (y - 5, x - 5),
+            (y - 5, x + 5),
+            (y + 5, x - 5),
+            (y + 5, x + 5),
+            (y - 4, x - 4),
+            (y - 4, x + 4),
+            (y + 4, x - 4),
+            (y + 4, x + 4),
         ]
-        ring_vals = [float(image[ry, rx]) for ry, rx in coords if 0 <= ry < h and 0 <= rx < w]
+        ring_vals = [
+            float(image[ry, rx]) for ry, rx in coords if 0 <= ry < h and 0 <= rx < w
+        ]
         Ir = float(np.mean(ring_vals)) if ring_vals else Ic
         contrasts.append(Ic - Ir)
 
@@ -211,8 +221,9 @@ def detect_plate_targets(
     from openptv2.image_scaling import to_uint8
 
     _rule = scaling or {"mode": "stretch"}
-    work8 = to_uint8(work, _rule.get("mode", "stretch"),
-                     lo=_rule.get("lo"), hi=_rule.get("hi"))
+    work8 = to_uint8(
+        work, _rule.get("mode", "stretch"), lo=_rule.get("lo"), hi=_rule.get("hi")
+    )
 
     # ROI detection
     subrange_x = None
@@ -242,10 +253,19 @@ def detect_plate_targets(
         subrange_y=subrange_y,
     )
     # Filter sentinel
-    targets = [t for t in raw_targets if getattr(t, "pnr", -999) != 1 or len(raw_targets) == 1]
+    targets = [
+        t for t in raw_targets if getattr(t, "pnr", -999) != 1 or len(raw_targets) == 1
+    ]
     # Fallback: if sentinel slipped through (single dummy), drop it
-    if len(targets) == 1 and getattr(targets[0], "n", 0) == 1 and targets[0].x == 1.0 and targets[0].y == 1.0:
+    if (
+        len(targets) == 1
+        and getattr(targets[0], "n", 0) == 1
+        and targets[0].x == 1.0
+        and targets[0].y == 1.0
+    ):
         targets = []
 
-    coded = _classify_coded(raw_for_coded if raw_for_coded is not None else work8, targets, thr=coded_thr)
+    coded = _classify_coded(
+        raw_for_coded if raw_for_coded is not None else work8, targets, thr=coded_thr
+    )
     return PlateDetectionResult(targets=targets, coded_mask=coded)

@@ -33,6 +33,7 @@ THE SHARP QUESTION, and what this script actually measures:
 Ground truth is synthetic particle identity, so "correct quad" is exact:
 all 4 targets must come from the same true particle.
 """
+
 import os
 import sys
 from pathlib import Path
@@ -100,11 +101,13 @@ def build_one_frame(n_particles, noise_px, seed, half_extent=(25.0, 20.0, 15.0))
 
     rng = np.random.default_rng(seed + 1)
     hx, hy, hz = half_extent
-    P_all = np.column_stack([
-        rng.uniform(-hx, hx, n_particles),
-        rng.uniform(-hy, hy, n_particles),
-        rng.uniform(-hz, hz, n_particles),
-    ])
+    P_all = np.column_stack(
+        [
+            rng.uniform(-hx, hx, n_particles),
+            rng.uniform(-hy, hy, n_particles),
+            rng.uniform(-hz, hz, n_particles),
+        ]
+    )
 
     # Keep only particles visible in ALL 4 sensors -- those are the ones a
     # quad matcher can legitimately find, so they are the honest ground-truth
@@ -133,7 +136,9 @@ def build_one_frame(n_particles, noise_px, seed, half_extent=(25.0, 20.0, 15.0))
     frm = Frame(num_cams=NCAM, max_targets=n)
     pnr_to_pid = [dict() for _ in range(NCAM)]
     for c in range(NCAM):
-        order = np.argsort(pix[c, :, 1], kind="stable")  # y-sort, as real detection does
+        order = np.argsort(
+            pix[c, :, 1], kind="stable"
+        )  # y-sort, as real detection does
         frm.num_targets[c] = n
         for pnr, p in enumerate(order):
             x, y = pix[c, p]
@@ -152,14 +157,24 @@ def candidate_quads(frm, corrected, cals, cpar, vpar, corrmin):
     p1_arr, n_arr, p2_arr, corr_arr, dist_arr = allocate_adjacency_arrays(
         NCAM, num_targets
     )
-    match_pairs(p1_arr, n_arr, p2_arr, corr_arr, dist_arr, corrected, frm, vpar, cpar, cals)
+    match_pairs(
+        p1_arr, n_arr, p2_arr, corr_arr, dist_arr, corrected, frm, vpar, cpar, cals
+    )
 
     con0_size = NCAM * NMAX
     con0_p = np.full((con0_size, NCAM), -1, dtype=np.int32)
     con0_corr = np.zeros(con0_size, dtype=np.float64)
     match0 = four_camera_matching(
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-        num_targets[0], corrmin, con0_p, con0_corr, con0_size,
+        p1_arr,
+        n_arr,
+        p2_arr,
+        corr_arr,
+        dist_arr,
+        num_targets[0],
+        corrmin,
+        con0_p,
+        con0_corr,
+        con0_size,
     )
     src_p = con0_p[:match0]
     src_corr = con0_corr[:match0]
@@ -172,7 +187,9 @@ def dedup_clean(order, src_p, max_targ):
     tusage = np.zeros((NCAM, max_targ + 1), dtype=np.int32)
     taken = []
     for cand in order:
-        if any(src_p[cand, c] > -1 and tusage[c, src_p[cand, c]] > 0 for c in range(NCAM)):
+        if any(
+            src_p[cand, c] > -1 and tusage[c, src_p[cand, c]] > 0 for c in range(NCAM)
+        ):
             continue
         for c in range(NCAM):
             if src_p[cand, c] > -1:
@@ -190,10 +207,10 @@ def dedup_buggy(order, src_p, max_targ):
         for c in range(NCAM):
             p = src_p[cand, c]
             if p > -1:
-                tim[c, p] += 1          # incremented BEFORE knowing the rest pass
+                tim[c, p] += 1  # incremented BEFORE knowing the rest pass
                 if tim[c, p] > 1:
                     ok = False
-                    break               # ... and NOT rolled back. This is the quirk.
+                    break  # ... and NOT rolled back. This is the quirk.
         if ok:
             taken.append(cand)
     return taken
@@ -245,12 +262,12 @@ def run_case(n_particles, noise_px, seed, corrmin_base):
     tightened = None
     if buggy["accepted"] < clean["accepted"]:
         lo, hi = corrmin_base, corrmin_base
-        for _ in range(60):                      # find an upper bracket
+        for _ in range(60):  # find an upper bracket
             hi = hi * 1.5 + 1.0
             sp, od, mt = candidate_quads(frm, corrected, cals, cpar, vpar, hi)
             if len(dedup_clean(od, sp, mt)) <= buggy["accepted"]:
                 break
-        for _ in range(40):                      # bisect to the matched N
+        for _ in range(40):  # bisect to the matched N
             mid = 0.5 * (lo + hi)
             sp, od, mt = candidate_quads(frm, corrected, cals, cpar, vpar, mid)
             t = dedup_clean(od, sp, mt)
@@ -275,11 +292,16 @@ def main():
     # Gate 1: at very low density there is no ambiguity -> both variants must
     # agree, and both must be near-perfect. Catches harness/scoring bugs.
     clean, buggy, _t, n = run_case(15, 0.3, 0, corrmin_base)
-    g1 = (clean["accepted"] == buggy["accepted"]
-          and clean["precision"] > 0.98 and clean["recall"] > 0.9)
-    print(f"gate 1 (sparse scene -> variants agree & near-perfect): "
-          f"n_obs={n} clean acc={clean['accepted']} prec={clean['precision']:.3f} rec={clean['recall']:.3f} | "
-          f"buggy acc={buggy['accepted']} prec={buggy['precision']:.3f} -> {'PASS' if g1 else 'FAIL'}")
+    g1 = (
+        clean["accepted"] == buggy["accepted"]
+        and clean["precision"] > 0.98
+        and clean["recall"] > 0.9
+    )
+    print(
+        f"gate 1 (sparse scene -> variants agree & near-perfect): "
+        f"n_obs={n} clean acc={clean['accepted']} prec={clean['precision']:.3f} rec={clean['recall']:.3f} | "
+        f"buggy acc={buggy['accepted']} prec={buggy['precision']:.3f} -> {'PASS' if g1 else 'FAIL'}"
+    )
 
     # Gate 2: the quirk is provably strictly-more-restrictive. If buggy ever
     # accepts MORE than clean, the harness is wrong.
@@ -297,12 +319,16 @@ def main():
         c, _b, _t, _n = run_case(np_, noise_px, 7, corrmin_base)
         ghost_rates.append(1.0 - c["precision"])
     g3 = ghost_rates[-1] > ghost_rates[0]
-    print(f"gate 3 (ghost rate rises with density): "
-          f"{[f'{g:.3f}' for g in ghost_rates]} -> {'PASS' if g3 else 'FAIL'}")
+    print(
+        f"gate 3 (ghost rate rises with density): "
+        f"{[f'{g:.3f}' for g in ghost_rates]} -> {'PASS' if g3 else 'FAIL'}"
+    )
     g1 = g1 and g3
 
     if not (g1 and g2):
-        print("\nGATES FAILED -- results below are NOT trustworthy. Fix the harness first.")
+        print(
+            "\nGATES FAILED -- results below are NOT trustworthy. Fix the harness first."
+        )
         return
 
     print()
@@ -310,9 +336,11 @@ def main():
     print("RESULT: buggy(3dptv quirk) vs clean-TIGHTENED-to-the-same-accept-count")
     print("(comparing raw clean vs buggy would be meaningless -- see module docstring)")
     print("=" * 100)
-    hdr = (f"{'n_part':>7} {'n_obs':>6} {'seed':>5} | {'clean_acc':>9} {'clean_P':>8} {'clean_R':>8} "
-           f"| {'buggy_acc':>9} {'buggy_P':>8} {'buggy_R':>8} "
-           f"| {'tight_P':>8} {'tight_R':>8} | verdict")
+    hdr = (
+        f"{'n_part':>7} {'n_obs':>6} {'seed':>5} | {'clean_acc':>9} {'clean_P':>8} {'clean_R':>8} "
+        f"| {'buggy_acc':>9} {'buggy_P':>8} {'buggy_R':>8} "
+        f"| {'tight_P':>8} {'tight_R':>8} | verdict"
+    )
     print(hdr)
     print("-" * len(hdr))
 
@@ -321,7 +349,9 @@ def main():
         for seed in (1, 2, 3):
             clean, buggy, tight, n = run_case(n_part, noise_px, seed, corrmin_base)
             if tight is None:
-                print(f"{n_part:7d} {n:6d} {seed:5d} |  (buggy did not reduce count; no matched point)")
+                print(
+                    f"{n_part:7d} {n:6d} {seed:5d} |  (buggy did not reduce count; no matched point)"
+                )
                 continue
             d = buggy["precision"] - tight["precision"]
             if abs(d) < 0.005:
@@ -331,14 +361,18 @@ def main():
             else:
                 verdict, key = f"corrmin +{-d:.3f}", "corrmin"
             wins[key] += 1
-            print(f"{n_part:7d} {n:6d} {seed:5d} "
-                  f"| {clean['accepted']:9d} {clean['precision']:8.3f} {clean['recall']:8.3f} "
-                  f"| {buggy['accepted']:9d} {buggy['precision']:8.3f} {buggy['recall']:8.3f} "
-                  f"| {tight['precision']:8.3f} {tight['recall']:8.3f} | {verdict}")
+            print(
+                f"{n_part:7d} {n:6d} {seed:5d} "
+                f"| {clean['accepted']:9d} {clean['precision']:8.3f} {clean['recall']:8.3f} "
+                f"| {buggy['accepted']:9d} {buggy['precision']:8.3f} {buggy['recall']:8.3f} "
+                f"| {tight['precision']:8.3f} {tight['recall']:8.3f} | {verdict}"
+            )
 
     print()
-    print(f"tally at matched operating point -> quirk better: {wins['quirk']}, "
-          f"tie: {wins['tie']}, plain-corrmin better: {wins['corrmin']}")
+    print(
+        f"tally at matched operating point -> quirk better: {wins['quirk']}, "
+        f"tie: {wins['tie']}, plain-corrmin better: {wins['corrmin']}"
+    )
 
 
 if __name__ == "__main__":

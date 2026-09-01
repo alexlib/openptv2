@@ -49,7 +49,8 @@ def scene(tmp_path, monkeypatch):
     spar = SequencePar.from_yaml(str(yaml_path), cpar.num_cams)
     cals = [
         Calibration.from_file(
-            str(dst / f"cal/cam{c + 1}.tif.ori"), str(dst / f"cal/cam{c + 1}.tif.addpar")
+            str(dst / f"cal/cam{c + 1}.tif.ori"),
+            str(dst / f"cal/cam{c + 1}.tif.addpar"),
         )
         for c in range(cpar.num_cams)
     ]
@@ -58,15 +59,27 @@ def scene(tmp_path, monkeypatch):
     _populate_store_from_rt_is(store, dst / "res", spar.first, spar.last)
 
     return {
-        "dst": dst, "yaml_path": yaml_path, "cpar": cpar, "vpar": vpar,
-        "tpar": tpar, "spar": spar, "cals": cals, "store": store,
+        "dst": dst,
+        "yaml_path": yaml_path,
+        "cpar": cpar,
+        "vpar": vpar,
+        "tpar": tpar,
+        "spar": spar,
+        "cals": cals,
+        "store": store,
     }
 
 
 def test_run_warmup_produces_sane_result(scene):
     result = run_warmup(
-        scene["cpar"], scene["vpar"], scene["tpar"], scene["spar"], scene["cals"],
-        scene["store"], frames=5, max_cycles=2,
+        scene["cpar"],
+        scene["vpar"],
+        scene["tpar"],
+        scene["spar"],
+        scene["cals"],
+        scene["store"],
+        frames=5,
+        max_cycles=2,
     )
 
     assert result.tracker in ("priority_segment_3d", "full_multipass")
@@ -92,8 +105,14 @@ def test_write_result_to_yaml_round_trips(scene):
     import yaml
 
     result = run_warmup(
-        scene["cpar"], scene["vpar"], scene["tpar"], scene["spar"], scene["cals"],
-        scene["store"], frames=5, max_cycles=1,
+        scene["cpar"],
+        scene["vpar"],
+        scene["tpar"],
+        scene["spar"],
+        scene["cals"],
+        scene["store"],
+        frames=5,
+        max_cycles=1,
     )
     write_result_to_yaml(result, scene["yaml_path"])
 

@@ -30,6 +30,7 @@ dot plane's offset through the plate and the camera being on the other side;
 both are handled at fit time by resection_from_known_plates.py, which determines
 them from the data rather than assuming.
 """
+
 import os
 import sys
 from pathlib import Path
@@ -43,11 +44,13 @@ from openptv2.plate_labeler import label_plate
 
 # Dataset location; override with ILLMENAU_RAW / ILLMENAU_DIR.
 ILLMENAU_RAW = os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau")
-ILLMENAU_DIR = os.environ.get("ILLMENAU_DIR",
-                              os.path.join(ILLMENAU_RAW, "openptv_illmenau_4cam"))
+ILLMENAU_DIR = os.environ.get(
+    "ILLMENAU_DIR", os.path.join(ILLMENAU_RAW, "openptv_illmenau_4cam")
+)
 
-CAMS = [int(c) for c in
-        os.environ.get("ILLMENAU_CAMS", "1,2,3,4").split(",") if c.strip()]
+CAMS = [
+    int(c) for c in os.environ.get("ILLMENAU_CAMS", "1,2,3,4").split(",") if c.strip()
+]
 NPZ = os.environ.get("ILLMENAU_NPZ", "labelled_all_frames.npz")
 for _i, _a in enumerate(sys.argv):
     if _a == "--cams":
@@ -59,9 +62,20 @@ base = Path(ILLMENAU_RAW)
 out = Path(ILLMENAU_DIR)
 PITCH, NX, NY = 120.0, 6, 7
 tpar = plate_tpar_from_yaml(out / "parameters_Run1.yaml")
-cpar = ControlPar(num_cams=len(CAMS), imx=2560, imy=2048, pix_x=0.005, pix_y=0.005,
-                  mm=MmNp(n1=1.0, n2=[1.0], d=[0.0], n3=1.0), chfield=0, tiff_flag=1,
-                  hp_flag=1, allCam_flag=0, img_base_name=[""]*len(CAMS), cal_img_base_name=[""]*len(CAMS))
+cpar = ControlPar(
+    num_cams=len(CAMS),
+    imx=2560,
+    imy=2048,
+    pix_x=0.005,
+    pix_y=0.005,
+    mm=MmNp(n1=1.0, n2=[1.0], d=[0.0], n3=1.0),
+    chfield=0,
+    tiff_flag=1,
+    hp_flag=1,
+    allCam_flag=0,
+    img_base_name=[""] * len(CAMS),
+    cal_img_base_name=[""] * len(CAMS),
+)
 
 DATUM_IX, DATUM_IY = 2, 3
 CODED_THR = (30, 25, 20, 15, 10)
@@ -70,6 +84,7 @@ cals = {}
 if USE_HINT:
     from openptv2.algorithms.calibration import Calibration
     from openptv2.plate_labeler import image_up_direction
+
     for ci, cam in enumerate(CAMS):
         ori = out / f"cal/cam{cam}.tif.ori"
         if not ori.exists():
@@ -97,14 +112,27 @@ for ci, cam in enumerate(CAMS):
                     res = r
                     break
             if res is None:
-                print(f"cam{cam} {fr}: no coded triple at any threshold, skipped", flush=True)
+                print(
+                    f"cam{cam} {fr}: no coded triple at any threshold, skipped",
+                    flush=True,
+                )
                 continue
             hint = None
             if ci in cals and len(res.centroids):
-                hint = image_up_direction(cals[ci], cpar, np.mean(res.centroids, axis=0))
-            ip, rp, _ = label_plate(res.centroids, res.coded_mask, pitch_x=PITCH, pitch_y=PITCH,
-                                    nx=NX, ny=NY, y_sign=1,
-                                    corner_index=(DATUM_IX, DATUM_IY), up_hint=hint)
+                hint = image_up_direction(
+                    cals[ci], cpar, np.mean(res.centroids, axis=0)
+                )
+            ip, rp, _ = label_plate(
+                res.centroids,
+                res.coded_mask,
+                pitch_x=PITCH,
+                pitch_y=PITCH,
+                nx=NX,
+                ny=NY,
+                y_sign=1,
+                corner_index=(DATUM_IX, DATUM_IY),
+                up_hint=hint,
+            )
         except Exception as e:
             print(f"cam{cam} {fr}: {type(e).__name__}", flush=True)
             continue
@@ -114,4 +142,4 @@ for ci, cam in enumerate(CAMS):
         store[f"c{ci}_{fr}_px"] = ip
         print(f"cam{cam} {fr}: {len(ip)} dots", flush=True)
 np.savez_compressed(out / "cal" / NPZ, **store)
-print("wrote", out / "cal" / NPZ, len(store)//2, "views")
+print("wrote", out / "cal" / NPZ, len(store) // 2, "views")

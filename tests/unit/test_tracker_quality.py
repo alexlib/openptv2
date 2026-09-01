@@ -46,7 +46,11 @@ def test_fast_3d_quality_floor_at_1k_density():
         make_dataset(DATASET, num_particles=1000, num_frames=N_FRAMES, seed=2026)
 
     results = bu.run_all_trackers(
-        ["fast_3d"], silent=True, src=DATASET, first=bu.FIRST, n_frames=N_FRAMES,
+        ["fast_3d"],
+        silent=True,
+        src=DATASET,
+        first=bu.FIRST,
+        n_frames=N_FRAMES,
     )
     row = results["fast_3d"]["row"]
     assert row is not None, results["fast_3d"].get("error")
@@ -124,10 +128,22 @@ def test_fast_3d_quality_floor_at_1k_density():
 #   nearest_hungarian_3d:precision 0.688, yield_recall 0.646, ghost 0.038
 #   predictive_gmm_3d:   precision 0.707, yield_recall 0.690, ghost 0.035
 _STAGE0B_FLOORS = {
-    "priority_segment_3d": {"precision": 0.88, "yield_recall": 0.86, "ghost_capture_rate": 0.06},
+    "priority_segment_3d": {
+        "precision": 0.88,
+        "yield_recall": 0.86,
+        "ghost_capture_rate": 0.06,
+    },
     "trackcorr": {"precision": 0.88, "yield_recall": 0.80, "ghost_capture_rate": 0.06},
-    "nearest_hungarian_3d": {"precision": 0.67, "yield_recall": 0.62, "ghost_capture_rate": 0.06},
-    "predictive_gmm_3d": {"precision": 0.69, "yield_recall": 0.67, "ghost_capture_rate": 0.055},
+    "nearest_hungarian_3d": {
+        "precision": 0.67,
+        "yield_recall": 0.62,
+        "ghost_capture_rate": 0.06,
+    },
+    "predictive_gmm_3d": {
+        "precision": 0.69,
+        "yield_recall": 0.67,
+        "ghost_capture_rate": 0.055,
+    },
 }
 
 
@@ -138,7 +154,10 @@ def test_registered_tracker_quality_floor_at_1k_density(tracker):
         make_dataset(DATASET, num_particles=1000, num_frames=N_FRAMES, seed=2026)
 
     overrides = bu.per_tracker_overrides(
-        [tracker], src=DATASET, first=bu.FIRST, n_frames=N_FRAMES,
+        [tracker],
+        src=DATASET,
+        first=bu.FIRST,
+        n_frames=N_FRAMES,
     )[tracker]
 
     # Subprocess-isolated (see scripts/tune_tracker_params.py docstring):
@@ -147,7 +166,11 @@ def test_registered_tracker_quality_floor_at_1k_density(tracker):
     # trackers run back-to-back in one process -- exactly what a
     # parametrized sweep over all registered trackers does.
     pred0, _dt = _run_via_subprocess(
-        tracker, DATASET, bu.FIRST, N_FRAMES, overrides,
+        tracker,
+        DATASET,
+        bu.FIRST,
+        N_FRAMES,
+        overrides,
     )
 
     frames = bu.read_gt_frames(DATASET, bu.FIRST, N_FRAMES)
@@ -171,7 +194,12 @@ def test_trajectory_shape_stats_length_and_smoothness():
     (length/gaps/smoothness comparison across trackers)."""
     tracks = {
         # Straight, constant-velocity: 0 deg smoothness.
-        0: [(0, 0.0, 0.0, 0.0), (1, 1.0, 0.0, 0.0), (2, 2.0, 0.0, 0.0), (3, 3.0, 0.0, 0.0)],
+        0: [
+            (0, 0.0, 0.0, 0.0),
+            (1, 1.0, 0.0, 0.0),
+            (2, 2.0, 0.0, 0.0),
+            (3, 3.0, 0.0, 0.0),
+        ],
         # A 90-degree turn at frame 2.
         1: [(0, 0.0, 0.0, 0.0), (1, 1.0, 0.0, 0.0), (2, 1.0, 1.0, 0.0)],
         # Short fragment (< 5 frames).

@@ -35,6 +35,7 @@ class Tracking:
         plugins_cfg = pm.parameters.get("plugins", {}) if pm else {}
 
         from openptv2.tracking_presets import infer_direction
+
         direction = infer_direction(track_cfg, plugins_cfg)
 
         print(f"Running 4BE Tracking (Four-Frame Best Estimate, {direction})...")

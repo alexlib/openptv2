@@ -227,6 +227,7 @@ def targ_rec_scaled(img, *args, scaling: dict | None = None, **kwargs):
     arr = np.asarray(img)
     if arr.dtype != np.uint8:
         rule = scaling or {"mode": "fixed"}
-        arr = to_uint8(arr, rule.get("mode", "fixed"),
-                       lo=rule.get("lo"), hi=rule.get("hi"))
+        arr = to_uint8(
+            arr, rule.get("mode", "fixed"), lo=rule.get("lo"), hi=rule.get("hi")
+        )
     return _targ_rec(arr, *args, **kwargs)

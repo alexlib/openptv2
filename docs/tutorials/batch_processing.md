@@ -87,11 +87,14 @@ uv run openptv2-batch test_data/test_cavity 10001 10004 --mode both
 
 ```python
 import zarr, numpy as np
+
 root = zarr.open_group("res/run.zarr", mode="r")
-traj = root["traj"]; ln = np.asarray(traj["length"]); fr = np.asarray(traj["first_row"])
+traj = root["traj"]
+ln = np.asarray(traj["length"])
+fr = np.asarray(traj["first_row"])
 top = np.argsort(ln)[::-1][:100]
 for tid, fr_i, ln_i in zip(np.asarray(traj["trajid"])[top], fr[top], ln[top]):
-    pts = np.asarray(root["trajectories/pos"][fr_i:fr_i+ln_i])  # [m]
+    pts = np.asarray(root["trajectories/pos"][fr_i : fr_i + ln_i])  # [m]
 ```
 
 Or `notebooks/marimo_trajectory_viewer.py` (plotly, top-N longest).

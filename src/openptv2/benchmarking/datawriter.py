@@ -145,9 +145,7 @@ def write_dataset(
                     _, ex, ey = cam_targ_entries[cam][cam_slot_to_targ[cam][slot]]
                     coords.append(f"{ex:.4f}")
                     coords.append(f"{ey:.4f}")
-                fh.write(
-                    f"{pid},{x:.6f},{y:.6f},{z:.6f},{','.join(coords)}\n"
-                )
+                fh.write(f"{pid},{x:.6f},{y:.6f},{z:.6f},{','.join(coords)}\n")
 
 
 def write_dataset_store(

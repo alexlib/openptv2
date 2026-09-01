@@ -58,14 +58,21 @@ def _window_spar(spar: SequencePar, first: int, n_frames: int) -> SequencePar:
 
 def _track_par_dict(tpar: TrackPar) -> dict[str, float]:
     return {
-        "dvxmin": tpar.dvxmin, "dvxmax": tpar.dvxmax,
-        "dvymin": tpar.dvymin, "dvymax": tpar.dvymax,
-        "dvzmin": tpar.dvzmin, "dvzmax": tpar.dvzmax,
-        "dangle": tpar.dangle, "dacc": tpar.dacc, "add": tpar.add,
+        "dvxmin": tpar.dvxmin,
+        "dvxmax": tpar.dvxmax,
+        "dvymin": tpar.dvymin,
+        "dvymax": tpar.dvymax,
+        "dvzmin": tpar.dvzmin,
+        "dvzmax": tpar.dvzmax,
+        "dangle": tpar.dangle,
+        "dacc": tpar.dacc,
+        "add": tpar.add,
     }
 
 
-def _forward_backward_agreement(cpar, vpar, tpar, spar_window, cals, store, linkage_name):
+def _forward_backward_agreement(
+    cpar, vpar, tpar, spar_window, cals, store, linkage_name
+):
     """Run trackcorr forward+backward on a scratch linkage group, measure
     reciprocity (link agreement -- a ground-truth-free quality signal) and
     the displacement distribution of the CONFIRMED (reciprocal) links, which
@@ -99,7 +106,9 @@ def _forward_backward_agreement(cpar, vpar, tpar, spar_window, cals, store, link
     return agreement_rate, np.asarray(displacements, dtype=np.float64)
 
 
-def _tune_from_displacements(tpar: TrackPar, displacements: np.ndarray, margin: float = 3.0) -> TrackPar:
+def _tune_from_displacements(
+    tpar: TrackPar, displacements: np.ndarray, margin: float = 3.0
+) -> TrackPar:
     """dv box set from the p99 of confirmed-link displacements (matches
     tracking_recommender._suggest_params's own p95/p99-not-max rationale:
     a single nearest-neighbour mismatch shouldn't set the whole search
@@ -108,8 +117,16 @@ def _tune_from_displacements(tpar: TrackPar, displacements: np.ndarray, margin: 
         return tpar
     half = max(float(np.percentile(displacements, 99)) * margin, 0.05)
     return TrackPar(
-        dvxmin=-half, dvxmax=half, dvymin=-half, dvymax=half, dvzmin=-half, dvzmax=half,
-        dangle=tpar.dangle, dacc=half, add=tpar.add, track_mode=tpar.track_mode,
+        dvxmin=-half,
+        dvxmax=half,
+        dvymin=-half,
+        dvymax=half,
+        dvzmin=-half,
+        dvzmax=half,
+        dangle=tpar.dangle,
+        dacc=half,
+        add=tpar.add,
+        track_mode=tpar.track_mode,
     )
 
 
@@ -150,8 +167,15 @@ def _mean_track_length(linkage_name: str, first: int, last: int, store) -> float
 
 
 def run_warmup(
-    cpar, vpar, tpar, spar, cals, store,
-    frames: int = 25, max_cycles: int = 3, plateau_tol: float = 0.01,
+    cpar,
+    vpar,
+    tpar,
+    spar,
+    cals,
+    store,
+    frames: int = 25,
+    max_cycles: int = 3,
+    plateau_tol: float = 0.01,
 ) -> WarmupResult:
     """The warmup loop. Callers (CLI, tests) supply an already-loaded
     experiment's params/calibration and an open RunStore whose
@@ -177,8 +201,10 @@ def run_warmup(
         dvymax=rec.suggested_params.get("dvymax", tpar.dvymax),
         dvzmin=rec.suggested_params.get("dvzmin", tpar.dvzmin),
         dvzmax=rec.suggested_params.get("dvzmax", tpar.dvzmax),
-        dangle=tpar.dangle, dacc=rec.suggested_params.get("dacc", tpar.dacc),
-        add=tpar.add, track_mode=tpar.track_mode,
+        dangle=tpar.dangle,
+        dacc=rec.suggested_params.get("dacc", tpar.dacc),
+        add=tpar.add,
+        track_mode=tpar.track_mode,
     )
 
     prev_agreement = -1.0
@@ -187,7 +213,13 @@ def run_warmup(
     cycle = 0
     for cycle in range(1, max_cycles + 1):
         agreement, displacements = _forward_backward_agreement(
-            cpar, vpar, cur_tpar, spar_window, cals, store, f"cycle{cycle}",
+            cpar,
+            vpar,
+            cur_tpar,
+            spar_window,
+            cals,
+            store,
+            f"cycle{cycle}",
         )
         if agreement - prev_agreement < plateau_tol and cycle > 1:
             break
@@ -198,13 +230,21 @@ def run_warmup(
 
     engine_scores: dict[str, float] = {}
     for engine in _CANDIDATE_ENGINES:
-        naming = {"corres": "warmup", "linkage": f"warmup/select_{engine}", "prio": "warmup"}
-        tracker = Tracker(cpar, vpar, cur_tpar, spar_window, cals, naming=naming, store=store)
+        naming = {
+            "corres": "warmup",
+            "linkage": f"warmup/select_{engine}",
+            "prio": "warmup",
+        }
+        tracker = Tracker(
+            cpar, vpar, cur_tpar, spar_window, cals, naming=naming, store=store
+        )
         if engine == "priority_segment_3d":
             tracker.full_forward_3d()
         else:
             tracker.full_forward()
-        engine_scores[engine] = _mean_track_length(naming["linkage"], first, last, store)
+        engine_scores[engine] = _mean_track_length(
+            naming["linkage"], first, last, store
+        )
     best_engine = max(engine_scores, key=engine_scores.get)
 
     result = WarmupResult(

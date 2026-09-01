@@ -91,7 +91,7 @@ tracker = MyPTV3DTracker(
     a_max=1.5,
     max_gap=2,
     dt=1.0,
-    cost_weights=CostWeights(w_distance=1.0, w_velocity=0.6, w_acceleration=0.3)
+    cost_weights=CostWeights(w_distance=1.0, w_velocity=0.6, w_acceleration=0.3),
 )
 trajectories = tracker.track_frames(frame_particle_arrays)
 ```
@@ -102,7 +102,25 @@ Use for high-throughput batch processing, real-time tracking, or ultra-large dat
 from openptv2.algorithms.track_kernels_track3d import track3d_loop_fast
 
 # Runs native C memoryview loop at 800,000+ particles/sec
-track3d_loop_fast(n1, x0, prev0, n0, x1, prev1, next1, n1, x2, prev2, next2, n2, v_max, v_max, v_max, 32, a_max)
+track3d_loop_fast(
+    n1,
+    x0,
+    prev0,
+    n0,
+    x1,
+    prev1,
+    next1,
+    n1,
+    x2,
+    prev2,
+    next2,
+    n2,
+    v_max,
+    v_max,
+    v_max,
+    32,
+    a_max,
+)
 ```
 
 ---

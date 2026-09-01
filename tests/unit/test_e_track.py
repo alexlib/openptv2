@@ -28,7 +28,12 @@ def test_exact_reproduction_is_perfect():
 
     assert m.n_perfect == 1
     assert m.e_track == 0.0
-    assert (m.n_fragmented, m.n_contaminated, m.n_incomplete, m.n_missed) == (0, 0, 0, 0)
+    assert (m.n_fragmented, m.n_contaminated, m.n_incomplete, m.n_missed) == (
+        0,
+        0,
+        0,
+        0,
+    )
 
 
 def test_short_fragment_is_not_a_perfect_reproduction():
@@ -126,10 +131,10 @@ def test_a_gap_in_ground_truth_can_be_reproduced_perfectly():
 
 def test_breakdown_partitions_the_failures():
     true = {
-        0: _line(range(10)),                 # perfect
-        1: _line(range(10), y=50.0),         # missed
-        2: _line(range(10), y=100.0),        # fragmented
-        3: _line(range(10), y=150.0),        # incomplete
+        0: _line(range(10)),  # perfect
+        1: _line(range(10), y=50.0),  # missed
+        2: _line(range(10), y=100.0),  # fragmented
+        3: _line(range(10), y=150.0),  # incomplete
     }
     pred = {
         100: _line(range(10)),
