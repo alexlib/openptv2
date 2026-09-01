@@ -1,0 +1,4051 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Calibration hub: multiple sources/algorithms -> .ori/.addpar - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#calibration-hub-multiple-sourcesalgorithms-oriaddpar" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Calibration hub: multiple sources/algorithms -&gt; .ori/.addpar
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../plate-calibration-howto/" class="md-tabs__link">
+          
+  
+  
+  Calibration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../benchmarking_guide/" class="md-tabs__link">
+          
+  
+  
+  Benchmarks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
+          
+  
+  
+  Decisions
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    End-to-End Particle Tracking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/cavity_flow_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lid-Driven Cavity Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aorta_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aorta Flow (cloud-native)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/four_view_splitter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4-View Image Splitter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sequence & Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracker-tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracker Engines & Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lagrangian_turbulence_quality_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lagrangian Turbulence Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-batch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud-like Batch Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multi-folder-runs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Folder Experiments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Calibration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plate-calibration-howto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plate Calibration How-To
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../illmenau-4cam-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illmenau 4-Camera Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/particle_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle-Based Refinement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/dumbbell_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dumbbell Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/warmup_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auto-Calibration (warmup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-rms-vs-rcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reprojection RMS vs Ray Convergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-bundle-adjustment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bundle Adjustment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracer-self-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracer Self-Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Benchmarks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarking & Tracker Selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking-benchmark-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Engine Benchmark Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/custom_tracking_plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correspondence eps0 Semantics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Decisions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Cython Optimization Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-governing-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The governing idea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-four-doors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The four doors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-optics-layer-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The optics layer (policy)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verified-facts-measured-2026-08-30-do-not-re-derive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verified facts (measured 2026-08-30 -- do not re-derive)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verified facts (measured 2026-08-30 -- do not re-derive)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#opencv-openptv2-exact-to-1e-12-px-when-xhyh0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenCV -&gt; openptv2, exact to 1e-12 px when xh=yh=0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frame-change-is-absorbable-into-the-exterior-3e-12-px" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frame change is absorbable into the exterior (3e-12 px)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-one-true-residual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one true residual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pixel-pitch-is-a-gauge-freedom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pixel pitch is a gauge freedom
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#open-question-resolve-with-data-do-not-assume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open question -- resolve with data, do not assume
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traps-in-the-existing-code-each-verified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traps in the existing code (each verified)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-0-verify-the-unrun-phase-1-code-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 0 -- verify the unrun Phase 1 code (blocking)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-srcopenptv2calibration_importpy-new-numpyscipy-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 -- src/openptv2/calibration_import.py (new, numpy/scipy only)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1 -- src/openptv2/calibration_import.py (new, numpy/scipy only)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-anglematrix-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Angle/matrix helpers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-the-converter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 The converter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-the-inverse-needed-for-the-round-trip-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 The inverse (needed for the round-trip test)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Readers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-kabsch-only-if-step-7-shows-a-frame-mismatch-otherwise-skip-yagni" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Kabsch (only if Step 7 shows a frame mismatch -- otherwise skip, YAGNI)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-presorted-bypass-in-_refine_and_select" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 -- presorted bypass in _refine_and_select
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-register-the-new-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 -- register the new sources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 -- tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4 -- tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testsunittest_calibration_importpy-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tests/unit/test_calibration_import.py (new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testsunittest_calibration_registrypy-add" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tests/unit/test_calibration_registry.py (add)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-scriptsimport_calibrationpy-new-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 -- scripts/import_calibration.py (new CLI)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-the-ilmenau-run-acceptance-test-for-the-whole-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 -- the Ilmenau run (acceptance test for the whole feature)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-the-report-existing-code-only-no-new-maths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 -- the report (existing code only, no new maths)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-8-later-doors-documented-not-built-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 -- later doors (documented, not built now)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 8 -- later doors (documented, not built now)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standing-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standing policies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-format-catalogue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A -- format catalogue
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-conventions-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B -- conventions checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-c-grounding-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix C -- grounding references
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ---
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="calibration-hub-multiple-sourcesalgorithms-oriaddpar">Calibration hub: multiple sources/algorithms -&gt; <code>.ori</code>/<code>.addpar</code><a class="headerlink" href="#calibration-hub-multiple-sourcesalgorithms-oriaddpar" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> implementation plan, ready to execute. Supersedes the
+2026-08-29/30 draft of this file (phased-roadmap framing), which is folded in
+as Step 8 and Appendix C.</p>
+<p><strong>Two parts, independently executable:</strong></p>
+<ul>
+<li><strong>Part 1 (below, Steps 0-9)</strong> — <em>importing</em> a calibration that already
+  exists elsewhere: the four doors, the verified OpenCV -&gt; <code>.ori</code>/<code>.addpar</code>
+  conversion, and the Ilmenau acceptance run.</li>
+<li><strong>Part 2 (Steps S1-S7, from "Part 2 — The seed")</strong> — <em>creating</em> the initial
+  <code>.ori</code> when there is nothing to import. Nothing in the package does this
+  today; every path reads an <code>.ori</code> or raises. Adds <code>rig.yaml</code> -&gt; <code>.ori</code>
+  autogeneration from a look-at description, promotes DLT resection into the
+  package, and records the measured seed requirements.</li>
+</ul>
+<p>Part 2 is the prerequisite for a <strong>first-time</strong> user; Part 1 is the
+prerequisite for a user <strong>arriving from another package</strong>. Neither blocks the
+other — Part 1 Step 0 is the only shared gate.</p>
+<hr />
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>openptv2 today calibrates exactly one way: a surveyed 3D calibration body
+(<code>calblock.txt</code>) plus a 4-point manual click per camera, then
+<code>external_calibration</code> -&gt; <code>sortgrid</code> -&gt; <code>full_calibration</code>
+(<code>src/openptv2/autocalibration.py:calibrate_camera</code>).</p>
+<p>Users arrive from DaVis/LaVision, easyWand, proPTV, MyPTV and plain OpenCV
+already holding a calibration. openptv2's model is the only <em>physical</em> one in
+that set -- camera at real mm coordinates, real focal length, explicit
+refraction through the glass -- which is what makes x,y,z measurable in
+millimetres and multimedia ray tracing possible. So openptv2 should be the
+<strong>backbone</strong> any of those can feed into, not a competing ecosystem.</p>
+<h3 id="the-governing-idea">The governing idea<a class="headerlink" href="#the-governing-idea" title="Permanent link">&para;</a></h3>
+<p>A calibration is two separable things:</p>
+<ol>
+<li><strong>The measurements</strong> -- "this lab XYZ appears at this pixel". Pure data.
+   <em>Universal across every package.</em></li>
+<li><strong>The model</strong> -- how a camera turns 3D into pixels. Tsai, Soloff cubic,
+   OpenCV Brown, DLT-11, openptv2's pinhole+Brown+refraction. <em>Every package
+   parameterises this differently; there is no 1:1 mapping.</em></li>
+</ol>
+<p><strong>Always land on (1), then let openptv2 fit its own (2).</strong></p>
+<h3 id="the-four-doors">The four doors<a class="headerlink" href="#the-four-doors" title="Permanent link">&para;</a></h3>
+<p>All funnel into the existing <code>CalibrationPointSet</code> -&gt; <code>_refine_and_select</code> -&gt;
+<code>.ori</code>/<code>.addpar</code>:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a> A. points file      (MyPTV, proPTV, Multiview-Cal, DaVis) --+
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a> B. pinhole model    (OpenCV, COLMAP, Metashape, DLT-11)   --+   (XYZ,uv)     openptv2
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a> C. polynomial model (proPTV Soloff, DaVis 3rd-order)      --+-&gt; pairs   --&gt; bundle  --&gt; .ori/.addpar
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a> D. images           (calblock, checkerboard, multiplane)  --+   + seed       adjust
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>door</th>
+<th>input</th>
+<th>how</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. points</strong></td>
+<td>MyPTV <code>camN_cal_points</code>, proPTV <code>markers_cN.txt</code>, Multiview-Cal <code>cN_xyXYZ.txt</code>, DaVis plate export</td>
+<td><strong>all four are the same five columns <code>x y X Y Z</code></strong>, differing only in separator and header. <strong>One reader covers four packages.</strong> Primary door, full accuracy.</td>
+</tr>
+<tr>
+<td><strong>B. pinhole model</strong></td>
+<td>OpenCV <code>(K,dist,rvec,tvec)</code>, COLMAP, Metashape, DLT-11</td>
+<td>algebraic convert -&gt; seed <code>Calibration</code>. Numpy only. The first three are <em>the same model</em> up to the p-swap, the half-pixel origin, <code>R</code> vs <code>R.T</code> and mm-vs-normalised scaling: <strong>one converter with three thin front-ends</strong>, not three converters.</td>
+</tr>
+<tr>
+<td><strong>C. polynomial model</strong></td>
+<td>proPTV Soloff, DaVis 3rd-order, MyPTV extendedZolof</td>
+<td>no exterior orientation exists to convert at all; <em>evaluate</em> the foreign model on a grid over the measurement volume -&gt; regenerates door A. Only valid inside the fitted volume -- a cubic diverges fast outside it.</td>
+</tr>
+<tr>
+<td><strong>D. images</strong></td>
+<td>calblock, checkerboard, multiplane, wand</td>
+<td>the old plan's Phases 2 and 4; the only doors needing cv2.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>First target: the Ilmenau barrel dataset</strong> (<code>../Multiview-Calibration</code>),
+with the fewest conversions and the least error. It is the ideal first case
+because it is a convection cell <strong>in air</strong> (<code>mmp_n1=n2=n3=1.0, mmp_d=1.0,
+interf: 0</code>), so OpenCV's model and openptv2's are the <em>same</em> model
+(pinhole + Brown) and the conversion is exact rather than approximate.</p>
+<hr />
+<h2 id="the-optics-layer-policy">The optics layer (policy)<a class="headerlink" href="#the-optics-layer-policy" title="Permanent link">&para;</a></h2>
+<p><strong>Reuse <code>ptv.par</code> / YAML <code>mmp_n1..n3</code>, <code>mmp_d</code>. Invent no new config.</strong>
+<code>ControlPar.from_file</code> (<code>algorithms/parameters.py:637</code>) and <code>from_yaml</code>
+(<code>:693</code>) already read them, and <code>test_data/burgers/parameters/ptv.par</code> already
+ships the <code>1/1/1/1</code> no-glass case.</p>
+<ul>
+<li><strong>Default <code>n1=n2=n3=1, d=1</code>.</strong> openptv2 then reproduces the foreign model
+  exactly. The glass vector defaults to a unit vector along the camera axis;
+  it is numerically inert while <code>n1 == n2 == n3</code> (verified), but must be
+  non-zero unless you want the explicit pinhole short-circuit at
+  <code>imgcoord.py:196</code>.</li>
+<li><strong>Real optics only together with a re-fit on points.</strong> A calibration shot
+  through water has <strong>already absorbed refraction into its distortion
+  coefficients</strong>. Importing it and then switching <code>n3=1.33</code> on
+  <strong>double-counts refraction</strong>. This is the loudest warning in this document.</li>
+</ul>
+<p>The upgrade path is the actual value proposition: import points from anywhere,
+declare the real optics, re-run openptv2's bundle adjustment -&gt; the distortion
+coefficients collapse to genuine lens distortion, the camera lands at a
+physically measurable mm position, and rays trace correctly through the
+interface.</p>
+<hr />
+<h2 id="verified-facts-measured-2026-08-30-do-not-re-derive">Verified facts (measured 2026-08-30 -- do not re-derive)<a class="headerlink" href="#verified-facts-measured-2026-08-30-do-not-re-derive" title="Permanent link">&para;</a></h2>
+<p>Measured numerically against <code>img_coord</code> + <code>metric_to_pixel</code> on a synthetic
+camera, <strong>and</strong> independently re-derived from the OpenCV/Brown source
+definitions. Both routes agree.</p>
+<h3 id="opencv-openptv2-exact-to-1e-12-px-when-xhyh0">OpenCV -&gt; openptv2, exact to 1e-12 px when <code>xh=yh=0</code><a class="headerlink" href="#opencv-openptv2-exact-to-1e-12-px-when-xhyh0" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">])</span>  <span class="c1"># OpenCV cam frame -&gt; photogrammetric cam frame</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">R_cv</span> <span class="o">=</span> <span class="n">Rotation</span><span class="o">.</span><span class="n">from_rotvec</span><span class="p">(</span><span class="n">rvec</span><span class="p">)</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span>  <span class="c1"># world -&gt; camera</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">C</span> <span class="o">=</span> <span class="o">-</span><span class="n">R_cv</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">tvec</span>  <span class="c1"># camera centre -&gt; ext.x0, y0, z0   [mm]</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">dm</span> <span class="o">=</span> <span class="n">R_cv</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">S</span>  <span class="c1"># NOTE: S on the RIGHT</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">cc</span> <span class="o">=</span> <span class="n">fx</span> <span class="o">*</span> <span class="n">pix_x</span>  <span class="c1"># [mm]</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">pix_y</span> <span class="o">=</span> <span class="n">cc</span> <span class="o">/</span> <span class="n">fy</span>  <span class="c1"># anisotropy MUST go here, not into scx</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">xh</span> <span class="o">=</span> <span class="p">(</span><span class="n">cx</span> <span class="o">-</span> <span class="n">imx</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">pix_x</span>  <span class="c1"># [mm]</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">yh</span> <span class="o">=</span> <span class="p">(</span><span class="n">imy</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="n">cy</span><span class="p">)</span> <span class="o">*</span> <span class="n">pix_y</span>  <span class="c1"># [mm]  &lt;- sign flip: openptv2 y is UP</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">k1</span> <span class="o">=</span> <span class="n">k1_cv</span> <span class="o">/</span> <span class="n">cc</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># OpenCV r is normalised, openptv2 r is mm</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="n">k2</span> <span class="o">=</span> <span class="n">k2_cv</span> <span class="o">/</span> <span class="n">cc</span><span class="o">**</span><span class="mi">4</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="n">k3</span> <span class="o">=</span> <span class="n">k3_cv</span> <span class="o">/</span> <span class="n">cc</span><span class="o">**</span><span class="mi">6</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="n">p1</span> <span class="o">=</span> <span class="n">p2_cv</span> <span class="o">/</span> <span class="n">cc</span>  <span class="c1"># SWAPPED</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="n">p2</span> <span class="o">=</span> <span class="o">-</span><span class="n">p1_cv</span> <span class="o">/</span> <span class="n">cc</span>  <span class="c1"># SWAPPED *and* sign-flipped (the y inversion)</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="n">scx</span><span class="p">,</span> <span class="n">she</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span>
+</span></code></pre></div>
+<p><code>dm = Rx(omega) @ Ry(phi) @ Rz(kappa)</code> (from <code>calibration.py:44
+compute_rotation_matrix</code>), so:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">kappa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="o">-</span><span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">omega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="o">-</span><span class="n">dm</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dm</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+</span></code></pre></div>
+<p>equivalently <code>scipy Rotation.from_matrix(dm).as_euler('XYZ')</code> (capital =
+intrinsic). Lowercase <code>'xyz'</code> is extrinsic and gives the WRONG answer -- the
+<code>../Multiview-Calibration</code> prototype uses lowercase, <strong>and</strong> puts <code>S</code> on the
+left; both are wrong. Do not copy it.</p>
+<h3 id="frame-change-is-absorbable-into-the-exterior-3e-12-px">Frame change is absorbable into the exterior (3e-12 px)<a class="headerlink" href="#frame-change-is-absorbable-into-the-exterior-3e-12-px" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">dm_new</span> <span class="o">=</span> <span class="n">A</span> <span class="o">@</span> <span class="n">dm_old</span>  <span class="c1"># A: rotation from old lab frame to new</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">C_new</span> <span class="o">=</span> <span class="n">A</span> <span class="o">@</span> <span class="n">C_old</span> <span class="o">+</span> <span class="n">b</span>
+</span></code></pre></div>
+<p>Never transform the points; rotate the cameras. <code>A</code>, <code>b</code> from a Kabsch fit
+(<code>np.linalg.svd</code>, ~8 lines) on &gt;=3 known correspondences. If a scale <code>s</code> is
+also needed, scale positions only -- <code>cc</code> is a sensor quantity and is
+unaffected.</p>
+<h3 id="the-one-true-residual">The one true residual<a class="headerlink" href="#the-one-true-residual" title="Permanent link">&para;</a></h3>
+<p>openptv2 centres distortion on the <strong>image centre</strong>
+(<code>imgcoord.py:61 _flat_to_dist_core</code> distorts <code>flat + xh,yh</code>); OpenCV centres
+it on the <strong>principal point</strong>. Measured, on-sensor points only:</p>
+<table>
+<thead>
+<tr>
+<th>principal-point offset</th>
+<th>distortion</th>
+<th>max</th>
+<th>RMS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 px</td>
+<td>any</td>
+<td>0.0000 px</td>
+<td>0.0000 px</td>
+</tr>
+<tr>
+<td>5, 3 px</td>
+<td>mild</td>
+<td>0.0374 px</td>
+<td>0.0186 px</td>
+</tr>
+<tr>
+<td>17, 11 px</td>
+<td>mild</td>
+<td>0.1240 px</td>
+<td>0.0633 px</td>
+</tr>
+<tr>
+<td>5, 3 px</td>
+<td>10x</td>
+<td>0.3549 px</td>
+<td>0.1795 px</td>
+</tr>
+<tr>
+<td>17, 11 px</td>
+<td>10x</td>
+<td>1.2366 px</td>
+<td>0.6168 px</td>
+</tr>
+</tbody>
+</table>
+<p>This is why door B yields a <strong>seed</strong>, not a final answer: one
+<code>full_calibration</code> pass absorbs it.</p>
+<h3 id="pixel-pitch-is-a-gauge-freedom">Pixel pitch is a gauge freedom<a class="headerlink" href="#pixel-pitch-is-a-gauge-freedom" title="Permanent link">&para;</a></h3>
+<p>OpenCV fixes only <code>fx = cc/pix_x</code>, <code>fy = cc/pix_y</code>. You may <em>choose</em> <code>pix_x</code>
+and set <code>cc = fx*pix_x</code>; the projection is bit-identical and only the printed
+focal length is fictional. World-space quantities are unaffected -- their
+scale comes from the calibration object, not the sensor. The real pitch
+matters only if you want <code>cc</code> to be physically meaningful. Ilmenau has it
+anyway (0.005 mm).</p>
+<h3 id="open-question-resolve-with-data-do-not-assume">Open question -- resolve with data, do not assume<a class="headerlink" href="#open-question-resolve-with-data-do-not-assume" title="Permanent link">&para;</a></h3>
+<p><strong>A possible 0.5 px origin offset.</strong> OpenCV puts integer coordinates at pixel
+<strong>centres</strong> (centred principal point = <code>(w-1)/2</code>); COLMAP/Metashape at the
+top-left <strong>corner</strong> (<code>w/2</code>). openptv2's <code>metric_to_pixel</code> uses <code>imx/2</code>, which
+looks like the corner convention, but what actually matters is the convention
+of the detector that produced the target coordinates. It appears as a
+<strong>constant 0.5 px bias in the residual field</strong>. Step 7 measures it.</p>
+<hr />
+<h2 id="traps-in-the-existing-code-each-verified">Traps in the existing code (each verified)<a class="headerlink" href="#traps-in-the-existing-code-each-verified" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong><code>raw_orient</code> zeroes all distortion</strong> before solving
+   (<code>algorithms/orientation.py:540-546</code> sets <code>k1=k2=k3=p1=p2=0, scx=1,
+   she=0</code>). <code>external_calibration</code> is a thin wrapper over it. So
+   <code>calibrate_from_source</code>'s path 2 (<code>initial_cal</code> + <code>fix4</code>/<code>pix4</code>)
+   <strong>destroys an imported distortion model</strong>. Door B must always use path 1
+   (<code>point_set.seed</code>).</li>
+<li><strong><code>_refine_and_select</code> always calls <code>sortgrid</code></strong>
+   (<code>autocalibration.py:383, 390, 397</code>). Imported point sets are <em>already
+   matched</em>; sortgrid re-matches by proximity within <code>eps</code> px and drops
+   non-matches to <code>pnr=-999</code>. Needs a bypass.</li>
+<li><strong>OpenCV is not a dependency</strong> -- absent from <code>pyproject.toml</code> (core,
+   <code>gui</code>, <code>rembg</code>, <code>viz</code>, <code>dev</code>) <em>and</em> from <code>uv.lock</code>. The 2026-08-29 draft of
+   this document claimed otherwise. Doors A/B/C need <strong>zero</strong> cv2; do not add
+   it.</li>
+<li><strong>Setting <code>Exterior.dm</code> directly is silently discarded.</strong> Demonstrated:
+   assigning a rotation matrix to <code>ext.dm</code> then building a <code>Calibration</code>
+   projected <strong>8e7 px</strong> off, because <code>dm</code> was recomputed from the still-zero
+   angles. Going through angles + <code>compute_rotation_matrix()</code> gave 3e-12 px on
+   identical geometry. <strong>Always convert R -&gt; angles first, never write <code>dm</code>.</strong></li>
+<li><code>.ori</code> stores angles <em>and</em> <code>dm</code>, and the reader trusts the file's <code>dm</code>
+   (<code>calibration.py:428</code>) -- the mirror of trap 4 on the read side. Also the
+   forward model is hand-inlined three times in <code>imgcoord.py</code>
+   (<code>_flat_image_coord_core</code>, <code>_img_coord_batch_impl</code>,
+   <code>_flat_image_coord_batch_impl</code>), so round-trip tests must exercise
+   <code>img_coord</code> <strong>and</strong> <code>img_coord_batch</code>.</li>
+</ol>
+<hr />
+<h2 id="step-0-verify-the-unrun-phase-1-code-blocking">Step 0 -- verify the unrun Phase 1 code (blocking)<a class="headerlink" href="#step-0-verify-the-unrun-phase-1-code-blocking" title="Permanent link">&para;</a></h2>
+<p><code>src/openptv2/calibration_registry.py</code>, the <code>_refine_and_select</code> extraction in
+<code>autocalibration.py</code>, and <code>tests/unit/test_calibration_registry.py</code> were
+written 2026-08-29/30 and <strong>never run</strong>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_autocalibration.py<span class="w"> </span>tests/unit/test_calibration_registry.py<span class="w"> </span>-v
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>.
+</span></code></pre></div>
+<p><code>test_autocalibrate_cavity</code> must still pass -- that is what proves the
+<code>_refine_and_select</code> extraction was behaviour-preserving. Fix anything that
+surfaces before touching anything else. <strong>Do not proceed on a red suite.</strong></p>
+<hr />
+<h2 id="step-1-srcopenptv2calibration_importpy-new-numpyscipy-only">Step 1 -- <code>src/openptv2/calibration_import.py</code> (new, numpy/scipy only)<a class="headerlink" href="#step-1-srcopenptv2calibration_importpy-new-numpyscipy-only" title="Permanent link">&para;</a></h2>
+<p>No cv2. <code>scipy.spatial.transform.Rotation</code> is fine (scipy is already a core
+dependency).</p>
+<h3 id="11-anglematrix-helpers">1.1 Angle/matrix helpers<a class="headerlink" href="#11-anglematrix-helpers" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">angles_from_dm</span><span class="p">(</span><span class="n">dm</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="sd">"""Invert Exterior.compute_rotation_matrix: dm = Rx(omega)Ry(phi)Rz(kappa)."""</span>
+</span></code></pre></div>
+<p>Use the closed form above. Raise <code>ValueError</code> when <code>abs(dm[0,2]) &gt; 1 - 1e-9</code>
+(gimbal lock: <code>cos(phi) -&gt; 0</code>, omega/kappa degenerate) rather than returning
+silently-wrong angles.</p>
+<p><code>scripts/calibrate_proptv_dlt.py:118 rotation_matrix_to_angles</code> is the same
+function; leave that script alone (it works and is self-tested), but add a
+comment there pointing at this module as the canonical copy.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">exterior_from_rotation</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">dm</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Exterior</span><span class="p">:</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="sd">"""Build an Exterior from a camera centre and a camera-&gt;world matrix.</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="sd">    Goes through omega/phi/kappa + compute_rotation_matrix() -- writing `dm`</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="sd">    directly is silently discarded (trap 4). Asserts the round-trip.</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="sd">    """</span>
+</span></code></pre></div>
+<p>Must <code>assert np.abs(ext.dm - dm).max() &lt; 1e-12</code> before returning.</p>
+<h3 id="12-the-converter">1.2 The converter<a class="headerlink" href="#12-the-converter" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">calibration_from_opencv</span><span class="p">(</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="n">K</span><span class="p">,</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="n">dist</span><span class="p">,</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">rvec</span><span class="p">,</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">tvec</span><span class="p">,</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="o">*</span><span class="p">,</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="n">imx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="n">imy</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    <span class="n">pix_x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>    <span class="n">pix_y</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>    <span class="n">glass_vec</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>    <span class="n">pixel_origin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"corner"</span><span class="p">,</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Calibration</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">    </span><span class="sd">"""Convert an OpenCV calibration to openptv2's .ori/.addpar model.</span>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="sd">    Returns (Calibration, pix_y_used). `pix_y` is derived as cc/fy when not</span>
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="sd">    given, because openptv2's `scx` is isotropic and cannot carry fx != fy.</span>
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="sd">    `pixel_origin`: "corner" (no shift) or "centre" (+0.5 px on cx, cy) --</span>
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="sd">    see the open question above.</span>
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="sd">    """</span>
+</span></code></pre></div>
+<p>Body follows the verified block exactly. <code>dist</code> is OpenCV order
+<code>(k1, k2, p1, p2[, k3[, ...]])</code> -- accept length 4, 5, 8, 12 or 14, use the
+first five, and <strong>raise</strong> if any of <code>k4..k6, s1..s4, taux, tauy</code> is non-zero,
+naming which (openptv2 has no representation for them; the caller must use
+door C and resample instead).</p>
+<p>Glass: <code>Glass(vec_x, vec_y, vec_z, n1=1.0, n2=1.0, n3=1.0, d=1.0)</code>. Note the
+refractive indices on <code>Glass</code> are stored-for-reference only -- the imaging
+chain reads them from <code>cpar.mm</code>. Use the glass-vector sign that puts the
+interface between camera and volume.</p>
+<h3 id="13-the-inverse-needed-for-the-round-trip-test">1.3 The inverse (needed for the round-trip test)<a class="headerlink" href="#13-the-inverse-needed-for-the-round-trip-test" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">opencv_from_calibration</span><span class="p">(</span><span class="n">cal</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">imx</span><span class="p">,</span> <span class="n">imy</span><span class="p">,</span> <span class="n">pix_x</span><span class="p">,</span> <span class="n">pix_y</span><span class="p">):</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="sd">"""Inverse of calibration_from_opencv. Returns (K, dist, rvec, tvec)."""</span>
+</span></code></pre></div>
+<h3 id="14-readers">1.4 Readers<a class="headerlink" href="#14-readers" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">read_xyXYZ</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="sd">"""Read the universal 5-column point file -&gt; (img_pts (n,2), ref_pts (n,3)).</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="sd">    Covers proPTV `markers_cN.txt`, MyPTV `camN_cal_points`,</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="sd">    Multiview-Calibration `cN_xyXYZ.txt` and DaVis plate exports -- all the</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="sd">    same `x y X Y Z`, differing only in separator and header.</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="sd">    """</span>
+</span></code></pre></div>
+<p>Skip <code>#</code> comment lines; accept whitespace <strong>or</strong> comma separation
+(<code>np.genfromtxt</code> with <code>comments="#"</code>, retry with <code>delimiter=","</code>). Tolerate an
+optional 6th column (MyPTV PR#67's view index) and return it when present.
+Raise on &lt;5 columns, naming the file and the line.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">read_opencv_flat15</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="sd">"""Read the Ilmenau `calib_cN.txt`: 15 floats, one per line.</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="sd">    Layout (from Multiview-Calibration's own extract_calibration.py):</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="sd">        [0:3]  rvec        [3:6]  tvec</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="sd">        [6] fx  [7] fy  [8] cx  [9] cy</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="sd">        [10:15] dist = k1, k2, p1, p2, k3</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="sd">    """</span>
+</span></code></pre></div>
+<h3 id="15-kabsch-only-if-step-7-shows-a-frame-mismatch-otherwise-skip-yagni">1.5 Kabsch (only if Step 7 shows a frame mismatch -- otherwise skip, YAGNI)<a class="headerlink" href="#15-kabsch-only-if-step-7-shows-a-frame-mismatch-otherwise-skip-yagni" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">similarity_from_correspondences</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">with_scale</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span><span class="sd">"""Kabsch/Procrustes: returns (A, b, s) with dst ~= s * A @ src + b."""</span>
+</span></code></pre></div>
+<p>Apply via <code>dm_new = A @ dm_old</code>, <code>C_new = A @ C_old + b</code> (verified).</p>
+<hr />
+<h2 id="step-2-presorted-bypass-in-_refine_and_select">Step 2 -- <code>presorted</code> bypass in <code>_refine_and_select</code><a class="headerlink" href="#step-2-presorted-bypass-in-_refine_and_select" title="Permanent link">&para;</a></h2>
+<p><code>src/openptv2/autocalibration.py:363</code>. Add a keyword-only parameter:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">_refine_and_select</span><span class="p">(</span><span class="n">cam</span><span class="p">,</span> <span class="n">cal</span><span class="p">,</span> <span class="n">cpar</span><span class="p">,</span> <span class="n">fix</span><span class="p">,</span> <span class="n">nfix</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">pix</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">presorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CamResult</span><span class="p">:</span>
+</span></code></pre></div>
+<p>When <code>presorted=True</code>, skip <strong>all three</strong> <code>sortgrid</code> calls and the coarse
+pre-pass; set <code>sorted_pix = pix</code> and <code>n_matched = len(pix)</code>, then go straight
+to the <code>CANDIDATE_FLAGS</code> loop. <code>pix</code> must already be index-aligned with <code>fix</code>
+-- that is what <code>_target_from_xy(i, ...)</code> guarantees, since it sets <code>pnr=i</code>.</p>
+<p>Default <code>False</code>, so <code>calibrate_camera</code> is unchanged and
+<code>test_autocalibrate_cavity</code> stays byte-for-byte identical.</p>
+<p>Thread the flag through <code>calibrate_from_source</code> (<code>autocalibration.py:489</code>) as
+a keyword-only <code>presorted: bool = False</code>.</p>
+<p>Also: strengthen <code>calibrate_from_source</code>'s docstring on path 2 to state that
+<code>external_calibration</code> <strong>wipes <code>k1..she</code></strong> (trap 1), so any source carrying a
+converted distortion model must use path 1 (<code>point_set.seed</code>).</p>
+<hr />
+<h2 id="step-3-register-the-new-sources">Step 3 -- register the new sources<a class="headerlink" href="#step-3-register-the-new-sources" title="Permanent link">&para;</a></h2>
+<p>In <code>src/openptv2/calibration_registry.py</code>, add two <code>CalibrationSourceInfo</code>
+entries alongside <code>calibration_object</code>:</p>
+<ul>
+<li><code>name="opencv_model"</code>, <code>produces_seed=True</code> -- requires K, dist, rvec, tvec,
+  image size and pixel pitch; <code>best_for</code> an existing OpenCV/COLMAP/Metashape
+  calibration; <code>avoid_when</code> the foreign model used rational/thin-prism/tilt
+  terms.</li>
+<li><code>name="points_file"</code>, <code>produces_seed=False</code> -- requires a 5-column
+  <code>x y X Y Z</code> file per camera plus a seed pose from elsewhere; <code>best_for</code>
+  proPTV / MyPTV / DaVis / Multiview-Calibration exports.</li>
+</ul>
+<p>Metadata only, mirroring the existing entry's style. Keep the module a plain
+registry -- no dynamic dispatch until there is more than one implementation to
+dispatch between.</p>
+<hr />
+<h2 id="step-4-tests">Step 4 -- tests<a class="headerlink" href="#step-4-tests" title="Permanent link">&para;</a></h2>
+<h3 id="testsunittest_calibration_importpy-new"><code>tests/unit/test_calibration_import.py</code> (new)<a class="headerlink" href="#testsunittest_calibration_importpy-new" title="Permanent link">&para;</a></h3>
+<p>Follow the style of <code>tests/unit/test_synthetic_calibration.py</code>; reuse its
+<code>make_calibration</code> / <code>make_control_par</code> helpers where they fit. Fast and
+file-I/O-free except the reader tests.</p>
+<table>
+<thead>
+<tr>
+<th>test</th>
+<th>assertion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_angles_roundtrip</code></td>
+<td>random rotations: <code>dm -&gt; angles -&gt; dm</code> within 1e-12</td>
+</tr>
+<tr>
+<td><code>test_angles_gimbal_raises</code></td>
+<td><code>phi = pi/2</code> raises <code>ValueError</code></td>
+</tr>
+<tr>
+<td><code>test_exterior_from_rotation_survives</code></td>
+<td>the built <code>Exterior.dm</code> matches the input within 1e-12 (regression guard for trap 4)</td>
+</tr>
+<tr>
+<td><code>test_opencv_projection_matches_img_coord</code></td>
+<td>build a <code>Calibration</code> with <code>xh=yh=0</code> and full distortion; project ~60 points both with <code>img_coord</code>+<code>metric_to_pixel</code> and with a numpy transcription of OpenCV's model using <code>opencv_from_calibration</code>'s output; <strong>max diff &lt; 1e-9 px</strong></td>
+</tr>
+<tr>
+<td><code>test_opencv_roundtrip</code></td>
+<td><code>calibration_from_opencv(*opencv_from_calibration(cal))</code> reproduces <code>cal</code>'s projections within 1e-9 px</td>
+</tr>
+<tr>
+<td><code>test_distortion_centre_gap_bounded</code></td>
+<td>with <code>xh,yh</code> = 17,11 px and strong distortion, on-sensor max diff is <strong>&gt; 0.1 px and &lt; 2 px</strong> -- bounds the known limitation in both directions, so a change that silently widens it fails</td>
+</tr>
+<tr>
+<td><code>test_batch_matches_scalar</code></td>
+<td><code>img_coord_batch</code> agrees with <code>img_coord</code> on the imported calibration (trap 5)</td>
+</tr>
+<tr>
+<td><code>test_frame_change_absorbed</code></td>
+<td>random <code>A</code>, <code>b</code>: <code>dm_new = A@dm</code>, <code>C_new = A@C+b</code> reproduces projections within 1e-9 px</td>
+</tr>
+<tr>
+<td><code>test_read_xyXYZ_variants</code></td>
+<td>whitespace, comma, <code>#</code> header, optional 6th column; a <code>&lt;5</code>-column file raises naming the path</td>
+</tr>
+<tr>
+<td><code>test_read_opencv_flat15</code></td>
+<td>a 15-line fixture unpacks to the documented slots</td>
+</tr>
+<tr>
+<td><code>test_rejects_unsupported_distortion</code></td>
+<td>an 8-element <code>dist</code> with non-zero <code>k4</code> raises, naming <code>k4</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="testsunittest_calibration_registrypy-add"><code>tests/unit/test_calibration_registry.py</code> (add)<a class="headerlink" href="#testsunittest_calibration_registrypy-add" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>test</th>
+<th>assertion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_presorted_skips_sortgrid</code></td>
+<td>synthetic <code>fix</code>/<code>pix</code> deliberately spaced closer than <code>eps</code> so sortgrid would mis-match; <code>presorted=True</code> recovers the known pose, <code>presorted=False</code> does not</td>
+</tr>
+<tr>
+<td><code>test_new_sources_registered</code></td>
+<td><code>opencv_model</code> and <code>points_file</code> present with the documented <code>produces_seed</code> values</td>
+</tr>
+</tbody>
+</table>
+<p>Fixtures: generate the tiny text files in a <code>tmp_path</code> fixture. No new repo
+data.</p>
+<hr />
+<h2 id="step-5-scriptsimport_calibrationpy-new-cli">Step 5 -- <code>scripts/import_calibration.py</code> (new CLI)<a class="headerlink" href="#step-5-scriptsimport_calibrationpy-new-cli" title="Permanent link">&para;</a></h2>
+<p>Modelled on <code>scripts/calibration_diagnostics.py</code> (argparse, <code>main()</code>, no
+hardcoded paths -- unlike <code>scripts/calibrate_proptv_dlt.py</code>, which has
+<code>C:/Users/alex/...</code> baked into <code>main()</code>).</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/import_calibration.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">    </span>--model-dir<span class="w">  </span>&lt;dir<span class="w"> </span>with<span class="w"> </span>calib_c*.txt&gt;<span class="w">   </span><span class="se">\</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span>--points-dir<span class="w"> </span>&lt;dir<span class="w"> </span>with<span class="w"> </span>c*_xyXYZ.txt&gt;<span class="w">   </span><span class="se">\</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">    </span>--num-cams<span class="w"> </span><span class="m">4</span><span class="w"> </span>--imx<span class="w"> </span><span class="m">2560</span><span class="w"> </span>--imy<span class="w"> </span><span class="m">2048</span><span class="w"> </span>--pix<span class="w"> </span><span class="m">0</span>.005<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">    </span>--out<span class="w"> </span>&lt;dir&gt;<span class="w"> </span><span class="o">[</span>--no-refine<span class="o">]</span><span class="w"> </span><span class="o">[</span>--pixel-origin<span class="w"> </span>corner<span class="p">|</span>centre<span class="o">]</span><span class="w"> </span><span class="o">[</span>--json<span class="w"> </span>report.json<span class="o">]</span>
+</span></code></pre></div>
+<p>Behaviour:</p>
+<ol>
+<li>Per camera: <code>read_opencv_flat15</code> -&gt; <code>calibration_from_opencv</code> -&gt; a seed
+   <code>Calibration</code>.</li>
+<li><code>--no-refine</code>: write <code>camN.ori</code>/<code>.addpar</code> from the seed and stop. This is
+   the "least conversions" mode -- a pure algebraic import, no fitting.</li>
+<li>Otherwise: <code>read_xyXYZ</code> -&gt; <code>CalibrationPointSet(ref_pts, img_pts,
+   seed=cal)</code> -&gt; <code>calibrate_from_source("opencv_model", cam, cpar, point_set,
+   presorted=True)</code> -&gt; write from the refined <code>CamResult</code>.</li>
+<li>Report (Step 7) to stdout, and to <code>--json</code> when given.</li>
+</ol>
+<p>Write with <code>Calibration.to_file(ori_path, add_file)</code>. Back up any existing
+files the way <code>calibrate_dataset</code> does (<code>.autobck</code> suffix).</p>
+<p>Do <strong>not</strong> add a <code>[project.scripts]</code> entry yet -- there is no calibration
+entry point today and adding one is a separate decision.</p>
+<hr />
+<h2 id="step-6-the-ilmenau-run-acceptance-test-for-the-whole-feature">Step 6 -- the Ilmenau run (acceptance test for the whole feature)<a class="headerlink" href="#step-6-the-ilmenau-run-acceptance-test-for-the-whole-feature" title="Permanent link">&para;</a></h2>
+<p>Data lives in <code>../Multiview-Calibration</code>, branch <strong><code>origin/nov_2025</code></strong> (the
+checked-out <code>main</code> is ~1% of the repo). <strong>No LICENSE file -- reference only,
+do not vendor any code or data into openptv2.</strong></p>
+<p>Inputs:</p>
+<ul>
+<li><code>markers_Nov_2025/calibration/calib_c{0..3}.txt</code> -- the 15-float OpenCV
+  parameters.</li>
+<li><code>c{0..3}_xyXYZ.txt</code> -- ~8550 rows of <code>x,y,X,Y,Z</code> per camera.</li>
+<li>Geometry: 2560x2048 px, pixel pitch 0.005 mm, markers on a 40 mm grid.</li>
+<li>Optics: <strong>air</strong> -- <code>mmp_n1 = mmp_n2 = mmp_n3 = 1.0</code>, <code>mmp_d = 1.0</code>,
+  <code>interf: 0</code> (from <code>openptv/parameters_Run1.yaml</code>).</li>
+</ul>
+<p>No frame conversion is expected: those extrinsics are already in the plate
+frame (X,Y on the 40 mm grid with Y negated, Z along the traverse), which is
+exactly a calblock frame. Step 7's camera-separation check will show if that
+assumption is wrong.</p>
+<p>Run both modes and compare:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># pure algebraic import, zero fitting</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/import_calibration.py<span class="w"> </span>--model-dir<span class="w"> </span>...<span class="w"> </span>--no-refine<span class="w"> </span>--out<span class="w"> </span>cal_seed
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="c1"># seed + bundle adjust on all ~8550 points per camera</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/import_calibration.py<span class="w"> </span>--model-dir<span class="w"> </span>...<span class="w"> </span>--points-dir<span class="w"> </span>...<span class="w"> </span>--out<span class="w"> </span>cal_refined
+</span></code></pre></div>
+<p><strong>What this deletes from the current Multiview-Calibration workflow</strong>: the
+farthest-point sampling of 40 markers, <code>calibration_block.txt</code>, the
+PIL-synthesised fake <code>cam*.tif</code> dot images and the 4-point GUI click -- i.e.
+all of <code>notebooks/manual_openptv_orientation_from_opencv_pipeline_nb.py</code>.
+Five stages plus a human become two, and the refinement uses <strong>8550 points per
+camera instead of 40</strong>.</p>
+<hr />
+<h2 id="step-7-the-report-existing-code-only-no-new-maths">Step 7 -- the report (existing code only, no new maths)<a class="headerlink" href="#step-7-the-report-existing-code-only-no-new-maths" title="Permanent link">&para;</a></h2>
+<p>Print, for both modes:</p>
+<ul>
+<li>per-camera reprojection RMS (<code>autocalibration.rms_px</code> on the <code>CamResult</code>);</li>
+<li><strong><code>autocalibration.cross_camera_rcm(results, cpar)</code></strong> -- ray-convergence
+  miss distance in mm (median/p90/p95/max). This is the check per-camera RMS
+  cannot make;</li>
+<li><strong>pairwise camera separations</strong> <code>||C_a - C_b||</code> -- frame-invariant, the one
+  number no choice of lab frame can change;</li>
+<li>the bounding box of the calibration points, with the note that only inside
+  it is the calibration supported by data;</li>
+<li><strong>the mean residual vector per camera</strong> -- a constant ~0.5 px bias is the
+  pixel-origin question above; if it appears, re-run with
+  <code>--pixel-origin centre</code> and record which is right.</li>
+</ul>
+<p>MyPTV PR#67 measured a synthetic case sitting at <strong>0.14 px reprojection while
+coordinates were 3.8 mm wrong</strong> (shape correct to 4 um) -- focal length,
+principal point and depth trade off against each other. So RMS alone is not
+acceptance. <strong>Acceptance is: RCM and camera separations physically sensible,
+<em>and</em> refined RMS &lt;= seed RMS.</strong></p>
+<p>Also cross-check with <code>src/openptv2/calibration_diagnostics.py</code> (<code>load_model</code>,
+<code>compute_diagnostics</code>) and the <code>visualize-calibration</code> skill -- both are
+model-agnostic and work off any <code>.ori</code> for free.</p>
+<hr />
+<h2 id="step-8-later-doors-documented-not-built-now">Step 8 -- later doors (documented, not built now)<a class="headerlink" href="#step-8-later-doors-documented-not-built-now" title="Permanent link">&para;</a></h2>
+<p>In this order:</p>
+<ul>
+<li><strong>Door A standalone</strong> -- a <code>points_file</code> source seeded by
+  <code>scripts/calibrate_proptv_dlt.py:dlt_resection</code> (numpy-only; its
+  <code>_self_test()</code> passes, recovering C, cc and all three angles exactly). This
+  removes OpenCV from the loop entirely whenever &gt;=6 non-coplanar known points
+  exist.</li>
+<li><strong>Multiplane</strong> -- <code>MultiPlanesPar</code> (<code>algorithms/parameters.py:1092</code>) parses
+  <code>multi_planes.par</code> and nothing consumes it. Concatenate all planes' points
+  per camera and solve once over the union.
+  <code>alexlib/proPTV_OpenPTV_MyPTV_Test_case_1024_15</code> is a ready-made 6-plane
+  fixture in openptv2's own layout. PR#67 measured focal lengths 0.59% out
+  with the board confined to 12 mm vs 0.17% with 200 mm of depth wander --
+  depth spread is a <strong>conditioning requirement</strong>, not a convenience.</li>
+<li><strong>Door C, model resampling</strong> -- evaluate a Soloff/DaVis polynomial on a grid
+  over the fitted volume to regenerate door-A points. proPTV version trap:
+  v1.0 is 19 coefficients, v1.1 is 20 (adds <code>Z^3</code>), indistinguishable except
+  by counting lines, and the shipped example data is 19-line v1.0 against a
+  v1.1 evaluator. <strong>Count before interpreting.</strong></li>
+<li><strong>Door D</strong> -- checkerboard on a translation stage, then freely moved
+  (homography + Zhang), per the old plan's Phases 2 and 4. The only doors
+  needing cv2; put it in a new optional extra, never in core.</li>
+<li><strong>Phase 6 (unchanged)</strong> -- extend
+  <code>.claude/skills/openptv-calibrate/SKILL.md</code> with a "choose your source"
+  section once &gt;=2 sources exist; add
+  <code>print_source_table()</code>/<code>print_source_detail()</code> mirroring
+  <code>tracking_registry.print_tracker_table()</code>.</li>
+</ul>
+<h3 id="standing-policies">Standing policies<a class="headerlink" href="#standing-policies" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>DaVis is a point source, not a model source.</strong> Its calibration lives in
+  undocumented <code>.set</code>/<code>.im7</code> buffer attributes; neither <code>lvpyio</code>, <code>ReadIM</code> nor
+  <code>libim7</code> surfaces the mapping coefficients. Ask the user for a plate marker
+  list. (DaVis is also the only other package here that models refraction
+  explicitly -- Wieneke's 3-media pinhole -- so a DaVis pinhole calibration
+  may already be physical.)</li>
+<li><strong>easyWand/DLT-11 silently drops distortion</strong>: the <code>kc</code> vector lives in
+  separate <code>_camNTforms.mat</code> files, not in <code>dltCoefs.csv</code>, so a bare DLT
+  import yields <code>.addpar = 0 0 0 0 0 1 0</code>.</li>
+<li><strong>Do not copy <code>../Multiview-Calibration</code>'s conversion prototype.</strong> It has
+  two bugs: <code>S</code> applied on the left, and scipy's lowercase <code>'xyz'</code> (extrinsic)
+  Euler convention. See the verified block above.</li>
+</ul>
+<hr />
+<h2 id="files">Files<a class="headerlink" href="#files" title="Permanent link">&para;</a></h2>
+<p><strong>New:</strong> <code>src/openptv2/calibration_import.py</code>,
+<code>tests/unit/test_calibration_import.py</code>, <code>scripts/import_calibration.py</code>.</p>
+<p><strong>Modified:</strong> <code>src/openptv2/autocalibration.py</code> (presorted bypass +
+docstring), <code>src/openptv2/calibration_registry.py</code> (two entries),
+<code>tests/unit/test_calibration_registry.py</code> (two tests).</p>
+<p><strong>Referenced, unchanged:</strong> <code>algorithms/{calibration,imgcoord,trafo,orientation,
+sortgrid,parameters}.py</code>, <code>calibration_diagnostics.py</code>,
+<code>scripts/calibrate_proptv_dlt.py</code>.</p>
+<p><strong>Not touched:</strong> anything under <code>algorithms/</code> -- <strong>no Cython rebuild is needed
+for any step in this plan.</strong></p>
+<hr />
+<h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_autocalibration.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">              </span>tests/unit/test_calibration_registry.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">              </span>tests/unit/test_calibration_import.py<span class="w"> </span>-v
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>.
+</span></code></pre></div>
+<ul>
+<li><code>test_autocalibrate_cavity</code> green and unchanged -- proves the <code>presorted</code>
+  parameter did not disturb the existing path.</li>
+<li><code>test_opencv_projection_matches_img_coord</code> &lt; 1e-9 px -- proves the
+  conversion.</li>
+<li><code>test_distortion_centre_gap_bounded</code> inside 0.1-2 px -- proves the known
+  limitation is still the known limitation.</li>
+<li>Ilmenau: refined RMS &lt;= seed RMS, and <code>cross_camera_rcm</code> median plus the
+  pairwise camera separations physically sensible for a 2.38 m x 7.0 m barrel.</li>
+<li>No Cython rebuild required; <code>uv run python setup.py build_ext --inplace</code> is
+  <strong>not</strong> part of this plan.</li>
+</ul>
+<p>Commit discipline: the doc and each step land separately. The Phase 1 code
+(<code>calibration_registry.py</code>, <code>test_calibration_registry.py</code>, the
+<code>autocalibration.py</code> modification) stays uncommitted until Step 0 is green.</p>
+<hr />
+<h2 id="appendix-a-format-catalogue">Appendix A -- format catalogue<a class="headerlink" href="#appendix-a-format-catalogue" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Model</th>
+<th>Physical exterior?</th>
+<th>Refraction</th>
+<th>On-disk format</th>
+<th>OSS reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OpenCV</strong></td>
+<td>pinhole + Brown rational (+prism, tilt)</td>
+<td>yes (<code>rvec</code>/<code>tvec</code>)</td>
+<td>no</td>
+<td>ad-hoc <code>FileStorage</code> YAML/XML/JSON</td>
+<td>opencv/opencv (Apache-2.0)</td>
+</tr>
+<tr>
+<td><strong>proPTV</strong></td>
+<td>Soloff polynomial, 19 (v1.0) / 20 (v1.1) coefs per axis</td>
+<td><strong>no</strong></td>
+<td>implicit</td>
+<td><code>soloff_cN{x,y}.txt</code>, one float per line</td>
+<td>RobinBarta/proPTV</td>
+</tr>
+<tr>
+<td><strong>MyPTV (Tsai)</strong></td>
+<td>pinhole + <code>E</code> (3x5) image-space correction</td>
+<td>yes (<code>O</code>, <code>theta</code>)</td>
+<td>implicit</td>
+<td><code>camN</code>, positional text, tagged <code>Tsai model camera</code></td>
+<td>ronshnapp/MyPTV (MIT)</td>
+</tr>
+<tr>
+<td><strong>MyPTV (extZolof)</strong></td>
+<td>cubic fwd <code>A</code> + cubic ray-dir <code>B</code> + common origin <code>O</code></td>
+<td>partial (<code>O</code> only)</td>
+<td>implicit</td>
+<td><code>camN</code>, keyed <code>O i / A i j / B i j</code></td>
+<td>same</td>
+</tr>
+<tr>
+<td><strong>easyWand/DLTdv</strong></td>
+<td>DLT-11 + separate Bouguet <code>kc</code></td>
+<td>recoverable</td>
+<td>no</td>
+<td><code>*_dltCoefs.csv</code> (11xN), <code>*_camNTforms.mat</code></td>
+<td>tlhedrick/dltdv, dltutil</td>
+</tr>
+<tr>
+<td><strong>DaVis</strong></td>
+<td>3rd-order polynomial <strong>or</strong> 3-media pinhole + Scheimpflug</td>
+<td>yes (pinhole)</td>
+<td><strong>yes</strong> (explicit)</td>
+<td>inside <code>.set</code>/<code>.im7</code>; <strong>undocumented</strong></td>
+<td>none</td>
+</tr>
+<tr>
+<td><strong>Metashape</strong></td>
+<td>Brown, normalised, <code>f/cx/cy/B1/B2/K1-4/P1-2</code></td>
+<td>yes (4x4 transform)</td>
+<td>no</td>
+<td>Agisoft calibration <code>.xml</code></td>
+<td>documented + Python API</td>
+</tr>
+<tr>
+<td><strong>Australis</strong></td>
+<td>Brown, mm, <code>c/xp/yp/K1-3/P1-2/B1-2</code></td>
+<td>yes</td>
+<td>no</td>
+<td>proprietary text report</td>
+<td>maths in NASA ASP</td>
+</tr>
+<tr>
+<td><strong>COLMAP</strong></td>
+<td>16+ models, OpenCV-compatible</td>
+<td>yes (quaternion, world-&gt;cam)</td>
+<td>no</td>
+<td><code>cameras.txt</code>/<code>images.txt</code>/<code>points3D.txt</code></td>
+<td>colmap/colmap (BSD)</td>
+</tr>
+<tr>
+<td><strong>openptv2</strong></td>
+<td>pinhole + Brown (mm) + affine + explicit glass/multimedia</td>
+<td>yes</td>
+<td><strong>yes</strong> (explicit)</td>
+<td><code>.ori</code> + <code>.addpar</code></td>
+<td>this repo</td>
+</tr>
+</tbody>
+</table>
+<p>Two conclusions this table drives:</p>
+<ul>
+<li><strong>Point-level interchange beats model-level interchange for four of them.</strong>
+  proPTV, MyPTV, DaVis and Multiview-Calibration all emit the same five
+  columns. One reader.</li>
+<li><strong>Model-level import is worth building only for OpenCV, COLMAP and
+  Metashape</strong>, and those three are the <em>same</em> model up to the p-swap, the
+  half-pixel origin, <code>R</code> vs <code>R.T</code> and mm-vs-normalised scaling. One converter,
+  three thin front-ends.</li>
+</ul>
+<h2 id="appendix-b-conventions-checklist">Appendix B -- conventions checklist<a class="headerlink" href="#appendix-b-conventions-checklist" title="Permanent link">&para;</a></h2>
+<p>Every one of these has bitten someone in this exact problem domain.</p>
+<ol>
+<li><strong>Y-axis flip (image).</strong> CV <code>v</code> increases downward; photogrammetry /
+   openptv2 metric <code>y</code> increases upward (<code>trafo.py:120</code>).</li>
+<li><strong>Y/Z flip (camera frame).</strong> CV: +Y down, +Z forward. Photogrammetric: +Y
+   up, +Z backward. Bridge: <code>S = diag(1,-1,-1)</code>.</li>
+<li><strong>Pixel origin -- three conventions.</strong> OpenCV/Kalibr/DLTdv8: integer at
+   pixel centres, centred principal point <code>(w-1)/2</code>. COLMAP/Metashape: corner
+   origin, <code>w/2</code>. openptv2 uses <code>imx/2</code>.</li>
+<li><strong><code>R</code> vs <code>R.T</code>.</strong> OpenCV/COLMAP/Metashape <code>[R|t]</code> is world-&gt;camera;
+   openptv2's <code>dm</code> is camera-&gt;world, used transposed. <code>C = -R.T t</code>.</li>
+<li><strong>Distortion direction.</strong> OpenCV / Metashape / COLMAP / openptv2: ideal -&gt;
+   distorted. Classical Brown / Australis / easyWand's stated <code>kc</code> formula:
+   distorted -&gt; undistorted. Wrong direction gives ~2x the distortion with the
+   right sign -- looks plausible, is not. Test on the widest lens's corners.</li>
+<li><strong><code>p1</code>/<code>p2</code> swap.</strong> Brown/Australis/Metashape/openptv2 put <code>P1</code> on
+   <code>(r^2 + 2x^2)</code>; OpenCV/COLMAP put <code>p2</code> there.</li>
+<li><strong>Distortion coefficient units.</strong> CV family: dimensionless, on <code>X/Z</code>.
+   Brown/Australis/openptv2: on <strong>millimetres</strong>. <code>k1</code> differs by <code>cc^2</code>, <code>k2</code>
+   by <code>cc^4</code>, <code>k3</code> by <code>cc^6</code>, <code>p1/p2</code> by <code>cc</code>.</li>
+<li><strong>Focal length units.</strong> <code>fx, fy</code> in pixels vs <code>cc</code> in mm. Needs the pitch.</li>
+<li><strong>Principal point: absolute vs offset.</strong> OpenCV/COLMAP <code>cx,cy</code> absolute;
+   Metashape <code>cx,cy</code> and openptv2 <code>xh,yh</code> are offsets from the image centre
+   (openptv2's in mm, with <code>yh</code> sign inverted).</li>
+<li><strong>Aspect ratio and skew.</strong> openptv2's <code>scx</code> is <strong>isotropic</strong> -- it
+    multiplies both outputs (<code>trafo.py:334-335</code>), so <code>fx != fy</code> must go into
+    <code>pix_x != pix_y</code>.</li>
+<li><strong>Euler order and sign.</strong> openptv2 uses <code>Rx(omega)Ry(phi)Rz(kappa)</code>.
+    Always transport the rotation <strong>matrix</strong>, derive angles last, and assert
+    the round-trip within 1e-12.</li>
+<li><strong>Where distortion is centred.</strong> openptv2 adds <code>xh,yh</code> <em>before</em> distorting
+    (<code>imgcoord.py:74-75</code>), so the radial term is centred on the sensor centre;
+    OpenCV centres it on the principal point. They coincide only at
+    <code>xh = yh = 0</code>.</li>
+<li><strong>Polynomial models have no exterior orientation at all.</strong> proPTV,
+    DaVis-polynomial and MyPTV-extendedZolof carry no camera position to
+    convert. The only bridge is door C.</li>
+</ol>
+<h2 id="appendix-c-grounding-references">Appendix C -- grounding references<a class="headerlink" href="#appendix-c-grounding-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><code>ronshnapp/MyPTV#67</code></strong> (open, <code>stebrizzo</code>, +6999/-1) -- checkerboard
+  calibration in two modes. <strong>The architectural precedent</strong>: not one line of
+  MyPTV's camera models was touched; the new code only emits an ordinary
+  <code>eta zeta x_lab y_lab z_lab</code> points file. Three moves worth copying: (i) an
+  optional trailing <strong>view-index column</strong> old positional readers ignore, which
+  buys per-view diagnostics free -- openptv2's <code>read_calblock</code>
+  (<code>sortgrid.py:91</code>) slices <code>[:,1:4]</code>, so the same trick works; (ii) the
+  <code>origin_hint</code> parameter carried over between frames as the minimum human
+  input for unambiguous corner labelling; (iii) <strong>validating on
+  frame-invariant quantities</strong> rather than reprojection RMS.</li>
+<li><strong><code>OpenPTV/proPTV_OpenPTV_MyPTV_comparison</code></strong> -- proPTV's Soloff calibration
+  (<code>proPTV_LineOfSight/soloff.py</code>), the door-C reference.</li>
+<li><strong><code>alexlib/proPTV_OpenPTV_MyPTV_Test_case_1024_15</code></strong> -- a real 6-plane
+  multiplane dataset in openptv2's classic layout
+  (<code>parametersMultiPlane/multi_planes.par</code>), already parseable by
+  <code>MultiPlanesPar.from_file</code>. The Step 8 multiplane fixture.</li>
+<li><strong><code>alexlib/Multiview-Calibration</code> (Ilmenau barrel)</strong> -- 4 cameras, 18 planes
+  used, 2.38 m x 7.0 m barrel at 2560x2048, 40 mm marker pitch, ~8550
+  points/camera. Live branch is <code>origin/nov_2025</code>. Pipeline: flat-Z0 init -&gt;
+  per-camera <code>cv2.calibrateCamera</code> -&gt; <code>stereoCalibrate</code> on plane 0 -&gt;
+  4-camera DLT triangulation -&gt; recalibrate -&gt; <code>cN_xyXYZ.txt</code>. <strong>That whole
+  loop exists only to recover unknown plate Z</strong>; the open TODO "enforce the
+  40 mm constraint" suggests the recovered Z's do not respect the known pitch,
+  which is worth chasing. <strong>No LICENSE file -- reference only.</strong></li>
+</ul>
+<h2 id="-">---<a class="headerlink" href="#-" title="Permanent link">&para;</a></h2>
+<h1 id="part-2-the-seed-where-the-initial-ori-comes-from">Part 2 — The seed: where the initial <code>.ori</code> comes from<a class="headerlink" href="#part-2-the-seed-where-the-initial-ori-comes-from" title="Permanent link">&para;</a></h1>
+<h2 id="context-for-part-2">Context for Part 2<a class="headerlink" href="#context-for-part-2" title="Permanent link">&para;</a></h2>
+<p>Part 1 converts a <em>foreign</em> calibration into <code>.ori</code>/<code>.addpar</code> (door B) and
+calls its output a "seed". It never answers the prior question: <strong>where does
+an initial <code>.ori</code> come from at all</strong>, when there is no foreign model to
+convert? That is the missing half, and it gates every path into
+<code>sortgrid</code> -&gt; <code>external_calibration</code> -&gt; <code>full_calibration</code>.</p>
+<p><code>.addpar</code> is not the problem — it correctly starts at defaults
+(<code>0 0 0 0 0 1 0</code>). The problem is <code>.ori</code>: camera position, orientation, and
+camera constant.</p>
+<p><strong>Nothing in the package creates an <code>.ori</code> from scratch.</strong> Every path reads one
+or raises:</p>
+<table>
+<thead>
+<tr>
+<th>path</th>
+<th>source of the initial pose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GUI "Show initial guess" (<code>calibration_gui.py:711</code>)</td>
+<td>existing <code>.ori</code>; a <strong>viewer</strong>, raises <code>FileNotFoundError</code> if absent</td>
+</tr>
+<tr>
+<td>GUI "Raw orientation" (<code>:822</code>)</td>
+<td>the existing <code>.ori</code>'s interior + 4 clicks for the exterior</td>
+</tr>
+<tr>
+<td><code>autocalibration.calibrate_camera</code> (<code>:471-482</code>)</td>
+<td>existing <code>.ori</code>; falls back to <code>external_calibration</code> <strong>from the same file</strong>. Both branches call <code>Calibration.from_file</code>; <strong>there is no third branch</strong></td>
+</tr>
+<tr>
+<td><code>gui/standalone_calibration.py:153</code></td>
+<td>existing <code>.ori</code>, else a bare <code>Calibration()</code> — <code>cc = 0</code>, silently broken</td>
+</tr>
+<tr>
+<td><code>gui/ptv_calibration.py:653</code></td>
+<td>same silent zero-<code>cc</code> fallback, prints "using defaults"</td>
+</tr>
+<tr>
+<td><code>algorithms/parameter_converters.py:127</code></td>
+<td>same, a third time</td>
+</tr>
+<tr>
+<td><code>.claude/skills/openptv-calibrate/scripts/calib.py:306</code></td>
+<td>the only synthesizer — <code>pos=(0,0,-D)</code>, <code>angs=(0,0,0)</code>, <code>cc = imx*pix_x</code></td>
+</tr>
+</tbody>
+</table>
+<p>So a first-time user with images and a calibration body <strong>cannot start</strong>.</p>
+<p>Two decisions taken with the user for this part:</p>
+<ul>
+<li><strong><code>cc</code> is designed around now; its non-recovery is filed as a separate
+  investigation</strong> (Step S7), so the seed work does not block on a possibly
+  deep numerical fix.</li>
+<li><strong>The rig description lives in a separate <code>rig.yaml</code> next to
+  <code>parameters/</code></strong> — no parameter-schema change, no risk to existing readers.</li>
+</ul>
+<hr />
+<h2 id="verified-facts-about-seeding-measured-2026-08-30">Verified facts about seeding (measured 2026-08-30)<a class="headerlink" href="#verified-facts-about-seeding-measured-2026-08-30" title="Permanent link">&para;</a></h2>
+<p>All measured against a synthetic camera at 800 mm standoff, <code>cc = 50 mm</code>,
+1280x1024 at 0.01 mm pitch, a 75-point calblock, <code>n1=n2=n3=1</code>. Re-run these
+before trusting any of it after a refactor.</p>
+<h3 id="m1-pose-is-cheap-external_calibration-fixes-almost-anything">M1 — pose is cheap; <code>external_calibration</code> fixes almost anything<a class="headerlink" href="#m1-pose-is-cheap-external_calibration-fixes-almost-anything" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>seed error</th>
+<th><code>_refine_and_select</code> alone</th>
+<th>with <code>external_calibration</code> first</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>position 10 mm</td>
+<td>92.90 mm err, rms 19.0</td>
+<td><strong>0.00 mm, rms 0.000, 75/75</strong></td>
+</tr>
+<tr>
+<td>position 200 mm</td>
+<td>200 mm err, rms inf, 0 matched</td>
+<td><strong>0.00 mm, rms 0.000, 75/75</strong></td>
+</tr>
+<tr>
+<td>angle 2 deg</td>
+<td>68.24 mm err, rms 12.8</td>
+<td><strong>0.00 mm, rms 0.000, 75/75</strong></td>
+</tr>
+<tr>
+<td>angle 10 deg</td>
+<td>diverged (8.6e10 mm)</td>
+<td><strong>0.00 mm, rms 0.000, 75/75</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>A seed's pose barely matters.</strong> Given 4 identified correspondences, the
+6-DOF resection recovers exactly from 200 mm and 10 degrees of error.
+Tape-measure accuracy is plenty.</p>
+<h3 id="m2-cc-is-the-whole-ballgame">M2 — <code>cc</code> is the whole ballgame<a class="headerlink" href="#m2-cc-is-the-whole-ballgame" title="Permanent link">&para;</a></h3>
+<p>Perturbing <strong>only</strong> <code>cc</code>, with <code>external_calibration</code> run first:</p>
+<table>
+<thead>
+<tr>
+<th><code>cc</code> seeded</th>
+<th>position error</th>
+<th>rms</th>
+<th><code>cc</code> after refine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+2% (51.0)</td>
+<td><strong>15.60 mm</strong></td>
+<td><strong>0.102 px</strong></td>
+<td>51.00 — unmoved</td>
+</tr>
+<tr>
+<td>+10% (55.0)</td>
+<td><strong>78.37 mm</strong></td>
+<td>0.472 px</td>
+<td>55.00 — unmoved</td>
+</tr>
+<tr>
+<td>+40% (70.0)</td>
+<td><strong>314 mm</strong></td>
+<td>1.488 px</td>
+<td>70.00 — unmoved</td>
+</tr>
+</tbody>
+</table>
+<p>Rule of thumb, confirmed at every level:
+<strong>position error ~= standoff distance x relative <code>cc</code> error</strong>
+(800 mm x 2% = 16 mm; measured 15.60 mm).</p>
+<p>Note the 2% row: <strong>rms 0.102 px looks like an excellent calibration while the
+camera is 15.6 mm out of place.</strong> This is exactly MyPTV PR#67's "a good fit is
+not a correct reconstruction", reproduced in openptv2 with numbers.</p>
+<h3 id="m3-depth-spread-does-not-rescue-cc-contrary-to-expectation">M3 — depth spread does not rescue <code>cc</code> (contrary to expectation)<a class="headerlink" href="#m3-depth-spread-does-not-rescue-cc-contrary-to-expectation" title="Permanent link">&para;</a></h3>
+<p>Same 800 mm standoff, calblock depth swept, <code>cc</code> seeded +2% / +10%:</p>
+<table>
+<thead>
+<tr>
+<th>calblock depth</th>
+<th>depth/standoff</th>
+<th>+2%: posErr / rms / cc</th>
+<th>+10%: posErr / rms / cc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+-20 mm</td>
+<td>5%</td>
+<td>15.60 / 0.102 / 51.00</td>
+<td>78.37 / 0.472 / 55.00</td>
+</tr>
+<tr>
+<td>+-100 mm</td>
+<td>25%</td>
+<td>14.70 / 0.288 / 50.99</td>
+<td>75.64 / 1.358 / 54.98</td>
+</tr>
+<tr>
+<td>+-400 mm</td>
+<td>100%</td>
+<td>14.55 / 0.421 / 50.99</td>
+<td>76.76 / 2.027 / 54.96</td>
+</tr>
+</tbody>
+</table>
+<p><code>cc</code> moves 0.01 mm of a 1.0 mm error even at 100% depth ratio, while RMS
+climbs — the model stops fitting but <code>cc</code> does not move to fix it. Direct
+confirmation: six successive <code>full_calibration(..., ["cc"])</code> calls on 88
+points at 25% depth move <code>cc</code> from 51.00 to <strong>50.968</strong> — 3% of the error.
+Adding <code>xh,yh</code> or <code>k1,k2</code> to the flags changes nothing material.</p>
+<p>So <code>cc</code> is <strong>nominally free but effectively frozen</strong>. Step S7 investigates.</p>
+<h3 id="m4-sortgrid-is-safe-and-the-manual-click-is-avoidable">M4 — <code>sortgrid</code> is safe, and the manual click is avoidable<a class="headerlink" href="#m4-sortgrid-is-safe-and-the-manual-click-is-avoidable" title="Permanent link">&para;</a></h3>
+<p>Auto-identification from a rough seed, 75-point grid, 40 px nearest-neighbour
+spacing in the image. Format <code>matched / wrongly-matched</code>:</p>
+<table>
+<thead>
+<tr>
+<th>seed error</th>
+<th>eps=15</th>
+<th>eps=60</th>
+<th>eps=150</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>perfect</td>
+<td>75/0</td>
+<td>75/0</td>
+<td>75/0</td>
+</tr>
+<tr>
+<td>position 5 mm</td>
+<td>4/0</td>
+<td>75/0</td>
+<td>75/0</td>
+</tr>
+<tr>
+<td>position 50 mm</td>
+<td>1/0</td>
+<td>39/0</td>
+<td>60/0</td>
+</tr>
+<tr>
+<td>angle 1 deg</td>
+<td>3/0</td>
+<td>66/0</td>
+<td>75/0</td>
+</tr>
+<tr>
+<td>angle 3 deg</td>
+<td>2/0</td>
+<td>44/0</td>
+<td>69/0</td>
+</tr>
+<tr>
+<td><code>cc</code> +5%</td>
+<td>63/0</td>
+<td>75/0</td>
+<td>75/0</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><strong><code>sortgrid</code> never mis-matched once</strong> — it matches or abstains. A generous
+   <code>eps</code> is cheap insurance, not a correctness risk (on a regular grid; an
+   off-by-one-lattice failure remains theoretically possible, so the report in
+   Part 1 Step 7 should watch for it).</li>
+<li><strong>The default <code>eps = 15</code> is far too tight</strong> for a rough seed — a 5 mm
+   position error drops matching from 75 to 4. Use <code>eps ~= 3-4x</code> the projected
+   grid spacing. Shipped <code>sortgrid.par</code> values are 9-25 px, tuned for an
+   already-good <code>.ori</code>; Multiview-Calibration's Ilmenau config uses <strong>151</strong>.</li>
+</ol>
+<p>Consequence: <strong>with a good <code>cc</code> and a generous <code>eps</code>, the 4-point manual click
+is unnecessary</strong> — <code>sortgrid</code> identifies the correspondences, then
+<code>external_calibration</code> fixes the pose (M1).</p>
+<h3 id="m5-the-one-existing-synthesizers-cc-guess-is-46-31x-wrong">M5 — the one existing synthesizer's <code>cc</code> guess is 4.6-31x wrong<a class="headerlink" href="#m5-the-one-existing-synthesizers-cc-guess-is-46-31x-wrong" title="Permanent link">&para;</a></h3>
+<p><code>.claude/skills/openptv-calibrate/scripts/calib.py:306</code> uses
+<code>cc_guess = imx * pix_x</code> (a ~90 degree FOV assumption):</p>
+<table>
+<thead>
+<tr>
+<th>dataset</th>
+<th><code>imx*pix_x</code></th>
+<th>actual <code>cc</code></th>
+<th>wrong by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>test_cavity</td>
+<td>15.36</td>
+<td>70.00</td>
+<td><strong>4.6x</strong></td>
+</tr>
+<tr>
+<td>burgers</td>
+<td>6.66</td>
+<td>80.00</td>
+<td><strong>12.0x</strong></td>
+</tr>
+<tr>
+<td>test_splitter</td>
+<td>10.24</td>
+<td>67.93</td>
+<td><strong>6.6x</strong></td>
+</tr>
+<tr>
+<td>single_cam</td>
+<td>3.20</td>
+<td>100.00</td>
+<td><strong>31.2x</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Combined with M2, a 4.6x <code>cc</code> error makes the recovered position meaningless.
+This is why SKILL.md records that on a real splitter rig 3/4 cameras
+"converged" and matched <strong>0/135</strong> calblock points. <strong>The fix is to ask the
+user for the lens focal length</strong> — it is printed on the barrel.</p>
+<h3 id="m6-look-at-construction-verified-exact">M6 — look-at construction, verified exact<a class="headerlink" href="#m6-look-at-construction-verified-exact" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">dm_from_lookat</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">up</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">roll</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>    <span class="n">back</span> <span class="o">=</span> <span class="n">C</span> <span class="o">-</span> <span class="n">target</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>    <span class="n">back</span> <span class="o">/=</span> <span class="n">norm</span><span class="p">(</span><span class="n">back</span><span class="p">)</span>  <span class="c1"># col2 points AWAY from the scene</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    <span class="n">right</span> <span class="o">=</span> <span class="n">cross</span><span class="p">(</span><span class="n">up</span><span class="p">,</span> <span class="n">back</span><span class="p">)</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>    <span class="k">if</span> <span class="n">norm</span><span class="p">(</span><span class="n">right</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-8</span><span class="p">:</span>  <span class="c1"># up parallel to the axis</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>        <span class="n">right</span> <span class="o">=</span> <span class="n">cross</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">back</span><span class="p">)</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>    <span class="n">right</span> <span class="o">/=</span> <span class="n">norm</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>    <span class="n">dm</span> <span class="o">=</span> <span class="n">column_stack</span><span class="p">([</span><span class="n">right</span><span class="p">,</span> <span class="n">cross</span><span class="p">(</span><span class="n">back</span><span class="p">,</span> <span class="n">right</span><span class="p">),</span> <span class="n">back</span><span class="p">])</span>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>    <span class="k">return</span> <span class="n">dm</span> <span class="o">@</span> <span class="n">Rz</span><span class="p">(</span><span class="n">roll</span><span class="p">)</span> <span class="k">if</span> <span class="n">roll</span> <span class="k">else</span> <span class="n">dm</span>
+</span></code></pre></div>
+<p>Verified on four geometries: the target projects to exactly
+<code>(imx/2, imy/2)</code> and the angle round-trip
+<code>dm -&gt; (omega, phi, kappa) -&gt; compute_rotation_matrix()</code> closes to <strong>1.7e-16</strong>.
+Consistent with <code>calibration_diagnostics.py:48 viewing_dir(rot) = -rot[:, 2]</code>.</p>
+<p><strong>Independently confirmed by working prior art.</strong> <code>../PTV_SYN-1</code> (Alex Ruiz,
+UCF) contains <code>Generate_ORI_files.m</code> + <code>cameraLookAtToExtrinsic.m</code>, a MATLAB
+look-at -&gt; <code>.ori</code> generator whose output is checked in at
+<code>../Alex_Ruiz_Test_cases/JHU/cal_before_cal/</code>. Its core is</p>
+<div class="language-matlab highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">Ln</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="n">CENTER</span><span class="o">-</span><span class="n">EYE</span><span class="p">)</span><span class="o">/</span><span class="nb">norm</span><span class="p">(</span><span class="k">...</span><span class="c">);  sn = cross(Ln,UP)/norm(...);</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="n">uprime</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">cross</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span><span class="n">Ln</span><span class="p">);</span><span class="w">  </span><span class="n">R</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="n">sn</span><span class="p">;</span><span class="w"> </span><span class="n">uprime</span><span class="p">;</span><span class="w"> </span><span class="o">-</span><span class="n">Ln</span><span class="p">];</span><span class="w">   </span><span class="c">% rows</span>
+</span></code></pre></div>
+<p>and it writes <code>dm = R'</code>, i.e. <code>dm</code> columns <code>= [sn, uprime, -Ln]</code>. Since
+<code>sn = cross(Ln,UP) = cross(UP, back)</code> and <code>uprime = cross(sn,Ln) =
+cross(back, sn)</code> with <code>back = -Ln</code>, this is <strong>algebraically identical</strong> to M6
+— derived and verified independently, from opposite directions. It also
+confirms <code>rotm2eul(.,'XYZ')</code> (i.e. <code>Rx*Ry*Rz</code>) is openptv2's convention.</p>
+<p><strong>And it explains the <code>cc</code> fudge.</strong> That generator takes <code>cc</code> as a hand-tuned
+magic number (<code>focal=80</code>) with the comment <em>"still some uncertainity here"</em>.
+The cause: it renders at <code>PixelWidth = 0.017 mm</code> but declares
+<code>pix_x = 0.0065 mm</code> in <code>ptv.par</code>, so
+<code>cc = f_mm * (pix_declared / pix_rendered)</code> — <code>205 * 0.0065/0.017 = 78.4 ~= 80</code>
+and <code>105 * 0.38 = 40.1 ~= 40</code>, matching both magic numbers exactly. <strong>With a
+consistent pixel pitch the fudge vanishes and <code>cc = focal_mm</code></strong>, which is what
+<code>seed_from_lookat</code> assumes. Same <code>cc = fx*pix_x</code> relation as door B, seen from
+the other side.</p>
+<p><strong>Licence:</strong> PTV_SYN-1 is <strong>CC BY-NC-SA 4.0</strong> (non-commercial, share-alike).
+Port the <em>idea</em> — the math above is already independently re-derived and
+verified here — <strong>do not copy its code</strong> into openptv2.</p>
+<p><strong>One caveat:</strong> with <code>up</code> fixed (their <code>[0,1,0]</code>), <code>kappa</code> is not free —
+<code>dm[1,0] == 0</code> in every file they generate. So <code>rig.yaml</code>'s <code>up</code> sets the
+camera roll; expose <code>roll</code> separately for rigs where the camera is rotated in
+its mount.</p>
+<hr />
+<h2 id="the-seed-hierarchy-use-the-highest-tier-available">The seed hierarchy (use the highest tier available)<a class="headerlink" href="#the-seed-hierarchy-use-the-highest-tier-available" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>tier</th>
+<th>route</th>
+<th>gives pose</th>
+<th>gives <code>cc</code></th>
+<th>needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td><strong>DLT resection</strong></td>
+<td>yes</td>
+<td><strong>yes</strong></td>
+<td>&gt;=6 non-coplanar known points with identified pixels</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td><strong>foreign model (door B, Part 1)</strong></td>
+<td>yes</td>
+<td>yes</td>
+<td>an existing OpenCV/COLMAP/Metashape calibration</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td><strong>look-at + lens focal length</strong></td>
+<td>yes</td>
+<td>from the barrel (~1-5%)</td>
+<td>a tape measure and the lens marking</td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td><strong>4-point manual click</strong></td>
+<td>yes</td>
+<td><strong>no</strong></td>
+<td>a human, plus <code>cc</code> from elsewhere</td>
+</tr>
+</tbody>
+</table>
+<p>Tiers 1 and 2 are the only ones that <em>solve</em> for <code>cc</code>. Tier 3 is the
+human-friendly rig setup; its <code>cc</code> is only as good as the lens marking, so per
+M2 expect position errors of order <code>standoff x 2%</code>. Tier 4 — today's default
+path — supplies no <code>cc</code> at all and silently inherits whatever was in the
+<code>.ori</code> it started from.</p>
+<hr />
+<h2 id="what-already-exists-this-is-a-wiring-job-not-a-build">What already exists — this is a wiring job, not a build<a class="headerlink" href="#what-already-exists-this-is-a-wiring-job-not-a-build" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>piece</th>
+<th>where</th>
+<th>state</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DLT resection (no initial guess)</td>
+<td><code>scripts/calibrate_proptv_dlt.py:36 dlt_resection</code></td>
+<td>works, <code>_self_test()</code> passes (recovers C, cc, all three angles exactly)</td>
+</tr>
+<tr>
+<td>matrix -&gt; <code>omega/phi/kappa</code></td>
+<td><code>scripts/calibrate_proptv_dlt.py:118 rotation_matrix_to_angles</code></td>
+<td>correct, <strong>including the gimbal-lock branch</strong></td>
+</tr>
+<tr>
+<td>full from-scratch chain</td>
+<td><code>scripts/calibrate_proptv_dlt.py:186 calibrate_camera_from_scratch</code></td>
+<td>works; hardcoded Windows path in <code>main()</code></td>
+</tr>
+<tr>
+<td>in-package rig synthesizer</td>
+<td><code>src/openptv2/benchmarking/camera_rig.py:110 make_standard_rig</code></td>
+<td>works; hardcoded poses, never writes <code>.ori</code></td>
+</tr>
+<tr>
+<td>glass normal from viewing direction</td>
+<td><code>benchmarking/camera_rig.py:221-227</code></td>
+<td><strong>reuse verbatim</strong> for the look-at seed's glass vector</td>
+</tr>
+<tr>
+<td>viewing direction (forward half)</td>
+<td><code>calibration_diagnostics.py:48 viewing_dir</code></td>
+<td>confirms the look-at convention</td>
+</tr>
+<tr>
+<td>aim-point parameterization + inverse</td>
+<td><code>gui/optimize_calibration.py:34-53 get_pos</code>/<code>get_polar_rep</code></td>
+<td><strong>dead code</strong>, zero callers, unfinished port — harvest the idea or delete</td>
+</tr>
+<tr>
+<td>working look-at -&gt; <code>.ori</code> prior art</td>
+<td><code>../PTV_SYN-1/{Generate_ORI_files,cameraLookAtToExtrinsic}.m</code></td>
+<td>verified correct, output checked in — <strong>CC BY-NC-SA, reference only, do not copy</strong></td>
+</tr>
+</tbody>
+</table>
+<p>None of these is reachable from the GUI, <code>autocalibration</code>, or the calibrate
+skill. Assembling them into one supported API is the task.</p>
+<h3 id="three-magic-number-sites-seed_from_lookat-should-replace">Three magic-number sites <code>seed_from_lookat</code> should replace<a class="headerlink" href="#three-magic-number-sites-seed_from_lookat-should-replace" title="Permanent link">&para;</a></h3>
+<p>Each hardcodes a pose a look-at would compute, and each is free regression
+coverage for the new function (the computed pose must reproduce the hardcoded
+one):</p>
+<ul>
+<li><code>src/openptv2/benchmarking/camera_rig.py:66-108</code> — <code>_BASE_CAMERAS</code> +
+  <code>_BASE_ROTATIONS</code>, <strong>44 lines of magic numbers</strong>; the docstring admits they
+  were "validated against the model so the volume projects onto the sensors"
+  (i.e. found by trial and error) and the rig <strong>cannot be re-aimed</strong>.
+  Replacing them lets <code>make_standard_rig</code> take a <code>target</code> argument.</li>
+<li><code>tests/batch/test_synthetic_tracker.py:71-81</code> — four poses with angles
+  <code>+-0.78 / +-2.35</code>, which are <code>+-pi/4</code> and <code>+-3pi/4</code> guessed by hand.</li>
+<li><code>.claude/skills/openptv-calibrate/scripts/calib.py:306</code> — the <code>cc = imx*pix_x</code>
+  guess of M5.</li>
+</ul>
+<hr />
+<h2 id="step-s1-srcopenptv2calibration_seedpy-new-numpyscipy-only">Step S1 — <code>src/openptv2/calibration_seed.py</code> (new, numpy/scipy only)<a class="headerlink" href="#step-s1-srcopenptv2calibration_seedpy-new-numpyscipy-only" title="Permanent link">&para;</a></h2>
+<p>This module owns the primitives; <code>calibration_import.py</code> (Part 1 Step 1)
+imports them from here, not the other way round.</p>
+<h3 id="s11-primitives-move-do-not-duplicate">S1.1 Primitives — move, do not duplicate<a class="headerlink" href="#s11-primitives-move-do-not-duplicate" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>angles_from_dm(dm)</code> — <strong>move</strong> <code>rotation_matrix_to_angles</code> from
+  <code>scripts/calibrate_proptv_dlt.py:118</code> verbatim (its gimbal branch is already
+  right). Leave a one-line import shim in the script so it keeps working.</li>
+<li><code>exterior_from_rotation(C, dm) -&gt; Exterior</code> — build via <code>omega/phi/kappa</code> +
+  <code>compute_rotation_matrix()</code>, then
+  <code>assert np.abs(ext.dm - dm).max() &lt; 1e-12</code>. <strong>Never assign <code>Exterior.dm</code>
+  directly</strong> (Part 1 trap 4 — a direct assignment is silently discarded and
+  projects 8e7 px off).</li>
+<li><code>dm_from_lookat(C, target, up=(0,0,1), roll=0.0)</code> — exactly M6 above.</li>
+</ul>
+<h3 id="s12-tier-3-seed">S1.2 Tier-3 seed<a class="headerlink" href="#s12-tier-3-seed" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">seed_from_lookat</span><span class="p">(</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>    <span class="o">*</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">focal_mm</span><span class="p">,</span> <span class="n">up</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">roll</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">glass_vec</span><span class="o">=</span><span class="kc">None</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Calibration</span><span class="p">:</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">    </span><span class="sd">"""Human-friendly rig seed: 'camera at P, looking at T, with an f mm lens'.</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="sd">    cc = focal_mm, xh = yh = 0, AddedPar defaults. When glass_vec is None the</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="sd">    normal is oriented from the viewing direction, as</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="sd">    benchmarking/camera_rig.py:221-227 does.</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="sd">    """</span>
+</span></code></pre></div>
+<p>Raise <code>ValueError</code> if <code>focal_mm &lt;= 0</code>. Document at the call site that, per M2,
+the position error will be about <code>|position - target| * (relative focal error)</code>.</p>
+<h3 id="s13-tier-1-seed">S1.3 Tier-1 seed<a class="headerlink" href="#s13-tier-1-seed" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">seed_from_dlt</span><span class="p">(</span><span class="n">ref_pts</span><span class="p">,</span> <span class="n">img_pts</span><span class="p">,</span> <span class="n">cpar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Calibration</span><span class="p">:</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">    </span><span class="sd">"""DLT resection: pose AND cc from &gt;=6 non-coplanar known correspondences."""</span>
+</span></code></pre></div>
+<p>Move <code>dlt_resection</code> from the script into this module (again leaving a shim).
+Raise a named error when fewer than 6 points, or when the points are
+near-coplanar — check the smallest singular value of the centred <code>ref_pts</code>
+against a tolerance, because DLT is degenerate on a plane and will otherwise
+return a plausible-looking wrong answer.</p>
+<h3 id="s14-rigyaml-ori-autogeneration-the-headline-deliverable">S1.4 <code>rig.yaml</code> -&gt; <code>.ori</code> autogeneration (the headline deliverable)<a class="headerlink" href="#s14-rigyaml-ori-autogeneration-the-headline-deliverable" title="Permanent link">&para;</a></h3>
+<p><strong>This is the piece that does not exist today</strong> (see the table in the Part 2
+context above).</p>
+<p><code>rig.yaml</code>, next to <code>parameters/</code> (user's choice — no schema change):</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># all distances in mm. One entry per camera, in camera order.</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="nt">volume_centre</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">]</span><span class="w">     </span><span class="c1"># default target for every camera</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="nt">cameras</span><span class="p">:</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">300</span><span class="p p-Indicator">,</span><span class="w">  </span><span class="nv">200</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-700</span><span class="p p-Indicator">],</span><span class="nt"> focal_mm</span><span class="p">:</span><span class="w"> </span><span class="nv">50</span><span class="p p-Indicator">}</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">-300</span><span class="p p-Indicator">,</span><span class="w">  </span><span class="nv">200</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-700</span><span class="p p-Indicator">],</span><span class="nt"> focal_mm</span><span class="p">:</span><span class="w"> </span><span class="nv">50</span><span class="p p-Indicator">}</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">-300</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-200</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-700</span><span class="p p-Indicator">],</span><span class="nt"> focal_mm</span><span class="p">:</span><span class="w"> </span><span class="nv">50</span><span class="p p-Indicator">,</span><span class="nt"> up</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">]}</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">300</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-200</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-700</span><span class="p p-Indicator">],</span><span class="nt"> focal_mm</span><span class="p">:</span><span class="w"> </span><span class="nv">50</span><span class="p p-Indicator">,</span><span class="nt"> target</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">20</span><span class="p p-Indicator">],</span><span class="nt"> roll</span><span class="p">:</span><span class="w"> </span><span class="nv">1.5708</span><span class="p p-Indicator">}</span>
+</span></code></pre></div>
+<p>That is the entire user-facing input: <strong>where each camera is, what it points
+at, and what lens is on it.</strong> Three numbers from a tape measure and one from
+the lens barrel.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">read_rig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">seed_rig</span><span class="p">(</span><span class="n">path_or_spec</span><span class="p">,</span> <span class="n">cpar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Calibration</span><span class="p">]</span>   <span class="c1"># cam index -&gt; Calibration</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">write_rig_ori</span><span class="p">(</span><span class="n">rig_path</span><span class="p">,</span> <span class="n">dataset_dir</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span>
+</span></code></pre></div>
+<ul>
+<li><code>target</code> defaults to <code>volume_centre</code>; <code>up</code> defaults to <code>[0,0,1]</code>; <code>roll</code>
+  defaults to 0. <code>focal_mm</code> is <strong>required</strong> — no default, because M5 is
+  exactly what a default gets you.</li>
+<li><code>write_rig_ori</code> resolves output paths with the existing
+  <code>autocalibration.cam_files(base, cam)</code> so files land where every other code
+  path already looks, writes via <code>Calibration.to_file(ori, addpar)</code>, and
+  <strong>refuses to clobber an existing <code>.ori</code> unless <code>overwrite=True</code></strong> (mirroring
+  <code>calib.py init</code>'s one good habit), backing up to <code>.autobck</code> when it does.</li>
+<li><code>.addpar</code> is written at defaults (<code>0 0 0 0 0 1 0</code>).</li>
+<li>Validate loudly: camera count must match <code>ptv.par</code>'s <code>num_cams</code>; a
+  <code>position</code> equal to its <code>target</code> raises; a <code>focal_mm</code> outside 1-2000 mm warns.</li>
+</ul>
+<h3 id="s15-guard-the-zero-cc-hole">S1.5 Guard the zero-<code>cc</code> hole<a class="headerlink" href="#s15-guard-the-zero-cc-hole" title="Permanent link">&para;</a></h3>
+<p><code>Interior.cc</code> defaults to <code>0.0</code>, which divides by zero at
+<code>ray_tracing.py:40-43</code> (<code>sqrt(x^2+y^2+cc^2)</code> at the principal point) and
+collapses every projection to <code>(0,0)</code> in <code>imgcoord.py:303</code>. There is no guard,
+unlike <code>Glass.sanitize()</code>.</p>
+<p>Add a <code>cc &lt;= 0</code> check that <strong>raises</strong>, naming the missing <code>.ori</code> and pointing
+at <code>seed_from_lookat</code>, at all three silent fallbacks:
+<code>gui/ptv_calibration.py:653</code>, <code>gui/standalone_calibration.py:153</code>,
+<code>algorithms/parameter_converters.py:127</code>. Do this as its own commit — it
+changes behaviour from "silently wrong" to "loudly broken" and may surface
+latent breakage in the GUI.</p>
+<hr />
+<h2 id="step-s2-calibration_importpy-adjustment">Step S2 — <code>calibration_import.py</code> adjustment<a class="headerlink" href="#step-s2-calibration_importpy-adjustment" title="Permanent link">&para;</a></h2>
+<p>As Part 1 Step 1, except: import <code>angles_from_dm</code> / <code>exterior_from_rotation</code>
+from <code>calibration_seed</code> rather than defining them.</p>
+<hr />
+<h2 id="step-s3-the-eps-default-alongside-part-1-step-2s-presorted-work">Step S3 — the <code>eps</code> default (alongside Part 1 Step 2's <code>presorted</code> work)<a class="headerlink" href="#step-s3-the-eps-default-alongside-part-1-step-2s-presorted-work" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Change <code>calibrate_from_source</code>'s <code>eps: int = 15</code> default
+  (<code>autocalibration.py:494</code>) to <code>None</code>, meaning "derive it". Derive as <strong>3x the
+  median nearest-neighbour spacing of the projected reference points</strong> —
+  computable from <code>fix</code> and the seed pose with the existing projection
+  helpers, no new maths. Fall back to 15 when fewer than 2 points.</li>
+<li>Log the chosen <code>eps</code> at INFO. Per M4 this is what makes a rough seed usable,
+  and it is currently the single biggest silent failure mode.</li>
+<li>Do <strong>not</strong> change <code>sortgrid.par</code> / <code>sortgrid.radius</code> handling for the
+  existing calblock path — that path starts from a good <code>.ori</code> and its tight
+  radii are correct there.</li>
+</ul>
+<hr />
+<h2 id="step-s4-registry-entries">Step S4 — registry entries<a class="headerlink" href="#step-s4-registry-entries" title="Permanent link">&para;</a></h2>
+<p>In addition to Part 1's <code>opencv_model</code> and <code>points_file</code>:</p>
+<ul>
+<li><code>name="rig_lookat"</code>, <code>produces_seed=True</code> — requires <code>rig.yaml</code> with a focal
+  length per camera; <code>avoid_when</code>: you need camera positions accurate to
+  better than <code>standoff x lens-marking error</code> (cite M2).</li>
+<li><code>name="dlt_resection"</code>, <code>produces_seed=True</code> — requires &gt;=6 non-coplanar
+  identified correspondences; <code>best_for</code>: any dataset with a points file and
+  no prior calibration; note it is the only tier that solves for <code>cc</code>.</li>
+</ul>
+<hr />
+<h2 id="step-s5-tests-testsunittest_calibration_seedpy-new">Step S5 — tests: <code>tests/unit/test_calibration_seed.py</code> (new)<a class="headerlink" href="#step-s5-tests-testsunittest_calibration_seedpy-new" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>test</th>
+<th>assertion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_lookat_puts_target_at_principal_point</code></td>
+<td>4 geometries: target projects to <code>(imx/2, imy/2)</code> within 1e-6 px</td>
+</tr>
+<tr>
+<td><code>test_lookat_angles_roundtrip</code></td>
+<td><code>dm -&gt; angles -&gt; compute_rotation_matrix()</code> within 1e-12</td>
+</tr>
+<tr>
+<td><code>test_lookat_up_parallel_to_axis</code></td>
+<td><code>up</code> parallel to the view axis takes the fallback branch and still yields orthonormal <code>dm</code> (<code>det == +1</code>)</td>
+</tr>
+<tr>
+<td><code>test_lookat_roll</code></td>
+<td>a nonzero <code>roll</code> rotates the image about the principal point by that angle</td>
+</tr>
+<tr>
+<td><code>test_dlt_recovers_pose_and_cc</code></td>
+<td>port <code>scripts/calibrate_proptv_dlt.py:_self_test</code> into pytest: C, cc and all three angles exact</td>
+</tr>
+<tr>
+<td><code>test_dlt_rejects_coplanar</code></td>
+<td>all points on a plane raises, naming coplanarity</td>
+</tr>
+<tr>
+<td><code>test_dlt_rejects_too_few</code></td>
+<td>5 points raises</td>
+</tr>
+<tr>
+<td><code>test_external_calibration_rescues_bad_pose</code></td>
+<td><strong>encodes M1</strong>: 200 mm + 10 deg seed error, 4 points -&gt; recovered within 0.1 mm</td>
+</tr>
+<tr>
+<td><code>test_cc_error_propagates_to_position</code></td>
+<td><strong>encodes M2</strong>: 2% <code>cc</code> error -&gt; position error within 20% of <code>standoff * 0.02</code>, rms still &lt; 0.2 px. Documents a <em>limitation</em>; must fail loudly if Step S7 ever fixes <code>cc</code> recovery</td>
+</tr>
+<tr>
+<td><code>test_sortgrid_never_mismatches</code></td>
+<td><strong>encodes M4</strong>: sweep the seed errors in the table, assert <code>wrongly_matched == 0</code> throughout</td>
+</tr>
+<tr>
+<td><code>test_derived_eps_beats_default</code></td>
+<td>a 5 mm position error: derived <code>eps</code> matches &gt;=90% of points where <code>eps=15</code> matches &lt;10%</td>
+</tr>
+<tr>
+<td><code>test_zero_cc_raises</code></td>
+<td>a bare <code>Calibration()</code> through the new guard raises, naming <code>cc</code></td>
+</tr>
+<tr>
+<td><code>test_read_rig_requires_focal</code></td>
+<td>a <code>rig.yaml</code> entry without <code>focal_mm</code> raises, naming the camera</td>
+</tr>
+<tr>
+<td><code>test_rig_ori_roundtrip</code></td>
+<td>build <code>rig.yaml</code> from a known <code>Calibration</code> (position, target on its optical axis, <code>focal_mm = cc</code>), regenerate, recover position/angles/cc to 1e-9</td>
+</tr>
+<tr>
+<td><code>test_write_rig_ori_refuses_clobber</code></td>
+<td>an existing <code>.ori</code> is not overwritten without <code>overwrite=True</code>; with it, an <code>.autobck</code> appears</td>
+</tr>
+<tr>
+<td><code>test_rig_camera_count_mismatch</code></td>
+<td>a 3-camera <code>rig.yaml</code> against a 4-camera <code>ptv.par</code> raises, naming both counts</td>
+</tr>
+<tr>
+<td><code>test_lookat_reproduces_benchmark_rig</code></td>
+<td><code>seed_from_lookat</code> reproduces <code>benchmarking/camera_rig.py</code>'s <code>_BASE_CAMERAS[i]</code> rotation for a target on each camera's optical axis — free regression coverage for the 44 magic numbers</td>
+</tr>
+</tbody>
+</table>
+<p>Reuse <code>tests/unit/test_synthetic_calibration.py</code> helpers. Generate <code>rig.yaml</code>
+fixtures in <code>tmp_path</code>.</p>
+<hr />
+<h2 id="step-s6-cli-and-skill">Step S6 — CLI and skill<a class="headerlink" href="#step-s6-cli-and-skill" title="Permanent link">&para;</a></h2>
+<p>Extend <code>scripts/import_calibration.py</code> (Part 1 Step 5) with a seed subcommand
+rather than adding a second script:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/import_calibration.py<span class="w"> </span>seed<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="w">    </span>--rig<span class="w"> </span>rig.yaml<span class="w"> </span>--dataset<span class="w"> </span>&lt;dir&gt;<span class="w"> </span><span class="o">[</span>--out<span class="w"> </span>&lt;dir&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--overwrite<span class="o">]</span><span class="w"> </span><span class="o">[</span>--dry-run<span class="o">]</span>
+</span></code></pre></div>
+<p><code>--dry-run</code> writes nothing and prints, per camera: the derived <code>eps</code>, how many
+calblock points <code>sortgrid</code> identifies, and the reprojection RMS — so a user
+can iterate on <code>rig.yaml</code> before committing files.</p>
+<p>Also <strong>fix <code>.claude/skills/openptv-calibrate/scripts/calib.py:306</code></strong> to call
+<code>seed_from_lookat</code> and require a focal length, instead of <code>cc = imx*pix_x</code>
+(M5). Update SKILL.md's fresh-dataset flow accordingly: ask the user for
+roughly where each camera is, what it points at, and the lens focal length —
+which is precisely the "rough orientation guess" SKILL.md already says to ask
+for, now with a supported API behind it.</p>
+<hr />
+<h2 id="step-s7-separate-investigate-cc-non-recovery">Step S7 (separate) — investigate <code>cc</code> non-recovery<a class="headerlink" href="#step-s7-separate-investigate-cc-non-recovery" title="Permanent link">&para;</a></h2>
+<p><strong>Do not block Steps S1-S6 on this.</strong> File it as its own investigation with the
+M2/M3 reproducers attached.</p>
+<p>Question: <code>full_calibration(..., ["cc"])</code> moves <code>cc</code> by 3% of a 1 mm error over
+six iterations, on noise-free data with 25% depth leverage, while RMS rises.
+Intended damping, or a defect?</p>
+<p>Starting points in <code>src/openptv2/algorithms/orientation.py</code>:</p>
+<ul>
+<li><code>:851</code> <code>P[n_obs + 0] = 1 if flags.ccflag else POS_INF</code> — the <code>cc</code> prior row
+  carries <strong>unit weight</strong> against ~150 unit-weight observation rows, so it
+  should be negligible. Confirm it is.</li>
+<li><code>:885-900</code> — <code>rscale</code> column scaling is applied to columns 9/10/11
+  (<code>k1,k2,k3</code>) only. Check whether <code>beta[6]</code> (<code>cc</code>) needs analogous scaling:
+  <code>cc</code> is ~50 mm while exterior translations are ~800 mm and angles ~1 rad, so
+  the normal-equation columns differ by orders of magnitude and <code>matinv</code> may be
+  effectively pinning the worst-conditioned direction.</li>
+<li><code>:928-942</code> — the constrained-parameter zeroing; verify <code>ccflag</code> is actually
+  parsed from the string <code>"cc"</code> all the way to <code>flags.ccflag</code>.</li>
+</ul>
+<p>Success criterion: either a one-line explanation of why this is correct (with
+the degeneracy argument), or a fix after which
+<code>test_cc_error_propagates_to_position</code> fails and is replaced by a recovery test.</p>
+<hr />
+<h2 id="part-2-files">Part 2 files<a class="headerlink" href="#part-2-files" title="Permanent link">&para;</a></h2>
+<p><strong>New:</strong> <code>src/openptv2/calibration_seed.py</code>,
+<code>tests/unit/test_calibration_seed.py</code>.</p>
+<p><strong>Modified:</strong> <code>scripts/calibrate_proptv_dlt.py</code> (import shims after the move),
+<code>src/openptv2/autocalibration.py</code> (derived <code>eps</code>),
+<code>src/openptv2/calibration_registry.py</code> (two more entries),
+<code>src/openptv2/gui/ptv_calibration.py</code> + <code>gui/standalone_calibration.py</code> +
+<code>algorithms/parameter_converters.py</code> (zero-<code>cc</code> guard),
+<code>scripts/import_calibration.py</code> (<code>seed</code> subcommand),
+<code>.claude/skills/openptv-calibrate/scripts/calib.py</code> + <code>SKILL.md</code>.</p>
+<p><strong>Consider deleting:</strong> <code>src/openptv2/gui/optimize_calibration.py</code> — 289 lines,
+zero callers, references an undefined <code>self</code>, superseded by
+<code>seed_from_lookat</code>. Confirm with the user before removing.</p>
+<p><strong>Not touched:</strong> anything under <code>algorithms/</code> except the <code>parameter_converters</code>
+guard — <strong>no Cython rebuild needed.</strong></p>
+<h2 id="part-2-verification">Part 2 verification<a class="headerlink" href="#part-2-verification" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_calibration_seed.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">              </span>tests/unit/test_calibration_import.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">              </span>tests/unit/test_calibration_registry.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">              </span>tests/unit/test_autocalibration.py<span class="w"> </span>-v
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>.
+</span></code></pre></div>
+<ul>
+<li><code>test_autocalibrate_cavity</code> green and unchanged.</li>
+<li>The M1/M2/M4 tests encode the measurements above, so a regression in seed
+  behaviour fails a test rather than silently degrading a calibration.</li>
+<li><strong>End-to-end acceptance for the whole seed layer</strong>: on
+  <code>test_data/test_cavity</code>, write a <code>rig.yaml</code> from the solved <code>.ori</code>
+  (position, look-at = calblock centroid, <code>focal_mm</code> = solved <code>cc</code>), move the
+  <code>.ori</code> aside, and confirm <code>import_calibration.py seed</code> regenerates it and
+  then recovers &gt;=90% of the calblock points with an RMS within 2x the
+  committed solve. This proves a first-time user with a tape measure and a
+  lens marking can bootstrap a dataset that today requires an <code>.ori</code> to
+  already exist.</li>
+<li>Then Ilmenau (Part 1 Step 6) still runs unchanged.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

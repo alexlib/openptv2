@@ -1,0 +1,2684 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Plan: Final ASCII → Zarr Cutover — no more _targets / rt_is / ptv_is / added files at runtime - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#plan-final-ascii-zarr-cutover-no-more-_targets-rt_is-ptv_is-added-files-at-runtime" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Plan: Final ASCII → Zarr Cutover — no more _targets / rt_is / ptv_is / added files at runtime
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../plate-calibration-howto/" class="md-tabs__link">
+          
+  
+  
+  Calibration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../benchmarking_guide/" class="md-tabs__link">
+          
+  
+  
+  Benchmarks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
+          
+  
+  
+  Decisions
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    End-to-End Particle Tracking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/cavity_flow_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lid-Driven Cavity Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aorta_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aorta Flow (cloud-native)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/four_view_splitter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4-View Image Splitter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sequence & Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracker-tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracker Engines & Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lagrangian_turbulence_quality_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lagrangian Turbulence Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-batch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud-like Batch Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multi-folder-runs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Folder Experiments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Calibration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plate-calibration-howto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plate Calibration How-To
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../illmenau-4cam-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illmenau 4-Camera Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/particle_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle-Based Refinement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/dumbbell_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dumbbell Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/warmup_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auto-Calibration (warmup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-rms-vs-rcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reprojection RMS vs Ray Convergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-bundle-adjustment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bundle Adjustment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracer-self-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracer Self-Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Benchmarks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarking & Tracker Selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking-benchmark-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Engine Benchmark Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/custom_tracking_plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correspondence eps0 Semantics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Decisions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Cython Optimization Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-context-what-all-means" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Context &amp; what "all" means
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-current-state-audited-2026-09-01-two-parallel-inventories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Current state (audited 2026-09-01, two parallel inventories)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Current state (audited 2026-09-01, two parallel inventories)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-already-store-native-no-change-needed-keep-as-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Already store-native (no change needed, keep as reference)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-stragglers-the-actual-cutover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Stragglers — the actual cutover
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-env-flag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Env / flag
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-decision-required-before-code-1-day-blocks-w3w4r8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Decision required before code (1 day, blocks W3/W4/R8)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Design
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-implementation-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Implementation phases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Implementation phases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-0-confirm-decision-baseline-05-day" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 0 — Confirm decision &amp; baseline (0.5 day)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-kill-the-remaining-runtime-ascii-writers-1-day" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1 — Kill the remaining runtime ASCII writers (1 day)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-make-visualization-zarr-first-05-day" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2 — Make visualization zarr-first (0.5 day)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-pipeline-reads-already-correct-just-delete-dead-fallbacks-05-day" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3 — Pipeline reads already correct, just delete dead fallbacks (0.5 day)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-tests-migrate-the-12-batchgui-tests-that-assert-on-ascii-files-15-days-bulk-of-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4 — Tests: migrate the ~12 batch/GUI tests that assert on ASCII files (1.5 days) — bulk of work
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-hardening-cleanup-05-day" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5 — Hardening &amp; cleanup (0.5 day)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-verification-05-day" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6 — Verification (0.5 day)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-risks-mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Risks &amp; mitigations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-alternative-considered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Alternative considered
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-acceptance-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Acceptance criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-effort-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Effort &amp; ordering
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="plan-final-ascii-zarr-cutover-no-more-_targets-rt_is-ptv_is-added-files-at-runtime">Plan: Final ASCII → Zarr Cutover — no more <code>_targets</code> / <code>rt_is</code> / <code>ptv_is</code> / <code>added</code> files at runtime<a class="headerlink" href="#plan-final-ascii-zarr-cutover-no-more-_targets-rt_is-ptv_is-added-files-at-runtime" title="Permanent link">&para;</a></h1>
+<p>Date: 2026-09-01
+Status: draft — for review before implementation
+Goal: <strong>every runtime write of <code>_targets</code>, <code>rt_is.*</code>, <code>ptv_is.*</code>, <code>added.*</code> goes to <code>res/run.zarr</code> (<code>RunStore</code>); every runtime read (pipeline + visualization) comes from the store.</strong> ASCII survives only as an on-demand import/export boundary (<code>storage/legacy.py:import_run</code> / <code>export_run</code>) and — if the review below chooses option B — as calibration's tiny one-shot <code>cal/camN.tif_targets</code>.</p>
+<p>This is the follow-through of <code>docs/plans/archive/2026-08-15-zarr-only-transition-plan.md</code> and <code>docs/plans/archive/2026-08-26-zarr-only-v0.5.6-plan.md</code>, which made store the DB of record but left dual-write (store + ASCII) and dual-read (<code>store.has_*</code> → store else ASCII) in place and left calibration explicitly as an exception. This plan removes the remaining ASCII legs.</p>
+<h2 id="1-context-what-all-means">1. Context &amp; what "all" means<a class="headerlink" href="#1-context-what-all-means" title="Permanent link">&para;</a></h2>
+<p>Four legacy families, all per-frame, all replaced by <code>docs/zarr-hdf5-storage.md:15</code> layout:</p>
+<table>
+<thead>
+<tr>
+<th>Legacy</th>
+<th>Store path</th>
+<th>Canonical writer</th>
+<th>Canonical reader</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>img/cam&lt;N&gt;.&lt;frame&gt;_targets</code></td>
+<td><code>targets/cam_&lt;c&gt;/frame_&lt;n&gt;</code></td>
+<td><code>storage/run_store.py:282</code> <code>RunStore.write_targets</code></td>
+<td><code>storage/run_store.py:298/312</code> <code>read/has_targets</code></td>
+</tr>
+<tr>
+<td><code>res/rt_is.&lt;frame&gt;</code></td>
+<td><code>correspondences/frame_&lt;n&gt;</code></td>
+<td><code>storage/run_store.py:321</code> <code>write_correspondences</code></td>
+<td><code>storage/run_store.py:343/359</code> <code>read/has_correspondences</code></td>
+</tr>
+<tr>
+<td><code>res/ptv_is.&lt;frame&gt;</code></td>
+<td><code>linkage/ptv_is/frame_&lt;n&gt;</code></td>
+<td><code>storage/run_store.py:364</code> <code>write_linkage(name=ptv_is)</code></td>
+<td><code>storage/run_store.py:405/420</code></td>
+</tr>
+<tr>
+<td><code>res/added.&lt;frame&gt;</code></td>
+<td><code>linkage/added/frame_&lt;n&gt;</code></td>
+<td>same</td>
+<td>same</td>
+</tr>
+</tbody>
+</table>
+<p>Non-goals (keep forever): YAML params, <code>.ori</code>/<code>.addpar</code> calibrations, CSV/VTK/NetCDF exports, <code>storage/legacy.py:92</code> <code>import_run</code> / <code>:232</code> <code>export_run</code> (the permanent compatibility boundary — see <code>docs/plans/archive/2026-08-15-zarr-only-transition-plan.md:195</code>).</p>
+<h2 id="2-current-state-audited-2026-09-01-two-parallel-inventories">2. Current state (audited 2026-09-01, two parallel inventories)<a class="headerlink" href="#2-current-state-audited-2026-09-01-two-parallel-inventories" title="Permanent link">&para;</a></h2>
+<h3 id="21-already-store-native-no-change-needed-keep-as-reference">2.1 Already store-native (no change needed, keep as reference)<a class="headerlink" href="#21-already-store-native-no-change-needed-keep-as-reference" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>gui/ptv.py:1041</code> <code>_open_run_store(exp)</code> — single opener threaded everywhere.</li>
+<li><code>gui/ptv.py:1082-1131</code> <code>py_sequence_loop</code> — <code>read_targets(...,store=store)</code>, <code>write_targets(...,store=store)</code>, <code>store.write_correspondences</code> ✅</li>
+<li><code>gui/ptv.py:1346-1501</code> <code>py_sequence_loop_python</code> — same via <code>_write_targets_canonical(...,store=store)</code> ✅</li>
+<li><code>algorithms/tracking_frame_buf.py:177</code> <code>read_targets(file_base,frame,cam_idx,store)</code> / <code>:215</code> <code>write_targets(...,store)</code> / <code>:369</code> <code>read_path_frame(...,store)</code> / <code>:579</code> <code>write_path_frame(...,store)</code> / <code>:869</code> <code>Frame.read</code> / <code>:960</code> <code>Frame.write</code> / <code>:1043</code> <code>FrameBuf.read_frame_at_end</code> — all dual with <code>store.has_*</code> gate ✅</li>
+<li><code>gui/ptv.py:1601</code> <code>write_targets</code> / <code>:1657</code> <code>read_targets</code> — dual ✅ (kept separate from canonical for <code>tests/gui/test_ptv_file_io.py</code> mock contract, <code>gui/ptv.py:1609</code>)</li>
+<li><code>gui/ptv.py:190-251</code> <code>_process_frame_worker</code> — <code>store.write_targets</code> when <code>store</code> else ASCII (good when <code>zarr_store_path</code> is passed)</li>
+<li><code>plugins/contour_sequence.py:189/216/243</code>, <code>plugins/rembg_sequence.py:73/100/127</code>, <code>plugins/rembg_contour_sequence.py:125/154/181</code> — all <code>store=</code> ✅</li>
+<li><code>plugins/default_tracking.py</code>, <code>myptv_3d_tracking.py:257</code>, <code>myptv_2d_tracking.py:243</code>, <code>hybrid_deltat_3d.py:279</code>, <code>proptv_tracking.py:370</code>, <code>two_phase_tracking.py:306/359</code> — <code>Frame.read/write(...,store=store)</code> ✅</li>
+<li><code>tracker.py:53</code> <code>_estimate_max_targets</code> — checks <code>store</code> first, ASCII fallback (intentional backward compat)</li>
+<li><code>storage/legacy.py:58</code> <code>_load_rt_is</code> / <code>:194</code> <code>_write_targets_ascii</code> — intentionally ASCII (import/export)</li>
+<li><code>benchmarking/datawriter.py:209</code> <code>write_store()</code> vs <code>:89</code> ASCII fixture writer — keep both (golden-file compare)</li>
+<li><code>batch/pyptv_batch.py:146</code> <code>_warn_if_tracking_poorly_conditioned</code> — <strong>already fixed</strong> to <code>store.read_correspondences</code> (<code>batch/pyptv_batch.py:163</code>), no longer ASCII.</li>
+</ul>
+<h3 id="22-stragglers-the-actual-cutover">2.2 Stragglers — the actual cutover<a class="headerlink" href="#22-stragglers-the-actual-cutover" title="Permanent link">&para;</a></h3>
+<p><strong>Writers that still emit ASCII at runtime (the "last piece" from the user report):</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>File:line</th>
+<th>Symbol</th>
+<th>Why it still writes ASCII</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W1</td>
+<td><code>gui/ptv.py:704-733</code> <code>py_correspondences_proc_c(exp)</code></td>
+<td><code>write_targets(exp.detections[i], short_base, frame)</code></td>
+<td><strong>No <code>store=</code></strong> — GUI "Correspondences" button <code>gui/pyptv_gui.py:808</code>. Only call site in pipeline that never got a store.</td>
+</tr>
+<tr>
+<td>W2</td>
+<td><code>gui/ptv.py:1328</code> <code>py_sequence_loop_python</code> parallel branch</td>
+<td><code>preprocess_and_detect_all_parallel(exp)</code></td>
+<td>Missing <code>zarr_store_path=str(store.store_path)</code> — <code>py_sequence_loop:1044</code> passes it, python-engine variant does not, so <code>_process_frame_worker:251</code> falls to ASCII.</td>
+</tr>
+<tr>
+<td>W3</td>
+<td><code>autocalibration.py:479</code> <code>calibrate_camera</code></td>
+<td><code>write_targets(detected,len, target_base(base,cam), 0)</code></td>
+<td>Calibration one-shot <code>cal/camN.tif_targets</code> (<code>frame 0</code>). Intentional per old plan <code>2026-08-15:42</code> option (b) — see §3 decision.</td>
+</tr>
+<tr>
+<td>W4</td>
+<td><code>skills/openptv-calibrate/scripts/detect_targets.py:84</code></td>
+<td><code>write_targets(list(targs),n,str(tbase),0)</code></td>
+<td>Same calibration family — CLI helper.</td>
+</tr>
+<tr>
+<td>W5</td>
+<td><code>gui/dumbbell_ground_truth.py:106</code></td>
+<td><code>ptv.write_targets(targs,str(short_base),frame)</code> + <code>:108</code> <code>store.write_targets</code></td>
+<td>Dual today (mirrors). Should become store-only or be deleted (see W3).</td>
+</tr>
+<tr>
+<td>W6</td>
+<td><code>gui/ptv.py:966</code> <code>_write_rt_is_file</code> / <code>algorithms/tracking_frame_buf.py:567</code> <code>write_rt_is</code></td>
+<td><code>open(path,"w")</code></td>
+<td>Pure ASCII helper, called only when <code>store is None</code> (<code>gui/ptv.py:781</code> <code>py_determination_proc_c</code> non-store path). Keep for <code>store=None</code> export path, but pipeline must never hit it with a store.</td>
+</tr>
+<tr>
+<td>W7</td>
+<td><code>gui/ptv.py:248-251</code> <code>_process_frame_worker</code> else-branch</td>
+<td><code>write_targets(targs, short_base, frame)</code></td>
+<td>Covered by W2 — dead when caller passes store.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Readers that still prefer or fall back to ASCII at runtime (visualization + pipeline):</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>File:line</th>
+<th>Symbol</th>
+<th>Current behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td><code>gui/ptv.py:1845</code> <code>read_rt_is_file(filename)</code> + <code>:1807</code> <code>_read_correspondences_from_zarr_fallback</code></td>
+<td>Reads ASCII <code>open(filename)</code>; zarr only if <code>not Path.exists</code> + <code>_read_correspondences_from_zarr_fallback</code> via <code>ZarrFrameStore</code></td>
+<td>Visualization fallback inverted — ASCII-first. Should be <strong>zarr-first, ASCII only via <code>import_run</code></strong>.</td>
+</tr>
+<tr>
+<td>R2</td>
+<td><code>gui/plot_3d_positions.py:377</code> <code>_read_positions(rt_is_path,frame)</code></td>
+<td><code>if not exists</code> → <code>RunStore.has_correspondences</code> else <code>ptv.read_rt_is_file</code> (ASCII) (<code>:402</code>)</td>
+<td>Dual, ASCII-first. Same inversion.</td>
+</tr>
+<tr>
+<td>R3</td>
+<td><code>gui/plot_3d_positions.py:423</code> <code>read_positions_sequence</code></td>
+<td>Loops <code>_read_positions</code> per frame</td>
+<td>Inherits R2. Caps at <code>max_frames=50</code>.</td>
+</tr>
+<tr>
+<td>R4</td>
+<td><code>gui/visualize_rt_is_nb.py:154</code> <code>plot_3d_target</code></td>
+<td><code>if not exists &amp;&amp; frame</code> → <code>RunStore</code> (<code>:178</code>) else <code>np.loadtxt(skiprows=1)</code> (<code>:199</code>)</td>
+<td>Same.</td>
+</tr>
+<tr>
+<td>R5</td>
+<td><code>gui/pyptv_gui.py:938</code> <code>visualize_3d_positions</code></td>
+<td>Opens TraitsUI, delegates to <code>_read_positions</code></td>
+<td>Inherits R2.</td>
+</tr>
+<tr>
+<td>R6</td>
+<td><code>gui/pyptv_gui.py:1013/1039</code> <code>detect_part_track</code></td>
+<td>Already <code>ptv.read_targets(...,store)</code> ✅ — reference good pattern for others.</td>
+<td></td>
+</tr>
+<tr>
+<td>R7</td>
+<td><code>algorithms/tracking_frame_buf.py:402</code> <code>read_path_frame</code> store gate</td>
+<td><code>if store.has_correspondences(frame)</code> → store else ASCII <code>open(rt_is)</code></td>
+<td>Correct gate; after cutover the <code>else</code> is only for <code>store=None</code> / pre-zarr imports. No change, just stop writing the else's files.</td>
+</tr>
+<tr>
+<td>R8</td>
+<td><code>autocalibration.py:458</code> <code>pix=read_targets(str(target_base),0)</code> / <code>:1028</code> <code>suggest_eps0</code> / <code>gui/ptv_calibration.py:498</code> / <code>skills/.../calib.py:872</code></td>
+<td>Always ASCII calibration reads</td>
+<td>Tied to W3 decision.</td>
+</tr>
+<tr>
+<td>R9</td>
+<td><code>gui/plot_3d_trajectories.py:218</code> / <code>gui/flowtracks_utils.py:31</code> / <code>tracker.py:53</code></td>
+<td>Fallback to <code>flowtracks.io.trajectories_ptvis</code> / <code>open(rt_is)</code> when no store</td>
+<td>Intentional backward compat for pre-zarr runs (<code>2026-08-15:148</code>). Keep, but must not fire for new runs (no files to find).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-env-flag">2.3 Env / flag<a class="headerlink" href="#23-env-flag" title="Permanent link">&para;</a></h3>
+<p><code>ParameterManager</code> <code>pft_version.Existing_Target</code> (<code>gui/legacy_parameters.py:793</code>, <code>gui/parameter_manager.py:101</code>, <code>gui/ptv.py:1020/1306</code>) — sole gate for "read targets vs detect". No env var (<code>OPENPTV_STORAGE</code> already removed per <code>docs/zarr-hdf5-storage.md:107</code>). Keep.</p>
+<h2 id="3-decision-required-before-code-1-day-blocks-w3w4r8">3. Decision required before code (1 day, blocks W3/W4/R8)<a class="headerlink" href="#3-decision-required-before-code-1-day-blocks-w3w4r8" title="Permanent link">&para;</a></h2>
+<p>Old plan recommended <strong>(b) leave calibration as permanent ASCII exception</strong> (<code>2026-08-15:42</code>) — calibration is 1 frame per cam, human-inspected, overlay workflow expects files. User's new ask is "all ASCII → zarr". Choose:</p>
+<ul>
+<li><strong>Option A (user literal):</strong> calibration <code>_targets</code> also go to <code>res/run.zarr</code> (or a calibration-scoped store <code>cal/run.zarr</code>). <code>detect_targets.py</code>, <code>autocalibration.py</code>, <code>ptv_calibration.py</code>, <code>calib.py</code> all read via <code>store.read_targets(cam,0)</code> with ASCII fallback hidden behind <code>import_run</code>. Benefit: total cutover, single code path. Cost: <code>openptv-calibrate</code> skill overlay-image assumptions (<code>cal/camN.tif_targets</code> existence) must be updated to check store too; human inspection now via <code>ZarrFrameStore.dump_frame_text</code> not <code>cat</code>.</li>
+<li><strong>Option B (recommended, keeps W3/W4/R8 as documented exception):</strong> keep <code>cal/cam*.tif_targets</code> ASCII. Rationale: calibration is not a run (no <code>rt_is</code>/<code>ptv_is</code>), store buys nothing operationally, and the skill's <code>has_targets</code> check (<code>skills/openptv-calibrate/SKILL.md:116</code>) is file-existence based. If B, W3/W4/R8 are <strong>not</strong> in scope and the "all" in the title means "all run-data families".</li>
+</ul>
+<p><strong>Plan below assumes B (no calibration change) unless the review picks A.</strong> If A is chosen, add W3/W4/R8 to Phase 1/2 with same <code>store=</code> threading and update skill docs; no other phase changes.</p>
+<h2 id="4-design">4. Design<a class="headerlink" href="#4-design" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Single store per experiment: <code>res/run.zarr</code> resolved by <code>storage/run_store.py:66</code> <code>resolve_store_path</code> / <code>:82</code> <code>find_existing_store</code>, opened once via <code>gui/ptv.py:161</code> <code>_open_run_store(exp)</code> ("explicit store threading" from <code>gui/ptv.py:174</code> comment).</li>
+<li>Pipeline never writes ASCII when a store is present. <code>store=None</code> stays valid <strong>only</strong> for <code>storage/legacy.py:export_run</code>, tests that explicitly pass <code>store=None</code>, and calibration if B. Not for <code>py_sequence_loop</code> etc.</li>
+<li>Visualization becomes zarr-first: <code>store.has_correspondences(frame)</code> → <code>store.read_correspondences</code> → <code>(N,3)</code> array; ASCII only when <code>store is None</code> or <code>not has_correspondences</code> <strong>and</strong> caller explicitly asked for a legacy file (pre-zarr run). No <code>Path.exists</code> → zarr fallback; go <code>zarr</code> directly.</li>
+<li>Import boundary: old ASCII runs remain readable via <code>import_run</code> ( <code>storage/legacy.py:92</code> <code>import_run</code> does <code>store.write_targets/write_correspondences</code> from ASCII). No pipeline fallback needed beyond that.</li>
+<li>No <code>OPENPTV_STORAGE</code> env, no new flag.</li>
+</ul>
+<h2 id="5-implementation-phases">5. Implementation phases<a class="headerlink" href="#5-implementation-phases" title="Permanent link">&para;</a></h2>
+<h3 id="phase-0-confirm-decision-baseline-05-day">Phase 0 — Confirm decision &amp; baseline (0.5 day)<a class="headerlink" href="#phase-0-confirm-decision-baseline-05-day" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Review picks A vs B for calibration.</li>
+<li>Baseline pass: <code>uv run pytest -q</code> (record 5 pre-existing failures baseline), manual <code>uv run openptv2-batch test_data/test_cavity_small --mode both</code> and <code>ls res/*.targets res/rt_is.* res/ptv_is.*</code> count (should be &gt;0 today, 0 after).</li>
+</ul>
+<h3 id="phase-1-kill-the-remaining-runtime-ascii-writers-1-day">Phase 1 — Kill the remaining runtime ASCII writers (1 day)<a class="headerlink" href="#phase-1-kill-the-remaining-runtime-ascii-writers-1-day" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>W1</strong> <code>gui/ptv.py:704</code> <code>py_correspondences_proc_c</code>: add <code>store = _open_run_store(exp)</code> at top, change loop to <code>write_targets(exp.detections[i], short_base, frame, store=store, cam_idx=i)</code> — mirrors <code>gui/ptv.py:1104</code>. Keep ASCII helper <code>gui/ptv.py:1601</code> body (<code>if store is not None: store.write_targets else: np.savetxt</code>) unchanged; it already branches.</li>
+<li><strong>W2</strong> <code>gui/ptv.py:1328</code> <code>py_sequence_loop_python</code>: change <code>preprocess_and_detect_all_parallel(exp)</code> → <code>preprocess_and_detect_all_parallel(exp, zarr_store_path=str(store.store_path))</code> and ensure the early <code>store = _open_run_store(exp)</code> (already at <code>:1302</code>) is before the call. Then <code>_process_frame_worker:248</code> always takes <code>store.write_targets</code> branch.</li>
+<li><strong>(If A)</strong> W3/W4/W5: thread a calibration-scoped <code>RunStore(cal_dir / "run.zarr")</code> through <code>autocalibration.py:479</code>, <code>detect_targets.py:84</code>, <code>dumbbell_ground_truth.py:106</code> (change to single <code>ptv.write_targets(...,store=store,cam_idx=cam)</code> and delete the extra <code>store.write_targets</code> mirroring).</li>
+<li>Rebuild Cython: <code>uv run python setup.py build_ext --inplace</code> if <code>tracking_frame_buf.py</code> changed (W1/W2 don't touch it, but do if hardening <code>write_targets</code> to assert <code>store is not None</code> in pipeline).</li>
+<li>Verify: <code>grep -rn "write_targets.*short_file" src/openptv2/gui/ptv.py</code> should show no bare <code>write_targets(..., frame)</code> without <code>store=</code>.</li>
+</ul>
+<h3 id="phase-2-make-visualization-zarr-first-05-day">Phase 2 — Make visualization zarr-first (0.5 day)<a class="headerlink" href="#phase-2-make-visualization-zarr-first-05-day" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>R2</strong> <code>gui/plot_3d_positions.py:377</code> <code>_read_positions</code>: invert to <code>store = find_existing_store(...); if store and store.has_correspondences(frame): return store.read_correspondences(frame)[:,:3]</code> first; only then try ASCII <code>ptv.read_rt_is_file</code> / <code>np.loadtxt</code>. Today it's <code>if not exists → store</code> else ASCII — flip. Keep <code>ValueError</code> → <code>(0,3)</code> behavior (<code>:404</code>) for empty frames.</li>
+<li><strong>R1</strong> <code>gui/ptv.py:1845</code> <code>read_rt_is_file</code>: add optional <code>store</code> param or make it <code>find_existing_store</code> first (consistent with R2). Keep <code>ZarrFrameStore</code> fallback as is for old path, but make it primary. Same for <code>:1807</code> <code>_read_correspondences_from_zarr_fallback</code> — keep as helper but call before <code>open</code>.</li>
+<li><strong>R4</strong> <code>gui/visualize_rt_is_nb.py:154</code> — same inversion (store first, <code>np.loadtxt</code> only if <code>not has_correspondences</code>).</li>
+<li><strong>R3/R5</strong> inherit R2 — no direct change.</li>
+<li>Keep <code>gui/plot_3d_trajectories.py:218</code> / <code>flowtracks_utils.py:31</code> backward-compat fallback — it's already <code>if store exists else ASCII</code>; just ensure it doesn't synthesize files (it doesn't).</li>
+<li>Small new helper (optional, not required): <code>storage/run_store.py:343</code> <code>read_correspondences</code> already returns <code>(pos_3d, cam_ids)</code> — visualization needs only <code>pos_3d</code>; keep as is.</li>
+</ul>
+<h3 id="phase-3-pipeline-reads-already-correct-just-delete-dead-fallbacks-05-day">Phase 3 — Pipeline reads already correct, just delete dead fallbacks (0.5 day)<a class="headerlink" href="#phase-3-pipeline-reads-already-correct-just-delete-dead-fallbacks-05-day" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>algorithms/tracking_frame_buf.py:402</code> <code>read_path_frame</code> and <code>:177</code> <code>read_targets</code> already <code>has_*</code> gated — no change. The point is that after Phase 1, no new run will leave ASCII files for the <code>else</code> to find, so the else becomes legacy-only. Leave it (it's the <code>store=None</code> and <code>import_run</code> path) — do not delete.</li>
+<li>Audit <code>ParameterManager</code> <code>Existing_Target</code> semantics: when <code>Existing_Target=1</code> and store has no targets for that frame, today <code>read_targets(...,store)</code> returns <code>[]</code> (<code>tracking_frame_buf.py:211</code>) after <code>has_targets==False</code> → file miss → <code>[]</code>. That's fine — caller handles empty. No change.</li>
+<li>Remove any stray <code>Path("res/rt_is.%d" % frame).exists()</code> probes that assume files (none remaining after W1/W2; <code>tracker.py:53</code> already store-first).</li>
+</ul>
+<h3 id="phase-4-tests-migrate-the-12-batchgui-tests-that-assert-on-ascii-files-15-days-bulk-of-work">Phase 4 — Tests: migrate the ~12 batch/GUI tests that assert on ASCII files (1.5 days) — bulk of work<a class="headerlink" href="#phase-4-tests-migrate-the-12-batchgui-tests-that-assert-on-ascii-files-15-days-bulk-of-work" title="Permanent link">&para;</a></h3>
+<p>Per <code>2026-08-15:133</code> third sub-category (the only one that must move):</p>
+<ul>
+<li>Files to migrate (read via <code>RunStore</code> instead of <code>open</code>/<code>np.loadtxt</code>):
+  <code>batch/test_batch_small.py</code>, <code>batch/test_burgers_synthetic.py</code>, <code>batch/test_pyptv_batch.py</code>, <code>batch/test_pyptv_batch_plugins.py</code>, <code>batch/test_rembg_small.py</code>, <code>batch/test_sequence_singleframe_parity.py</code>, <code>batch/test_splitter_end_to_end.py</code>, <code>batch/test_synthetic_tracker.py</code>, <code>batch/test_track_res_vs_res_orig.py</code>, <code>batch/test_tracking_presets_benchmark.py</code>, <code>batch/test_yaml_only_folder.py</code>, <code>gui/test_cavity_comprehensive.py</code>, <code>gui/test_plot_3d_positions.py</code>, <code>gui/test_plot_3d_trajectories.py</code>, <code>gui/test_export_ptv_is_to_paraview.py</code>, <code>gui/test_pyptv_gui.py</code>, <code>gui/test_tracker_minimal.py</code>, <code>gui/test_tracking_parameters.py</code>, <code>unit/test_batch_python_pipeline.py</code> (pipeline-backed ones).</li>
+<li>Keep as-is (not in scope): <code>unit/test_run_store.py</code>, <code>unit/test_tracker_run_store.py</code> (round-trip gates), <code>unit/test_tracking_frame_buf.py</code>, <code>test_tracking_frame_buf_coverage.py</code>, <code>test_track3d*.py</code>, etc. — they use <code>store=None</code> intentionally. Same for <code>tests/gui/test_ptv_file_io.py:34</code> — leave, it's testing the ASCII utility itself (<code>gui/ptv.py:1609</code> docstring says keep separate).</li>
+<li>Pattern to replace:
+  <div class="language-py highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># before</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">assert</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"res/rt_is.10000"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">"res/rt_is.10000"</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># after</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.storage</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunStore</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">store</span> <span class="o">=</span> <span class="n">RunStore</span><span class="p">(</span><span class="s2">"res/run.zarr"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"r"</span><span class="p">)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">pos</span><span class="p">,</span> <span class="n">cam_ids</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">read_correspondences</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="k">assert</span> <span class="n">pos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span></code></pre></div>
+  Same for <code>targets</code>: <code>store.read_targets(cam, frame)</code> vs <code>read_targets("cam1.", frame)</code>.</li>
+<li>Do this <strong>before</strong> landing Phase 1 on <code>main</code> (or same PR) so CI doesn't go red the moment ASCII stops being written (<code>2026-08-15:184</code>).</li>
+</ul>
+<h3 id="phase-5-hardening-cleanup-05-day">Phase 5 — Hardening &amp; cleanup (0.5 day)<a class="headerlink" href="#phase-5-hardening-cleanup-05-day" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>src/openptv2/benchmarking/datawriter.py</code> — keep <code>write_dataset</code> ASCII + <code>write_store()</code> store variant (golden-file compare). No change.</li>
+<li><code>tracking_postprocess.py:70</code>, <code>tracking_chunked.py:311</code> — already store-branched; no change.</li>
+<li><code>.gitignore:54</code> <code>*_targets</code> / <code>:116</code> <code>**/**/*.*_targets</code> — keep ignoring runtime <code>_targets</code>, but add <code>!test_data/**/cal/*_targets</code> already there and (if B) keep ignoring; no change unless A then add <code>!res/run.zarr/**</code> already ignored correctly.</li>
+<li>Docs: update <code>docs/zarr-hdf5-storage.md:3</code> from "are not written" (today's claim is premature — W1/W2 still write) to accurate post-cutover wording; add "Visualization reads from store" note under <code>docs/zarr-hdf5-storage.md:46</code> / <code>gui/plot_3d_positions.py:377</code> docstring.</li>
+</ul>
+<h3 id="phase-6-verification-05-day">Phase 6 — Verification (0.5 day)<a class="headerlink" href="#phase-6-verification-05-day" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>uv run pytest -m ci -q</code> (<code>2026-08-26:59</code> <code>ci</code> marker: <code>test_run_store.py</code>, <code>test_store_parallel_io.py</code>, <code>test_parallel_tracking.py</code>, <code>test_trackcorr_store_only.py</code>, etc.) — target <code>&lt;5 min</code>, 0 new failures.</li>
+<li>Full <code>uv run pytest -q</code> — expect same 5 pre-existing baseline, 0 new.</li>
+<li>Manual: fresh <code>test_cavity</code> / <code>test_cavity_small</code> batch <code>both</code> → <code>find . -name "*_targets" -o -name "rt_is.*"</code> under <code>res/</code> / <code>img/</code> must be 0 files; <code>res/run.zarr</code> must hold frames via <code>RunStore.has_targets/has_correspondences</code>; visualization <code>Visualize 3D positions</code> must show same point cloud as before (store path).</li>
+<li>Legacy import check: <code>python scripts/convert_fixtures_to_zarr.py</code> then <code>RunStore.export_frame_text(frame)</code> vs original ASCII bytes — already covered by <code>test_convert_legacy_to_zarr.py:3.1</code>.</li>
+</ul>
+<h2 id="6-risks-mitigations">6. Risks &amp; mitigations<a class="headerlink" href="#6-risks-mitigations" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GUI calibration skill (<code>openptv-calibrate</code>) expects <code>_targets</code> files next to images (<code>SKILL.md:116</code> <code>has_targets</code>)</td>
+<td>If A: update skill to check <code>store.has_targets</code> too; if B: no risk (keep files).</td>
+</tr>
+<tr>
+<td>Tests that assert <code>Path(...).exists()</code> start failing the moment W1/W2 land</td>
+<td>Land Phase 4 in same PR / before W1/W2, or gate CI on <code>store</code> variant immediately.</td>
+</tr>
+<tr>
+<td><code>gui/ptv.py:1601</code> <code>write_targets</code> mock contract (<code>tests/gui/test_ptv_file_io.py</code> patches <code>np.savetxt</code>) breaks if unified with canonical</td>
+<td>Keep it separate (docstring <code>1609</code> says so) — don't unify.</td>
+</tr>
+<tr>
+<td><code>store=None</code> callers that intentionally want ASCII (export, fixtures) lose ability if we delete branches</td>
+<td>Never delete <code>store is None</code> branches; they are the permanent <code>export_run</code> path. Only stop calling them from pipeline.</td>
+</tr>
+<tr>
+<td>Parallel worker file-lock vs zarr concurrency</td>
+<td>Already chunked per <code>frame_*</code> key (<code>docs/zarr-hdf5-storage.md:11</code>), no lock; <code>3.4/3.5</code> parallel I/O tests cover.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-alternative-considered">7. Alternative considered<a class="headerlink" href="#7-alternative-considered" title="Permanent link">&para;</a></h2>
+<p><strong>Delete all fallback ASCII branches (<code>else: open(...)</code>) entirely.</strong> Rejected: <code>store=None</code> is the permanent export/legacy-compat path and is used by <code>import_run</code>/<code>export_run</code> and unit tests that deliberately pass <code>store=None</code>. Removing it would break the compatibility boundary for no runtime gain — pipeline simply stops calling it (Phase 1), but the function keeps the branch for explicit callers.</p>
+<h2 id="8-acceptance-criteria">8. Acceptance criteria<a class="headerlink" href="#8-acceptance-criteria" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fresh <code>pyptv_batch</code> run creates <strong>0</strong> <code>_targets</code> / <code>rt_is.*</code> / <code>ptv_is.*</code> / <code>added.*</code> files under <code>res/</code> / <code>img/</code> (calibration excluded if B).</li>
+<li><code>res/run.zarr</code> contains every frame's <code>targets/cam_*/frame_*</code> and <code>correspondences/frame_*</code> + <code>linkage/ptv_is/frame_*</code> readable via <code>RunStore</code>.</li>
+<li><code>Visualize 3D positions</code> / <code>Visualize 3D trajectories</code> show identical clouds before/after (manual check + <code>test_plot_3d_positions.py</code> migrated).</li>
+<li><code>uv run pytest</code> shows 0 new failures vs baseline.</li>
+</ul>
+<h2 id="9-effort-ordering">9. Effort &amp; ordering<a class="headerlink" href="#9-effort-ordering" title="Permanent link">&para;</a></h2>
+<p>~4.5 days if B (calibration stays ASCII), ~5.5 if A. Order: <strong>Phase 0 → Phase 4 (tests) → Phase 1 (W1/W2) → Phase 2 (R1/R2/R4) → Phase 5 → Phase 6</strong>. Phase 4 before Phase 1 is required to keep CI green.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
