@@ -2250,16 +2250,49 @@ right move is to extend it, not build a parallel one:</p>
   <code>cal.int_par.cc += ...</code>) — reuse for the new calibration-error axis.</li>
 </ul>
 <p><strong>Two real gotchas found and must be handled, not rediscovered the hard way:</strong>
-1. <code>two_phase</code> silently falls back to plain forward tracking if there's no
-   RunStore/zarr present (<code>two_phase_tracking.py:249-265</code>) — must also call
-   <code>bm.write_dataset_store(rig, frame_gt, DatasetSpec(dir=out_dir))</code> into the
-   experiment dir for any scenario that will run <code>two_phase</code>.
-2. <code>standard_forward</code>/<code>full_multipass</code> need their own kinematic-bound
+1. <strong>Every scenario must write to a RunStore (zarr) always — not a
+   <code>two_phase</code>-specific patch.</strong> <code>docs/plans/archive/2026-09-01-zarr-only-final-cutover-plan.md</code>
+   (same-day, already executed) confirms the tracking plugins already prefer
+   store input across the board — <code>default_tracking.py</code>,
+   <code>myptv_3d_tracking.py:257</code>, <code>myptv_2d_tracking.py:243</code>,
+   <code>hybrid_deltat_3d.py:279</code>, <code>proptv_tracking.py:370</code>,
+   <code>two_phase_tracking.py:306/359</code> all call <code>Frame.read(...,store=store)</code> —
+   ASCII is only ever the legacy fallback when no store exists. <code>two_phase</code>
+   just has the <em>worst</em> fallback behavior (silent algorithmic downgrade
+   instead of equivalent results), which is what surfaced it first, but
+   every tracker in Groups A/B should be benchmarked against the same
+   store-backed path the real pipeline uses, not the ASCII path nobody
+   actually runs in production. Every stress scenario therefore calls
+   <strong>both</strong> <code>bm.write_experiment(...)</code> (still needed for <code>cal/*.ori</code> +
+   <code>parameters_Run1.yaml</code>) <strong>and</strong> <code>bm.write_dataset_store(rig, frame_gt,
+   DatasetSpec(dir=out_dir))</code> (zarr) unconditionally — zarr is the read
+   source of record, ASCII stays only as the interchange/debug artifact.
+   Reference: <code>tests/helpers/synthetic_scene.py::make_cavity_scene</code> (this
+   session's own synthetic factory) already does this correctly — it writes
+   <strong>only</strong> to <code>RunStore</code>, no ASCII <code>_targets</code> at all — use it as the
+   pattern to match, not two_phase's fallback as an excuse to special-case.
+2. <strong>On-sensor projection coverage.</strong> A perturbed or non-standard rig
+   (especially <code>calibration_error_scenario</code>) can push particles off-sensor,
+   silently shrinking the effective dataset. Reuse the existing
+   <code>project_to_pixels</code> + coverage-check pattern from
+   <code>tests/unit/test_benchmarking.py::test_rig_projects_to_sensor</code> (asserts</p>
+<blockquote>
+<p>90% of a point spread lands within <code>[0,imx]×[0,imy]</code> per camera) as a
+   generator-level assertion in every <code>scripts/stress_scenarios.py</code>
+   function, right after building the rig and before writing the scenario.
+   <code>bm.make_standard_rig()</code> already satisfies this for the unperturbed case;
+   for <code>calibration_error_scenario</code>, check coverage <em>after</em> perturbing and
+   fail loudly (not silently degrade) if it drops out of range — a genuinely
+   new 4-camera rig is only needed if <code>make_standard_rig</code>'s geometry can't be
+   tuned (via its <code>volume</code>/<code>center</code>/<code>image_size</code>/<code>cc</code> params) to keep
+   coverage high across the perturbation range actually tested.
+3. <code>standard_forward</code>/<code>full_multipass</code> need their own kinematic-bound
    overrides (reusing <code>fast_3d</code>-tuned bounds yields 0 links — precedent:
    <code>tests/batch/test_tracking_presets_benchmark.py:121-138</code>); use
    <code>benchmark_utils.per_tracker_overrides</code> for <strong>every</strong> tracker rather than a
    single shared dict (this is exactly what bit the Phase 5 harness earlier
    this session before the frame-offset fix).</p>
+</blockquote>
 <h2 id="3-design">3. Design<a class="headerlink" href="#3-design" title="Permanent link">&para;</a></h2>
 <h3 id="31-scriptsstress_scenariospy-new-one-knob-at-a-time-generators">3.1 <code>scripts/stress_scenarios.py</code> (new) — one-knob-at-a-time generators<a class="headerlink" href="#31-scriptsstress_scenariospy-new-one-knob-at-a-time-generators" title="Permanent link">&para;</a></h3>
 <p>Modeled directly on <code>create_synthetic_turbulent.make_dataset</code>. Each function
@@ -2287,8 +2320,11 @@ takes a <code>severity</code> (or axis-specific param) and <code>out_dir</code>,
   from <code>test_synthetic_calibration.py</code>, <strong>then</strong> <code>write_experiment</code> — this
   tests whether a tracker's gates are robust to imperfect calibration, not
   whether BA can recover it.</li>
-<li>All of the above call <code>write_dataset_store</code> too when the scenario will be
-  used against <code>two_phase</code> (Group A).</li>
+<li>All of the above call <code>write_dataset_store</code> <strong>unconditionally</strong>, every
+  time, for every tracker — not just when <code>two_phase</code> is in the group under
+  test (see gotcha 1). Each generator also runs the on-sensor coverage check
+  (gotcha 2) before writing, and raises rather than silently returning a
+  thinner-than-requested scenario.</li>
 </ul>
 <h3 id="32-test-files-pytest-regression-safe-thresholds">3.2 Test files (pytest, regression-safe thresholds)<a class="headerlink" href="#32-test-files-pytest-regression-safe-thresholds" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2344,9 +2380,15 @@ write <code>docs/reports/tracker-stress-YYYY-MM-DD.md</code> with:</p>
 <li><code>uv run python scripts/tracker_stress_report.py --groups a,b</code> → writes
   <code>docs/reports/tracker-stress-&lt;date&gt;.md</code>, eyeball for sane numbers (no
   all-zero rows, no crashes)</li>
-<li>Spot-check the <code>two_phase</code> RunStore requirement: confirm
-  <code>write_dataset_store</code> output actually changes <code>two_phase</code>'s behavior vs
-  ASCII-only (rerun one scenario both ways, diff completeness)</li>
+<li>Spot-check the RunStore-always requirement: for at least one scenario per
+  group, confirm <code>write_dataset_store</code> output actually changes tracker
+  behavior vs ASCII-only (rerun one scenario both ways per tracker, diff
+  completeness) — <code>two_phase</code> should show the largest delta, but confirm the
+  others are neutral-or-better too, not just unaffected.</li>
+<li>For <code>calibration_error_scenario</code>: confirm the on-sensor coverage check
+  (gotcha 2) actually fires — deliberately push a perturbation past the
+  coverage threshold and confirm the generator raises instead of silently
+  writing a thin scenario.</li>
 </ul>
 <h2 id="6-effort">6. Effort<a class="headerlink" href="#6-effort" title="Permanent link">&para;</a></h2>
 <p>Phase A (Group A: scenarios + tests): ~1 day
