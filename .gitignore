@@ -164,6 +164,9 @@ __marimo__/
 /scratch_fbf_exp/
 /test_data/burgers/run.zarr
 /test_data/test_cavity/run.zarr
+# generated run stores - not ground truth, recreated by tests/batch (covers all datasets)
+**/run.zarr
+**/run.zarr/**
 
 
 # mkdocs build output
