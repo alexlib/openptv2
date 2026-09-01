@@ -729,8 +729,11 @@ def py_correspondences_proc_c(exp):
     print(f"short_file_bases: {short_file_bases}")
     _ensure_target_output_writable(short_file_bases)
 
+    store = _open_run_store(exp)
     for i_cam in range(exp.num_cams):
-        write_targets(exp.detections[i_cam], short_file_bases[i_cam], frame)
+        write_targets(
+            exp.detections[i_cam], short_file_bases[i_cam], frame, store=store, cam_idx=i_cam
+        )
 
     print(f"Frame {frame} had {[s.shape[1] for s in sorted_pos]!r} correspondences.")
 
@@ -1325,7 +1328,7 @@ def py_sequence_loop_python(exp) -> None:
         parallel_preprocess = ptv_params_dict.get("parallel_preprocess", False)
 
     if parallel_preprocess and not existing_target:
-        preprocess_and_detect_all_parallel(exp)
+        preprocess_and_detect_all_parallel(exp, zarr_store_path=str(store.store_path))
         existing_target = True
 
     first_frame = spar.get_first()
@@ -1807,10 +1810,39 @@ def generate_short_file_bases(img_base_names: List[str]) -> List[str]:
 def _read_correspondences_from_zarr_fallback(p: Path, frame: int):
     """Try each candidate Zarr store for one frame's correspondences.
 
-    Returns the parsed [x, y, z, p1, p2, p3, p4] rows on success, or None if
-    no candidate store has this frame (falls back to the ascii rt_is file).
+    Zarr is the database of record — try RunStore first (res/run.zarr),
+    then legacy ZarrFrameStore candidates. Returns the parsed
+    [x, y, z, p1, p2, p3, p4] rows on success, or None if no candidate
+    store has this frame (falls back to the ascii rt_is file).
     """
-    from openptv2.storage import ZarrFrameStore, find_existing_store
+    from openptv2.storage import RunStore, ZarrFrameStore, find_existing_store
+
+    # Canonical RunStore (res/run.zarr) — probe via find_existing_store.
+    try:
+        for cand_parent in (p.parent, p.parent.parent):
+            zarr_path = find_existing_store(cand_parent)
+            if zarr_path is not None and zarr_path.exists():
+                try:
+                    store = RunStore(zarr_path, mode="r")
+                    if store.has_correspondences(frame):
+                        pos_3d, cam_ids = store.read_correspondences(frame)
+                        return [
+                            [
+                                float(pt[0]),
+                                float(pt[1]),
+                                float(pt[2]),
+                                int(c[0]),
+                                int(c[1]),
+                                int(c[2]),
+                                int(c[3]),
+                            ]
+                            for pt, c in zip(pos_3d, cam_ids)
+                        ]
+                except Exception:
+                    pass
+                break
+    except Exception:
+        pass
 
     exp_root = p.parent.parent
     zarr_store = find_existing_store(exp_root)
@@ -1843,17 +1875,21 @@ def _read_correspondences_from_zarr_fallback(p: Path, frame: int):
 
 
 def read_rt_is_file(filename) -> List[List[float]]:
-    """Read data from an rt_is file or Zarr store and return the parsed values."""
-    if not Path(filename).exists():
-        p = Path(filename)
-        frame_match = re.search(r"\.(\d+)$", p.name)
-        if frame_match:
-            data = _read_correspondences_from_zarr_fallback(
-                p, int(frame_match.group(1))
-            )
+    """Read data from an rt_is file or Zarr store and return the parsed values.
+
+    Zarr is the database of record — the store is checked first when the
+    frame can be parsed from the filename. ASCII is only for pre-zarr runs.
+    """
+    p = Path(filename)
+    frame_match = re.search(r"\.(\d+)$", p.name)
+    if frame_match:
+        try:
+            frame = int(frame_match.group(1))
+            data = _read_correspondences_from_zarr_fallback(p, frame)
             if data is not None:
                 return data
-
+        except Exception:
+            pass
     try:
         with open(filename, "r", encoding="utf-8") as file:
             num_rows = int(file.readline().strip())

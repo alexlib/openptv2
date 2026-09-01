@@ -377,12 +377,14 @@ class Plot3DPositions(HasTraits):
 def _read_positions(rt_is_path: Path, frame: Optional[int] = None) -> np.ndarray:
     """Read an rt_is file or Zarr store and return its (N, 3) metric xyz positions.
 
-    A file that exists but holds zero particles is returned as an empty
-    (0, 3) array. Missing/unreadable files propagate their OSError.
+    Zarr is the database of record — the store is checked first when a
+    frame is known. ASCII is only for pre-zarr runs (via import_run) or
+    when no store exists. A file that exists but holds zero particles is
+    returned as an empty (0, 3) array.
     """
-    if not rt_is_path.exists():
-        # Fallback to the unified RunStore for this run.
-        if frame is not None:
+    # Zarr-first: when the frame is known, the unified RunStore wins.
+    if frame is not None:
+        try:
             from openptv2.storage import RunStore, find_existing_store
 
             # The rt_is file's parent may be res/, the experiment root, or
@@ -397,6 +399,8 @@ def _read_positions(rt_is_path: Path, frame: Optional[int] = None) -> np.ndarray
                 if store.has_correspondences(frame):
                     pos_3d, _ = store.read_correspondences(frame)
                     return np.asarray(pos_3d, dtype=float)
+        except Exception:
+            pass
 
     try:
         rows = ptv.read_rt_is_file(str(rt_is_path))  # [[x, y, z, p0..p3], ...]

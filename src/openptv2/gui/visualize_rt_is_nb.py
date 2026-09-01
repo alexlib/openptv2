@@ -155,17 +155,15 @@ def _(np, plt):
         import re
         from pathlib import Path as _Path
 
-        # Zarr-first: if the ASCII file is missing, try the RunStore
-        # (zarr is the database of record). Keeps ASCII as fallback.
+        # Zarr-first: the store is the database of record. Try RunStore
+        # before ASCII regardless of whether the ASCII file exists.
         _path = _Path(filename)
-        if not _path.exists():
-            # infer frame number from filename if not given
-            if frame is None:
-                m = re.search(r"rt_is\.(\d+)", str(filename))
-                if m:
-                    frame = int(m.group(1))
-            if frame is not None:
-                # search for store: file's dir, its parent, and cwd
+        if frame is None:
+            m = re.search(r"rt_is\.(\d+)", str(filename))
+            if m:
+                frame = int(m.group(1))
+        if frame is not None:
+            try:
                 from openptv2.storage import RunStore, find_existing_store
 
                 store_path = None
@@ -195,7 +193,9 @@ def _(np, plt):
                         ax.set_ylabel("y")
                         ax.set_zlabel("z")
                         return ax
-        # ASCII fallback
+            except Exception:
+                pass
+        # ASCII fallback (pre-zarr runs via import_run)
         d = np.loadtxt(filename, usecols=(0, 1, 2, 3), skiprows=1)
 
         # %%
