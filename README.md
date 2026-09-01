@@ -17,7 +17,7 @@ Cython bindings to an external library, and no runtime engine
 selector.
 
 <p align="center">
-  <img src="docs/images/test_cavity_trajectories.gif" alt="3D Particle Trajectories in Cavity Flow" width="550"/>
+  <img src="docs/images/burgers_smooth_moving.gif" alt="Burgers vortex — smooth Lagrangian spirals (particles moving)" width="620"/>
 </p>
 
 - **Algorithms** (`src/openptv2/algorithms/`) - Cython 3 pure-Python particle tracking, correspondence, and calibration code
