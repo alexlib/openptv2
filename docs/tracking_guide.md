@@ -148,15 +148,25 @@ Select via GUI **Plugins** or `plugins.selected_tracking`. Custom plugins implem
 
 ```python
 import zarr, numpy as np
+
 root = zarr.open_group("res/run.zarr", mode="r")
 # Linkage per frame
-prev, nxt, pos = root["linkage/ptv_is/frame_000001/prev"][:], root["linkage/ptv_is/frame_000001/next"][:], root["linkage/ptv_is/frame_000001/pos"][:]
+prev, nxt, pos = (
+    root["linkage/ptv_is/frame_000001/prev"][:],
+    root["linkage/ptv_is/frame_000001/next"][:],
+    root["linkage/ptv_is/frame_000001/pos"][:],
+)
 # Flat trajectories (sealed)
-traj = root["traj"]; idx_tid, idx_len, idx_row = np.asarray(traj["trajid"]), np.asarray(traj["length"]), np.asarray(traj["first_row"])
+traj = root["traj"]
+idx_tid, idx_len, idx_row = (
+    np.asarray(traj["trajid"]),
+    np.asarray(traj["length"]),
+    np.asarray(traj["first_row"]),
+)
 # Top 100 longest
 order = np.argsort(idx_len)[::-1][:100]
 for tid, fr, ln in zip(idx_tid[order], idx_row[order], idx_len[order]):
-    pts = np.asarray(root["trajectories/pos"][fr:fr+ln])  # [m]
+    pts = np.asarray(root["trajectories/pos"][fr : fr + ln])  # [m]
 ```
 
 ### Copying to Dropbox

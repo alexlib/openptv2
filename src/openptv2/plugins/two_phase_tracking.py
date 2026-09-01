@@ -207,8 +207,14 @@ class TwoPhaseTracker:
             p1 = np.arange(len(pts1), dtype=np.int32)
 
             links = _match_two_phase_frame(
-                pts0, pts1, lf0, lf1, p0, p1,
-                self.cfg.v_max, self.cfg.leaf_weight,
+                pts0,
+                pts1,
+                lf0,
+                lf1,
+                p0,
+                p1,
+                self.cfg.v_max,
+                self.cfg.leaf_weight,
             )
             for pid0, pid1 in links:
                 all_links.append((t0, pid0, t1, pid1))
@@ -244,6 +250,7 @@ class Tracking:
         if store is None:
             from openptv2.storage import RunStore
             from openptv2.storage.run_store import find_existing_store
+
             zarr_path = find_existing_store(Path.cwd())
             if zarr_path is not None:
                 store = RunStore(zarr_path, mode="a")
@@ -290,7 +297,9 @@ class Tracking:
             frames = contiguous
 
         if not frames:
-            print("TwoPhaseTracker: no frames to process, falling back to default tracker.")
+            print(
+                "TwoPhaseTracker: no frames to process, falling back to default tracker."
+            )
             tracker = self.ptv.py_trackcorr_init(self.exp)
             self.exp.tracker = tracker
             tracker.full_forward()
@@ -308,9 +317,9 @@ class Tracking:
             frame_particles.append(pos_3d)
 
             n = len(pos_3d)
-            cam_ids = np.asarray(
-                store.root[f"correspondences/frame_{f:06d}"]
-            )[:, 3:].astype(int)
+            cam_ids = np.asarray(store.root[f"correspondences/frame_{f:06d}"])[
+                :, 3:
+            ].astype(int)
             xy = np.full((n, num_cams, 2), np.nan)
             for c in range(num_cams):
                 key = f"targets/cam_{c}/frame_{f:06d}"
@@ -326,19 +335,25 @@ class Tracking:
 
         # Per-step progress like trackcorr (track3d step: curr/next/links)
         from collections import Counter
+
         _cnt = Counter(t0 for t0, _, _, _ in links)
         for _i in range(len(frames) - 1):
             _curr = len(frame_particles[_i])
             _nxt = len(frame_particles[_i + 1])
             _links = _cnt.get(_i, 0)
-            print(f"two_phase step: {frames[_i]}, curr: {_curr}, next: {_nxt}, links: {_links}")
+            print(
+                f"two_phase step: {frames[_i]}, curr: {_curr}, next: {_nxt}, links: {_links}"
+            )
         if frames:
             _avg_parts = sum(len(p) for p in frame_particles) / len(frame_particles)
             _avg_links = len(links) / max(len(frames) - 1, 1)
-            print(f"Average over sequence, particles: {_avg_parts:.1f}, links: {_avg_links:.1f}, lost: {_avg_parts - _avg_links:.1f}")
+            print(
+                f"Average over sequence, particles: {_avg_parts:.1f}, links: {_avg_links:.1f}, lost: {_avg_parts - _avg_links:.1f}"
+            )
 
         # Build prev/next arrays per frame from links
         from collections import defaultdict
+
         nxt_map = defaultdict(lambda: defaultdict(lambda: -1))
         prv_map = defaultdict(lambda: defaultdict(lambda: -1))
         for t0, p0, t1, p1 in links:

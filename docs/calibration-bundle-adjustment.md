@@ -126,8 +126,10 @@ you where the error is coming from.** The remaining error needs §3/§4, not mor
 
 ## 3. Roadmap — driving RCM down further
 
-The full plan lives in
-[`docs/plans/master-plan.md`](plans/master-plan.md).
+The calibration plans live in [`docs/plans/`](https://github.com/alexlib/openptv2/blob/main/docs/plans) -- see
+`2026-08-30-calibration-hub-multi-source.md` and
+`2026-08-30-illmenau-dots-plate-pipeline.md`.  (This used to point at a
+`master-plan.md` that was never written.)
 Status: RCM reporting **done**, joint-plate BA first cut **done**, the rest below
 **TODO**.
 

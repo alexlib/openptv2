@@ -47,22 +47,30 @@ _WORKER = Path(__file__).parent / "_tracker_run_worker.py"
 
 
 def _run_via_subprocess(
-    tracker: str, src: Path, first: int, n_frames: int, overrides: dict | None,
+    tracker: str,
+    src: Path,
+    first: int,
+    n_frames: int,
+    overrides: dict | None,
 ) -> tuple[dict, float]:
     """Run one tracker (openptv2 name, or "liboptv:fast3d"/"liboptv:trackcorr")
     in its own process -- see _tracker_run_worker.py's docstring for why:
     openptv2's own Cython extensions and the optv C bindings corrupt each
     other's memory when run back-to-back in one process."""
     spec = {
-        "tracker": tracker, "src": str(src), "first": first,
-        "n_frames": n_frames, "overrides": overrides,
+        "tracker": tracker,
+        "src": str(src),
+        "first": first,
+        "n_frames": n_frames,
+        "overrides": overrides,
     }
     work = Path(tempfile.mkdtemp())
     spec_path, out_path = work / "spec.json", work / "result.json"
     spec_path.write_text(json.dumps(spec))
     proc = subprocess.run(
         [sys.executable, str(_WORKER), str(spec_path), str(out_path)],
-        capture_output=True, text=True,
+        capture_output=True,
+        text=True,
     )
     if proc.returncode != 0 or not out_path.exists():
         raise RuntimeError(
@@ -72,6 +80,7 @@ def _run_via_subprocess(
     payload = json.loads(out_path.read_text())
     tracks = {int(k): [tuple(pt) for pt in v] for k, v in payload["tracks"].items()}
     return tracks, payload["time_s"]
+
 
 # Which liboptv forward-mode engine each openptv2 tracker is checked
 # against. priority_segment_3d/myptv/proptv are all 3D-only linkers
@@ -96,7 +105,9 @@ def run_comparison(src: Path, first: int, n_frames: int) -> list[dict]:
             "uv sync should have pulled it in (pyproject.toml: optv>=0.3.2)."
         )
 
-    overrides = bu.per_tracker_overrides(TRACKERS, src=src, first=first, n_frames=n_frames)
+    overrides = bu.per_tracker_overrides(
+        TRACKERS, src=src, first=first, n_frames=n_frames
+    )
 
     frames = bu.read_gt_frames(src, first, n_frames)
     tt = bu.build_true_tracks(frames, first)
@@ -109,10 +120,17 @@ def run_comparison(src: Path, first: int, n_frames: int) -> list[dict]:
         if ref_mode not in liboptv_cache:
             try:
                 ref_tracks, ref_dt = _run_via_subprocess(
-                    f"liboptv:{ref_mode}", src, first, n_frames, overrides[tr],
+                    f"liboptv:{ref_mode}",
+                    src,
+                    first,
+                    n_frames,
+                    overrides[tr],
                 )
                 liboptv_cache[ref_mode] = {
-                    "tracks": ref_tracks, "time_s": ref_dt, "src": src, "n_frames": n_frames,
+                    "tracks": ref_tracks,
+                    "time_s": ref_dt,
+                    "src": src,
+                    "n_frames": n_frames,
                 }
             except Exception as e:
                 if ref_mode == "trackcorr":
@@ -125,14 +143,22 @@ def run_comparison(src: Path, first: int, n_frames: int) -> list[dict]:
                     capped_frames = min(n_frames, bu.LIBOPTV_TRACKCORR_MAX_FRAMES)
                     try:
                         capped_src, _ = bu.make_density_capped_copy(
-                            src, bu.LIBOPTV_TRACKCORR_MAX_PARTICLES,
-                            first, first + capped_frames - 1,
+                            src,
+                            bu.LIBOPTV_TRACKCORR_MAX_PARTICLES,
+                            first,
+                            first + capped_frames - 1,
                         )
                         ref_tracks, ref_dt = _run_via_subprocess(
-                            f"liboptv:{ref_mode}", capped_src, first, capped_frames, overrides[tr],
+                            f"liboptv:{ref_mode}",
+                            capped_src,
+                            first,
+                            capped_frames,
+                            overrides[tr],
                         )
                         liboptv_cache[ref_mode] = {
-                            "tracks": ref_tracks, "time_s": ref_dt, "src": capped_src,
+                            "tracks": ref_tracks,
+                            "time_s": ref_dt,
+                            "src": capped_src,
                             "n_frames": capped_frames,
                             "capped_at": bu.LIBOPTV_TRACKCORR_MAX_PARTICLES,
                         }
@@ -164,13 +190,25 @@ def run_comparison(src: Path, first: int, n_frames: int) -> list[dict]:
                 # ref may be on a density-capped copy of src (see above) --
                 # run this tracker there too, so the link-agreement
                 # comparison is apples-to-apples on identical input.
-                cmp_pred = pred if ref["src"] == src else _run_via_subprocess(
-                    tr, ref["src"], first, ref["n_frames"], overrides[tr],
-                )[0]
-                vs_ref_link = calculate_tracking_metrics(ref["tracks"], cmp_pred, distance_tolerance=1.0)
+                cmp_pred = (
+                    pred
+                    if ref["src"] == src
+                    else _run_via_subprocess(
+                        tr,
+                        ref["src"],
+                        first,
+                        ref["n_frames"],
+                        overrides[tr],
+                    )[0]
+                )
+                vs_ref_link = calculate_tracking_metrics(
+                    ref["tracks"], cmp_pred, distance_tolerance=1.0
+                )
                 row["vs_liboptv_precision"] = vs_ref_link.precision
                 row["vs_liboptv_yield_recall"] = vs_ref_link.yield_recall
-                row["vs_liboptv_false_connection_rate"] = vs_ref_link.false_connection_rate
+                row["vs_liboptv_false_connection_rate"] = (
+                    vs_ref_link.false_connection_rate
+                )
         except Exception as e:  # keep going for the other trackers
             row["error"] = str(e)
         rows.append(row)
@@ -193,14 +231,18 @@ def run_comparison(src: Path, first: int, n_frames: int) -> list[dict]:
         if trackcorr_ref["src"] == src:
             gt_tt, gt_ghosts = tt, ghosts
         else:
-            ref_frames = bu.read_gt_frames(trackcorr_ref["src"], first, trackcorr_ref["n_frames"])
+            ref_frames = bu.read_gt_frames(
+                trackcorr_ref["src"], first, trackcorr_ref["n_frames"]
+            )
             gt_tt = bu.build_true_tracks(ref_frames, first)
             gt_ghosts = bu.build_ghost_frames(ref_frames, first)
             cap = trackcorr_ref.get("capped_at")
             optv_row["tracker"] += (
                 f" (capped <= {cap}/frame, {trackcorr_ref['n_frames']} frames)"
             )
-        gt_row = bu.combined_metrics(gt_tt, trackcorr_ref["tracks"], eps=1.0, ghosts=gt_ghosts)
+        gt_row = bu.combined_metrics(
+            gt_tt, trackcorr_ref["tracks"], eps=1.0, ghosts=gt_ghosts
+        )
         for k, v in gt_row.items():
             optv_row[f"gt_{k}"] = v
         shape = bu.trajectory_shape_stats(trackcorr_ref["tracks"])
@@ -217,7 +259,9 @@ def run_comparison(src: Path, first: int, n_frames: int) -> list[dict]:
                 "time_s": fast3d_ref["time_s"],
                 "n_tracks": len(fast3d_ref["tracks"]),
             }
-            gt_row = bu.combined_metrics(tt, fast3d_ref["tracks"], eps=1.0, ghosts=ghosts)
+            gt_row = bu.combined_metrics(
+                tt, fast3d_ref["tracks"], eps=1.0, ghosts=ghosts
+            )
             for k, v in gt_row.items():
                 optv_fast_row[f"gt_{k}"] = v
             shape = bu.trajectory_shape_stats(fast3d_ref["tracks"])
@@ -244,7 +288,9 @@ def format_report(rows: list[dict], src: Path, first: int, n_frames: int) -> str
     ]
     for row in rows:
         if "error" in row:
-            lines.append(f"| {row['tracker']} | {row['liboptv_ref']} | ERROR: {row['error']} | | | | | | |")
+            lines.append(
+                f"| {row['tracker']} | {row['liboptv_ref']} | ERROR: {row['error']} | | | | | | |"
+            )
             continue
         lines.append(
             f"| {row['tracker']} | {row['liboptv_ref']} | "
@@ -329,11 +375,18 @@ def format_report(rows: list[dict], src: Path, first: int, n_frames: int) -> str
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("--src", type=Path, default=bu.SRC)
     ap.add_argument("--first", type=int, default=bu.FIRST)
     ap.add_argument("--n-frames", type=int, default=bu.N_FRAMES)
-    ap.add_argument("--report", type=Path, default=None, help="write the markdown report to this path")
+    ap.add_argument(
+        "--report",
+        type=Path,
+        default=None,
+        help="write the markdown report to this path",
+    )
     args = ap.parse_args()
 
     rows = run_comparison(args.src, args.first, args.n_frames)

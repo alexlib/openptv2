@@ -46,7 +46,9 @@ def _read_correspondences(exp_path: Path) -> dict:
     store = RunStore(resolve_store_path(exp_path / "res"), mode="r")
     out = {}
     for frame in range(FIRST, LAST + 1):
-        assert store.has_correspondences(frame), f"missing correspondences for frame {frame}"
+        assert store.has_correspondences(frame), (
+            f"missing correspondences for frame {frame}"
+        )
         out[frame] = store.read_correspondences(frame)
     return out
 

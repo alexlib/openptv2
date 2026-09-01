@@ -29,7 +29,13 @@ from bench_proptv_kinematics import kinematics, stats  # noqa: E402
 SRC = Path("test_data/proptv_500_30")
 PROPTV_ROOT = Path(r"C:/Users/alex/Github/proPTV/data")
 FIRST, N = 10001, 30
-TRACKERS = ["priority_segment_3d", "trackcorr", "4be", "myptv_3d_tracking", "proptv_tracking"]
+TRACKERS = [
+    "priority_segment_3d",
+    "trackcorr",
+    "4be",
+    "myptv_3d_tracking",
+    "proptv_tracking",
+]
 
 
 def run_dataset(label: str) -> dict:
@@ -45,12 +51,16 @@ def run_dataset(label: str) -> dict:
         print(f"{tr:<22} {overrides[tr]}")
 
     results = {}
-    print(f"\n{'tracker':<22} {'a_err':>8} {'K_a':>8} {'>5sig':>8} {'meanlen':>8} "
-          f"{'prec':>7} {'yield':>7} {'time_s':>7}")
+    print(
+        f"\n{'tracker':<22} {'a_err':>8} {'K_a':>8} {'>5sig':>8} {'meanlen':>8} "
+        f"{'prec':>7} {'yield':>7} {'time_s':>7}"
+    )
     for tr in TRACKERS:
         ov = overrides[tr]
         try:
-            pred0, dt = bu.run_single_tracker(tr, track_overrides=ov, src=SRC, first=FIRST)
+            pred0, dt = bu.run_single_tracker(
+                tr, track_overrides=ov, src=SRC, first=FIRST
+            )
         except Exception as e:  # noqa: BLE001
             print(f"{tr:<22} ERROR {e}")
             continue
@@ -58,13 +68,26 @@ def run_dataset(label: str) -> dict:
         v_p, a_p = kinematics(pred0)
         a_rms, a_k = stats(a_p)
         lens = np.array([len(v) for v in pred0.values()]) if pred0 else np.zeros(1)
-        outl = 100 * np.mean(np.abs(a_p - a_t.mean()) > 5 * a_rms_t) if a_p.size else float("nan")
-        print(f"{tr:<22} {100*(a_rms/a_rms_t-1):+7.1f}% {a_k:8.2f} {outl:7.3f}% "
-              f"{lens.mean():8.2f} {m['precision']:7.4f} {m['yield_recall']:7.4f} "
-              f"{dt:7.2f}", flush=True)
-        results[tr] = dict(a_err=100 * (a_rms / a_rms_t - 1), K_a=a_k, outlier_pct=outl,
-                            meanlen=lens.mean(), precision=m["precision"],
-                            yield_recall=m["yield_recall"], overrides=ov)
+        outl = (
+            100 * np.mean(np.abs(a_p - a_t.mean()) > 5 * a_rms_t)
+            if a_p.size
+            else float("nan")
+        )
+        print(
+            f"{tr:<22} {100 * (a_rms / a_rms_t - 1):+7.1f}% {a_k:8.2f} {outl:7.3f}% "
+            f"{lens.mean():8.2f} {m['precision']:7.4f} {m['yield_recall']:7.4f} "
+            f"{dt:7.2f}",
+            flush=True,
+        )
+        results[tr] = dict(
+            a_err=100 * (a_rms / a_rms_t - 1),
+            K_a=a_k,
+            outlier_pct=outl,
+            meanlen=lens.mean(),
+            precision=m["precision"],
+            yield_recall=m["yield_recall"],
+            overrides=ov,
+        )
     return results
 
 
@@ -72,10 +95,17 @@ def main():
     apd.convert(PROPTV_ROOT / "500_30", Path("test_data/synthetic_turbulent"), SRC)
     clean = run_dataset("clean (no noise, ground-truth correspondences)")
 
-    apd.convert_realistic(PROPTV_ROOT / "500_30", Path("test_data/synthetic_turbulent"), SRC,
-                           seed=0, **apd.SEVERITY_PRESETS["mild"])
-    realistic = run_dataset("realistic (mild severity: detection noise, dropout, "
-                             "merging, correspondence solving, calibration residual)")
+    apd.convert_realistic(
+        PROPTV_ROOT / "500_30",
+        Path("test_data/synthetic_turbulent"),
+        SRC,
+        seed=0,
+        **apd.SEVERITY_PRESETS["mild"],
+    )
+    realistic = run_dataset(
+        "realistic (mild severity: detection noise, dropout, "
+        "merging, correspondence solving, calibration residual)"
+    )
 
     print("\n=== summary: K_a, clean vs realistic ===")
     print(f"{'tracker':<22} {'K_a clean':>10} {'K_a realistic':>14}")

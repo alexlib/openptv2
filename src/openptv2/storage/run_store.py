@@ -49,6 +49,7 @@ def _require_group(parent: Any, name: str) -> Any:
                 return parent[name]
             time.sleep(0.02 * (attempt + 1))
 
+
 from openptv2.algorithms.tracking_frame_buf import Target, TargetArray  # noqa: E402
 
 STORE_DIRNAME = "run.zarr"
@@ -186,7 +187,9 @@ class RunStore:
                         meta.attrs["schema_version"] = 1
                         meta.attrs["sealed"] = False
                         meta.attrs["source_hash"] = None
-                        meta.attrs["raw_units"] = "mm"  # matches legacy ASCII (rt_is/ptv_is)
+                        meta.attrs["raw_units"] = (
+                            "mm"  # matches legacy ASCII (rt_is/ptv_is)
+                        )
                         meta.attrs["trajectories_units"] = "m"  # matches flowtracks
                         break
                     except Exception:
@@ -314,7 +317,9 @@ class RunStore:
 
     def target_cameras(self) -> list[int]:
         grp = self.root["targets"]
-        return sorted(int(k.split("_", 1)[1]) for k in grp.keys() if k.startswith("cam_"))
+        return sorted(
+            int(k.split("_", 1)[1]) for k in grp.keys() if k.startswith("cam_")
+        )
 
     # -- correspondences ----------------------------------------------------
 
@@ -457,9 +462,7 @@ class RunStore:
         correspondences by default, falling back to the ``ptv_is`` linkage,
         then to any camera's targets.
         """
-        for grp_path in (
-            [source] if source else ["correspondences", "linkage/ptv_is"]
-        ):
+        for grp_path in [source] if source else ["correspondences", "linkage/ptv_is"]:
             if grp_path not in self.root:
                 continue
             keys = [k for k in self.root[grp_path].keys() if k.startswith("frame_")]
@@ -497,12 +500,20 @@ class RunStore:
         ``first_row``: optional row offset into trajectories/pos for each
         trajectory, enabling direct slicing without searchsorted."""
         grp = self.root["traj"]
-        grp.create_array("trajid", data=np.asarray(trajid, dtype=np.int32), overwrite=True)
-        grp.create_array("first", data=np.asarray(first, dtype=np.int32), overwrite=True)
+        grp.create_array(
+            "trajid", data=np.asarray(trajid, dtype=np.int32), overwrite=True
+        )
+        grp.create_array(
+            "first", data=np.asarray(first, dtype=np.int32), overwrite=True
+        )
         grp.create_array("last", data=np.asarray(last, dtype=np.int32), overwrite=True)
-        grp.create_array("length", data=np.asarray(length, dtype=np.int32), overwrite=True)
+        grp.create_array(
+            "length", data=np.asarray(length, dtype=np.int32), overwrite=True
+        )
         if first_row is not None:
-            grp.create_array("first_row", data=np.asarray(first_row, dtype=np.int64), overwrite=True)
+            grp.create_array(
+                "first_row", data=np.asarray(first_row, dtype=np.int64), overwrite=True
+            )
 
     def traj_index(self) -> dict[str, np.ndarray]:
         grp = self.root["traj"]
@@ -522,12 +533,16 @@ class RunStore:
     def read_unified_table(self):
         """Read a UnifiedParticleTable from zarr ``particle_table/`` group."""
         from openptv2.storage.unified_table import UnifiedParticleTable
+
         grp = self.root["particle_table"]
         d = {k: np.asarray(grp[k]) for k in grp.keys()}
         return UnifiedParticleTable.from_dict(d)
 
     def has_unified_table(self) -> bool:
-        return "particle_table" in self.root and len(self.root["particle_table"].keys()) > 0
+        return (
+            "particle_table" in self.root
+            and len(self.root["particle_table"].keys()) > 0
+        )
 
     # -- trajectories (derived flat cache, written by seal) --------------
 
@@ -547,9 +562,13 @@ class RunStore:
         grp = self.root["trajectories"]
         grp.create_array("pos", data=np.asarray(pos, dtype=np.float64), overwrite=True)
         grp.create_array("vel", data=np.asarray(vel, dtype=np.float64), overwrite=True)
-        grp.create_array("accel", data=np.asarray(accel, dtype=np.float64), overwrite=True)
+        grp.create_array(
+            "accel", data=np.asarray(accel, dtype=np.float64), overwrite=True
+        )
         grp.create_array("time", data=np.asarray(time, dtype=np.int64), overwrite=True)
-        grp.create_array("trajid", data=np.asarray(trajid, dtype=np.int64), overwrite=True)
+        grp.create_array(
+            "trajid", data=np.asarray(trajid, dtype=np.int64), overwrite=True
+        )
 
     def trajectory(self, trajid: int) -> dict[str, np.ndarray]:
         """One trajectory's rows from the sealed ``trajectories/`` cache.
@@ -589,7 +608,9 @@ class RunStore:
                 "openptv2.storage.seal.seal(store) first."
             )
         grp = self.root["trajectories"]
-        return {k: np.asarray(grp[k]) for k in ("pos", "vel", "accel", "time", "trajid")}
+        return {
+            k: np.asarray(grp[k]) for k in ("pos", "vel", "accel", "time", "trajid")
+        }
 
     def to_flowtracks_trajectories(
         self,
@@ -625,7 +646,13 @@ class RunStore:
             mask &= time >= first
         if last is not None:
             mask &= time <= last
-        pos, vel, accel, time, trajid = pos[mask], vel[mask], accel[mask], time[mask], trajid[mask]
+        pos, vel, accel, time, trajid = (
+            pos[mask],
+            vel[mask],
+            accel[mask],
+            time[mask],
+            trajid[mask],
+        )
 
         trajects = []
         for tid in np.unique(trajid):
@@ -677,8 +704,12 @@ class RunStore:
             rows.append(
                 {
                     "frame": _frame_num(key),
-                    "n_targets": np.asarray(fg["n_targets"]) if "n_targets" in fg else None,
-                    "cam_seen": np.asarray(fg["cam_seen"]) if "cam_seen" in fg else None,
+                    "n_targets": np.asarray(fg["n_targets"])
+                    if "n_targets" in fg
+                    else None,
+                    "cam_seen": np.asarray(fg["cam_seen"])
+                    if "cam_seen" in fg
+                    else None,
                     "n_quads": fg.attrs.get("n_quads"),
                     "n_trips": fg.attrs.get("n_trips"),
                     "n_pairs": fg.attrs.get("n_pairs"),
@@ -718,8 +749,12 @@ class RunStore:
         lut_grp.attrs["nr"] = int(nr)
         lut_grp.attrs["nz"] = int(nz)
         lut_grp.attrs["rw"] = float(rw)
-        lut_grp.create_array("origin", data=np.asarray(origin, dtype=np.float64), overwrite=True)
-        lut_grp.create_array("data", data=np.asarray(data, dtype=np.float64), overwrite=True)
+        lut_grp.create_array(
+            "origin", data=np.asarray(origin, dtype=np.float64), overwrite=True
+        )
+        lut_grp.create_array(
+            "data", data=np.asarray(data, dtype=np.float64), overwrite=True
+        )
 
     def read_mmlut(
         self, cam_idx: int

@@ -95,7 +95,13 @@ def test_chunked_tracking_cavity_parity_store(cavity_test_env):
     # 1. Serial Baseline Tracking
     serial_store = RunStore("res/serial_run.zarr", mode="w")
     serial_tracker = Tracker(
-        cpar, vpar, tpar, spar, cals, naming={"linkage": "res/ptv_is", "corres": "res/rt_is", "prio": "res/added"}, store=serial_store
+        cpar,
+        vpar,
+        tpar,
+        spar,
+        cals,
+        naming={"linkage": "res/ptv_is", "corres": "res/rt_is", "prio": "res/added"},
+        store=serial_store,
     )
     serial_tracker.full_forward_3d()
     serial_npart = serial_tracker.npart
@@ -111,7 +117,13 @@ def test_chunked_tracking_cavity_parity_store(cavity_test_env):
         parallel_store.write_correspondences(f, pos, ids)
 
     par_tracker = Tracker(
-        cpar, vpar, tpar, spar, cals, naming={"linkage": "res/ptv_is", "corres": "res/rt_is", "prio": "res/added"}, store=parallel_store
+        cpar,
+        vpar,
+        tpar,
+        spar,
+        cals,
+        naming={"linkage": "res/ptv_is", "corres": "res/rt_is", "prio": "res/added"},
+        store=parallel_store,
     )
     par_npart, par_nlinks = par_tracker.full_forward_chunked_parallel(
         n_workers=2, overlap=1, mode="3d", postprocess=False
@@ -172,8 +184,12 @@ def test_chunked_tracking_synthetic_trajectory_continuity(tmp_path, monkeypatch)
 
     # Base coordinates + linear motion
     np.random.seed(42)
-    base_pos = np.random.uniform(low=[-20.0, -20.0, 10.0], high=[20.0, 20.0, 50.0], size=(n_particles, 3))
-    velocities = np.random.uniform(low=[-0.5, -0.5, -0.5], high=[0.5, 0.5, 0.5], size=(n_particles, 3))
+    base_pos = np.random.uniform(
+        low=[-20.0, -20.0, 10.0], high=[20.0, 20.0, 50.0], size=(n_particles, 3)
+    )
+    velocities = np.random.uniform(
+        low=[-0.5, -0.5, -0.5], high=[0.5, 0.5, 0.5], size=(n_particles, 3)
+    )
 
     store = RunStore("res/run.zarr", mode="w")
     for step in range(n_frames):
@@ -190,10 +206,14 @@ def test_chunked_tracking_synthetic_trajectory_continuity(tmp_path, monkeypatch)
         Zmax_lay=[-100.0, 100.0],
     )
     tpar = TrackPar(
-        dvxmin=-2.0, dvxmax=2.0,
-        dvymin=-2.0, dvymax=2.0,
-        dvzmin=-2.0, dvzmax=2.0,
-        dangle=100.0, dacc=2.0,
+        dvxmin=-2.0,
+        dvxmax=2.0,
+        dvymin=-2.0,
+        dvymax=2.0,
+        dvzmin=-2.0,
+        dvzmax=2.0,
+        dangle=100.0,
+        dacc=2.0,
         add=0,
     )
     spar = SequencePar(
@@ -203,6 +223,7 @@ def test_chunked_tracking_synthetic_trajectory_continuity(tmp_path, monkeypatch)
     )
     cals = [Calibration() for _ in range(4)]
     from openptv2.algorithms.multimed import init_mmlut
+
     for c in cals:
         init_mmlut(vpar, cpar, c)
 
@@ -249,6 +270,3 @@ def test_chunked_tracking_with_postprocessing(cavity_test_env):
     assert nlinks > 0
     assert store.sealed
     assert len(store.traj_index()["trajid"]) > 0
-
-
-

@@ -37,7 +37,11 @@ import benchmark_utils as bu  # noqa: E402
 
 
 def apply_backprojection_filter(
-    pred_tracks: dict, src: Path, first: int, tol_px: float = 3.0, min_cams: int = 3,
+    pred_tracks: dict,
+    src: Path,
+    first: int,
+    tol_px: float = 3.0,
+    min_cams: int = 3,
 ) -> dict:
     """Split every track at any point whose back-projection lands near a
     real 2D target in fewer than `min_cams` cameras. Returns a new
@@ -54,12 +58,19 @@ def apply_backprojection_filter(
     yaml_data = yaml.safe_load((src / "parameters_Run1.yaml").read_text())
     ptv = yaml_data["ptv"]
     cpar = ControlPar(
-        num_cams=4, imx=ptv["imx"], imy=ptv["imy"], pix_x=ptv["pix_x"], pix_y=ptv["pix_y"],
-        mm=MmNp(n1=ptv["mmp_n1"], n2=[ptv["mmp_n2"]], n3=ptv["mmp_n3"], d=[ptv["mmp_d"]]),
+        num_cams=4,
+        imx=ptv["imx"],
+        imy=ptv["imy"],
+        pix_x=ptv["pix_x"],
+        pix_y=ptv["pix_y"],
+        mm=MmNp(
+            n1=ptv["mmp_n1"], n2=[ptv["mmp_n2"]], n3=ptv["mmp_n3"], d=[ptv["mmp_d"]]
+        ),
     )
     cals = [
         Calibration.from_file(
-            str(src / "cal" / f"cam{c + 1}.tif.ori"), str(src / "cal" / f"cam{c + 1}.tif.addpar")
+            str(src / "cal" / f"cam{c + 1}.tif.ori"),
+            str(src / "cal" / f"cam{c + 1}.tif.addpar"),
         )
         for c in range(4)
     ]
@@ -72,7 +83,9 @@ def apply_backprojection_filter(
         if key not in target_cache:
             if store.has_targets(cam, frame):
                 t = store.read_targets(cam, frame)
-                target_cache[key] = np.array([[tt.x, tt.y] for tt in t]) if len(t) else np.zeros((0, 2))
+                target_cache[key] = (
+                    np.array([[tt.x, tt.y] for tt in t]) if len(t) else np.zeros((0, 2))
+                )
             else:
                 target_cache[key] = np.zeros((0, 2))
         return target_cache[key]
@@ -120,23 +133,38 @@ def main():
     a_rms_t, a_k_t = stats(a_t)
     print(f"truth: a_rms {a_rms_t:.5f}  K_a {a_k_t:.2f}\n")
 
-    overrides = bu.per_tracker_overrides(["priority_segment_3d"], src=SRC, first=FIRST, n_frames=N)
+    overrides = bu.per_tracker_overrides(
+        ["priority_segment_3d"], src=SRC, first=FIRST, n_frames=N
+    )
     pred0, dt = bu.run_single_tracker(
-        "priority_segment_3d", track_overrides=overrides["priority_segment_3d"], src=SRC, first=FIRST
+        "priority_segment_3d",
+        track_overrides=overrides["priority_segment_3d"],
+        src=SRC,
+        first=FIRST,
     )
 
-    for label, tracks in [("primary (3MA, unfiltered)", pred0),
-                           ("hybrid (3MA + back-projection filter)",
-                            apply_backprojection_filter(pred0, SRC, FIRST))]:
+    for label, tracks in [
+        ("primary (3MA, unfiltered)", pred0),
+        (
+            "hybrid (3MA + back-projection filter)",
+            apply_backprojection_filter(pred0, SRC, FIRST),
+        ),
+    ]:
         m = bu.combined_metrics(tt, tracks, eps=1.0)
         v_p, a_p = kinematics(tracks)
         a_rms, a_k = stats(a_p)
         lens = np.array([len(v) for v in tracks.values()]) if tracks else np.zeros(1)
-        outl = 100 * np.mean(np.abs(a_p - a_t.mean()) > 5 * a_rms_t) if a_p.size else float("nan")
+        outl = (
+            100 * np.mean(np.abs(a_p - a_t.mean()) > 5 * a_rms_t)
+            if a_p.size
+            else float("nan")
+        )
         print(f"{label}:")
-        print(f"  n_tracks={len(tracks)}  meanlen={lens.mean():.2f}  "
-              f"a_err={100*(a_rms/a_rms_t-1):+.1f}%  K_a={a_k:.2f}  >5sig={outl:.3f}%  "
-              f"yield={m['yield_recall']:.4f}")
+        print(
+            f"  n_tracks={len(tracks)}  meanlen={lens.mean():.2f}  "
+            f"a_err={100 * (a_rms / a_rms_t - 1):+.1f}%  K_a={a_k:.2f}  >5sig={outl:.3f}%  "
+            f"yield={m['yield_recall']:.4f}"
+        )
 
 
 if __name__ == "__main__":

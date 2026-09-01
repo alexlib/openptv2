@@ -69,7 +69,9 @@ def _load(scene_dir):
     return cpar, vpar, spar, cals
 
 
-def _score_trackcorr_or_track3d(tmp_path, scene_dir, mode, first, last, **tpar_overrides):
+def _score_trackcorr_or_track3d(
+    tmp_path, scene_dir, mode, first, last, **tpar_overrides
+):
     cpar, vpar, spar, cals = _load(scene_dir)
     tpar = TrackPar.from_yaml(str(scene_dir / "parameters_Run1.yaml"))
     for k, v in tpar_overrides.items():
@@ -105,7 +107,9 @@ def _score_nearest_hungarian(tmp_path, scene_dir, first, last, v_max, a_max):
         frm.read(str(scene_dir / "res_orig" / "rt_is"), "", "", "", fn)
         frame_particles.append(frm.positions())
 
-    tracker = MyPTV3DTracker(v_max=v_max, a_max=a_max, max_gap=1, dt=1.0, max_angle_deg=90.0)
+    tracker = MyPTV3DTracker(
+        v_max=v_max, a_max=a_max, max_gap=1, dt=1.0, max_angle_deg=90.0
+    )
     trajectories = tracker.track_frames(frame_particles)
 
     # next[frame_idx][row] -> row it links to in frame_idx+1, or -1.
@@ -159,10 +163,16 @@ def _count_links(linkage_base, first, last):
 # --------------------------------------------------------------------------- #
 
 REGIMES = {
-    "easy_sparse_clean": dict(n_particles=20, spacing_mm=8.0, motion_mm=1.0, noise_px=0.2),
+    "easy_sparse_clean": dict(
+        n_particles=20, spacing_mm=8.0, motion_mm=1.0, noise_px=0.2
+    ),
     "moderate": dict(n_particles=40, spacing_mm=5.0, motion_mm=0.5, noise_px=0.5),
-    "test_cavity_like": dict(n_particles=80, spacing_mm=3.8, motion_mm=0.3, noise_px=1.0),
-    "harder_than_test_cavity": dict(n_particles=120, spacing_mm=3.0, motion_mm=0.2, noise_px=1.5),
+    "test_cavity_like": dict(
+        n_particles=80, spacing_mm=3.8, motion_mm=0.3, noise_px=1.0
+    ),
+    "harder_than_test_cavity": dict(
+        n_particles=120, spacing_mm=3.0, motion_mm=0.2, noise_px=1.5
+    ),
 }
 
 
@@ -183,23 +193,41 @@ def test_easy_regime_is_recovered_near_perfectly_by_all_trackers(tmp_path, regim
     results = {}
     for mode in ("trackcorr", "track3d"):
         c, w, lost = _score_trackcorr_or_track3d(
-            tmp_path, scene_dir, mode, first, last,
-            dvxmax=gate, dvxmin=-gate, dvymax=gate, dvymin=-gate,
-            dvzmax=gate, dvzmin=-gate, dacc=dacc, dangle=90.0,
+            tmp_path,
+            scene_dir,
+            mode,
+            first,
+            last,
+            dvxmax=gate,
+            dvxmin=-gate,
+            dvymax=gate,
+            dvymin=-gate,
+            dvzmax=gate,
+            dvzmin=-gate,
+            dacc=dacc,
+            dangle=90.0,
         )
         results[mode] = (c, w, lost)
 
-    c, w, lost = _score_nearest_hungarian(tmp_path, scene_dir, first, last, v_max=gate, a_max=dacc)
+    c, w, lost = _score_nearest_hungarian(
+        tmp_path, scene_dir, first, last, v_max=gate, a_max=dacc
+    )
     results["nearest_hungarian_3d"] = (c, w, lost)
 
     max_links = params["n_particles"] * (n_frames - 1)
-    print(f"\n[{regime}] spacing={params['spacing_mm']} motion={params['motion_mm']} "
-          f"noise_px={params['noise_px']} (max_links={max_links})")
+    print(
+        f"\n[{regime}] spacing={params['spacing_mm']} motion={params['motion_mm']} "
+        f"noise_px={params['noise_px']} (max_links={max_links})"
+    )
     for mode, (c, w, lost) in results.items():
-        print(f"  {mode:20s}: correct={c:4d} wrong={w:4d} lost={len(lost):4d} "
-              f"accuracy={100 * c / max_links:.1f}%")
+        print(
+            f"  {mode:20s}: correct={c:4d} wrong={w:4d} lost={len(lost):4d} "
+            f"accuracy={100 * c / max_links:.1f}%"
+        )
 
     # No tracker should produce more wrong links than correct ones in any
     # regime tested here -- a tracker that does is worse than doing nothing.
     for mode, (c, w, lost) in results.items():
-        assert w <= c, f"{mode} in {regime}: {w} wrong links >= {c} correct -- worse than a coin flip"
+        assert w <= c, (
+            f"{mode} in {regime}: {w} wrong links >= {c} correct -- worse than a coin flip"
+        )

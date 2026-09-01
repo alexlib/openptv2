@@ -79,8 +79,8 @@ Components:
 
 ### track3d_loop_fast Level 1 (lines 421-442)
 ```python
-acc = sqrt((X2 - 2*X1 + X0)^2 + (Y2 - 2*Y1 + Y0)^2 + (Z2 - 2*1 + Z0)^2)
-dist_from_curr = sqrt((X2-X1)^2 + (Y2-Y1)^2 + (Z2-Z1)^2)
+acc = sqrt((X2 - 2 * X1 + X0) ^ 2 + (Y2 - 2 * Y1 + Y0) ^ 2 + (Z2 - 2 * 1 + Z0) ^ 2)
+dist_from_curr = sqrt((X2 - X1) ^ 2 + (Y2 - Y1) ^ 2 + (Z2 - Z1) ^ 2)
 cost = acc + dist_weight * dist_from_curr
 ```
 
@@ -93,13 +93,13 @@ Components:
 
 ### track3d_loop_fast Level 2 (lines 504-508)
 ```python
-acc = sqrt((cand - pred)^2)  # distance from neighbor-averaged prediction
+acc = sqrt((cand - pred) ^ 2)  # distance from neighbor-averaged prediction
 cost = acc
 ```
 
 ### track3d_loop_fast Level 3 (lines 587-593)
 ```python
-dist = sqrt((cand - pred)^2)  # distance from current (or flow-corrected) position
+dist = sqrt((cand - pred) ^ 2)  # distance from current (or flow-corrected) position
 cost = dist
 ```
 
@@ -120,8 +120,18 @@ sortwhatfound(p16, &zaehler1);  // merge across cameras by frequency
 3D position-space search:
 ```python
 n_cands = _find_closest_in_3d_grid(
-    path_x_2, np2, pred_x, pred_y, pred_z, ax, ay, az,
-    max_cands, cand_inds, cand_dists, ...
+    path_x_2,
+    np2,
+    pred_x,
+    pred_y,
+    pred_z,
+    ax,
+    ay,
+    az,
+    max_cands,
+    cand_inds,
+    cand_dists,
+    ...,
 )
 ```
 

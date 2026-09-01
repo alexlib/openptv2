@@ -104,7 +104,9 @@ def test_match_frame_correspondences_parity(cavity_params, sample_targets):
         ref_cam_ids = sorted_corresp.astype(np.int32).T
 
         # 2. match_frame_correspondences calculation
-        pos_3d, cam_target_ids = match_frame_correspondences(detections, cpar, cals, vpar)
+        pos_3d, cam_target_ids = match_frame_correspondences(
+            detections, cpar, cals, vpar
+        )
 
         # 3. Assert bit-exact matching
         assert len(pos_3d) == len(ref_pos)

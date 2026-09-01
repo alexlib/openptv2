@@ -70,12 +70,19 @@ def analyze_track(gtid, pts, match):
         step = np.abs(np.asarray(cur[1:], float) - np.asarray(prev[1:], float))
         need = max(need, float(step.max()))
         if float(step.max()) > bu.BASE_OVERRIDES["dvxmax"]:
-            breaks.append((int(cur[0]), int(cur[0] - prev[0]), round(float(step.max()), 2)))
+            breaks.append(
+                (int(cur[0]), int(cur[0] - prev[0]), round(float(step.max()), 2))
+            )
         prev = cur
 
     C = len(cov) / max(1, len(pts))
-    return {"gtid": gtid, "cov": C, "n_frag": len(frag),
-            "need": round(need, 2), "breaks": breaks}
+    return {
+        "gtid": gtid,
+        "cov": C,
+        "n_frag": len(frag),
+        "need": round(need, 2),
+        "breaks": breaks,
+    }
 
 
 def main():
@@ -98,13 +105,18 @@ def main():
     print(f"{'gt':>5} {'C':>5} {'frag':>4} {'win':>7} breaks(frame,gap,max|step|)")
     for r in rows[: args.top]:
         br = ", ".join(f"({a},{b},{c})" for a, b, c in r["breaks"]) or "-"
-        print(f"{r['gtid']:>5} {r['cov']:>5.2f} {r['n_frag']:>4} "
-              f"{r['need']:>7.2f} {br}")
+        print(
+            f"{r['gtid']:>5} {r['cov']:>5.2f} {r['n_frag']:>4} {r['need']:>7.2f} {br}"
+        )
 
     clean = [r for r in rows if r["n_frag"] == 1 and r["cov"] == 1.0]
-    print(f"\n{len(clean)}/{len(rows)} tracks kept clean at dvx={bu.BASE_OVERRIDES['dvxmax']}")
-    newsup = sorted({r['need'] for r in rows if r['n_frag'] > 1})
-    print(f"fragmented tracks would need window > {bu.BASE_OVERRIDES['dvxmax']}: {newsup}")
+    print(
+        f"\n{len(clean)}/{len(rows)} tracks kept clean at dvx={bu.BASE_OVERRIDES['dvxmax']}"
+    )
+    newsup = sorted({r["need"] for r in rows if r["n_frag"] > 1})
+    print(
+        f"fragmented tracks would need window > {bu.BASE_OVERRIDES['dvxmax']}: {newsup}"
+    )
 
 
 if __name__ == "__main__":

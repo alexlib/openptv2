@@ -32,11 +32,7 @@ Welcome to the openptv2 documentation.
 - [Documentation Workflow](developer_guide/documentation_workflow.md) - Editing documentation and deploying to GitHub Pages
 - [Packaging & Releases](developer_guide/packaging_and_releases.md) - Building binary wheels and releasing them on PyPI and GitHub
 - [GUI Testing Guide](HOW_TO_TEST_GUI.md) - How to test the GUI
-- [Development Workflow](developer_guide/building.md#development-workflow) - How to develop
-
-### Migration
-
-- [From optv/pyptv](index.md#migration-from-optvpyptv) - Migrating from legacy packages
+- [Development Workflow](developer_guide/building.md#4-development-workflow-commands) - How to develop
 
 ---
 
@@ -73,30 +69,30 @@ docs/
 ### Developer Guide
 - [Building from Source](developer_guide/building.md) - Full build instructions
 - [Cython & Pure Python Modes](developer_guide/cython_and_pure_python.md) - Seamlessly switch between C-level speed and pure python debugging
-- [Building Binary Wheels](../../BUILDING_BINARY_WHEELS.md) - manylinux/macOS/Windows wheels
+- [Building Binary Wheels](https://github.com/alexlib/openptv2/blob/main/BUILDING_BINARY_WHEELS.md) - manylinux/macOS/Windows wheels
 
 ### GUI
 - [Testing the GUI](HOW_TO_TEST_GUI.md) - How to test the GUI
 
 ### Scripts
-- [scripts/build_wheel.sh](../../scripts/build_wheel.sh) - Build binary wheel
-- [scripts/install_wheel.sh](../../scripts/install_wheel.sh) - Install wheel in clean venv
-- [scripts/run_tests.sh](../../scripts/run_tests.sh) - Run test suite
+- [scripts/build_wheel.sh](https://github.com/alexlib/openptv2/blob/main/scripts/build_wheel.sh) - Build binary wheel
+- [scripts/install_wheel.sh](https://github.com/alexlib/openptv2/blob/main/scripts/install_wheel.sh) - Install wheel in clean venv
+- [scripts/run_tests.sh](https://github.com/alexlib/openptv2/blob/main/scripts/run_tests.sh) - Run test suite
 
 ---
 
 ## For Users
 
-1. **Installation**: See [README.md](../../README.md#installation)
-2. **Basic Usage**: See [README.md](../../README.md#usage)
+1. **Installation**: See [README.md](https://github.com/alexlib/openptv2/blob/main/README.md#installation)
+2. **Basic Usage**: See [README.md](https://github.com/alexlib/openptv2/blob/main/README.md#usage)
 3. **GUI Usage**: Launch `openptv2-gui` and explore the interface
 
 ## For Developers
 
 1. **Build Setup**: See [building.md](developer_guide/building.md)
 2. **Cython & Pure Python modes**: See [cython_and_pure_python.md](developer_guide/cython_and_pure_python.md)
-3. **Development Workflow**: See [building.md#development-workflow](developer_guide/building.md#development-workflow)
-4. **Testing**: See [building.md#testing](developer_guide/building.md#testing)
+3. **Development Workflow**: See [building.md#development-workflow](developer_guide/building.md#4-development-workflow-commands)
+4. **Testing**: See [building.md#running-tests](developer_guide/building.md#running-tests)
 
 ## For Contributors
 

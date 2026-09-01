@@ -58,9 +58,7 @@ def GMM(t, X):
     sum_b_dt_dt = ml.repmat(np.sum(b_dt_dt, axis=0), N, 1)
 
     psi_X = (b / sum_b).T
-    psi_V = (
-        (b_dt * sum_b - b * sum_b_dt) / (sum_b**2) * (z[1] - z[0])
-    ).T
+    psi_V = ((b_dt * sum_b - b * sum_b_dt) / (sum_b**2) * (z[1] - z[0])).T
     psi_A = (
         (
             ((b_dt_dt * sum_b - b * sum_b_dt_dt) * sum_b**2)

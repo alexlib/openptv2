@@ -237,4 +237,3 @@ def test_read_zarr_trajectories(tmp_path):
     p0 = trajs[0].pos()
     np.testing.assert_allclose(p0[0], [0.010, 0.020, 0.030])
     np.testing.assert_allclose(p0[1], [0.012, 0.022, 0.032])
-

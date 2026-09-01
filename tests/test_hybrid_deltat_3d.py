@@ -89,9 +89,7 @@ def test_refine_recovers_intermediate_detections_in_clean_case():
     """With no noise every intermediate frame is attached: full coverage."""
     truth, _ = _synthetic(seed=3)
     clean = [t.copy() for t in truth]
-    chains = hybrid_track(
-        clean, stride=STRIDE, v_max=0.5, a_max=0.5, refine_gate=1e-6
-    )
+    chains = hybrid_track(clean, stride=STRIDE, v_max=0.5, a_max=0.5, refine_gate=1e-6)
     # noise-free: gate can be tiny; prediction is exact
     assert len(chains) == N_PARTICLES
     assert all(len(c["frame"]) == N_FRAMES for c in chains)
@@ -106,9 +104,7 @@ def test_stride_one_matches_plain_hungarian_scale():
     # floored at a_max -> exactly the plain tracker's a_max.
     plain = MyPTV3DTracker(v_max=V_MAX, a_max=A_MAX, max_gap=0, dt=1.0)
     ref = plain.track_frames(clouds)
-    out = hybrid_track(
-        clouds, stride=1, v_max=V_MAX, a_max=A_MAX, refine_gate=1e9
-    )
+    out = hybrid_track(clouds, stride=1, v_max=V_MAX, a_max=A_MAX, refine_gate=1e9)
     # same seeding/matching dynamics -> identical track count scale
     assert len(out) == pytest.approx(len(ref), abs=2)
 

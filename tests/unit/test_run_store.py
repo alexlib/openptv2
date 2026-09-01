@@ -56,7 +56,9 @@ def cavity_ascii_only(tmp_path):
     shutil.copytree(
         CAVITY_DIR,
         dst,
-        ignore=shutil.ignore_patterns("*_targets", "res", "run.zarr", "tmp*.yaml", "tmp*.txt"),
+        ignore=shutil.ignore_patterns(
+            "*_targets", "res", "run.zarr", "tmp*.yaml", "tmp*.txt"
+        ),
     )
     pyptv_batch.main(dst / "parameters_Run1.yaml", 10001, 10004)
     store = RunStore(resolve_store_path(dst), mode="r")
@@ -72,7 +74,10 @@ def cavity_ascii_only(tmp_path):
 def test_resolve_store_path_variants(tmp_path):
     assert resolve_store_path(tmp_path) == tmp_path / "res" / "run.zarr"
     assert resolve_store_path(tmp_path / "res") == tmp_path / "res" / "run.zarr"
-    assert resolve_store_path(tmp_path / "res" / "run.zarr") == tmp_path / "res" / "run.zarr"
+    assert (
+        resolve_store_path(tmp_path / "res" / "run.zarr")
+        == tmp_path / "res" / "run.zarr"
+    )
 
 
 def test_import_discovers_cams_and_frames(cavity_ascii_only):
@@ -171,7 +176,9 @@ def test_stats_partition_matches_correspondence_count(cavity_ascii_only):
         assert (row["cam_seen"] <= row["n_targets"]).all()
 
 
-def test_traj_index_matches_legacy_reader_after_singleton_filter(cavity_ascii_only, tmp_path):
+def test_traj_index_matches_legacy_reader_after_singleton_filter(
+    cavity_ascii_only, tmp_path
+):
     """traj/ is a superset of what the legacy read_zarr_trajectories returns:
     it labels every particle including length-1 (unlinked) singletons, since
     nothing should be silently dropped from the store. The legacy reader
@@ -270,8 +277,12 @@ def test_read_correspondences_handles_flat_zero_particle_array(tmp_path):
 
 def test_clear_linkage_removes_all_frames(tmp_path):
     store = RunStore(tmp_path / "run.zarr", mode="w")
-    store.write_linkage(1, prev_ids=[-1], next_ids=[-2], pos_3d=np.zeros((1, 3)), name="ptv_is")
-    store.write_linkage(2, prev_ids=[-1], next_ids=[-2], pos_3d=np.zeros((1, 3)), name="ptv_is")
+    store.write_linkage(
+        1, prev_ids=[-1], next_ids=[-2], pos_3d=np.zeros((1, 3)), name="ptv_is"
+    )
+    store.write_linkage(
+        2, prev_ids=[-1], next_ids=[-2], pos_3d=np.zeros((1, 3)), name="ptv_is"
+    )
     assert store.has_linkage(1, "ptv_is")
     assert store.has_linkage(2, "ptv_is")
 
@@ -292,14 +303,24 @@ def test_seal_carries_trajid_across_a_bridged_gap(tmp_path):
     starting a fresh trajectory id at every bridge."""
     store = RunStore(tmp_path / "run.zarr", mode="w")
     # frame 0 -> frame 1 (step 1), frame 1 -> frame 3 (step 2, bridged gap)
-    store.write_linkage(0, np.array([-1], np.int32), np.array([0], np.int32),
-                        np.array([[0.0, 0.0, 0.0]]))
-    store.write_linkage(1, np.array([0], np.int32), np.array([0], np.int32),
-                        np.array([[2.0, 0.0, 0.0]]))
-    store.write_linkage(2, np.zeros(0, np.int32), np.zeros(0, np.int32),
-                        np.zeros((0, 3)))
-    store.write_linkage(3, np.array([0], np.int32), np.array([-2], np.int32),
-                        np.array([[6.0, 0.0, 0.0]]))
+    store.write_linkage(
+        0,
+        np.array([-1], np.int32),
+        np.array([0], np.int32),
+        np.array([[0.0, 0.0, 0.0]]),
+    )
+    store.write_linkage(
+        1, np.array([0], np.int32), np.array([0], np.int32), np.array([[2.0, 0.0, 0.0]])
+    )
+    store.write_linkage(
+        2, np.zeros(0, np.int32), np.zeros(0, np.int32), np.zeros((0, 3))
+    )
+    store.write_linkage(
+        3,
+        np.array([0], np.int32),
+        np.array([-2], np.int32),
+        np.array([[6.0, 0.0, 0.0]]),
+    )
 
     summary = seal(store)
     assert summary["n_trajectories"] == 1  # one trajectory, not two

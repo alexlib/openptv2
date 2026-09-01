@@ -44,7 +44,9 @@ from openptv2.algorithms.track import (
 )
 from openptv2.algorithms.tracking_run import tr_new
 
-SYNTHETIC_DIR = Path(__file__).resolve().parent.parent.parent / "test_data" / "synthetic"
+SYNTHETIC_DIR = (
+    Path(__file__).resolve().parent.parent.parent / "test_data" / "synthetic"
+)
 NUM_CAMS = 4
 F0, F1, F2, F3 = 10001, 10002, 10003, 10004
 

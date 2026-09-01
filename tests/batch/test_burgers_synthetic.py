@@ -104,7 +104,9 @@ def _read_targets(path: Path) -> dict[int, tuple[float, float]]:
     return out
 
 
-def _read_detected_targets(workdir: Path, cam: int, frame: int) -> dict[int, tuple[float, float]]:
+def _read_detected_targets(
+    workdir: Path, cam: int, frame: int
+) -> dict[int, tuple[float, float]]:
     """Read detected targets for one camera/frame from the run's ASCII
     ``img/*_targets`` file, or -- for a store-backed run (no ``_targets``
     files are written, see ``tracking_frame_buf.write_targets``) -- from the
@@ -164,7 +166,9 @@ def _find_yaml(workdir: Path) -> Path:
     return y
 
 
-def _run_batch(workdir: Path, *, mode: str, tracking_plugin=None, seq_first=None, seq_last=None):
+def _run_batch(
+    workdir: Path, *, mode: str, tracking_plugin=None, seq_first=None, seq_last=None
+):
     seq_first = seq_first or FRAMES[0]
     seq_last = seq_last or FRAMES[-1]
     kw = dict(
@@ -195,7 +199,9 @@ def test_burgers_detection_roundtrip(burgers_workdir):
     n_gt = 0
     for cam in range(1, NCAMS + 1):
         for frame in FRAMES:
-            gt = _read_targets(burgers_workdir / "img_orig" / f"cam{cam}.{frame}_targets")
+            gt = _read_targets(
+                burgers_workdir / "img_orig" / f"cam{cam}.{frame}_targets"
+            )
             det = _read_detected_targets(burgers_workdir, cam, frame)
 
             # Ground truth sets the count; detection must recover every one.
@@ -270,10 +276,7 @@ def test_burgers_3d_trajectory_vs_res_orig(burgers_workdir):
             else:
                 all_errors.append(float("inf"))
 
-        print(
-            f"  frame {frame}: rec={len(rec)} gt={len(gt)} "
-            f"matched={frame_matched}"
-        )
+        print(f"  frame {frame}: rec={len(rec)} gt={len(gt)} matched={frame_matched}")
 
     max_err = float(np.max([e for e in all_errors if np.isfinite(e)]))
     mean_err = float(np.mean([e for e in all_errors if np.isfinite(e)]))
@@ -331,7 +334,9 @@ def test_burgers_image_space_add_particle(burgers_workdir, tracker):
     for frame in FRAMES:
         p = dst / "res" / f"rt_is.{frame}"
         n = int(p.read_text().splitlines()[0].strip())
-        gt_n = int((dst / "res_orig" / f"rt_is.{frame}").read_text().splitlines()[0].strip())
+        gt_n = int(
+            (dst / "res_orig" / f"rt_is.{frame}").read_text().splitlines()[0].strip()
+        )
         print(f"    rt_is.{frame}: rec={n} gt={gt_n}")
         assert n >= gt_n, (
             f"{tracker}: rt_is.{frame} has {n} particles, fewer than ground "

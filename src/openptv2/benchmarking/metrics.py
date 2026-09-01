@@ -35,10 +35,10 @@ from openptv2.plugins._assignment import match_within_radius
 class IdentityMetrics:
     """proPTV-style identity-aware tracking metrics."""
 
-    fragmentation: float = 0.0          # mean F over true tracks
-    completeness: float = 0.0           # mean C over true tracks
-    purity: float = 0.0                 # mean Cr over fragments
-    pmt: float = 0.0                    # percentage of correct tracks
+    fragmentation: float = 0.0  # mean F over true tracks
+    completeness: float = 0.0  # mean C over true tracks
+    purity: float = 0.0  # mean Cr over fragments
+    pmt: float = 0.0  # percentage of correct tracks
     n_true_tracks: int = 0
     n_reconstructed: int = 0
     n_correct_tracks: int = 0
@@ -168,7 +168,9 @@ def compute_identity_metrics(
         pred_here = pred_frames.get(frame, {})
         frame_match[frame] = _match_frame(true_frames.get(frame, {}), pred_here, eps)
         n_pred_points += len(pred_here)
-        ghost_pts = None if ghost_pos_by_frame is None else ghost_pos_by_frame.get(frame)
+        ghost_pts = (
+            None if ghost_pos_by_frame is None else ghost_pos_by_frame.get(frame)
+        )
         n_ghost_captures += _ghost_captures_in_frame(
             pred_here, set(frame_match[frame].keys()), ghost_pts, eps
         )
@@ -253,14 +255,14 @@ class TrackErrorMetrics:
     The four failure counts partition the non-perfect true tracks.
     """
 
-    e_track: float = 1.0          # fraction of true tracks NOT reproduced exactly
+    e_track: float = 1.0  # fraction of true tracks NOT reproduced exactly
     n_true_tracks: int = 0
     n_perfect: int = 0
     # Failure breakdown; these four sum to n_true_tracks - n_perfect.
-    n_fragmented: int = 0         # covered by >1 predicted track
-    n_contaminated: int = 0       # its one fragment also holds foreign/unmatched points
-    n_incomplete: int = 0         # clean single fragment, but missing frames
-    n_missed: int = 0             # no predicted track matched it at all
+    n_fragmented: int = 0  # covered by >1 predicted track
+    n_contaminated: int = 0  # its one fragment also holds foreign/unmatched points
+    n_incomplete: int = 0  # clean single fragment, but missing frames
+    n_missed: int = 0  # no predicted track matched it at all
 
     def to_dict(self) -> dict:
         return {
@@ -455,8 +457,10 @@ def track_lifetime_distribution(
     lengths = np.array([len(pts) for pts in tracks.values()], dtype=float)
     if lengths.size == 0:
         return {
-            "mean_track_length": 0.0, "frac_tracks_over_10": 0.0,
-            "frac_tracks_over_30": 0.0, "n_tracks": 0,
+            "mean_track_length": 0.0,
+            "frac_tracks_over_10": 0.0,
+            "frac_tracks_over_30": 0.0,
+            "n_tracks": 0,
         }
     return {
         "mean_track_length": float(np.mean(lengths)),
@@ -467,7 +471,8 @@ def track_lifetime_distribution(
 
 
 def acceleration_kurtosis(
-    tracks: Dict[int, List[Tuple[int, float, float, float]]], dt: float = 1.0,
+    tracks: Dict[int, List[Tuple[int, float, float, float]]],
+    dt: float = 1.0,
 ) -> tuple[float, int]:
     """Section B: K_a = <a^4> / <a^2>^2, the flatness factor of the
     acceleration PDF, pooled over every velocity COMPONENT of every track
@@ -510,7 +515,8 @@ def acceleration_kurtosis(
 
 
 def compute_physics_metrics(
-    tracks: Dict[int, List[Tuple[int, float, float, float]]], dt: float = 1.0,
+    tracks: Dict[int, List[Tuple[int, float, float, float]]],
+    dt: float = 1.0,
 ) -> PhysicsMetrics:
     """Convenience wrapper bundling track_lifetime_distribution and
     acceleration_kurtosis into one PhysicsMetrics result, matching this

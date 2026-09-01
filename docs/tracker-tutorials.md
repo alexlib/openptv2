@@ -186,12 +186,17 @@ sees the 3D correspondence positions already handed to it.
 from pathlib import Path
 import benchmark_utils as bu
 
-overrides = bu.per_tracker_overrides(["priority_segment_3d"],
-                                      src=Path("test_data/proptv_500_30"),
-                                      first=10001, n_frames=30)
+overrides = bu.per_tracker_overrides(
+    ["priority_segment_3d"],
+    src=Path("test_data/proptv_500_30"),
+    first=10001,
+    n_frames=30,
+)
 tracks, elapsed = bu.run_single_tracker(
-    "priority_segment_3d", track_overrides=overrides["priority_segment_3d"],
-    src=Path("test_data/proptv_500_30"), first=10001,
+    "priority_segment_3d",
+    track_overrides=overrides["priority_segment_3d"],
+    src=Path("test_data/proptv_500_30"),
+    first=10001,
 )
 ```
 
@@ -237,7 +242,9 @@ knobs beyond that.
 **Example**:
 ```python
 overrides = bu.per_tracker_overrides(["trackcorr"], src=..., first=10001, n_frames=30)
-tracks, elapsed = bu.run_single_tracker("trackcorr", track_overrides=overrides["trackcorr"], src=..., first=10001)
+tracks, elapsed = bu.run_single_tracker(
+    "trackcorr", track_overrides=overrides["trackcorr"], src=..., first=10001
+)
 ```
 
 **Strength**: best K_a of all five under realistic noise (25.36, closest to
@@ -292,20 +299,20 @@ per-axis half-widths). Two further knobs exist but are **not exposed via
 `track.par` at all** — module-level constants in `src/openptv2/algorithms/track4be.py`:
 
 ```python
-STRICT_SUPPORT = 0     # 0 = unsupported candidates fall back to a 3MA-style
-                       #     acceleration-residual score instead of being
-                       #     rejected outright (recovers yield on genuine
-                       #     1-frame detection gaps). 1 = reproduce Ouellette's
-                       #     paper literally: reject any candidate with no
-                       #     real n+2 support.
-GREEDY_CONFLICTS = 0   # 0 = the paper's give-up-on-conflict rule: a frame
-                       #     n+1 particle claimed by more than one frame-n
-                       #     particle links to none of them.
-                       # 1 = cost-ordered greedy claiming across the whole
-                       #     frame instead (a particle that loses its first
-                       #     choice may take a later one). Ouellette reports
-                       #     this degrades every heuristic but nearest-
-                       #     neighbor, hence 0 is the default.
+STRICT_SUPPORT = 0  # 0 = unsupported candidates fall back to a 3MA-style
+#     acceleration-residual score instead of being
+#     rejected outright (recovers yield on genuine
+#     1-frame detection gaps). 1 = reproduce Ouellette's
+#     paper literally: reject any candidate with no
+#     real n+2 support.
+GREEDY_CONFLICTS = 0  # 0 = the paper's give-up-on-conflict rule: a frame
+#     n+1 particle claimed by more than one frame-n
+#     particle links to none of them.
+# 1 = cost-ordered greedy claiming across the whole
+#     frame instead (a particle that loses its first
+#     choice may take a later one). Ouellette reports
+#     this degrades every heuristic but nearest-
+#     neighbor, hence 0 is the default.
 ```
 To change either, edit `track4be.py` directly and rebuild
 (`uv run python setup.py build_ext --inplace`) — there is currently no
@@ -316,7 +323,9 @@ must edit source.
 **Example**:
 ```python
 overrides = bu.per_tracker_overrides(["4be"], src=..., first=10001, n_frames=30)
-tracks, elapsed = bu.run_single_tracker("4be", track_overrides=overrides["4be"], src=..., first=10001)
+tracks, elapsed = bu.run_single_tracker(
+    "4be", track_overrides=overrides["4be"], src=..., first=10001
+)
 ```
 
 **Strength**: fastest alongside `priority_segment_3d` (7.7-8.9s); after the
@@ -351,8 +360,15 @@ intensity — `openptv2.tracking_cost`).
 
 **Example**:
 ```python
-overrides = bu.per_tracker_overrides(["myptv_3d_tracking"], src=..., first=10001, n_frames=30)
-tracks, elapsed = bu.run_single_tracker("myptv_3d_tracking", track_overrides=overrides["myptv_3d_tracking"], src=..., first=10001)
+overrides = bu.per_tracker_overrides(
+    ["myptv_3d_tracking"], src=..., first=10001, n_frames=30
+)
+tracks, elapsed = bu.run_single_tracker(
+    "myptv_3d_tracking",
+    track_overrides=overrides["myptv_3d_tracking"],
+    src=...,
+    first=10001,
+)
 ```
 
 **Strength**: second-best K_a under realistic noise (29.04, essentially
@@ -395,8 +411,15 @@ question, not settled by this benchmark.
 
 **Example**:
 ```python
-overrides = bu.per_tracker_overrides(["proptv_tracking"], src=..., first=10001, n_frames=30)
-tracks, elapsed = bu.run_single_tracker("proptv_tracking", track_overrides=overrides["proptv_tracking"], src=..., first=10001)
+overrides = bu.per_tracker_overrides(
+    ["proptv_tracking"], src=..., first=10001, n_frames=30
+)
+tracks, elapsed = bu.run_single_tracker(
+    "proptv_tracking",
+    track_overrides=overrides["proptv_tracking"],
+    src=...,
+    first=10001,
+)
 ```
 
 **Strength**: `supports_backward=True` and `supports_gap_relinking=True`

@@ -5,7 +5,9 @@ from typing import Any, Dict
 
 
 class TrackingPreset(str, Enum):
-    PRIORITY_SEGMENT_3D = "priority_segment_3d"  # 3D Segment-Priority (Cython Engine - Default)
+    PRIORITY_SEGMENT_3D = (
+        "priority_segment_3d"  # 3D Segment-Priority (Cython Engine - Default)
+    )
     FAST_3D = "fast_3d"  # Alias for priority_segment_3d
     FAST = "fast"  # Alias for priority_segment_3d
     FULL_MULTIPASS = "full_multipass"  # Forward + Backward + Reciprocity Postprocessing
@@ -269,7 +271,7 @@ def apply_tracker(
     plugins_params = dict(plugins_params) if plugins_params else {}
     proptv_params = dict(proptv_params) if proptv_params else {}
 
-    run_backward = (direction == "forward_backward")
+    run_backward = direction == "forward_backward"
 
     if tracker == "priority_segment_3d":
         track_params["track_mode"] = 1

@@ -106,31 +106,52 @@ def find_smooth_params(
 
     def run(dv_v: float, dacc_v: float, angle_v: float) -> PhysicsMetrics:
         ov = {
-            "dvxmax": dv_v, "dvxmin": -dv_v, "dvymax": dv_v, "dvymin": -dv_v,
-            "dvzmax": dv_v, "dvzmin": -dv_v, "dacc": dacc_v, "angle": angle_v,
+            "dvxmax": dv_v,
+            "dvxmin": -dv_v,
+            "dvymax": dv_v,
+            "dvymin": -dv_v,
+            "dvzmax": dv_v,
+            "dvzmin": -dv_v,
+            "dacc": dacc_v,
+            "angle": angle_v,
         }
         pred = run_tracker(yaml_path, tracker, track_overrides=ov)
         return compute_physics_metrics(pred)
 
-    def make_eval(param_name: str, get_triple: Callable[[float], tuple[float, float, float]]):
+    def make_eval(
+        param_name: str, get_triple: Callable[[float], tuple[float, float, float]]
+    ):
         def eval_fn(value: float) -> float:
             pm = run(*get_triple(value))
             score = fluidity_score(pm)
             history.append(SearchStep(param_name, value, score, pm))
             return score
+
         return eval_fn
 
     dv = _saturating_1d(
         make_eval("dv", lambda v: (v, dacc, angle)),
-        dv_start, growth, max_steps, patience, backoff,
+        dv_start,
+        growth,
+        max_steps,
+        patience,
+        backoff,
     )
     dacc = _saturating_1d(
         make_eval("dacc", lambda v: (dv, v, angle)),
-        dacc_start, growth, max_steps, patience, backoff,
+        dacc_start,
+        growth,
+        max_steps,
+        patience,
+        backoff,
     )
     angle = _saturating_1d(
         make_eval("angle", lambda v: (dv, dacc, v)),
-        angle_start, growth, max_steps, patience, backoff,
+        angle_start,
+        growth,
+        max_steps,
+        patience,
+        backoff,
     )
 
     final_pm = run(dv, dacc, angle)

@@ -33,8 +33,12 @@ class SelfChecker:
         self.strict = strict
         self.checks: list[DiagnosticCheck] = []
 
-    def log(self, category: str, name: str, status: str, detail: str) -> DiagnosticCheck:
-        check = DiagnosticCheck(category=category, name=name, status=status, detail=detail)
+    def log(
+        self, category: str, name: str, status: str, detail: str
+    ) -> DiagnosticCheck:
+        check = DiagnosticCheck(
+            category=category, name=name, status=status, detail=detail
+        )
         self.checks.append(check)
         return check
 
@@ -42,12 +46,32 @@ class SelfChecker:
         """Check Python version and OS platform."""
         py_ver = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
         if sys.version_info >= (3, 9):
-            self.log("Environment", "python_version", "PASS", f"Python {py_ver} ({sys.executable})")
+            self.log(
+                "Environment",
+                "python_version",
+                "PASS",
+                f"Python {py_ver} ({sys.executable})",
+            )
         else:
-            self.log("Environment", "python_version", "FAIL", f"Python {py_ver} (>= 3.9 required)")
+            self.log(
+                "Environment",
+                "python_version",
+                "FAIL",
+                f"Python {py_ver} (>= 3.9 required)",
+            )
 
-        self.log("Environment", "platform", "PASS", f"{platform.system()} {platform.release()} ({platform.machine()})")
-        self.log("Environment", "package_version", "PASS", f"openptv2 v{openptv2.get_version()}")
+        self.log(
+            "Environment",
+            "platform",
+            "PASS",
+            f"{platform.system()} {platform.release()} ({platform.machine()})",
+        )
+        self.log(
+            "Environment",
+            "package_version",
+            "PASS",
+            f"openptv2 v{openptv2.get_version()}",
+        )
 
     def check_dependencies(self) -> None:
         """Check required and optional Python dependencies."""
@@ -66,7 +90,12 @@ class SelfChecker:
                 ver = getattr(mod, "__version__", "unknown")
                 self.log("Dependencies", f"dep_{mod_name}", "PASS", f"{label} v{ver}")
             except ImportError:
-                self.log("Dependencies", f"dep_{mod_name}", "FAIL", f"Missing required dependency: {label}")
+                self.log(
+                    "Dependencies",
+                    f"dep_{mod_name}",
+                    "FAIL",
+                    f"Missing required dependency: {label}",
+                )
 
         optional = [
             ("numba", "Numba"),
@@ -83,7 +112,12 @@ class SelfChecker:
                 self.log("Dependencies", f"opt_{mod_name}", "PASS", f"{label} v{ver}")
             except ImportError:
                 status = "FAIL" if self.strict else "WARN"
-                self.log("Dependencies", f"opt_{mod_name}", status, f"Optional dependency not installed: {label}")
+                self.log(
+                    "Dependencies",
+                    f"opt_{mod_name}",
+                    status,
+                    f"Optional dependency not installed: {label}",
+                )
 
     def check_cython_compilation(self) -> None:
         """Check Cython compilation status across algorithms modules."""
@@ -91,7 +125,12 @@ class SelfChecker:
         is_comp = openptv2.is_compiled()
 
         if is_comp:
-            self.log("Cython Runtime", "cython_compiled", "PASS", f"Engine: {info['engine']} (compiled)")
+            self.log(
+                "Cython Runtime",
+                "cython_compiled",
+                "PASS",
+                f"Engine: {info['engine']} (compiled)",
+            )
         else:
             status = "FAIL" if self.strict else "WARN"
             self.log(
@@ -122,14 +161,26 @@ class SelfChecker:
                 mod = importlib.import_module(mod_path)
                 file_path = getattr(mod, "__file__", "") or ""
                 # Compiled Cython extensions end in .so or .pyd
-                is_ext = file_path.endswith((".so", ".pyd")) or not file_path.endswith(".py")
+                is_ext = file_path.endswith((".so", ".pyd")) or not file_path.endswith(
+                    ".py"
+                )
                 if is_ext:
                     compiled_count += 1
                     if self.verbose:
-                        self.log("Cython Modules", mod_name, "PASS", f"Compiled binary: {file_path}")
+                        self.log(
+                            "Cython Modules",
+                            mod_name,
+                            "PASS",
+                            f"Compiled binary: {file_path}",
+                        )
                 else:
                     if self.verbose:
-                        self.log("Cython Modules", mod_name, "WARN", f"Pure Python file: {file_path}")
+                        self.log(
+                            "Cython Modules",
+                            mod_name,
+                            "WARN",
+                            f"Pure Python file: {file_path}",
+                        )
             except Exception as e:
                 self.log("Cython Modules", mod_name, "FAIL", f"Import error: {e}")
 
@@ -159,7 +210,12 @@ class SelfChecker:
                 "Successfully instantiated Calibration, ControlParams, VolumeParams, etc.",
             )
         except Exception as e:
-            self.log("Core API", "param_instantiation", "FAIL", f"Failed to instantiate core objects: {e}")
+            self.log(
+                "Core API",
+                "param_instantiation",
+                "FAIL",
+                f"Failed to instantiate core objects: {e}",
+            )
             return
 
         try:
@@ -170,11 +226,23 @@ class SelfChecker:
             roundtrip = openptv2.convert_arr_metric_to_pixel(metric, cpar)
             max_diff = float(np.max(np.abs(pixels - roundtrip)))
             if max_diff < 1e-10:
-                self.log("Core API", "pixel_metric_transforms", "PASS", f"Pixel-metric roundtrip max diff: {max_diff:.3e}")
+                self.log(
+                    "Core API",
+                    "pixel_metric_transforms",
+                    "PASS",
+                    f"Pixel-metric roundtrip max diff: {max_diff:.3e}",
+                )
             else:
-                self.log("Core API", "pixel_metric_transforms", "FAIL", f"Roundtrip diff too large: {max_diff:.3e}")
+                self.log(
+                    "Core API",
+                    "pixel_metric_transforms",
+                    "FAIL",
+                    f"Roundtrip diff too large: {max_diff:.3e}",
+                )
         except Exception as e:
-            self.log("Core API", "pixel_metric_transforms", "FAIL", f"Transform error: {e}")
+            self.log(
+                "Core API", "pixel_metric_transforms", "FAIL", f"Transform error: {e}"
+            )
 
     def check_test_data(self) -> Path | None:
         """Check test dataset availability."""
@@ -191,9 +259,19 @@ class SelfChecker:
                 break
 
         if test_data_dir:
-            self.log("Test Data", "synthetic_fixtures", "PASS", f"Found test data at {test_data_dir}")
+            self.log(
+                "Test Data",
+                "synthetic_fixtures",
+                "PASS",
+                f"Found test data at {test_data_dir}",
+            )
         else:
-            self.log("Test Data", "synthetic_fixtures", "WARN", "Synthetic test data files not found in standard paths")
+            self.log(
+                "Test Data",
+                "synthetic_fixtures",
+                "WARN",
+                "Synthetic test data files not found in standard paths",
+            )
 
         return test_data_dir
 
@@ -227,7 +305,12 @@ class SelfChecker:
                     f"{len(failed)} validation checks failed ({details})",
                 )
         except Exception as e:
-            self.log("Validation Suite", "synthetic_suite", "FAIL", f"Failed to execute validation suite: {e}")
+            self.log(
+                "Validation Suite",
+                "synthetic_suite",
+                "FAIL",
+                f"Failed to execute validation suite: {e}",
+            )
 
     def run_all(self) -> list[DiagnosticCheck]:
         """Run all self-check diagnostic checks."""
@@ -259,11 +342,23 @@ class SelfChecker:
 
                 status_fmt = f"[{check.status}]"
                 if check.status == "PASS":
-                    status_str = f"\033[32m{status_fmt:<7}\033[0m" if sys.stdout.isatty() else f"{status_fmt:<7}"
+                    status_str = (
+                        f"\033[32m{status_fmt:<7}\033[0m"
+                        if sys.stdout.isatty()
+                        else f"{status_fmt:<7}"
+                    )
                 elif check.status == "FAIL":
-                    status_str = f"\033[31m{status_fmt:<7}\033[0m" if sys.stdout.isatty() else f"{status_fmt:<7}"
+                    status_str = (
+                        f"\033[31m{status_fmt:<7}\033[0m"
+                        if sys.stdout.isatty()
+                        else f"{status_fmt:<7}"
+                    )
                 elif check.status == "WARN":
-                    status_str = f"\033[33m{status_fmt:<7}\033[0m" if sys.stdout.isatty() else f"{status_fmt:<7}"
+                    status_str = (
+                        f"\033[33m{status_fmt:<7}\033[0m"
+                        if sys.stdout.isatty()
+                        else f"{status_fmt:<7}"
+                    )
                 else:
                     status_str = f"{status_fmt:<7}"
 

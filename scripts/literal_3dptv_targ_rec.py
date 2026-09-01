@@ -11,6 +11,7 @@ transliteration slip.
 See docs/plans/2026-08-27-verified-pipeline-ghost-particle-study-plan.md,
 Phase 1 step 4 (revised approach).
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -95,8 +96,10 @@ def literal_3dptv_targ_rec(
 
                     if (
                         gv4 > thres
-                        and xn4 >= xmin and xn4 < xmax - 1
-                        and yn4 >= ymin and yn4 < ymax - 1
+                        and xn4 >= xmin
+                        and xn4 < xmax - 1
+                        and yn4 >= ymin
+                        and yn4 < ymax - 1
                         and gv4 <= gvref + disco
                         and gvref + disco >= img0[yn4 - 1, xn4]
                         and gvref + disco >= img0[yn4 + 1, xn4]
@@ -125,9 +128,12 @@ def literal_3dptv_targ_rec(
             ny = yb - ya + 1
 
             if (
-                numpix >= nnmin and numpix <= nnmax
-                and nx >= nxmin and nx <= nxmax
-                and ny >= nymin and ny <= nymax
+                numpix >= nnmin
+                and numpix <= nnmax
+                and nx >= nxmin
+                and nx <= nxmax
+                and ny >= nymin
+                and ny <= nymax
                 and sumg > sumg_min
             ):
                 sumg_for_centroid = sumg - numpix * thres

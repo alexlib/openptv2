@@ -121,7 +121,14 @@ def test_standalone_dumbbell_calibration_cycle_zarr(tmp_path: Path):
 
     yaml_path = work / "parameters_Run1.yaml"
     assert yaml_path.exists()
-    assert (work / "run.zarr").exists(), "fixture store expected"
+    # Fixture store is now untracked (generated output, not ground truth) —
+    # create an empty one if the shipped fixture is absent so the test does
+    # not depend on committed run.zarr. The dumbbell generator will mirror
+    # its targets into it.
+    if not (work / "run.zarr").exists() and not (work / "res" / "run.zarr").exists():
+        from openptv2.storage import RunStore
+
+        RunStore(work / "run.zarr", mode="w")
 
     summary = generate_dumbbell_target_files(
         yaml_path,

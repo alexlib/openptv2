@@ -50,6 +50,7 @@ except ModuleNotFoundError:
     def Str(default=""):
         return _TraitField(default=default)
 
+
 from .parameter_manager import ParameterManager
 
 

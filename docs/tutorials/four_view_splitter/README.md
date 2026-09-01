@@ -6,8 +6,8 @@ setting parameters, calibrating, running the splitter plugins, and verifying
 you get correct 3D correspondences and tracks.
 
 It is grounded in the working reference dataset shipped with the repo,
-[`test_data/test_splitter/`](../../../test_data/test_splitter/), and uses the
-demo assets in [`images/`](images/).
+[`test_data/test_splitter/`](https://github.com/alexlib/openptv2/blob/main/test_data/test_splitter), and uses the
+demo assets in `images/` -- [the splitter layout](images/quadrant_mapping.png) and [a demo frame](images/demo_4view.tif).
 
 ---
 
@@ -98,7 +98,7 @@ splitter code does the cropping.
 
 ## 4. Parameters (YAML-first)
 
-`openptv2` is YAML-first: [`parameters_Run1.yaml`](../../../test_data/test_splitter/parameters_Run1.yaml)
+`openptv2` is YAML-first: [`parameters_Run1.yaml`](https://github.com/alexlib/openptv2/blob/main/test_data/test_splitter/parameters_Run1.yaml)
 is the single source of truth. The two flags that turn on splitter mode:
 
 ```yaml

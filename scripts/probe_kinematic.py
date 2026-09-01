@@ -64,8 +64,10 @@ def show(label, tracks, lo=1.0, hi=99.0, prune=True):
     print(f"[{label}]  p{lo:g}/p{hi:g}")
     for n, vlo, vhi in zip(("dx", "dy", "dz"), dl, dh):
         print(f"  {n}: [{vlo:+.2f}, {vhi:+.2f}]")
-    print(f"  dacc (p{hi:g} |2nd-deriv|): "
-          f"[{ah[0]:.2f}, {ah[1]:.2f}, {ah[2]:.2f}] max {ah.max():.2f}")
+    print(
+        f"  dacc (p{hi:g} |2nd-deriv|): "
+        f"[{ah[0]:.2f}, {ah[1]:.2f}, {ah[2]:.2f}] max {ah.max():.2f}"
+    )
     return dl, dh, ah
 
 
@@ -75,8 +77,16 @@ def main():
     print("=== GROUND-TRUTH envelope (upper bound) ===")
     dl_gt, dh_gt, ah_gt = show("GT", tt)
 
-    loose = dict(bu.BASE_OVERRIDES, dvxmax=16, dvxmin=-16, dvymax=16,
-                 dvymin=-16, dvzmax=16, dvzmin=-16, dacc=50)
+    loose = dict(
+        bu.BASE_OVERRIDES,
+        dvxmax=16,
+        dvxmin=-16,
+        dvymax=16,
+        dvymin=-16,
+        dvzmax=16,
+        dvzmin=-16,
+        dacc=50,
+    )
     pred_myptv, _ = bu.run_single_tracker("nearest_hungarian_3d", loose)
 
     print("\n=== myPTV probe: raw tails (polluted by mislinks) ===")
@@ -91,8 +101,10 @@ def main():
     acc_rec = max(ah) if len(ah) else 2.0
     acc_rec = round(acc_rec)
     print("\n=== recommended set from pruned probe ===")
-    half_str = ", ".join(f"{name}={abs(float(v)):.1f}" for name, v in
-                         zip(("dvx", "dvy", "dvz"), (half[0], half[1], half[2])))
+    half_str = ", ".join(
+        f"{name}={abs(float(v)):.1f}"
+        for name, v in zip(("dvx", "dvy", "dvz"), (half[0], half[1], half[2]))
+    )
     print(f"  dv* half-widths: {half_str}  dacc ~ {acc_rec:.1f}")
 
     # priority_segment_3d parameter sweep at fixed dv=6, dacc in {1,2,3,4,5,6}
@@ -101,31 +113,44 @@ def main():
         ov = dict(bu.BASE_OVERRIDES, dacc=dacc)
         pred, _ = bu.run_single_tracker("priority_segment_3d", ov)
         m = bm.compute_identity_metrics(tt, pred, eps=1.0)
-        print(f"  dacc={dacc:<4.0f} | pmt {m.pmt:5.1f}% | purity {m.purity:.3f} "
-              f"| F {m.fragmentation:5.2f} | n {m.n_reconstructed:>4}")
+        print(
+            f"  dacc={dacc:<4.0f} | pmt {m.pmt:5.1f}% | purity {m.purity:.3f} "
+            f"| F {m.fragmentation:5.2f} | n {m.n_reconstructed:>4}"
+        )
 
     # Final benchmark: recommended set (dv from pruned envelope, dacc from
     # the sweep optimum 3 vs old default 6) on every tracker.
     print("\n=== FULL BENCHMARK with recommended parameters ===")
     print(f"  recommended: dv* = +/-6.0 (envelope p1/p99), dacc = {acc_rec}")
-    recommended = dict(dvxmax=6.0, dvxmin=-6.0, dvymax=6.0, dvymin=-6.0,
-                       dvzmax=6.0, dvzmin=-6.0, dacc=acc_rec)
+    recommended = dict(
+        dvxmax=6.0,
+        dvxmin=-6.0,
+        dvymax=6.0,
+        dvymin=-6.0,
+        dvzmax=6.0,
+        dvzmin=-6.0,
+        dacc=acc_rec,
+    )
     for tr in ("priority_segment_3d", "nearest_hungarian_3d", "predictive_gmm_3d"):
         ov = dict(bu.BASE_OVERRIDES)
         ov.update({k: v for k, v in recommended.items()})
         pred, dt = bu.run_single_tracker(tr, ov)
         m = bm.compute_identity_metrics(tt, pred, eps=1.0)
-        print(f"  {tr:<18} | pmt {m.pmt:5.1f}% | purity {m.purity:.3f} "
-              f"| C {m.completeness:.3f} | F {m.fragmentation:5.2f} "
-              f"| n {m.n_reconstructed:>4} | {dt:5.1f}s")
+        print(
+            f"  {tr:<18} | pmt {m.pmt:5.1f}% | purity {m.purity:.3f} "
+            f"| C {m.completeness:.3f} | F {m.fragmentation:5.2f} "
+            f"| n {m.n_reconstructed:>4} | {dt:5.1f}s"
+        )
 
     print("\n=== reference: myptv/proptv with their default params ===")
     for tr in ("nearest_hungarian_3d", "predictive_gmm_3d"):
         pred, dt = bu.run_single_tracker(tr, bu.BASE_OVERRIDES)
         m = bm.compute_identity_metrics(tt, pred, eps=1.0)
-        print(f"  {tr:<18} | pmt {m.pmt:5.1f}% | purity {m.purity:.3f} "
-              f"| C {m.completeness:.3f} | F {m.fragmentation:5.2f} "
-              f"| n {m.n_reconstructed:>4} | {dt:5.1f}s")
+        print(
+            f"  {tr:<18} | pmt {m.pmt:5.1f}% | purity {m.purity:.3f} "
+            f"| C {m.completeness:.3f} | F {m.fragmentation:5.2f} "
+            f"| n {m.n_reconstructed:>4} | {dt:5.1f}s"
+        )
 
 
 if __name__ == "__main__":

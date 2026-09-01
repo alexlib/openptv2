@@ -204,3 +204,30 @@ def target_recognition(img, tpar, cam, cpar, subrange_x=None, subrange_y=None):
 from openptv2.algorithms.segmentation import detect_targets_batch_parallel  # noqa: E402
 
 __all__ = ["target_recognition", "detect_targets_batch_parallel"]
+
+
+def targ_rec_scaled(img, *args, scaling: dict | None = None, **kwargs):
+    """``targ_rec`` for images that are not already uint8.
+
+    The compiled kernel is typed ``uchar[:, ::1]`` and rejects anything else, so
+    a 16-bit frame cannot reach it.  This converts first, by the rule from
+    :func:`openptv2.image_scaling.from_parameters`, then calls it.
+
+    Note what this does NOT do: thresholds stay on the 0-255 scale of the
+    converted image.  Giving ``targ_rec`` native 16-bit thresholds means a
+    fused-type kernel and re-reading every threshold in every parameter file --
+    a separate piece of work, gated on the parity suite.  See
+    docs/plans/2026-08-31-16bit-image-handling.md step 3.
+    """
+    import numpy as np
+
+    from openptv2.algorithms.segmentation import targ_rec as _targ_rec
+    from openptv2.image_scaling import to_uint8
+
+    arr = np.asarray(img)
+    if arr.dtype != np.uint8:
+        rule = scaling or {"mode": "fixed"}
+        arr = to_uint8(
+            arr, rule.get("mode", "fixed"), lo=rule.get("lo"), hi=rule.get("hi")
+        )
+    return _targ_rec(arr, *args, **kwargs)

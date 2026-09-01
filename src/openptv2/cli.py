@@ -27,8 +27,12 @@ def print_help():
     print("  self-check          Run comprehensive system self-checks & diagnostics")
     print("  gui                 Launch the interactive 3D-PTV GUI")
     print("  list-trackers       List all available trackers with capabilities")
-    print("  recommend           Analyse a dataset and recommend a tracker & parameters")
-    print("  warmup              Auto-calibrate tracker/params on a frame window before tracking")
+    print(
+        "  recommend           Analyse a dataset and recommend a tracker & parameters"
+    )
+    print(
+        "  warmup              Auto-calibrate tracker/params on a frame window before tracking"
+    )
     print("  benchmark           Generate datasets, sweep params, compare trackers")
     print()
     print("For help on any specific command, run:")
@@ -256,10 +260,14 @@ def main():
         p_sw = sub.add_parser("sweep", help="Sweep a tracking parameter for a tracker")
         p_sw.add_argument("out_dir")
         p_sw.add_argument("--tracker", default="priority_segment_3d")
-        p_sw.add_argument("--param", default="dvxmax",
-                          choices=["dvxmax", "dvy", "dvz", "dacc", "angle"])
-        p_sw.add_argument("--values", nargs="+", type=float,
-                          default=[1.0, 2.0, 4.0, 8.0])
+        p_sw.add_argument(
+            "--param",
+            default="dvxmax",
+            choices=["dvxmax", "dvy", "dvz", "dacc", "angle"],
+        )
+        p_sw.add_argument(
+            "--values", nargs="+", type=float, default=[1.0, 2.0, 4.0, 8.0]
+        )
         p_sw.add_argument("--particles", type=int, default=60)
         p_sw.add_argument("--frames", type=int, default=30)
         p_sw.add_argument("--refract", action="store_true")
@@ -284,19 +292,38 @@ def main():
 
             if args.action == "dataset":
                 cmd_dataset(
-                    args.out_dir, args.particles, args.frames, args.velocity,
-                    args.crossings, args.entering, args.leaving, args.gap,
-                    args.noise, args.ghost, args.refract, args.seed,
+                    args.out_dir,
+                    args.particles,
+                    args.frames,
+                    args.velocity,
+                    args.crossings,
+                    args.entering,
+                    args.leaving,
+                    args.gap,
+                    args.noise,
+                    args.ghost,
+                    args.refract,
+                    args.seed,
                 )
             elif args.action == "sweep":
                 cmd_sweep(
-                    args.out_dir, args.tracker, args.param, args.values,
-                    args.particles, args.frames, args.refract, args.seed,
+                    args.out_dir,
+                    args.tracker,
+                    args.param,
+                    args.values,
+                    args.particles,
+                    args.frames,
+                    args.refract,
+                    args.seed,
                 )
             elif args.action == "compare":
                 cmd_compare(
-                    args.out_dir, args.trackers, args.particles, args.frames,
-                    args.refract, args.seed,
+                    args.out_dir,
+                    args.trackers,
+                    args.particles,
+                    args.frames,
+                    args.refract,
+                    args.seed,
                 )
         except Exception as e:
             print(f"Benchmark failed: {e}")
@@ -313,12 +340,8 @@ def main():
                 default="res",
                 help="Directory containing rt_is.# files, or the experiment root / run store (default: res)",
             )
-            parser.add_argument(
-                "--first", type=int, default=None, help="First frame"
-            )
-            parser.add_argument(
-                "--last", type=int, default=None, help="Last frame"
-            )
+            parser.add_argument("--first", type=int, default=None, help="First frame")
+            parser.add_argument("--last", type=int, default=None, help="Last frame")
             parser.add_argument(
                 "--priority",
                 choices=["speed", "accuracy", "default"],
@@ -365,14 +388,20 @@ def main():
             parser = argparse.ArgumentParser(prog="openptv warmup")
             parser.add_argument("yaml_file", help="Experiment parameters YAML")
             parser.add_argument(
-                "--frames", type=int, default=25,
+                "--frames",
+                type=int,
+                default=25,
                 help="Window size in frames, starting at the sequence's first frame (default: 25)",
             )
             parser.add_argument(
-                "--max-cycles", type=int, default=3, help="Max tuning cycles (default: 3)"
+                "--max-cycles",
+                type=int,
+                default=3,
+                help="Max tuning cycles (default: 3)",
             )
             parser.add_argument(
-                "--write", action="store_true",
+                "--write",
+                action="store_true",
                 help="Write the chosen tracker/params back into the YAML "
                 "(otherwise this is a dry run: report only)",
             )
@@ -391,18 +420,30 @@ def main():
             os.chdir(exp_dir)
             try:
                 seq_bounds = SequencePar.from_yaml(str(yaml_file))
-                exp = build_processing_experiment(yaml_file, seq_bounds.first, seq_bounds.last)
+                exp = build_processing_experiment(
+                    yaml_file, seq_bounds.first, seq_bounds.last
+                )
                 store = _open_run_store(exp)
 
                 result = run_warmup(
-                    exp.cpar, exp.vpar, exp.track_par, exp.spar, exp.cals, store,
-                    frames=args.frames, max_cycles=args.max_cycles,
+                    exp.cpar,
+                    exp.vpar,
+                    exp.track_par,
+                    exp.spar,
+                    exp.cals,
+                    store,
+                    frames=args.frames,
+                    max_cycles=args.max_cycles,
                 )
 
-                print(f"Warmup window: frames {result.frames[0]}-{result.frames[1]} "
-                      f"({result.cycles} cycle(s))")
-                print(f"Chosen tracker: {result.tracker}  "
-                      f"(engine scores: {result.engine_scores})")
+                print(
+                    f"Warmup window: frames {result.frames[0]}-{result.frames[1]} "
+                    f"({result.cycles} cycle(s))"
+                )
+                print(
+                    f"Chosen tracker: {result.tracker}  "
+                    f"(engine scores: {result.engine_scores})"
+                )
                 print(f"Forward/backward agreement: {result.agreement_rate:.1%}")
                 print(f"Empirical noise estimate: {result.noise_estimate_mm:.3f} mm")
                 print("Tuned track params:")

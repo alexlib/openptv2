@@ -123,7 +123,8 @@ def convert(proptv_case_dir: Path, scaffold: Path, out: Path) -> None:
     res = out / "res"
     cals = [
         Calibration.from_file(
-            str(out / "cal" / f"cam{c + 1}.tif.ori"), str(out / "cal" / f"cam{c + 1}.tif.addpar")
+            str(out / "cal" / f"cam{c + 1}.tif.ori"),
+            str(out / "cal" / f"cam{c + 1}.tif.addpar"),
         )
         for c in range(NUM_CAMS)
     ]
@@ -199,7 +200,9 @@ def convert(proptv_case_dir: Path, scaffold: Path, out: Path) -> None:
         # store), so this is the single shared data source for every tracker,
         # not a format some trackers see and others don't.
         pos_3d = np.array([[x, y, z] for _pid, x, y, z, _pix in rows], dtype=np.float64)
-        cam_ids = np.array([cam_ids_per_row[idx] for idx in range(len(rows))], dtype=np.int32)
+        cam_ids = np.array(
+            [cam_ids_per_row[idx] for idx in range(len(rows))], dtype=np.int32
+        )
         store.write_correspondences(frame=fn, pos_3d=pos_3d, cam_target_ids=cam_ids)
 
     last = FIRST + len(files) - 1
@@ -207,11 +210,18 @@ def convert(proptv_case_dir: Path, scaffold: Path, out: Path) -> None:
     yaml_data["sequence"]["last"] = last
     yaml_path.write_text(yaml.safe_dump(yaml_data, sort_keys=False))
 
-    print(f"wrote {len(files)} frames ({FIRST}-{last}) -> {out} (targets in res/run.zarr)")
+    print(
+        f"wrote {len(files)} frames ({FIRST}-{last}) -> {out} (targets in res/run.zarr)"
+    )
 
 
-def _perturb_calibration(cal, rng: np.random.Generator, angle_sigma_deg: float,
-                          pos_sigma_mm: float, cc_ppm: float):
+def _perturb_calibration(
+    cal,
+    rng: np.random.Generator,
+    angle_sigma_deg: float,
+    pos_sigma_mm: float,
+    cc_ppm: float,
+):
     """A copy of `cal` with a small, fixed-per-camera offset in position,
     orientation, and focal length -- simulating real calibration residual
     (the reconstruction-side model never matches the true camera exactly).
@@ -237,12 +247,30 @@ def _perturb_calibration(cal, rng: np.random.Generator, angle_sigma_deg: float,
 #: leaving them at one arbitrary combination, and eps0 is DERIVED (below),
 #: not listed here -- it must track noise_px, not be picked independently.
 SEVERITY_PRESETS: dict[str, dict[str, float]] = {
-    "mild": dict(noise_px=0.08, dropout_p=0.01, merge_radius_px=1.0,
-                 calib_angle_sigma_deg=0.01, calib_pos_sigma_mm=0.01, calib_cc_ppm=100.0),
-    "moderate": dict(noise_px=0.15, dropout_p=0.03, merge_radius_px=2.0,
-                      calib_angle_sigma_deg=0.02, calib_pos_sigma_mm=0.02, calib_cc_ppm=200.0),
-    "severe": dict(noise_px=0.3, dropout_p=0.06, merge_radius_px=3.0,
-                    calib_angle_sigma_deg=0.04, calib_pos_sigma_mm=0.04, calib_cc_ppm=400.0),
+    "mild": dict(
+        noise_px=0.08,
+        dropout_p=0.01,
+        merge_radius_px=1.0,
+        calib_angle_sigma_deg=0.01,
+        calib_pos_sigma_mm=0.01,
+        calib_cc_ppm=100.0,
+    ),
+    "moderate": dict(
+        noise_px=0.15,
+        dropout_p=0.03,
+        merge_radius_px=2.0,
+        calib_angle_sigma_deg=0.02,
+        calib_pos_sigma_mm=0.02,
+        calib_cc_ppm=200.0,
+    ),
+    "severe": dict(
+        noise_px=0.3,
+        dropout_p=0.06,
+        merge_radius_px=3.0,
+        calib_angle_sigma_deg=0.04,
+        calib_pos_sigma_mm=0.04,
+        calib_cc_ppm=400.0,
+    ),
 }
 
 
@@ -263,7 +291,10 @@ def _derive_eps0_mm(noise_px: float) -> float:
 
 
 def _streak_dropout_mask(
-    n_items: int, n_frames: int, dropout_p: float, mean_streak_frames: float,
+    n_items: int,
+    n_frames: int,
+    dropout_p: float,
+    mean_streak_frames: float,
     rng: np.random.Generator,
 ) -> np.ndarray:
     """(n_items, n_frames) bool array, True = dropped that frame. A 2-state
@@ -362,14 +393,21 @@ def convert_realistic(
     crit = yaml_data["criteria"]
     crit["eps0"] = eps0_mm
     vpar = VolumePar(
-        X_lay=crit["X_lay"], Zmin_lay=crit["Zmin_lay"], Zmax_lay=crit["Zmax_lay"],
-        cnx=crit["cnx"], cny=crit["cny"], cn=crit["cn"], csumg=crit["csumg"],
-        corrmin=crit["corrmin"], eps0=eps0_mm,
+        X_lay=crit["X_lay"],
+        Zmin_lay=crit["Zmin_lay"],
+        Zmax_lay=crit["Zmax_lay"],
+        cnx=crit["cnx"],
+        cny=crit["cny"],
+        cn=crit["cn"],
+        csumg=crit["csumg"],
+        corrmin=crit["corrmin"],
+        eps0=eps0_mm,
     )
 
     cals_true = [
         Calibration.from_file(
-            str(out / "cal" / f"cam{c + 1}.tif.ori"), str(out / "cal" / f"cam{c + 1}.tif.addpar")
+            str(out / "cal" / f"cam{c + 1}.tif.ori"),
+            str(out / "cal" / f"cam{c + 1}.tif.addpar"),
         )
         for c in range(NUM_CAMS)
     ]
@@ -378,12 +416,15 @@ def convert_realistic(
     # what the tracker itself loads at runtime, matching a real experiment
     # (the "true" camera model is never actually known).
     cals_recon = [
-        _perturb_calibration(c, rng, calib_angle_sigma_deg, calib_pos_sigma_mm, calib_cc_ppm)
+        _perturb_calibration(
+            c, rng, calib_angle_sigma_deg, calib_pos_sigma_mm, calib_cc_ppm
+        )
         for c in cals_true
     ]
     for c in range(NUM_CAMS):
         cals_recon[c].write(
-            str(out / "cal" / f"cam{c + 1}.tif.ori"), str(out / "cal" / f"cam{c + 1}.tif.addpar")
+            str(out / "cal" / f"cam{c + 1}.tif.ori"),
+            str(out / "cal" / f"cam{c + 1}.tif.addpar"),
         )
 
     # Read every frame's truth up front: dropout must be a per-particle
@@ -448,7 +489,10 @@ def convert_realistic(
             per_cam_pix.append(arr)
 
         per_cam_targets = [
-            [Target(pnr=j, x=p[0], y=p[1]) for j, p in enumerate(arr[np.argsort(arr[:, 1])])]
+            [
+                Target(pnr=j, x=p[0], y=p[1])
+                for j, p in enumerate(arr[np.argsort(arr[:, 1])])
+            ]
             for arr in per_cam_pix
         ]
 
@@ -465,7 +509,10 @@ def convert_realistic(
                 frm.targ_y[c][j] = t.y
                 frm.targ_tnr[c][j] = -1
 
-        corrected = [MatchedCoords(per_cam_targets[c], cpar, cals_recon[c]) for c in range(NUM_CAMS)]
+        corrected = [
+            MatchedCoords(per_cam_targets[c], cpar, cals_recon[c])
+            for c in range(NUM_CAMS)
+        ]
         con, counts = alg_correspondences(
             frm, [mc._corrected for mc in corrected], vpar, cpar, cals_recon
         )
@@ -478,7 +525,9 @@ def convert_realistic(
                 mapped.append(int(corrected[c]._corrected[idx].pnr) if idx >= 0 else -1)
             corresp_list.append(mapped)
         corresp = (
-            np.array(corresp_list, dtype=np.int32) if corresp_list else np.zeros((0, NUM_CAMS), dtype=np.int32)
+            np.array(corresp_list, dtype=np.int32)
+            if corresp_list
+            else np.zeros((0, NUM_CAMS), dtype=np.int32)
         )
         n_matched_total += len(corresp)
 
@@ -487,7 +536,9 @@ def convert_realistic(
             flat = np.array(
                 [corrected[c].get_by_pnrs(corresp[:, c]) for c in range(NUM_CAMS)]
             )
-            pos, _ = alg_point_positions(flat.transpose(1, 0, 2), cpar, cals_recon, vpar)
+            pos, _ = alg_point_positions(
+                flat.transpose(1, 0, 2), cpar, cals_recon, vpar
+            )
         else:
             pos = np.zeros((0, 3))
 
@@ -512,22 +563,35 @@ def convert_realistic(
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("case", choices=["500_25", "500_30"])
-    ap.add_argument("--scaffold", default="test_data/synthetic_turbulent",
-                     help="existing openptv2 dataset to clone cal/img/yaml from")
+    ap.add_argument(
+        "--scaffold",
+        default="test_data/synthetic_turbulent",
+        help="existing openptv2 dataset to clone cal/img/yaml from",
+    )
     ap.add_argument("--proptv-root", default=r"C:/Users/alex/Github/proPTV/data")
-    ap.add_argument("--realistic", action="store_true",
-                     help="simulate the real detection/correspondence error chain "
-                          "instead of injecting ground-truth correspondences directly")
-    ap.add_argument("--severity", choices=sorted(SEVERITY_PRESETS), default="moderate",
-                     help="noise/dropout/merge/calibration operating point for --realistic "
-                          "(eps0 is derived from noise_px, not part of the preset)")
+    ap.add_argument(
+        "--realistic",
+        action="store_true",
+        help="simulate the real detection/correspondence error chain "
+        "instead of injecting ground-truth correspondences directly",
+    )
+    ap.add_argument(
+        "--severity",
+        choices=sorted(SEVERITY_PRESETS),
+        default="moderate",
+        help="noise/dropout/merge/calibration operating point for --realistic "
+        "(eps0 is derived from noise_px, not part of the preset)",
+    )
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
     out = Path("test_data") / f"proptv_{args.case}"
     if args.realistic:
         convert_realistic(
-            Path(args.proptv_root) / args.case, Path(args.scaffold), out,
-            seed=args.seed, **SEVERITY_PRESETS[args.severity],
+            Path(args.proptv_root) / args.case,
+            Path(args.scaffold),
+            out,
+            seed=args.seed,
+            **SEVERITY_PRESETS[args.severity],
         )
     else:
         convert(Path(args.proptv_root) / args.case, Path(args.scaffold), out)

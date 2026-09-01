@@ -127,10 +127,14 @@ _PRESET_FLOORS = {
 # too tight for this data's real motion and trackcorr finds 0 links. Apply
 # each trackcorr preset's own registry-documented defaults instead.
 _TRACKCORR_TRACK_OVERRIDES = {
-    "dvxmin": -10.0, "dvxmax": 10.0,
-    "dvymin": -10.0, "dvymax": 10.0,
-    "dvzmin": -10.0, "dvzmax": 10.0,
-    "dacc": 5.0, "angle": 120.0,
+    "dvxmin": -10.0,
+    "dvxmax": 10.0,
+    "dvymin": -10.0,
+    "dvymax": 10.0,
+    "dvzmin": -10.0,
+    "dvzmax": 10.0,
+    "dacc": 5.0,
+    "angle": 120.0,
 }
 
 

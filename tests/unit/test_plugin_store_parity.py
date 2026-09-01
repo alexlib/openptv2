@@ -86,7 +86,9 @@ def _run_plugin(work: Path, *, ascii_fed: bool) -> RunStore:
             pos, ids = _load_rt_is(res_dir / f"rt_is.{frame}")
             store.write_correspondences(frame, pos, ids)
             for cam in range(4):
-                targs = read_targets_ascii(str(SRC / "img" / f"cam{cam}."), frame, cam_idx=cam)
+                targs = read_targets_ascii(
+                    str(SRC / "img" / f"cam{cam}."), frame, cam_idx=cam
+                )
                 store.write_targets(cam, frame, targs)
 
         shutil.rmtree(work / "res", ignore_errors=True)
@@ -125,5 +127,7 @@ def test_myptv_3d_plugin_ascii_and_store_runs_agree(tmp_path):
         assert np.array_equal(rn_, sn_), f"next mismatch frame {frame}"
 
     # sanity: the tracker actually linked something
-    total_links = sum(int((ref.read_linkage(f, "ptv_is")[1] >= 0).sum()) for f in frames_ref)
+    total_links = sum(
+        int((ref.read_linkage(f, "ptv_is")[1] >= 0).sum()) for f in frames_ref
+    )
     assert total_links > 0

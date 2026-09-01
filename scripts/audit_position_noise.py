@@ -43,12 +43,12 @@ for src, label, first, n in [
         d = np.linalg.norm(rec[:, None, :] - truth[None, :, :], axis=2)
         j = np.argmin(d, axis=1)
         dist = d[np.arange(len(rec)), j]
-        keep = dist < 1.0          # matched, not a ghost
+        keep = dist < 1.0  # matched, not a ghost
         resid.append(rec[keep] - truth[j[keep]])
 
     r = np.concatenate(resid) if resid else np.zeros((0, 3))
     sigma = r.std(axis=0)
-    sigma_c = float(np.sqrt((sigma**2).mean()))   # per-component rms
+    sigma_c = float(np.sqrt((sigma**2).mean()))  # per-component rms
 
     # True acceleration scale, from the truth trajectories.
     tt = bu.build_true_tracks(gt, first)
@@ -62,13 +62,17 @@ for src, label, first, n in [
                 accs.append(np.diff(seg, 2, axis=0))
     a_rms = float(np.concatenate(accs).std()) if accs else float("nan")
 
-    sigma_a = sigma_c * np.sqrt(6.0)   # dt = 1 frame
+    sigma_a = sigma_c * np.sqrt(6.0)  # dt = 1 frame
 
     print(f"\n=== {label} ===")
     print(f"  reconstructed pts / true pts   {n_rec} / {n_true}")
-    print(f"  position noise per component   {sigma_c:.4f} mm  "
-          f"(x/y/z: {sigma[0]:.4f} {sigma[1]:.4f} {sigma[2]:.4f})")
+    print(
+        f"  position noise per component   {sigma_c:.4f} mm  "
+        f"(x/y/z: {sigma[0]:.4f} {sigma[1]:.4f} {sigma[2]:.4f})"
+    )
     print(f"  true accel rms                 {a_rms:.4f} mm/frame^2")
-    print(f"  noise-induced accel rms        {sigma_a:.4f} mm/frame^2  "
-          f"(= sqrt(6) * sigma_x, dt=1)")
+    print(
+        f"  noise-induced accel rms        {sigma_a:.4f} mm/frame^2  "
+        f"(= sqrt(6) * sigma_x, dt=1)"
+    )
     print(f"  ==> noise / signal in accel    {sigma_a / a_rms:.2f}")

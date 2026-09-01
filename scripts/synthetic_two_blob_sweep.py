@@ -7,6 +7,7 @@ exactly where the two diverge on "is this 1 blob or 2".
 See docs/plans/2026-08-27-verified-pipeline-ghost-particle-study-plan.md,
 Phase 1 step 4 (revised approach).
 """
+
 import sys
 from pathlib import Path
 
@@ -18,17 +19,26 @@ from literal_3dptv_targ_rec import literal_3dptv_targ_rec  # noqa: E402
 from openptv2.algorithms.segmentation import targ_rec  # noqa: E402
 
 IMSIZE = 64
-PARAMS = dict(gvthres=10, discont=20, nnmin=2, nnmax=200, nxmin=1, nxmax=15, nymin=2, nymax=15, sumg_min=20)
+PARAMS = dict(
+    gvthres=10,
+    discont=20,
+    nnmin=2,
+    nnmax=200,
+    nxmin=1,
+    nxmax=15,
+    nymin=2,
+    nymax=15,
+    sumg_min=20,
+)
 
 
 def make_two_blob_image(sep_px, sigma, amp1, amp2, size=IMSIZE):
     yy, xx = np.mgrid[0:size, 0:size]
     cx1, cy = size / 2 - sep_px / 2, size / 2
     cx2 = size / 2 + sep_px / 2
-    img = (
-        amp1 * np.exp(-((xx - cx1) ** 2 + (yy - cy) ** 2) / (2 * sigma**2))
-        + amp2 * np.exp(-((xx - cx2) ** 2 + (yy - cy) ** 2) / (2 * sigma**2))
-    )
+    img = amp1 * np.exp(
+        -((xx - cx1) ** 2 + (yy - cy) ** 2) / (2 * sigma**2)
+    ) + amp2 * np.exp(-((xx - cx2) ** 2 + (yy - cy) ** 2) / (2 * sigma**2))
     return np.clip(img, 0, 255).astype(np.uint8)
 
 

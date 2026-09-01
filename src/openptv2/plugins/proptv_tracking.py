@@ -96,17 +96,17 @@ class ProPTVTracker:
         next_track_id = 1
 
         # ── Initialisation: link the first t_init frames █────────────
-        active, next_track_id = self._initialise(
-            frame_particles, cfg, next_track_id
-        )
+        active, next_track_id = self._initialise(frame_particles, cfg, next_track_id)
 
         # ── Main loop █───────────────────────────────────────────────
         for f in range(cfg.t_init, num_frames):
             cand = frame_particles[f]
             if len(cand) == 0:
                 completed.extend(active)
-                active = [self._new_track(next_track_id + i, cand, f)
-                          for i in range(len(cand))]
+                active = [
+                    self._new_track(next_track_id + i, cand, f)
+                    for i in range(len(cand))
+                ]
                 next_track_id += len(cand)
                 continue
 
@@ -347,12 +347,17 @@ class Tracking:
         # deliberate per-tracker override for when the unified default
         # genuinely doesn't fit this engine.
         maxvel = float(proptv_cfg.get("maxvel", unified_velocity_bound(track_cfg)))
-        angle = float(proptv_cfg.get("angle", unified_angle_deg(track_cfg, default_deg=30.0)))
+        angle = float(
+            proptv_cfg.get("angle", unified_angle_deg(track_cfg, default_deg=30.0))
+        )
         t_init = int(proptv_cfg.get("t_init", 4))
 
         from openptv2.tracking_presets import infer_direction
+
         direction = infer_direction(track_cfg, proptv_cfg)
-        backtracking = bool(proptv_cfg.get("backtracking", False)) or (direction == "forward_backward")
+        backtracking = bool(proptv_cfg.get("backtracking", False)) or (
+            direction == "forward_backward"
+        )
         maxacc = float(proptv_cfg.get("maxacc", 10.0))
         weights = [float(w) for w in proptv_cfg.get("weights", [1.0, 0.6, 0.3])]
 
@@ -385,8 +390,12 @@ class Tracking:
         for fn in frame_numbers:
             frame = Frame(num_cams, max_targets)
             frame.read(
-                corres_base, "", prio_file_base=prio_base,
-                target_file_base="", frame_num=fn, store=store,
+                corres_base,
+                "",
+                prio_file_base=prio_base,
+                target_file_base="",
+                frame_num=fn,
+                store=store,
             )
             frames.append(frame)
             frame_particles.append(frame.positions())
@@ -397,9 +406,7 @@ class Tracking:
 
         # 3. Backward pass if requested (greedy reverse re-link).
         if cfg.backtracking:
-            trajectories = self._backtrack(
-                trajectories, frame_particles, maxvel
-            )
+            trajectories = self._backtrack(trajectories, frame_particles, maxvel)
 
         # 4. Write linkages to ptv_is.  `tr["time"]` holds 0-based frame
         # indices (relative to the sequence start), so `idx = time` maps
@@ -418,8 +425,12 @@ class Tracking:
                 pts_next = frame_particles[f_next]
                 if len(pts_curr) == 0 or len(pts_next) == 0:
                     continue
-                i_curr = int(np.argmin(np.linalg.norm(pts_curr - positions[step_i], axis=1)))
-                i_next = int(np.argmin(np.linalg.norm(pts_next - positions[step_i + 1], axis=1)))
+                i_curr = int(
+                    np.argmin(np.linalg.norm(pts_curr - positions[step_i], axis=1))
+                )
+                i_next = int(
+                    np.argmin(np.linalg.norm(pts_next - positions[step_i + 1], axis=1))
+                )
                 frames[f_curr].path_next[i_curr] = i_next
                 frames[f_next].path_prev[i_next] = i_curr
 
@@ -431,8 +442,11 @@ class Tracking:
             total_particles += frame.num_parts
             frame._sync_soa_to_path()
             frame.write(
-                corres_base, linkage_base,
-                prio_file_base=prio_base, target_file_base=None, frame_num=fn,
+                corres_base,
+                linkage_base,
+                prio_file_base=prio_base,
+                target_file_base=None,
+                frame_num=fn,
                 store=store,
             )
             if f_idx < num_frames - 1:
@@ -453,15 +467,20 @@ class Tracking:
                 relink_trajectory_gaps,
                 seed_cold_start,
             )
+
             base = linkage_base
             first, last = frame_numbers[0], frame_numbers[-1]
             stats = {"links_before": count_links(base, first, last, store=store)}
-            stats["cold_start"] = seed_cold_start(base, first, last, float(maxvel), store=store)
+            stats["cold_start"] = seed_cold_start(
+                base, first, last, float(maxvel), store=store
+            )
             stats["gap_relinking"] = relink_trajectory_gaps(
                 base, first, last, max_gap=2, max_accel_err=float(maxacc), store=store
             )
             if cfg.backtracking:
-                stats["reciprocity"] = enforce_reciprocity(base, first, last, store=store)
+                stats["reciprocity"] = enforce_reciprocity(
+                    base, first, last, store=store
+                )
             stats["links_after"] = count_links(base, first, last, store=store)
             print(
                 f"Post-process links: {stats.get('links_before', 0)} -> {stats.get('links_after', 0)}"

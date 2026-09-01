@@ -171,4 +171,3 @@ def test_create_3d_trajectories_panel_zarr(tmp_path):
         mock_read_store.assert_called_once()
         ax = panel.figure.axes[0]
         assert len(ax.lines) == 1
-

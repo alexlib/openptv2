@@ -74,7 +74,9 @@ def _claimed_indices(cam_target_ids: np.ndarray, cam: int) -> set[int]:
     return {int(v) for v in cam_target_ids[:, cam] if v >= 0}
 
 
-def _unclaimed_target_list(store, cam: int, frame: int, claimed: set[int]) -> list[Target]:
+def _unclaimed_target_list(
+    store, cam: int, frame: int, claimed: set[int]
+) -> list[Target]:
     """Plain, property-based Target objects (what candsearch_in_pix_rest
     needs), preserving read_targets' stored order (already y-sorted --
     every writer in this codebase sorts before storing). tnr encodes
@@ -90,7 +92,9 @@ def _unclaimed_target_list(store, cam: int, frame: int, claimed: set[int]) -> li
     return out
 
 
-def _claim_particle(predicted_pos, cals, cpar, store, frame: int, radius_px: float = ADD_RADIUS_PX):
+def _claim_particle(
+    predicted_pos, cals, cpar, store, frame: int, radius_px: float = ADD_RADIUS_PX
+):
     """Project predicted_pos into every camera, search unclaimed targets,
     triangulate when >= 2 cameras hit. Returns (pos_3d, cam_target_ids,
     n_cams) or None."""
@@ -113,8 +117,16 @@ def _claim_particle(predicted_pos, cals, cpar, store, frame: int, radius_px: flo
         px, py = point_to_pixel(predicted_pos, cals[cam], cpar)
         idx_out = [PT_UNUSED]
         counter = candsearch_in_pix_rest(
-            targets, len(targets), px, py, radius_px, radius_px, radius_px, radius_px,
-            idx_out, cpar,
+            targets,
+            len(targets),
+            px,
+            py,
+            radius_px,
+            radius_px,
+            radius_px,
+            radius_px,
+            idx_out,
+            cpar,
         )
         if counter > 0 and idx_out[0] != PT_UNUSED:
             hit = targets[idx_out[0]]
@@ -144,11 +156,15 @@ def _append_correspondence(store, frame: int, pos, cam_ids) -> int:
 
 def _empty_linkage():
     return (
-        np.empty(0, dtype=np.int32), np.empty(0, dtype=np.int32), np.empty((0, 3)),
+        np.empty(0, dtype=np.int32),
+        np.empty(0, dtype=np.int32),
+        np.empty((0, 3)),
     )
 
 
-def _backward_walk(cpar, cals, store, linkage_name: str, first: int, last: int) -> tuple[int, int]:
+def _backward_walk(
+    cpar, cals, store, linkage_name: str, first: int, last: int
+) -> tuple[int, int]:
     """One backward sweep, frame last-1 -> first: for every track head at
     t+1 with a known forward velocity, try to claim a particle at t.
     Returns (claimed_total, claimed_2cam)."""
@@ -159,7 +175,9 @@ def _backward_walk(cpar, cals, store, linkage_name: str, first: int, last: int) 
         if r_here is None:
             continue
         prev_here, next_here, xyz_here = r_here
-        r_next2 = read_linkage(linkage_name, t + 2, store=store) if t + 2 <= last else None
+        r_next2 = (
+            read_linkage(linkage_name, t + 2, store=store) if t + 2 <= last else None
+        )
         xyz_next2 = r_next2[2] if r_next2 is not None else None
 
         r_t = read_linkage(linkage_name, t, store=store)
@@ -193,7 +211,9 @@ def _backward_walk(cpar, cals, store, linkage_name: str, first: int, last: int) 
                 claimed_2cam += 1
 
         if dirty_here:
-            write_linkage(linkage_name, t + 1, prev_here, next_here, xyz_here, store=store)
+            write_linkage(
+                linkage_name, t + 1, prev_here, next_here, xyz_here, store=store
+            )
         if dirty_t:
             write_linkage(linkage_name, t, prev_t, next_t, xyz_t, store=store)
 
@@ -201,8 +221,15 @@ def _backward_walk(cpar, cals, store, linkage_name: str, first: int, last: int) 
 
 
 def run_corrective_pass(
-    cpar, vpar, tpar, spar, cals, store,
-    linkage_name: str = "ptv_is", max_passes: int = 2, min_change_frac: float = 0.01,
+    cpar,
+    vpar,
+    tpar,
+    spar,
+    cals,
+    store,
+    linkage_name: str = "ptv_is",
+    max_passes: int = 2,
+    min_change_frac: float = 0.01,
 ) -> CorrectiveStats:
     """The Stage-2 corrective pass. Iterates the backward walk +
     gap-bridging + reciprocity while the sequence's total link count keeps
@@ -216,16 +243,25 @@ def run_corrective_pass(
         stats.passes_run = p
         links_before_pass = count_links(linkage_name, first, last, store=store)
 
-        claimed, claimed_2cam = _backward_walk(cpar, cals, store, linkage_name, first, last)
+        claimed, claimed_2cam = _backward_walk(
+            cpar, cals, store, linkage_name, first, last
+        )
         stats.claimed_total += claimed
         stats.claimed_2cam += claimed_2cam
 
         stats.gaps_bridged[f"pass{p}"] = relink_trajectory_gaps(
-            linkage_name, first, last, max_gap=2,
-            max_accel_err=float(tpar.dacc), store=store,
+            linkage_name,
+            first,
+            last,
+            max_gap=2,
+            max_accel_err=float(tpar.dacc),
+            store=store,
         )
         stats.reciprocity[f"pass{p}"] = enforce_reciprocity(
-            linkage_name, first, last, store=store,
+            linkage_name,
+            first,
+            last,
+            store=store,
         )
 
         links_after_pass = count_links(linkage_name, first, last, store=store)

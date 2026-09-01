@@ -49,7 +49,11 @@ def _build_scene(store, cpar, cals):
     num_cams = cpar.num_cams
 
     for f, positions in frames.items():
-        pids_present = [p for p in range(len(positions)) if not (f == DROPPED_FRAME and p == DROPPED_PID)]
+        pids_present = [
+            p
+            for p in range(len(positions))
+            if not (f == DROPPED_FRAME and p == DROPPED_PID)
+        ]
 
         # Targets: every particle projects into every camera, every frame --
         # the dropout is a correspondence-stage miss, not a detection miss.
@@ -80,7 +84,11 @@ def _build_linkage(store, frames):
     sorted_frames = sorted(frames)
     row_of = {}  # frame -> {pid: row}
     for f in sorted_frames:
-        present = [p for p in range(len(frames[f])) if not (f == DROPPED_FRAME and p == DROPPED_PID)]
+        present = [
+            p
+            for p in range(len(frames[f]))
+            if not (f == DROPPED_FRAME and p == DROPPED_PID)
+        ]
         row_of[f] = {p: i for i, p in enumerate(present)}
 
     for fi, f in enumerate(sorted_frames):
@@ -108,7 +116,8 @@ def scene(tmp_path):
     spar = SequencePar.from_yaml(str(yaml_path), cpar.num_cams)
     cals = [
         Calibration.from_file(
-            str(FIX / f"cal/cam{c + 1}.tif.ori"), str(FIX / f"cal/cam{c + 1}.tif.addpar")
+            str(FIX / f"cal/cam{c + 1}.tif.ori"),
+            str(FIX / f"cal/cam{c + 1}.tif.addpar"),
         )
         for c in range(cpar.num_cams)
     ]
@@ -117,7 +126,14 @@ def scene(tmp_path):
     frames = _build_scene(store, cpar, cals)
     _build_linkage(store, frames)
 
-    return {"cpar": cpar, "vpar": vpar, "tpar": tpar, "spar": spar, "cals": cals, "store": store}
+    return {
+        "cpar": cpar,
+        "vpar": vpar,
+        "tpar": tpar,
+        "spar": spar,
+        "cals": cals,
+        "store": store,
+    }
 
 
 def test_backward_walk_recovers_the_dropped_correspondence(scene):
@@ -128,11 +144,19 @@ def test_backward_walk_recovers_the_dropped_correspondence(scene):
     assert DROPPED_PID not in ids[:, 0]
     prev, _next, _xyz = store.read_linkage(DROPPED_FRAME + 1, name="ptv_is")
     row_at_next = _next_frame_row(store, DROPPED_FRAME + 1, DROPPED_PID)
-    assert prev[row_at_next] == -1, "test setup: dropped particle's track must start fresh"
+    assert prev[row_at_next] == -1, (
+        "test setup: dropped particle's track must start fresh"
+    )
 
     stats = run_corrective_pass(
-        scene["cpar"], scene["vpar"], scene["tpar"], scene["spar"], scene["cals"], store,
-        linkage_name="ptv_is", max_passes=1,
+        scene["cpar"],
+        scene["vpar"],
+        scene["tpar"],
+        scene["spar"],
+        scene["cals"],
+        store,
+        linkage_name="ptv_is",
+        max_passes=1,
     )
 
     assert stats.claimed_total >= 1, "corrective pass claimed no particles"
@@ -145,7 +169,9 @@ def test_backward_walk_recovers_the_dropped_correspondence(scene):
     frames = _load_trajectories()
     true_pos = frames[DROPPED_FRAME][DROPPED_PID]
     dists = np.linalg.norm(pos_after - true_pos, axis=1)
-    assert dists.min() < 1e-3, "claimed particle's position doesn't match the true dropped particle"
+    assert dists.min() < 1e-3, (
+        "claimed particle's position doesn't match the true dropped particle"
+    )
 
     # And frame DROPPED_FRAME+1's prev pointer for that particle must now
     # point at the newly-claimed row (rewired, not left at -1).

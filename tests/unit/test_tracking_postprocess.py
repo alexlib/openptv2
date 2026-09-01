@@ -29,7 +29,14 @@ def test_write_linkage_with_store_skips_ascii(tmp_path):
     store = RunStore(tmp_path / "run.zarr", mode="w")
     base = "warmup/cycle1"  # deliberately not a real directory on disk
 
-    write_linkage(base, 1, np.array([-1]), np.array([-2]), np.array([[0.0, 0.0, 0.0]]), store=store)
+    write_linkage(
+        base,
+        1,
+        np.array([-1]),
+        np.array([-2]),
+        np.array([[0.0, 0.0, 0.0]]),
+        store=store,
+    )
 
     prev, nxt, xyz = read_linkage(base, 1, store=store)
     assert list(prev) == [-1]
@@ -102,9 +109,7 @@ def test_relink_trajectory_gaps_bridges_missing_frame(tmp_path):
     _write(base, 3, [-1], [0], [[6, 0, 0]])
     _write(base, 4, [0], [-2], [[8, 0, 0]])
 
-    stats = relink_trajectory_gaps(
-        base, first=0, last=4, max_gap=2, max_accel_err=1.0
-    )
+    stats = relink_trajectory_gaps(base, first=0, last=4, max_gap=2, max_accel_err=1.0)
     assert stats["bridged_gaps"] == 1
 
     # A bridged gap is a single cross-frame link (frame 1 -> frame 3), not a
@@ -134,9 +139,12 @@ def test_enforce_reciprocity_keeps_gap_bridged_cross_frame_link(tmp_path):
     _write(base, 3, [-1], [0], [[6, 0, 0]])
     _write(base, 4, [0], [-2], [[8, 0, 0]])
 
-    assert relink_trajectory_gaps(
-        base, first=0, last=4, max_gap=2, max_accel_err=1.0
-    )["bridged_gaps"] == 1
+    assert (
+        relink_trajectory_gaps(base, first=0, last=4, max_gap=2, max_accel_err=1.0)[
+            "bridged_gaps"
+        ]
+        == 1
+    )
     stats = enforce_reciprocity(base, 0, 4)
 
     assert stats == {"severed_next": 0, "severed_prev": 0}

@@ -55,17 +55,17 @@ class ScenarioSpec:
     curvature: float = 0.0
 
     # ── Birth / death / crossing ──────────────────────────────────────
-    birth_fraction: float = 0.0   # fraction of tracks that start late mid-sequence
-    death_fraction: float = 0.0   # fraction of tracks that end early
-    entering_particles: int = 0   # particles that cross INTO the volume and appear
-    leaving_particles: int = 0    # particles that cross OUT of the volume and vanish
+    birth_fraction: float = 0.0  # fraction of tracks that start late mid-sequence
+    death_fraction: float = 0.0  # fraction of tracks that end early
+    entering_particles: int = 0  # particles that cross INTO the volume and appear
+    leaving_particles: int = 0  # particles that cross OUT of the volume and vanish
     crossings: list[CrossingSpec] = field(default_factory=list)
     crossing_particle_ids: list[int] = field(default_factory=list)
 
     # ── Detection realism ─────────────────────────────────────────────
-    gap_probability: float = 0.0   # per-frame dropout probability per track
-    noise_mm: float = 0.0          # additive gaussian detection noise
-    ghost_ratio: float = 0.0       # fraction of spurious extra particles per frame
+    gap_probability: float = 0.0  # per-frame dropout probability per track
+    noise_mm: float = 0.0  # additive gaussian detection noise
+    ghost_ratio: float = 0.0  # fraction of spurious extra particles per frame
     seed: int = 42
 
     # ── Helpers present purely for ergonomics ─────────────────────────
@@ -74,7 +74,10 @@ class ScenarioSpec:
 
 def generate_scenario(
     spec: ScenarioSpec,
-) -> tuple[dict[int, list[tuple[int, float, float, float]]], dict[int, list[tuple[int, float, float, float]]]]:
+) -> tuple[
+    dict[int, list[tuple[int, float, float, float]]],
+    dict[int, list[tuple[int, float, float, float]]],
+]:
     """Generate ground-truth trajectories for a :class:`ScenarioSpec`.
 
     Returns
@@ -204,7 +207,7 @@ def generate_scenario(
         chosen = rng.choice(all_ids, size=n, replace=False)
         for pid in chosen:
             shortened = max(1, spec.num_frames // 4)
-            true_tracks[pid] = true_tracks[pid][: shortened]
+            true_tracks[pid] = true_tracks[pid][:shortened]
 
     # ── 5. Build per-frame ground truth with noise / gaps / ghosts ──
     frame_gt: dict[int, list[tuple[int, float, float, float]]] = {

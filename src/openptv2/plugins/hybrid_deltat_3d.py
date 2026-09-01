@@ -103,9 +103,7 @@ def hybrid_track(
     # interval (e.g. the shortened final step to the last frame).
     for tr in segments:
         p = np.asarray(tr["pos"])
-        t_real = np.asarray(coarse_idx, dtype=float)[
-            np.asarray(tr["time"], dtype=int)
-        ]
+        t_real = np.asarray(coarse_idx, dtype=float)[np.asarray(tr["time"], dtype=int)]
         if len(p) < 2:
             continue
         dt = np.diff(t_real)
@@ -142,10 +140,7 @@ def hybrid_track(
             k = claim(f, pos)
             if k >= 0 and (
                 gate is None
-                or float(
-                    np.linalg.norm(frame_particles[f][k] - pos)
-                )
-                <= gate
+                or float(np.linalg.norm(frame_particles[f][k] - pos)) <= gate
             ):
                 used[f][k] = True
                 if gate is not None:

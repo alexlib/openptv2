@@ -155,17 +155,15 @@ def _(np, plt):
         import re
         from pathlib import Path as _Path
 
-        # Zarr-first: if the ASCII file is missing, try the RunStore
-        # (zarr is the database of record). Keeps ASCII as fallback.
+        # Zarr-first: the store is the database of record. Try RunStore
+        # before ASCII regardless of whether the ASCII file exists.
         _path = _Path(filename)
-        if not _path.exists():
-            # infer frame number from filename if not given
-            if frame is None:
-                m = re.search(r"rt_is\.(\d+)", str(filename))
-                if m:
-                    frame = int(m.group(1))
-            if frame is not None:
-                # search for store: file's dir, its parent, and cwd
+        if frame is None:
+            m = re.search(r"rt_is\.(\d+)", str(filename))
+            if m:
+                frame = int(m.group(1))
+        if frame is not None:
+            try:
                 from openptv2.storage import RunStore, find_existing_store
 
                 store_path = None
@@ -179,12 +177,8 @@ def _(np, plt):
                     if store.has_correspondences(frame):
                         pos, _ = store.read_correspondences(frame)
                         # mimic rt_is columns: [nr, x, y, z] for common plotting below
-                        d = np.column_stack(
-                            [np.arange(len(pos)) + 1, np.asarray(pos)]
-                        )
-                        ax = plt.figure(figsize=(12, 10)).add_subplot(
-                            projection="3d"
-                        )
+                        d = np.column_stack([np.arange(len(pos)) + 1, np.asarray(pos)])
+                        ax = plt.figure(figsize=(12, 10)).add_subplot(projection="3d")
                         for row in d:
                             ax.plot(row[1], row[2], row[3], "ro")
                             ax.text(row[1], row[2], row[3], f"{row[0]:.0f}", None)
@@ -195,7 +189,9 @@ def _(np, plt):
                         ax.set_ylabel("y")
                         ax.set_zlabel("z")
                         return ax
-        # ASCII fallback
+            except Exception:
+                pass
+        # ASCII fallback (pre-zarr runs via import_run)
         d = np.loadtxt(filename, usecols=(0, 1, 2, 3), skiprows=1)
 
         # %%

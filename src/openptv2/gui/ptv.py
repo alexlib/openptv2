@@ -615,6 +615,7 @@ def py_start_proc_c(
         exp_dir = getattr(pm, "exp_path", None)
         if exp_dir is None and getattr(pm, "yaml_path", None) is not None:
             from pathlib import Path
+
             exp_dir = Path(pm.yaml_path).resolve().parent
 
         cals = ptv_calibration._read_calibrations(cpar, num_cams, base_dir=exp_dir)
@@ -729,8 +730,15 @@ def py_correspondences_proc_c(exp):
     print(f"short_file_bases: {short_file_bases}")
     _ensure_target_output_writable(short_file_bases)
 
+    store = _open_run_store(exp)
     for i_cam in range(exp.num_cams):
-        write_targets(exp.detections[i_cam], short_file_bases[i_cam], frame)
+        write_targets(
+            exp.detections[i_cam],
+            short_file_bases[i_cam],
+            frame,
+            store=store,
+            cam_idx=i_cam,
+        )
 
     print(f"Frame {frame} had {[s.shape[1] for s in sorted_pos]!r} correspondences.")
 
@@ -821,11 +829,35 @@ def _frame_image_name(base_name, frame: int) -> Path:
     """Format a sequence base name into the image path for one frame."""
     base_name = _safe_decode(base_name)
     try:
-        return Path(base_name % frame)
+        p = Path(base_name % frame)
     except (TypeError, ValueError):
         # No usable % placeholder: append the frame number (legacy naming).
         base_path = Path(base_name)
-        return base_path.parent / f"{base_path.stem}_{frame:04d}{base_path.suffix}"
+        p = base_path.parent / f"{base_path.stem}_{frame:04d}{base_path.suffix}"
+
+    if p.exists():
+        return p
+
+    # If the exact path does not exist, look for matching prefix files (e.g. 00001901_000000007383A010.tiff)
+    # glob ordering is filesystem-dependent — sort deterministically
+    if p.parent.exists():
+        candidates = sorted(p.parent.glob(f"{p.name}*"))
+        if not candidates and p.suffix:
+            candidates = sorted(p.parent.glob(f"{p.stem}*"))
+        if not candidates:
+            candidates = sorted(p.parent.glob(f"{frame:08d}*"))
+        if not candidates:
+            candidates = sorted(p.parent.glob(f"{frame:04d}*"))
+        if candidates:
+            img_cands = sorted(
+                c
+                for c in candidates
+                if c.suffix.lower()
+                in (".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp")
+            )
+            return img_cands[0] if img_cands else sorted(candidates)[0]
+
+    return p
 
 
 def _read_gray_uint8(imname: Path) -> np.ndarray:
@@ -1079,7 +1111,9 @@ def py_sequence_loop(exp) -> None:
             detections, corrected, cals, vpar, cpar
         )
         for i_cam in range(num_cams):
-            write_targets(detections[i_cam], short_file_bases[i_cam], frame, store=store)
+            write_targets(
+                detections[i_cam], short_file_bases[i_cam], frame, store=store
+            )
 
         print(
             "Frame "
@@ -1303,7 +1337,7 @@ def py_sequence_loop_python(exp) -> None:
         parallel_preprocess = ptv_params_dict.get("parallel_preprocess", False)
 
     if parallel_preprocess and not existing_target:
-        preprocess_and_detect_all_parallel(exp)
+        preprocess_and_detect_all_parallel(exp, zarr_store_path=str(store.store_path))
         existing_target = True
 
     first_frame = spar.get_first()
@@ -1632,7 +1666,9 @@ def write_targets(
     return True
 
 
-def read_targets(short_file_base: str, frame: int, store=None, cam_idx=None) -> TargetArray:
+def read_targets(
+    short_file_base: str, frame: int, store=None, cam_idx=None
+) -> TargetArray:
     """Read targets: from the unified RunStore when ``store`` is given and has targets,
     otherwise falls back to ASCII file."""
     filename = f"{short_file_base}.{frame:04d}_targets"
@@ -1785,10 +1821,39 @@ def generate_short_file_bases(img_base_names: List[str]) -> List[str]:
 def _read_correspondences_from_zarr_fallback(p: Path, frame: int):
     """Try each candidate Zarr store for one frame's correspondences.
 
-    Returns the parsed [x, y, z, p1, p2, p3, p4] rows on success, or None if
-    no candidate store has this frame (falls back to the ascii rt_is file).
+    Zarr is the database of record — try RunStore first (res/run.zarr),
+    then legacy ZarrFrameStore candidates. Returns the parsed
+    [x, y, z, p1, p2, p3, p4] rows on success, or None if no candidate
+    store has this frame (falls back to the ascii rt_is file).
     """
-    from openptv2.storage import ZarrFrameStore, find_existing_store
+    from openptv2.storage import RunStore, ZarrFrameStore, find_existing_store
+
+    # Canonical RunStore (res/run.zarr) — probe via find_existing_store.
+    try:
+        for cand_parent in (p.parent, p.parent.parent):
+            zarr_path = find_existing_store(cand_parent)
+            if zarr_path is not None and zarr_path.exists():
+                try:
+                    store = RunStore(zarr_path, mode="r")
+                    if store.has_correspondences(frame):
+                        pos_3d, cam_ids = store.read_correspondences(frame)
+                        return [
+                            [
+                                float(pt[0]),
+                                float(pt[1]),
+                                float(pt[2]),
+                                int(c[0]),
+                                int(c[1]),
+                                int(c[2]),
+                                int(c[3]),
+                            ]
+                            for pt, c in zip(pos_3d, cam_ids)
+                        ]
+                except Exception:
+                    pass
+                break
+    except Exception:
+        pass
 
     exp_root = p.parent.parent
     zarr_store = find_existing_store(exp_root)
@@ -1821,17 +1886,21 @@ def _read_correspondences_from_zarr_fallback(p: Path, frame: int):
 
 
 def read_rt_is_file(filename) -> List[List[float]]:
-    """Read data from an rt_is file or Zarr store and return the parsed values."""
-    if not Path(filename).exists():
-        p = Path(filename)
-        frame_match = re.search(r"\.(\d+)$", p.name)
-        if frame_match:
-            data = _read_correspondences_from_zarr_fallback(
-                p, int(frame_match.group(1))
-            )
+    """Read data from an rt_is file or Zarr store and return the parsed values.
+
+    Zarr is the database of record — the store is checked first when the
+    frame can be parsed from the filename. ASCII is only for pre-zarr runs.
+    """
+    p = Path(filename)
+    frame_match = re.search(r"\.(\d+)$", p.name)
+    if frame_match:
+        try:
+            frame = int(frame_match.group(1))
+            data = _read_correspondences_from_zarr_fallback(p, frame)
             if data is not None:
                 return data
-
+        except Exception:
+            pass
     try:
         with open(filename, "r", encoding="utf-8") as file:
             num_rows = int(file.readline().strip())

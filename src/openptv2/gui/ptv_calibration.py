@@ -64,7 +64,9 @@ def _read_calibrations(
                 addpar_file = cand_str + ".addpar"
 
             ori_exists = os.path.isfile(ori_file) and os.access(ori_file, os.R_OK)
-            addpar_exists = os.path.isfile(addpar_file) and os.access(addpar_file, os.R_OK)
+            addpar_exists = os.path.isfile(addpar_file) and os.access(
+                addpar_file, os.R_OK
+            )
 
             if ori_exists and addpar_exists:
                 found_ori = ori_file
@@ -76,10 +78,20 @@ def _read_calibrations(
             print(f"Loaded calibration for camera {i_cam + 1} from {found_ori}")
         else:
             primary_cand = str(candidates[0])
-            ori_file = primary_cand if primary_cand.endswith(".ori") else (primary_cand + ".ori")
-            addpar_file = (primary_cand[:-4] + ".addpar") if primary_cand.endswith(".ori") else (primary_cand + ".addpar")
+            ori_file = (
+                primary_cand
+                if primary_cand.endswith(".ori")
+                else (primary_cand + ".ori")
+            )
+            addpar_file = (
+                (primary_cand[:-4] + ".addpar")
+                if primary_cand.endswith(".ori")
+                else (primary_cand + ".addpar")
+            )
             ori_exists = os.path.isfile(ori_file) and os.access(ori_file, os.R_OK)
-            addpar_exists = os.path.isfile(addpar_file) and os.access(addpar_file, os.R_OK)
+            addpar_exists = os.path.isfile(addpar_file) and os.access(
+                addpar_file, os.R_OK
+            )
             missing_str = f"Missing: {ori_file if not ori_exists else ''} {addpar_file if not addpar_exists else ''}"
             if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
                 raise RuntimeError(
@@ -787,9 +799,7 @@ def calib_particles(exp):
         pm = exp.experiment.pm
         cpar, spar, _vpar, _track_par, _tpar, _cals, _epar = py_start_proc_c(pm)
     else:
-        raise ValueError(
-            "Object must have a pm, exp1.pm, or experiment.pm attribute"
-        )
+        raise ValueError("Object must have a pm, exp1.pm, or experiment.pm attribute")
 
     num_cams = cpar.get_num_cams()
     calibs = _read_calibrations(cpar, num_cams)

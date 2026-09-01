@@ -69,7 +69,9 @@ def ingest_dataset(root: Path) -> str:
             cam, frame = int(m.group(1)) - 1, int(m.group(2))
             seen.setdefault((cam, frame), p)
     for (cam, frame), path in sorted(seen.items()):
-        targs = read_targets_ascii(str(path.parent / path.name.split(".")[0]) + ".", frame, cam_idx=cam)
+        targs = read_targets_ascii(
+            str(path.parent / path.name.split(".")[0]) + ".", frame, cam_idx=cam
+        )
         store.write_targets(cam, frame, targs)
         if frame not in frames:
             frames.append(frame)

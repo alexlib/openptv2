@@ -83,7 +83,9 @@ def _(Path, frame_ui, num_cams, pm, read_frame_images, spar, yaml_path_ui):
         str(yaml_dir / name) if not Path(name).is_absolute() else name
         for name in spar.img_base_name
     ]
-    images = read_frame_images(pm, absolute_img_base_name, num_cams, int(frame_ui.value))
+    images = read_frame_images(
+        pm, absolute_img_base_name, num_cams, int(frame_ui.value)
+    )
     return (images,)
 
 
@@ -120,12 +122,14 @@ def _(mo, tpar):
     nymax_ui = mo.ui.slider(1, 50, value=int(tpar.nymax), label="nymax")
     sumg_min_ui = mo.ui.slider(0, 500, value=int(tpar.sumg_min), label="sumg_min")
 
-    mo.vstack([
-        mo.hstack([x_center_ui, y_center_ui, zoom_ui]),
-        mo.hstack([discont_ui, sumg_min_ui]),
-        mo.hstack([nnmin_ui, nnmax_ui]),
-        mo.hstack([nxmin_ui, nxmax_ui, nymin_ui, nymax_ui]),
-    ])
+    mo.vstack(
+        [
+            mo.hstack([x_center_ui, y_center_ui, zoom_ui]),
+            mo.hstack([discont_ui, sumg_min_ui]),
+            mo.hstack([nnmin_ui, nnmax_ui]),
+            mo.hstack([nxmin_ui, nxmax_ui, nymin_ui, nymax_ui]),
+        ]
+    )
 
     return (
         discont_ui,
@@ -215,9 +219,13 @@ def _(
         all_xs = [t.x for t in targets]
         all_ys = [t.y for t in targets]
         ax1.scatter(all_xs, all_ys, s=8, marker="x", color="red", linewidths=0.8)
-    rect = Rectangle((x0, y0), x1 - x0, y1 - y0, linewidth=2, edgecolor="cyan", facecolor="none")
+    rect = Rectangle(
+        (x0, y0), x1 - x0, y1 - y0, linewidth=2, edgecolor="cyan", facecolor="none"
+    )
     ax1.add_patch(rect)
-    ax1.set_title(f"cam{cam_idx + 1}: {len(targets)} detections (gvthres={gvthres_uis[cam_idx].value})")
+    ax1.set_title(
+        f"cam{cam_idx + 1}: {len(targets)} detections (gvthres={gvthres_uis[cam_idx].value})"
+    )
     ax1.axis("off")
 
     crop_img = img[y0:y1, x0:x1]
@@ -322,7 +330,7 @@ def _(cam_ui):
 def _(mo, num_cams, tpar):
 
     gvthres_uis = [
-        mo.ui.slider(0, 255, value=int(tpar.gvthres[c]), label=f"cam{c+1} gvthres")
+        mo.ui.slider(0, 255, value=int(tpar.gvthres[c]), label=f"cam{c + 1} gvthres")
         for c in range(num_cams)
     ]
 

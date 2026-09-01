@@ -153,7 +153,14 @@ def targ_rec(
     xmax = min(xmax, imx - 1)
     ymax = min(ymax, imy - 1)
 
-    img_u8 = np.ascontiguousarray(img, dtype=np.uint8)
+    _a = np.asarray(img)
+    if _a.dtype != np.uint8:
+        raise TypeError(
+            f"targ_rec needs a uint8 image, got {_a.dtype}. Casting would WRAP "
+            "(65520 -> 240), not scale. Convert first with "
+            "openptv2.image_scaling.to_uint8, or call targ_rec_scaled. "
+            "See docs/plans/2026-08-31-16bit-image-handling.md")
+    img_u8 = np.ascontiguousarray(_a, dtype=np.uint8)
     img0 = img_u8.copy()
     max_targets = (xmax - xmin) * (ymax - ymin)
 
@@ -452,34 +459,41 @@ def is_compiled() -> bool:
     return cython.compiled
 
 
-def _load_image_array(img_source) -> np.ndarray:
-    """Load and normalize an image source into a C-contiguous uint8 2D array."""
+def _to_uint8(arr, scaling: dict | None) -> np.ndarray:
+    """Apply the configured grey-scaling rule; 'fixed' reproduces img_as_ubyte."""
+    from openptv2.image_scaling import to_uint8
+    rule = scaling or {"mode": "fixed"}
+    return to_uint8(arr, rule.get("mode", "fixed"),
+                    lo=rule.get("lo"), hi=rule.get("hi"))
+
+
+def _load_image_array(img_source, scaling: dict | None = None) -> np.ndarray:
+    """Load an image source as a C-contiguous uint8 2D array.
+
+    ``scaling`` is the rule from :func:`openptv2.image_scaling.from_parameters`.
+    Omitting it keeps the historical fixed full-range map, so existing callers
+    are unaffected.
+    """
     from pathlib import Path
 
     if isinstance(img_source, (str, Path)):
         p = Path(img_source)
         if not p.exists():
             raise FileNotFoundError(f"Image not found: {p}")
-        from skimage.io import imread
         from skimage.color import rgb2gray
-        from skimage.util import img_as_ubyte
+        from skimage.io import imread
 
         arr = imread(p)
         if arr.ndim > 2:
             arr = rgb2gray(arr[:, :, :3])
-        if arr.dtype != np.uint8:
-            arr = img_as_ubyte(arr)
-        return np.ascontiguousarray(arr, dtype=np.uint8)
+        return _to_uint8(arr, scaling)
 
     elif isinstance(img_source, np.ndarray):
         arr = img_source
         if arr.ndim > 2:
             from skimage.color import rgb2gray
             arr = rgb2gray(arr[:, :, :3])
-        if arr.dtype != np.uint8:
-            from skimage.util import img_as_ubyte
-            arr = img_as_ubyte(arr)
-        return np.ascontiguousarray(arr, dtype=np.uint8)
+        return _to_uint8(arr, scaling)
 
     elif isinstance(img_source, dict) and "shm_name" in img_source:
         from multiprocessing import shared_memory
@@ -649,7 +663,6 @@ def detect_targets_batch_parallel(
     """
     import os
     from concurrent.futures import ProcessPoolExecutor
-    from pathlib import Path
 
     if isinstance(images, np.ndarray) and images.ndim == 3:
         num_items = images.shape[0]

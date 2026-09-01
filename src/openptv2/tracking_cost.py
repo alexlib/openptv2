@@ -111,7 +111,9 @@ def compute_multi_term_cost_matrix(
         dt_eff = max(dt, 1e-6)
         # Constant-velocity projected position: x_last + v_pred * dt
         # Displacement from constant-velocity prediction measures acceleration change
-        v_proj = pred_pos - (0.5 * (pred_acc if pred_acc is not None else 0.0) * (dt_eff**2))
+        v_proj = pred_pos - (
+            0.5 * (pred_acc if pred_acc is not None else 0.0) * (dt_eff**2)
+        )
         vel_err = cdist(v_proj, cand_pos) / dt_eff
         cost += w.w_velocity * vel_err
 

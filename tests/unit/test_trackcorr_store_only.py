@@ -57,13 +57,17 @@ def _build_dataset(out: Path, set_tnr: bool) -> None:
     ptv["mmp_n1"] = ptv["mmp_n2"] = ptv["mmp_n3"] = 1.0
     ptv["mmp_d"] = 0.0
     cpar = ControlPar(
-        num_cams=NUM_CAMS, imx=ptv["imx"], imy=ptv["imy"],
-        pix_x=ptv["pix_x"], pix_y=ptv["pix_y"],
+        num_cams=NUM_CAMS,
+        imx=ptv["imx"],
+        imy=ptv["imy"],
+        pix_x=ptv["pix_x"],
+        pix_y=ptv["pix_y"],
         mm=MmNp(n1=1.0, n2=[1.0], n3=1.0, d=[0.0]),
     )
     cals = [
         Calibration.from_file(
-            str(out / "cal" / f"cam{c + 1}.tif.ori"), str(out / "cal" / f"cam{c + 1}.tif.addpar")
+            str(out / "cal" / f"cam{c + 1}.tif.ori"),
+            str(out / "cal" / f"cam{c + 1}.tif.addpar"),
         )
         for c in range(NUM_CAMS)
     ]
@@ -111,7 +115,9 @@ def _run_trackcorr(out: Path) -> int:
     prev_cwd = _os.getcwd()
     _os.chdir(out)
     try:
-        exp = build_processing_experiment(out / "parameters_Run1.yaml", FIRST, FIRST + 2)
+        exp = build_processing_experiment(
+            out / "parameters_Run1.yaml", FIRST, FIRST + 2
+        )
     finally:
         _os.chdir(prev_cwd)
 
@@ -154,7 +160,10 @@ def _write_fake_proptv_origin(case_dir: Path) -> None:
     vel = rng.uniform(-0.02, 0.02, size=(N_PARTICLES, 3))
     for fi in range(3):
         pos = pos0 + vel * fi
-        lines = [f"{i} {pos[i, 0]:.6f} {pos[i, 1]:.6f} {pos[i, 2]:.6f}" for i in range(N_PARTICLES)]
+        lines = [
+            f"{i} {pos[i, 0]:.6f} {pos[i, 1]:.6f} {pos[i, 2]:.6f}"
+            for i in range(N_PARTICLES)
+        ]
         (origin_dir / f"origin_{fi:05d}.txt").write_text("\n".join(lines) + "\n")
 
 
@@ -212,7 +221,9 @@ def test_adapt_proptv_dataset_convert_realistic_runs_end_to_end(tmp_path):
     )
 
     n_linked = _run_trackcorr(out)
-    assert n_linked >= 1, "expected at least one real link on the realistic-pipeline output"
+    assert n_linked >= 1, (
+        "expected at least one real link on the realistic-pipeline output"
+    )
 
 
 @pytest.mark.unit
@@ -234,4 +245,6 @@ def test_trackcorr_fails_when_tnr_is_unset(tmp_path):
     out = tmp_path / "without_tnr"
     _build_dataset(out, set_tnr=False)
     n_linked = _run_trackcorr(out)
-    assert n_linked == 1, f"expected exactly 1 (the tnr-collapse signature), got {n_linked}"
+    assert n_linked == 1, (
+        f"expected exactly 1 (the tnr-collapse signature), got {n_linked}"
+    )

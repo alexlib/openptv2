@@ -19,7 +19,7 @@ an openptv2 YAML field are not guaranteed to have the same definition.**
 candidate regardless of particle size:
 
 ```python
-tol_band_width = vpar.eps0   # mm, constant for the whole frame
+tol_band_width = vpar.eps0  # mm, constant for the whole frame
 ```
 
 This is liboptv's mainline algorithm (`find_candidate` in liboptv's classic
@@ -68,7 +68,7 @@ valid for this dataset** — compute what fraction of detected particles would
 have their *true* per-particle tolerance dominated by the 0.06mm floor:
 
 ```python
-tol = eps0_raw * 0.5 * (pix_x + pix_y) * particle_sizes   # array, one per target
+tol = eps0_raw * 0.5 * (pix_x + pix_y) * particle_sizes  # array, one per target
 floor_fraction = (tol < 0.06).mean()
 ```
 

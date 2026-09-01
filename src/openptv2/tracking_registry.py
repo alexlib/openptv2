@@ -38,22 +38,22 @@ class TrackerInfo:
     # ── Identity ──────────────────────────────────────────────────────
     name: str
     display_name: str
-    short_description: str                     # one-liner for tables
+    short_description: str  # one-liner for tables
 
     # ── Algorithm ─────────────────────────────────────────────────────
-    algorithm_summary: str                     # paragraph describing how it works
-    algorithm_detail: str = ""                 # longer technical description
-    citation: str = ""                         # DOI or BibTeX key if published
+    algorithm_summary: str  # paragraph describing how it works
+    algorithm_detail: str = ""  # longer technical description
+    citation: str = ""  # DOI or BibTeX key if published
 
     # ── Capabilities ──────────────────────────────────────────────────
     supports_backward: bool = False
     supports_new_particles: bool = True
-    supports_2d: bool = False                  # uses 2D image targets (not just 3D)
+    supports_2d: bool = False  # uses 2D image targets (not just 3D)
     supports_postprocessing: bool = False
     supports_gap_relinking: bool = False
     supports_multimedia: bool = False
     supports_splitter: bool = False
-    supports_cost_weights: bool = False        # configurable cost terms
+    supports_cost_weights: bool = False  # configurable cost terms
 
     # ── Performance characteristics ───────────────────────────────────
     speed_ranking: Literal["fastest", "fast", "moderate", "slow"] = "moderate"
@@ -70,8 +70,8 @@ class TrackerInfo:
     typical_datasets: str = ""
 
     # ── Integration ───────────────────────────────────────────────────
-    plugin_module: str = ""                    # resolved import path
-    preset_name: str | None = None             # TrackingPreset enum value if any
+    plugin_module: str = ""  # resolved import path
+    preset_name: str | None = None  # TrackingPreset enum value if any
 
 
 # ── Registry ──────────────────────────────────────────────────────────
@@ -258,9 +258,9 @@ FOUR_BE_INFO = TrackerInfo(
             type="float",
             default="±15.5",
             description="Velocity search window, per axis (mm/frame) -- same track.par "
-                         "fields priority_segment_3d/trackcorr use.",
+            "fields priority_segment_3d/trackcorr use.",
             how_to_choose="Set just above max observed displacement, same guidance as "
-                          "priority_segment_3d -- there is no 4BE-specific tuning here.",
+            "priority_segment_3d -- there is no 4BE-specific tuning here.",
             typical_range="1 - 100",
             unit="mm/frame",
         ),
@@ -269,21 +269,21 @@ FOUR_BE_INFO = TrackerInfo(
             type="float",
             default="5.5",
             description="Unused directly by 4BE's own cost (which is a distance sum, not "
-                         "an acceleration bound) -- retained for API parity with "
-                         "priority_segment_3d/trackcorr; the candidate search box itself "
-                         "is dvxmax/dvymax/dvzmax.",
+            "an acceleration bound) -- retained for API parity with "
+            "priority_segment_3d/trackcorr; the candidate search box itself "
+            "is dvxmax/dvymax/dvzmax.",
             how_to_choose="Leave at the same value used for priority_segment_3d on this "
-                          "dataset; it does not change 4BE's own linking decisions.",
+            "dataset; it does not change 4BE's own linking decisions.",
             typical_range="0.5 - 50",
             unit="mm",
         ),
     ),
     default_preset="4be",
     best_for="Sparse-to-moderate density flows where a real particle usually exists two "
-              "frames ahead to disambiguate close candidates.",
+    "frames ahead to disambiguate close candidates.",
     avoid_when="High density or high-noise data (see the case study above) -- more "
-               "candidates means more chances for a coincidental n+2 match to compete "
-               "with the correct one, even with the summed cost.",
+    "candidates means more chances for a coincidental n+2 match to compete "
+    "with the correct one, even with the summed cost.",
     typical_datasets="3D PTV benchmark sequences, turbulent flow sequences.",
 )
 
@@ -907,12 +907,24 @@ def print_tracker_detail(name: str) -> str:
 
     lines.append("")
     lines.append("  Capabilities:")
-    lines.append(f"    {'Backward pass':.<30} {'Yes' if info.supports_backward else 'No'}")
-    lines.append(f"    {'New particles mid-seq':.<30} {'Yes' if info.supports_new_particles else 'No'}")
-    lines.append(f"    {'2D target tracking':.<30} {'Yes' if info.supports_2d else 'No'}")
-    lines.append(f"    {'Post-processing':.<30} {'Yes' if info.supports_postprocessing else 'No'}")
-    lines.append(f"    {'Gap relinking':.<30} {'Yes' if info.supports_gap_relinking else 'No'}")
-    lines.append(f"    {'Cost weights':.<30} {'Yes' if info.supports_cost_weights else 'No'}")
+    lines.append(
+        f"    {'Backward pass':.<30} {'Yes' if info.supports_backward else 'No'}"
+    )
+    lines.append(
+        f"    {'New particles mid-seq':.<30} {'Yes' if info.supports_new_particles else 'No'}"
+    )
+    lines.append(
+        f"    {'2D target tracking':.<30} {'Yes' if info.supports_2d else 'No'}"
+    )
+    lines.append(
+        f"    {'Post-processing':.<30} {'Yes' if info.supports_postprocessing else 'No'}"
+    )
+    lines.append(
+        f"    {'Gap relinking':.<30} {'Yes' if info.supports_gap_relinking else 'No'}"
+    )
+    lines.append(
+        f"    {'Cost weights':.<30} {'Yes' if info.supports_cost_weights else 'No'}"
+    )
 
     lines.append("")
     lines.append("  Performance:")
@@ -925,7 +937,9 @@ def print_tracker_detail(name: str) -> str:
         lines.append("  Parameters:")
         for p in info.parameters:
             lines.append(f"    {p.name}")
-            lines.append(f"      Default: {p.default}  |  Range: {p.typical_range}  |  Unit: {p.unit}")
+            lines.append(
+                f"      Default: {p.default}  |  Range: {p.typical_range}  |  Unit: {p.unit}"
+            )
             lines.append(f"      {p.description}")
             if p.how_to_choose:
                 lines.append(f"      Tuning: {p.how_to_choose}")
@@ -950,4 +964,3 @@ __all__ = [
     "print_tracker_table",
     "print_tracker_detail",
 ]
-

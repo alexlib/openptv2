@@ -143,7 +143,9 @@ def build_processing_experiment(
     return proc_exp
 
 
-def _warn_if_tracking_poorly_conditioned(proc_exp, seq_first: int, seq_last: int) -> None:
+def _warn_if_tracking_poorly_conditioned(
+    proc_exp, seq_first: int, seq_last: int
+) -> None:
     """Best-effort advisory check, run once before tracking starts: is the
     true flow fast enough, relative to this calibration's z-reconstruction
     noise floor, for individual trajectories to be trustworthy? See
@@ -163,7 +165,9 @@ def _warn_if_tracking_poorly_conditioned(proc_exp, seq_first: int, seq_last: int
         store = _open_run_store(proc_exp)
         pos_a, _ = store.read_correspondences(seq_first)
         pos_b, _ = store.read_correspondences(seq_first + 1)
-        report = assess_tracking_conditioning(pos_a, pos_b, proc_exp.cals, proc_exp.cpar)
+        report = assess_tracking_conditioning(
+            pos_a, pos_b, proc_exp.cals, proc_exp.cpar
+        )
         if report is not None and report.verdict != "well-conditioned":
             print(f"[WARNING] {report.message}")
     except Exception:
@@ -244,11 +248,14 @@ def run_batch(
             try:
                 from openptv2.storage import RunStore
                 from openptv2.storage.seal import seal
+
                 zarr_path = Path.cwd() / "res" / "run.zarr"
                 if zarr_path.exists():
                     store = RunStore(zarr_path, mode="a")
                     # Read min_length from YAML tracking params
-                    _track_cfg = proc_exp.pm.parameters.get("tracking", proc_exp.pm.parameters.get("track", {}))
+                    _track_cfg = proc_exp.pm.parameters.get(
+                        "tracking", proc_exp.pm.parameters.get("track", {})
+                    )
                     _min_length = int(_track_cfg.get("min_trajectory_length", 5))
                     info = seal(store, min_length=_min_length)
                     print(f"Sealed: {info}")
@@ -258,6 +265,7 @@ def run_batch(
         # If --output specified, copy result to output path
         if output:
             import shutil
+
             _zarr_default = Path("res") / "run.zarr"
             output_path = Path("res") / output
             if _zarr_default.exists():

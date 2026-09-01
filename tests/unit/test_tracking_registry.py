@@ -43,9 +43,7 @@ def test_every_tracker_has_required_fields():
         assert info.algorithm_summary, f"{name}: missing algorithm_summary"
         assert info.speed_ranking in ("fastest", "fast", "moderate", "slow")
         assert info.accuracy_ranking in ("draft", "standard", "high", "highest")
-        assert info.density_ranking in (
-            "low", "low_to_moderate", "moderate", "high"
-        )
+        assert info.density_ranking in ("low", "low_to_moderate", "moderate", "high")
 
 
 def test_get_tracker_info():

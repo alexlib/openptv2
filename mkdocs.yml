@@ -55,20 +55,59 @@ nav:
   - Home: index.md
   - Installation & Setup: installation.md
   - First Steps: first_steps.md
+  - Tutorials:
+    - End-to-End Particle Tracking: tutorials/getting_started_tutorial.md
+    - Lid-Driven Cavity Flow: tutorials/cavity_flow_tutorial.md
+    - Aorta Flow (cloud-native): aorta_tutorial.md
+    - 4-View Image Splitter: tutorials/four_view_splitter/README.md
+    - Sequence & Tracking Plugins: tutorials/plugins.md
+    - Parameter Management: tutorials/parameters.md
   - User Guides:
     - Zarr & HDF5 Storage: zarr-hdf5-storage.md
     - Tracking Pipeline & Results: tracking_guide.md
-    - Calibration Best Practices: calibration_best_practices.md
+    - Tracker Engines & Parameters: tracker-tutorials.md
+    - Lagrangian Turbulence Quality: lagrangian_turbulence_quality_guide.md
     - Command-Line Batch Processing: tutorials/batch_processing.md
+    - Cloud-like Batch Deployment: cloud-batch.md
+    - Multi-Folder Experiments: multi-folder-runs.md
     - Tracking Visualization: tutorials/tracking_visualization.md
     - Debug Visualization: tutorials/tracking_debug_visualization.md
+  - Calibration:
+    - Plate Calibration How-To: plate-calibration-howto.md
+    - Illmenau 4-Camera Case Study: illmenau-4cam-calibration.md
+    - Best Practices: calibration_best_practices.md
+    - Camera Calibration: tutorials/calibration.md
+    - Particle-Based Refinement: tutorials/particle_calibration.md
+    - Dumbbell Calibration: tutorials/dumbbell_calibration.md
+    - Auto-Calibration (warmup): tutorials/warmup_tutorial.md
+    - Reprojection RMS vs Ray Convergence: calibration-rms-vs-rcm.md
+    - Bundle Adjustment: calibration-bundle-adjustment.md
+    - Tracer Self-Calibration: tracer-self-calibration.md
+  - Benchmarks:
+    - Benchmarking & Tracker Selection: benchmarking_guide.md
+    - Multi-Engine Benchmark Results: tracking-benchmark-results.md
   - Running Tests: tests.md
   - Developer Guide:
     - Building from Source: developer_guide/building.md
     - Cython & Pure Python Modes: developer_guide/cython_and_pure_python.md
+    - Custom Tracking Plugins: developer_guide/custom_tracking_plugins.md
     - Documentation Workflow: developer_guide/documentation_workflow.md
     - Packaging & Releases: developer_guide/packaging_and_releases.md
     - GUI Testing Guide: HOW_TO_TEST_GUI.md
   - Algorithms:
     - Tracking Core: algorithms/tracking.md
+    - Correspondence eps0 Semantics: algorithms/correspondence-eps0-semantics.md
     - Burgers Gap Relinking Case Study: algorithms/burgers_gap_relinking_case_study.md
+  - Decisions:
+    - ADR-001 Cython Optimization Plan: decisions/ADR-001-cython-optimization-plan.md
+
+# Working material that is deliberately built but kept out of the navigation:
+# plans and reports are internal, dated, and often superseded, and the research
+# architecture notes are proposals rather than documentation.  Listing them here
+# stops mkdocs reporting them as accidental omissions on every build.
+not_in_nav: |
+  /plans/**
+  /reports/**
+  coverage-to-100-plan.md
+  differentiable_ptv_autoresearch_architecture.md
+  holistic-3d-ptv-systems-research-program.md

@@ -60,10 +60,10 @@ particle_table/
 Or as a single structured array:
 ```python
 dtype = [
-    ('time', 'i4'),
-    ('id', 'i4'),
-    ('xyz', 'f8', (3,)),
-    ('xy_cam', 'f8', (num_cams, 2)),  # NaN where camera didn't detect
+    ("time", "i4"),
+    ("id", "i4"),
+    ("xyz", "f8", (3,)),
+    ("xy_cam", "f8", (num_cams, 2)),  # NaN where camera didn't detect
 ]
 ```
 

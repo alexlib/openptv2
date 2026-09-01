@@ -127,4 +127,3 @@ class CythonEpipolarTracker:
 
 # Plugin contract alias
 Tracking = CythonEpipolarTracker
-

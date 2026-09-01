@@ -59,7 +59,9 @@ def measure_motion_scale(pos_a, pos_b) -> Optional[tuple[float, float]]:
     return displacement, spacing
 
 
-def z_noise_floor_mm(cals, cpar, detection_noise_px: float = 0.5, probe_mm: float = 10.0) -> float:
+def z_noise_floor_mm(
+    cals, cpar, detection_noise_px: float = 0.5, probe_mm: float = 10.0
+) -> float:
     """Implied z-position noise (mm) from a nominal 2D detection precision,
     via each camera's own depth (z) sensitivity: how many image pixels a
     small along-z displacement produces, at the volume centroid. Camera
