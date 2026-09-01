@@ -1,5 +1,7 @@
 # Calibration hub: multiple sources/algorithms -> `.ori`/`.addpar`
 
+> **Update 2026-09-01:** `PR #36` merged as `6a1e81aa` — Part 1 Doors A/B (OpenCV `K,dist,rvec,tvec` + `calibration_import.py` `angles_from_dm`/`calibration_from_opencv`, `presorted` bypass, `import_calibration.py`) and Illmenau acceptance are done. Doors C/D (proPTV v19/20 polynomial grid, checkerboard `extra`), Tier1 standalone `dlt_resection`, `rig.yaml` auto-generation, `eps=None` derivation and zero-`cc` guard remain open. See `archive/2026-09-01-zarr-only-final-cutover-plan.md` for storage.
+
 **Status:** implementation plan, ready to execute. Supersedes the
 2026-08-29/30 draft of this file (phased-roadmap framing), which is folded in
 as Step 8 and Appendix C.

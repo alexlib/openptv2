@@ -1,5 +1,7 @@
 # Plan: find and fix the double-claim / long-jump bug in backward tracking + postprocess
 
+> **Update 2026-09-01:** After zarr-only cutover (`archive/2026-09-01-zarr-only-final-cutover-plan.md`, `6a1e81aa`), diagnostics here should use `RunStore.read_linkage` (`linkage/ptv_is/frame_*`) not `res/ptv_is.*` files (already store-branched in `tracking_postprocess.py`).
+
 ## The bug, confirmed today
 
 `trackcorr` with `direction: forward_backward` + `postprocess: true`

@@ -1,5 +1,7 @@
 # Plan: verify detection fidelity and the quad-uniqueness ordering-quirk (bug vs. feature) with synthetic ground truth
 
+> **Update 2026-09-01:** After zarr-only cutover (`archive/2026-09-01-zarr-only-final-cutover-plan.md`, `6a1e81aa`), synthetic benchmarks and `detection_fidelity_check.py` should read ground truth from `RunStore` (`targets/`+`correspondences/`) consistently; Phase2 verdict `FEATURE` (+0.01-0.03 PR) stands.
+
 Umbrella plan for the /goal stated 2026-08-27: a verified and validated
 openptv2 that does correct detection, stereo-matching, and tracking — not
 just "matches 3dptv.exe's GT," since GT is itself a heuristic tracker's

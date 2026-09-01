@@ -1,5 +1,7 @@
 # Illmenau dots-plate pipeline: hand-held multi-plane → OpenCV → openPTV
 
+> **Update 2026-09-01:** `PR #36` merged as `6a1e81aa` — `src/openptv2/calibration_import.py`, `detect_plate.py`, `plate_bundle.py`, `scripts/illmenau/*`, `presorted` and the joint bundle for cams 1–4 are done. This doc is now the delivered procedure for 1–4; **§8 (cams 5–8) remains open**.
+
 **Status (2026-08-31, validated over all 48 planes — see §5):** cameras **1–4 are calibrated and accepted**. The route
 taken differs from the original plan in two substantive ways — see §0. The
 delivered procedure is `docs/illmenau-4cam-calibration.md` (tutorial, numbers)

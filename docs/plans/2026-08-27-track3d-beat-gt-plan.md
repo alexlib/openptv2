@@ -1,5 +1,7 @@
 # Plan: make `track3d` (level-3 cascade) beat 3dptv.exe's own GT, not just match it
 
+> **Update 2026-09-01:** After zarr-only cutover (`archive/2026-09-01-zarr-only-final-cutover-plan.md`, `6a1e81aa`), the visual harness and `wp1_10_images/scripts/` examples that read `res/rt_is.*` / `img/*_targets` should use `RunStore` (`res/run.zarr`, `targets/cam_*/frame_*` + `correspondences/frame_*`).
+
 Context: wp1 10-frame dataset, `C:\Users\alex\Downloads\wp1_10_images`. GT
 (`run_ground_truth.zarr`) is 3dptv.exe's own tracked output (`rt_is`/`ptv_is`),
 almost certainly produced by `track3d.c` (`track_mode: 1` in this dataset's
