@@ -2107,13 +2107,35 @@
 <td style="text-align: left;"><code>2026-08-17-lagrangian-accuracy</code></td>
 <td style="text-align: left;">Early accuracy program — replaced by <code>tracking-as-joint-tree-forest</code> + <code>unified-particle-table</code></td>
 </tr>
+<tr>
+<td style="text-align: left;"><code>2026-08-27-track3d-vs-liboptv</code> / <code>track3d-vs-3dptv</code></td>
+<td style="text-align: left;">Reference comparisons — no phases to execute, kept as docs</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>2026-08-27-quad-uniqueness-pass-study</code></td>
+<td style="text-align: left;">Study done 2026-08-27 — superseded by <code>verified-pipeline</code> Phase2 FEATURE verdict</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>two-subrig-calibration</code></td>
+<td style="text-align: left;">Negative result on 4-frame test_cavity — plateau is data quantity, not parametrisation</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>2026-09-01-zarr-only-final-cutover</code></td>
+<td style="text-align: left;">Follow-through of <code>2026-08-15</code>/<code>2026-08-26</code> — <code>res/run.zarr</code> sole DB, PR #36 + <code>5d44a0c4</code></td>
+</tr>
 </tbody>
 </table>
 <p>Current active plans (in <code>docs/plans/</code>):
-- <code>2026-08-27-unified-particle-table.md</code> — tree-forest particle table + KD-tree
-- <code>2026-08-27-tracking-as-joint-tree-forest.md</code> — two_phase 3D→2D tracking
-- <code>2026-08-27-track3d-vs-liboptv</code> / <code>track3d-vs-3dptv</code> — liboptv parity
-- <code>differentiable_ptv_nextgen_plan.md</code>, <code>two-subrig-calibration.md</code> — future work</p>
+- <code>2026-08-27-unified-particle-table.md</code> — tree-forest particle table + KD-tree (research, conflicts with current RunStore schema)
+- <code>2026-08-27-tracking-as-joint-tree-forest.md</code> — two_phase 3D→2D tracking (north star)
+- <code>2026-08-27-track3d-beat-gt-plan.md</code> — <code>track3d</code> cascade vs GT (next: losers-retry + adaptive gate)
+- <code>2026-08-27-backward-postprocess-double-claim-bug-plan.md</code> — 185 double-claims via postprocess
+- <code>2026-08-27-verified-pipeline-ghost-particle-study-plan.md</code> — Phase1 rerun with highpass + Phase3 gated implementation
+- <code>2026-08-27-eps0-dynamic-band-study-plan.md</code> — per-particle epipolar band (deferred)
+- <code>2026-08-30-illmenau-dots-plate-pipeline.md</code> — 1–4 done via PR #36, §8 cams 5–8 remains
+- <code>2026-08-30-calibration-hub-multi-source.md</code> — Doors A/B done via PR #36, Doors C/D + DLT/rig.yaml/eps remain
+- <code>2026-08-31-16bit-image-handling.md</code> — 16→8 scaling (<code>to_uint8</code> + <code>targ_rec_scaled</code>)
+- <code>differentiable_ptv_nextgen_plan.md</code> — nextgen differentiable PTV (long-term vision)</p>
 
 
 

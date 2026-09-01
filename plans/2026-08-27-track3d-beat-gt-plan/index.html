@@ -2160,6 +2160,9 @@
 
 
 <h1 id="plan-make-track3d-level-3-cascade-beat-3dptvexes-own-gt-not-just-match-it">Plan: make <code>track3d</code> (level-3 cascade) beat 3dptv.exe's own GT, not just match it<a class="headerlink" href="#plan-make-track3d-level-3-cascade-beat-3dptvexes-own-gt-not-just-match-it" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Update 2026-09-01:</strong> After zarr-only cutover (<code>archive/2026-09-01-zarr-only-final-cutover-plan.md</code>, <code>6a1e81aa</code>), the visual harness and <code>wp1_10_images/scripts/</code> examples that read <code>res/rt_is.*</code> / <code>img/*_targets</code> should use <code>RunStore</code> (<code>res/run.zarr</code>, <code>targets/cam_*/frame_*</code> + <code>correspondences/frame_*</code>).</p>
+</blockquote>
 <p>Context: wp1 10-frame dataset, <code>C:\Users\alex\Downloads\wp1_10_images</code>. GT
 (<code>run_ground_truth.zarr</code>) is 3dptv.exe's own tracked output (<code>rt_is</code>/<code>ptv_is</code>),
 almost certainly produced by <code>track3d.c</code> (<code>track_mode: 1</code> in this dataset's

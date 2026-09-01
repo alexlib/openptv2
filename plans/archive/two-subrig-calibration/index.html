@@ -18,19 +18,19 @@
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Plan: study the 4-camera quad-uniqueness-pass gap between openptv2 and 3dptv.exe - OpenPTV2 Documentation</title>
+        <title>Two-subrig calibration: exploiting (and fixing) the test_cavity rig geometry - OpenPTV2 Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,7 +49,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#plan-study-the-4-camera-quad-uniqueness-pass-gap-between-openptv2-and-3dptvexe" class="md-skip">
+        <a href="#two-subrig-calibration-exploiting-and-fixing-the-test_cavity-rig-geometry" class="md-skip">
           Skip to content
         </a>
       
@@ -88,7 +88,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+    <a href="../../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Plan: study the 4-camera quad-uniqueness-pass gap between openptv2 and 3dptv.exe
+              Two-subrig calibration: exploiting (and fixing) the test_cavity rig geometry
             
           </span>
         </div>
@@ -221,7 +221,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -240,7 +240,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../installation/" class="md-tabs__link">
+      <a href="../../../installation/" class="md-tabs__link">
         
   
   
@@ -259,7 +259,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../first_steps/" class="md-tabs__link">
+      <a href="../../../first_steps/" class="md-tabs__link">
         
   
   
@@ -280,7 +280,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+        <a href="../../../tutorials/getting_started_tutorial/" class="md-tabs__link">
           
   
   
@@ -300,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+        <a href="../../../zarr-hdf5-storage/" class="md-tabs__link">
           
   
   
@@ -320,7 +320,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../plate-calibration-howto/" class="md-tabs__link">
+        <a href="../../../plate-calibration-howto/" class="md-tabs__link">
           
   
   
@@ -340,7 +340,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../benchmarking_guide/" class="md-tabs__link">
+        <a href="../../../benchmarking_guide/" class="md-tabs__link">
           
   
   
@@ -358,7 +358,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../tests/" class="md-tabs__link">
+      <a href="../../../tests/" class="md-tabs__link">
         
   
   
@@ -379,7 +379,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../developer_guide/building/" class="md-tabs__link">
+        <a href="../../../developer_guide/building/" class="md-tabs__link">
           
   
   
@@ -399,7 +399,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../algorithms/tracking/" class="md-tabs__link">
+        <a href="../../../algorithms/tracking/" class="md-tabs__link">
           
   
   
@@ -419,7 +419,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
+        <a href="../../../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
           
   
   
@@ -453,7 +453,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+    <a href="../../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -483,7 +483,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -510,7 +510,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/" class="md-nav__link">
+      <a href="../../../installation/" class="md-nav__link">
         
   
   
@@ -537,7 +537,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../first_steps/" class="md-nav__link">
+      <a href="../../../first_steps/" class="md-nav__link">
         
   
   
@@ -618,7 +618,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
+      <a href="../../../tutorials/getting_started_tutorial/" class="md-nav__link">
         
   
   
@@ -646,7 +646,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/cavity_flow_tutorial/" class="md-nav__link">
+      <a href="../../../tutorials/cavity_flow_tutorial/" class="md-nav__link">
         
   
   
@@ -674,7 +674,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../aorta_tutorial/" class="md-nav__link">
+      <a href="../../../aorta_tutorial/" class="md-nav__link">
         
   
   
@@ -702,7 +702,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/four_view_splitter/" class="md-nav__link">
+      <a href="../../../tutorials/four_view_splitter/" class="md-nav__link">
         
   
   
@@ -730,7 +730,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/plugins/" class="md-nav__link">
+      <a href="../../../tutorials/plugins/" class="md-nav__link">
         
   
   
@@ -758,7 +758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/parameters/" class="md-nav__link">
+      <a href="../../../tutorials/parameters/" class="md-nav__link">
         
   
   
@@ -847,7 +847,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+      <a href="../../../zarr-hdf5-storage/" class="md-nav__link">
         
   
   
@@ -875,7 +875,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tracking_guide/" class="md-nav__link">
+      <a href="../../../tracking_guide/" class="md-nav__link">
         
   
   
@@ -903,7 +903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tracker-tutorials/" class="md-nav__link">
+      <a href="../../../tracker-tutorials/" class="md-nav__link">
         
   
   
@@ -931,7 +931,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../lagrangian_turbulence_quality_guide/" class="md-nav__link">
+      <a href="../../../lagrangian_turbulence_quality_guide/" class="md-nav__link">
         
   
   
@@ -959,7 +959,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+      <a href="../../../tutorials/batch_processing/" class="md-nav__link">
         
   
   
@@ -987,7 +987,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-batch/" class="md-nav__link">
+      <a href="../../../cloud-batch/" class="md-nav__link">
         
   
   
@@ -1015,7 +1015,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../multi-folder-runs/" class="md-nav__link">
+      <a href="../../../multi-folder-runs/" class="md-nav__link">
         
   
   
@@ -1043,7 +1043,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+      <a href="../../../tutorials/tracking_visualization/" class="md-nav__link">
         
   
   
@@ -1071,7 +1071,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+      <a href="../../../tutorials/tracking_debug_visualization/" class="md-nav__link">
         
   
   
@@ -1160,7 +1160,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../plate-calibration-howto/" class="md-nav__link">
+      <a href="../../../plate-calibration-howto/" class="md-nav__link">
         
   
   
@@ -1188,7 +1188,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../illmenau-4cam-calibration/" class="md-nav__link">
+      <a href="../../../illmenau-4cam-calibration/" class="md-nav__link">
         
   
   
@@ -1216,7 +1216,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calibration_best_practices/" class="md-nav__link">
+      <a href="../../../calibration_best_practices/" class="md-nav__link">
         
   
   
@@ -1244,7 +1244,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/calibration/" class="md-nav__link">
+      <a href="../../../tutorials/calibration/" class="md-nav__link">
         
   
   
@@ -1272,7 +1272,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/particle_calibration/" class="md-nav__link">
+      <a href="../../../tutorials/particle_calibration/" class="md-nav__link">
         
   
   
@@ -1300,7 +1300,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/dumbbell_calibration/" class="md-nav__link">
+      <a href="../../../tutorials/dumbbell_calibration/" class="md-nav__link">
         
   
   
@@ -1328,7 +1328,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/warmup_tutorial/" class="md-nav__link">
+      <a href="../../../tutorials/warmup_tutorial/" class="md-nav__link">
         
   
   
@@ -1356,7 +1356,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calibration-rms-vs-rcm/" class="md-nav__link">
+      <a href="../../../calibration-rms-vs-rcm/" class="md-nav__link">
         
   
   
@@ -1384,7 +1384,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calibration-bundle-adjustment/" class="md-nav__link">
+      <a href="../../../calibration-bundle-adjustment/" class="md-nav__link">
         
   
   
@@ -1412,7 +1412,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tracer-self-calibration/" class="md-nav__link">
+      <a href="../../../tracer-self-calibration/" class="md-nav__link">
         
   
   
@@ -1501,7 +1501,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../benchmarking_guide/" class="md-nav__link">
+      <a href="../../../benchmarking_guide/" class="md-nav__link">
         
   
   
@@ -1529,7 +1529,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tracking-benchmark-results/" class="md-nav__link">
+      <a href="../../../tracking-benchmark-results/" class="md-nav__link">
         
   
   
@@ -1564,7 +1564,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/" class="md-nav__link">
+      <a href="../../../tests/" class="md-nav__link">
         
   
   
@@ -1645,7 +1645,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/building/" class="md-nav__link">
+      <a href="../../../developer_guide/building/" class="md-nav__link">
         
   
   
@@ -1673,7 +1673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+      <a href="../../../developer_guide/cython_and_pure_python/" class="md-nav__link">
         
   
   
@@ -1701,7 +1701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/custom_tracking_plugins/" class="md-nav__link">
+      <a href="../../../developer_guide/custom_tracking_plugins/" class="md-nav__link">
         
   
   
@@ -1729,7 +1729,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+      <a href="../../../developer_guide/documentation_workflow/" class="md-nav__link">
         
   
   
@@ -1757,7 +1757,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+      <a href="../../../developer_guide/packaging_and_releases/" class="md-nav__link">
         
   
   
@@ -1785,7 +1785,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+      <a href="../../../HOW_TO_TEST_GUI/" class="md-nav__link">
         
   
   
@@ -1874,7 +1874,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../algorithms/tracking/" class="md-nav__link">
+      <a href="../../../algorithms/tracking/" class="md-nav__link">
         
   
   
@@ -1902,7 +1902,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
+      <a href="../../../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
         
   
   
@@ -1930,7 +1930,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+      <a href="../../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
         
   
   
@@ -2019,7 +2019,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
+      <a href="../../../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
         
   
   
@@ -2074,10 +2074,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#the-finding" class="md-nav__link">
+  <a href="#context" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The finding
+        Context
       
     </span>
   </a>
@@ -2085,10 +2085,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#why-this-matters-more-than-it-might-sound" class="md-nav__link">
+  <a href="#root-cause-reframing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why this matters more than it might sound
+        Root-cause reframing
       
     </span>
   </a>
@@ -2096,10 +2096,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#study-questions-in-order" class="md-nav__link">
+  <a href="#phase-1-cross-pair-weighted-joint-self-calibration-cheap-do-first" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Study questions, in order
+        Phase 1 -- cross-pair-weighted joint self-calibration (cheap, do first)
       
     </span>
   </a>
@@ -2107,10 +2107,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#open-question-is-the-bug-actually-better-dropped" class="md-nav__link">
+  <a href="#phase-2-rigid-subrig-reparametrization-if-phase-1-helps" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Open question: is the "bug" actually better dropped?
+        Phase 2 -- rigid-subrig reparametrization (if Phase 1 helps)
       
     </span>
   </a>
@@ -2118,10 +2118,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#also-worth-checking-in-step-1s-replication" class="md-nav__link">
+  <a href="#verification-protocol-both-phases" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Also worth checking in step 1's replication
+        Verification protocol (both phases)
       
     </span>
   </a>
@@ -2129,10 +2129,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#out-of-scope-for-this-plan" class="md-nav__link">
+  <a href="#results-both-phases-executed-2026-08-14" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Out of scope for this plan
+        Results (both phases executed, 2026-08-14)
       
     </span>
   </a>
@@ -2159,159 +2159,188 @@
   
 
 
-<h1 id="plan-study-the-4-camera-quad-uniqueness-pass-gap-between-openptv2-and-3dptvexe">Plan: study the 4-camera quad-uniqueness-pass gap between openptv2 and 3dptv.exe<a class="headerlink" href="#plan-study-the-4-camera-quad-uniqueness-pass-gap-between-openptv2-and-3dptvexe" title="Permanent link">&para;</a></h1>
-<p>Companion to <code>2026-08-27-track3d-beat-gt-plan.md</code> and
-<code>2026-08-27-eps0-dynamic-band-study-plan.md</code>. Where those two are about
-<code>eps0</code>, this one is about a second, independent correspondence-stage finding
-from the same wp1 investigation — and the eps0 sweep (see
-<code>wp1_10_images/scripts/point_cloud_diff.py</code>) now shows it's the <strong>dominant</strong>
-of the two: no <code>eps0</code> value (tested 0.02–0.20) gets openptv2's total point
-count within 35% of GT's, and openptv2 is still ~1.9x GT's <em>quadruplet</em> count
-even at the tightest tested <code>eps0=0.02</code>.</p>
-<h2 id="the-finding">The finding<a class="headerlink" href="#the-finding" title="Permanent link">&para;</a></h2>
-<p><code>3dptv/src_c/correspondences.c</code>'s greedy "take best quadruplets, skip if any
-point already used" pass has a real quirk in its C:</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">con0</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">p1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">-1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">++</span><span class="n">tim</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">p1</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">con0</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">p2</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">-1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">++</span><span class="n">tim</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">p2</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">p3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">con0</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">p3</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">-1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">++</span><span class="n">tim</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">p3</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">p4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">con0</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">p4</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">-1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">++</span><span class="n">tim</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">p4</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">con</span><span class="p">[</span><span class="n">match</span><span class="o">++</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">con0</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-</span></code></pre></div>
-<p>Each point's usage counter is incremented <strong>as it's checked, in order</strong> —
-before the candidate is known to survive all four checks. A candidate that
-fails at <code>p2</code> has <em>already</em> incremented <code>tim[0][p1]</code>, even though it never
-gets committed to <code>con</code>. A later candidate that also uses that same <code>p1</code> then
-sees <code>tim[0][p1]</code> already at 1 and gets rejected on the very first check —
-even though the <em>first</em> candidate touching <code>p1</code> was itself never accepted.
-This is an ordering artifact of the C loop, not a documented design choice —
-nothing in the surrounding code or comments suggests it's intentional.</p>
-<p>openptv2's <code>take_best_candidates</code> (<code>correspondences.py:823</code>) does the clean
-version: check all four points are free first, only then commit all four.
-Strictly more permissive than 3dptv's quirky pass — it accepts every quad
-3dptv would have, plus some 3dptv's ordering bug incorrectly threw away.</p>
-<h2 id="why-this-matters-more-than-it-might-sound">Why this matters more than it might sound<a class="headerlink" href="#why-this-matters-more-than-it-might-sound" title="Permanent link">&para;</a></h2>
-<p>The wp1 point-cloud diff (<code>point_cloud_diff.py</code>) shows the practical scale:
-at <code>eps0=0.06</code> (the corrected flat value), of ~1854 points/frame we produce,
-only ~35% match a GT point within 0.3mm; of GT's ~1281 points/frame, only
-~51% are matched. The "extra" points on our side are <strong>not</strong> dominated by
-weak, low-camera-count matches — the breakdown is <code>{quad: 6939, trip: 4692,
-pair: 355}</code> across all 10 frames, i.e. the excess is overwhelmingly
-4-camera-consistent (or 3-camera-consistent) correspondences, exactly the
-population this dedup pass governs. Symmetrically, GT has points we never
-reproduce at all (<code>{quad: 2538, trip: 2944, pair: 778}</code>) — so this isn't just
-"we keep everything GT keeps plus junk"; the <em>set</em> of which ambiguous
-candidate wins differs, consistent with an ordering-dependent resolution
-difference rather than a simple threshold difference.</p>
-<p>One reassuring result from the same diff: for the ~6551 points that <em>do</em>
-match a GT point, position residuals are tight (mean 0.112mm, median 0.089mm,
-p95 0.273mm) — ray-tracing/triangulation (<code>point_positions</code>) agrees with
-3dptv.exe wherever the two pipelines agree on <em>which</em> points to reconstruct.
-The problem is entirely in candidate selection, not in the geometry math.</p>
-<h2 id="study-questions-in-order">Study questions, in order<a class="headerlink" href="#study-questions-in-order" title="Permanent link">&para;</a></h2>
+<h1 id="two-subrig-calibration-exploiting-and-fixing-the-test_cavity-rig-geometry">Two-subrig calibration: exploiting (and fixing) the test_cavity rig geometry<a class="headerlink" href="#two-subrig-calibration-exploiting-and-fixing-the-test_cavity-rig-geometry" title="Permanent link">&para;</a></h1>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p><code>test_data/test_cavity</code> uses a 4-camera rig where cam1-cam2 and cam3-cam4
+behave like two short-baseline sub-pairs, not four symmetric viewpoints.
+Evidence (frames 10001-10004, current committed <code>parameters_Run1.yaml</code>):</p>
+<ul>
+<li><strong>2-camera correspondence ("pair") composition is skewed toward the two
+  within-subrig combinations</strong>: cam1-cam2 = 18% of all pairs, cam3-cam4 =
+  23% (together 41%, vs 33% expected if all 6 combinations fired equally).
+  A short baseline means near-parallel epipolar geometry, which lets many
+  unrelated 2D detections accidentally satisfy the epipolar tolerance --
+  more candidate crossings, whether real or not.</li>
+<li><strong>Ghost rate by camera multiplicity</strong> (no plausible neighbor within 2mm in
+  an adjacent frame): 2-cam pairs 64%, 3-cam triplets 38%, 4-cam quads 16%.
+  Ghost rate per pair <em>identity</em> is fairly uniform (58-70% for all 6
+  combinations) -- cam1-2/cam3-4 aren't individually worse per match, they're
+  just far more numerous, so they dump the largest absolute ghost count.</li>
+<li><strong>Per-camera z-sensitivity</strong> (px of image motion per mm of true z motion,
+  via <code>image_coordinates</code>): cam1=1.12, cam2=1.58, cam3=1.68, cam4=1.86,
+  vs ~10.2-10.9 px/mm in-plane (x/y) -- roughly 7x worse depth sensitivity
+  than in-plane, for every camera.</li>
+<li><strong>Earlier full joint bundle adjustment</strong> (Phase 4b, all 4 cameras' exteriors
+  free except a held gauge camera, fit against 706 quad-only points from
+  these 4 frames): RMS dropped 35-60% on its own fit objective, but
+  independent checks (z-sensitivity, reprojection against detected targets,
+  and trajectory correctness via <code>rank_check.py</code>) showed <strong>no measurable
+  improvement</strong> -- the correction was real but too small/generic to matter.</li>
+</ul>
+<h2 id="root-cause-reframing">Root-cause reframing<a class="headerlink" href="#root-cause-reframing" title="Permanent link">&para;</a></h2>
+<p>The within-pair short baseline is a physical fact; no calibration removes
+it. But it points at <em>why</em> a flat 4-camera bundle adjustment under-helps:
+the quantity that actually governs 3D depth precision here is the <strong>relative
+transform between the two rigid sub-rigs</strong> (cam1-cam2 as a unit, cam3-cam4
+as a unit) -- not each camera's individual exterior pose. A standard bundle
+adjustment treats all 24 exterior DOF as independent and lets a shallow
+calibration target under-constrain each camera's along-ray direction
+roughly equally, diluting the one relationship that matters (inter-rig
+depth) across many loosely-constrained parameters instead of concentrating
+information on it.</p>
+<h2 id="phase-1-cross-pair-weighted-joint-self-calibration-cheap-do-first">Phase 1 -- cross-pair-weighted joint self-calibration (cheap, do first)<a class="headerlink" href="#phase-1-cross-pair-weighted-joint-self-calibration-cheap-do-first" title="Permanent link">&para;</a></h2>
+<p>Re-run the same joint bundle adjustment as Phase 4b (hold one camera as
+gauge reference, jointly refine the other 3 exteriors + all free 3D points),
+but source observations from <strong>triplets and quads only</strong>, not pairs. Every
+triplet/quad point, by construction, includes cameras from <em>both</em> sub-rigs
+(each sub-rig only has 2 members, so no 3-or-4-camera correspondence can be
+within-subrig-only) -- this automatically concentrates the fit on
+cross-rig-informative observations without needing per-pair bookkeeping.
+Also increases the observation count from 706 (quad-only) to ~4000
+(triplet+quad), which should better-condition the solve.</p>
+<p><strong>Success criteria</strong> (compare against the Phase 4b baseline numbers above):
+- z-sensitivity (px/mm along z, per camera) increases meaningfully from the
+  ~1.1-1.9 baseline.
+- Independent reprojection error (<code>corres_check.py</code>, detected targets, not
+  the fit's own points) improves from the ~1.53-1.54px baseline.
+- <code>rank_check.py</code> wrong-pick rate improves from the ~51% baseline.</p>
+<p>If none of these move, that's evidence the inter-rig transform is already
+about as well-determined as this data permits, and Phase 2 is unlikely to
+help either -- worth stopping and reconsidering rather than proceeding.</p>
+<h2 id="phase-2-rigid-subrig-reparametrization-if-phase-1-helps">Phase 2 -- rigid-subrig reparametrization (if Phase 1 helps)<a class="headerlink" href="#phase-2-rigid-subrig-reparametrization-if-phase-1-helps" title="Permanent link">&para;</a></h2>
+<p>Reparametrize the bundle adjustment around the 2-rigid-subrig structure
+explicitly:</p>
 <ol>
-<li><strong>Faithfully replicate 3dptv's ordering quirk in a standalone (non-compiled)
-   reimplementation</strong> of the greedy pass — a direct one-to-one port of the
-   <code>++tim[...] &gt; 1</code> short-circuit sequence, applied to openptv2's own sorted
-   quad candidate list (same input as <code>take_best_candidates</code> gets today).
-   Compare its output point count and per-frame quad count against GT
-   directly. This isolates whether the ordering quirk alone (not eps0, not
-   detection differences) accounts for the ~1.9x quad excess, or only part of
-   it.</li>
+<li>Calibrate cam1&lt;-&gt;cam2's internal relative pose and cam3&lt;-&gt;cam4's internal
+   relative pose independently (well-conditioned for x/y, weak only for z --
+   short baseline is not a problem for in-plane precision).</li>
+<li>Hold each sub-rig's internal relative pose fixed.</li>
+<li>Solve for a single 6-DOF rigid transform between the two sub-rig frames,
+   using cross-rig triplet/quad observations. This is 6 free parameters
+   aimed directly at the weak direction, instead of 24 DOF where the weak
+   direction is buried inside 4 individually-underdetermined poses.</li>
 </ol>
-<p><strong>Done, 2026-08-27</strong> (<code>wp1_10_images/scripts/replicate_3dptv_uniqueness_pass.py</code>):
-   ran both the clean pass (openptv2's actual <code>take_best_candidates</code> logic)
-   and the ordering-quirked replica against the <em>same</em> raw candidate list
-   from <code>four_camera_matching</code>, all 10 wp1 frames, <code>eps0=0.06</code>:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>gt_quad=7376  clean_quad=12562  buggy_quad=10830
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>clean excess over GT: 5186 (70%)
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>buggy excess over GT: 3454 (47%)
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>ordering quirk explains 33% of the clean-vs-GT gap
-</span></code></pre></div>
-<p><strong>Confirmed but partial</strong>: the quirk is real and measurably contributes,
-   but two-thirds of the gap survives even with an identical uniqueness pass.
-   The raw candidate count feeding the uniqueness pass (8600–9080/frame here,
-   vs. GT's final 703–780 quads/frame) means the dominant remaining factor is
-   upstream — in what <code>match_pairs</code> generates as candidates <em>before</em> dedup,
-   not in the dedup logic itself. Re-scope: don't invest further in the
-   ordering-quirk theory alone; move to candidate-generation-volume causes
-   (question 3, promoted to primary).</p>
-<p><strong>Resolved, 2026-08-27, with 3dptv's own raw detections</strong>
-   (<code>wp1_10_images/img_3dptv/Cam{1-4}.{frame}_targets</code>, provided by the user
-   — 3dptv.exe's actual per-camera 2D target output, not openptv2's):
-   <code>MAXCAND</code> (200 in both — ruled out) and raw target counts were checked;
-   <code>match_pairs</code> at all frames: 3dptv detects 66,735 total raw targets across
-   all cameras/frames, openptv2 detects 81,298 — a consistent <strong>~22% excess</strong>
-   at the detection stage, threshold values identical
-   (<code>targ_rec.par</code>/YAML match exactly). Feeding 3dptv's own real detections
-   through openptv2's matcher (<code>verify_3dptv_detections.py</code>) with the CLEAN
-   dedup already drops the excess from 70% to 16%; adding the ordering-quirk
-   replica on top of 3dptv's real detections closes it to <strong>-1%</strong>
-   (<code>gt_quad=7376</code> vs <code>buggy_quad=7287</code>, several individual frames matching
-   exactly). <strong>The two factors found this session (detection-stage volume +
-   uniqueness-pass ordering) together fully account for the point-cloud
-   excess</strong> — no further correspondence-stage cause needs to be hunted.
-   Remaining open items, now clearly scoped:
-   - <strong>Detection-stage fidelity</strong> (why ~22% more raw targets at identical
-     thresholds) is its own investigation — the underlying peak-finding /
-     connected-component algorithm, not a parameter — out of scope for this
-     plan; track separately if pursued.
-   - <strong>Whether to adopt the ordering-quirk in production</strong> is still an open
-     decision (see "Open question" below), now with much stronger evidence:
-     even with clean, correct detections, the <em>clean</em> dedup logic still
-     accepts 16% more quads than 3dptv's buggy one — worth deciding whether
-     that's openptv2 legitimately doing better, or genuine over-acceptance,
-     before touching production code.
-2. <strong>If it accounts for most of the gap</strong>: decide whether to actually adopt
-   the quirky behavior in production, or keep the clean version and instead
-   verify the "extra" quads independently (do they hold up under a stricter
-   physical check — e.g. reprojection residual across all 4 cameras, or
-   Level-1/2/3 tracking-cascade classification from
-   <code>classify_by_level.py</code> — are they trackable into consistent trajectories,
-   or do they look like transient junk?). Don't replicate a C ordering bug
-   without evidence the "bug" version is actually the more correct one for
-   <em>this</em> purpose — see "Open question" below.
-3. <strong>If it accounts for only part of the gap</strong>: the remainder needs its own
-   investigation — likely candidates are differences in <code>quicksort_con</code>'s
-   sort stability/tie-breaking (3dptv's C <code>qsort</code> is not guaranteed stable;
-   openptv2's <code>np.argsort</code> also isn't by default — same-<code>corr</code> ties could
-   resolve differently between the two, feeding different candidates into an
-   otherwise-identical uniqueness pass) or a difference in how many candidate
-   quads even get <em>generated</em> before the uniqueness pass runs (check
-   <code>list[...].n</code> truncation via <code>maxcand</code>/<code>MAXCAND</code> — is 3dptv's per-pair
-   candidate cap the same value as openptv2's?).</p>
-<h2 id="open-question-is-the-bug-actually-better-dropped">Open question: is the "bug" actually better dropped?<a class="headerlink" href="#open-question-is-the-bug-actually-better-dropped" title="Permanent link">&para;</a></h2>
-<p>3dptv.exe's ordering quirk makes its dedup <em>more</em> conservative than a correct
-greedy algorithm — it's an accidental <strong>precision-over-recall</strong> bias, not
-necessarily a defect to fix. openptv2's clean version is <em>more</em> internally
-consistent (it implements the documented "skip if used" rule correctly) but
-that alone doesn't mean the extra quads it accepts are junk — 3dptv might be
-dropping perfectly good quads for accidental reasons. This plan's step 2
-(reprojection / trackability check on the extra quads) is what actually
-answers "should we chase GT-parity here, or is openptv2's version already
-better and GT undercounts real particles" — don't assume either answer before
-running it.</p>
-<h2 id="also-worth-checking-in-step-1s-replication">Also worth checking in step 1's replication<a class="headerlink" href="#also-worth-checking-in-step-1s-replication" title="Permanent link">&para;</a></h2>
+<p>This requires new code in <code>autocalibration.py</code> -- there is currently no
+rigid-subrig parametrization, only per-camera free/held exteriors
+(<code>tracer_self_calibrate</code>'s <code>hold_cam</code> is a single camera, not a rigid pair).
+Not a parameter tweak; a real (small) feature.</p>
+<h2 id="verification-protocol-both-phases">Verification protocol (both phases)<a class="headerlink" href="#verification-protocol-both-phases" title="Permanent link">&para;</a></h2>
+<p>Reuse the session's existing scratchpad diagnostics against the same 4
+frames (10001-10004), applying each phase's calibration output to a fresh
+copy of the experiment and re-running <code>--mode sequence</code> (detection doesn't
+depend on calibration; correspondence and 3D positions do):</p>
 <ul>
-<li><code>maxcand</code>/<code>MAXCAND</code>: confirm openptv2's per-pair candidate cap matches
-  3dptv's <code>maxcand</code> (both need the same value or the candidate lists feeding
-  the uniqueness pass already differ before ordering even matters).</li>
-<li>Sort stability: <code>quicksort_con</code> (3dptv) vs <code>np.argsort</code> (openptv2,
-  <code>take_best_candidates:834</code>) on tied <code>corr</code> values — test with synthetic
-  tied-score input to confirm they don't silently diverge.</li>
+<li><code>scale.py</code> -- per-camera px/mm along z (depth sensitivity)</li>
+<li><code>corres_check.py</code> -- reprojection error against detected targets
+  (independent of whatever the fit optimized against)</li>
+<li><code>ghost_check.py</code> / <code>pair_asymmetry.py</code> -- ghost rate and pair-composition
+  skew, to see if better depth conditioning reduces spurious pair matches</li>
+<li><code>rank_check.py</code> -- fraction of tracker links that picked a farther
+  candidate over a closer available one (the actual trajectory-quality
+  metric, not a proxy)</li>
 </ul>
-<h2 id="out-of-scope-for-this-plan">Out of scope for this plan<a class="headerlink" href="#out-of-scope-for-this-plan" title="Permanent link">&para;</a></h2>
-<ul>
-<li>The <code>eps0</code> semantics gap — tracked separately
-  (<code>2026-08-27-eps0-dynamic-band-study-plan.md</code>); the sweep here already
-  shows <code>eps0</code> isn't the dominant lever, but it's not zero-effect either
-  (point count did increase 0.02→0.10) — note also that
-  <code>wp1_10_images/scripts/point_cloud_diff.py</code>'s sweep shows a suspicious
-  <strong>non-monotonic collapse</strong> above <code>eps0=0.10</code> (18696 at 0.10 → 7542 at 0.15
-  → 4211 at 0.20) that looks like a separate bug (numerical edge case,
-  candidate-array truncation, or a sensor-boundary check misbehaving at wide
-  tolerances) — flag for a quick look if anyone tunes <code>eps0</code> above ~0.10 on
-  any dataset, but not otherwise in scope here.</li>
-</ul>
+<p>Do not apply either phase's calibration to the committed
+<code>test_data/test_cavity/cal/*.ori</code>/<code>.addpar</code> files until the verification
+protocol shows genuine improvement on the <em>independent</em> checks, not just
+the fit's own optimization objective -- Phase 4b's history of a real-looking
+fit objective improvement with zero independent-metric improvement is the
+reason this protocol exists.</p>
+<h2 id="results-both-phases-executed-2026-08-14">Results (both phases executed, 2026-08-14)<a class="headerlink" href="#results-both-phases-executed-2026-08-14" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>metric</th>
+<th>baseline</th>
+<th>Phase 1 (18-DOF, triplet+quad obs)</th>
+<th>Phase 2 (rigid 6-DOF)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>z-sensitivity cam1 (px/mm)</td>
+<td>1.12</td>
+<td>1.05</td>
+<td>1.05</td>
+</tr>
+<tr>
+<td>z-sensitivity cam2</td>
+<td>1.58</td>
+<td><strong>2.08</strong></td>
+<td><strong>2.12</strong></td>
+</tr>
+<tr>
+<td>z-sensitivity cam3</td>
+<td>1.68</td>
+<td>1.79</td>
+<td>1.76</td>
+</tr>
+<tr>
+<td>z-sensitivity cam4</td>
+<td>1.86</td>
+<td>1.99</td>
+<td>2.00</td>
+</tr>
+<tr>
+<td>reprojection median (independent, vs detected targets)</td>
+<td>1.53px</td>
+<td>1.52px</td>
+<td>1.54px</td>
+</tr>
+<tr>
+<td>ghost rate: pairs / triplets / quads</td>
+<td>64% / 38% / 16%</td>
+<td>63% / 36% / 16%</td>
+<td>65% / 38% / 18%</td>
+</tr>
+<tr>
+<td>trajectories (4 frames)</td>
+<td>731</td>
+<td>747</td>
+<td>723</td>
+</tr>
+<tr>
+<td><code>dz/dxy</code></td>
+<td>1.90</td>
+<td>1.98</td>
+<td>1.97</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Both phases plateau at essentially the same answer.</strong> Phase 2's 6-DOF
+rigid parametrization was built on the hypothesis that Phase 1's 18 free
+DOF diluted the one direction that matters (inter-rig transform) across
+too many loosely-constrained parameters. That hypothesis predicts Phase 2
+should do meaningfully <em>better</em> than Phase 1 on the same data. It didn't --
+the two land within noise of each other on every metric, including the
+z-sensitivity gain the fit was aimed at (cam2 +32% vs +34%, cam3 +7% vs
++5%, cam4 +7% vs +8%, cam1 -6% vs -6%). That means Phase 1's extra DOF
+weren't actually being wasted on this data; the limiting factor is <strong>data
+quantity/diversity</strong> (4 frames, one volume pass, no depth-spanning tracer
+set), not the parametrization.</p>
+<p>Neither phase moved the metrics that determine trajectory quality:
+independent reprojection error, ghost rate at any camera-multiplicity
+level, or trajectory count/kinematics -- all flat within noise. Per the
+stopping rule above, <strong>neither calibration was applied to the committed
+files.</strong> The z-sensitivity gain, while real for cam2 (+32%), is a ~1.3px/mm
+change against a ~7x in-plane/z gap -- nowhere near closing it.</p>
+<p><strong>Conclusion:</strong> for this dataset (4 frames, current seeding density),
+recalibration is not the lever that fixes the SNR/z-noise problem behind
+short trajectories. The tracker's greedy-vs-nearest algorithmic gap
+(documented elsewhere this session: ~51% of links pick a farther candidate
+over a closer available one at a loose gate) remains the more promising
+remaining lever. Revisiting this plan would need genuinely new information
+-- more frames, or tracer particles spanning more of the volume's depth --
+not a different fit of the same 4-frame data.</p>
 
 
 
@@ -2367,10 +2396,10 @@ running it.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

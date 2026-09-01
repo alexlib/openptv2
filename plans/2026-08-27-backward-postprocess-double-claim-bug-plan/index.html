@@ -2149,6 +2149,9 @@
 
 
 <h1 id="plan-find-and-fix-the-double-claim-long-jump-bug-in-backward-tracking-postprocess">Plan: find and fix the double-claim / long-jump bug in backward tracking + postprocess<a class="headerlink" href="#plan-find-and-fix-the-double-claim-long-jump-bug-in-backward-tracking-postprocess" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Update 2026-09-01:</strong> After zarr-only cutover (<code>archive/2026-09-01-zarr-only-final-cutover-plan.md</code>, <code>6a1e81aa</code>), diagnostics here should use <code>RunStore.read_linkage</code> (<code>linkage/ptv_is/frame_*</code>) not <code>res/ptv_is.*</code> files (already store-branched in <code>tracking_postprocess.py</code>).</p>
+</blockquote>
 <h2 id="the-bug-confirmed-today">The bug, confirmed today<a class="headerlink" href="#the-bug-confirmed-today" title="Permanent link">&para;</a></h2>
 <p><code>trackcorr</code> with <code>direction: forward_backward</code> + <code>postprocess: true</code>
 (<code>parameters_Run1.yaml</code>, wp1 dataset, <code>img_3dptv</code> images, frames
