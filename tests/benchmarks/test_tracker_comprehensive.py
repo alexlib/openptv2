@@ -1,136 +1,122 @@
 """Decisive tracker benchmark: accuracy vs speed vs robustness.
 
-Uses test_cavity-calibrated synthetic scenes (via tests.helpers.synthetic_scene)
-with controllable degradations. Decides which tracker is best/fastest/most
-robust at controlled SNR, not 5 clean pinhole frames.
+Reuses the existing, tested benchmarking harness
+(``openptv2.benchmarking``: ``ScenarioSpec``/``generate_scenario`` for
+ground-truth trajectories with gaps/ghosts/turbulence, ``write_experiment``
+to produce a runnable experiment folder, ``run_tracker`` to drive a real
+tracker plugin, ``compute_identity_metrics`` for P/R/F1-style scoring)
+instead of hand-rolling a second synthetic pipeline — see
+tests/unit/test_benchmarking.py for the harness's own tests.
 
-See docs/plans/2026-09-02-refactor-burgers-synthetic-tests.md §10.
+Decides the accuracy-vs-speed-vs-robustness trade-off across trackers at
+controlled SNR, rather than the old fixed 5-frame smoke which could only say
+"it links".
+
+See docs/plans/2026-09-02-refactor-burgers-synthetic-tests.md Phase 5 (§10).
 """
+
+from __future__ import annotations
 
 import time
 from pathlib import Path
 
-import numpy as np
 import pytest
 
-from tests.helpers.synthetic_scene import make_cavity_scene
+import openptv2.benchmarking as bm
 
 pytestmark = [pytest.mark.slow, pytest.mark.ci]
 
-# Trackers to compare — use the builtin registry names where possible
-TRACKERS_UNDER_TEST = [
-    "cython_3d",  # fast_3d
-    "priority_segment_3d",
-    # "trackcorr",  # 2D image-space, add when stable
-]
-
-NOISE_LEVELS = [0.2, 0.5, 1.0]  # pixel_noise in px
-SEEDS = [0, 1, 2]
+TRACKERS_UNDER_TEST = ["fast_3d", "priority_segment_3d"]
+NOISE_LEVELS_MM = [0.0, 0.3, 0.6]
 
 
-def _run_tracker_on_scene(
-    scene_root: Path, tracker_name: str, n_frames: int = 12
-) -> tuple[int, float, dict]:
-    """Run one tracker on a scene's RunStore and return (n_links, ms_per_frame, extra)."""
-    from openptv2.batch.pyptv_batch import build_processing_experiment
-    from openptv2.plugins import run_tracking_plugin
+def _track_overrides(velocity: float) -> dict[str, float]:
+    """Loose-but-bounded gates scaled to the scenario's velocity, mirroring
+    tests/unit/test_benchmarking.py::test_runner_reconstructs_tracks."""
+    dv = max(3.0, velocity * 3.0)
+    return dict(
+        dvxmin=-dv, dvxmax=dv, dvymin=-dv, dvymax=dv, dvzmin=-dv, dvzmax=dv,
+        dacc=max(3.0, velocity * 3.0),
+    )
 
-    # Build experiment that points at the synthetic scene's yaml?
-    # For now, we use the Tracker directly on the RunStore via the scene's Store.
-    # Simpler: use Tracker via the scene's stored correspondences.
-    # We will use the benchmarking runner if available, falling back to Tracker.
-    try:
-        from openptv2.benchmarking.runner import run_tracker
 
-        # Try to run via runner (takes yaml, store, etc.)
-        # For this harness we just measure that the store has linkage after tracking.
-        # The synthetic scene already has correspondences; we need to run tracking.
-        # Use the scene's yaml if it exists, otherwise create a minimal one.
-        yaml_path = scene_root / "parameters_Run1.yaml"
-        if not yaml_path.exists():
-            # No yaml — skip runner, use direct Tracker path below
-            raise FileNotFoundError
-        t0 = time.perf_counter()
-        # run_tracker expects a yaml and will write linkage to the scene's store
-        # We pass the scene's store path via the yaml's res/run.zarr
-        # For now, fallback to direct
-        raise NotImplementedError
-    except Exception:
-        pass
+def _run_and_score(
+    tmp_path: Path, tracker: str, spec: bm.ScenarioSpec, first_frame: int = 10001
+):
+    """Generate a scenario, run one tracker, return (metrics, ms_per_frame)."""
+    true_tracks, frame_gt = bm.generate_scenario(spec)
+    rig = bm.make_standard_rig(refract=False)
+    yaml_path = bm.write_experiment(rig, frame_gt, tmp_path, first_frame=first_frame)
 
-    # Fallback: direct Tracker via RunStore — create a minimal Tracker and run
-    # This is the same path the batch pipeline uses, but we drive it manually.
-    from openptv2.storage import RunStore
-
-    store_path = scene_root / "res" / "run.zarr"
-    store = RunStore(store_path, mode="a")
-    # Count links before
-    # We need to actually run tracking — for this harness we just verify that
-    # the scene's correspondences are present and that a Tracker can be
-    # instantiated; detailed tracking is measured in the gap/turbulence tests.
-    # For speed measurement we time a no-op (store read) as placeholder.
-    # TODO: wire full Tracker once synthetic_scene writes a full yaml.
     t0 = time.perf_counter()
-    # Simulate work: read all frames
-    for f in store.frames():
-        _ = store.read_correspondences(f)
-    dt = (time.perf_counter() - t0) / max(1, len(store.frames()))
-    # For now, report dt and 0 links — the real tracking will be wired in Phase 5
-    # This keeps the test green while the harness is scaffolded.
-    return 0, dt * 1000, {}
+    pred = bm.run_tracker(
+        yaml_path, tracker, track_overrides=_track_overrides(spec.velocity)
+    )
+    dt_ms_per_frame = (time.perf_counter() - t0) * 1000.0 / spec.num_frames
+
+    # generate_scenario numbers frames 0-based; run_tracker/write_experiment
+    # number them from first_frame — shift before matching or every frame
+    # miss and completeness reads a flat 0.0 regardless of tracking quality.
+    true_tracks_abs = {
+        pid: [(f + first_frame, x, y, z) for f, x, y, z in pts]
+        for pid, pts in true_tracks.items()
+    }
+    # Matching tolerance must cover the injected detection noise itself, or
+    # every point misses its true particle regardless of tracking quality.
+    eps = max(0.5, 2.0 * spec.noise_mm)
+    metrics = bm.compute_identity_metrics(true_tracks_abs, pred, eps=eps)
+    return metrics, dt_ms_per_frame
 
 
-@pytest.mark.parametrize("pixel_noise", NOISE_LEVELS)
+@pytest.mark.parametrize("noise_mm", NOISE_LEVELS_MM)
 @pytest.mark.parametrize("tracker", TRACKERS_UNDER_TEST)
-def test_tracker_accuracy_vs_noise(tmp_path: Path, tracker: str, pixel_noise: float):
-    """Accuracy degrades gracefully with pixel_noise; robust tracker stays flat."""
-    # Use small scene for speed in CI
-    scene = make_cavity_scene(
-        tmp_path / f"{tracker}-{pixel_noise}",
-        n_frames=8,
-        n_particles=40,
-        pixel_noise=pixel_noise,
-        gap_prob=0.05,
+def test_tracker_accuracy_vs_noise(tmp_path: Path, tracker: str, noise_mm: float):
+    """Accuracy degrades gracefully with detection noise; a working tracker
+    stays well above chance even at the noisiest level tested."""
+    spec = bm.ScenarioSpec(
+        num_particles=15,
+        num_frames=10,
+        velocity=1.0,
+        velocity_jitter=0.2,
+        noise_mm=noise_mm,
         seed=0,
     )
-    n_links, ms_per_frame, _ = _run_tracker_on_scene(scene, tracker, n_frames=8)
-    # Smoke: scene was created and tracker ran without crash
-    assert (scene / "res" / "run.zarr").exists()
-    # Speed gate: should be < 100 ms/frame even on synthetic
-    assert ms_per_frame < 1000  # generous, just to catch hangs
+    metrics, ms_per_frame = _run_and_score(tmp_path, tracker, spec)
 
-    # For the scaffold, we don't yet assert F1, just that the scene is readable
-    # Phase 5 will add: F1 > 0.85 at pixel_noise 0.2, F1 > 0.65 at 1.0 via compute_identity_metrics
-    from openptv2.storage import RunStore
-
-    store = RunStore(scene / "res" / "run.zarr", mode="r")
-    # Check that correspondences are present for all frames
-    assert len(store.frames()) == 8
+    assert ms_per_frame < 2000, f"{tracker}: {ms_per_frame:.1f} ms/frame (hang?)"
+    # Completeness (fraction of each true track's points recovered) must not
+    # collapse even at 0.6mm noise on a ~1mm/frame motion scenario.
+    assert metrics.completeness > 0.5, (
+        f"{tracker} @ noise={noise_mm}: completeness={metrics.completeness:.2f}"
+    )
 
 
 def test_tracker_speed_scaling(tmp_path: Path):
-    """Speed scales sub-quadratically with density."""
-    times = {}
-    for n in [20, 40, 80]:
-        scene = make_cavity_scene(
-            tmp_path / f"scale-{n}", n_frames=6, n_particles=n, pixel_noise=0.3, seed=1
+    """Speed scales sub-quadratically with particle density."""
+    times_ms = {}
+    for n in [10, 20, 40]:
+        spec = bm.ScenarioSpec(
+            num_particles=n, num_frames=8, velocity=1.0, seed=1
         )
-        _, ms, _ = _run_tracker_on_scene(scene, "cython_3d", n_frames=6)
-        times[n] = ms
-    # 4x density should be < 8x time (sub-quadratic)
-    assert times[80] < times[20] * 8
+        _, ms_per_frame = _run_and_score(tmp_path / f"n{n}", "fast_3d", spec)
+        times_ms[n] = ms_per_frame
+    # 4x density should cost less than 8x time (sub-quadratic slope).
+    assert times_ms[40] < times_ms[10] * 8 + 1.0, times_ms
 
 
-def test_tracker_robustness_gap(tmp_path: Path):
-    """Gap relinking robustness: tracker should bridge 1-2 frame gaps."""
-    scene = make_cavity_scene(
-        tmp_path, n_frames=12, n_particles=30, gap_prob=0.15, gap_len=(1, 2), seed=2
+def test_tracker_robustness_gap_relinking(tmp_path: Path):
+    """A tracker must keep recovering most of a track's points even with
+    per-frame detection dropouts (regression surface for the double-claim
+    bug in docs/plans/2026-08-27-backward-postprocess-double-claim-bug-plan.md)."""
+    spec = bm.ScenarioSpec(
+        num_particles=20,
+        num_frames=12,
+        velocity=1.0,
+        velocity_jitter=0.2,
+        gap_probability=0.1,
+        seed=2,
     )
-    from openptv2.storage import RunStore
-
-    store = RunStore(scene / "res" / "run.zarr", mode="r")
-    # Count how many particles are missing in at least one frame (gaps injected)
-    # For this smoke, just verify gaps were injected and store is readable
-    assert len(store.frames()) == 12
-    has_gap = any(len(store.read_targets(0, 10001 + f)) < 30 for f in range(12))
-    assert has_gap
+    metrics, _ = _run_and_score(tmp_path, "priority_segment_3d", spec)
+    assert metrics.completeness > 0.4, metrics
+    # No predicted track should be so fragmented it's meaningless.
+    assert metrics.fragmentation < 5.0, metrics
