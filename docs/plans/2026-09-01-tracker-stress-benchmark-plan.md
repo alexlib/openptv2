@@ -206,3 +206,56 @@ Phase A (Group A: scenarios + tests): ~1 day
 Phase B (Group B: tests, reusing Phase A's scenarios): ~0.5 day
 Phase C (report generator): ~0.5-1 day
 Total: ~2-2.5 days, staged — Group A can ship and be reviewed before Group B.
+
+## 7. Resume point (2026-09-01 session end)
+
+Not yet started writing `scripts/stress_scenarios.py` or the Group A test
+file — still in the "confirm the exact API before writing" step. Worked out
+and confirmed by reading source (no code written yet):
+
+* **`write_dataset_store` path gotcha**: it writes to `spec.dir / "run.zarr"`
+  directly (`datawriter.py:176-179`), ignoring `spec.res_sub` — unlike
+  `write_dataset`, which writes ASCII to `spec.dir / spec.res_sub`
+  (`datawriter.py:60`). `benchmark_utils.per_tracker_overrides` and
+  `runner.py`'s `_read_path_info`/`find_existing_store` look for the store at
+  the **canonical** `<experiment_root>/res/run.zarr`. So the "always write a
+  store" generator wrapper must call
+  `bm.write_dataset_store(rig, frame_gt, DatasetSpec(dir=out_dir / "res", first_frame=first_frame, num_cams=len(rig.cals)))`
+  — i.e. pass `out_dir / "res"` as `spec.dir`, **not** `out_dir` — or the
+  store lands next to `res/`, at the legacy fallback path, instead of inside
+  it, and store discovery becomes order-dependent instead of guaranteed.
+* Planned first concrete function, not yet written:
+  ```python
+  def write_experiment_with_store(rig, frame_gt, out_dir, first_frame=10001, volume=(100.,100.,100.)):
+      yaml_path = bm.write_experiment(rig, frame_gt, out_dir, first_frame=first_frame, volume=volume)
+      bm.write_dataset_store(
+          rig, frame_gt,
+          bm.DatasetSpec(dir=Path(out_dir) / "res", first_frame=first_frame, num_cams=len(rig.cals)),
+      )
+      return yaml_path
+  ```
+  This becomes the one call site every `stress_scenarios.py` generator uses
+  instead of `bm.write_experiment` directly (satisfies gotcha 1, "RunStore
+  always").
+* On-sensor coverage check, not yet written — sketch:
+  ```python
+  def _assert_on_sensor_coverage(rig, frame_gt, min_frac=0.8):
+      pts = np.array([(x, y, z) for fr in frame_gt.values() for (_, x, y, z) in fr])
+      if len(pts) == 0:
+          return
+      imx, imy = rig.cpar.imx, rig.cpar.imy
+      for cam_px in bm.project_to_pixels(rig, pts):
+          frac = ((cam_px[:, 0] > 0) & (cam_px[:, 0] < imx) &
+                  (cam_px[:, 1] > 0) & (cam_px[:, 1] < imy)).mean()
+          if frac < min_frac:
+              raise RuntimeError(f"on-sensor coverage {frac:.2f} < {min_frac}")
+  ```
+  Call right after `generate_scenario`, before `write_experiment_with_store`.
+* **Next action tomorrow**: write `scripts/stress_scenarios.py` starting with
+  `write_experiment_with_store` + `_assert_on_sensor_coverage` (above), then
+  `density_motion_scenario` (reuse the Trackability-Number formula from
+  `create_synthetic_turbulent.py:112-116`), verify end-to-end with one manual
+  run (`fast_3d` on a tiny generated scenario) before writing the other 3
+  generators or any pytest file — confirm the store-vs-ASCII behavior
+  difference empirically at that point, per §5's verification bullet, rather
+  than assuming it.
