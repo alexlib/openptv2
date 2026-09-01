@@ -225,3 +225,16 @@ def test_bundle_result_camera_centre():
         np.zeros(0),
     )
     np.testing.assert_allclose(r.camera_centre(0), [0.0, 0.0, 5.0])
+
+
+def test_bundle_vertical_sigma_must_be_positive_when_prior_enabled():
+    """vertical_px>0 with sigma<=0 would divide by sin(0) -> inf; must raise."""
+    obs, plate_R, plate_t = make_scene(n_frames=3)
+    start = perturbed_start(plate_R, plate_t)
+    with pytest.raises(ValueError, match="vertical_sigma_deg must be >0"):
+        bundle_plate_poses(obs, *start, K, vertical_px=10.0, vertical_sigma_deg=0.0)
+    with pytest.raises(ValueError, match="vertical_sigma_deg must be >0"):
+        bundle_plate_poses(obs, *start, K, vertical_px=5.0, vertical_sigma_deg=-1.0)
+    # disabled prior (vertical_px==0) is fine even with sigma==0
+    res = bundle_plate_poses(obs, *start, K, vertical_px=0.0, vertical_sigma_deg=0.0)
+    assert res is not None

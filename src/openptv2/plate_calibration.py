@@ -122,17 +122,15 @@ def solve_opencv_multiview(
 
     P_planes = []
     for p in range(num_planes):
-        # triangulate each marker across cams (requires 4 views in Illmenau loop;
-        # generalize to whatever cams are present by using the first min(4, num_cams) cams)
+        # triangulate each marker across available cameras (≥2).  The previous
+        # code padded to 4 by duplicating the last view, which makes A
+        # rank-deficient (duplicate rows) and can bias/unstabilize the SVD —
+        # use only the available views.
         n = refs_per_plane[p].shape[0]
         plane_3d = []
         for k in range(n):
             xys = [views_per_cam[c][p][k] for c in range(min(4, num_cams))]
             Ps = Pc[: len(xys)]
-            # pad to 4 if needed by duplicating — or just use available cams
-            while len(Ps) < 4:
-                Ps.append(Ps[-1])
-                xys.append(xys[-1])
             plane_3d.append(_dlt(Ps, xys))
         P_planes.append(np.asarray(plane_3d, dtype=np.float32))
     # Keep plane 0 at Z=0 as reference (hub: P[0]=XYZ0)

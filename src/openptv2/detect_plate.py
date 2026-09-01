@@ -252,18 +252,22 @@ def detect_plate_targets(
         subrange_x=subrange_x,
         subrange_y=subrange_y,
     )
-    # Filter sentinel
-    targets = [
-        t for t in raw_targets if getattr(t, "pnr", -999) != 1 or len(raw_targets) == 1
-    ]
-    # Fallback: if sentinel slipped through (single dummy), drop it
-    if (
-        len(targets) == 1
-        and getattr(targets[0], "n", 0) == 1
-        and targets[0].x == 1.0
-        and targets[0].y == 1.0
-    ):
+
+    # Filter the single dummy sentinel (pnr=1,x=y=1,n=1) returned when
+    # target_recognition finds nothing.  The previous filter dropped any
+    # real target with pnr==1 when ≥2 targets were found.
+    def _is_dummy(t) -> bool:
+        return (
+            getattr(t, "pnr", -999) == 1
+            and getattr(t, "n", 0) == 1
+            and float(getattr(t, "x", 0)) == 1.0
+            and float(getattr(t, "y", 0)) == 1.0
+        )
+
+    if len(raw_targets) == 1 and _is_dummy(raw_targets[0]):
         targets = []
+    else:
+        targets = [t for t in raw_targets if not _is_dummy(t)]
 
     coded = _classify_coded(
         raw_for_coded if raw_for_coded is not None else work8, targets, thr=coded_thr

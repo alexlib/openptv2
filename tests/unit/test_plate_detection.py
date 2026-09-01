@@ -3,6 +3,7 @@
 import numpy as np
 import pytest
 
+from openptv2.algorithms.tracking_frame_buf import Target
 from openptv2.detect_plate import PlateDetectionResult, _classify_coded
 from openptv2.plate_labeler import label_coded_6x7, label_plate, label_uncoded_grid
 
@@ -76,3 +77,76 @@ def test_label_uncoded_grid_synthetic():
     )
     assert len(img_pts) == nx * ny
     assert len(ref_pts) == nx * ny
+
+
+@pytest.mark.unit
+def test_detect_plate_targets_keeps_pnr1_when_multiple_found(monkeypatch):
+    """Regression for sentinel bug: real pnr==1 must not be dropped when ≥2 found.
+
+    target_recognition returns pnr 0..n-1; pnr==1 is the second real dot.
+    The old filter ``pnr != 1 or len==1`` dropped it whenever n≥2.
+    """
+    from unittest.mock import Mock
+
+    import openptv2.detect_plate as dp
+
+    # Two real targets, pnr 0 and 1 — neither is the dummy (x=y=1,n=1 is dummy)
+    t0 = Target(pnr=0, x=100.0, y=100.0, n=10, nx=5, ny=5, sumg=1000, tnr=0)
+    t1 = Target(pnr=1, x=200.0, y=100.0, n=12, nx=6, ny=6, sumg=1100, tnr=0)
+
+    monkeypatch.setattr(
+        "openptv2.segmentation.target_recognition", lambda *a, **kw: [t0, t1]
+    )
+    monkeypatch.setattr(
+        "openptv2.image_scaling.to_uint8",
+        lambda img, *a, **kw: np.zeros((20, 20), dtype=np.uint8),
+    )
+    monkeypatch.setattr(
+        "openptv2.image_processing.preprocess_image", lambda img, *a, **kw: img
+    )
+    monkeypatch.setattr(dp, "find_plate_roi", lambda *a, **kw: (1, 10, 1, 10))
+    monkeypatch.setattr(dp, "_classify_coded", lambda *a, **kw: np.zeros(2, dtype=bool))
+
+    cpar = Mock()
+    cpar.negative = False
+    cpar.hp_flag = 1
+    cpar.get_hp_flag = Mock(return_value=1)
+    tpar = Mock()
+    img = np.zeros((20, 20), dtype=np.uint8)
+    res = dp.detect_plate_targets(
+        img, tpar, cpar, cam=0, use_roi=False, scaling={"mode": "stretch"}
+    )
+    assert len(res.targets) == 2
+    assert [t.pnr for t in res.targets] == [0, 1]
+
+
+@pytest.mark.unit
+def test_detect_plate_targets_drops_single_dummy(monkeypatch):
+    """Single dummy (n_found==0 sentinel pnr=1,x=y=1,n=1) must become empty."""
+    import openptv2.detect_plate as dp
+
+    dummy = Target(pnr=1, x=1.0, y=1.0, n=1, nx=1, ny=1, sumg=1, tnr=-1)
+    monkeypatch.setattr(
+        "openptv2.segmentation.target_recognition", lambda *a, **kw: [dummy]
+    )
+    monkeypatch.setattr(
+        "openptv2.image_scaling.to_uint8",
+        lambda img, *a, **kw: np.zeros((20, 20), dtype=np.uint8),
+    )
+    monkeypatch.setattr(
+        "openptv2.image_processing.preprocess_image", lambda img, *a, **kw: img
+    )
+    monkeypatch.setattr(dp, "find_plate_roi", lambda *a, **kw: (1, 10, 1, 10))
+    monkeypatch.setattr(dp, "_classify_coded", lambda *a, **kw: np.zeros(0, dtype=bool))
+
+    from unittest.mock import Mock
+
+    cpar = Mock()
+    cpar.negative = False
+    cpar.hp_flag = 1
+    tpar = Mock()
+    img = np.zeros((20, 20), dtype=np.uint8)
+    res = dp.detect_plate_targets(
+        img, tpar, cpar, cam=0, use_roi=False, scaling={"mode": "stretch"}
+    )
+    assert len(res.targets) == 0

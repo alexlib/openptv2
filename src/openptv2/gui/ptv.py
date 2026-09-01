@@ -839,22 +839,23 @@ def _frame_image_name(base_name, frame: int) -> Path:
         return p
 
     # If the exact path does not exist, look for matching prefix files (e.g. 00001901_000000007383A010.tiff)
+    # glob ordering is filesystem-dependent — sort deterministically
     if p.parent.exists():
-        candidates = list(p.parent.glob(f"{p.name}*"))
+        candidates = sorted(p.parent.glob(f"{p.name}*"))
         if not candidates and p.suffix:
-            candidates = list(p.parent.glob(f"{p.stem}*"))
+            candidates = sorted(p.parent.glob(f"{p.stem}*"))
         if not candidates:
-            candidates = list(p.parent.glob(f"{frame:08d}*"))
+            candidates = sorted(p.parent.glob(f"{frame:08d}*"))
         if not candidates:
-            candidates = list(p.parent.glob(f"{frame:04d}*"))
+            candidates = sorted(p.parent.glob(f"{frame:04d}*"))
         if candidates:
-            img_cands = [
+            img_cands = sorted(
                 c
                 for c in candidates
                 if c.suffix.lower()
                 in (".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp")
-            ]
-            return img_cands[0] if img_cands else candidates[0]
+            )
+            return img_cands[0] if img_cands else sorted(candidates)[0]
 
     return p
 

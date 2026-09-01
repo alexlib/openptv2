@@ -409,5 +409,27 @@ class TestExtractFrameNum:
         assert _extract_frame_num("") == 123456789
 
 
+class TestFrameImageName:
+    def test_frame_image_name_sorts_candidates_deterministically(self, tmp_path):
+        """Glob fallback must be sorted — filesystem order is nondeterministic."""
+        from openptv2.gui.ptv import _frame_image_name
+
+        # No exact cam1.0001.tif, but two prefix matches: _A sorts before _B
+        (tmp_path / "cam1.0001_B.tif").write_bytes(b"fake")
+        (tmp_path / "cam1.0001_A.tif").write_bytes(b"fake")
+        base = str(tmp_path / "cam1.%04d.tif")
+        # Intentionally create files in reverse lex order on disk; result must still be _A
+        result = _frame_image_name(base, 1)
+        assert result.name == "cam1.0001_A.tif"
+
+    def test_frame_image_name_returns_exact_when_exists(self, tmp_path):
+        from openptv2.gui.ptv import _frame_image_name
+
+        exact = tmp_path / "cam1.0001.tif"
+        exact.write_bytes(b"fake")
+        base = str(tmp_path / "cam1.%04d.tif")
+        assert _frame_image_name(base, 1) == exact
+
+
 if __name__ == "__main__":
     pytest.main([__file__])

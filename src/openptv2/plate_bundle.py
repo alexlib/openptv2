@@ -202,6 +202,10 @@ def bundle_plate_poses(
     ncam = len(cam_rvec0)
     nframe = len(plate_rvec0)
     K = np.asarray(K, float)
+    if vertical_px > 0 and vertical_sigma_deg <= 0:
+        raise ValueError(
+            "vertical_sigma_deg must be >0 when vertical_px>0 (got 0 or negative, would divide by sin(0))"
+        )
     x = _pack(cam_rvec0, cam_tvec0, plate_rvec0, plate_tvec0)
 
     def vertical_residual(p):
