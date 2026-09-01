@@ -19,6 +19,7 @@ selector.
 <p align="center">
   <img src="docs/images/burgers_smooth_moving.gif" alt="Burgers vortex — smooth Lagrangian spirals (particles moving)" width="620"/>
 </p>
+<p align="center"><em>Data of a synthetic Burgers vortex created for the manuscript: Ruiz, Liberzon, Bhattacharya (2023), <a href="https://doi.org/10.1016/j.flowmeasinst.2023.102310">doi:10.1016/j.flowmeasinst.2023.102310</a></em></p>
 
 - **Algorithms** (`src/openptv2/algorithms/`) - Cython 3 pure-Python particle tracking, correspondence, and calibration code
 - **Plugins** (`src/openptv2/plugins/`) - pluggable tracker implementations (fast, MyPTV/ProPTV-informed trackers)
@@ -541,3 +542,14 @@ The project includes scripts for building and testing:
 | `scripts/install_wheel.sh` | Install wheel in clean test environment |
 | `scripts/run_tests.sh` | Run test suite in test environment |
 | `docker/Dockerfile.slim` | Slim Docker image for testing |
+
+---
+
+## Publications
+
+For publications where **OpenPTV / Liberzon + 3D-PTV / particle tracking** are mentioned, see:
+
+* **Alex Liberzon — Google Scholar (3D-PTV, particle tracking velocimetry):** <https://scholar.google.com/citations?user=3vgugREAAAAJ&hl=en>
+* **Tel Aviv University CRIS — publications list:** <https://cris.tau.ac.il/en/persons/alex-liberzon/publications/>
+* **OpenPTV organisation — related work:** <https://github.com/search?q=org%3Aopenptv+OR+OpenPTV&type=repositories> and the original OpenPTV paper: <https://doi.org/10.17605/osf.io/tdcn4>
+* **Example Burgers vortex dataset paper (synthetic data used for the hero animation):** Ruiz, Liberzon, Bhattacharya (2023), *Flow Measurement and Instrumentation*, <https://doi.org/10.1016/j.flowmeasinst.2023.102310>

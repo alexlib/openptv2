@@ -79,9 +79,6 @@ ax.set_zlim(zmin - pad, zmax + pad)
 ax.set_xlabel("X [mm]", fontsize=9, fontweight="bold")
 ax.set_ylabel("Y [mm]", fontsize=9, fontweight="bold")
 ax.set_zlabel("Z [mm]", fontsize=9, fontweight="bold")
-ax.set_title(
-    "Burgers vortex — smooth Lagrangian spirals", fontsize=11, fontweight="bold", pad=12
-)
 ax.grid(True, linestyle="--", alpha=0.22)
 ax.view_init(elev=elev, azim=azim)
 sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
@@ -99,12 +96,6 @@ for f in range(T):
     ax.set_xlabel("X [mm]", fontsize=9, fontweight="bold")
     ax.set_ylabel("Y [mm]", fontsize=9, fontweight="bold")
     ax.set_zlabel("Z [mm]", fontsize=9, fontweight="bold")
-    ax.set_title(
-        "Burgers vortex — smooth Lagrangian spirals",
-        fontsize=11,
-        fontweight="bold",
-        pad=12,
-    )
     ax.grid(True, linestyle="--", alpha=0.22)
     ax.view_init(elev=elev, azim=azim)
     for traj, v in zip(trajectories, vels):
