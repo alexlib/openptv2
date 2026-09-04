@@ -54,6 +54,7 @@ from openptv2.autocalibration import (
     resolve_calblock,
     rms_px,
     save_overlay,
+    target_base,
 )
 
 CANDIDATE_FLAGS = [
@@ -71,8 +72,7 @@ def calibrate_camera_full(cam, base, cpar, fix, nfix, eps):
 
     # Stage 2: only now allow cc + distortion to adjust, seeded from the
     # stage-1 pose (not from the raw manual-orientation seed).
-    img, _, _ = cam_files(base, cam)
-    pix = read_targets(str(img), 0)
+    pix = read_targets(str(target_base(base, cam)), 0)
     sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
 
     best = None

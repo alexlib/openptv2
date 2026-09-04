@@ -44,6 +44,7 @@ from openptv2.autocalibration import (
     resolve_calblock,
     rms_px,
     save_overlay,
+    target_base,
 )
 
 FLAGS = ["xh", "yh"]  # exterior always free in orient(); cc/distortion/affine fixed
@@ -51,12 +52,12 @@ REFINE_ITERS = 3
 
 
 def recalibrate_camera(cam, base, cpar, fix, nfix, eps):
-    img, ori, addpar = cam_files(base, cam)
+    _, ori, addpar = cam_files(base, cam)
 
     cal = Calibration.from_file(str(ori), str(addpar))
     cal.added_par = AddedPar()  # remove addpar: zero distortion, identity affine
 
-    pix = read_targets(str(img), 0)
+    pix = read_targets(str(target_base(base, cam)), 0)
     if not pix:
         raise RuntimeError(f"cam{cam + 1}: no detected targets found")
 

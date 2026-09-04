@@ -300,9 +300,12 @@ class RunStore:
 
     def read_targets(self, cam: int, frame: int) -> TargetArray:
         key = f"targets/cam_{cam}/{_frame_key(frame)}"
-        if key not in self.root:
-            raise RunStoreError(f"No targets stored for cam={cam} frame={frame}")
-        raw = np.asarray(self.root[key])
+        try:
+            raw = np.asarray(self.root[key])
+        except KeyError:
+            raise RunStoreError(
+                f"No targets stored for cam={cam} frame={frame}"
+            ) from None
         tarr = TargetArray(len(raw))
         for i, row in enumerate(raw):
             tarr[i].set_pnr(int(row[0]))
@@ -347,9 +350,12 @@ class RunStore:
 
     def read_correspondences(self, frame: int) -> tuple[np.ndarray, np.ndarray]:
         key = f"correspondences/{_frame_key(frame)}"
-        if key not in self.root:
-            raise RunStoreError(f"No correspondences stored for frame {frame}")
-        data = np.asarray(self.root[key])
+        try:
+            data = np.asarray(self.root[key])
+        except KeyError:
+            raise RunStoreError(
+                f"No correspondences stored for frame {frame}"
+            ) from None
         if data.ndim == 1:
             # A zero-particle frame stored as a flat (0,) array (e.g. by a
             # caller that wrote np.empty(0) instead of np.empty((0, 3 + C)) --
@@ -411,16 +417,20 @@ class RunStore:
         self, frame: int, name: str = "ptv_is"
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         key = f"linkage/{name}/{_frame_key(frame)}"
-        if key not in self.root:
-            raise RunStoreError(f"No linkage '{name}' stored for frame {frame}")
-        fg = self.root[key]
-        return np.asarray(fg["prev"]), np.asarray(fg["next"]), np.asarray(fg["pos"])
+        try:
+            fg = self.root[key]
+            return np.asarray(fg["prev"]), np.asarray(fg["next"]), np.asarray(fg["pos"])
+        except KeyError:
+            raise RunStoreError(
+                f"No linkage '{name}' stored for frame {frame}"
+            ) from None
 
     def read_prio(self, frame: int, name: str = "ptv_is") -> Optional[np.ndarray]:
         key = f"linkage/{name}/{_frame_key(frame)}"
-        if key not in self.root or "prio" not in self.root[key]:
+        try:
+            return np.asarray(self.root[key]["prio"])
+        except KeyError:
             return None
-        return np.asarray(self.root[key]["prio"])
 
     def has_linkage(self, frame: int, name: str = "ptv_is") -> bool:
         return f"linkage/{name}/{_frame_key(frame)}" in self.root
