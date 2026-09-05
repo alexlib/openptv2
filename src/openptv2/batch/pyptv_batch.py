@@ -146,32 +146,8 @@ def build_processing_experiment(
 def _warn_if_tracking_poorly_conditioned(
     proc_exp, seq_first: int, seq_last: int
 ) -> None:
-    """Best-effort advisory check, run once before tracking starts: is the
-    true flow fast enough, relative to this calibration's z-reconstruction
-    noise floor, for individual trajectories to be trustworthy? See
-    openptv2.tracking_feasibility for the reasoning and
-    docs/plans/two-subrig-calibration.md for where this was first measured.
-
-    Purely informational -- never blocks or alters tracking. Any failure to
-    read the data (sequence didn't produce rt_is yet, too few points, etc.)
-    is swallowed silently rather than interrupting the actual pipeline.
-    """
-    if seq_last <= seq_first:
-        return
-    try:
-        from openptv2.gui.ptv import _open_run_store
-        from openptv2.tracking_feasibility import assess_tracking_conditioning
-
-        store = _open_run_store(proc_exp)
-        pos_a, _ = store.read_correspondences(seq_first)
-        pos_b, _ = store.read_correspondences(seq_first + 1)
-        report = assess_tracking_conditioning(
-            pos_a, pos_b, proc_exp.cals, proc_exp.cpar
-        )
-        if report is not None and report.verdict != "well-conditioned":
-            print(f"[WARNING] {report.message}")
-    except Exception:
-        pass
+    """Disabled: advisory check based on heuristic calibration noise floor."""
+    return
 
 
 def run_batch(
@@ -240,7 +216,6 @@ def run_batch(
             print(f"Running sequence plugin: {sequence_plugin}")
             run_sequence_plugin(sequence_plugin, proc_exp, plugins_dir)
         if mode in ("both", "tracking"):
-            _warn_if_tracking_poorly_conditioned(proc_exp, seq_first, seq_last)
             print(f"Running tracking plugin: {tracking_plugin}")
             run_tracking_plugin(tracking_plugin, proc_exp, plugins_dir)
 
