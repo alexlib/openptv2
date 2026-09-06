@@ -39,6 +39,7 @@ from .parameter_manager import ParameterManager
 # Re-exported for callers that import them from this module (GUI + tests).
 from .ptv_calibration import (  # noqa: F401
     _read_calibrations,
+    _resolve_ci,
     clone_calibration,
     full_scipy_calibration,
 )
@@ -828,6 +829,11 @@ def run_tracking_plugin(exp) -> None:
 def _frame_image_name(base_name, frame: int) -> Path:
     """Format a sequence base name into the image path for one frame."""
     base_name = _safe_decode(base_name)
+    # Windows-authored YAMLs routinely use '\' as a separator; on POSIX (every
+    # cloud container) '\' is just a literal character, not a separator, so
+    # e.g. "img\\frame_%06d.tif" resolves to a single-component filename that
+    # never exists instead of img/frame_NNNNNN.tif. '/' works on both OSes.
+    base_name = base_name.replace("\\", "/")
     try:
         p = Path(base_name % frame)
     except (TypeError, ValueError):
@@ -837,6 +843,14 @@ def _frame_image_name(base_name, frame: int) -> Path:
 
     if p.exists():
         return p
+
+    # Exact name missing -- try a case-insensitive match before the fuzzier
+    # prefix search below (same base-name-case-mismatch problem as
+    # calibration files: harmless on Windows' case-insensitive filesystem,
+    # broken on Linux). See ptv_calibration._resolve_ci.
+    ci_match = _resolve_ci(p)
+    if ci_match is not None:
+        return Path(ci_match)
 
     # If the exact path does not exist, look for matching prefix files (e.g. 00001901_000000007383A010.tiff)
     # glob ordering is filesystem-dependent — sort deterministically

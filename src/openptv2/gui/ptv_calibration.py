@@ -25,6 +25,33 @@ from openptv2.transforms import convert_arr_pixel_to_metric
 NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear", "interf"]
 
 
+def _resolve_ci(path: "os.PathLike | str") -> str | None:
+    """The real path of `path` on disk, tolerating a case mismatch.
+
+    Parameter YAMLs are routinely authored on Windows, where the filesystem
+    is case-insensitive, so `cam_1.TIF` and `cam_1.tif` are the same file
+    there. On Linux (every cloud container) they are not, and a YAML mixing
+    `cal/cam_1.TIF` in one section with `cal/cam_1.tif` in another -- legal
+    on Windows, since both resolve to the one file on disk -- silently breaks
+    only in the cloud. Exact match first; only scan the directory if that
+    misses. None if neither the exact name nor a case-insensitive match
+    exists.
+    """
+    from pathlib import Path
+
+    p = Path(path)
+    if p.is_file():
+        return str(p)
+    parent = p.parent
+    if not parent.is_dir():
+        return None
+    target = p.name.lower()
+    for candidate in parent.iterdir():
+        if candidate.is_file() and candidate.name.lower() == target:
+            return str(candidate)
+    return None
+
+
 def _read_calibrations(
     cpar: ControlParams, num_cams: int, base_dir: os.PathLike | str | None = None
 ) -> List[Calibration]:
@@ -47,6 +74,10 @@ def _read_calibrations(
             cals.append(cal)
             continue
 
+        # Windows-authored YAMLs routinely use '\' as a separator; '/' works
+        # on both platforms, '\' only on Windows.
+        base_name = base_name.replace("\\", "/")
+
         candidates = []
         if base_dir is not None and not Path(base_name).is_absolute():
             candidates.append(Path(base_dir) / base_name)
@@ -63,14 +94,16 @@ def _read_calibrations(
                 ori_file = cand_str + ".ori"
                 addpar_file = cand_str + ".addpar"
 
-            ori_exists = os.path.isfile(ori_file) and os.access(ori_file, os.R_OK)
-            addpar_exists = os.path.isfile(addpar_file) and os.access(
-                addpar_file, os.R_OK
-            )
+            resolved_ori = _resolve_ci(ori_file)
+            resolved_addpar = _resolve_ci(addpar_file)
 
-            if ori_exists and addpar_exists:
-                found_ori = ori_file
-                found_addpar = addpar_file
+            if resolved_ori and resolved_addpar:
+                found_ori = resolved_ori
+                found_addpar = resolved_addpar
+                if resolved_ori != ori_file:
+                    print(
+                        f"  (case-insensitive match: {ori_file} -> {resolved_ori})"
+                    )
                 break
 
         if found_ori and found_addpar:
@@ -88,10 +121,8 @@ def _read_calibrations(
                 if primary_cand.endswith(".ori")
                 else (primary_cand + ".addpar")
             )
-            ori_exists = os.path.isfile(ori_file) and os.access(ori_file, os.R_OK)
-            addpar_exists = os.path.isfile(addpar_file) and os.access(
-                addpar_file, os.R_OK
-            )
+            ori_exists = _resolve_ci(ori_file) is not None
+            addpar_exists = _resolve_ci(addpar_file) is not None
             missing_str = f"Missing: {ori_file if not ori_exists else ''} {addpar_file if not addpar_exists else ''}"
             if os.environ.get("OPENPTV_STORAGE") == "zarr_only":
                 raise RuntimeError(
