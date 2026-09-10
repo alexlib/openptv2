@@ -47,9 +47,12 @@ def test_edited_mask_invalidates_the_rasterized_cache(tmp_path):
     out = apply_roi_mask(img, 0, tmp_path)
     assert out[5, 10] == 0  # right half masked out
 
-    # Redraw a wider polygon covering the whole frame; bump mtime so the
-    # cache (keyed on it) actually sees a change on fast filesystems.
-    os.utime(mask_path, (time.time() + 1, time.time() + 1))
+    # Redraw a wider polygon covering the whole frame, then bump mtime
+    # forward -- write_text() itself sets mtime to "now", so bumping it
+    # *before* the write would just get overwritten; bumping after
+    # guarantees the cache (keyed on mtime) sees a change even when two
+    # writes land in the same filesystem timestamp tick.
     mask_path.write_text("0 0\n11 0\n11 9\n0 9\n")
+    os.utime(mask_path, (time.time() + 1, time.time() + 1))
     out2 = apply_roi_mask(img, 0, tmp_path)
     assert out2[5, 10] == 200  # now inside the redrawn polygon
