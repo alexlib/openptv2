@@ -733,12 +733,20 @@ class TreeMenuHandler(Handler):
     def draw_trajectory_roi_action(self, info):
         """Draw the 3D trajectory ROI (XY/XZ/YZ inclusion polygons)."""
         from openptv2.gui.trajectory_roi_gui import draw_trajectory_roi
+        from openptv2.storage import RunStoreError
 
         working_folder = Path(info.object.exp1.active_params.yaml_path).parent
         try:
             draw_trajectory_roi(working_folder)
         except FileNotFoundError as exc:
             print(f"Could not draw trajectory ROI: {exc}")
+        except RunStoreError as exc:
+            print(
+                "Could not draw trajectory ROI: no sealed trajectories yet "
+                f"({exc}). Run sequence + tracking for this experiment first "
+                "-- the ROI is drawn against triangulated 3D positions, which "
+                "only exist once tracking has produced trajectories."
+            )
 
     def highpass_action(self, info):
         """highpass_action - calls ptv.py_pre_processing_c()"""

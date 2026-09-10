@@ -29,13 +29,45 @@ _TITLES = {"xy_polygon": "XY", "xz_polygon": "XZ", "yz_polygon": "YZ"}
 
 
 def load_trajectory_positions(working_folder: Path | str) -> np.ndarray:
-    """Load all (N, 3) trajectory positions for the run in ``working_folder``."""
+    """Load 3D positions (mm) to draw the trajectory ROI against.
+
+    Tries three sources, cheapest/earliest-available first, all already mm
+    (matching what ``filter_by_trajectory_roi`` tests during triangulation --
+    see its docstring) so none need scaling except the last:
+
+    1. Per-frame correspondences -- exist as soon as correspondence/
+       triangulation has run for one frame. This is the point: the ROI is
+       meant to be drawn *before* tracking, since it filters during
+       triangulation, not after.
+    2. The ``ptv_is`` linkage -- written directly by tracking; some runs
+       (e.g. this project's splitter/zarr_only paths) end up with tracking
+       output but no populated ``correspondences`` group.
+    3. The sealed ``trajectories/`` cache (metres, matching flowtracks --
+       scaled up to mm here), which needs ``seal()`` to have run.
+
+    Raises the store's own error if none of the three exist.
+    """
     store_path = find_existing_store(working_folder)
     if store_path is None:
         raise FileNotFoundError(
             f"No run store (res/run.zarr) found under {working_folder}"
         )
-    return RunStore(store_path, mode="r").trajectories()["pos"]
+
+    store = RunStore(store_path, mode="r")
+
+    corr_frames = store.frames(source="correspondences")
+    if corr_frames:
+        return np.concatenate(
+            [store.read_correspondences(frame)[0] for frame in corr_frames], axis=0
+        )
+
+    link_frames = store.frames(source="linkage/ptv_is")
+    if link_frames:
+        return np.concatenate(
+            [store.read_linkage(frame, "ptv_is")[2] for frame in link_frames], axis=0
+        )
+
+    return store.trajectories()["pos"] * 1000.0
 
 
 def draw_trajectory_roi(working_folder: Path | str) -> None:
