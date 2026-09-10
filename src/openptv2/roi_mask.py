@@ -40,6 +40,30 @@ def rasterize_mask(polygon_xy: np.ndarray, imx: int, imy: int) -> np.ndarray:
     return mask
 
 
+# One run's mask never changes frame to frame, but apply_roi_mask is called
+# once per camera per frame -- caching the rasterized mask (keyed by mtime,
+# so an edited-and-resaved mask still invalidates it) turns the per-frame
+# cost back into one cheap os.stat() instead of a re-parse + re-rasterize.
+_rasterized_cache: dict[tuple[str, int, int], tuple[float, np.ndarray | None]] = {}
+
+
+def _cached_rasterized_mask(
+    i_cam: int, working_folder: Path | str | None, imx: int, imy: int
+) -> np.ndarray | None:
+    path = mask_file_path(i_cam, working_folder)
+    key = (str(path), imx, imy)
+    mtime = path.stat().st_mtime if path.exists() else -1.0
+
+    cached = _rasterized_cache.get(key)
+    if cached is not None and cached[0] == mtime:
+        return cached[1]
+
+    polygon_xy = load_mask_polygon(i_cam, working_folder)
+    mask = rasterize_mask(polygon_xy, imx, imy) if polygon_xy is not None else None
+    _rasterized_cache[key] = (mtime, mask)
+    return mask
+
+
 def apply_roi_mask(
     img: np.ndarray, i_cam: int, working_folder: Path | str | None = None
 ) -> np.ndarray:
@@ -47,8 +71,7 @@ def apply_roi_mask(
 
     No saved polygon -> ``img`` is returned unchanged (default: full frame).
     """
-    polygon_xy = load_mask_polygon(i_cam, working_folder)
-    if polygon_xy is None:
+    mask = _cached_rasterized_mask(i_cam, working_folder, img.shape[1], img.shape[0])
+    if mask is None:
         return img
-    mask = rasterize_mask(polygon_xy, img.shape[1], img.shape[0])
     return subtract_mask(img, mask)

@@ -1,3 +1,6 @@
+import os
+import time
+
 import numpy as np
 import pytest
 
@@ -34,3 +37,19 @@ def test_rasterize_mask_shape():
     mask = rasterize_mask(poly, imx=10, imy=10)
     assert mask.shape == (10, 10)
     assert mask.dtype == np.uint8
+
+
+def test_edited_mask_invalidates_the_rasterized_cache(tmp_path):
+    img = np.full((10, 12), 200, dtype=np.uint8)
+    mask_path = tmp_path / "mask_0.txt"
+
+    mask_path.write_text("0 0\n5 0\n5 9\n0 9\n")
+    out = apply_roi_mask(img, 0, tmp_path)
+    assert out[5, 10] == 0  # right half masked out
+
+    # Redraw a wider polygon covering the whole frame; bump mtime so the
+    # cache (keyed on it) actually sees a change on fast filesystems.
+    os.utime(mask_path, (time.time() + 1, time.time() + 1))
+    mask_path.write_text("0 0\n11 0\n11 9\n0 9\n")
+    out2 = apply_roi_mask(img, 0, tmp_path)
+    assert out2[5, 10] == 200  # now inside the redrawn polygon
