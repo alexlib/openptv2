@@ -28,6 +28,7 @@ from openptv2.parameters import (
     TrackingParams,
     VolumeParams,
 )
+from openptv2.roi_mask import apply_roi_mask
 from openptv2.segmentation import target_recognition
 from openptv2.tracker import Tracker, default_naming
 from openptv2.tracking_framebuf import TargetArray
@@ -235,6 +236,7 @@ def _process_frame_worker(args: Tuple) -> int:
                 img = np.clip(img - background, 0, 255).astype(np.uint8)
             except (ValueError, FileNotFoundError):
                 pass
+        img = apply_roi_mask(img, i_cam)
         high_pass = simple_highpass(
             img, cpar, ptv_params.get("highpass_size", DEFAULT_HIGHPASS_FILTER_SIZE)
         )
@@ -984,6 +986,8 @@ def read_frame_images(pm, img_base_names, num_cams, frame) -> List[np.ndarray]:
             except (ValueError, FileNotFoundError, TypeError):
                 print("failed to read the mask")
 
+    images = [apply_roi_mask(img, i_cam) for i_cam, img in enumerate(images)]
+
     return images
 
 
@@ -1400,6 +1404,7 @@ def py_sequence_loop_python(exp) -> None:
                         img = np.clip(img - background, 0, 255).astype(np.uint8)
                     except (ValueError, FileNotFoundError):
                         print("failed to read the mask")
+                img = apply_roi_mask(img, i_cam)
                 high_pass = simple_highpass(
                     img,
                     cpar,

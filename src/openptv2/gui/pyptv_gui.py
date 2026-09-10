@@ -42,6 +42,7 @@ from traitsui.menu import Action, Menu, MenuBar
 
 from openptv2 import __version__ as openptv_version
 from openptv2.epipolar import epipolar_curve
+from openptv2.roi_mask import apply_roi_mask
 
 from . import ptv
 from .calibration_gui import CalibrationGUI
@@ -729,6 +730,16 @@ class TreeMenuHandler(Handler):
         mask_gui = MaskGUI(info.object.exp1)
         mask_gui.configure_traits()
 
+    def draw_trajectory_roi_action(self, info):
+        """Draw the 3D trajectory ROI (XY/XZ/YZ inclusion polygons)."""
+        from openptv2.gui.trajectory_roi_gui import draw_trajectory_roi
+
+        working_folder = Path(info.object.exp1.active_params.yaml_path).parent.parent
+        try:
+            draw_trajectory_roi(working_folder)
+        except FileNotFoundError as exc:
+            print(f"Could not draw trajectory ROI: {exc}")
+
     def highpass_action(self, info):
         """highpass_action - calls ptv.py_pre_processing_c()"""
         mainGui = info.object
@@ -757,6 +768,10 @@ class TreeMenuHandler(Handler):
                     ).astype(np.uint8)
             except ValueError as exc:
                 raise ValueError("Failed subtracting mask") from exc
+
+        mainGui.orig_images = [
+            apply_roi_mask(im, i) for i, im in enumerate(mainGui.orig_images)
+        ]
 
         print("highpass started")
         mainGui.orig_images = ptv.py_pre_processing_c(
@@ -1288,6 +1303,10 @@ menu_bar = MenuBar(
             enabled_when="pass_init",
         ),
         name="Drawing mask",
+    ),
+    Menu(
+        Action(name="Draw trajectory ROI", action="draw_trajectory_roi_action"),
+        name="Trajectory ROI",
     ),
 )
 
