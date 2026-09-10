@@ -734,7 +734,7 @@ class TreeMenuHandler(Handler):
         """Draw the 3D trajectory ROI (XY/XZ/YZ inclusion polygons)."""
         from openptv2.gui.trajectory_roi_gui import draw_trajectory_roi
 
-        working_folder = Path(info.object.exp1.active_params.yaml_path).parent.parent
+        working_folder = Path(info.object.exp1.active_params.yaml_path).parent
         try:
             draw_trajectory_roi(working_folder)
         except FileNotFoundError as exc:

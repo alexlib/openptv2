@@ -269,7 +269,12 @@ class MaskGUI(HasTraits):
         self.need_reset = 0
         self.experiment = experiment
         self.active_path = Path(experiment.active_params.yaml_path).parent
-        self.working_folder = self.active_path.parent
+        # Working folder = the yaml's own directory, matching how MainGUI
+        # chdirs (pyptv_gui.py's init_action: os.chdir(yaml_path.parent)) --
+        # this used to go one level too high (active_path.parent), landing
+        # in the experiment's parent dir instead of the run folder, which
+        # made every relative img_name/mask path resolve to the wrong place.
+        self.working_folder = self.active_path
 
         os.chdir(self.working_folder)
         print(f"Inside a folder: {Path.cwd()}")
