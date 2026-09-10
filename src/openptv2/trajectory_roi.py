@@ -19,6 +19,7 @@ from pathlib import Path
 import numpy as np
 
 PLANES = {"xy_polygon": (0, 1), "xz_polygon": (0, 2), "yz_polygon": (1, 2)}
+ROI_FILENAME = "trajectory_roi.json"
 
 
 @dataclass(frozen=True)
@@ -57,3 +58,46 @@ class TrajectoryROI:
             if polygon is not None:
                 inside &= MplPath(polygon).contains_points(positions[:, [a, b]])
         return inside
+
+
+# A run's ROI never changes frame to frame, but filter_by_trajectory_roi is
+# called once per frame during triangulation -- cache it by mtime (as
+# roi_mask.py does for the image mask) so a re-parse only happens when the
+# file actually changes.
+_roi_cache: dict[str, tuple[float, TrajectoryROI]] = {}
+
+
+def load_trajectory_roi(working_folder: Path | str | None = None) -> TrajectoryROI:
+    """Load ``working_folder``'s trajectory_roi.json, or an empty (fully
+    unrestricted) ROI if it doesn't exist -- default: nothing is filtered."""
+    folder = Path(working_folder) if working_folder is not None else Path.cwd()
+    path = folder / ROI_FILENAME
+    mtime = path.stat().st_mtime if path.exists() else -1.0
+
+    cached = _roi_cache.get(str(path))
+    if cached is not None and cached[0] == mtime:
+        return cached[1]
+
+    roi = TrajectoryROI.from_json(path) if path.exists() else TrajectoryROI()
+    _roi_cache[str(path)] = (mtime, roi)
+    return roi
+
+
+def filter_by_trajectory_roi(
+    pos: np.ndarray,
+    corresp: np.ndarray,
+    working_folder: Path | str | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Drop rows of ``pos`` (N, 3) and the matching columns of ``corresp``
+    (C, N) whose 3D position falls outside any drawn ROI plane.
+
+    No saved ROI (or one with no polygons drawn) keeps everything --
+    default: unrestricted, same convention as the image mask.
+    """
+    if len(pos) == 0:
+        return pos, corresp
+    roi = load_trajectory_roi(working_folder)
+    if roi.is_empty():
+        return pos, corresp
+    keep = roi.contains(pos)
+    return pos[keep], corresp[:, keep]

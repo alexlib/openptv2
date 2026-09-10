@@ -23,9 +23,7 @@ from pathlib import Path
 import numpy as np
 
 from openptv2.storage import RunStore, find_existing_store
-from openptv2.trajectory_roi import PLANES, TrajectoryROI
-
-ROI_FILENAME = "trajectory_roi.json"
+from openptv2.trajectory_roi import PLANES, ROI_FILENAME, TrajectoryROI
 
 _TITLES = {"xy_polygon": "XY", "xz_polygon": "XZ", "yz_polygon": "YZ"}
 

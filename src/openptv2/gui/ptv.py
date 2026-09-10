@@ -32,6 +32,7 @@ from openptv2.roi_mask import apply_roi_mask
 from openptv2.segmentation import target_recognition
 from openptv2.tracker import Tracker, default_naming
 from openptv2.tracking_framebuf import TargetArray
+from openptv2.trajectory_roi import filter_by_trajectory_roi
 
 # PyPTV imports
 from . import ptv_calibration
@@ -782,6 +783,8 @@ def py_determination_proc_c(
     else:
         print_corresp = concatenated_corresp
 
+    pos, print_corresp = filter_by_trajectory_roi(pos, print_corresp)
+
     if store is not None:
         store.write_correspondences(
             frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
@@ -1155,6 +1158,8 @@ def py_sequence_loop(exp) -> None:
         else:
             print_corresp = sorted_corresp
 
+        pos, print_corresp = filter_by_trajectory_roi(pos, print_corresp)
+
         store.write_correspondences(
             frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
         )
@@ -1526,6 +1531,8 @@ def py_sequence_loop_python(exp) -> None:
             print_corresp[:num_cams, :] = concatenated_corresp
         else:
             print_corresp = concatenated_corresp
+
+        pos, print_corresp = filter_by_trajectory_roi(pos, print_corresp)
 
         store.write_correspondences(
             frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
