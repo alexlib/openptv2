@@ -70,7 +70,8 @@ gui = [
     "PySide6>=6.0.0",
     "matplotlib>=3.7.0",
     "pandas>=2.0.0",
-    "flowtracks>=0.3.0",
+    "flowtracks[legacy-io]>=0.3.0",  # legacy-io: flowtracks.io imports pytables unconditionally
+    "pyvista>=0.44.0",  # flowtracks.writers .vtp export used by "Save Paraview files"
     "imagecodecs>=2023.1.23",
 ]
 # Background-removal preprocessing (openptv2.plugins.rembg_sequence /
@@ -235,6 +236,12 @@ ignore = ["D1", "E501"]
 "docs/**" = ["E402"]
 "test_data/**" = ["E402"]
 "test_dictoffset.py" = ["E402"]
+
+[tool.uv.sources]
+# Local dev loop for flowtracks (mirrors flowtracks_examples): the installed
+# PyPI release (1.1.1) predates flowtracks/writers.py used by
+# gui/flowtracks_utils.py's "Save Paraview files" action.
+flowtracks = { path = "../postptv", editable = true }
 
 [dependency-groups]
 dev = [

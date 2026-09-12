@@ -67,16 +67,33 @@ def export_ptv_is_to_paraview(
     ptv_is_pattern="res/ptv_is.%d", output_dir="./res", xuap=False
 ):
     """
-    Reads ptv_is.# files or Zarr store and exports per-frame CSVs for Paraview visualization.
-    Each output file is named ptv_<frame>.txt and contains columns:
-    particle, x, y, z, dx, dy, dz
-    """
-    import pandas as pd
+    Reads ptv_is.# files or Zarr store and exports trajectories for Paraview.
 
+    When a Zarr run store exists, writes one ``trajectories.vtp`` (VTK
+    PolyData: points + a polyline per trajectory, with velocity/speed/time
+    point data) via ``flowtracks.writers.write_trajectories_vtp`` -- ParaView
+    opens this directly, no per-frame CSV + TableToPoints setup needed. Falls
+    back to the legacy per-frame ``ptv_<frame>.txt`` CSV export when no Zarr
+    store is available (plain ``ptv_is.#`` runs) or pyvista isn't installed.
+    """
     from openptv2.storage import find_existing_store
 
-    dataset = []
     zarr_store = find_existing_store(output_dir)
+    if zarr_store is not None:
+        try:
+            from flowtracks.writers import write_trajectories_vtp
+
+            vtp_path = write_trajectories_vtp(
+                zarr_store, f"{output_dir}/trajectories.vtp"
+            )
+            print(f"Saving trajectories to Paraview finished: {vtp_path}")
+            return
+        except ImportError:
+            pass  # pyvista not installed -- fall through to CSV export below
+
+    import pandas as pd
+
+    dataset = []
     if zarr_store is not None:
         try:
             from openptv2.storage import RunStore
