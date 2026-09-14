@@ -30,9 +30,41 @@ Tracking parameters (velocity, acceleration, angle limits) can be chosen systema
 - `accel_lim = 0.099` (10% above max acceleration)
 - `angle_lim = 20` (gon)
 
+### Measured recipe for `trackcorr` (`openptv2.tracking_params`)
+
+For noisy, slowly moving tracers (kHz frame rates) the limits above are
+better derived from the noise than from observed maxima, because the observed
+"acceleration" and "turning angle" between frames are almost entirely
+position noise:
+
+1. Track a short stretch (e.g. 20 frames) with loose limits: `angle: 270`
+   (off) and a generous `dacc`.
+2. `params, stats, reasons = recommend_from_store(store, first, last)` measures
+   the per-axis position noise from the lag-1 covariance of second differences
+   (`-4 sigma^2` for white noise) and the step statistics, and returns:
+   - `dv` per axis = p99.9 of |step| + 3·√2·σ,
+   - `dacc` = 1.2 × p99.5 of the noise acceleration magnitude (per-axis std √6·σ),
+   - `angle` = 270 (off) when the median step is below 10× the step noise
+     (√2·|σ|): the turning angle is then noise and an angle limit only rejects
+     correct links.
+3. Keep `ptv.pair_flag: false` (the default): on a 4-camera rig only ~37% of
+   2-camera correspondences were confirmed by a third camera.
+
+On a 4-camera, 5005-frame experiment (σ = 9/8/42 µm, median step 0.125 mm)
+this gave `angle: 270`, `dacc: 0.4`, `dv` ±1.4/1.7/1.8 mm; points in tracks of
+10+ frames rose from 52.9% (angle 100, dacc 0.8) to 71.8% on the first 20
+frames and to 84.5% over the full run, and on synthetic ground truth matched to
+that experiment link recall went from 93.3% to 99.8% with precision 99.9%.
+
+Parallel chunked tracking (`track_sequence_chunked_parallel`) runs trackcorr
+forward-only per window; its optional global passes
+(`run_postprocess_passes`: cold-start seeding, gap relinking, reciprocity)
+now print their stats and warn when a pass fails instead of skipping silently.
+
 ### Reference test
 
-See the tracking parameter sensitivity tests in `tests/batch/test_pyptv_batch.py` and `tests/batch/test_apply_optimizations.py`.
+See the tracking parameter sensitivity tests in `tests/batch/test_pyptv_batch.py` and `tests/batch/test_apply_optimizations.py`,
+and `tests/unit/test_tracking_params.py` for the measured recipe.
 
 These tests demonstrate the full workflow and can be used as a template for your own datasets.
 

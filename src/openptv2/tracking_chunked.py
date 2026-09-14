@@ -339,6 +339,62 @@ def stitch_chunked_linkages(
     return total_parts, total_links
 
 
+def run_postprocess_passes(linkage_base, first, last, tpar, store=None) -> dict:
+    """Cold-start seeding, gap relinking and reciprocity over a stitched run.
+
+    Each pass's stats are printed and returned. A pass that raises is reported
+    as a ``RuntimeWarning`` carrying the exception, and the remaining passes
+    still run. This replaces a bare ``except Exception: pass`` around all
+    three, which hid failures and made the passes look like no-ops (a chunked
+    wp1 run and a sequential run without these passes differed by 0.004% of
+    links, with no way to tell whether the passes had run at all).
+    """
+    import warnings
+
+    from openptv2.tracking_postprocess import (
+        enforce_reciprocity,
+        relink_trajectory_gaps,
+        seed_cold_start,
+    )
+
+    passes = (
+        (
+            "seed_cold_start",
+            lambda: seed_cold_start(
+                linkage_base, first, last, float(tpar.dvxmax), store=store
+            ),
+        ),
+        (
+            "relink_trajectory_gaps",
+            lambda: relink_trajectory_gaps(
+                linkage_base,
+                first,
+                last,
+                max_gap=2,
+                max_accel_err=float(tpar.dacc),
+                store=store,
+            ),
+        ),
+        (
+            "enforce_reciprocity",
+            lambda: enforce_reciprocity(linkage_base, first, last, store=store),
+        ),
+    )
+    stats: dict = {}
+    for name, run_pass in passes:
+        try:
+            stats[name] = run_pass()
+        except Exception as exc:  # noqa: BLE001 -- report it, run the next pass
+            warnings.warn(
+                f"tracking post-processing pass {name} failed: {exc!r}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            stats[name] = {"error": repr(exc)}
+        print(f"[tracking postprocess] {name}: {stats[name]}")
+    return stats
+
+
 def track_sequence_chunked_parallel(
     cpar: ControlPar,
     vpar: VolumePar,
@@ -463,27 +519,7 @@ def track_sequence_chunked_parallel(
 
     # Optional post-processing passes
     if postprocess and store is not None:
-        from openptv2.tracking_postprocess import (
-            enforce_reciprocity,
-            relink_trajectory_gaps,
-            seed_cold_start,
-        )
-
-        try:
-            seed_cold_start(
-                naming["linkage"], first, last, float(tpar.dvxmax), store=store
-            )
-            relink_trajectory_gaps(
-                naming["linkage"],
-                first,
-                last,
-                max_gap=2,
-                max_accel_err=float(tpar.dacc),
-                store=store,
-            )
-            enforce_reciprocity(naming["linkage"], first, last, store=store)
-        except Exception:
-            pass
+        run_postprocess_passes(naming["linkage"], first, last, tpar, store=store)
 
     # Seal store if attached
     if store is not None:
