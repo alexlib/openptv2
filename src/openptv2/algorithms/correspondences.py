@@ -1086,8 +1086,11 @@ def correspondences(frm, corrected, vpar, cpar, calib):
         )
         match_counts[3] += match_counts[1]
 
-    # 2-camera pairs
-    if num_cams > 1 and cpar.allCam_flag == 0:
+    # 2-camera pairs: default off (ptv.pair_flag=False); allcam_flag wins
+    # over pair_flag; 2-cam rigs always allow pairs (pairs ARE all cams).
+    from openptv2.algorithms.parameters import pairs_allowed
+
+    if pairs_allowed(num_cams, cpar.allCam_flag, getattr(cpar, "pair_flag", 0)):
         match0 = consistent_pair_matching(
             p1_arr,
             n_arr,
