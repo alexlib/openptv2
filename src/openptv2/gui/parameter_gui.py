@@ -71,12 +71,18 @@ class ParamHandler(Handler):
             img_name = img_name[: main_params.Num_Cam]
             img_cal_name = img_cal_name[: main_params.Num_Cam]
 
+            # allcam wins over pairs: requiring all cameras leaves no room
+            # for 2-camera pairs (except 2-cam rigs where pairs ARE all cams).
+            pair_flag = bool(main_params.pair_Flag)
+            if bool(main_params.Accept_OnlyAllCameras) and int(main_params.Num_Cam) > 2:
+                pair_flag = False
             experiment.pm.parameters["ptv"].update(
                 {
                     "img_name": img_name,
                     "img_cal": img_cal_name,
                     "hp_flag": main_params.HighPass,
                     "allcam_flag": main_params.Accept_OnlyAllCameras,
+                    "pair_flag": pair_flag,
                     "tiff_flag": main_params.tiff_flag,
                     "imx": main_params.imx,
                     "imy": main_params.imy,
@@ -735,12 +741,17 @@ class Main_Params(HasTraits):
     def _pair_Flag_fired(self):
         if self.pair_Flag:
             self.all_enable_flag = False
+            # pairs and allcam are mutually exclusive: enabling pairs
+            # releases the allcam requirement.
+            self.Accept_OnlyAllCameras = False
         else:
             self.all_enable_flag = True
 
     def _Accept_OnlyAllCameras_fired(self):
         if self.Accept_OnlyAllCameras:
             self.pair_enable_flag = False
+            # allcam wins over pairs: auto-uncheck pairs.
+            self.pair_Flag = False
         else:
             self.pair_enable_flag = True
 
@@ -763,6 +774,22 @@ class Main_Params(HasTraits):
         self.Refr_Water = ptv_params["mmp_n3"]
         self.Thick_Glass = ptv_params["mmp_d"]
         self.Accept_OnlyAllCameras = bool(ptv_params["allcam_flag"])
+        if "pair_flag" in ptv_params:
+            self.pair_Flag = bool(ptv_params["pair_flag"])
+        elif "use_pairs" in ptv_params:
+            self.pair_Flag = bool(ptv_params["use_pairs"])
+        else:
+            try:
+                cal_ori = pm.get_section("cal_ori")
+                self.pair_Flag = bool(cal_ori.get("pair_flag", False))
+            except Exception:
+                self.pair_Flag = False
+        # allcam wins over pairs on load as well.
+        if self.Accept_OnlyAllCameras and int(global_n_cam) > 2:
+            self.pair_Flag = False
+            self.pair_enable_flag = False
+        else:
+            self.pair_enable_flag = True
         self.Num_Cam = global_n_cam
         self.HighPass = bool(ptv_params["hp_flag"])
         self.tiff_flag = bool(ptv_params["tiff_flag"])

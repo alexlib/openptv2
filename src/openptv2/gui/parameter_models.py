@@ -110,6 +110,7 @@ class PftVersionParams(SectionModel):
 
 class PtvParams(SectionModel):
     allcam_flag: bool = False
+    pair_flag: bool = False
     chfield: int = 0
     hp_flag: bool = True
     img_cal: list[str] = []

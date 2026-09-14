@@ -402,7 +402,9 @@ def simple_highpass(
     return preprocess_image(img, 0, cpar, filter_size)
 
 
-def _populate_cpar(ptv_params: dict, num_cams: int) -> ControlParams:
+def _populate_cpar(
+    ptv_params: dict, num_cams: int, full_params: dict | None = None
+) -> ControlParams:
     """Populate a ControlParams object from a dictionary containing full parameters.
 
     Args:
@@ -420,6 +422,18 @@ def _populate_cpar(ptv_params: dict, num_cams: int) -> ControlParams:
     cpar.set_pixel_size((ptv_params["pix_x"], ptv_params["pix_y"]))
     cpar.set_hp_flag(ptv_params["hp_flag"])
     cpar.set_allCam_flag(ptv_params["allcam_flag"])
+    if "pair_flag" in ptv_params:
+        cpar.set_pair_flag(ptv_params["pair_flag"])
+    elif "use_pairs" in ptv_params:
+        cpar.set_pair_flag(ptv_params["use_pairs"])
+    elif full_params is not None:
+        cal = (full_params.get("cal_ori") or {}) if isinstance(full_params, dict) else {}
+        cpar.set_pair_flag(cal.get("pair_flag", False))
+    else:
+        cpar.set_pair_flag(False)
+    # allcam wins over pairs (except 2-cam rigs where pairs ARE all cams).
+    if bool(ptv_params.get("allcam_flag", False)) and num_cams > 2:
+        cpar.set_pair_flag(False)
     cpar.set_tiff_flag(ptv_params["tiff_flag"])
     cpar.set_chfield(ptv_params["chfield"])
 
@@ -606,7 +620,7 @@ def py_start_proc_c(
         params = pm.parameters
         num_cams = pm.num_cams
 
-        cpar = _populate_cpar(params["ptv"], num_cams)
+        cpar = _populate_cpar(params["ptv"], num_cams, params)
         spar = _populate_spar(params["sequence"], num_cams)
         vpar = _populate_vpar(params["criteria"])
         track_par = _populate_track_par(params["track"])
@@ -1192,6 +1206,16 @@ def _convert_optv_params_for_python_engine(cpar, vpar, tpar, cals, num_cams):
     if hasattr(cpar, "get_allCam_flag"):
         cpar_py.all_cam_flag = cpar.get_allCam_flag()
         cpar_py.allCam_flag = cpar.get_allCam_flag()
+    if hasattr(cpar, "get_pair_flag"):
+        try:
+            cpar_py.pair_flag = int(cpar.get_pair_flag())
+        except Exception:
+            pass
+    elif hasattr(cpar, "pair_flag"):
+        try:
+            cpar_py.pair_flag = int(cpar.pair_flag)
+        except Exception:
+            pass
     if hasattr(cpar, "get_tiff_flag"):
         cpar_py.tiff_flag = cpar.get_tiff_flag()
     if hasattr(cpar, "get_chfield"):

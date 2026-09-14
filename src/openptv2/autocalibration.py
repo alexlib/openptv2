@@ -241,6 +241,7 @@ def _cpar_from_ptv(ptv: dict, num_cams: int):
         num_cams=num_cams,
         hp_flag=int(ptv.get("hp_flag", 0)),
         allCam_flag=int(ptv.get("allcam_flag", 0)),
+        pair_flag=int(bool(ptv.get("pair_flag", ptv.get("use_pairs", False)))),
         tiff_flag=int(ptv.get("tiff_flag", 1)),
         imx=int(ptv["imx"]),
         imy=int(ptv["imy"]),

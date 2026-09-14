@@ -40,6 +40,7 @@ DEFAULT_PTV_OPTIONAL = {
     "tiff_flag": True,
     "chfield": 0,
     "allcam_flag": False,
+    "pair_flag": False,
     "splitter": False,
     "splitter_order": [0, 1, 3, 2],
     # Multimedia parameters

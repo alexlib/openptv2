@@ -37,6 +37,36 @@ def _clean_name_list(names, num_cams: int) -> list[str]:
     return out
 
 
+def _resolve_pair_flag(data: dict) -> int:
+    """Resolve ptv.pair_flag with backward-compatible fallbacks.
+
+    Canonical key is ``ptv.pair_flag`` (default False). Falls back to
+    ``ptv.use_pairs`` alias, then legacy ``cal_ori.pair_flag``.
+    """
+    ptv = data.get("ptv") or {}
+    if "pair_flag" in ptv:
+        return int(bool(ptv.get("pair_flag")))
+    if "use_pairs" in ptv:
+        return int(bool(ptv.get("use_pairs")))
+    cal = data.get("cal_ori") or {}
+    return int(bool(cal.get("pair_flag", False)))
+
+
+def pairs_allowed(num_cams: int, allcam_flag: int, pair_flag: int) -> bool:
+    """Return whether 2-camera pairs may be used for tracking.
+
+    Rules: default off (pair_flag=False); allcam_flag wins over pair_flag;
+    2-cam rigs always allow pairs since pairs ARE all cams there.
+    """
+    if int(num_cams) <= 1:
+        return False
+    if int(num_cams) == 2:
+        return True
+    if int(allcam_flag):
+        return False
+    return bool(int(pair_flag))
+
+
 # TrackParTuple for test compatibility
 TrackParTuple = namedtuple(
     "TrackParTuple",
@@ -586,6 +616,7 @@ class ControlPar:
     cal_img_base_name = cython.declare(object, visibility="public")
     hp_flag = cython.declare(cython.int, visibility="public")
     allCam_flag = cython.declare(cython.int, visibility="public")
+    pair_flag = cython.declare(cython.int, visibility="public")
     tiff_flag = cython.declare(cython.int, visibility="public")
     imx = cython.declare(cython.int, visibility="public")
     imy = cython.declare(cython.int, visibility="public")
@@ -602,6 +633,8 @@ class ControlPar:
         hp_flag: int = 0,
         allCam_flag: int = 0,
         all_cam_flag: int | None = None,
+        pair_flag: int = 0,
+        use_pairs: int | bool | None = None,
         tiff_flag: int = 0,
         imx: int = 0,
         imy: int = 0,
@@ -625,6 +658,11 @@ class ControlPar:
             self.allCam_flag = all_cam_flag
         else:
             self.allCam_flag = allCam_flag
+        # Canonical key is ptv.pair_flag; accept use_pairs alias.
+        if use_pairs is not None:
+            self.pair_flag = int(bool(use_pairs))
+        else:
+            self.pair_flag = int(pair_flag)
         self.tiff_flag = tiff_flag
         self.imx = imx
         self.imy = imy
@@ -709,6 +747,7 @@ class ControlPar:
             cal_img_base_name=_clean_name_list(ptv.get("img_cal"), nc),
             hp_flag=int(ptv.get("hp_flag", 0)),
             allCam_flag=int(ptv.get("allcam_flag", 0)),
+            pair_flag=int(_resolve_pair_flag(data)),
             tiff_flag=int(ptv.get("tiff_flag", 0)),
             imx=int(ptv["imx"]),
             imy=int(ptv["imy"]),
@@ -748,6 +787,23 @@ class ControlPar:
 
     def set_allCam_flag(self, flag: int) -> None:
         self.allCam_flag = int(flag)
+        # allcam wins over pairs: requiring all cameras leaves no room
+        # for 2-camera pairs (except 2-cam rigs where pairs ARE all cams).
+        if self.allCam_flag and int(getattr(self, "num_cams", 0)) > 2:
+            self.pair_flag = 0
+
+    def get_pair_flag(self) -> int:
+        return int(getattr(self, "pair_flag", 0))
+
+    def set_pair_flag(self, flag: int) -> None:
+        flag = int(flag)
+        # allcam wins: ignore attempts to enable pairs while allcam is on
+        # (except 2-cam rigs where pairs ARE all cams).
+        if flag and int(getattr(self, "allCam_flag", 0)) and int(
+            getattr(self, "num_cams", 0)
+        ) > 2:
+            return
+        self.pair_flag = flag
 
     def get_tiff_flag(self) -> int:
         return self.tiff_flag
@@ -794,6 +850,7 @@ class ControlPar:
         self.cal_img_base_name = new_par.cal_img_base_name
         self.hp_flag = new_par.hp_flag
         self.allCam_flag = new_par.allCam_flag
+        self.pair_flag = int(getattr(new_par, "pair_flag", 0))
         self.tiff_flag = new_par.tiff_flag
         self.imx = new_par.imx
         self.imy = new_par.imy

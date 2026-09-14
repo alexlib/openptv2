@@ -199,6 +199,15 @@ def get_control_par(yaml_params):
     opt = _merge_with_defaults(ptv, DEFAULT_PTV_OPTIONAL)
     mm = get_multimedia_par(yaml_params)
 
+    pair_flag = opt.get("pair_flag", None)
+    if "pair_flag" in ptv:
+        pair_flag = ptv.get("pair_flag")
+    elif "use_pairs" in ptv:
+        pair_flag = ptv.get("use_pairs")
+    else:
+        cal = yaml_params.get("cal_ori") or {}
+        pair_flag = cal.get("pair_flag", False)
+
     cpar = ControlPar(
         num_cams=num_cams,
         imx=ptv["imx"],
@@ -207,6 +216,7 @@ def get_control_par(yaml_params):
         pix_y=ptv["pix_y"],
         hp_flag=1 if opt.get("hp_flag", True) else 0,
         all_cam_flag=1 if opt.get("allcam_flag", False) else 0,
+        pair_flag=1 if pair_flag else 0,
         tiff_flag=1 if opt.get("tiff_flag", True) else 0,
         chfield=opt.get("chfield", 0),
     )
