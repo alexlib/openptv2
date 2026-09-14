@@ -1979,6 +1979,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#measured-recipe-for-trackcorr-openptv2tracking_params" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measured recipe for trackcorr (openptv2.tracking_params)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#reference-test" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2665,6 +2676,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#measured-recipe-for-trackcorr-openptv2tracking_params" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measured recipe for trackcorr (openptv2.tracking_params)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#reference-test" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3202,8 +3224,37 @@
 - <code>velocity_lims = [[-0.088, 0.088], [-0.088, 0.088], [-0.088, 0.088]]</code> (10% above max displacement, but &lt; interparticle distance)
 - <code>accel_lim = 0.099</code> (10% above max acceleration)
 - <code>angle_lim = 20</code> (gon)</p>
+<h3 id="measured-recipe-for-trackcorr-openptv2tracking_params">Measured recipe for <code>trackcorr</code> (<code>openptv2.tracking_params</code>)<a class="headerlink" href="#measured-recipe-for-trackcorr-openptv2tracking_params" title="Permanent link">&para;</a></h3>
+<p>For noisy, slowly moving tracers (kHz frame rates) the limits above are
+better derived from the noise than from observed maxima, because the observed
+"acceleration" and "turning angle" between frames are almost entirely
+position noise:</p>
+<ol>
+<li>Track a short stretch (e.g. 20 frames) with loose limits: <code>angle: 270</code>
+   (off) and a generous <code>dacc</code>.</li>
+<li><code>params, stats, reasons = recommend_from_store(store, first, last)</code> measures
+   the per-axis position noise from the lag-1 covariance of second differences
+   (<code>-4 sigma^2</code> for white noise) and the step statistics, and returns:</li>
+<li><code>dv</code> per axis = p99.9 of |step| + 3·√2·σ,</li>
+<li><code>dacc</code> = 1.2 × p99.5 of the noise acceleration magnitude (per-axis std √6·σ),</li>
+<li><code>angle</code> = 270 (off) when the median step is below 10× the step noise
+     (√2·|σ|): the turning angle is then noise and an angle limit only rejects
+     correct links.</li>
+<li>Keep <code>ptv.pair_flag: false</code> (the default): on a 4-camera rig only ~37% of
+   2-camera correspondences were confirmed by a third camera.</li>
+</ol>
+<p>On a 4-camera, 5005-frame experiment (σ = 9/8/42 µm, median step 0.125 mm)
+this gave <code>angle: 270</code>, <code>dacc: 0.4</code>, <code>dv</code> ±1.4/1.7/1.8 mm; points in tracks of
+10+ frames rose from 52.9% (angle 100, dacc 0.8) to 71.8% on the first 20
+frames and to 84.5% over the full run, and on synthetic ground truth matched to
+that experiment link recall went from 93.3% to 99.8% with precision 99.9%.</p>
+<p>Parallel chunked tracking (<code>track_sequence_chunked_parallel</code>) runs trackcorr
+forward-only per window; its optional global passes
+(<code>run_postprocess_passes</code>: cold-start seeding, gap relinking, reciprocity)
+now print their stats and warn when a pass fails instead of skipping silently.</p>
 <h3 id="reference-test">Reference test<a class="headerlink" href="#reference-test" title="Permanent link">&para;</a></h3>
-<p>See the tracking parameter sensitivity tests in <code>tests/batch/test_pyptv_batch.py</code> and <code>tests/batch/test_apply_optimizations.py</code>.</p>
+<p>See the tracking parameter sensitivity tests in <code>tests/batch/test_pyptv_batch.py</code> and <code>tests/batch/test_apply_optimizations.py</code>,
+and <code>tests/unit/test_tracking_params.py</code> for the measured recipe.</p>
 <p>These tests demonstrate the full workflow and can be used as a template for your own datasets.</p>
 <hr />
 <h1 id="tracking-algorithms">Tracking Algorithms<a class="headerlink" href="#tracking-algorithms" title="Permanent link">&para;</a></h1>
