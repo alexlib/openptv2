@@ -37,10 +37,22 @@ def _load_params() -> dict:
 def _load_images(n: int) -> list[np.ndarray]:
     from skimage.io import imread
 
-    return [
+    from openptv2.algorithms.parameters import ControlPar
+    from openptv2.image_processing import preprocess_image
+
+    # Pipeline parity: py_sequence_loop highpasses every frame BEFORE
+    # target_recognition (ptv.py simple_highpass, size 25). The first bench
+    # round fed RAW images to all methods, which buries global-threshold
+    # methods under background. Apply the same filter to every input,
+    # including the baseline.
+    raw = [
         np.ascontiguousarray(imread(f"test_data/test_cavity/img/cam1.{10000 + k}"), dtype=np.uint8)
         for k in range(n)
     ]
+    h, w = raw[0].shape[:2]
+    cpar = ControlPar(1)
+    cpar.set_image_size((w, h))
+    return [np.ascontiguousarray(preprocess_image(im, 0, cpar, 25), dtype=np.uint8) for im in raw]
 
 
 def _match_stats(base: np.ndarray, cand: np.ndarray, tol: float = 1.5) -> tuple[float, float]:

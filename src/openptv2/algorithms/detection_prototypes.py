@@ -64,53 +64,57 @@ def _to_rows(xs, ys, ns, nxs, nys, sumgs) -> np.ndarray:
 
 
 def detect_dask_label(img: np.ndarray, params: dict) -> np.ndarray:
-    """dask-image ``label`` + ``ndmeasure`` prototype.
+    """dask-orchestrated label+measure prototype.
 
-    Graph: ``from_array(chunks=whole)`` -> ``> gvthres`` -> ``label`` ->
-    ``center_of_mass`` / ``sum`` / ``area`` -> compute once -> numpy filter
-    on ``nn/nx/ny/sumg``. One ``compute()`` total; per-frame chunking means
-    no halo exchange is needed when this is later mapped over ``(N,H,W)``.
+    NOTE: ``dask_image.ndmeasure.label`` hangs (>3 min) on a single
+    highpassed test_cavity frame where ``scipy.ndimage.label`` takes 0.01 s
+    (its blockwise label-merging graph does not scale to thousands of
+    components). This keeps dask as the orchestration layer — lazy
+    ``from_array(chunks=(1,H,W))`` + ``map_blocks`` over frames, one
+    ``compute()`` — with the scipy kernel per frame. Same graph benefits
+    (out-of-core, distributed, direct from_zarr) without the hanging op.
     """
+
     import dask.array as da
-    import dask_image.ndmeasure
+    from scipy import ndimage
 
     img = np.ascontiguousarray(img, dtype=np.uint8)
     gv = int(params.get("gvthres", 9))
-    d = da.from_array(img, chunks=img.shape)
-    mask = d > gv
-    label_image, _num = dask_image.ndmeasure.label(mask)
-    nlab = int(np.asarray(_num.compute()).ravel()[0]) if hasattr(_num, "compute") else int(np.asarray(_num).ravel()[0])
-    if nlab == 0:
-        return np.zeros((0, 8), dtype=np.float64)
-    idx = list(range(1, nlab + 1))
-    # ndmeasure reductions return lazy arrays; compute together below.
-    com = dask_image.ndmeasure.center_of_mass(np.asarray(img), label_image, index=idx)
-    sums = dask_image.ndmeasure.sum(np.asarray(img), label_image, index=idx)
-    areas = dask_image.ndmeasure.area(mask, label_image, index=idx)
-    com_v, sums_v, areas_v, lab_v = tuple(
-        np.asarray(x) for x in (com.compute(), sums.compute(), areas.compute(), label_image.compute())
+    d = da.from_array(img[None, :, :], chunks=(1,) + img.shape)
+
+    def _one(block: np.ndarray) -> np.ndarray:
+        f = np.ascontiguousarray(block[0], dtype=np.uint8)
+        lab, nlab = ndimage.label(f > gv)
+        if nlab == 0:
+            return np.zeros((0, 8), dtype=np.float64)
+        idx = list(range(1, nlab + 1))
+        sums = np.asarray(ndimage.sum(f, lab, idx), dtype=float).ravel()
+        areas = np.asarray(ndimage.sum(np.ones_like(f), lab, idx), dtype=float).ravel()
+        com = np.asarray(ndimage.center_of_mass(f, lab, idx), dtype=float).reshape(-1, 2)
+        ys, xs = com[:, 0], com[:, 1]
+        nx = np.zeros(nlab, dtype=int)
+        ny = np.zeros(nlab, dtype=int)
+        for k, sl in enumerate(ndimage.find_objects(lab)):
+            if sl is not None:
+                ny[k] = sl[0].stop - sl[0].start
+                nx[k] = sl[1].stop - sl[1].start
+        ns = areas.astype(int)
+        keep = (
+            (ns >= int(params.get("nnmin", 1)))
+            & (ns <= int(params.get("nnmax", 10**9)))
+            & (nx >= int(params.get("nxmin", 1)))
+            & (nx <= int(params.get("nxmax", 10**9)))
+            & (ny >= int(params.get("nymin", 1)))
+            & (ny <= int(params.get("nymax", 10**9)))
+            & (sums >= int(params.get("sumg_min", 0)))
+        )
+        return _to_rows(xs[keep], ys[keep], ns[keep], nx[keep], ny[keep], sums[keep])
+
+    out = d.map_blocks(
+        _one, dtype=np.float64, chunks=((1,), (8,)), drop_axis=(1, 2), new_axis=1
     )
-    # com_v rows: (y, x) per label.
-    ys, xs = com_v[:, 0], com_v[:, 1]
-    sumgs, ns = np.asarray(sums_v).ravel(), np.asarray(areas_v).ravel().astype(int)
-    # bbox extents per label for nx/ny (numpy, single pass over small label map).
-    nx = np.zeros_like(ns)
-    ny = np.zeros_like(ns)
-    for k in range(len(ns)):
-        r, c = np.nonzero(lab_v == (k + 1))
-        if r.size:
-            nx[k] = int(c.max() - c.min() + 1)
-            ny[k] = int(r.max() - r.min() + 1)
-    keep = (
-        (ns >= int(params.get("nnmin", 1)))
-        & (ns <= int(params.get("nnmax", 10**9)))
-        & (nx >= int(params.get("nxmin", 1)))
-        & (nx <= int(params.get("nxmax", 10**9)))
-        & (ny >= int(params.get("nymin", 1)))
-        & (ny <= int(params.get("nymax", 10**9)))
-        & (sumgs >= int(params.get("sumg_min", 0)))
-    )
-    return _to_rows(xs[keep], ys[keep], ns[keep], nx[keep], ny[keep], sumgs[keep])
+    res = np.asarray(out.compute())
+    return res.reshape(-1, 8)
 
 
 def detect_trackpy(img: np.ndarray, params: dict) -> np.ndarray:
