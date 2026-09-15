@@ -14,7 +14,7 @@
 
 import marimo
 
-__generated_with = "0.24.0"
+__generated_with = "0.24.2"
 app = marimo.App(width="medium")
 
 
@@ -52,7 +52,7 @@ def _(mo):
 
 
 @app.cell
-def _(mo, np):
+def _(np):
     from skimage.io import imread
 
     from openptv2.algorithms import detection_prototypes as dp
@@ -153,7 +153,19 @@ def _(CROPS, mo):
 
 
 @app.cell
-def _(CROPS, base_all, crop_of, crop_pick, hp_full, in_crop, input_pick, mo, raw_full, size_pick, to_local):
+def _(
+    CROPS,
+    base_all,
+    crop_of,
+    crop_pick,
+    hp_full,
+    in_crop,
+    input_pick,
+    mo,
+    raw_full,
+    size_pick,
+    to_local,
+):
     src = hp_full if input_pick.value == "hp" else raw_full
     cx, cy = crop_pick.value
     crop_label = next(k for k, v in CROPS.items() if v == crop_pick.value)
@@ -177,7 +189,9 @@ def _(base_local, crop, overlay_fig, plt):
 
 @app.cell
 def _(mo):
-    mo.md("## 1. Baseline `targ_rec` — reference, rerun on the crop (expect close to baseline, modulo border cuts)")
+    mo.md("""
+    ## 1. Baseline `targ_rec` — reference, rerun on the crop (expect close to baseline, modulo border cuts)
+    """)
     return
 
 
@@ -193,7 +207,21 @@ def _(base_params, mo):
 
 
 @app.cell
-def _(base_local, base_params, crop, dp, match_stats, overlay_fig, plt, time, tr_disco, tr_gv, tr_nnmax, tr_nnmin, tr_sumg):
+def _(
+    base_local,
+    base_params,
+    crop,
+    dp,
+    match_stats,
+    overlay_fig,
+    plt,
+    time,
+    tr_disco,
+    tr_gv,
+    tr_nnmax,
+    tr_nnmin,
+    tr_sumg,
+):
     tr_params = dict(
         base_params, gvthres=tr_gv.value, discont=tr_disco.value,
         nnmin=tr_nnmin.value, nnmax=tr_nnmax.value, sumg_min=tr_sumg.value,
@@ -204,12 +232,14 @@ def _(base_local, base_params, crop, dp, match_stats, overlay_fig, plt, time, tr
     tr_med, tr_rec = match_stats(base_local, tr_rows)
     plt.close("all")
     overlay_fig(crop, base_local, tr_rows, f"targ_rec: {len(tr_rows)} | medNN {tr_med:.2f}px rec {tr_rec:.2f} | {tr_ms:.1f} ms")
-    return tr_med, tr_ms, tr_rec, tr_rows
+    return
 
 
 @app.cell
 def _(mo):
-    mo.md("## 2. dask (scipy kernel, dask graph) — `gvthres` + size/sum filters")
+    mo.md("""
+    ## 2. dask (scipy kernel, dask graph) — `gvthres` + size/sum filters
+    """)
     return
 
 
@@ -224,7 +254,20 @@ def _(base_params, mo):
 
 
 @app.cell
-def _(base_local, base_params, crop, da_gv, da_nnmax, da_nnmin, da_sumg, dp, match_stats, overlay_fig, plt, time):
+def _(
+    base_local,
+    base_params,
+    crop,
+    da_gv,
+    da_nnmax,
+    da_nnmin,
+    da_sumg,
+    dp,
+    match_stats,
+    overlay_fig,
+    plt,
+    time,
+):
     da_params = dict(
         base_params, gvthres=da_gv.value, nnmin=da_nnmin.value,
         nnmax=da_nnmax.value, sumg_min=da_sumg.value,
@@ -235,12 +278,14 @@ def _(base_local, base_params, crop, da_gv, da_nnmax, da_nnmin, da_sumg, dp, mat
     da_med, da_rec = match_stats(base_local, da_rows)
     plt.close("all")
     overlay_fig(crop, base_local, da_rows, f"dask: {len(da_rows)} | medNN {da_med:.2f}px rec {da_rec:.2f} | {da_ms:.1f} ms")
-    return da_med, da_ms, da_rec, da_rows
+    return
 
 
 @app.cell
 def _(mo):
-    mo.md("## 3. trackpy.locate — `diameter` / `minmass` / `separation` / `threshold`")
+    mo.md("""
+    ## 3. trackpy.locate — `diameter` / `minmass` / `separation` / `threshold`
+    """)
     return
 
 
@@ -255,7 +300,19 @@ def _(mo):
 
 
 @app.cell
-def _(base_local, crop, dp, match_stats, overlay_fig, plt, time, tp_diam, tp_mass, tp_sep, tp_thr):
+def _(
+    base_local,
+    crop,
+    dp,
+    match_stats,
+    overlay_fig,
+    plt,
+    time,
+    tp_diam,
+    tp_mass,
+    tp_sep,
+    tp_thr,
+):
     tp_t0 = time.perf_counter()
     tp_rows = dp.detect_trackpy(
         crop,
@@ -266,12 +323,14 @@ def _(base_local, crop, dp, match_stats, overlay_fig, plt, time, tp_diam, tp_mas
     tp_med, tp_rec = match_stats(base_local, tp_rows)
     plt.close("all")
     overlay_fig(crop, base_local, tp_rows, f"trackpy: {len(tp_rows)} | medNN {tp_med:.2f}px rec {tp_rec:.2f} | {tp_ms:.1f} ms")
-    return tp_med, tp_ms, tp_rec, tp_rows
+    return
 
 
 @app.cell
 def _(mo):
-    mo.md("## 4. skimage peak + regionprops — threshold / min_distance / size filters")
+    mo.md("""
+    ## 4. skimage peak + regionprops — threshold / min_distance / size filters
+    """)
     return
 
 
@@ -286,7 +345,20 @@ def _(base_params, mo):
 
 
 @app.cell
-def _(base_local, base_params, crop, dp, match_stats, overlay_fig, plt, sk_gv, sk_md, sk_nnmin, sk_sumg, time):
+def _(
+    base_local,
+    base_params,
+    crop,
+    dp,
+    match_stats,
+    overlay_fig,
+    plt,
+    sk_gv,
+    sk_md,
+    sk_nnmin,
+    sk_sumg,
+    time,
+):
     sk_params = dict(
         base_params, gvthres=sk_gv.value, min_distance=sk_md.value,
         nnmin=sk_nnmin.value, sumg_min=sk_sumg.value,
@@ -297,12 +369,14 @@ def _(base_local, base_params, crop, dp, match_stats, overlay_fig, plt, sk_gv, s
     sk_med, sk_rec = match_stats(base_local, sk_rows)
     plt.close("all")
     overlay_fig(crop, base_local, sk_rows, f"skimage: {len(sk_rows)} | medNN {sk_med:.2f}px rec {sk_rec:.2f} | {sk_ms:.1f} ms")
-    return sk_med, sk_ms, sk_rec, sk_rows
+    return
 
 
 @app.cell
 def _(mo):
-    mo.md("## 5. proPTV port (Barta) — expects **raw** input; keep the box checked to use the raw crop regardless of the global toggle")
+    mo.md("""
+    ## 5. proPTV port (Barta) — expects **raw** input; keep the box checked to use the raw crop regardless of the global toggle
+    """)
     return
 
 
@@ -318,7 +392,25 @@ def _(mo):
 
 
 @app.cell
-def _(base_local, crop, crop_of, dp, match_stats, overlay_fig, plt, pp_ps, pp_raw, pp_runs, pp_std, pp_thr, raw_full, size, time, x0, y0):
+def _(
+    base_local,
+    crop,
+    crop_of,
+    dp,
+    match_stats,
+    overlay_fig,
+    plt,
+    pp_ps,
+    pp_raw,
+    pp_runs,
+    pp_std,
+    pp_thr,
+    raw_full,
+    size,
+    time,
+    x0,
+    y0,
+):
     pp_src = crop_of(raw_full, x0 + size // 2, y0 + size // 2, size)[0] if pp_raw.value else crop
     pp_t0 = time.perf_counter()
     pp_rows = dp.detect_proptv(
@@ -330,22 +422,30 @@ def _(base_local, crop, crop_of, dp, match_stats, overlay_fig, plt, pp_ps, pp_ra
     pp_med, pp_rec = match_stats(base_local, pp_rows)
     plt.close("all")
     overlay_fig(pp_src, base_local, pp_rows, f"proPTV: {len(pp_rows)} | medNN {pp_med:.2f}px rec {pp_rec:.2f} | {pp_ms:.1f} ms")
-    return pp_med, pp_ms, pp_rec, pp_rows
+    return
 
 
 @app.cell
-def _(base_local, da_med, da_ms, da_rec, da_rows, mo, pp_med, pp_ms, pp_rec, pp_rows, sk_med, sk_ms, sk_rec, sk_rows, tp_med, tp_ms, tp_rec, tp_rows, tr_med, tr_ms, tr_rec, tr_rows):
-    mo.md(
-        "### Scoreboard (tol 1.5 px, baseline in view: "
-        f"{len(base_local)})\n\n"
-        "| method | found | medNN px | recall | ms |\n"
-        "|---|---|---|---|---|\n"
-        f"| targ_rec | {len(tr_rows)} | {tr_med:.2f} | {tr_rec:.2f} | {tr_ms:.1f} |\n"
-        f"| dask | {len(da_rows)} | {da_med:.2f} | {da_rec:.2f} | {da_ms:.1f} |\n"
-        f"| trackpy | {len(tp_rows)} | {tp_med:.2f} | {tp_rec:.2f} | {tp_ms:.1f} |\n"
-        f"| skimage | {len(sk_rows)} | {sk_med:.2f} | {sk_rec:.2f} | {sk_ms:.1f} |\n"
-        f"| proPTV | {len(pp_rows)} | {pp_med:.2f} | {pp_rec:.2f} | {pp_ms:.1f} |\n"
-    )
+def _(mo):
+    mo.md("""
+    ### Scoreboard (tol 1.5 px, baseline in view: "
+        f"{len(base_local)})
+
+    "
+        "| method | found | medNN px | recall | ms |
+    "
+        "|---|---|---|---|---|
+    "
+        f"| targ_rec | {len(tr_rows)} | {tr_med:.2f} | {tr_rec:.2f} | {tr_ms:.1f} |
+    "
+        f"| dask | {len(da_rows)} | {da_med:.2f} | {da_rec:.2f} | {da_ms:.1f} |
+    "
+        f"| trackpy | {len(tp_rows)} | {tp_med:.2f} | {tp_rec:.2f} | {tp_ms:.1f} |
+    "
+        f"| skimage | {len(sk_rows)} | {sk_med:.2f} | {sk_rec:.2f} | {sk_ms:.1f} |
+    "
+        f"| proPTV | {len(pp_rows)} | {pp_med:.2f} | {pp_rec:.2f} | {pp_ms:.1f} |
+    """)
     return
 
 
