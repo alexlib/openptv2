@@ -70,7 +70,9 @@ gui = [
     "PySide6>=6.0.0",
     "matplotlib>=3.7.0",
     "pandas>=2.0.0",
-    "flowtracks>=0.3.0",
+    # legacy-io brings `tables`: flowtracks.io imports it at module level,
+    # and since flowtracks 1.2.2 it is an optional extra.
+    "flowtracks[legacy-io]>=0.3.0",
     "imagecodecs>=2023.1.23",
 ]
 # Background-removal preprocessing (openptv2.plugins.rembg_sequence /
