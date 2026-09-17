@@ -121,6 +121,13 @@ pyptv = "openptv2.gui.pyptv_gui:main"
 pyptv_gui = "openptv2.gui.pyptv_gui:main"
 pyptv_batch = "openptv2.batch.pyptv_batch:main_cli"
 
+[tool.uv.sources]
+# Published as "flowtracks" on PyPI, but the repo lives as sibling `postptv/`
+# in this workspace (see top-level CLAUDE.md) -- same override
+# flowtracks_examples/pyproject.toml uses, so a local postptv checkout is
+# what `uv sync --extra gui` (or `--extra dev`) actually installs.
+flowtracks = { path = "../postptv", editable = true }
+
 [tool.setuptools]
 packages = [
     "openptv2",
