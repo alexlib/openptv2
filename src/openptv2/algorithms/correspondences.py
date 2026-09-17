@@ -392,7 +392,7 @@ def match_pairs(
     # ThreadPoolExecutor here -- this runs once per frame, and a fresh pool
     # per frame measured at ~22% of wall time in a profiled batch run purely
     # in thread create/teardown, not in the work itself.
-    from concurrent.futures import as_completed
+    from concurrent.futures import as_completed, wait
 
     from openptv2.thread_pool import get_executor
 
@@ -414,8 +414,20 @@ def match_pairs(
         ): (i1, i2)
         for i1, i2 in pairs
     }
-    for future in as_completed(futures):
-        future.result()  # propagate exceptions
+    try:
+        for future in as_completed(futures):
+            future.result()  # propagate exceptions
+    except BaseException:
+        # Unlike the removed `with ThreadPoolExecutor() as pool:`, this pool
+        # is shared and outlives this call, so it won't wait for stragglers
+        # on its own. Cancel what hasn't started and wait for what has,
+        # so nothing keeps writing into n_arr/p2_arr/corr_arr/dist_arr after
+        # we've raised (a caller retrying or reusing those buffers would
+        # otherwise race with them).
+        for f in futures:
+            f.cancel()
+        wait(futures)
+        raise
 
 
 # ---------------------------------------------------------------------------
