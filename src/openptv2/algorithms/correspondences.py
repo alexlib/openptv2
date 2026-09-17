@@ -20,6 +20,30 @@ NMAX = 20240
 PT_UNUSED = -999
 
 
+@cython.cfunc
+@cython.nogil
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _bisect_left(arr: cython.double[:], n: cython.int, value: cython.double) -> cython.int:
+    """Index of the first element >= ``value`` in an ascending array of length ``n``.
+
+    Same result as ``int(np.searchsorted(arr, value))``, but as a plain C loop
+    instead of numpy's per-call Python/ufunc dispatch. Called once per source
+    target inside ``_build_adjacency_for_pair``'s hot loop -- thousands of
+    times per frame -- where the numpy call's own dispatch overhead dominated.
+    """
+    lo: cython.int = 0
+    hi: cython.int = n
+    mid: cython.int
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if arr[mid] < value:
+            lo = mid + 1
+        else:
+            hi = mid
+    return lo
+
+
 # ---------------------------------------------------------------------------
 # Output data type — NTupel is the external result of the matching pipeline.
 # It is only created / consumed once per frame (not in hot loops), so the
@@ -146,9 +170,11 @@ def _build_adjacency_for_pair(
     Speedups applied:
     * :func:`epi_mm_batch` computes all N epipolar bounding boxes in one
       vectorised call (replacing N individual :func:`epi_mm` calls).
-    * :func:`numpy.searchsorted` on the x-sorted destination array finds
-      the epipolar-band start in O(log M) instead of the manual bisection
-      previously inside :func:`find_candidate`.
+    * :func:`_bisect_left`, a typed C loop, finds the epipolar-band start on
+      the x-sorted destination array in O(log M) -- replacing both the manual
+      bisection previously inside :func:`find_candidate` and (later)
+      :func:`numpy.searchsorted`, whose per-call Python/ufunc dispatch
+      dominated this loop when profiled.
     * Quality-ratio checks and distance filtering are applied inline,
       avoiding Python function-call overhead for :func:`find_candidate`.
     """
@@ -267,7 +293,7 @@ def _build_adjacency_for_pair(
         sqrt_m2_1: cython.double = np.sqrt(m_line * m_line + 1.0)
 
         # Binary-search for x-range start (replaces manual bisection)
-        lo = int(np.searchsorted(dst_x, xa - eps))
+        lo = _bisect_left(dst_x, n2, xa - eps)
 
         n_i: cython.double = frm.targets[i1][src_pnr[i]].n
         nx_i: cython.double = frm.targets[i1][src_pnr[i]].nx
@@ -361,29 +387,47 @@ def match_pairs(
             )
         return
 
-    # Multi-threaded: each camera pair is independent
-    from concurrent.futures import ThreadPoolExecutor, as_completed
+    # Multi-threaded: each camera pair is independent. Uses the shared,
+    # process-wide pool (openptv2.thread_pool) instead of opening a fresh
+    # ThreadPoolExecutor here -- this runs once per frame, and a fresh pool
+    # per frame measured at ~22% of wall time in a profiled batch run purely
+    # in thread create/teardown, not in the work itself.
+    from concurrent.futures import as_completed, wait
 
-    with ThreadPoolExecutor(max_workers=len(pairs)) as pool:
-        futures = {
-            pool.submit(
-                _build_adjacency_for_pair,
-                i1,
-                i2,
-                n_arr,
-                p2_arr,
-                corr_arr,
-                dist_arr,
-                corrected,
-                frm,
-                vpar,
-                cpar,
-                calib,
-            ): (i1, i2)
-            for i1, i2 in pairs
-        }
+    from openptv2.thread_pool import get_executor
+
+    pool = get_executor()
+    futures = {
+        pool.submit(
+            _build_adjacency_for_pair,
+            i1,
+            i2,
+            n_arr,
+            p2_arr,
+            corr_arr,
+            dist_arr,
+            corrected,
+            frm,
+            vpar,
+            cpar,
+            calib,
+        ): (i1, i2)
+        for i1, i2 in pairs
+    }
+    try:
         for future in as_completed(futures):
             future.result()  # propagate exceptions
+    except BaseException:
+        # Unlike the removed `with ThreadPoolExecutor() as pool:`, this pool
+        # is shared and outlives this call, so it won't wait for stragglers
+        # on its own. Cancel what hasn't started and wait for what has,
+        # so nothing keeps writing into n_arr/p2_arr/corr_arr/dist_arr after
+        # we've raised (a caller retrying or reusing those buffers would
+        # otherwise race with them).
+        for f in futures:
+            f.cancel()
+        wait(futures)
+        raise
 
 
 # ---------------------------------------------------------------------------
