@@ -387,29 +387,35 @@ def match_pairs(
             )
         return
 
-    # Multi-threaded: each camera pair is independent
-    from concurrent.futures import ThreadPoolExecutor, as_completed
+    # Multi-threaded: each camera pair is independent. Uses the shared,
+    # process-wide pool (openptv2.thread_pool) instead of opening a fresh
+    # ThreadPoolExecutor here -- this runs once per frame, and a fresh pool
+    # per frame measured at ~22% of wall time in a profiled batch run purely
+    # in thread create/teardown, not in the work itself.
+    from concurrent.futures import as_completed
 
-    with ThreadPoolExecutor(max_workers=len(pairs)) as pool:
-        futures = {
-            pool.submit(
-                _build_adjacency_for_pair,
-                i1,
-                i2,
-                n_arr,
-                p2_arr,
-                corr_arr,
-                dist_arr,
-                corrected,
-                frm,
-                vpar,
-                cpar,
-                calib,
-            ): (i1, i2)
-            for i1, i2 in pairs
-        }
-        for future in as_completed(futures):
-            future.result()  # propagate exceptions
+    from openptv2.thread_pool import get_executor
+
+    pool = get_executor()
+    futures = {
+        pool.submit(
+            _build_adjacency_for_pair,
+            i1,
+            i2,
+            n_arr,
+            p2_arr,
+            corr_arr,
+            dist_arr,
+            corrected,
+            frm,
+            vpar,
+            cpar,
+            calib,
+        ): (i1, i2)
+        for i1, i2 in pairs
+    }
+    for future in as_completed(futures):
+        future.result()  # propagate exceptions
 
 
 # ---------------------------------------------------------------------------
