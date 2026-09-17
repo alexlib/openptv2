@@ -42,6 +42,7 @@ ALGORITHMS_MODULES = [
     "orientation",
     "image_processing",
     "segmentation",
+    "bubble_detection",
     "sortgrid",
     "epi",
     "correspondences",
