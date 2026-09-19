@@ -45,6 +45,7 @@ else:
 
 @cython.ccall
 @cython.nogil
+@cython.exceptval(check=False)
 def _multimed_r_nlay_1layer(
     pos_x: cython.double,
     pos_y: cython.double,

@@ -5,15 +5,9 @@ import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        acos as c_acos,
-    )
-    from cython.cimports.libc.math import (
         sqrt as c_sqrt,
     )
 else:
-    from math import (
-        acos as c_acos,
-    )
     from math import (
         sqrt as c_sqrt,
     )
@@ -24,6 +18,7 @@ if cython.compiled:
         _sorted_candidates_fast_out_nogil,
     )
     from cython.cimports.openptv2.algorithms.track_kernels_position import (
+        _angle_acc_out,
         _point_position_out,
         assess_new_position_fast_nogil,
     )
@@ -33,6 +28,7 @@ else:
         _sorted_candidates_fast_out_nogil,
     )
     from .track_kernels_position import (
+        _angle_acc_out,
         _point_position_out,
         assess_new_position_fast_nogil,
     )
@@ -59,73 +55,6 @@ PREV_NONE_K = -1
 NEXT_NONE_K = -2
 COORD_UNUSED_K = -1e10
 ADD_PART_K = 3.0
-
-
-@cython.ccall
-@cython.inline
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-@cython.profile(False)
-@cython.nogil
-def _angle_acc_out(
-    start_x: cython.double,
-    start_y: cython.double,
-    start_z: cython.double,
-    pred_x: cython.double,
-    pred_y: cython.double,
-    pred_z: cython.double,
-    cand_x: cython.double,
-    cand_y: cython.double,
-    cand_z: cython.double,
-    out: cython.double[:],
-) -> cython.int:
-    """Write angle and acc to out[0], out[1] — no tuple creation."""
-    v0x: cython.double
-    v0y: cython.double
-    v0z: cython.double
-    v1x: cython.double
-    v1y: cython.double
-    v1z: cython.double
-    angle: cython.double
-    norm0: cython.double
-    norm1: cython.double
-    dot: cython.double
-    dx: cython.double
-    dy: cython.double
-    dz: cython.double
-    acc: cython.double
-    v0x = pred_x - start_x
-    v0y = pred_y - start_y
-    v0z = pred_z - start_z
-    v1x = cand_x - start_x
-    v1y = cand_y - start_y
-    v1z = cand_z - start_z
-
-    if v0x == -v1x and v0y == -v1y and v0z == -v1z:
-        angle = 200.0
-    elif v0x == v1x and v0y == v1y and v0z == v1z:
-        angle = 0.0
-    else:
-        norm0 = c_sqrt(v0x * v0x + v0y * v0y + v0z * v0z)
-        norm1 = c_sqrt(v1x * v1x + v1y * v1y + v1z * v1z)
-        if norm0 == 0.0 or norm1 == 0.0:
-            angle = 0.0
-        else:
-            dot = (v0x * v1x + v0y * v1y + v0z * v1z) / (norm0 * norm1)
-            if dot > 1.0:
-                dot = 1.0
-            elif dot < -1.0:
-                dot = -1.0
-            angle = c_acos(dot) * 200.0 / 3.141592653589793
-
-    dx = v1x - v0x
-    dy = v1y - v0y
-    dz = v1z - v0z
-    acc = c_sqrt(dx * dx + dy * dy + dz * dz)
-    out[0] = angle
-    out[1] = acc
-    return 0
 
 
 @cython.cfunc

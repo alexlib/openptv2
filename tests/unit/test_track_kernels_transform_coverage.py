@@ -52,27 +52,20 @@ _needs_pure_python = pytest.mark.skipif(
 # ---------------------------------------------------------------------------
 # Imports under test
 # ---------------------------------------------------------------------------
-from openptv2.algorithms.track_kernels_transform import (
+from openptv2.algorithms.track_kernels_pixel import (
     _candsearch_in_pix_rest_nogil,
-    _flat_image_coord_fast,
-    _img_coord_fast,
-    _metric_to_pixel_out,
+    _dist_to_flat_out,
     _multimed_r_nlay_1layer,
     _pixel_to_metric_out,
+)
+from openptv2.algorithms.track_kernels_position import (
     _point_position_out,
     _ray_tracing_out,
-    assess_new_position_fast,
     assess_new_position_fast_nogil,
-    dist_to_flat_fast,
-    flat_image_coord_batch_fast,
-    img_coord_batch_fast,
-    metric_to_pixel_fast,
-    pixel_to_metric_fast,
-    point_position_fast,
 )
-
-if not _is_compiled():
-    from openptv2.algorithms.track_kernels_transform import _dist_to_flat_out
+from openptv2.algorithms.track_kernels_transform import (
+    assess_new_position_fast,
+)
 
 # ---------------------------------------------------------------------------
 # Helpers: build a minimal 31-element calibration flat array
@@ -443,64 +436,6 @@ class TestPointPositionOut:
         assert out is not None
 
 
-class TestPointPositionFast:
-    """Cover point_position_fast (line 495) — wraps _point_position_out."""
-
-    def test_returns_pos_and_dist(self):
-        """Smoke test: returns (pos_array, dist_float)."""
-        cal_arr = _make_cal_arr_batch(2)
-        targets = np.full((2, 2), COORD_UNUSED, dtype=np.float64)
-        pos, dist = point_position_fast(targets, 2, cal_arr)
-        assert pos.shape == (3,)
-        assert dist == 0.0
-
-    def test_two_cams_valid_targets(self):
-        """Two cameras with valid targets → non-trivial result."""
-        cal_arr = _make_cal_arr_batch(2)
-        targets = np.zeros((2, 2), dtype=np.float64)
-        pos, dist = point_position_fast(targets, 2, cal_arr)
-        assert pos.shape == (3,)
-        assert isinstance(dist, float)
-
-
-# ---------------------------------------------------------------------------
-# 4. pixel_to_metric_fast
-# ---------------------------------------------------------------------------
-
-
-class TestPixelToMetricFast:
-    def test_chfield_zero(self):
-        x_m, y_m = pixel_to_metric_fast(512.0, 384.0, 1024, 768, 0.01, 0.01, 0)
-        assert math.isclose(x_m, 0.0, abs_tol=1e-10)
-        assert math.isclose(y_m, 0.0, abs_tol=1e-10)
-
-    def test_chfield_one(self):
-        """chfield==1: yp = 2*y_pixel + 1."""
-        x_m, y_m = pixel_to_metric_fast(512.0, 100.0, 1024, 768, 0.01, 0.01, 1)
-        # yp = 2*100 + 1 = 201
-        expected_y = (768 * 0.5 - 201) * 0.01
-        assert math.isclose(y_m, expected_y, rel_tol=1e-9)
-
-    def test_chfield_two(self):
-        """chfield==2: yp = 2*y_pixel."""
-        x_m, y_m = pixel_to_metric_fast(512.0, 100.0, 1024, 768, 0.01, 0.01, 2)
-        yp = 2.0 * 100.0
-        expected_y = (768 * 0.5 - yp) * 0.01
-        assert math.isclose(y_m, expected_y, rel_tol=1e-9)
-
-    def test_origin_pixel(self):
-        """Pixel at image centre → metric (0,0)."""
-        x_m, y_m = pixel_to_metric_fast(512.0, 384.0, 1024, 768, 0.01, 0.01, 0)
-        assert abs(x_m) < 1e-10
-        assert abs(y_m) < 1e-10
-
-    def test_corner_pixel(self):
-        """Pixel at (0,0) → negative metric coords."""
-        x_m, y_m = pixel_to_metric_fast(0.0, 0.0, 1024, 768, 0.01, 0.01, 0)
-        assert x_m < 0.0
-        assert y_m > 0.0
-
-
 # ---------------------------------------------------------------------------
 # 5. _pixel_to_metric_out
 # ---------------------------------------------------------------------------
@@ -531,64 +466,6 @@ class TestPixelToMetricOut:
         out = np.zeros(2, dtype=np.float64)
         ret = _pixel_to_metric_out(0.0, 0.0, 100, 100, 0.05, 0.05, 0, out)
         assert ret == 0
-
-
-# ---------------------------------------------------------------------------
-# 6. dist_to_flat_fast
-# ---------------------------------------------------------------------------
-
-
-class TestDistToFlatFast:
-    def test_r_near_zero_returns_minus_xh_yh(self):
-        """Very small dist_x/dist_y → returns (-xh, -yh)."""
-        xh, yh = 0.5, -0.3
-        x, y = dist_to_flat_fast(
-            1e-15, 0.0, xh, yh, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1e-6
-        )
-        assert math.isclose(x, -xh, rel_tol=1e-9)
-        assert math.isclose(y, -yh, rel_tol=1e-9)
-
-    def test_zero_distortion_identity(self):
-        """k=p=0, scx=1, she=0 → output ≈ input (modulo xh/yh)."""
-        x, y = dist_to_flat_fast(
-            1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1e-8
-        )
-        assert math.isclose(x, 1.0, rel_tol=1e-5)
-        assert math.isclose(y, 2.0, rel_tol=1e-5)
-
-    def test_with_principal_point_offset(self):
-        """Non-zero xh/yh shifts the result."""
-        xh, yh = 0.1, 0.2
-        x, y = dist_to_flat_fast(
-            1.0, 2.0, xh, yh, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1e-8
-        )
-        # xq starts at 1.0 and converges; result should be near 1.0 - xh
-        assert abs(x - (1.0 - xh)) < 0.01
-
-    def test_with_k1_distortion(self):
-        """Non-zero k1 changes the result noticeably."""
-        x0, y0 = dist_to_flat_fast(
-            2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1e-8
-        )
-        x1, y1 = dist_to_flat_fast(
-            2.0, 1.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1e-8
-        )
-        assert x0 != x1
-
-    def test_she_nonzero(self):
-        """Non-zero shear angle exercises sin/cos branches."""
-        x, y = dist_to_flat_fast(
-            1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.01, 1e-8
-        )
-        assert isinstance(x, float)
-        assert isinstance(y, float)
-
-    def test_convergence_tol(self):
-        """Tight tolerance converges; result shifts slightly due to k1 correction."""
-        x, y = dist_to_flat_fast(
-            0.5, 0.5, 0.0, 0.0, 0.001, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1e-12
-        )
-        assert math.isclose(x, 0.5, abs_tol=0.01)
 
 
 # ---------------------------------------------------------------------------
@@ -624,269 +501,6 @@ class TestDistToFlatOut:
             1.5, 0.5, 0.0, 0.0, 0.005, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1e-8, out
         )
         assert math.isclose(out[0], 1.5, rel_tol=0.05)
-
-
-# ---------------------------------------------------------------------------
-# 8. metric_to_pixel_fast
-# ---------------------------------------------------------------------------
-
-
-class TestMetricToPixelFast:
-    def test_chfield_zero(self):
-        """metric_to_pixel_fast is inverse of pixel_to_metric_fast."""
-        xp0, yp0 = 200.0, 300.0
-        xm, ym = pixel_to_metric_fast(xp0, yp0, 1024, 768, 0.01, 0.01, 0)
-        xp1, yp1 = metric_to_pixel_fast(xm, ym, 1024, 768, 0.01, 0.01, 0)
-        assert math.isclose(xp1, xp0, rel_tol=1e-9)
-        assert math.isclose(yp1, yp0, rel_tol=1e-9)
-
-    def test_chfield_one(self):
-        xp, yp = metric_to_pixel_fast(0.0, 0.0, 1024, 768, 0.01, 0.01, 1)
-        # x_pixel = 0/0.01 + 512 = 512
-        assert math.isclose(xp, 512.0, rel_tol=1e-9)
-        # y_pixel raw = 768/2 - 0/0.01 = 384 → (384 - 1) / 2 = 191.5
-        assert math.isclose(yp, (384.0 - 1.0) * 0.5, rel_tol=1e-9)
-
-    def test_chfield_two(self):
-        xp, yp = metric_to_pixel_fast(0.0, 0.0, 1024, 768, 0.01, 0.01, 2)
-        # y_pixel raw = 384 → 384 * 0.5 = 192
-        assert math.isclose(yp, 192.0, rel_tol=1e-9)
-
-    def test_off_centre(self):
-        xp, yp = metric_to_pixel_fast(1.0, 0.0, 1024, 768, 0.01, 0.01, 0)
-        assert math.isclose(xp, 512.0 + 100.0, rel_tol=1e-9)
-
-
-# ---------------------------------------------------------------------------
-# 9. _metric_to_pixel_out
-# ---------------------------------------------------------------------------
-
-
-class TestMetricToPixelOut:
-    def test_chfield_zero(self):
-        out = np.zeros(2, dtype=np.float64)
-        _metric_to_pixel_out(0.0, 0.0, 1024, 768, 0.01, 0.01, 0, out)
-        assert math.isclose(out[0], 512.0, rel_tol=1e-9)
-        assert math.isclose(out[1], 384.0, rel_tol=1e-9)
-
-    def test_chfield_one(self):
-        out = np.zeros(2, dtype=np.float64)
-        _metric_to_pixel_out(0.0, 0.0, 1024, 768, 0.01, 0.01, 1, out)
-        assert math.isclose(out[1], (384.0 - 1.0) * 0.5, rel_tol=1e-9)
-
-    def test_chfield_two(self):
-        out = np.zeros(2, dtype=np.float64)
-        _metric_to_pixel_out(0.0, 0.0, 1024, 768, 0.01, 0.01, 2, out)
-        assert math.isclose(out[1], 192.0, rel_tol=1e-9)
-
-
-# ---------------------------------------------------------------------------
-# 10. _flat_image_coord_fast
-# ---------------------------------------------------------------------------
-
-
-class TestFlatImageCoordFast:
-    def _pos(self, x=0.0, y=0.0, z=0.0):
-        return np.array([x, y, z], dtype=np.float64)
-
-    def _empty_mmlut(self):
-        return np.array([], dtype=np.float64), np.zeros(3, dtype=np.float64), 0, 0, 1.0
-
-    def _filled_mmlut(self, factor=1.0):
-        """2x2 LUT with constant factor."""
-        data = np.full(4, factor, dtype=np.float64)
-        origin = np.zeros(3, dtype=np.float64)
-        return data, origin, 2, 2, 1000.0
-
-    def test_basic_no_mmlut(self):
-        cal = _make_cal_arr(x0=0.0, y0=0.0, z0=100.0, gz=50.0)
-        pos = self._pos(0.0, 0.0, 0.0)
-        mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
-        x, y = _flat_image_coord_fast(pos, cal, mmlut_data, mmlut_origin, nr, nz, rw)
-        assert isinstance(x, float)
-        assert isinstance(y, float)
-
-    def test_with_mmlut_in_bounds(self):
-        """LUT in-bounds path (has_mmlut=True, mmf > 0)."""
-        cal = _make_cal_arr(x0=0.0, y0=0.0, z0=100.0, gz=50.0)
-        pos = self._pos(1.0, 0.0, -10.0)
-        mmlut_data, mmlut_origin, nr, nz, rw = self._filled_mmlut(1.2)
-        x, y = _flat_image_coord_fast(pos, cal, mmlut_data, mmlut_origin, nr, nz, rw)
-        assert isinstance(x, float)
-
-    def test_with_mmlut_zero_factor(self):
-        """LUT path where mmf == 0 → falls back to _multimed_r_nlay_1layer."""
-        cal = _make_cal_arr(x0=0.0, y0=0.0, z0=100.0, gz=50.0)
-        pos = self._pos(1.0, 0.0, -10.0)
-        mmlut_data = np.zeros(4, dtype=np.float64)  # mmf == 0
-        mmlut_origin = np.zeros(3, dtype=np.float64)
-        x, y = _flat_image_coord_fast(pos, cal, mmlut_data, mmlut_origin, 2, 2, 1000.0)
-        assert isinstance(x, float)
-
-    def test_pos_t_0_zero_branch(self):
-        """pos_t_0 == 0 → the s_x branch is skipped."""
-        # Place the point directly along the glass normal from the camera projection
-        cal = _make_cal_arr(x0=0.0, y0=0.0, z0=100.0, gz=50.0)
-        pos = self._pos(0.0, 0.0, 0.0)
-        mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
-        x, y = _flat_image_coord_fast(pos, cal, mmlut_data, mmlut_origin, nr, nz, rw)
-        assert isinstance(x, float)
-
-    def test_mmlut_out_of_bounds(self):
-        """LUT v3 > nr*nz → skip LUT, fall back to iterative solver."""
-        cal = _make_cal_arr(x0=0.0, y0=0.0, z0=100.0, gz=50.0)
-        pos = self._pos(500.0, 0.0, -10.0)  # large R
-        # Small LUT so ir > mmlut_nr
-        data = np.ones(4, dtype=np.float64)
-        origin = np.zeros(3, dtype=np.float64)
-        x, y = _flat_image_coord_fast(pos, cal, data, origin, 1, 2, 0.001)
-        assert isinstance(x, float)
-
-    def test_radial_shift_one_fallback(self):
-        """When mmlut lookup gives radial_shift still == 1.0, falls through to
-        _multimed_r_nlay_1layer."""
-        cal = _make_cal_arr(
-            x0=0.0, y0=0.0, z0=100.0, gz=50.0, n1=1.0, n2_0=1.5, n3=1.33, d0=2.0
-        )
-        pos = self._pos(2.0, 1.0, -5.0)
-        mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
-        x, y = _flat_image_coord_fast(pos, cal, mmlut_data, mmlut_origin, nr, nz, rw)
-        assert isinstance(x, float)
-
-
-# ---------------------------------------------------------------------------
-# 11. _img_coord_fast
-# ---------------------------------------------------------------------------
-
-
-class TestImgCoordFast:
-    def _empty_mmlut(self):
-        return np.array([], dtype=np.float64), np.zeros(3, dtype=np.float64), 0, 0, 1.0
-
-    def test_r_near_zero_returns_zero(self):
-        """_flat_image_coord_fast returns x≈0, y≈0 → r < 1e-10 → (0,0)."""
-        cal = _make_cal_arr(x0=0.0, y0=0.0, z0=100.0, gz=50.0, xh=0.0, yh=0.0)
-        pos = np.array([0.0, 0.0, 0.0], dtype=np.float64)
-        mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
-        xd, yd = _img_coord_fast(pos, cal, mmlut_data, mmlut_origin, nr, nz, rw)
-        assert xd == 0.0 and yd == 0.0
-
-    def test_normal_case(self):
-        cal = _make_cal_arr(
-            x0=0.0,
-            y0=0.0,
-            z0=100.0,
-            gz=50.0,
-            xh=0.0,
-            yh=0.0,
-            k1=0.001,
-            scx=1.0,
-            she=0.0,
-        )
-        pos = np.array([1.0, 2.0, 0.0], dtype=np.float64)
-        mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
-        xd, yd = _img_coord_fast(pos, cal, mmlut_data, mmlut_origin, nr, nz, rw)
-        assert isinstance(xd, float)
-        assert isinstance(yd, float)
-
-    def test_with_she_nonzero(self):
-        cal = _make_cal_arr(x0=0.0, y0=0.0, z0=100.0, gz=50.0, she=0.05)
-        pos = np.array([2.0, 1.0, 0.0], dtype=np.float64)
-        mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
-        xd, yd = _img_coord_fast(pos, cal, mmlut_data, mmlut_origin, nr, nz, rw)
-        assert isinstance(xd, float)
-
-
-# ---------------------------------------------------------------------------
-# 12. img_coord_batch_fast
-# ---------------------------------------------------------------------------
-
-
-class TestImgCoordBatchFast:
-    def _empty_mmlut(self):
-        return np.array([], dtype=np.float64), np.zeros(3, dtype=np.float64), 0, 0, 1.0
-
-    def test_empty_batch(self):
-        cal = _make_cal_arr()
-        positions = np.empty((0, 3), dtype=np.float64, order="C")
-        mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
-        result = img_coord_batch_fast(
-            positions, cal, mmlut_data, mmlut_origin, nr, nz, rw
-        )
-        assert result.shape == (0, 2)
-
-    def test_single_point(self):
-        cal = _make_cal_arr(gz=50.0)
-        positions = np.array([[1.0, 2.0, 0.0]], dtype=np.float64, order="C")
-        mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
-        result = img_coord_batch_fast(
-            positions, cal, mmlut_data, mmlut_origin, nr, nz, rw
-        )
-        assert result.shape == (1, 2)
-        assert result.dtype == np.float64
-
-    def test_multiple_points(self):
-        cal = _make_cal_arr(gz=50.0)
-        positions = np.array(
-            [
-                [1.0, 0.0, 0.0],
-                [2.0, 1.0, -5.0],
-                [0.5, -0.5, 3.0],
-            ],
-            dtype=np.float64,
-            order="C",
-        )
-        mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
-        result = img_coord_batch_fast(
-            positions, cal, mmlut_data, mmlut_origin, nr, nz, rw
-        )
-        assert result.shape == (3, 2)
-
-
-# ---------------------------------------------------------------------------
-# 13. flat_image_coord_batch_fast
-# ---------------------------------------------------------------------------
-
-
-class TestFlatImageCoordBatchFast:
-    def _empty_mmlut(self):
-        return np.array([], dtype=np.float64), np.zeros(3, dtype=np.float64), 0, 0, 1.0
-
-    def test_empty_batch(self):
-        cal = _make_cal_arr()
-        positions = np.empty((0, 3), dtype=np.float64, order="C")
-        mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
-        result = flat_image_coord_batch_fast(
-            positions, cal, mmlut_data, mmlut_origin, nr, nz, rw
-        )
-        assert result.shape == (0, 2)
-
-    def test_single_point(self):
-        cal = _make_cal_arr(gz=50.0)
-        positions = np.array([[0.0, 0.0, 0.0]], dtype=np.float64, order="C")
-        mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
-        result = flat_image_coord_batch_fast(
-            positions, cal, mmlut_data, mmlut_origin, nr, nz, rw
-        )
-        assert result.shape == (1, 2)
-
-    def test_multiple_points(self):
-        cal = _make_cal_arr(gz=50.0)
-        positions = np.array(
-            [
-                [1.0, 0.0, 0.0],
-                [0.0, 1.0, 0.0],
-                [2.0, 2.0, -10.0],
-                [0.0, 0.0, 5.0],
-            ],
-            dtype=np.float64,
-            order="C",
-        )
-        mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
-        result = flat_image_coord_batch_fast(
-            positions, cal, mmlut_data, mmlut_origin, nr, nz, rw
-        )
-        assert result.shape == (4, 2)
 
 
 # ---------------------------------------------------------------------------
@@ -1568,129 +1182,10 @@ def test_constants():
 # ---------------------------------------------------------------------------
 
 
-def test_pixel_metric_pixel_roundtrip():
-    """metric_to_pixel(pixel_to_metric(px, py)) == (px, py) for chfield 0."""
-    for chfield in [0]:
-        px0, py0 = 300.0, 200.0
-        xm, ym = pixel_to_metric_fast(px0, py0, 1024, 768, 0.01, 0.01, chfield)
-        px1, py1 = metric_to_pixel_fast(xm, ym, 1024, 768, 0.01, 0.01, chfield)
-        assert math.isclose(px1, px0, rel_tol=1e-9)
-        assert math.isclose(py1, py0, rel_tol=1e-9)
-
-
 # ---------------------------------------------------------------------------
 # 19. dist_to_flat / _dist_to_flat_out consistency
 # ---------------------------------------------------------------------------
 
-
-@_needs_pure_python
-def test_dist_to_flat_fast_and_out_agree():
-    """fast and _out variants give same result."""
-    args = (2.5, -1.0, 0.1, -0.2, 0.001, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1e-8)
-    x1, y1 = dist_to_flat_fast(*args)
-    out = np.zeros(2, dtype=np.float64)
-    _dist_to_flat_out(*args, out)
-    assert math.isclose(x1, out[0], rel_tol=1e-12)
-    assert math.isclose(y1, out[1], rel_tol=1e-12)
-
-
-# ---------------------------------------------------------------------------
-# 20. _pixel_to_metric_out / pixel_to_metric_fast consistency
-# ---------------------------------------------------------------------------
-
-
-def test_pixel_to_metric_out_and_fast_agree():
-    """_out and fast variants give same result for all chfields."""
-    for chfield in [0, 1, 2]:
-        x_f, y_f = pixel_to_metric_fast(400.0, 300.0, 1024, 768, 0.01, 0.01, chfield)
-        out = np.zeros(2, dtype=np.float64)
-        _pixel_to_metric_out(400.0, 300.0, 1024, 768, 0.01, 0.01, chfield, out)
-        assert math.isclose(x_f, out[0], rel_tol=1e-12)
-        assert math.isclose(y_f, out[1], rel_tol=1e-12)
-
-
-# ---------------------------------------------------------------------------
-# 21. _metric_to_pixel_out / metric_to_pixel_fast consistency
-# ---------------------------------------------------------------------------
-
-
-def test_metric_to_pixel_out_and_fast_agree():
-    """_out and fast variants give same result for all chfields."""
-    for chfield in [0, 1, 2]:
-        xp_f, yp_f = metric_to_pixel_fast(0.5, -0.3, 1024, 768, 0.01, 0.01, chfield)
-        out = np.zeros(2, dtype=np.float64)
-        _metric_to_pixel_out(0.5, -0.3, 1024, 768, 0.01, 0.01, chfield, out)
-        assert math.isclose(xp_f, out[0], rel_tol=1e-12)
-        assert math.isclose(yp_f, out[1], rel_tol=1e-12)
-
-
-# ---------------------------------------------------------------------------
-# 22. img_coord_batch_fast vs _img_coord_fast element-wise
-# ---------------------------------------------------------------------------
-
-
-def test_img_coord_batch_matches_elementwise():
-    """batch result == repeated scalar calls."""
-    cal = _make_cal_arr(gz=50.0, k1=0.001)
-    mmlut_data = np.array([], dtype=np.float64)
-    mmlut_origin = np.zeros(3, dtype=np.float64)
-    positions = np.array(
-        [
-            [1.0, 0.0, 0.0],
-            [0.0, 2.0, -5.0],
-        ],
-        dtype=np.float64,
-        order="C",
-    )
-    result = img_coord_batch_fast(positions, cal, mmlut_data, mmlut_origin, 0, 0, 1.0)
-    for i in range(len(positions)):
-        xi, yi = _img_coord_fast(positions[i], cal, mmlut_data, mmlut_origin, 0, 0, 1.0)
-        assert math.isclose(result[i, 0], xi, rel_tol=1e-12)
-        assert math.isclose(result[i, 1], yi, rel_tol=1e-12)
-
-
-# ---------------------------------------------------------------------------
-# 23. flat_image_coord_batch_fast vs _flat_image_coord_fast element-wise
-# ---------------------------------------------------------------------------
-
-
-def test_flat_image_coord_batch_matches_elementwise():
-    """batch result == repeated scalar calls."""
-    cal = _make_cal_arr(gz=50.0)
-    mmlut_data = np.array([], dtype=np.float64)
-    mmlut_origin = np.zeros(3, dtype=np.float64)
-    positions = np.array(
-        [
-            [0.5, -0.5, 0.0],
-            [2.0, 1.0, -3.0],
-        ],
-        dtype=np.float64,
-        order="C",
-    )
-    result = flat_image_coord_batch_fast(
-        positions, cal, mmlut_data, mmlut_origin, 0, 0, 1.0
-    )
-    for i in range(len(positions)):
-        xi, yi = _flat_image_coord_fast(
-            positions[i], cal, mmlut_data, mmlut_origin, 0, 0, 1.0
-        )
-        assert math.isclose(result[i, 0], xi, rel_tol=1e-12)
-        assert math.isclose(result[i, 1], yi, rel_tol=1e-12)
-
-
-# ---------------------------------------------------------------------------
-# 24. dist_to_flat_fast / _dist_to_flat_out loop-exhaustion branches (596->618, 665->680)
-# ---------------------------------------------------------------------------
-
-
-def test_dist_to_flat_fast_loop_exhaustion():
-    """tol=0.0 prevents the break from firing → all 50 iterations run (596->618 branch)."""
-    x, y = dist_to_flat_fast(
-        1.0, 1.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0
-    )
-    # Result exists even without convergence
-    assert isinstance(x, float)
-    assert isinstance(y, float)
 
 
 @_needs_pure_python
@@ -1731,30 +1226,6 @@ def test_candsearch_xmax_ymax_clamp():
     )
     # Target is at the centre of the search box → should be found
     assert result == 0
-
-
-# ---------------------------------------------------------------------------
-# 26. _flat_image_coord_fast: branch 1262->1271 (v3 > mmlut_nr*mmlut_nz)
-# ---------------------------------------------------------------------------
-
-
-def test_flat_image_coord_fast_lut_boundary_branch():
-    """ir == mmlut_nr AND iz in [0,nz] → v3 > mmlut_nr*mmlut_nz → inner if False → 1262->1271.
-
-    Geometry (x0=0, y0=0, z0=100, gz=50):
-      With pos=[2.5, 0, 51] and rw=1.0, nr=2, nz=2:
-        pos_t_0 = 2.5 → R=2.5 → ir=2 = nr=2 (outer condition True: 2<=2)
-        dist_point_glas = 51-50 = 1 → iz=1 (in [0,2])
-        v3 = 2*2+1+2+1 = 8 > 4 = nr*nz → inner condition False → 1262->1271
-    """
-    cal = _make_cal_arr(x0=0.0, y0=0.0, z0=100.0, gz=50.0, d0=0.0)
-    pos = np.array([2.5, 0.0, 51.0], dtype=np.float64)
-    nr, nz = 2, 2
-    mmlut_data = np.ones(nr * nz, dtype=np.float64)  # non-empty LUT
-    mmlut_origin = np.zeros(3, dtype=np.float64)
-    rw = 1.0
-    x, y = _flat_image_coord_fast(pos, cal, mmlut_data, mmlut_origin, nr, nz, rw)
-    assert isinstance(x, float)
 
 
 # ---------------------------------------------------------------------------

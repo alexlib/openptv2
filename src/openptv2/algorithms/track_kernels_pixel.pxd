@@ -105,4 +105,15 @@ cpdef int _sorted_candidates_fast_out_nogil(
     double[:] _pp,
 ) noexcept nogil
 
-
+cpdef double _multimed_r_nlay_1layer(
+    double pos_x,
+    double pos_y,
+    double pos_z,
+    double ext_x0,
+    double ext_y0,
+    double ext_z0,
+    double mm_n1,
+    double mm_n2_0,
+    double mm_n3,
+    double mm_d0,
+) noexcept nogil

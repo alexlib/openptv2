@@ -25,10 +25,6 @@ import pytest
 
 from openptv2.algorithms.track_kernels_batch import (  # noqa: E402
     init_mmlut_data_fast,
-    metric_to_pixel_batch_fast,
-    pixel_to_metric_batch_fast,
-    point_position_batch_fast,
-    ray_tracing_batch_fast,
     targ_rec_fast,
 )
 
@@ -89,46 +85,6 @@ _CAL = _make_cal()
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def test_ray_tracing_batch_empty():
-    """N=0 input → (0, 3) position and direction arrays."""
-    xy = np.empty((0, 2), dtype=np.float64)
-    pos, dirs = ray_tracing_batch_fast(xy, _CAL)
-    assert pos.shape == (0, 3)
-    assert dirs.shape == (0, 3)
-
-
-def test_ray_tracing_batch_single():
-    """N=1 → (1, 3) outputs; values are finite."""
-    xy = np.array([[0.0, 0.0]], dtype=np.float64)
-    pos, dirs = ray_tracing_batch_fast(xy, _CAL)
-    assert pos.shape == (1, 3)
-    assert dirs.shape == (1, 3)
-    assert np.all(np.isfinite(pos))
-    assert np.all(np.isfinite(dirs))
-
-
-def test_ray_tracing_batch_multiple():
-    """N=5 → (5, 3) outputs; all finite."""
-    xy = np.array(
-        [[-5.0, -5.0], [-2.0, 0.0], [0.0, 0.0], [2.0, 0.0], [5.0, 5.0]],
-        dtype=np.float64,
-    )
-    pos, dirs = ray_tracing_batch_fast(xy, _CAL)
-    assert pos.shape == (5, 3)
-    assert dirs.shape == (5, 3)
-    assert np.all(np.isfinite(pos))
-    assert np.all(np.isfinite(dirs))
-
-
-def test_ray_tracing_batch_off_axis():
-    """Non-zero x0,y0 camera position still produces finite rays."""
-    cal_off = _make_cal(x0=10.0, y0=5.0, z0=80.0)
-    xy = np.array([[1.0, -1.0], [0.5, 0.5]], dtype=np.float64)
-    pos, dirs = ray_tracing_batch_fast(xy, cal_off)
-    assert pos.shape == (2, 3)
-    assert np.all(np.isfinite(pos))
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 # pixel_to_metric_batch_fast
 # ─────────────────────────────────────────────────────────────────────────────
@@ -137,87 +93,9 @@ _IMX, _IMY = 640, 480
 _PIXX, _PIXY = 0.017, 0.017
 
 
-def test_pixel_to_metric_batch_empty():
-    """N=0 → (0, 2) result, no crash."""
-    xy = np.empty((0, 2), dtype=np.float64)
-    result = pixel_to_metric_batch_fast(xy, _IMX, _IMY, _PIXX, _PIXY, 0)
-    assert result.shape == (0, 2)
-
-
-def test_pixel_to_metric_batch_chfield0():
-    """chfield=0 → standard pixel-to-metric; shape (3, 2), finite."""
-    xy = np.array([[320.0, 240.0], [0.0, 0.0], [640.0, 480.0]], dtype=np.float64)
-    result = pixel_to_metric_batch_fast(xy, _IMX, _IMY, _PIXX, _PIXY, 0)
-    assert result.shape == (3, 2)
-    assert np.all(np.isfinite(result))
-
-
-def test_pixel_to_metric_batch_chfield1():
-    """chfield=1 → yp = 2*y + 1 branch executed."""
-    xy = np.array([[100.0, 100.0]], dtype=np.float64)
-    result = pixel_to_metric_batch_fast(xy, _IMX, _IMY, _PIXX, _PIXY, 1)
-    assert result.shape == (1, 2)
-    assert np.isfinite(result[0, 1])
-
-
-def test_pixel_to_metric_batch_chfield2():
-    """chfield=2 → yp = 2*y branch executed."""
-    xy = np.array([[100.0, 100.0]], dtype=np.float64)
-    result = pixel_to_metric_batch_fast(xy, _IMX, _IMY, _PIXX, _PIXY, 2)
-    assert result.shape == (1, 2)
-    assert np.isfinite(result[0, 1])
-
-
-def test_pixel_to_metric_batch_center():
-    """Image centre maps to metric origin (0, 0) for chfield=0."""
-    xy = np.array([[_IMX / 2.0, _IMY / 2.0]], dtype=np.float64)
-    result = pixel_to_metric_batch_fast(xy, _IMX, _IMY, _PIXX, _PIXY, 0)
-    assert abs(result[0, 0]) < 1e-10
-    assert abs(result[0, 1]) < 1e-10
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 # metric_to_pixel_batch_fast
 # ─────────────────────────────────────────────────────────────────────────────
-
-
-def test_metric_to_pixel_batch_chfield0():
-    """chfield=0 → standard metric-to-pixel; shape (3, 2), finite."""
-    xy = np.array([[0.0, 0.0], [1.0, 1.0], [-1.0, -1.0]], dtype=np.float64)
-    result = metric_to_pixel_batch_fast(xy, _IMX, _IMY, _PIXX, _PIXY, 0)
-    assert result.shape == (3, 2)
-    assert np.all(np.isfinite(result))
-
-
-def test_metric_to_pixel_batch_chfield1():
-    """chfield=1 → y_pixel = (y_pixel - 1) * 0.5 branch executed."""
-    xy = np.array([[0.5, 0.5]], dtype=np.float64)
-    result = metric_to_pixel_batch_fast(xy, _IMX, _IMY, _PIXX, _PIXY, 1)
-    assert result.shape == (1, 2)
-    assert np.isfinite(result[0, 1])
-
-
-def test_metric_to_pixel_batch_chfield2():
-    """chfield=2 → y_pixel = y_pixel * 0.5 branch executed."""
-    xy = np.array([[0.5, 0.5]], dtype=np.float64)
-    result = metric_to_pixel_batch_fast(xy, _IMX, _IMY, _PIXX, _PIXY, 2)
-    assert result.shape == (1, 2)
-    assert np.isfinite(result[0, 1])
-
-
-def test_pixel_metric_roundtrip():
-    """pixel→metric→pixel recovers original coordinates (chfield=0)."""
-    pts_px = np.array([[320.0, 240.0], [100.0, 380.0]], dtype=np.float64)
-    metric = pixel_to_metric_batch_fast(pts_px, _IMX, _IMY, _PIXX, _PIXY, 0)
-    back = metric_to_pixel_batch_fast(metric, _IMX, _IMY, _PIXX, _PIXY, 0)
-    assert np.allclose(back, pts_px, atol=1e-8)
-
-
-def test_metric_pixel_empty():
-    """N=0 metric_to_pixel → (0, 2) result."""
-    xy = np.empty((0, 2), dtype=np.float64)
-    result = metric_to_pixel_batch_fast(xy, _IMX, _IMY, _PIXX, _PIXY, 0)
-    assert result.shape == (0, 2)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -230,47 +108,6 @@ def _two_cams():
     cal1 = _make_cal(x0=-50.0, y0=0.0, z0=100.0, cc=75.0, gz=50.0)
     cal2 = _make_cal(x0=50.0, y0=0.0, z0=100.0, cc=75.0, gz=50.0)
     return (cal1, cal2)
-
-
-def test_point_position_batch_empty():
-    """num_pts=0 → (0, 3) positions and (0,) distances."""
-    all_targets = np.empty((0, 2, 2), dtype=np.float64)
-    cal_arrays = _two_cams()
-    positions, distances = point_position_batch_fast(all_targets, 0, 2, cal_arrays)
-    assert positions.shape == (0, 3)
-    assert distances.shape == (0,)
-
-
-def test_point_position_batch_one_point():
-    """num_pts=1, num_cams=2 → (1, 3) and (1,); finite values."""
-    all_targets = np.zeros((1, 2, 2), dtype=np.float64)
-    cal_arrays = _two_cams()
-    positions, distances = point_position_batch_fast(all_targets, 1, 2, cal_arrays)
-    assert positions.shape == (1, 3)
-    assert distances.shape == (1,)
-    assert np.all(np.isfinite(positions))
-    assert np.isfinite(distances[0])
-
-
-def test_point_position_batch_multiple_points():
-    """num_pts=3 → (3, 3) positions and (3,) distances."""
-    all_targets = np.zeros((3, 2, 2), dtype=np.float64)
-    cal_arrays = _two_cams()
-    positions, distances = point_position_batch_fast(all_targets, 3, 2, cal_arrays)
-    assert positions.shape == (3, 3)
-    assert distances.shape == (3,)
-
-
-def test_point_position_batch_nonzero_targets():
-    """Finite target coords still yield finite positions."""
-    all_targets = np.array(
-        [[[1.0, 2.0], [-1.0, 2.0]], [[0.5, 0.5], [-0.5, 0.5]]],
-        dtype=np.float64,
-    )
-    cal_arrays = _two_cams()
-    positions, distances = point_position_batch_fast(all_targets, 2, 2, cal_arrays)
-    assert positions.shape == (2, 3)
-    assert np.all(np.isfinite(positions))
 
 
 # ─────────────────────────────────────────────────────────────────────────────

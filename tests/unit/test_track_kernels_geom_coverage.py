@@ -19,14 +19,16 @@ import pytest
 from openptv2.algorithms.track_kernels_geom import (
     CAL_ARRAY_SIZE,
     PT_UNUSED,
-    _angle_acc_out,
-    _multimed_r_nlay_1layer,
-    _point_to_pixel_out,
-    _ray_tracing_fast,
-    _ray_tracing_out,
-    angle_acc_fast,
     point_to_pixel_fast,
     searchquader_fast,
+)
+from openptv2.algorithms.track_kernels_pixel import (
+    _multimed_r_nlay_1layer,
+    _point_to_pixel_out,
+)
+from openptv2.algorithms.track_kernels_position import (
+    _angle_acc_out,
+    _ray_tracing_out,
 )
 
 # ---------------------------------------------------------------------------
@@ -1007,160 +1009,6 @@ def test_searchquader_zero_quader():
 
 
 # ---------------------------------------------------------------------------
-# angle_acc_fast
-# ---------------------------------------------------------------------------
-
-
-def test_angle_acc_fast_same_vectors_zero():
-    """v0 == v1 → angle = 0.0, acc = 0.0."""
-    angle, acc = angle_acc_fast(
-        0.0,
-        0.0,
-        0.0,  # start
-        1.0,
-        0.0,
-        0.0,  # pred
-        1.0,
-        0.0,
-        0.0,  # cand  (same as pred)
-    )
-    assert angle == 0.0
-    assert acc == 0.0
-
-
-def test_angle_acc_fast_opposite_vectors_200():
-    """v0 == -v1 → angle = 200.0."""
-    angle, acc = angle_acc_fast(
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        -1.0,
-        0.0,
-        0.0,
-    )
-    assert angle == 200.0
-
-
-def test_angle_acc_fast_90_degrees():
-    """Perpendicular vectors → angle ≈ 100.0 (90° scaled to 200/π·rad)."""
-    angle, acc = angle_acc_fast(
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-    )
-    assert abs(angle - 100.0) < 0.1
-    assert np.isfinite(acc)
-
-
-def test_angle_acc_fast_norm0_zero():
-    """start == pred → v0 = (0,0,0) → norm0 = 0 → angle = 0.0."""
-    angle, acc = angle_acc_fast(
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-    )
-    assert angle == 0.0
-
-
-def test_angle_acc_fast_norm1_zero():
-    """start == cand → v1 = (0,0,0) → norm1 = 0 → angle = 0.0."""
-    angle, acc = angle_acc_fast(
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-    )
-    assert angle == 0.0
-
-
-def test_angle_acc_fast_nearly_parallel():
-    """Almost parallel vectors — dot may be > 1 in floating point → clamped."""
-    eps = 1e-14
-    angle, acc = angle_acc_fast(
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        1.0 + eps,
-        0.0,
-        0.0,
-    )
-    assert 0.0 <= angle <= 200.0
-
-
-def test_angle_acc_fast_acceleration_value():
-    """Acc is the distance between v1 and v0."""
-    angle, acc = angle_acc_fast(
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        2.0,
-        0.0,
-        0.0,
-    )
-    # v0=(1,0,0), v1=(2,0,0) → dx=1 → acc=1
-    assert abs(acc - 1.0) < 1e-10
-
-
-def test_angle_acc_fast_3d_vectors():
-    angle, acc = angle_acc_fast(
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        1.0,
-        1.0,
-        1.0,
-        -1.0,
-        0.0,
-    )
-    assert 0.0 <= angle <= 200.0
-    assert np.isfinite(acc)
-
-
-def test_angle_acc_fast_negative_dot_clamped():
-    """Antiparallel but not exact → dot < -1 gets clamped to -1."""
-    # Make two nearly-opposite unit vectors with floating-point excess
-    angle, acc = angle_acc_fast(
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        -1.0,
-        1e-15,
-        0.0,  # nearly opposite, not exactly
-    )
-    assert 0.0 <= angle <= 200.0
-
-
-# ---------------------------------------------------------------------------
 # _angle_acc_out
 # ---------------------------------------------------------------------------
 
@@ -1186,14 +1034,6 @@ def test_angle_acc_out_90_degrees():
     assert np.isfinite(out[1])
 
 
-def test_angle_acc_out_matches_fast():
-    out = np.zeros(2, dtype=np.float64)
-    _angle_acc_out(0.0, 0.0, 0.0, 2.0, 1.0, 0.0, 1.0, 2.0, 0.5, out)
-    angle, acc = angle_acc_fast(0.0, 0.0, 0.0, 2.0, 1.0, 0.0, 1.0, 2.0, 0.5)
-    assert abs(out[0] - angle) < 1e-10
-    assert abs(out[1] - acc) < 1e-10
-
-
 def test_angle_acc_out_norm0_zero():
     out = np.zeros(2, dtype=np.float64)
     _angle_acc_out(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, out)
@@ -1214,75 +1054,6 @@ def test_angle_acc_out_3d():
 
 
 # ---------------------------------------------------------------------------
-# _ray_tracing_fast
-# ---------------------------------------------------------------------------
-
-
-def test_ray_tracing_fast_on_axis_tuple_len():
-    cal = _make_cal_array()
-    result = _ray_tracing_fast(0.0, 0.0, cal)
-    assert len(result) == 6
-    assert all(np.isfinite(v) for v in result)
-
-
-def test_ray_tracing_fast_off_axis():
-    cal = _make_cal_array()
-    Xx, Xy, Xz, ox, oy, oz = _ray_tracing_fast(1.0, 0.5, cal)
-    assert all(np.isfinite(v) for v in [Xx, Xy, Xz, ox, oy, oz])
-
-
-def test_ray_tracing_fast_negative_xy():
-    cal = _make_cal_array()
-    result = _ray_tracing_fast(-2.0, -1.0, cal)
-    assert all(np.isfinite(v) for v in result)
-
-
-def test_ray_tracing_fast_tilted_glass():
-    """Tilted glass → non-trivial Snell refraction."""
-    cal = _make_cal_array(gx=0.5, gy=0.0, gz=1.0)
-    Xx, Xy, Xz, ox, oy, oz = _ray_tracing_fast(1.0, 0.0, cal)
-    assert np.isfinite(Xx)
-    assert np.isfinite(ox)
-
-
-def test_ray_tracing_fast_on_axis_bpn_zero():
-    """x=0, y=0, dm=identity, glass=[0,0,1] → start_dir·glass parallel → bpn=0."""
-    cal = _make_cal_array(gx=0.0, gy=0.0, gz=1.0)
-    result = _ray_tracing_fast(0.0, 0.0, cal)
-    assert len(result) == 6
-
-
-def test_ray_tracing_fast_varied_indices():
-    cal = _make_cal_array(mm_n1=1.33, mm_n2_0=1.5, mm_n3=1.33, mm_d0=5.0)
-    result = _ray_tracing_fast(2.0, 1.0, cal)
-    assert all(np.isfinite(v) for v in result)
-
-
-def test_ray_tracing_fast_large_xy():
-    cal = _make_cal_array()
-    result = _ray_tracing_fast(8.0, 6.0, cal)
-    assert len(result) == 6
-
-
-def test_ray_tracing_fast_symmetry_x():
-    """_ray_tracing_fast(-x, y) mirrors _ray_tracing_fast(x, y) in X."""
-    cal = _make_cal_array()
-    Xx_p, Xy_p, Xz_p, _, _, _ = _ray_tracing_fast(2.0, 0.0, cal)
-    Xx_n, Xy_n, Xz_n, _, _, _ = _ray_tracing_fast(-2.0, 0.0, cal)
-    assert abs(Xx_p + Xx_n) < 1e-10
-    assert abs(Xy_p - Xy_n) < 1e-10
-
-
-def test_ray_tracing_fast_zero_glass_gn_zero_branch():
-    """gx=gy=gz=0 → gn=0 branch executed (raises ZeroDivision later — acceptable)."""
-    cal = _make_cal_array(gx=0.0, gy=0.0, gz=0.0)
-    try:
-        _ray_tracing_fast(1.0, 0.0, cal)
-    except (ZeroDivisionError, ValueError):
-        pass  # branch covered; exception is expected
-
-
-# ---------------------------------------------------------------------------
 # _ray_tracing_out
 # ---------------------------------------------------------------------------
 
@@ -1300,19 +1071,6 @@ def test_ray_tracing_out_off_axis():
     out = np.zeros(6, dtype=np.float64)
     _ray_tracing_out(1.0, 0.5, cal, out)
     assert all(np.isfinite(out[i]) for i in range(6))
-
-
-def test_ray_tracing_out_matches_fast():
-    cal = _make_cal_array()
-    out = np.zeros(6, dtype=np.float64)
-    _ray_tracing_out(1.0, 0.5, cal, out)
-    Xx, Xy, Xz, ox, oy, oz = _ray_tracing_fast(1.0, 0.5, cal)
-    assert abs(out[0] - Xx) < 1e-10
-    assert abs(out[1] - Xy) < 1e-10
-    assert abs(out[2] - Xz) < 1e-10
-    assert abs(out[3] - ox) < 1e-10
-    assert abs(out[4] - oy) < 1e-10
-    assert abs(out[5] - oz) < 1e-10
 
 
 def test_ray_tracing_out_negative_xy():

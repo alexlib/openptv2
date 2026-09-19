@@ -75,7 +75,7 @@ jobs:
           # regression tests unsuited to wheel smoke.
           CIBW_TEST_COMMAND: >
             python {project}/scripts/ci_test_setup.py {project} &&
-            python -c "import openptv2.algorithms.track_kernels_tracking, openptv2.algorithms.track3d; print('openmp import OK')" &&
+            python -c "import openptv2.algorithms.track_kernels_corr, openptv2.algorithms.track3d; print('openmp import OK')" &&
             pytest
             tests/unit/test_vec_utils.py
             tests/unit/test_correspondences.py

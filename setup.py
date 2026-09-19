@@ -58,7 +58,6 @@ ALGORITHMS_MODULES = [
     "track_kernels_position",  # 3D ray tracing + position reconstruction
     "track_kernels_track3d",  # stereo-3D tracking loop
     "track_kernels_corr",  # forward/backward tracking loops + CAS
-    "track_kernels_tracking",  # compatibility shim (re-exports above)
     "track_kernels_batch",  # batch processing + detection
 ]
 

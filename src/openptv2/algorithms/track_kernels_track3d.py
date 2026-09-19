@@ -8,9 +8,13 @@ from openptv2.algorithms.constants import NEXT_NONE
 UNSUPPORTED_PENALTY = 1e6
 
 if cython.compiled:
-    from cython.cimports.libc.math import floor as c_floor, sqrt as c_sqrt, isnan as c_isnan
+    from cython.cimports.libc.math import floor as c_floor
+    from cython.cimports.libc.math import isnan as c_isnan
+    from cython.cimports.libc.math import sqrt as c_sqrt
 else:
-    from math import floor as c_floor, sqrt as c_sqrt, isnan as c_isnan
+    from math import floor as c_floor
+    from math import isnan as c_isnan
+    from math import sqrt as c_sqrt
 
 
 @cython.cfunc
@@ -137,9 +141,9 @@ def _find_closest_in_3d(
 ) -> cython.int:
     """Find up to max_cands closest candidates by distance within a 3D box.
 
-    @cython.ccall rather than @cython.cfunc: track_kernels_tracking re-exports
-    this one, so it has to stay importable from Python while still being
-    C-callable from _find_closest_in_3d_grid's small-frame fallback.
+    @cython.ccall rather than @cython.cfunc: this one has to stay importable
+    from Python (tests import it) while still being C-callable from
+    _find_closest_in_3d_grid's small-frame fallback.
     """
     s: cython.int
     k: cython.int
