@@ -42,36 +42,30 @@ Also dropped two search test classes that only tested the deleted dead copies.
 
 Net so far: roughly -2,200 lines from dedup, about -840 from item 9, plus tests.
 
-## Verification status
+## Verification status (updated 2026-09-21)
 
-- After items 1-6 (before item 9): clean Cython rebuild OK; hot-path tests
-  (`test_track`, `test_track3d`, `test_correspondences`, `test_track4be`) = 49 passed, same as baseline;
-  781 related unit tests passed, one failure (`test_trackcorr_stub_zero_no_prev`) which was
-  fixed (patch target must be the pixel module).
-- **Not yet verified:** the item 9 deletions (sources edited after the last build), and the
-  complete `uv run pytest tests` result (a full run was started in the background and
-  never reported; treat it as unknown, rerun it).
-- Baseline before any change: 49 passed, 3 deselected on the hot-path set.
+Clean Cython rebuild of the final tree: OK.
+- Hot-path tests (`test_track`, `test_track3d`, `test_correspondences`, `test_track4be`): 49 passed = baseline.
+- Full suite `uv run --no-sync pytest tests`: 2017 passed, 86 skipped, 39 deselected (12 min).
+- Pure-Python fallback, kernel coverage files only
+  (`test_track_kernels_*_coverage.py`, 6 files): 266 passed.
+- Pure-Python fallback over the whole `tests/unit/test_*_coverage.py` glob: 1227 passed, 24 failed
+  (38 min; the glob now matches 29 files, not the 16 CLAUDE.md mentions, so it is slow).
+  The failures I inspected (`test_epi_coverage`, `test_correspondences_coverage`, 14 of the 24)
+  are all `Coord2d.__init__() got an unexpected keyword argument 'pnr'` /
+  `Candidate.__init__() ... 'pnr'`: interpreted-mode constructor mismatch in modules this
+  branch does not touch. Not confirmed on `main`; the other 10 were not inspected.
+- Running the suite rewrites tracked `test_data/test_cavity/img/*_targets`; `git checkout -- test_data` before committing.
 
-## Next steps (in order)
+## Remaining
 
-1. `git status` to confirm the tree matches the above. Remove stale `.c` and `cp313` `.pyd` for
-   `track_kernels*` and `rm -rf build`, then
-   `uv run --no-sync python setup.py build_ext --inplace` (about 3 min).
-   Use `--no-sync`: plain `uv run` reinstalls the package every time (about 1.5 min).
-2. Hot-path tests: `uv run --no-sync pytest tests/unit/test_track.py tests/unit/test_track3d.py tests/unit/test_correspondences.py tests/unit/test_track4be.py -q` (expect 49 passed).
-3. Full suite: `uv run --no-sync pytest tests -q` (takes over 10 min; run in background).
-4. Pure-Python fallback check per `CLAUDE.md` (move `*.cp313-win_amd64.pyd` aside, run
-   `tests/unit/test_*_coverage.py -m ''`, restore, rebuild). Expect all pass. The 16 coverage
-   files are the only tests that exercise the interpreted path, and I edited 6 of them.
-5. `uv run ruff check .` (pre-existing E701 in `track_kernels_track3d.py` and F842 in corr are not from this work).
-6. Optional quick perf sanity: `_angle_acc_out` was `ccall inline` inside corr and is now a
-   cross-module C call, so it lost inlining. Compare a tracking run before/after
-   (`tests/perf/`, or time `test_track.py`). If it regressed, keep a private copy in corr.
-7. Commit in two steps (dedup + shim; then item 9), end messages with the
-   Co-Authored-By line from the session attribution. Then a PR.
-8. Tidy leftovers (cosmetic): stray banner comments in `test_track_kernels_batch_coverage.py`
-   (lines about 84-102) and `test_track_kernels_transform_coverage.py` (lines 22, 352).
+1. Optional: confirm the 24 fallback failures also occur on `main` (build `main`, run
+   `tests/unit/test_epi_coverage.py tests/unit/test_correspondences_coverage.py` interpreted).
+2. Optional perf sanity: `_angle_acc_out` was `ccall inline` inside corr and is now a cross-module
+   C call (lost inlining). Time a tracking run before/after; if it regressed, keep a private copy in corr.
+3. Cosmetic: stray banner comments in `test_track_kernels_batch_coverage.py` (about lines 84-102) and
+   `test_track_kernels_transform_coverage.py` (lines 22, 352).
+4. Open a PR.
 
 ## Deliberately skipped
 
