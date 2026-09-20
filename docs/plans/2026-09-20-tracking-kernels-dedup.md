@@ -1,6 +1,6 @@
 # Tracking-kernels dedup (ponytail-audit items 1-9)
 
-Branch: `refactor/dedup-tracking-kernels` (off `main`). **Nothing is committed yet.**
+Branch: `refactor/dedup-tracking-kernels` (off `main`). Committed and pushed (0e1200a0, 1b83cfa6); no PR yet.
 Goal: remove duplicated / orphaned code in `src/openptv2/algorithms/track_kernels_*.py`
 without changing behavior.
 
@@ -12,7 +12,7 @@ identical or differed only in decorators/comments. `track_kernels_pixel.pxd` and
 `track_kernels_position.pxd` already existed as the sharing mechanism, so I
 extended them rather than inventing anything.
 
-## Done (uncommitted, in the working tree)
+## Done
 
 Items 1-5, dedup. Owners:
 - `track_kernels_pixel.py`: `_multimed_r_nlay_1layer` (added `exceptval(check=False)` + pxd entry),
