@@ -17,7 +17,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import numpy as np  # noqa: E402
-
 from verify_same_trajectories import DS, REF  # noqa: E402
 
 WORK = (Path(__file__).resolve().parent.parent / "scratch" / "_wp1_ab").resolve()

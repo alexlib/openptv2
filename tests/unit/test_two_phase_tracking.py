@@ -96,7 +96,6 @@ def test_cost_3d_without_project_fn():
 def test_cascade_merge_additive():
     """Merge extends free ends, never steals, accepts gap links."""
     import importlib.util
-
     from pathlib import Path as _Path
 
     spec = importlib.util.spec_from_file_location(

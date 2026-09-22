@@ -20,7 +20,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import numpy as np  # noqa: E402
-
 from cascade_track import merge_links, write_ptv_is  # noqa: E402
 
 REPO = Path(__file__).resolve().parent.parent
@@ -83,10 +82,15 @@ def run_two_phase_arrays(positions, leaves, project_fn, v_max: float,
 # ------------------------------------------------------------------ synth mode
 
 def mode_synth(reps: int):
-    from synth_crossing import (FIRST, NF, load_optics, make_truth,
-                                setup_work, write_scene)
-    from bench_two_phase import (V_MAX, make_leaves, project_points,
-                                 score_links)
+    from bench_two_phase import V_MAX, make_leaves, project_points, score_links
+    from synth_crossing import (
+        FIRST,
+        NF,
+        load_optics,
+        make_truth,
+        setup_work,
+        write_scene,
+    )
 
     cpar, cals = load_optics()
     scenarios = [

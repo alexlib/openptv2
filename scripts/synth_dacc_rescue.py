@@ -10,17 +10,18 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import synth_crossing as SC  # noqa: E402
 from synth_crossing import (  # noqa: E402
     REPO,
     load_optics,
     make_truth,
-    run_tracker as _run,
     score,
     setup_work,
     write_scene,
 )
-
-import synth_crossing as SC  # noqa: E402
+from synth_crossing import (
+    run_tracker as _run,
+)
 
 
 def run_tracker_dacc(work: Path, lr: int, cs: int, dacc: float):

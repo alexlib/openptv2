@@ -49,7 +49,6 @@ def main():
     ref = args.ref.resolve()
 
     from openptv2.algorithms.track import trackcorr_c_loop
-
     from openptv2.gui.parameter_manager import ParameterManager
     from openptv2.gui.ptv import py_start_proc_c
     from openptv2.tracker import default_naming

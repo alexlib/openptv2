@@ -19,7 +19,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, r"C:\Users\alex\projects\postptv")
 
 import numpy as np  # noqa: E402
-
 from verify_same_trajectories import DS, REF  # noqa: E402
 
 WORK = (Path(__file__).resolve().parent.parent / "scratch" / "_wp1_ab").resolve()
@@ -129,10 +128,12 @@ def score_trajs(trajs, positions, frames, ref_prev, ref_total, tag):
 
 def main():
     import os
+
+    from flowtracks.repair import repair_trajectories
+
     from openptv2.gui.parameter_manager import ParameterManager
     from openptv2.gui.ptv import py_start_proc_c
     from openptv2.tracker import Tracker, default_naming
-    from flowtracks.repair import repair_trajectories
 
     restore()
     os.chdir(WORK)

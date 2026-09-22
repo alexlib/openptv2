@@ -165,7 +165,9 @@ def main():
     print(f"res_orig: {score(ref_tracks, ref_chains, pos)}", flush=True)
 
     from openptv2.plugins.two_phase_tracking import (
-        TwoPhaseTracker, TwoPhaseTrackerConfig)
+        TwoPhaseTracker,
+        TwoPhaseTrackerConfig,
+    )
 
     for share in [False, True]:
         t1 = time.perf_counter()
@@ -182,8 +184,8 @@ def main():
               f"({time.perf_counter() - t1:.1f}s)", flush=True)
 
     sys.path.insert(0, "scripts")
-    from scipy.spatial import cKDTree
     from proto_shared_validate import fast3d_tracks, trackcorr_linkage_tracks
+    from scipy.spatial import cKDTree
 
     # Fast3D pure-Python kernel: 15 frames (50 would take too long in
     # interpreted mode; the compiled path is unaffected).

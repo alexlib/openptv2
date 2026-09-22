@@ -12,7 +12,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import numpy as np  # noqa: E402
-
 from verify_same_trajectories import DS, REF  # noqa: E402
 
 WORK = (Path(__file__).resolve().parent.parent / "scratch" / "_wp1_ab"
@@ -34,10 +33,12 @@ def read_xyz(f: int):
 
 def main():
     import os
+
+    from phase_scheduler import run_adaptive_pp
+
     from openptv2.gui.parameter_manager import ParameterManager
     from openptv2.gui.ptv import py_start_proc_c
     from openptv2.tracker import Tracker, default_naming
-    from phase_scheduler import run_adaptive_pp
 
     for f in range(FIRST, LAST + 1):
         shutil.copyfile(REF / f"rt_is.{f}", WORK / "res" / f"rt_is.{f}")

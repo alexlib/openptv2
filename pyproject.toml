@@ -232,7 +232,7 @@ ignore = ["D1", "E501"]
 # E741: `l`, `I` mirror the matrix names in the C originals under test.
 # E402: imports after a sys.path tweak or an importorskip guard.
 "tests/**" = ["E402", "E741", "F401"]
-"scripts/**" = ["E402"]
+"scripts/**" = ["E402", "E741", "F401", "F841"]
 "skills/**" = ["E402", "F401"]
 "docs/**" = ["E402"]
 "test_data/**" = ["E402"]

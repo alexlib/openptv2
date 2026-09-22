@@ -26,7 +26,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import numpy as np  # noqa: E402
-
 from synth_crossing import (  # noqa: E402
     REPO,
     load_optics,
@@ -67,11 +66,13 @@ def make_leaves(positions, cpar, cals):
 
 def run_productized(work, cpar, cals):
     """The productized plugin class (velocity + gaps + re-projection)."""
+    from synth_crossing import FIRST as _F
+    from synth_crossing import NF as _N
+
     from openptv2.plugins.two_phase_tracking import (
         TwoPhaseTracker,
         TwoPhaseTrackerConfig,
     )
-    from synth_crossing import FIRST as _F, NF as _N
 
     positions = load_rt_positions(work, _N, _F)
     leaves = make_leaves(positions, cpar, cals)

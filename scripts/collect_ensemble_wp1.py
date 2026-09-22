@@ -95,7 +95,9 @@ def run_2p(work: Path) -> Path:
     from openptv2.algorithms.imgcoord import img_coord_batch
     from openptv2.algorithms.parameters import ControlPar
     from openptv2.plugins.two_phase_tracking import (
-        TwoPhaseTracker, TwoPhaseTrackerConfig)
+        TwoPhaseTracker,
+        TwoPhaseTrackerConfig,
+    )
 
     cpar = ControlPar.from_file(str(work / "parameters" / "ptv.par"))
     cals = [Calibration.from_file(

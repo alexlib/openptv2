@@ -194,11 +194,11 @@ def trackcorr_linkage_tracks(frame_particles, base_links, tol=1.0):
     """Prototype trackcorr path: base_links (greedy forward output) -> plain
     linkage arrays -> mark_shared_observations -> assemble_with_shared.
     Returns (tracks_plain, tracks_shared, n_marks)."""
+    from openptv2.algorithms.constants import NEXT_NONE, PREV_NONE
     from openptv2.tracking_shared import (
-        mark_shared_observations,
         assemble_with_shared,
+        mark_shared_observations,
     )
-    from openptv2.algorithms.constants import PREV_NONE, NEXT_NONE
 
     nf = len(frame_particles)
     frames = {}

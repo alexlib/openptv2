@@ -10,9 +10,17 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from synth_crossing import (FIRST, NF, REPO, load_optics, make_truth,
-                            run_tracker, setup_work, write_scene)
 from proto_global_resolve import run_global
+from synth_crossing import (
+    FIRST,
+    NF,
+    REPO,
+    load_optics,
+    make_truth,
+    run_tracker,
+    setup_work,
+    write_scene,
+)
 
 
 def prev_of(work):

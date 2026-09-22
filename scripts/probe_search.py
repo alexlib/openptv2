@@ -49,11 +49,13 @@ def main():
     args = ap.parse_args()
     work = args.work.resolve()
 
+    from openptv2.algorithms.track import (
+        point_to_pixel,
+        searchquader,
+        trackcorr_c_loop,
+    )
     from openptv2.gui.parameter_manager import ParameterManager
     from openptv2.gui.ptv import py_start_proc_c
-    from openptv2.algorithms.track import (
-        searchquader, point_to_pixel, trackcorr_c_loop,
-    )
     from openptv2.tracker import Tracker, default_naming
 
     old = os.getcwd()

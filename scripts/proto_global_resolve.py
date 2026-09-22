@@ -24,7 +24,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import numpy as np  # noqa: E402
 from scipy.optimize import linear_sum_assignment  # noqa: E402
-
 from synth_crossing import (  # noqa: E402
     FIRST,
     NF,
@@ -39,11 +38,14 @@ from synth_crossing import (  # noqa: E402
 
 def run_global(work: Path, cs: int):
     """Forward tracking with Hungarian resolution per step."""
+    from openptv2.algorithms.track import (
+        _sync_soa_to_aos,
+        trackcorr_c_finish,
+        trackcorr_c_loop,
+    )
     from openptv2.gui.parameter_manager import ParameterManager
     from openptv2.gui.ptv import py_start_proc_c
     from openptv2.tracker import Tracker, default_naming
-    from openptv2.algorithms.track import trackcorr_c_loop, _sync_soa_to_aos
-    from openptv2.algorithms.track import trackcorr_c_finish
 
     old = os.getcwd()
     os.chdir(work)

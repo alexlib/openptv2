@@ -7,8 +7,8 @@ the first divergence frame + the competing choice -- the actual decision
 to adjudicate by manual vote.
 """
 
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 DS = Path(r"C:\Users\alex\Downloads\HiDImaging\wp1_10_images")
 REF = DS / "res_ground_truth_backup"

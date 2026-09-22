@@ -20,7 +20,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import numpy as np  # noqa: E402
-
 from verify_same_trajectories import (  # noqa: E402
     DS,
     REF,
@@ -100,6 +99,7 @@ def chain_stats(links, positions, frames, tag: str):
 
 def main():
     import os
+
     from openptv2.gui.parameter_manager import ParameterManager
     from openptv2.gui.ptv import py_start_proc_c
     from openptv2.tracker import Tracker, default_naming
