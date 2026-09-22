@@ -118,17 +118,21 @@ def main():
 
     cfgs = [
         ("base v2.0 proj", dict(v_max=2.0)),
-        ("v1.8 proj", dict(v_max=1.8)),
-        ("v2.2 proj", dict(v_max=2.2)),
-        ("v2.0 3d", dict(v_max=2.0, cost_mode="3d")),
-        ("v2.0 leaf0", dict(v_max=2.0, leaf_weight=0.0)),
-        ("v2.0 leaf0.5", dict(v_max=2.0, leaf_weight=0.5)),
-        ("v2.0 leaf2", dict(v_max=2.0, leaf_weight=2.0)),
-        ("v2.0 shared1", dict(v_max=2.0, allow_shared=True)),
-        ("v2.0 shared0.5", dict(v_max=2.0, allow_shared=True, share_tol=0.5)),
-        ("v2.2 shared1", dict(v_max=2.2, allow_shared=True)),
-        ("v2.2 leaf0", dict(v_max=2.2, leaf_weight=0.0)),
-        ("v2.5 shared1", dict(v_max=2.5, allow_shared=True)),
+        ("confirm0.5", dict(v_max=2.0, confirm_tol=0.5)),
+        ("confirm1.0", dict(v_max=2.0, confirm_tol=1.0)),
+        ("confirm1.5", dict(v_max=2.0, confirm_tol=1.5)),
+        ("confirm2.0", dict(v_max=2.0, confirm_tol=2.0)),
+        ("confirm3.0", dict(v_max=2.0, confirm_tol=3.0)),
+        ("confirm1.0+ends", dict(v_max=2.0, confirm_tol=1.0,
+                                confirm_ends=True)),
+        ("confirm1.5+ends", dict(v_max=2.0, confirm_tol=1.5,
+                                confirm_ends=True)),
+        ("confirm2.0+ends", dict(v_max=2.0, confirm_tol=2.0,
+                                confirm_ends=True)),
+        ("v2.2 confirm1.5+ends", dict(v_max=2.2, confirm_tol=1.5,
+                                     confirm_ends=True)),
+        ("v2.5 confirm2.0+ends", dict(v_max=2.5, confirm_tol=2.0,
+                                     confirm_ends=True)),
     ]
     for tag, kw in cfgs:
         t0 = time.perf_counter()

@@ -120,3 +120,23 @@ def test_cascade_merge_additive():
     assert list(mn[0]) == [0, 1] and list(mp[1]) == [0, 1]
     # base links untouched
     assert mn[0][0] == 0 and mp[1][0] == 0
+
+
+def test_bidirectional_tracking():
+    """Bidirectional tracking resolves crossings and returns clean 1-to-1 chains."""
+    frames = [
+        np.array([[0.0, 0, 0], [2.0, 0, 0]]),
+        np.array([[0.9, 0, 0], [1.1, 0, 0]]),
+        np.array([[2.0, 0, 0], [0.0, 0, 0]]),
+    ]
+    tr = TwoPhaseTracker(cfg(bidirectional=True))
+    got = tr.track_frames(frames, leaves_of(frames), project_fn=ident)
+    assert (1, 0, 2, 0) in got and (1, 1, 2, 1) in got
+
+    # Test return_chains=True with bidirectional=True
+    links, chains = tr.track_frames(
+        frames, leaves_of(frames), project_fn=ident, return_chains=True
+    )
+    assert len(links) == len(got)
+    assert len(chains) == 2
+    assert all(len(c["frames"]) == 3 for c in chains)
