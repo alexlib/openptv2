@@ -1,0 +1,4 @@
+# Shell scripts must keep LF endings even on Windows checkouts — they run
+# inside Linux containers (docker/entry-xpra.sh, etc.), and CRLF breaks
+# bash's `set -euo pipefail` with a stray \r ("invalid option name").
+*.sh text eol=lf
