@@ -561,6 +561,15 @@ def _detect_single_worker(task: tuple) -> dict:
         max_targets,
     )
 
+    if n_found > 1:
+        order = np.argsort(oy[:n_found], kind="stable")
+        ox[:n_found] = ox[:n_found][order]
+        oy[:n_found] = oy[:n_found][order]
+        on[:n_found] = on[:n_found][order]
+        onx[:n_found] = onx[:n_found][order]
+        ony[:n_found] = ony[:n_found][order]
+        osumg[:n_found] = osumg[:n_found][order]
+
     if write_path is not None:
         p = Path(write_path)
         p.parent.mkdir(parents=True, exist_ok=True)

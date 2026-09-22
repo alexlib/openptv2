@@ -185,15 +185,19 @@ def target_recognition(img, tpar, cam, cpar, subrange_x=None, subrange_y=None):
     if n == 0:
         return TargetArray([_empty_target()])
 
+    # Sort detected targets by y (monotonically non-decreasing) to preserve
+    # the pipeline invariant for correspondence and candidate binary search.
+    order = np.argsort(ys[:n], kind="stable")
+
     targets = [
         Target(
             pnr=i,
-            x=float(xs[i]),
-            y=float(ys[i]),
-            n=int(ns[i]),
-            nx=int(nxs[i]),
-            ny=int(nys[i]),
-            sumg=int(sumgs[i]),
+            x=float(xs[order[i]]),
+            y=float(ys[order[i]]),
+            n=int(ns[order[i]]),
+            nx=int(nxs[order[i]]),
+            ny=int(nys[order[i]]),
+            sumg=int(sumgs[order[i]]),
             tnr=CORRES_NONE,
         )
         for i in range(n)

@@ -1117,6 +1117,22 @@ def trackcorr_c_loop(run_info, step, num_threads=None):
     nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
     nt3 = np.array(fb.buf[3].num_targets[:nc], dtype=np.int32)
 
+    # Check if candidate search grid is requested or required. If targets in
+    # frame 2 or 3 are not monotonically non-decreasing in y, auto-promote
+    # to grid search to prevent the legacy binary-search from skipping targets.
+    use_grid = int(getattr(run_info, "use_grid", 0))
+    if not use_grid:
+        for buf_idx in (2, 3):
+            for c in range(nc):
+                _nt = int(fb.buf[buf_idx].num_targets[c])
+                if _nt > 1:
+                    _ty = np.asarray(fb.buf[buf_idx].targ_y[c, :_nt])
+                    if not (np.diff(_ty) >= -1e-7).all():
+                        use_grid = 1
+                        break
+            if use_grid:
+                break
+
     count1, num_added = _trackcorr_loop_fast(
         orig_parts,
         fb.buf[0].path_x,
@@ -1202,7 +1218,7 @@ def trackcorr_c_loop(run_info, step, num_threads=None):
         int(getattr(run_info, "cold_start_neighbour", 1)),
         float(getattr(run_info, "app_weight", 0.0)),
         gate_scale,
-        int(getattr(run_info, "use_grid", 0)),
+        use_grid,
     )
 
     fb.buf[2].num_parts = int(np2[0])
