@@ -73,7 +73,18 @@ class Tracker:
     """
 
     def __init__(
-        self, cpar, vpar, tpar, spar, cals, naming=None, flatten_tol=0.0001, store=None
+        self,
+        cpar,
+        vpar,
+        tpar,
+        spar,
+        cals,
+        naming=None,
+        flatten_tol=0.0001,
+        store=None,
+        loser_retry=1,
+        cold_start_neighbour=1,
+        app_weight=0.0,
     ):
         """
         Initialize Tracker.
@@ -97,6 +108,11 @@ class Tracker:
         self._cals = cals
         self._flatten_tol = flatten_tol
         self._store = store
+        # 1 = openptv2 default, 0 = original 3dptv track.c link resolution.
+        self._loser_retry = int(loser_retry)
+        self._cold_start_neighbour = int(cold_start_neighbour)
+        # Appearance cost weight, threaded to TrackingRun (0.0 = track.c).
+        self._app_weight = float(app_weight)
 
         # File naming
         if naming is None:
@@ -139,6 +155,9 @@ class Tracker:
             cal=self._cals_algo,
             flatten_tol=self._flatten_tol,
             store=self._store,
+            loser_retry=self._loser_retry,
+            cold_start_neighbour=self._cold_start_neighbour,
+            app_weight=self._app_weight,
         )
 
         # Initialize forward tracking

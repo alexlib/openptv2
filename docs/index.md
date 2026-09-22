@@ -13,6 +13,8 @@ Welcome to the openptv2 documentation.
 ### User Documentation
 
 - [Tracking Pipeline & Results Guide](tracking_guide.md) - Pipeline workflow, parameter guide, multi-pass tracking, and ptv_is.# output format
+- [Particle Trackers](trackers.md) - Which tracker to use and why: basics, all eight engines, caveats, tips, upstream credits
+- [Two-Phase Tracking](two-phase-tracking.md) - Two-Phase usage and parameters in depth
 - [Lid-Driven Cavity Flow Tutorial](tutorials/cavity_flow_tutorial.md) - End-to-end 3D-PTV case study: Autocalibration, Tracer Shaking, Warmup, and 3D Trajectories
 - [Aortic Pulsatile Flow Tutorial](aorta_tutorial.md) - Cloud-native 3D-PTV on complex aortic flow
 - [Auto-Calibration with `openptv warmup`](tutorials/warmup_tutorial.md) - Standalone parameter/engine auto-tuning before tracking
