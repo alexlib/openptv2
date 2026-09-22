@@ -23,7 +23,8 @@ same way.
 |------|---------|
 | `docker/Dockerfile.xpra` | Same GUI install as `docker/Dockerfile`, plus Xvfb + Xpra |
 | `docker/entry-xpra.sh` | Starts Xpra with `openptv2-gui` as its child process |
-| `docker/run-xpra.sh` | Local helper: build once, run, open a browser tab |
+| `docker/run-xpra.sh` | Local helper (Linux/macOS/WSL2/Git Bash): build once, run, open a browser tab |
+| `docker/run-xpra.ps1` | Same, for native Windows PowerShell |
 
 ## Test it locally
 
@@ -66,6 +67,43 @@ by `run-xpra.sh`, so it's not reachable off the machine) but logs a warning.
 **It refuses to start at all** if bound to a non-localhost address with
 neither `OPENPTV2_XPRA_PASSWORD` nor `OPENPTV2_XPRA_ALLOW_INSECURE=1` set —
 see "Security" below for why.
+
+## Cross-platform local filesystem access
+
+The image itself is a plain Linux container — no per-OS build variants —
+and reaching host data always works the same underlying way, a Docker bind
+mount (`-v host_path:/data`), which `run-xpra.sh` / `run-xpra.ps1` set up
+for you. What differs per host OS is how Docker gets from that container
+mount back to real files on your disk:
+
+- **Linux**: native, no translation layer — the bind mount is a direct
+  kernel-level mount, `-v /home/you/experiments:/data` just works. One
+  wrinkle: the container runs as a non-root user baked in at UID 1000, so
+  files it creates under `/data` show up on the host owned by UID 1000. If
+  that's not your host user's UID, you can still read/write from inside
+  the container fine, and read the files from the host, but modifying them
+  directly as your host user may need `sudo chown -R $(id -u):$(id -g)
+  /path/to/experiments` afterward.
+- **macOS (Docker Desktop)**: the bind mount goes through Docker Desktop's
+  VM, and it only shares directories you've explicitly allowed. If
+  `/data` shows up empty despite mounting a real folder, check
+  **Docker Desktop → Settings → Resources → File Sharing** and add the
+  parent directory (or your whole home folder) to the allowed list.
+- **Windows (Docker Desktop)**: two ways to run this, both fine:
+  - From **WSL2 or Git Bash**: use `run-xpra.sh` as-is with Linux-style
+    paths (`/mnt/c/Users/you/experiments` for a Windows `C:\Users\you\
+    experiments` folder under WSL2, or the WSL-native path if your data
+    already lives inside the WSL filesystem).
+  - From **native PowerShell**: use `run-xpra.ps1 -DataDir
+    C:\Users\you\experiments` — plain Windows paths, Docker Desktop
+    translates them. Same File Sharing setting as macOS applies if the
+    drive isn't already shared.
+
+**Mount a parent folder, not one experiment at a time**, if you want to
+switch between experiments from `pyptv_gui`'s own file picker without
+restarting the container — e.g. mount your whole `~/ptv-experiments`
+directory rather than `~/ptv-experiments/run3`. The container can only see
+what was mounted at startup; a new bind mount needs a container restart.
 
 ## Deploying on GCP
 
@@ -163,6 +201,18 @@ untrusted," not a default to leave on.
 - End-to-end click-test (build → run → open in a real browser → run
   detection → confirm Chaco plots render) hasn't been done yet — do this
   before depending on it for real work.
+- **Fixed, but only reasoned through, not re-verified by an actual build**:
+  the first version of `Dockerfile.xpra` used a hand-written, outdated apt
+  source for xpra.org's repo (`gpg --dearmor` + a manually typed `deb
+  [signed-by=...] https://xpra.org/ bookworm main` line) and failed to
+  build (`apt-get` exit 100) on a real attempt. Replaced with xpra.org's
+  current documented method — the pre-armored key at `xpra.org/xpra.asc`
+  and the actual per-codename `.sources` file fetched directly from
+  `Xpra-org/xpra`'s repo — and pinned the base image to
+  `python:3.12-slim-bookworm` explicitly so it can't drift from the
+  codename that `.sources` file is for. This should build now; it hasn't
+  been re-attempted on real hardware yet, so treat it as "should work,"
+  not "confirmed," until the next build attempt.
 - Multi-user session lifecycle (spin-up per user, idle teardown) isn't
   built. Both GCP options above are single-session; running this for a lab
   or a wider community needs an orchestration layer on top — CyVerse VICE's

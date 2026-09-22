@@ -27,12 +27,25 @@
 # likely fix is an explicit software-GL driver (`LIBGL_ALWAYS_SOFTWARE=1`)
 # or adjusting Xvfb's `-screen` depth/extensions.
 
-FROM python:3.12-slim
+# Pinned to -bookworm explicitly (not the ambiguous "python:3.12-slim" tag)
+# because the xpra apt repo below is fetched per-codename — pinning removes
+# any risk of the base image's default Debian release drifting out from
+# under that file.
+FROM python:3.12-slim-bookworm
 
 # --- system deps -------------------------------------------------------
 # Same X11/Qt deps as docker/Dockerfile (PySide6 needs these to open a
 # window at all, real display or virtual), plus xpra + Xvfb + xterm to
 # serve that window to a browser instead of a local X server.
+#
+# xpra install follows xpra.org's own current instructions
+# (github.com/Xpra-org/xpra/wiki/Download) rather than a hand-written apt
+# source: the key is fetched pre-armored (no `gpg --dearmor` step) and the
+# repo definition is the actual per-codename .sources file xpra.org
+# publishes, not retyped by hand — a hand-written `deb [signed-by=...]
+# https://xpra.org/ bookworm main` one-liner is the OLD-style method and is
+# what broke the first version of this file (apt-get exit 100: the key/repo
+# layout xpra.org serves today doesn't match that format).
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libgl1 libegl1 libglib2.0-0 libdbus-1-3 libfontconfig1 \
@@ -40,10 +53,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
     libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-xinerama0 \
     libxcb-util1 libxcb-xkb1 libxrender1 libxi6 libsm6 \
-    wget gnupg2 xvfb xterm \
-    && wget -qO - https://xpra.org/gpg.asc | gpg --dearmor -o /usr/share/keyrings/xpra.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/xpra.gpg] https://xpra.org/ bookworm main" \
-       > /etc/apt/sources.list.d/xpra.list \
+    wget ca-certificates xvfb xterm \
+    && wget -O /usr/share/keyrings/xpra.asc https://xpra.org/xpra.asc \
+    && wget -O /etc/apt/sources.list.d/xpra.sources \
+       https://raw.githubusercontent.com/Xpra-org/xpra/master/packaging/repos/bookworm/xpra.sources \
     && apt-get update && apt-get install -y --no-install-recommends xpra \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
