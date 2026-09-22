@@ -285,8 +285,13 @@ def track3d_loop_fast(
     )
     share_cap = shared_i.shape[0] if use_share else 0
 
-    _claim_cost_2 = np.full(np2 if np2 > 0 else 1, np.inf, dtype=np.float64)
-    claim_cost_2: cython.double[:] = _claim_cost_2
+    claim_cost_2: cython.double[:]
+    if use_share:
+        # Allocated only when sharing is enabled: the disabled path keeps
+        # its original allocation profile exactly (merge hygiene -- the
+        # prototype allocated this unconditionally on every call).
+        _claim_cost_2 = np.full(np2 if np2 > 0 else 1, np.inf, dtype=np.float64)
+        claim_cost_2 = _claim_cost_2
 
     _cand_inds = np.empty(max_cands, dtype=np.int32)
     _cand_dists = np.empty(max_cands, dtype=np.float64)
@@ -400,7 +405,8 @@ def track3d_loop_fast(
             if path_next_1[i] < 0 and path_prev_2[k] < 0:
                 path_next_1[i] = k
                 path_prev_2[k] = i
-                claim_cost_2[k] = edge_cost[e]
+                if use_share:
+                    claim_cost_2[k] = edge_cost[e]
                 count1 += 1
             elif (
                 use_share
