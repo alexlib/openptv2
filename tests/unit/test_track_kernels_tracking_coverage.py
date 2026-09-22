@@ -1,18 +1,8 @@
-"""Pure-Python coverage tests for track_kernels_tracking.py.
+"""Pure-Python coverage tests for the tracking kernels (corr/pixel/position/track3d).
 
 Skip when the compiled .so is active (coverage measures the .py source).
 
-Verification command (from repo root):
-    cp src/openptv2/algorithms/track_kernels_tracking.py \
-        /tmp/ppsrc/openptv2/algorithms/track_kernels_tracking.py
-    COVERAGE_FILE=/tmp/.cov_track_kernels_tracking \
-    uv run pytest tests/unit/test_track_kernels_tracking_coverage.py \
-      -o pythonpath=/tmp/ppsrc \
-      -p no:cacheprovider \
-      --cov=/tmp/ppsrc/openptv2 \
-      --cov-config=/tmp/covrc \
-      --cov-report=term-missing \
-      -q 2>&1 | grep -E '(algorithms/track_kernels_tracking\\.|TOTAL|passed|failed|error)'
+Run the interpreted-source variant per openptv2/CLAUDE.md (pure-Python fallback tests).
 """
 
 import numpy as np
@@ -34,33 +24,43 @@ _needs_pure_python_private_cfunc = pytest.mark.skipif(
 )
 
 import openptv2.algorithms.track_kernels_corr as _corr_mod
-import openptv2.algorithms.track_kernels_tracking as _mod
-from openptv2.algorithms.track_kernels_tracking import (
-    ADD_PART_K,
-    COORD_UNUSED_K,
-    CORRES_NONE_K,
-    MAX_CANDS_K,
-    NEXT_NONE_K,
-    POSI_K,
-    PREV_NONE_K,
-    PT_UNUSED,
-    TR_UNUSED_K,
-    _angle_acc_out,
-    _candsearch_in_pix_rest_nogil,
-    _dist_to_flat_out,
-    _find_closest_in_3d,
-    _multimed_r_nlay_1layer,
-    _pixel_to_metric_out,
-    _point_position_out,
-    _point_to_pixel_out,
-    _ray_tracing_out,
-    _sorted_candidates_fast_out_nogil,
-    assess_new_position_fast_nogil,
-    candsearch_in_pix_fast_nogil,
-    track3d_loop_fast,
+from openptv2.algorithms.track_kernels_corr import (
     trackback_loop_fast,
     trackcorr_loop_fast,
 )
+from openptv2.algorithms.track_kernels_pixel import (
+    _candsearch_in_pix_rest_nogil,
+    _dist_to_flat_out,
+    _multimed_r_nlay_1layer,
+    _pixel_to_metric_out,
+    _point_to_pixel_out,
+    _sorted_candidates_fast_out_nogil,
+    candsearch_in_pix_fast_nogil,
+)
+from openptv2.algorithms.track_kernels_position import (
+    _angle_acc_out,
+    _point_position_out,
+    _ray_tracing_out,
+    assess_new_position_fast_nogil,
+)
+from openptv2.algorithms.track_kernels_track3d import (
+    _find_closest_in_3d,
+    track3d_loop_fast,
+)
+
+# These mirror the cython.declare() C-level constants in track_kernels_corr,
+# which are not importable from Python when compiled.
+PT_UNUSED = -999
+POSI_K = 80
+MAX_CANDS_K = 32
+TR_UNUSED_K = -1
+CORRES_NONE_K = -1
+PREV_NONE_K = -1
+NEXT_NONE_K = -2
+COORD_UNUSED_K = -1e10
+ADD_PART_K = 3.0
+
+import openptv2.algorithms.track_kernels_pixel as _mod  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -148,6 +148,7 @@ def _frame(n, nc, n_targ, max_cands=4, x_offset=0.0):
         targ_x=np.zeros((nc, t_), dtype=np.float64, order="C"),
         targ_y=np.zeros((nc, t_), dtype=np.float64, order="C"),
         targ_tnr=np.full((nc, t_), -1, dtype=np.int32, order="C"),
+        targ_sumg=np.zeros((nc, t_), dtype=np.float64, order="C"),
         num_targets=np.zeros(nc, dtype=np.int32),
         num_parts=np.array([n], dtype=np.int32),
     )
@@ -184,6 +185,7 @@ def _call_trackcorr(n0, n1, n2, n3, nc=1, n_targ=0, stub_zero=False):
             f1["targ_x"],
             f1["targ_y"],
             f1["targ_tnr"],
+            f1["targ_sumg"],
             # frame 2
             f2["path_x"],
             f2["path_prev"],
@@ -198,6 +200,8 @@ def _call_trackcorr(n0, n1, n2, n3, nc=1, n_targ=0, stub_zero=False):
             f2["targ_x"],
             f2["targ_y"],
             f2["targ_tnr"],
+            f2["targ_sumg"],
+            np.full(f2["path_x"].shape[0], -1.0, dtype=np.float64),
             f2["num_targets"],
             f2["num_parts"],
             # frame 3
@@ -1373,6 +1377,7 @@ def test_trackcorr_stub_zero_with_prev():
             f1["targ_x"],
             f1["targ_y"],
             f1["targ_tnr"],
+            f1["targ_sumg"],
             f2["path_x"],
             f2["path_prev"],
             f2["path_next"],
@@ -1386,6 +1391,8 @@ def test_trackcorr_stub_zero_with_prev():
             f2["targ_x"],
             f2["targ_y"],
             f2["targ_tnr"],
+            f2["targ_sumg"],
+            np.full(f2["path_x"].shape[0], -1.0, dtype=np.float64),
             f2["num_targets"],
             f2["num_parts"],
             f3["path_x"],
@@ -1474,6 +1481,7 @@ def test_trackcorr_stub_zero_corres_p_path():
             f1["targ_x"],
             f1["targ_y"],
             f1["targ_tnr"],
+            f1["targ_sumg"],
             f2["path_x"],
             f2["path_prev"],
             f2["path_next"],
@@ -1487,6 +1495,8 @@ def test_trackcorr_stub_zero_corres_p_path():
             f2["targ_x"],
             f2["targ_y"],
             f2["targ_tnr"],
+            f2["targ_sumg"],
+            np.full(f2["path_x"].shape[0], -1.0, dtype=np.float64),
             f2["num_targets"],
             f2["num_parts"],
             f3["path_x"],
@@ -1843,6 +1853,7 @@ def test_trackcorr_stub_nonzero_enters_for_mm_loop():
             f1["targ_x"],
             f1["targ_y"],
             f1["targ_tnr"],
+            f1["targ_sumg"],
             f2["path_x"],
             f2["path_prev"],
             f2["path_next"],
@@ -1856,6 +1867,8 @@ def test_trackcorr_stub_nonzero_enters_for_mm_loop():
             f2["targ_x"],
             f2["targ_y"],
             f2["targ_tnr"],
+            f2["targ_sumg"],
+            np.full(f2["path_x"].shape[0], -1.0, dtype=np.float64),
             f2["num_targets"],
             f2["num_parts"],
             f3["path_x"],

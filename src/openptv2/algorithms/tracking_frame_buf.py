@@ -697,6 +697,7 @@ class Frame:
     targ_x = cython.declare(object, visibility="public")
     targ_y = cython.declare(object, visibility="public")
     targ_tnr = cython.declare(object, visibility="public")
+    targ_sumg = cython.declare(object, visibility="public")
     path_x = cython.declare(object, visibility="public")
     path_prev = cython.declare(object, visibility="public")
     path_next = cython.declare(object, visibility="public")
@@ -722,6 +723,7 @@ class Frame:
         self.targ_x = np.full((num_cams, max_targets), COORD_UNUSED, dtype=np.float64)
         self.targ_y = np.full((num_cams, max_targets), COORD_UNUSED, dtype=np.float64)
         self.targ_tnr = np.full((num_cams, max_targets), PT_UNUSED, dtype=np.int32)
+        self.targ_sumg = np.zeros((num_cams, max_targets), dtype=np.float64)
 
         # SoA for Pathinfo
         self.path_x = np.zeros((max_targets, 3), dtype=np.float64)
@@ -949,11 +951,13 @@ class Frame:
             tx = self.targ_x[cam]
             ty = self.targ_y[cam]
             ttnr = self.targ_tnr[cam]
+            tsumg = self.targ_sumg[cam]
             for j, t in enumerate(targets):
                 self.targets[cam][j] = t
                 tx[j] = t.x
                 ty[j] = t.y
                 ttnr[j] = t.tnr
+                tsumg[j] = t.sumg
 
         return True
 

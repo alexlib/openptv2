@@ -5,34 +5,32 @@ import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        acos as c_acos,
-    )
-    from cython.cimports.libc.math import (
         sqrt as c_sqrt,
     )
 else:
-    from math import (
-        acos as c_acos,
-    )
     from math import (
         sqrt as c_sqrt,
     )
 
 if cython.compiled:
     from cython.cimports.openptv2.algorithms.track_kernels_pixel import (
+        _grid_build_nogil,
         _point_to_pixel_out,
         _sorted_candidates_fast_out_nogil,
     )
     from cython.cimports.openptv2.algorithms.track_kernels_position import (
+        _angle_acc_out,
         _point_position_out,
         assess_new_position_fast_nogil,
     )
 else:
     from .track_kernels_pixel import (
+        _grid_build_nogil,
         _point_to_pixel_out,
         _sorted_candidates_fast_out_nogil,
     )
     from .track_kernels_position import (
+        _angle_acc_out,
         _point_position_out,
         assess_new_position_fast_nogil,
     )
@@ -59,73 +57,6 @@ PREV_NONE_K = -1
 NEXT_NONE_K = -2
 COORD_UNUSED_K = -1e10
 ADD_PART_K = 3.0
-
-
-@cython.ccall
-@cython.inline
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
-@cython.profile(False)
-@cython.nogil
-def _angle_acc_out(
-    start_x: cython.double,
-    start_y: cython.double,
-    start_z: cython.double,
-    pred_x: cython.double,
-    pred_y: cython.double,
-    pred_z: cython.double,
-    cand_x: cython.double,
-    cand_y: cython.double,
-    cand_z: cython.double,
-    out: cython.double[:],
-) -> cython.int:
-    """Write angle and acc to out[0], out[1] — no tuple creation."""
-    v0x: cython.double
-    v0y: cython.double
-    v0z: cython.double
-    v1x: cython.double
-    v1y: cython.double
-    v1z: cython.double
-    angle: cython.double
-    norm0: cython.double
-    norm1: cython.double
-    dot: cython.double
-    dx: cython.double
-    dy: cython.double
-    dz: cython.double
-    acc: cython.double
-    v0x = pred_x - start_x
-    v0y = pred_y - start_y
-    v0z = pred_z - start_z
-    v1x = cand_x - start_x
-    v1y = cand_y - start_y
-    v1z = cand_z - start_z
-
-    if v0x == -v1x and v0y == -v1y and v0z == -v1z:
-        angle = 200.0
-    elif v0x == v1x and v0y == v1y and v0z == v1z:
-        angle = 0.0
-    else:
-        norm0 = c_sqrt(v0x * v0x + v0y * v0y + v0z * v0z)
-        norm1 = c_sqrt(v1x * v1x + v1y * v1y + v1z * v1z)
-        if norm0 == 0.0 or norm1 == 0.0:
-            angle = 0.0
-        else:
-            dot = (v0x * v1x + v0y * v1y + v0z * v1z) / (norm0 * norm1)
-            if dot > 1.0:
-                dot = 1.0
-            elif dot < -1.0:
-                dot = -1.0
-            angle = c_acos(dot) * 200.0 / 3.141592653589793
-
-    dx = v1x - v0x
-    dy = v1y - v0y
-    dz = v1z - v0z
-    acc = c_sqrt(dx * dx + dy * dy + dz * dz)
-    out[0] = angle
-    out[1] = acc
-    return 0
 
 
 @cython.cfunc
@@ -194,9 +125,12 @@ def _trackcorr_particle_fast(
     corres_p_1: cython.int[:, ::1],
     targ_x_1: cython.double[:, ::1],
     targ_y_1: cython.double[:, ::1],
+    targ_sumg_1: cython.double[:, ::1],
     targ_x_2: cython.double[:, ::1],
     targ_y_2: cython.double[:, ::1],
     targ_tnr_2: cython.int[:, ::1],
+    targ_sumg_2: cython.double[:, ::1],
+    cand_app_2: cython.double[:],
     num_targets_2: cython.int[:],
     dvxmin: cython.double,
     dvxmax: cython.double,
@@ -227,6 +161,17 @@ def _trackcorr_particle_fast(
     Zmin_lay_0: cython.double,
     Zmax_lay_1: cython.double,
     add_flag: cython.int,
+    cold_start_neighbour: cython.int,
+    app_weight: cython.double,
+    gate_scale: cython.double[:],
+    use_grid: cython.int,
+    grid_head_2: cython.int[:, :],
+    grid_next_2: cython.int[:, :],
+    grid_head_3: cython.int[:, :],
+    grid_next_3: cython.int[:, :],
+    grid_nx: cython.int,
+    grid_ny: cython.int,
+    grid_cell: cython.double,
 ) -> cython.int:
     prev_h: cython.int
     j: cython.int
@@ -267,6 +212,12 @@ def _trackcorr_particle_fast(
     nb_vz: cython.double
     nb_n: cython.int
     nb_inv: cython.double
+    app_h: cython.double
+    app_c: cython.double
+    app_n: cython.int
+    app_term: cython.double
+    ci2: cython.int
+    tidx: cython.int
 
     path_inlist_1[h] = 0
 
@@ -274,7 +225,48 @@ def _trackcorr_particle_fast(
     X[1, 1] = path_x_1[h, 1]
     X[1, 2] = path_x_1[h, 2]
 
+    # Appearance signature of h: mean grey sum over its correspondent
+    # targets in frame 1. app_h < 0 marks "no correspondent targets".
+    app_h = -1.0
+    if app_weight > 0.0:
+        app_h = 0.0
+        app_n = 0
+        for j in range(num_cams):
+            tidx = corres_p_1[h, j]
+            if tidx != CORRES_NONE_K:
+                app_h += targ_sumg_1[j, tidx]
+                app_n += 1
+        if app_n > 0:
+            app_h /= app_n
+        else:
+            app_h = -1.0
+
     prev_h = path_prev_1[h]
+
+    # Per-particle gate freedom: scale this particle's search box and
+    # base-box acc gate by its own factor (1.0 = configured behaviour
+    # exactly; IEEE *1.0 is bit-identical). The rr COST denominators stay
+    # UNSCALED so bids remain comparable across particles in a contest.
+    # Dense-data safety is scheduler-side (crowd gate in phase_scheduler:
+    # freedom is granted only where no crowd can manufacture smooth lies),
+    # not by blunting the gate -- the scaled shell keeps its tight
+    # confirmation (acc < dacc*0.5, angle < dangle*0.5).
+    gs_p: cython.double = gate_scale[h]
+    gd_p: cython.double = dacc * gs_p
+    bvxmin: cython.double = dvxmin
+    bvxmax: cython.double = dvxmax
+    bvymin: cython.double = dvymin
+    bvymax: cython.double = dvymax
+    bvzmin: cython.double = dvzmin
+    bvzmax: cython.double = dvzmax
+    in_base: cython.int = 0
+    gate_ok: cython.int = 0
+    dvxmin = dvxmin * gs_p
+    dvxmax = dvxmax * gs_p
+    dvymin = dvymin * gs_p
+    dvymax = dvymax * gs_p
+    dvzmin = dvzmin * gs_p
+    dvzmax = dvzmax * gs_p
 
     if prev_h >= 0:
         X[0, 0] = path_x_0[prev_h, 0]
@@ -359,6 +351,9 @@ def _trackcorr_particle_fast(
                 nb_vz += path_x_1[nb_j, 2] - path_x_0[prev_h, 2]
                 nb_n += 1
         prev_h = path_prev_1[h]  # restore -- overwritten by the scan above
+
+        if cold_start_neighbour == 0:
+            nb_n = 0  # track.c parity: X2 = X1, no neighbour-velocity prior
 
         if nb_n > 0:
             nb_inv = 1.0 / nb_n
@@ -462,6 +457,12 @@ def _trackcorr_particle_fast(
         _wc_buf1,
         pt_buf,
         _pp_mv,
+        use_grid,
+        grid_head_2,
+        grid_next_2,
+        grid_nx,
+        grid_ny,
+        grid_cell,
     )
 
     if w_nc == 0:
@@ -472,6 +473,12 @@ def _trackcorr_particle_fast(
         X[3, 0] = path_x_2[ftnr_mm, 0]
         X[3, 1] = path_x_2[ftnr_mm, 1]
         X[3, 2] = path_x_2[ftnr_mm, 2]
+
+        # Appearance signature of the frame-2 candidate, precomputed per
+        # step in the loop (mean grey sum over its claimed targets).
+        # app_c < 0 marks "no correspondent targets".
+        app_c = cand_app_2[ftnr_mm] if app_weight > 0.0 and app_h >= 0.0 \
+            else -1.0
 
         if prev_h >= 0:
             for j in range(3):
@@ -563,6 +570,12 @@ def _trackcorr_particle_fast(
             _wc_buf2,
             pt_buf,
             _pp_mv,
+            use_grid,
+            grid_head_3,
+            grid_next_3,
+            grid_nx,
+            grid_ny,
+            grid_cell,
         )
 
         if wn_nc > 0:
@@ -576,7 +589,18 @@ def _trackcorr_particle_fast(
                 dp1 = X[4, 1] - X[3, 1]
                 dp2 = X[4, 2] - X[3, 2]
 
+                # Two-tier admission: inside the configured box the normal
+                # gate applies; in the extended shell (per-particle freedom)
+                # only tightly-confirmed motion passes -- freedom to be
+                # FOUND, discipline to be CHOSEN.
+                in_base = 0
                 if (
+                    bvxmin < dp0 < bvxmax
+                    and bvymin < dp1 < bvymax
+                    and bvzmin < dp2 < bvzmax
+                ):
+                    in_base = 1
+                if in_base == 1 or (
                     dvxmin < dp0 < dvxmax
                     and dvymin < dp1 < dvymax
                     and dvzmin < dp2 < dvzmax
@@ -618,7 +642,13 @@ def _trackcorr_particle_fast(
                     angle = (angle0 + angle1) * 0.5
                     quali = _freq_buf2[kk] + _freq_buf1[mm]
 
-                    if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
+                    gate_ok = 0
+                    if in_base == 1:
+                        if (acc < gd_p and angle < dangle) or acc < gd_p * 0.1:
+                            gate_ok = 1
+                    elif (acc < dacc * 0.5 and angle < dangle * 0.5):
+                        gate_ok = 1
+                    if gate_ok == 1:
                         d13 = c_sqrt(
                             (X[1, 0] - X[3, 0]) ** 2
                             + (X[1, 1] - X[3, 1]) ** 2
@@ -631,6 +661,11 @@ def _trackcorr_particle_fast(
                         )
                         dl = (d13 + d43) * 0.5
                         rr = (dl / lmax + acc / dacc + angle / dangle) / quali
+                        if app_weight > 0.0 and app_h >= 0.0 and app_c >= 0.0:
+                            app_term = app_c - app_h
+                            if app_term < 0.0:
+                                app_term = -app_term
+                            rr += app_weight * app_term / (app_h + app_c + 1.0)
 
                         inlist = path_inlist_1[h]
                         if inlist < POSI_K:
@@ -691,9 +726,9 @@ def _trackcorr_particle_fast(
 
             if (
                 in_volume == 1
-                and dvxmin < dp0 < dvxmax
-                and dvymin < dp1 < dvymax
-                and dvzmin < dp2 < dvzmax
+                and bvxmin < dp0 < bvxmax
+                and bvymin < dp1 < bvymax
+                and bvzmin < dp2 < bvzmax
             ):
                 _angle_acc_out(
                     X[3, 0],
@@ -725,6 +760,11 @@ def _trackcorr_particle_fast(
                     rr = (dl / lmax + acc / dacc + angle / dangle) / (
                         quali + _freq_buf1[mm]
                     )
+                    if app_weight > 0.0 and app_h >= 0.0 and app_c >= 0.0:
+                        app_term = app_c - app_h
+                        if app_term < 0.0:
+                            app_term = -app_term
+                        rr += app_weight * app_term / (app_h + app_c + 1.0)
 
                     inlist = path_inlist_1[h]
                     if inlist < POSI_K:
@@ -763,7 +803,14 @@ def _trackcorr_particle_fast(
             dp1 = X[3, 1] - X[1, 1]
             dp2 = X[3, 2] - X[1, 2]
 
+            in_base = 0
             if (
+                bvxmin < dp0 < bvxmax
+                and bvymin < dp1 < bvymax
+                and bvzmin < dp2 < bvzmax
+            ):
+                in_base = 1
+            if in_base == 1 or (
                 dvxmin < dp0 < dvxmax
                 and dvymin < dp1 < dvymax
                 and dvzmin < dp2 < dvzmax
@@ -783,7 +830,13 @@ def _trackcorr_particle_fast(
                 angle = _pp_mv[0]
                 acc = _pp_mv[1]
 
-                if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
+                gate_ok = 0
+                if in_base == 1:
+                    if (acc < gd_p and angle < dangle) or acc < gd_p * 0.1:
+                        gate_ok = 1
+                elif (acc < dacc * 0.5 and angle < dangle * 0.5):
+                    gate_ok = 1
+                if gate_ok == 1:
                     quali_f = _freq_buf1[mm]
                     d13 = c_sqrt(
                         (X[1, 0] - X[3, 0]) ** 2
@@ -797,6 +850,11 @@ def _trackcorr_particle_fast(
                     )
                     dl = (d13 + d01) * 0.5
                     rr = (dl / lmax + acc / dacc + angle / dangle) / quali_f
+                    if app_weight > 0.0 and app_h >= 0.0 and app_c >= 0.0:
+                        app_term = app_c - app_h
+                        if app_term < 0.0:
+                            app_term = -app_term
+                        rr += app_weight * app_term / (app_h + app_c + 1.0)
 
                     inlist = path_inlist_1[h]
                     if inlist < POSI_K:
@@ -861,9 +919,9 @@ def _trackcorr_particle_fast(
 
                 if (
                     in_volume == 1
-                    and dvxmin < dp0 < dvxmax
-                    and dvymin < dp1 < dvymax
-                    and dvzmin < dp2 < dvzmax
+                    and bvxmin < dp0 < bvxmax
+                    and bvymin < dp1 < bvymax
+                    and bvzmin < dp2 < bvzmax
                 ):
                     _angle_acc_out(
                         X[1, 0],
@@ -893,6 +951,20 @@ def _trackcorr_particle_fast(
                         )
                         dl = (d13 + d01) * 0.5
                         rr = (dl / lmax + acc / dacc + angle / dangle) / quali2
+                        if app_weight > 0.0 and app_h >= 0.0:
+                            app_c = 0.0
+                            app_n = 0
+                            for ci2 in range(num_cams):
+                                tidx = _assess_inds2[ci2]
+                                if tidx != PT_UNUSED:
+                                    app_c += targ_sumg_2[ci2, tidx]
+                                    app_n += 1
+                            if app_n > 0:
+                                app_c /= app_n
+                                app_term = app_c - app_h
+                                if app_term < 0.0:
+                                    app_term = -app_term
+                                rr += app_weight * app_term / (app_h + app_c + 1.0)
 
                         claimed_ok = 1
                         for ci in range(num_cams):
@@ -938,6 +1010,7 @@ def trackcorr_loop_fast(
     targ_x_1: cython.double[:, ::1],
     targ_y_1: cython.double[:, ::1],
     targ_tnr_1: cython.int[:, ::1],
+    targ_sumg_1: cython.double[:, ::1],
     # Frame 2 (next — read/write)
     path_x_2: cython.double[:, ::1],
     path_prev_2: cython.int[:],
@@ -952,6 +1025,8 @@ def trackcorr_loop_fast(
     targ_x_2: cython.double[:, ::1],
     targ_y_2: cython.double[:, ::1],
     targ_tnr_2: cython.int[:, ::1],
+    targ_sumg_2: cython.double[:, ::1],
+    cand_app_2: cython.double[:],
     num_targets_2: cython.int[:],
     num_parts_2: cython.int[:],
     # Frame 3 (next-next — read/write)
@@ -1008,6 +1083,11 @@ def trackcorr_loop_fast(
     pix_y: cython.double,
     flatten_tol: cython.double,
     num_threads: cython.int = 1,
+    loser_retry: cython.int = 1,
+    cold_start_neighbour: cython.int = 1,
+    app_weight: cython.double = 0.0,
+    gate_scale: cython.double[:] = None,
+    use_grid: cython.int = 0,
 ):
     """Full per-particle tracking loop + link resolution — single compiled entry.
 
@@ -1035,6 +1115,16 @@ def trackcorr_loop_fast(
     ti: cython.int
     cand: cython.int
     flag: cython.bint
+    grid_head_2: cython.int[:, :]
+    grid_next_2: cython.int[:, :]
+    grid_head_3: cython.int[:, :]
+    grid_next_3: cython.int[:, :]
+    grid_nx: cython.int = 0
+    grid_ny: cython.int = 0
+    grid_cell: cython.double = 16.0
+    maxnt2: cython.int = 0
+    maxnt3: cython.int = 0
+    _gc: cython.int
 
     n_sc: cython.int = num_cams * MAX_CANDS_K
 
@@ -1140,6 +1230,44 @@ def trackcorr_loop_fast(
     added_cand_2: cython.int[:, ::1] = _added_cand_2
     added_rr_2: cython.double[:] = _added_rr_2
 
+    if gate_scale is None:
+        gate_scale = np.ones(orig_parts_1, dtype=np.float64)
+
+    # Optional uniform-grid acceleration of the 2D candidate search
+    # (built once per step for the frame-2/frame-3 target sets, reused by
+    # every particle). use_grid=0 keeps the legacy y-band scan exactly.
+    if use_grid:
+        grid_nx = int(imx / grid_cell) + 1
+        grid_ny = int(imy / grid_cell) + 1
+        maxnt2 = 0
+        maxnt3 = 0
+        for _gc in range(num_cams):
+            if num_targets_2[_gc] > maxnt2:
+                maxnt2 = num_targets_2[_gc]
+            if num_targets_3[_gc] > maxnt3:
+                maxnt3 = num_targets_3[_gc]
+        if maxnt2 < 1:
+            maxnt2 = 1
+        if maxnt3 < 1:
+            maxnt3 = 1
+        _gh2 = np.full((num_cams, grid_nx * grid_ny), -1, dtype=np.int32)
+        _gn2 = np.empty((num_cams, maxnt2), dtype=np.int32)
+        _gh3 = np.full((num_cams, grid_nx * grid_ny), -1, dtype=np.int32)
+        _gn3 = np.empty((num_cams, maxnt3), dtype=np.int32)
+        grid_head_2 = _gh2
+        grid_next_2 = _gn2
+        grid_head_3 = _gh3
+        grid_next_3 = _gn3
+        for _gc in range(num_cams):
+            _grid_build_nogil(
+                targ_x_2[_gc], targ_y_2[_gc], num_targets_2[_gc],
+                grid_cell, grid_nx, grid_ny,
+                grid_head_2[_gc], grid_next_2[_gc])
+            _grid_build_nogil(
+                targ_x_3[_gc], targ_y_3[_gc], num_targets_3[_gc],
+                grid_cell, grid_nx, grid_ny,
+                grid_head_3[_gc], grid_next_3[_gc])
+
     # Serial particle loop
     for h in range(orig_parts_1):
         _trackcorr_particle_fast(
@@ -1199,9 +1327,12 @@ def trackcorr_loop_fast(
             corres_p_1,
             targ_x_1,
             targ_y_1,
+            targ_sumg_1,
             targ_x_2,
             targ_y_2,
             targ_tnr_2,
+            targ_sumg_2,
+            cand_app_2,
             num_targets_2,
             dvxmin,
             dvxmax,
@@ -1232,6 +1363,17 @@ def trackcorr_loop_fast(
             Zmin_lay_0,
             Zmax_lay_1,
             add_flag,
+            cold_start_neighbour,
+            app_weight,
+            gate_scale,
+            use_grid,
+            grid_head_2,
+            grid_next_2,
+            grid_head_3,
+            grid_next_3,
+            grid_nx,
+            grid_ny,
+            grid_cell,
         )
 
     # Sequential post-loop actual appending to global arrays
@@ -1341,16 +1483,21 @@ def trackcorr_loop_fast(
                 else:
                     path_next_1[h] = NEXT_NONE_K
 
-    # Phase 3: Losers retry with fallback candidates (claim unclaimed only)
-    for h in range(orig_parts_1):
-        if path_inlist_1[h] > 1 and path_next_1[h] == NEXT_NONE_K:
-            for ti in range(1, path_inlist_1[h]):
-                cand = path_linkdecis_1[h, ti]
-                if path_prev_2[cand] == PREV_NONE_K:
-                    path_next_1[h] = cand
-                    path_finaldecis_1[h] = path_decis_1[h, ti]
-                    path_prev_2[cand] = h
-                    break
+    # Phase 3: Losers retry with fallback candidates (claim unclaimed only).
+    # NOT in the original 3dptv track.c -- there (lines 598-646) a particle that
+    # loses a contested candidate gets next = -2 and is done; so is the one it
+    # evicted. Neither falls back to its second choice. Set loser_retry=0 for
+    # track.c parity. Default 1 preserves existing openptv2 behaviour.
+    if loser_retry != 0:
+        for h in range(orig_parts_1):
+            if path_inlist_1[h] > 1 and path_next_1[h] == NEXT_NONE_K:
+                for ti in range(1, path_inlist_1[h]):
+                    cand = path_linkdecis_1[h, ti]
+                    if path_prev_2[cand] == PREV_NONE_K:
+                        path_next_1[h] = cand
+                        path_finaldecis_1[h] = path_decis_1[h, ti]
+                        path_prev_2[cand] = h
+                        break
 
     for h in range(orig_parts_1):
         if path_next_1[h] != NEXT_NONE_K:

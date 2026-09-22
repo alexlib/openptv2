@@ -1076,6 +1076,34 @@ def trackcorr_c_loop(run_info, step, num_threads=None):
     nc = fb.num_cams
     orig_parts = fb.buf[1].num_parts
 
+    # Per-step candidate appearance: mean grey sum over each frame-2
+    # particle's claimed targets (target->particle inversion). -1 where
+    # a particle claims no targets. Feeds the app_weight cost term.
+    maxparts2 = fb.buf[2].path_x.shape[0]
+    cand_app_2 = np.full(maxparts2, -1.0, dtype=np.float64)
+    _sums = np.zeros(maxparts2, dtype=np.float64)
+    _cnts = np.zeros(maxparts2, dtype=np.int32)
+    for _cam in range(nc):
+        _nt = int(fb.buf[2].num_targets[_cam])
+        _tnr = np.asarray(fb.buf[2].targ_tnr[_cam, :_nt])
+        _sg = np.asarray(fb.buf[2].targ_sumg[_cam, :_nt])
+        _ok = (_tnr >= 0) & (_tnr < maxparts2)
+        np.add.at(_sums, _tnr[_ok], _sg[_ok])
+        np.add.at(_cnts, _tnr[_ok], 1)
+    _has = _cnts > 0
+    cand_app_2[_has] = _sums[_has] / _cnts[_has]
+
+    # Per-particle gate freedom set by an external scheduler (phase-aware
+    # tracking); None/absent -> all ones = configured behaviour exactly.
+    _gs = getattr(run_info, "gate_scale", None)
+    _maxp1 = fb.buf[1].path_x.shape[0]
+    if _gs is None:
+        gate_scale = np.ones(_maxp1, dtype=np.float64)
+    else:
+        gate_scale = np.asarray(_gs, dtype=np.float64)
+        if gate_scale.shape[0] < _maxp1:
+            gate_scale = np.ones(_maxp1, dtype=np.float64)
+
     # Synchronize path data from AoS to SoA
     fb.buf[0]._sync_path_to_soa()
     fb.buf[1]._sync_path_to_soa()
@@ -1088,6 +1116,22 @@ def trackcorr_c_loop(run_info, step, num_threads=None):
     np3 = np.array([fb.buf[3].num_parts], dtype=np.int32)
     nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
     nt3 = np.array(fb.buf[3].num_targets[:nc], dtype=np.int32)
+
+    # Check if candidate search grid is requested or required. If targets in
+    # frame 2 or 3 are not monotonically non-decreasing in y, auto-promote
+    # to grid search to prevent the legacy binary-search from skipping targets.
+    use_grid = int(getattr(run_info, "use_grid", 0))
+    if not use_grid:
+        for buf_idx in (2, 3):
+            for c in range(nc):
+                _nt = int(fb.buf[buf_idx].num_targets[c])
+                if _nt > 1:
+                    _ty = np.asarray(fb.buf[buf_idx].targ_y[c, :_nt])
+                    if not (np.diff(_ty) >= -1e-7).all():
+                        use_grid = 1
+                        break
+            if use_grid:
+                break
 
     count1, num_added = _trackcorr_loop_fast(
         orig_parts,
@@ -1103,6 +1147,7 @@ def trackcorr_c_loop(run_info, step, num_threads=None):
         fb.buf[1].targ_x,
         fb.buf[1].targ_y,
         fb.buf[1].targ_tnr,
+        fb.buf[1].targ_sumg,
         fb.buf[2].path_x,
         fb.buf[2].path_prev,
         fb.buf[2].path_next,
@@ -1116,6 +1161,8 @@ def trackcorr_c_loop(run_info, step, num_threads=None):
         fb.buf[2].targ_x,
         fb.buf[2].targ_y,
         fb.buf[2].targ_tnr,
+        fb.buf[2].targ_sumg,
+        cand_app_2,
         nt2,
         np2,
         fb.buf[3].path_x,
@@ -1166,6 +1213,12 @@ def trackcorr_c_loop(run_info, step, num_threads=None):
         cpar.pix_x,
         cpar.pix_y,
         run_info.flatten_tol,
+        1,  # num_threads
+        int(getattr(run_info, "loser_retry", 1)),
+        int(getattr(run_info, "cold_start_neighbour", 1)),
+        float(getattr(run_info, "app_weight", 0.0)),
+        gate_scale,
+        use_grid,
     )
 
     fb.buf[2].num_parts = int(np2[0])

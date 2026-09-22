@@ -30,6 +30,23 @@ class TrackingRun:
     # frame written/read during tracking also goes through the unified store,
     # replacing the old OPENPTV_STORAGE env var.
     store: object = None
+    # Forward link resolution: 1 = openptv2 default (a particle that loses a
+    # contested candidate retries its remaining choices), 0 = original 3dptv
+    # track.c behaviour (the loser is dropped). See track_kernels_corr.py
+    # "Phase 3" and scripts/diag_conflict_parity.py.
+    loser_retry: int = 1
+    # Cold-start prediction: 1 = openptv2 default (borrow a neighbour's
+    # velocity when the particle has no previous link), 0 = original 3dptv
+    # track.c behaviour (X2 = X1, zero-velocity guess).
+    cold_start_neighbour: int = 1
+    # Appearance cost weight: multiplies the relative grey-sum difference
+    # between a particle's own targets and a candidate's targets, added to
+    # the rr cost. 0.0 = original 3dptv track.c behaviour (purely
+    # kinematic cost); track.c never used brightness in tracking.
+    app_weight: float = 0.0
+    # Uniform-grid acceleration of the 2D candidate search (built once per
+    # step, reused by every particle). 0 = legacy y-band scan exactly.
+    use_grid: int = 0
 
     def __post_init__(self):
         self.fb = FrameBuf(

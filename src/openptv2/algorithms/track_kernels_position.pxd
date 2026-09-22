@@ -41,4 +41,22 @@ cpdef int assess_new_position_fast_nogil(
     double[:] scratch,
 ) noexcept nogil
 
+cpdef int _ray_tracing_out(
+    double x,
+    double y,
+    double[:] cal,
+    double[:] out,
+) noexcept nogil
 
+cpdef int _angle_acc_out(
+    double start_x,
+    double start_y,
+    double start_z,
+    double pred_x,
+    double pred_y,
+    double pred_z,
+    double cand_x,
+    double cand_y,
+    double cand_z,
+    double[:] out,
+) noexcept nogil

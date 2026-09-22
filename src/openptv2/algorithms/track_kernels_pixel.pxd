@@ -61,6 +61,40 @@ cpdef int _dist_to_flat_out(
     double[:] out,
 ) noexcept nogil
 
+cpdef int _grid_build_nogil(
+    double[:] targ_x,
+    double[:] targ_y,
+    int num_targets,
+    double cell,
+    int gnx,
+    int gny,
+    int[:] head,
+    int[:] nxt,
+) noexcept nogil
+
+cpdef int _grid_candsearch_nogil(
+    double[:] targ_x,
+    double[:] targ_y,
+    int[:] targ_tnr,
+    int[:] head,
+    int[:] nxt,
+    int gnx,
+    int gny,
+    double cell,
+    double cent_x,
+    double cent_y,
+    double dl,
+    double dr,
+    double du,
+    double dd,
+    double imx,
+    double imy,
+    int tr_unused,
+    int max_cands,
+    int[:] out_indices,
+    double[:] out_dists,
+) noexcept nogil
+
 cpdef int _sorted_candidates_fast_out_nogil(
     double[:] center,
     double[:] center_proj_x,
@@ -103,6 +137,23 @@ cpdef int _sorted_candidates_fast_out_nogil(
     int[:, :] whichcam_out,
     double[:] pt_buf,
     double[:] _pp,
+    int use_grid,
+    int[:, :] grid_head,
+    int[:, :] grid_next,
+    int grid_nx,
+    int grid_ny,
+    double grid_cell,
 ) noexcept nogil
 
-
+cpdef double _multimed_r_nlay_1layer(
+    double pos_x,
+    double pos_y,
+    double pos_z,
+    double ext_x0,
+    double ext_y0,
+    double ext_z0,
+    double mm_n1,
+    double mm_n2_0,
+    double mm_n3,
+    double mm_d0,
+) noexcept nogil
