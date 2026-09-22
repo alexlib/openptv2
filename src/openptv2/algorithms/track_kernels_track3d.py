@@ -206,6 +206,19 @@ def track3d_loop_fast(
     dz: cython.double,
     max_cands: cython.int,
     cold_start_gate: cython.double = 1.0,
+    # Prototype shared-observation (Level 1 only):
+    # share_tol > 0 enables recording (not claiming) of contested edges:
+    # when the cheapest remaining edge (i -> k) finds k already taken AND
+    # both this edge and the winner's edge cost less than share_tol, the
+    # pair is recorded into shared_i/shared_k (capacity len(shared_i))
+    # instead of stealing. The driver materializes each pair as a virtual
+    # carrier particle (shared coordinates, own history) so the track
+    # continues with an honest velocity. Cold levels never share: a track
+    # with no history of its own must not twin.
+    share_tol: cython.double = 0.0,
+    shared_count: cython.int[:] = None,
+    shared_i: cython.int[:] = None,
+    shared_k: cython.int[:] = None,
 ):
     """Full track3d loop (3 levels) — single compiled entry.
 
@@ -258,9 +271,22 @@ def track3d_loop_fast(
     oi: cython.int
     e: cython.int
     order: cython.int[:]
+    use_share: cython.bint
+    share_cap: cython.int
+    w: cython.int
 
     count1 = 0
     np2 = num_parts_2
+    use_share = (
+        share_tol > 0.0
+        and shared_count is not None
+        and shared_i is not None
+        and shared_k is not None
+    )
+    share_cap = shared_i.shape[0] if use_share else 0
+
+    _claim_cost_2 = np.full(np2 if np2 > 0 else 1, np.inf, dtype=np.float64)
+    claim_cost_2: cython.double[:] = _claim_cost_2
 
     _cand_inds = np.empty(max_cands, dtype=np.int32)
     _cand_dists = np.empty(max_cands, dtype=np.float64)
@@ -374,7 +400,33 @@ def track3d_loop_fast(
             if path_next_1[i] < 0 and path_prev_2[k] < 0:
                 path_next_1[i] = k
                 path_prev_2[k] = i
+                claim_cost_2[k] = edge_cost[e]
                 count1 += 1
+            elif (
+                use_share
+                and path_next_1[i] < 0
+                and path_prev_2[k] >= 0
+                and edge_cost[e] < share_tol
+                and claim_cost_2[k] < share_tol
+                and shared_count[0] < share_cap
+            ):
+                # Prototype shared-observation (Level 1 only): contested and
+                # mutually well-predicted -> share, don't steal. Cold levels
+                # never share: a track with no history of its own must not
+                # twin. A sharer that later claims normally keeps the claim;
+                # its share record dies below (no forks).
+                shared_i[shared_count[0]] = i
+                shared_k[shared_count[0]] = k
+                shared_count[0] += 1
+
+    if use_share:
+        w = 0
+        for e in range(shared_count[0]):
+            if path_next_1[shared_i[e]] < 0:
+                shared_i[w] = shared_i[e]
+                shared_k[w] = shared_k[e]
+                w += 1
+        shared_count[0] = w
 
     # ===== Level 2: No previous link, neighbor velocity =====
     n_edges = 0
