@@ -1,0 +1,3055 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Plan: locating the trackcorr vs 3dptv link gap (69.5% vs 59.0%) - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#plan-locating-the-trackcorr-vs-3dptv-link-gap-695-vs-590" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Plan: locating the trackcorr vs 3dptv link gap (69.5% vs 59.0%)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../plate-calibration-howto/" class="md-tabs__link">
+          
+  
+  
+  Calibration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../benchmarking_guide/" class="md-tabs__link">
+          
+  
+  
+  Benchmarks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
+          
+  
+  
+  Decisions
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    End-to-End Particle Tracking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/cavity_flow_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lid-Driven Cavity Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aorta_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aorta Flow (cloud-native)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/four_view_splitter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4-View Image Splitter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sequence & Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracker-tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracker Engines & Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lagrangian_turbulence_quality_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lagrangian Turbulence Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-batch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud-like Batch Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multi-folder-runs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Folder Experiments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Calibration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plate-calibration-howto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plate Calibration How-To
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../illmenau-4cam-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illmenau 4-Camera Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/particle_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle-Based Refinement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/dumbbell_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dumbbell Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/warmup_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auto-Calibration (warmup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-rms-vs-rcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reprojection RMS vs Ray Convergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-bundle-adjustment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bundle Adjustment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracer-self-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracer Self-Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Benchmarks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarking & Tracker Selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking-benchmark-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Engine Benchmark Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/custom_tracking_plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correspondence eps0 Semantics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Decisions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Cython Optimization Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#resolution-2026-09-20-evening-session" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolution (2026-09-20, evening session)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#addendum-dataset-folder-verification-same-session" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Addendum: dataset-folder verification (same session)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#addendum-2-single-trajectory-comparison-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Addendum 2: single-trajectory comparison (`scripts/
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#addendum-3-crossing-laboratory-scriptssynth_crossingpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Addendum 3: crossing laboratory (scripts/synth_crossing.py)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#addendum-4-4be-on-the-hard-crossings-scriptsbench_4be_crossingpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Addendum 4: 4BE on the hard crossings (scripts/bench_4be_crossing.py)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#addendum-5-two-phase-tracker-on-crossings-scriptsbench_two_phasepy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Addendum 5: two-phase tracker on crossings (scripts/bench_two_phase.py)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#addendum-6-productized-two-phasevel-plugin-wp1-verdict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Addendum 6: productized two-phase+vel (plugin) + wp1 verdict
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The gap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#suspects-eliminated-all-by-direct-measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suspects eliminated (all by direct measurement)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#separate-confirmed-data-defect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Separate confirmed data defect
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-open-contradiction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The open contradiction
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="plan-locating-the-trackcorr-vs-3dptv-link-gap-695-vs-590">Plan: locating the trackcorr vs 3dptv link gap (69.5% vs 59.0%)<a class="headerlink" href="#plan-locating-the-trackcorr-vs-3dptv-link-gap-695-vs-590" title="Permanent link">&para;</a></h1>
+<p><strong>Date</strong>: 2026-09-20
+<strong>Status</strong>: CLOSED — cause located (config mismatch, T0.1). See "Resolution".
+<strong>Dataset</strong>: <code>C:\Users\alex\Downloads\HiDImaging\wp1_10_images</code>
+(4 cameras, 512x512, ~1300 particles/frame, 10 frames, <code>dvxmax=1.9</code>,
+<code>dacc=1.9</code>, <code>dangle=270</code> gon, <code>add=1</code>)
+<strong>Reference</strong>: <code>res_ground_truth_backup/</code> — legacy <code>3dptv.exe</code> output, per
+<code>scripts/make_ground_truth_zarr.py</code> ("regression oracle for the old binary")</p>
+<h2 id="resolution-2026-09-20-evening-session">Resolution (2026-09-20, evening session)<a class="headerlink" href="#resolution-2026-09-20-evening-session" title="Permanent link">&para;</a></h2>
+<p><strong>Root cause: openptv2 ran with <code>dacc=0.8</code> while 3dptv ran with <code>dacc=1.9</code>.</strong>
+<code>scratch/_wp1_ab/parameters_Run1.yaml</code> (<code>track.dacc: 0.8</code>) overrides the
+work folder's <code>parameters/track.par</code> (line 8: <code>1.9</code>, byte-identical to the
+dataset's). <code>py_start_proc_c</code> returns the YAML value — every openptv2 number
+in this plan was measured at <code>dacc=0.8</code>, i.e. the two engines were never
+compared under the same configuration.</p>
+<p>Evidence (all on clean frames 100003–100010, pristine inputs restored before
+every run — see methodology note below):</p>
+<table>
+<thead>
+<tr>
+<th>config</th>
+<th>test links</th>
+<th>exact vs ref (7387)</th>
+<th>recall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>baseline <code>dacc=0.8</code> (track.c parity flags)</td>
+<td>6329</td>
+<td>6181</td>
+<td>83.7%</td>
+</tr>
+<tr>
+<td>baseline <code>dacc=0.8</code> (openptv2 defaults)</td>
+<td>6335</td>
+<td>6184</td>
+<td>83.7%</td>
+</tr>
+<tr>
+<td><strong><code>dacc=1.9</code></strong> (3dptv value)</td>
+<td>7384</td>
+<td>7238</td>
+<td><strong>98.0%</strong></td>
+</tr>
+<tr>
+<td><code>dacc=1.9</code> + backward pass</td>
+<td>7418</td>
+<td>7251</td>
+<td>98.2%</td>
+</tr>
+<tr>
+<td><code>dvxmax</code> 1.9 → 2.5 (dacc=0.8)</td>
+<td>6328</td>
+<td>6099</td>
+<td>82.6% (hurts slightly)</td>
+</tr>
+</tbody>
+</table>
+<p>Mechanism check: 17.9% of reference links have 3-point <code>acc &gt;= 0.8</code> (only
+0.25% have <code>acc &gt;= 1.9</code>), vs a 16.3% exact-link deficit — the missing mass
+sits exactly in the <code>[0.8, 1.9)</code> acceleration band the tighter gate rejects.
+This also explains the displacement ramp (faster links scatter more in
+acceleration) that was mistaken for a search/candidate defect.</p>
+<p>Residual 2% (149 → 136 links after backward): spread across all frames
+(12–30/frame, no blowup), disproportionately fast (mean disp 0.97 mm vs 0.39
+overall) — cascade + conflict noise, no second systematic cause. The backward
+pass adds only +13 links, so the reference is essentially forward-made.</p>
+<p><strong>Recommendation</strong>: decide whether <code>dacc: 0.8</code> in the work YAML is an
+intentional retune or an accident, and either align it with <code>track.par</code>
+(<code>1.9</code>) or document the divergence where the comparison is reported. The
+<code>~2% dacc/dangle rejects</code> and <code>dacc/sqrt(18)</code> noise-ceiling entries in the
+"Suspects eliminated" table below were measured/computed under mismatched
+assumptions (rejects at dacc=0.8; ceiling at dacc=1.9) — both are superseded
+by this section.</p>
+<p>Methodology notes (learned the hard way):
+- A tracking run REWRITES <code>res/rt_is.*</code> (added particles appended) and
+  updates target-file <code>tnr</code> columns in place. Re-running in the same folder
+  without restoring inputs silently changes the inputs. <code>scripts/
+  sweep_track_params.py</code> and <code>scripts/run_dacc19.py</code> restore pristine
+  <code>rt_is.*</code> (from <code>res_ground_truth_backup</code>) + targets (from dataset
+  <code>img_3dptv</code>) before every run and hash them.
+- Never run two tracking processes in one work folder concurrently (steps
+  re-read inputs per step; races produce garbage link counts and mystery
+  deaths). One early <code>dvxmax=2.5</code> reading (673 links/step-1 + vanished
+  process) was such a race artifact; clean rerun gives 82.6%.</p>
+<h2 id="addendum-dataset-folder-verification-same-session">Addendum: dataset-folder verification (same session)<a class="headerlink" href="#addendum-dataset-folder-verification-same-session" title="Permanent link">&para;</a></h2>
+<p>Re-ran everything directly in <code>C:\Users\alex\Downloads\HiDImaging\
+wp1_10_images</code> (whose own <code>parameters_Run1.yaml</code> also carries <code>dacc: 0.8</code>)
+with an in-memory <code>dacc=1.9</code> override, forward + backward
+(<code>scripts/verify_same_trajectories.py</code>):</p>
+<table>
+<thead>
+<tr>
+<th>level</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>links, clean frames 100003–100010</td>
+<td>7251/7387 = <strong>98.16%</strong> exact</td>
+</tr>
+<tr>
+<td>links, all frames 100002–100010</td>
+<td>7873/8018 = 98.19%</td>
+</tr>
+<tr>
+<td>full trajectory chains end-to-end</td>
+<td>4463/4793 = <strong>93.1%</strong>; length distrib. identical (mean 2.67 vs 2.69, max 10)</td>
+</tr>
+<tr>
+<td>displacement overlay</td>
+<td>ramp gone: %lost per bin ~0±5% at all speeds; mean step 0.395 vs 0.403 (was 0.394 vs 0.311)</td>
+</tr>
+</tbody>
+</table>
+<p>Residual-miss fingerprint at matched parameters (in-kernel probe, step
+100005, 26 misses): 73% partner PRESENT but lost in conflict resolution,
+19% partner gated downstream, 8% inlist empty — versus 96% inlist-EMPTY at
+<code>dacc=0.8</code>. No systematic blindness remains; the rest is greedy-resolution
+divergence + cascade.</p>
+<p>Tooling fixes while verifying: <code>scripts/diag_inlist_probe.py</code> gained
+<code>--dacc</code>/<code>--dv</code> overrides and now walks the buffer from <code>first</code> to <code>--step</code>
+(it previously processed frame <code>first</code> while labeling/comparing <code>--step</code>,
+and mislabeled output files for any <code>--step != first</code>).</p>
+<p>Dataset left pristine: <code>res/</code> back to <code>{run.zarr}</code>, target files
+byte-identical to pre-run snapshot (rt↔tnr consistent on clean frames),
+<code>parameters_Run1.yaml</code> untouched (still ships <code>dacc: 0.8</code>).</p>
+<h2 id="addendum-2-single-trajectory-comparison-scripts">Addendum 2: single-trajectory comparison (`scripts/<a class="headerlink" href="#addendum-2-single-trajectory-comparison-scripts" title="Permanent link">&para;</a></h2>
+<p>compare_single_trajectories.py<code>, plots in</code>scratch/single_traj/`)</p>
+<p>At matched parameters the residual is greedy contest resolution in dense
+crossing regions, illustrated frame-by-frame:</p>
+<ul>
+<li><strong>case2 (crossing, len-10):</strong> at 100006→100007 ref jumps 0.93 mm (acc
+  1.02) to 1268 and continues violently (acc up to 1.88); test links 842→822
+  (acc 0.27, smoother) and stops. Cross-check: ref runs 822→1237 as a len-2
+  stub while test runs 1268→1237 — a genuine 2-particle tangle 1268/822 →
+  1237/1238 resolved oppositely. Undecidable without ground truth.</li>
+<li><strong>case5 (ghost stitch, len-10):</strong> ref leaves 100004:1207 a singleton; test
+  threads it into a full-span chain assembled from three ref chains (len-3
+  head + singleton + interiors of a len-8 and a len-6), including a 1.50 mm
+  step and an acc-1.899 link at the dacc edge. Sensitive vs conservative —
+  likewise undecidable from outputs alone.</li>
+<li><strong>case1 (tail miss):</strong> test follows 8/8 frames then stops where ref
+  continues through acc 1.295 — conservative tail.</li>
+<li><strong>case3/4:</strong> 2.67 mm cold-start jump at the corrupt frame 100001 —
+  artifact of the known data defect, not algorithmic.</li>
+</ul>
+<p>Net: no global bias (smoother/longer/ghost-ridden in neither direction).
+Every remaining difference is a local contest outcome. Pushing past 98%
+requires ground truth adjudication — the synthetic replica testbed (T3.1).</p>
+<h2 id="addendum-3-crossing-laboratory-scriptssynth_crossingpy">Addendum 3: crossing laboratory (<code>scripts/synth_crossing.py</code>)<a class="headerlink" href="#addendum-3-crossing-laboratory-scriptssynth_crossingpy" title="Permanent link">&para;</a></h2>
+<p>Minimal scenes with known truth on the real wp1 optics (4 cams, σ=0.07 mm
+noise): two particles cross between frames 3→4 of 7. Result table
+(recall / crossing-decision-correct over reps):</p>
+<table>
+<thead>
+<tr>
+<th>scenario</th>
+<th>parity (lr0)</th>
+<th>default (lr1)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1 head-on, S2/S3 near-miss, S5 fast, S7 asymmetric</td>
+<td>100% 1/1</td>
+<td>100% 1/1</td>
+</tr>
+<tr>
+<td>S4 head-on+noise (8 reps), S6 three-way (8)</td>
+<td>100% 8/8</td>
+<td>100% 8/8</td>
+</tr>
+<tr>
+<td>S8 kick-at-cross (0.15→1.0, no noise)</td>
+<td>91.7% 1/1</td>
+<td><strong>100%</strong> 1/1</td>
+</tr>
+<tr>
+<td>S9 brake-at-cross</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>S10 convoy pair (8)</td>
+<td>100% 8/8</td>
+<td>100% 8/8</td>
+</tr>
+<tr>
+<td>S11 kick+noise (8)</td>
+<td>75% <strong>2/8</strong></td>
+<td>75% <strong>2/8</strong></td>
+</tr>
+<tr>
+<td>S12 convoy+noise (8)</td>
+<td>96.9% 7/8</td>
+<td><strong>100%</strong> 8/8</td>
+</tr>
+<tr>
+<td>S11 with dacc 2.5 / 3.5</td>
+<td>2/8, 2/8</td>
+<td>2/8, 2/8 (gate not binding)</td>
+</tr>
+</tbody>
+</table>
+<p>Mechanism, read from the kernel's own arrays (S8): the kick makes truth
+expensive (rr 0.039) while the smooth theft is cheap (rr 0.027); both claim
+the same row, truth's owner loses the contest (0.027 vs 0.009), parity drops
+it (<code>next=-2</code>), <code>loser_retry</code> recovers via second choice. Failure modes in
+S11 are swaps and stalls varying per noise seed.</p>
+<p>Lessons: (1) for steady motion through crossings the smooth choice IS
+correct and openptv2 never misses it — so real case-2's violent-vs-smooth
+split likely means the particle truly maneuvered and 3dptv was right;
+(2) keep <code>loser_retry=1</code> (default): strictly dominates parity on maneuvers
+(S8, S12), free elsewhere; (3) maneuver+noise is structural — no parameter
+rescues it; fixes would be longer temporal context, noise-aware costs, or
+global (non-greedy) assignment.</p>
+<h2 id="addendum-4-4be-on-the-hard-crossings-scriptsbench_4be_crossingpy">Addendum 4: 4BE on the hard crossings (<code>scripts/bench_4be_crossing.py</code>)<a class="headerlink" href="#addendum-4-4be-on-the-hard-crossings-scriptsbench_4be_crossingpy" title="Permanent link">&para;</a></h2>
+<p>4BE (four-frame best estimate: candidate scored by predicting a real
+particle two frames ahead) does NOT solve the maneuver crossing — it is
+worse: S8 cross-ok 0/3 (vs parity 3/3, default 3/3), S11 0/8 (vs 2/8),
+S12 7/8, S1/S4 100%. Reason: longer context cannot fix a violated motion
+model — constant-velocity extrapolation underprices the steady lie versus
+maneuvering truth at every horizon, so more context just confirms the lie
+more confidently. Two-directional (fwd+bwd trackcorr) was already measured
+on real data: +13 links (98.0→98.2%), same mirrored greedy logic, no help
+on contests. What would help: acceleration-aware prediction,
+multi-hypothesis tracking (keep both options alive 2 frames — the kick IS
+resolved by f5/f6), or global assignment; none is in the codebase.</p>
+<h2 id="addendum-5-two-phase-tracker-on-crossings-scriptsbench_two_phasepy">Addendum 5: two-phase tracker on crossings (<code>scripts/bench_two_phase.py</code>)<a class="headerlink" href="#addendum-5-two-phase-tracker-on-crossings-scriptsbench_two_phasepy" title="Permanent link">&para;</a></h2>
+<p><code>plugins/two_phase_tracking.py</code>: phase 1 = 3D KD-tree candidates within
+v_max; phase 2 = Hungarian assignment on 2D pixel-distance costs. Memoryless
+(no velocity, no history). Result: systematic <strong>bounce bias</strong> — at an
+X-crossing the swap always has lower total cost than the cross, so raw
+two-phase scores 0 cross-ok on EVERYTHING incl. clean S1 (83.3% recall =
+one swapped step). It cannot solve hard crossings as-is.
+Fix tested in-bench: constant-velocity prediction injected into phase 1
+(predict points, re-project for leaf costs) + Hungarian (<code>two-phase+vel</code>):
+S1/S8/S4 → 100% cross-ok, <strong>S11 → 5/8 vs trackcorr's 2/8</strong>. Global
+assignment + prediction beats greedy + prediction on the killer. Not yet
+productized (needs velocity state, cold start, gap handling in the plugin
++ wp1 validation) — candidate next step.</p>
+<h2 id="addendum-6-productized-two-phasevel-plugin-wp1-verdict">Addendum 6: productized two-phase+vel (plugin) + wp1 verdict<a class="headerlink" href="#addendum-6-productized-two-phasevel-plugin-wp1-verdict" title="Permanent link">&para;</a></h2>
+<p>Implemented in <code>plugins/two_phase_tracking.py</code>: velocity state per track,
+zero-velocity cold start, gap bridging to <code>max_gap</code>, <code>project_fn</code> callback
+built in <code>do_tracking</code> from <code>exp.cals</code>/<code>exp.cpar</code> (falls back to 3D costs),
+new knobs <code>use_velocity</code> (default True), <code>cost_mode</code>, <code>v_max</code> (separate from
+<code>dvxmax</code>), <code>max_gap</code>. <code>tests/unit/test_two_phase_tracking.py</code>: 5 passed.
+<code>scripts/bench_two_phase.py</code> productized engine == prototype on every scene
++ S13 occlusion gap bridged 3/3.</p>
+<p>wp1 (<code>scripts/verify_two_phase_wp1.py</code>, v_max × max_gap grid):</p>
+<table>
+<thead>
+<tr>
+<th>config</th>
+<th>recall</th>
+<th>links (ref 7418)</th>
+<th>test-only step p50/p90</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v2.0 gap1</td>
+<td><strong>96.26%</strong></td>
+<td>8443</td>
+<td>0.81 / 1.95</td>
+</tr>
+<tr>
+<td>v2.0 gap2</td>
+<td>95.93%</td>
+<td>8988 (+573 gap)</td>
+<td>0.82 / 1.95</td>
+</tr>
+<tr>
+<td>v2.5 gap1</td>
+<td>94.98%</td>
+<td>8734</td>
+<td>1.49 / 2.51</td>
+</tr>
+<tr>
+<td>v3.3 gap1</td>
+<td>86.92%</td>
+<td>9246</td>
+<td>2.52 / 3.96</td>
+</tr>
+</tbody>
+</table>
+<p>vs trackcorr@dacc19: 98.16%, 7418 links. Verdict: viable ALTERNATIVE
+engine (maneuver-sensitive: S11 5/8 vs 2/8), not a replacement — it lacks
+trackcorr's selectivity (no acc gate / two-hop confirmation), so it
+over-links plausible-but-unconfirmed tracks, and gap bridging slightly
+hurts on wp1 (95.93 &lt; 96.26: stale-velocity gap claims steal consecutive
+links). Natural next step per the original vision (3D forward, then 2D):
+cascade — trackcorr first, two-phase+vel only on unlinked heads/tails.</p>
+<h2 id="the-gap">The gap<a class="headerlink" href="#the-gap" title="Permanent link">&para;</a></h2>
+<p>Both engines run on identical <code>rt_is.*</code>, so a link-by-link comparison is exact.
+Measured on clean frames 100003–100010:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>3dptv 69.5%   openptv2 59.0%   reproduced 6113/7387 = 82.8%
+</span></code></pre></div>
+<p>The loss is monotonic in link displacement, with <strong>no cliff</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>link displacement</th>
+<th>3dptv links</th>
+<th>openptv2</th>
+<th>% openptv2 misses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.00–0.22 mm</td>
+<td>3326</td>
+<td>3263</td>
+<td>2%</td>
+</tr>
+<tr>
+<td>0.44–0.55</td>
+<td>608</td>
+<td>495</td>
+<td>19%</td>
+</tr>
+<tr>
+<td>0.77–0.88</td>
+<td>231</td>
+<td>116</td>
+<td>50%</td>
+</tr>
+<tr>
+<td>1.21–1.32</td>
+<td>72</td>
+<td>20</td>
+<td>72%</td>
+</tr>
+<tr>
+<td>1.87–1.98</td>
+<td>34</td>
+<td>7</td>
+<td>79%</td>
+</tr>
+</tbody>
+</table>
+<p>Mean step: 3dptv 0.394 mm, openptv2 0.311 mm — openptv2's trajectories are
+measurably slower, which is the originally reported symptom.</p>
+<p>Split of the 1256 missing links: 96% the <strong>predecessor got no link at all</strong>,
+4% it linked elsewhere. Only 0.7% of reference links are mislinked. So this is
+genuine dropping, not preference reordering.</p>
+<h2 id="suspects-eliminated-all-by-direct-measurement">Suspects eliminated (all by direct measurement)<a class="headerlink" href="#suspects-eliminated-all-by-direct-measurement" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Suspect</th>
+<th>Verdict</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Search-volume clamp</td>
+<td>✗</td>
+<td>no cliff; both runs have links past <code>dvxmax</code></td>
+</tr>
+<tr>
+<td>Candidate shortlist depth (top-4)</td>
+<td>✗</td>
+<td>true partner at <strong>rank 1</strong> median, 0.2% beyond top-4</td>
+</tr>
+<tr>
+<td>Multi-camera <code>freq&lt;2</code> cull</td>
+<td>✗</td>
+<td>1.2%</td>
+</tr>
+<tr>
+<td>Two-hop lookahead</td>
+<td>✗</td>
+<td>0.2% <code>HOP2_NOT_FOUND</code>; <code>X5</code> predictor byte-identical to <code>track.c:223</code></td>
+</tr>
+<tr>
+<td><code>dacc</code>/<code>dangle</code> gate</td>
+<td>✗</td>
+<td>~2% rejects; <code>dangle=270</code> gon = 243° is inert</td>
+</tr>
+<tr>
+<td>Position noise</td>
+<td>✗</td>
+<td>sigma = 0.070 mm vs ceiling <code>dacc/sqrt(18)</code> = 0.448 mm</td>
+</tr>
+<tr>
+<td>Phase-3 loser retry</td>
+<td>✗</td>
+<td>+1.6 links/frame of ~760</td>
+</tr>
+<tr>
+<td>Neighbour-velocity cold start</td>
+<td>✗</td>
+<td>6705 -&gt; 6704 links</td>
+</tr>
+<tr>
+<td>Compiled vs pure-Python</td>
+<td>✗</td>
+<td><strong>byte-identical</strong> (534 links, 523 reproduced, both)</td>
+</tr>
+<tr>
+<td>Camera permutation</td>
+<td>✗</td>
+<td>cross-camera residual matrix is diagonal</td>
+</tr>
+<tr>
+<td>Quadrant vs full-frame convention</td>
+<td>✗</td>
+<td>baseline 90 px vs 330–400 px for every offset variant</td>
+</tr>
+<tr>
+<td>mmlut / multimedia model</td>
+<td>✗</td>
+<td>clearing the LUT gives identical residuals; projection is <strong>0.53 px</strong> median on clean frames</td>
+</tr>
+<tr>
+<td>Frame-100001 corruption</td>
+<td>✗ (as gap cause)</td>
+<td>gap persists at 69.5/59.0 on clean frames</td>
+</tr>
+<tr>
+<td>Prediction cascade</td>
+<td>✗</td>
+<td>autopsy with test-run link history unchanged (69.1% GATE_PASSED)</td>
+</tr>
+</tbody>
+</table>
+<p>Faithful to <code>track.c</code>, verified line-by-line: <code>rr</code> cost formula, the
+<code>(acc&lt;dacc &amp;&amp; angle&lt;dangle) || acc&lt;dacc/10</code> gate, <code>angle_acc</code> (gon, 200/pi),
+the <code>X5 = 0.5*(5*X3-4*X1+X0)</code> two-hop predictor, <code>candsearch_in_pix</code> 4-nearest
+cascade, <code>sortwhatfound</code> freq merge, <code>POSI=80</code>.</p>
+<p>Two divergences from <code>track.c</code> were found, both made switchable and both
+measured <strong>inert</strong> on this data (defaults unchanged):</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">Tracker</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">loser_retry</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cold_start_neighbour</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>   <span class="c1"># track.c parity</span>
+</span></code></pre></div>
+<h2 id="separate-confirmed-data-defect">Separate confirmed data defect<a class="headerlink" href="#separate-confirmed-data-defect" title="Permanent link">&para;</a></h2>
+<p><strong>Frame 100001 is corrupt.</strong> <code>rt_is.100001</code>'s <code>p1..p4</code> columns disagree with
+<code>Cam*.100001_targets</code>: 1740 corresponded targets for 1107 particles, and 97 px
+median reprojection vs 0.53 px on every other frame. The target files look
+overwritten by a different detection/correspondence run. Worth fixing
+independently of this investigation.</p>
+<h2 id="the-open-contradiction">The open contradiction<a class="headerlink" href="#the-open-contradiction" title="Permanent link">&para;</a></h2>
+<p>The kernel's own arrays report <code>inlist == 0</code> for 96% of missed links. An
+external replay of the candidate stage — corrected for the search-centre bug
+(the tracker centres on the <strong>measured target pixel</strong>, <code>track.c:136</code>, not on
+<code>point_to_pixel(X2)</code>) and re-run with the tracker's own link history — still
+says 69% of those partners are admissible at rank 1.</p>
+<p>Both cannot be true. The kernel probe is the trustworthy one because it reads
+real state rather than reimplementing. <strong>The methodological error was replaying
+the candidate stage outside the tracker instead of instrumenting inside it.</strong></p>
+<hr />
+<h1 id="test-plan">Test plan<a class="headerlink" href="#test-plan" title="Permanent link">&para;</a></h1>
+<p><strong>Governing rule:</strong> read state the tracker actually produced, or control an
+input it actually consumed. No reimplementing tracker internals externally.
+Every wrong root cause in the 2026-09-20 session came from an external replay
+that diverged from the real code in an unnoticed detail.</p>
+<p>Each test states its decision rule up front.</p>
+<h2 id="phase-0-validate-the-premise-cheapest-can-end-the-investigation">Phase 0 — Validate the premise (cheapest; can end the investigation)<a class="headerlink" href="#phase-0-validate-the-premise-cheapest-can-end-the-investigation" title="Permanent link">&para;</a></h2>
+<h3 id="t01-are-3dptvs-links-legal-under-trackpar">T0.1 — Are 3dptv's links legal under <code>track.par</code>?<a class="headerlink" href="#t01-are-3dptvs-links-legal-under-trackpar" title="Permanent link">&para;</a></h3>
+<p>Never checked. The whole comparison assumes both ran the same configuration.</p>
+<ul>
+<li><strong>Method</strong>: for all reference links compute per-axis <code>|dx|,|dy|,|dz|</code>, the
+  3-point <code>acc</code>, and <code>angle</code> in gon. Histogram each against <code>dvxmax=1.9</code>,
+  <code>dacc=1.9</code>, <code>dangle=270</code>.</li>
+<li><strong>Decision</strong>: a material fraction violating these bounds means the reference
+  ran with <strong>different parameters</strong> — the gap is config, not algorithm. Stop
+  and reconcile.</li>
+<li><strong>Prior</strong>: non-trivial. Dropped links reach 3.40 mm and <code>1.9*sqrt(3) = 3.29</code>,
+  so some reference links may be out of bounds per-axis.</li>
+</ul>
+<h3 id="t02-is-the-reference-reproducible">T0.2 — Is the reference reproducible?<a class="headerlink" href="#t02-is-the-reference-reproducible" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Method</strong>: re-run <code>3dptv.exe</code> on this folder; diff <code>ptv_is.*</code> against
+  <code>res_ground_truth_backup</code>.</li>
+<li><strong>Decision</strong>: if it does not reproduce, the reference is stale — regenerate
+  before comparing. Frame 100001's corruption already makes provenance suspect.</li>
+</ul>
+<h3 id="t03-rebuild-the-corrupt-frame">T0.3 — Rebuild the corrupt frame<a class="headerlink" href="#t03-rebuild-the-corrupt-frame" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Method</strong>: re-run detection + correspondence for frame 100001; confirm
+  reprojection drops to ~0.5 px.</li>
+<li><strong>Decision</strong>: do this regardless — it is a real defect. Then re-baseline on a
+  fully clean 10-frame set.</li>
+</ul>
+<h2 id="phase-1-make-the-loss-observable-from-inside">Phase 1 — Make the loss observable from inside<a class="headerlink" href="#phase-1-make-the-loss-observable-from-inside" title="Permanent link">&para;</a></h2>
+<h3 id="t11-in-kernel-gate-census-highest-value">T1.1 — In-kernel gate census (highest value)<a class="headerlink" href="#t11-in-kernel-gate-census-highest-value" title="Permanent link">&para;</a></h3>
+<p>The one measurement that cannot disagree with itself.</p>
+<ul>
+<li><strong>Method</strong>: add an <code>int[8]</code> counter array to <code>_trackcorr_particle_fast</code>,
+  incremented at each discard point: <code>sorted_candidates</code> returned 0 ·
+  displacement gate · two-hop search empty · two-hop candidate gated ·
+  acc/angle gate · <code>inlist</code> full (POSI) · lost conflict · evicted. Return it
+  from <code>trackcorr_loop_fast</code>. Record per particle the step size of the
+  reference link it should have made.</li>
+<li><strong>Output</strong>: death-stage histogram, split by link displacement.</li>
+<li><strong>Decision</strong>: the dominant stage is the target. This supersedes every
+  external replay, including all autopsy numbers in
+  <code>scripts/diag_candidate_autopsy.py</code>.</li>
+</ul>
+<h3 id="t12-full-trace-on-ten-specific-drops">T1.2 — Full trace on ten specific drops<a class="headerlink" href="#t12-full-trace-on-ten-specific-drops" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Method</strong>: pick 10 dropped links spanning the speed range; dump every
+  intermediate — <code>X0,X1,X2</code>, per-camera window bounds, every candidate with
+  distance and <code>freq</code>, <code>X3,X5</code>, every frame-3 candidate,
+  <code>acc/angle/dl/quali/rr</code>, final <code>inlist</code>/<code>decis</code>/<code>linkdecis</code>.</li>
+<li><strong>Decision</strong>: read by hand. Histograms hide mechanism; traces show it.</li>
+</ul>
+<h2 id="phase-2-make-it-controllable-run-t21-in-parallel-with-phase-1">Phase 2 — Make it controllable (run T2.1 in parallel with Phase 1)<a class="headerlink" href="#phase-2-make-it-controllable-run-t21-in-parallel-with-phase-1" title="Permanent link">&para;</a></h2>
+<h3 id="t21-parameter-sensitivity-sweep-model-free-localiser">T2.1 — Parameter sensitivity sweep (model-free localiser)<a class="headerlink" href="#t21-parameter-sensitivity-sweep-model-free-localiser" title="Permanent link">&para;</a></h3>
+<p>Requires no hypothesis about mechanism.</p>
+<ul>
+<li><strong>Method</strong>: sweep one parameter at a time — <code>dvxmax</code> (1.9 -&gt; 4.0), <code>dacc</code>
+  (1.9 -&gt; 6.0), <code>dangle</code> (270 -&gt; 400), <code>add</code> (0/1) — plotting openptv2's link
+  rate against 3dptv's fixed 69.5%.</li>
+<li><strong>Decision</strong>: whichever parameter closes the gap names the binding constraint
+  empirically. If none closes it, the loss is not a gate and T1.1 should show a
+  structural cause.</li>
+</ul>
+<h3 id="t22-one-step-isolation-with-seeded-history">T2.2 — One-step isolation with seeded history<a class="headerlink" href="#t22-one-step-isolation-with-seeded-history" title="Permanent link">&para;</a></h3>
+<p>Removes cascade entirely.</p>
+<ul>
+<li><strong>Method</strong>: seed <code>path_prev</code>/<code>path_next</code> from 3dptv's <code>ptv_is</code> for frames
+  N-1 and N, run exactly one step, compare that step's links.</li>
+<li><strong>Decision</strong>: matching means the gap is cascade (a small per-step deficit
+  compounding). Still missing means a genuine per-step difference.</li>
+</ul>
+<h2 id="phase-3-make-iteration-fast">Phase 3 — Make iteration fast<a class="headerlink" href="#phase-3-make-iteration-fast" title="Permanent link">&para;</a></h2>
+<h3 id="t31-synthetic-replica-at-real-statistics">T3.1 — Synthetic replica at real statistics<a class="headerlink" href="#t31-synthetic-replica-at-real-statistics" title="Permanent link">&para;</a></h3>
+<p>The earlier synthetic (<code>scripts/ab_loser_retry.py synthetic</code>) was too sparse
+and too clean to reproduce this regime.</p>
+<ul>
+<li><strong>Method</strong>: ground-truth trajectories matching wp1 — ~1300 particles/frame,
+  0.36 mm mean step, 0.07 mm position noise, this calibration, 4 cameras, same
+  density distribution.</li>
+<li><strong>Decision</strong>: ~100% recall means the gap is specific to real data and
+  Phase 0/1 explains it. ~59% means you have a fast, fully-observable testbed
+  with a known right answer — iterate there, not on real data.</li>
+</ul>
+<h2 id="phase-4-the-comparison-not-yet-done">Phase 4 — The comparison not yet done<a class="headerlink" href="#phase-4-the-comparison-not-yet-done" title="Permanent link">&para;</a></h2>
+<h3 id="t41-instrumented-trackc-harness">T4.1 — Instrumented <code>track.c</code> harness<a class="headerlink" href="#t41-instrumented-trackc-harness" title="Permanent link">&para;</a></h3>
+<p>Everything so far compares openptv2's internals against 3dptv's <strong>final
+output</strong>. Nobody has looked at 3dptv's intermediates.</p>
+<ul>
+<li><strong>Method</strong>: extract <code>trackcorr_c</code> from <code>C:\Users\alex\Downloads\3dptv\src_c\</code>
+  into a standalone C harness reading the same <code>rt_is</code>/targets/<code>track.par</code>,
+  with the same counters as T1.1. Compare stage-by-stage on one frame.</li>
+<li><strong>Cost</strong>: highest — a real build project (Tcl dependencies need stripping).</li>
+<li><strong>Decision</strong>: reserve for the case where Phases 0–3 leave it ambiguous.</li>
+</ul>
+<h2 id="ordering-and-exit-criteria">Ordering and exit criteria<a class="headerlink" href="#ordering-and-exit-criteria" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Cost</th>
+<th>Could end it outright</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>hours</td>
+<td><strong>Yes</strong> — parameter mismatch or stale reference dissolves the premise</td>
+</tr>
+<tr>
+<td>1</td>
+<td>~1 day</td>
+<td><strong>Yes</strong> — the census names the stage</td>
+</tr>
+<tr>
+<td>2</td>
+<td>hours</td>
+<td>Localises empirically without any mechanism hypothesis</td>
+</tr>
+<tr>
+<td>3</td>
+<td>~1 day</td>
+<td>Converts it into a controlled, ground-truth problem</td>
+</tr>
+<tr>
+<td>4</td>
+<td>days</td>
+<td>Definitive, only if needed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Run Phase 0 first.</strong> Three dead ends in the originating session would have
+been avoided by checking whether the two runs were configured the same way.</p>
+<p><strong>Stop condition</strong>: a stage from T1.1 accounting for the majority of missed
+links, confirmed by T1.2 traces, whose removal or widening moves the link rate
+toward 69.5% in T2.1.</p>
+<h2 id="tooling-already-built">Tooling already built<a class="headerlink" href="#tooling-already-built" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Measures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts/diag_conflict_parity.py</code></td>
+<td><code>track.c</code> vs openptv2 link resolution, self-checking</td>
+</tr>
+<tr>
+<td><code>scripts/diag_speed_ceiling.py</code></td>
+<td>measured vs configured speed ceiling</td>
+</tr>
+<tr>
+<td><code>scripts/ab_loser_retry.py</code></td>
+<td><code>synthetic</code> / <code>folder</code> / <code>gate</code> modes, paired statistics</td>
+</tr>
+<tr>
+<td><code>scripts/diag_position_noise.py</code></td>
+<td>position noise vs the <code>dacc/sqrt(18)</code> ceiling</td>
+</tr>
+<tr>
+<td><code>scripts/diag_link_displacement.py</code></td>
+<td>the displacement ramp table + plot</td>
+</tr>
+<tr>
+<td><code>scripts/diag_candidate_autopsy.py</code></td>
+<td>per-link two-stage autopsy (<strong>external replay — see the open contradiction above; trust T1.1 over this</strong>)</td>
+</tr>
+<tr>
+<td><code>scripts/diag_inlist_probe.py</code></td>
+<td>reads the kernel's real <code>inlist</code>/<code>linkdecis</code> arrays</td>
+</tr>
+<tr>
+<td><code>scripts/_run_one_step.py</code></td>
+<td>one step + link comparison; used for the compiled/interpreted check</td>
+</tr>
+</tbody>
+</table>
+<h2 id="addendum-7-cascade-trackcorr-base-additive-two-phase-merge">Addendum 7: cascade (trackcorr base + additive two-phase merge)<a class="headerlink" href="#addendum-7-cascade-trackcorr-base-additive-two-phase-merge" title="Permanent link">&para;</a></h2>
+<p><code>scripts/cascade_track.py</code> (<code>merge_links</code>: accept a two-phase link iff
+BOTH ends are free; never steal) + <code>scripts/run_cascade.py</code> (synth/wp1
+driver). Load-bearing bug found by the +0 result: trackcorr marks dropped
+tails <code>-2</code>, not <code>-1</code> — the first guard (<code>== -1</code>) accepted nothing.</p>
+<ul>
+<li>synth: S13 occlusion gap fixed 94.1% → 100%; S11 unchanged (swaps have
+  taken ends — additive merge fixes incompleteness, never incorrectness).</li>
+<li>wp1: base 7251/7387 (98.16%) → merged 7295/7387 (<strong>98.75%</strong>), +444 links.
+  Added split: consecutive exact=44/extra=328 (11.8% added-precision);
+  gap exact=0/extra=0 (no occlusions in this data). Added links are
+  high-acc by construction (p50 1.46 vs ref 0.31); acc-filtering destroys
+  the gain (they're maneuvers or ghosts — undecidable vs 3dptv).</li>
+<li>Verdict: works as designed, but 44 recovered vs 328 unconfirmed fails
+  the no-ghost utility — ship as opt-in second pass, default OFF. The
+  adjudication the 328 needs is a dense-data synthetic testbed with truth.</li>
+</ul>
+<h2 id="addendum-8-willneff-program-pipeline-completion-core-limits">Addendum 8: Willneff program — pipeline completion + core limits<a class="headerlink" href="#addendum-8-willneff-program-pipeline-completion-core-limits" title="Permanent link">&para;</a></h2>
+<p>Willneff &amp; Grün 2002 (the algorithm track.c implements): new-method
+efficiency eff_3D = links/particles 76.2/89.4/91.1% (datasets A/B/C),
+gains +25/+28/+13% over object-space-only. Ingredients: image+object
+space, prediction, gap bridging, bidirectional. Thesis headline: yield of
+LONG trajectories for Lagrangian analysis.</p>
+<p>wp1 chain census — ref vs ours fwd+bwd are IDENTICAL (eff 69.9/70.2%,
+fullspan 334/335, len≥8 533/539): the port is faithful; the gap to
+Willneff's numbers is dataset difficulty + missing pipeline stages.</p>
+<p>Postprocess (<code>scripts/run_postprocess_wp1.py</code>, already wired into plugin
+flows): cold_start +8, gap bridges +138, reciprocity severs 0 →
+eff 70.2→71.5%, fullspan 335→373 (+11%), len≥8 539→608, exact unchanged
+98.16% (ref lacks relinked links). Gap bridging validated with truth:
+1- and 2-frame occlusions → 100% (<code>max_gap=2</code>). Note: 2-frame gaps only
+bridge with sequence room — the last 2 steps kill lookahead (track.c
+behavior), so tail cold-starts need the backward pass.</p>
+<p>Global (Hungarian) Phase-2 (<code>scripts/proto_global_resolve.py</code>, no kernel
+change, 20 reps): S11 20/20 (vs 7-10/20) BUT S4 13/20 and S12 7/20
+cross-ok (vs 19-20/20). Drill (<code>scripts/drill_s4_global.py</code>): identical
+histories, pure resolution-level loss — min-total overfits noise.
+REJECTED as replacement; greedy+retry stays the best average rule.</p>
+<p>Bottom line for trackcorr: pipeline-complete (fwd+bwd+postprocess) +
+loser_retry=1 is the evidence-backed operating point (98.16% links,
+71.5% eff, fullspan 373 on wp1). The S11 maneuver+noise core has no
+single-step fix — needs MHT / maneuver detection (future work).</p>
+<h2 id="addendum-9-out-of-box-program-profiler-appearance-ensemble">Addendum 9: out-of-box program — profiler, appearance, ensemble<a class="headerlink" href="#addendum-9-out-of-box-program-profiler-appearance-ensemble" title="Permanent link">&para;</a></h2>
+<p>Miss profiler (<code>scripts/miss_profiler.py</code>, 145 misses vs 7873 controls):
+misses are faster (step 1.02 vs 0.38), 5x more crowded (crowd≥2: 15.2 vs
+3.0%), shorter history (5.3 vs 7.5), higher acc (1.14 vs 0.44); no frame
+clustering except the tail frame (30 = last-frame no-lookahead boundary,
+vanishes on long sequences). Cold start is NOT the problem (0% starts).
+Appearance probe (sumg continuity at 26 contested divergences): truth
+more similar in 65% — real but weak; tiebreak-grade, not gate-grade.</p>
+<p>Ensemble (<code>scripts/collect_ensemble_wp1.py</code>: parity / default-lr1 / 4BE /
+two-phase+vel, identical inputs): singles 98.16 / <strong>98.33</strong> / 88.70 /
+96.26% (default-lr1 beats parity by 13 links — last missing cell).
+Unanimous (4/4) links: <strong>99.74% precision</strong> (n=6440) — the ghost-free set.
+Majority (≥3): 99.40% precision but only 96.01% recall (2-2 ties abstain).
+Union (any engine right): <strong>99.54%</strong> — only 34/7387 links are hard for
+ALL engines. Contested (engines disagree): 947 links (12.8%), majority
+right 90.1% (wins: default 841, parity 828, 2p 688, 4be 129).</p>
+<p>Shippable: per-link agreement flag (4/4 → high-confidence; 2-2 →
+review) + default-lr1 as the recall engine. Kernel rebuild verified
+feasible (setup.py, ~87 s) if an in-kernel change ever earns it.</p>
+<h2 id="addendum-11-brightness-in-cost-pulsatile-freedom-kernel-work">Addendum 11: brightness in cost + pulsatile freedom (kernel work)<a class="headerlink" href="#addendum-11-brightness-in-cost-pulsatile-freedom-kernel-work" title="Permanent link">&para;</a></h2>
+<p>track.c verified: tracking cost is purely kinematic
+(<code>rr=(dl/lmax+acc/dacc+angle/dangle)/quali</code>) — brightness was never used.
+(a) Implemented: <code>targ_sumg</code> SoA plumbing (Frame→kernel), per-particle
+mean-grey signatures, <code>rr += w_app·|Δ|/(sum)</code> at all 4 cost sites,
+<code>app_weight</code> flag (Tracker/TrackingRun/kernel, default 0.0), rebuilt.
+S15 (4:1 brightness kick+noise): 83%→100% at w≥0.1; 18 other
+scenario-variants unchanged (incl. uniform-brightness S11: proves
+inertness when uninformative). wp1: -4 links at w=0.1 → default 0.0,
+opt-in ≈0.1 for distinct populations. Shape/size (n/nx/ny) same pattern,
+not yet plumbed.
+(b) Pulsatile: mild (acc&lt;dacc) needs nothing (S14/S14b 100% fixed).
+Beyond-box systole needs wider dv (channel isolation: dv-only wins,
+dacc-only inert). BUT any widening (global or per-particle, hi 1.5-2.5)
+swap-bombs dense wp1 (87-88%: 832 steals, ZERO drops — smooth lies outbid
+fast truth once admitted; disciplined costs + two-tier tight confirmation
+don't save it). Kernel-neutrality proven: all features off reproduces
+7251/98.16% + 4463/93.11% bit-exactly.
+Prescription: fixed tight boxes for dense steady data (optimal);
+per-particle freedom + two-tier shell opt-in for sparse/pulsatile
+(S14c 61→100%); dense+systole needs a dense-systole truth scene + (a) as
+the complementary lever. Scripts: synth_crossing (S14/S15/sumg),
+sweep_app_weight, phase_scheduler, verify_ppar_wp1, diagnose_ppar_wp1.</p>
+<h2 id="addendum-12-ppar-config-artefact-correction-density-gated-freedom">Addendum 12: ppar config-artefact correction + density-gated freedom<a class="headerlink" href="#addendum-12-ppar-config-artefact-correction-density-gated-freedom" title="Permanent link">&para;</a></h2>
+<p>(shipped)</p>
+<p>The 87-88% "ppar regression" was a config artefact: the scheduler loaded
+<code>parameters_Run1.yaml</code> (dacc=0.8) while the fixed control ran dacc=1.9 --
+832 fast-link drops from the tight acc gate, misattributed to scaling
+(first-step gap already proved it: identical gs=1 code can't diverge).
+Scheduler now takes a <code>yaml</code> param; all wp1 runs use dacc19.
+Real scaling cost at matched config was only ~45 links, then engineered
+to zero: (1) costs stay unscaled (discipline when competing); (2) scaled
+shell keeps tight confirmation; (3) density-gated crowd veto in the
+scheduler -- freedom granted only where no rival sits near the predicted
+position in dense data (num_parts&gt;=100), veto skipped in sparse data
+where a lone bystander loses on cost (S14c). A kernel starvation-gate
+experiment was tried and REMOVED (redundant once the veto works; it
+blocked genuine shell rescues). Final, all on rebuilt kernel:
+wp1 ppar-acc-hi2.5 fwd = 7238/97.98% EXACT fixed parity; S14c-vel = 100%
+(61% fixed); S15-app0.1 = 100%; S11 fixed=app=ppar = 79.6%;
+S1-ppar = 100%. wp1 fwd+bwd: ppar+app0.1 == fixed+app0.1 link-for-link
+(7234/4439) -- backward absorbs the forward delta; app0.1 alone costs
+-17/-24 vs app0 on natural brightness (7251/4463), so default app=0,
+opt-in 0.1. run_adaptive_pp gained <code>yaml</code>, <code>mode</code>, <code>backward</code> params.</p>
+<h2 id="addendum-10-manual-vote-on-the-34-union-miss-links-moved-intact-">Addendum 10: manual vote on the 34 union-miss links (moved intact --<a class="headerlink" href="#addendum-10-manual-vote-on-the-34-union-miss-links-moved-intact-" title="Permanent link">&para;</a></h2>
+<p>was accidentally folded into Addendum 11 during editing)</p>
+<p>Prototype <code>scripts/vote_links.py</code> (agree.<frame> sidecars: flag 4/3/2/1
++ per-engine prev) + <code>scripts/plot_hard_links.py</code> (6 mosaics in
+<code>scratch/hard_links/</code>, X-Y/X-Z neighborhoods with per-engine arrows) +
+<code>scripts/judge_hard_links.py</code> (same-target options table) +
+<code>scripts/trace_divergence.py</code> (upstream walk) + validated
+<code>scripts/probe_search.py</code> (48/48 control agreement) and per-axis legality
+(31/34 legal; 3 ref dv-violations: 100005/488, 100010/860, 100010/1026).</p>
+<p>Verdict by class (34):
+- TAIL (8, all frame 100010): no-lookahead strict gate; vanishes on long
+  sequences. 860/1026 are ref dv-violations — engines defensible.
+- LOCAL contested, same history (14): genuine ties; options table decides
+  each. Exhibits: 100006/875 (ref smoother on step AND acc AND appearance
+  4-vs-139 — test steal; best case FOR appearance tiebreak), 100006/334
+  (ref acc 2.13 OVER dacc — engines right; possible 3dptv overreach),
+  100007/1268 (eng smoother 0.62 vs 1.02 — toss-up), 100004/1247
+  REF-FAST (ref steady 2.39mm/acc 0.41, all abstain — smoothness bias
+  drops fast tracks;needs velocity-alignment reward, not just acc penalty).
+- LOCAL all-abstain, small-step legal (535: kernel inlist=3 incl. truth —
+  S8-style maneuver contest loss, rr 0.039 vs 0.027; 421: parity blind via
+  broken forward history (21.6mm prediction), default contest loss — SAME
+  vote, THREE mechanisms across engines).
+- UPSTREAM (10): 2 one-step swaps adjudicated (100003/1167 lean-test:
+  smooth+history vs cold 2.25 jump; 100006/875 for REF, agrees with
+  appearance), 1 head-formation (421), 7 birth-differences in the corrupt
+  frame-100001 zone (excluded from judging — data defect).</p>
+<p>Critical missing decisions, ranked: (1) cost function has no
+velocity-alignment reward and no appearance tiebreak (875 + 1247 would
+flip); (2) single-step horizon can't see maneuvers resolving (S11);
+(3) upstream swaps cascade into downstream blindness backward can't
+repair (needs next&gt;=0 seeds). (1) is implementable in-kernel; (2)-(3)
+need MHT.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
