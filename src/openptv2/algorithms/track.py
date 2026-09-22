@@ -1202,6 +1202,7 @@ def trackcorr_c_loop(run_info, step, num_threads=None):
         int(getattr(run_info, "cold_start_neighbour", 1)),
         float(getattr(run_info, "app_weight", 0.0)),
         gate_scale,
+        int(getattr(run_info, "use_grid", 0)),
     )
 
     fb.buf[2].num_parts = int(np2[0])

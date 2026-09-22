@@ -43,6 +43,179 @@ else:
     )
 
 
+#: Uniform-grid cell size (pixels) for the optional grid-accelerated
+#: candidate search. Any value preserves results: the grid only selects a
+#: superset (cells overlapping the query window) and the exact legacy
+#: window filter + distance ordering run unchanged afterwards.
+GRID_CELL_PX = 16.0
+
+
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nogil
+@cython.exceptval(check=False)
+def _grid_build_nogil(
+    targ_x: cython.double[:],
+    targ_y: cython.double[:],
+    num_targets: cython.int,
+    cell: cython.double,
+    gnx: cython.int,
+    gny: cython.int,
+    head: cython.int[:],
+    nxt: cython.int[:],
+) -> cython.int:
+    """Bucket 2D targets into a uniform grid (head/next index chains).
+
+    head has length gnx*gny (filled with -1); nxt has length >= num_targets.
+    Out-of-image coordinates are clamped into the border cells; the exact
+    window filter at query time keeps results identical to a full scan.
+    """
+    c: cython.int
+    i: cython.int
+    cx: cython.int
+    cy: cython.int
+    for c in range(gnx * gny):
+        head[c] = -1
+    for i in range(num_targets):
+        cx = int(targ_x[i] / cell)
+        if cx < 0:
+            cx = 0
+        elif cx >= gnx:
+            cx = gnx - 1
+        cy = int(targ_y[i] / cell)
+        if cy < 0:
+            cy = 0
+        elif cy >= gny:
+            cy = gny - 1
+        c = cy * gnx + cx
+        nxt[i] = head[c]
+        head[c] = i
+    return 0
+
+
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nogil
+@cython.exceptval(check=False)
+def _grid_candsearch_nogil(
+    targ_x: cython.double[:],
+    targ_y: cython.double[:],
+    targ_tnr: cython.int[:],
+    head: cython.int[:],
+    nxt: cython.int[:],
+    gnx: cython.int,
+    gny: cython.int,
+    cell: cython.double,
+    cent_x: cython.double,
+    cent_y: cython.double,
+    dl: cython.double,
+    dr: cython.double,
+    du: cython.double,
+    dd: cython.double,
+    imx: cython.double,
+    imy: cython.double,
+    tr_unused: cython.int,
+    max_cands: cython.int,
+    out_indices: cython.int[:],
+    out_dists: cython.double[:],
+) -> cython.int:
+    """Grid twin of :func:`candsearch_in_pix_fast_nogil`: nearest `max_cands`
+    targets within the search box, nearest first.
+
+    Window computation, image guards, validity filter and distance are
+    identical to the linear scan; only the traversal differs (cells
+    overlapping the window instead of the y-band). Ties in distance resolve
+    by ascending target index (deterministic); the legacy scan resolves them
+    by y-band order, so results are identical up to measure-zero ties
+    (verified empirically by the wp1 neutrality check).
+    """
+    xmin: cython.double
+    xmax: cython.double
+    ymin: cython.double
+    ymax: cython.double
+    cx0: cython.int
+    cx1: cython.int
+    cy0: cython.int
+    cy1: cython.int
+    cx: cython.int
+    cy: cython.int
+    j: cython.int
+    tx: cython.double
+    ty: cython.double
+    dx: cython.double
+    dy: cython.double
+    d: cython.double
+    ci: cython.int
+    pos: cython.int
+
+    xmin = cent_x - dl
+    xmax = cent_x + dr
+    ymin = cent_y - du
+    ymax = cent_y + dd
+
+    if xmin < 0.0:
+        xmin = 0.0
+    if xmax > imx:
+        xmax = imx
+    if ymin < 0.0:
+        ymin = 0.0
+    if ymax > imy:
+        ymax = imy
+
+    for ci in range(max_cands):
+        out_indices[ci] = -999  # PT_UNUSED
+        out_dists[ci] = 1e20
+
+    if not (0.0 <= cent_x <= imx and 0.0 <= cent_y <= imy):
+        return 0
+
+    cx0 = int(xmin / cell)
+    if cx0 < 0:
+        cx0 = 0
+    cx1 = int(xmax / cell)
+    if cx1 >= gnx:
+        cx1 = gnx - 1
+    cy0 = int(ymin / cell)
+    if cy0 < 0:
+        cy0 = 0
+    cy1 = int(ymax / cell)
+    if cy1 >= gny:
+        cy1 = gny - 1
+
+    for cy in range(cy0, cy1 + 1):
+        for cx in range(cx0, cx1 + 1):
+            j = head[cy * gnx + cx]
+            while j >= 0:
+                if targ_tnr[j] != tr_unused:
+                    tx = targ_x[j]
+                    ty = targ_y[j]
+                    if tx > xmin and tx < xmax and ty > ymin and ty < ymax:
+                        dx = cent_x - tx
+                        dy = cent_y - ty
+                        d = c_sqrt(dx * dx + dy * dy)
+                        if d < out_dists[max_cands - 1] or (
+                            d == out_dists[max_cands - 1]
+                            and j < out_indices[max_cands - 1]
+                        ):
+                            pos = max_cands - 1
+                            while pos > 0 and (
+                                out_dists[pos - 1] > d
+                                or (
+                                    out_dists[pos - 1] == d
+                                    and out_indices[pos - 1] > j
+                                )
+                            ):
+                                out_dists[pos] = out_dists[pos - 1]
+                                out_indices[pos] = out_indices[pos - 1]
+                                pos -= 1
+                            out_dists[pos] = d
+                            out_indices[pos] = j
+                j = nxt[j]
+    return 0
+
+
 @cython.ccall
 @cython.nogil
 @cython.exceptval(check=False)
@@ -548,6 +721,12 @@ def _sorted_candidates_fast_out_nogil(
     whichcam_out: cython.int[:, :],
     pt_buf: cython.double[:],
     _pp: cython.double[:],
+    use_grid: cython.int,
+    grid_head: cython.int[:, :],
+    grid_next: cython.int[:, :],
+    grid_nx: cython.int,
+    grid_ny: cython.int,
+    grid_cell: cython.double,
 ) -> cython.int:
     n: cython.int
     px: cython.double
@@ -700,24 +879,48 @@ def _sorted_candidates_fast_out_nogil(
 
     # --- candsearch per camera, write directly into ftnr_out/whichcam_out ---
     for cam in range(num_cams):
-        candsearch_in_pix_fast_nogil(
-            targ_x[cam],
-            targ_y[cam],
-            targ_tnr[cam],
-            num_targets[cam],
-            center_proj_x[cam],
-            center_proj_y[cam],
-            xl[cam],
-            xr[cam],
-            yu[cam],
-            yd[cam],
-            imx,
-            imy,
-            tr_unused,
-            max_cands,
-            cands_buf,
-            cand_dists_buf,
-        )
+        if use_grid:
+            _grid_candsearch_nogil(
+                targ_x[cam],
+                targ_y[cam],
+                targ_tnr[cam],
+                grid_head[cam],
+                grid_next[cam],
+                grid_nx,
+                grid_ny,
+                grid_cell,
+                center_proj_x[cam],
+                center_proj_y[cam],
+                xl[cam],
+                xr[cam],
+                yu[cam],
+                yd[cam],
+                imx,
+                imy,
+                tr_unused,
+                max_cands,
+                cands_buf,
+                cand_dists_buf,
+            )
+        else:
+            candsearch_in_pix_fast_nogil(
+                targ_x[cam],
+                targ_y[cam],
+                targ_tnr[cam],
+                num_targets[cam],
+                center_proj_x[cam],
+                center_proj_y[cam],
+                xl[cam],
+                xr[cam],
+                yu[cam],
+                yd[cam],
+                imx,
+                imy,
+                tr_unused,
+                max_cands,
+                cands_buf,
+                cand_dists_buf,
+            )
 
         base = cam * max_cands
         for ci in range(max_cands):

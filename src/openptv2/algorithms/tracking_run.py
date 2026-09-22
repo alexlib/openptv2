@@ -44,6 +44,9 @@ class TrackingRun:
     # the rr cost. 0.0 = original 3dptv track.c behaviour (purely
     # kinematic cost); track.c never used brightness in tracking.
     app_weight: float = 0.0
+    # Uniform-grid acceleration of the 2D candidate search (built once per
+    # step, reused by every particle). 0 = legacy y-band scan exactly.
+    use_grid: int = 0
 
     def __post_init__(self):
         self.fb = FrameBuf(

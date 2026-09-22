@@ -85,6 +85,7 @@ class Tracker:
         loser_retry=1,
         cold_start_neighbour=1,
         app_weight=0.0,
+        use_grid=0,
     ):
         """
         Initialize Tracker.
@@ -113,6 +114,8 @@ class Tracker:
         self._cold_start_neighbour = int(cold_start_neighbour)
         # Appearance cost weight, threaded to TrackingRun (0.0 = track.c).
         self._app_weight = float(app_weight)
+        # Uniform-grid candidate search (0 = legacy y-band scan exactly).
+        self._use_grid = int(use_grid)
 
         # File naming
         if naming is None:
@@ -158,6 +161,7 @@ class Tracker:
             loser_retry=self._loser_retry,
             cold_start_neighbour=self._cold_start_neighbour,
             app_weight=self._app_weight,
+            use_grid=self._use_grid,
         )
 
         # Initialize forward tracking

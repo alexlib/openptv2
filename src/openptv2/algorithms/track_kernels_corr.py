@@ -14,6 +14,7 @@ else:
 
 if cython.compiled:
     from cython.cimports.openptv2.algorithms.track_kernels_pixel import (
+        _grid_build_nogil,
         _point_to_pixel_out,
         _sorted_candidates_fast_out_nogil,
     )
@@ -24,6 +25,7 @@ if cython.compiled:
     )
 else:
     from .track_kernels_pixel import (
+        _grid_build_nogil,
         _point_to_pixel_out,
         _sorted_candidates_fast_out_nogil,
     )
@@ -162,6 +164,14 @@ def _trackcorr_particle_fast(
     cold_start_neighbour: cython.int,
     app_weight: cython.double,
     gate_scale: cython.double[:],
+    use_grid: cython.int,
+    grid_head_2: cython.int[:, :],
+    grid_next_2: cython.int[:, :],
+    grid_head_3: cython.int[:, :],
+    grid_next_3: cython.int[:, :],
+    grid_nx: cython.int,
+    grid_ny: cython.int,
+    grid_cell: cython.double,
 ) -> cython.int:
     prev_h: cython.int
     j: cython.int
@@ -447,6 +457,12 @@ def _trackcorr_particle_fast(
         _wc_buf1,
         pt_buf,
         _pp_mv,
+        use_grid,
+        grid_head_2,
+        grid_next_2,
+        grid_nx,
+        grid_ny,
+        grid_cell,
     )
 
     if w_nc == 0:
@@ -554,6 +570,12 @@ def _trackcorr_particle_fast(
             _wc_buf2,
             pt_buf,
             _pp_mv,
+            use_grid,
+            grid_head_3,
+            grid_next_3,
+            grid_nx,
+            grid_ny,
+            grid_cell,
         )
 
         if wn_nc > 0:
@@ -1065,6 +1087,7 @@ def trackcorr_loop_fast(
     cold_start_neighbour: cython.int = 1,
     app_weight: cython.double = 0.0,
     gate_scale: cython.double[:] = None,
+    use_grid: cython.int = 0,
 ):
     """Full per-particle tracking loop + link resolution — single compiled entry.
 
@@ -1092,6 +1115,16 @@ def trackcorr_loop_fast(
     ti: cython.int
     cand: cython.int
     flag: cython.bint
+    grid_head_2: cython.int[:, :]
+    grid_next_2: cython.int[:, :]
+    grid_head_3: cython.int[:, :]
+    grid_next_3: cython.int[:, :]
+    grid_nx: cython.int = 0
+    grid_ny: cython.int = 0
+    grid_cell: cython.double = 16.0
+    maxnt2: cython.int = 0
+    maxnt3: cython.int = 0
+    _gc: cython.int
 
     n_sc: cython.int = num_cams * MAX_CANDS_K
 
@@ -1200,6 +1233,41 @@ def trackcorr_loop_fast(
     if gate_scale is None:
         gate_scale = np.ones(orig_parts_1, dtype=np.float64)
 
+    # Optional uniform-grid acceleration of the 2D candidate search
+    # (built once per step for the frame-2/frame-3 target sets, reused by
+    # every particle). use_grid=0 keeps the legacy y-band scan exactly.
+    if use_grid:
+        grid_nx = int(imx / grid_cell) + 1
+        grid_ny = int(imy / grid_cell) + 1
+        maxnt2 = 0
+        maxnt3 = 0
+        for _gc in range(num_cams):
+            if num_targets_2[_gc] > maxnt2:
+                maxnt2 = num_targets_2[_gc]
+            if num_targets_3[_gc] > maxnt3:
+                maxnt3 = num_targets_3[_gc]
+        if maxnt2 < 1:
+            maxnt2 = 1
+        if maxnt3 < 1:
+            maxnt3 = 1
+        _gh2 = np.full((num_cams, grid_nx * grid_ny), -1, dtype=np.int32)
+        _gn2 = np.empty((num_cams, maxnt2), dtype=np.int32)
+        _gh3 = np.full((num_cams, grid_nx * grid_ny), -1, dtype=np.int32)
+        _gn3 = np.empty((num_cams, maxnt3), dtype=np.int32)
+        grid_head_2 = _gh2
+        grid_next_2 = _gn2
+        grid_head_3 = _gh3
+        grid_next_3 = _gn3
+        for _gc in range(num_cams):
+            _grid_build_nogil(
+                targ_x_2[_gc], targ_y_2[_gc], num_targets_2[_gc],
+                grid_cell, grid_nx, grid_ny,
+                grid_head_2[_gc], grid_next_2[_gc])
+            _grid_build_nogil(
+                targ_x_3[_gc], targ_y_3[_gc], num_targets_3[_gc],
+                grid_cell, grid_nx, grid_ny,
+                grid_head_3[_gc], grid_next_3[_gc])
+
     # Serial particle loop
     for h in range(orig_parts_1):
         _trackcorr_particle_fast(
@@ -1298,6 +1366,14 @@ def trackcorr_loop_fast(
             cold_start_neighbour,
             app_weight,
             gate_scale,
+            use_grid,
+            grid_head_2,
+            grid_next_2,
+            grid_head_3,
+            grid_next_3,
+            grid_nx,
+            grid_ny,
+            grid_cell,
         )
 
     # Sequential post-loop actual appending to global arrays
