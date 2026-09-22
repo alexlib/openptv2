@@ -1,0 +1,77 @@
+# OpenPTV2 GUI served to a browser via Xpra's HTML5 client — no client
+# install, no X11 forwarding setup, just open a URL.
+#
+# Pattern learned from CyVerse VICE (github.com/cyverse-vice/xpra), which
+# serves scientific desktop GUI apps (CellProfiler, Orange3, ImageJ) the
+# same way: Xvfb (virtual X server) + xpra (seamless X11-app-to-browser
+# forwarding, HTML5 client) + the app itself, started as xpra's child
+# process. Builds on the same GUI dependency set already proven in
+# docker/Dockerfile (the libxcb*/xkb/GL/fontconfig packages PySide6 needs
+# to open a window over X11 — Xvfb is just a virtual X11 display, so the
+# app talks to it exactly the same way it talks to a real one).
+#
+#   Build:  docker build -f docker/Dockerfile.xpra -t openptv2-xpra .
+#   Run:    ./docker/run-xpra.sh
+#   Open:   http://localhost:9876 in any browser — pyptv_gui appears as a
+#           browser window, no client install.
+#
+# See docs/browser-gui.md for local testing and GCP deployment instructions,
+# including why this refuses to start with no authentication configured
+# (docker/entry-xpra.sh) and the recommended Cloud Run + IAP setup.
+#
+# NOT YET VERIFIED end-to-end (no Docker daemon in the environment this was
+# first drafted in): that Chaco/Enable's Qt rendering backend draws
+# correctly under Xvfb with no real GPU. Expected to work — Enable's Qt
+# backend is normally software/QPainter-based — but click through it for
+# real before relying on this. If Chaco plots come out blank/garbled, the
+# likely fix is an explicit software-GL driver (`LIBGL_ALWAYS_SOFTWARE=1`)
+# or adjusting Xvfb's `-screen` depth/extensions.
+
+FROM python:3.12-slim
+
+# --- system deps -------------------------------------------------------
+# Same X11/Qt deps as docker/Dockerfile (PySide6 needs these to open a
+# window at all, real display or virtual), plus xpra + Xvfb + xterm to
+# serve that window to a browser instead of a local X server.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libgl1 libegl1 libglib2.0-0 libdbus-1-3 libfontconfig1 \
+    libxkbcommon0 libxkbcommon-x11-0 \
+    libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+    libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-xinerama0 \
+    libxcb-util1 libxcb-xkb1 libxrender1 libxi6 libsm6 \
+    wget gnupg2 xvfb xterm \
+    && wget -qO - https://xpra.org/gpg.asc | gpg --dearmor -o /usr/share/keyrings/xpra.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/xpra.gpg] https://xpra.org/ bookworm main" \
+       > /etc/apt/sources.list.d/xpra.list \
+    && apt-get update && apt-get install -y --no-install-recommends xpra \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# --- non-root user (xpra/VICE convention) -------------------------------
+RUN adduser --disabled-password --gecos "openptv2" --uid 1000 openptv2 \
+    && mkdir -p /run/user/1000/xpra /run/xpra \
+    && chown -R openptv2:openptv2 /run/user/1000/xpra /run/xpra
+
+WORKDIR /app
+COPY . /app
+RUN chown -R openptv2:openptv2 /app && chmod +x /app/docker/entry-xpra.sh
+
+# [gui] = same extras as docker/Dockerfile: headless/batch runtime + the
+# desktop GUI stack (TraitsUI/Chaco/PySide6).
+RUN pip install --no-cache-dir -e ".[gui]"
+
+# Baked first-run demo, same as docker/Dockerfile.
+RUN mkdir -p /demo && cp -r /app/test_data/test_cavity /demo/test_cavity \
+    && chown -R openptv2:openptv2 /demo
+
+USER openptv2
+WORKDIR /data
+VOLUME ["/data"]
+
+ENV QT_X11_NO_MITSHM=1 \
+    PYTHONUNBUFFERED=1 \
+    DISPLAY=:100
+
+EXPOSE 9876
+
+ENTRYPOINT ["bash", "/app/docker/entry-xpra.sh"]
