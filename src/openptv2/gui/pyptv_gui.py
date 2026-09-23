@@ -2188,6 +2188,24 @@ def printException():
     print("=" * 50)
 
 
+def _has_experiment(dir_path: Path) -> bool:
+    """Check if a directory contains OpenPTV experiment files (YAML parameters or legacy parameter dirs)."""
+    if not dir_path.is_dir():
+        return False
+    try:
+        if any(dir_path.glob("*parameters*.yaml")) or any(
+            dir_path.glob("*parameters*.yml")
+        ):
+            return True
+        if any(
+            d.is_dir() and d.name.startswith("parameters") for d in dir_path.iterdir()
+        ):
+            return True
+    except OSError:
+        pass
+    return False
+
+
 def main():
     """main function"""
     import argparse
@@ -2256,24 +2274,52 @@ def main():
             exp = Experiment(pm=pm)  # ensures pm is an active parameter set
             exp.populate_runs(exp_path, active_yaml=yaml_file)
         elif arg_path.is_dir():  # second option - supply directory
+            target_dir = arg_path
+            if (
+                not _has_experiment(target_dir)
+                and (target_dir / "test_data" / "test_cavity").is_dir()
+            ):
+                target_dir = target_dir / "test_data" / "test_cavity"
             exp = Experiment()
-            exp.populate_runs(arg_path)
+            exp.populate_runs(target_dir)
             yaml_file = exp.active_params.yaml_path
             # exp.pm.from_yaml(yaml_file)
             print(f"Using top YAML file found: {yaml_file}")
         else:
             raise OSError(f"Argument must be a directory or YAML file, got: {arg_path}")
     else:
-        # Fallback to the bundled dev test case if it happens to be present
-        # (running from a source checkout). A fresh install won't have it, so
-        # exit with guidance instead of an opaque FileNotFoundError.
-        exp_path = software_path / "gui" / "tests" / "test_cavity"
-        if not exp_path.is_dir():
+        # Fallback to candidate experiment locations:
+        # 1. Current working directory (if it contains experiment yaml or parameters/)
+        # 2. Local test_data/test_cavity in current working directory (repo checkout or mounted repo)
+        # 3. Local test_cavity in current working directory
+        # 4. Baked Docker demo at /demo/test_cavity
+        # 5. Mounted /data or /data/test_data/test_cavity
+        # 6. Package source checkout test_data/test_cavity
+        # 7. Legacy test_cavity location
+        candidate_dirs = [
+            software_path,
+            software_path / "test_data" / "test_cavity",
+            software_path / "test_cavity",
+            Path("/demo/test_cavity"),
+            Path("/data"),
+            Path("/data/test_data/test_cavity"),
+            Path(__file__).resolve().parents[3] / "test_data" / "test_cavity",
+            software_path / "gui" / "tests" / "test_cavity",
+        ]
+        found_exp_dir = None
+        for candidate in candidate_dirs:
+            if _has_experiment(candidate):
+                found_exp_dir = candidate
+                break
+
+        if found_exp_dir is None:
             print(
                 "No experiment given. Pass a directory or an active YAML file, "
                 "e.g.:\n    openptv2-gui /data/exp1/parameters_Run3.yaml"
             )
             raise SystemExit(2)
+
+        exp_path = found_exp_dir
         exp = Experiment()
         exp.populate_runs(exp_path)
         yaml_file = exp.active_params.yaml_path

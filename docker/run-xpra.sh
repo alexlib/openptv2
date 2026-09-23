@@ -54,8 +54,13 @@ else
   echo "127.0.0.1 only. Set OPENPTV2_XPRA_PASSWORD to add a login prompt." >&2
 fi
 
-docker run --rm -it \
+TTY_ARGS=(-it)
+if [ ! -t 0 ]; then
+  TTY_ARGS=(-i)
+fi
+
+docker run --rm "${TTY_ARGS[@]}" \
   -p "$PORT_BIND" \
   "${ENV_ARGS[@]}" \
   -v "$DATA_DIR:/data" \
-  "$IMAGE"
+  "$IMAGE" "${@:2}"

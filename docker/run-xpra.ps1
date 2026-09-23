@@ -20,7 +20,9 @@
 #     to 0.0.0.0 without also setting a password.
 
 param(
-    [string]$DataDir = (Get-Location).Path
+    [string]$DataDir = (Get-Location).Path,
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$ExtraArgs
 )
 
 $ErrorActionPreference = "Stop"
@@ -41,8 +43,16 @@ if ($env:OPENPTV2_XPRA_PASSWORD) {
     Write-Warning "No OPENPTV2_XPRA_PASSWORD set - running with no auth, bound to 127.0.0.1 only. Set `$env:OPENPTV2_XPRA_PASSWORD to add a login prompt."
 }
 
-docker run --rm -it `
-    -p 127.0.0.1:9876:9876 `
-    @EnvArgs `
-    -v "${DataDir}:/data" `
+$TtyArgs = if ([Console]::IsInputRedirected) { @("-i") } else { @("-it") }
+
+$DockerArgs = @("run", "--rm") + $TtyArgs + @(
+    "-p", "127.0.0.1:9876:9876"
+) + $EnvArgs + @(
+    "-v", "${DataDir}:/data",
     $Image
+)
+if ($ExtraArgs -and $ExtraArgs.Count -gt 0) {
+    $DockerArgs += $ExtraArgs
+}
+
+docker @DockerArgs

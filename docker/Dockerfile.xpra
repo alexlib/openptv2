@@ -57,13 +57,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && wget -O /usr/share/keyrings/xpra.asc https://xpra.org/xpra.asc \
     && wget -O /etc/apt/sources.list.d/xpra.sources \
        https://raw.githubusercontent.com/Xpra-org/xpra/master/packaging/repos/bookworm/xpra.sources \
-    && apt-get update && apt-get install -y --no-install-recommends xpra \
+    && apt-get update && apt-get install -y --no-install-recommends \
+       xpra xpra-x11 xpra-html5 xauth python3-netifaces \
+       libx264-164 python3-xdg python3-paramiko python3-zeroconf \
+       xkb-data python3-xlib \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Pre-create X11 unix socket directory with correct permissions so Xvfb doesn't fail when run as non-root
+RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp/.X11-unix
 
 # --- non-root user (xpra/VICE convention) -------------------------------
 RUN adduser --disabled-password --gecos "openptv2" --uid 1000 openptv2 \
     && mkdir -p /run/user/1000/xpra /run/xpra \
-    && chown -R openptv2:openptv2 /run/user/1000/xpra /run/xpra
+    && chmod 700 /run/user/1000 /run/user/1000/xpra \
+    && chown -R openptv2:openptv2 /run/user/1000 /run/xpra
 
 WORKDIR /app
 COPY . /app
@@ -83,7 +90,8 @@ VOLUME ["/data"]
 
 ENV QT_X11_NO_MITSHM=1 \
     PYTHONUNBUFFERED=1 \
-    DISPLAY=:100
+    DISPLAY=:100 \
+    XDG_RUNTIME_DIR=/run/user/1000
 
 EXPOSE 9876
 
