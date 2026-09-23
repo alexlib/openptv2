@@ -1,6 +1,7 @@
 """Streamlined target recognition and binarization."""
 
 from collections import deque
+from typing import Any, cast
 
 import numpy as np
 
@@ -232,4 +233,4 @@ def targ_rec_scaled(img, *args, scaling: dict | None = None, **kwargs):
         arr = to_uint8(
             arr, rule.get("mode", "fixed"), lo=rule.get("lo"), hi=rule.get("hi")
         )
-    return _targ_rec(arr, *args, **kwargs)
+    return cast(Any, _targ_rec)(arr, *args, **kwargs)

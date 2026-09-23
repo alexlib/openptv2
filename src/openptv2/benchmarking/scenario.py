@@ -219,8 +219,8 @@ def generate_scenario(
             if spec.gap_probability > 0 and rng.uniform() < spec.gap_probability:
                 continue
             if spec.noise_mm > 0:
-                n = rng.normal(0, spec.noise_mm, 3)
-                frame_gt[f].append((pid, x + n[0], y + n[1], z + n[2]))
+                noise = rng.normal(0, spec.noise_mm, 3)
+                frame_gt[f].append((pid, x + noise[0], y + noise[1], z + noise[2]))
             else:
                 frame_gt[f].append((pid, x, y, z))
 

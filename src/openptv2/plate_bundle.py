@@ -43,7 +43,10 @@ def rodrigues(rvec: np.ndarray) -> np.ndarray:
         return np.eye(3)
     k = r / theta
     K = np.array([[0.0, -k[2], k[1]], [k[2], 0.0, -k[0]], [-k[1], k[0], 0.0]])
-    return np.eye(3) + np.sin(theta) * K + (1.0 - np.cos(theta)) * (K @ K)
+    return np.asarray(
+        np.eye(3) + np.sin(theta) * K + (1.0 - np.cos(theta)) * (K @ K),
+        dtype=np.float64,
+    )
 
 
 def rotvec(R: np.ndarray) -> np.ndarray:
@@ -59,9 +62,9 @@ def rotvec(R: np.ndarray) -> np.ndarray:
         i = int(np.argmax(k))
         if k[i] > 1e-9:
             k = A[:, i] / k[i]
-        return theta * k / max(float(np.linalg.norm(k)), 1e-12)
+        return np.asarray(theta * k / max(float(np.linalg.norm(k)), 1e-12), dtype=np.float64)
     axis = np.array([R[2, 1] - R[1, 2], R[0, 2] - R[2, 0], R[1, 0] - R[0, 1]])
-    return theta * axis / (2.0 * np.sin(theta))
+    return np.asarray(theta * axis / (2.0 * np.sin(theta)), dtype=np.float64)
 
 
 def tilt_off_vertical_deg(R: np.ndarray, up_axis: int = 1) -> float:
@@ -123,7 +126,10 @@ class BundleResult:
 
     def camera_centre(self, ci: int) -> np.ndarray:
         """Projection centre of camera ``ci`` in world coordinates."""
-        return -rodrigues(self.cam_rvec[ci]).T @ self.cam_tvec[ci]
+        return np.asarray(
+            -rodrigues(self.cam_rvec[ci]).T @ self.cam_tvec[ci],
+            dtype=np.float64,
+        )
 
 
 def _pack(cam_rvec, cam_tvec, plate_rvec, plate_tvec):

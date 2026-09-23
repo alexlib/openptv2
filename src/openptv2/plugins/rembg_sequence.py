@@ -2,8 +2,8 @@ from pathlib import Path
 
 import numpy as np
 from imageio.v3 import imread
-from skimage import img_as_ubyte
 from skimage.color import rgb2gray
+from skimage.util import img_as_ubyte
 
 from openptv2.correspondences import MatchedCoords, correspondences
 from openptv2.orientation import point_positions
@@ -41,7 +41,7 @@ def mask_image(imname: Path, display: bool = False) -> np.ndarray:
     result = remove(input_data, session=_get_session())
     result = img_as_ubyte(rgb2gray(result[:, :, :3]))
 
-    return result
+    return np.asarray(result, dtype=np.uint8)
 
 
 class Sequence:

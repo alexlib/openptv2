@@ -133,8 +133,11 @@ def find_rms(ori_path: Path) -> tuple[float | None, int | None]:
                 rep.append((float(parts[3]), float(parts[4])))
             if not ids:
                 return None, None
-            det, rep = np.array(det), np.array(rep)
-            rms = float(np.sqrt(np.mean(np.sum((det - rep) ** 2, axis=1))))
+            det_arr = np.asarray(det, dtype=np.float64)
+            rep_arr = np.asarray(rep, dtype=np.float64)
+            rms = float(
+                np.sqrt(np.mean(np.sum((det_arr - rep_arr) ** 2, axis=1)))
+            )
             return rms, len(ids)
     return None, None
 

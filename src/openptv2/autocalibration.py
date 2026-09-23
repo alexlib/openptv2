@@ -214,7 +214,7 @@ def resolve_calblock(base: Path) -> Path:
     """
     fixp_name = _cal_ori_yaml(base).get("fixp_name")
     if fixp_name:
-        return base / fixp_name
+        return base / str(fixp_name)
     return base / "cal" / "target_on_a_side.txt"
 
 
@@ -650,7 +650,8 @@ def calibrate_dataset(
 
             shutil.copy2(ori, Path(str(ori) + ".autobck"))
             shutil.copy2(addpar, Path(str(addpar) + ".autobck"))
-            res.cal.write(str(ori).encode(), str(addpar).encode())
+            if res.cal is not None:
+                res.cal.write(str(ori).encode(), str(addpar).encode())
 
     return results
 
@@ -690,6 +691,8 @@ def cross_camera_rcm(results: list[CamResult], cpar) -> dict | None:
         for cam, (px, py) in pix.items():
             mx, my = pixel_to_metric(px, py, cpar)
             cal = cal_by_cam[cam]
+            if cal is None:
+                continue
             fx, fy = dist_to_flat(
                 mx,
                 my,
@@ -929,7 +932,8 @@ def _cam_view(base: Path, cam: int, raw):
     even when the calibration is right. Detection already splits (see
     detect_targets.py); this makes the overlay agree with it.
     """
-    y = yaml.safe_load(_find_yaml(base).read_text()) if _find_yaml(base) else {}
+    yaml_path = _find_yaml(base)
+    y = yaml.safe_load(yaml_path.read_text()) if yaml_path else {}
     ptv = y.get("ptv") or {}
     if not ptv.get("splitter"):
         return raw
@@ -1018,7 +1022,8 @@ def suggest_eps0(base, cpar, cals, *, sweep=None, gt_radius=3.0):
 
     if cpar.num_cams != 4:
         return None
-    y = yaml.safe_load(_find_yaml(base).read_text()) if _find_yaml(base) else {}
+    yaml_path = _find_yaml(base)
+    y = yaml.safe_load(yaml_path.read_text()) if yaml_path else {}
     crit = y.get("criteria")
     if not crit:
         return None

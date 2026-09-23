@@ -26,7 +26,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 
@@ -52,7 +52,10 @@ class WarmupResult:
 def _window_spar(spar: SequencePar, first: int, n_frames: int) -> SequencePar:
     last = min(first + n_frames - 1, spar.last)
     return SequencePar(
-        num_cams=spar.num_cams, img_base_name=spar.img_base_name, first=first, last=last
+        num_cams=spar.num_cams,
+        img_base_name=cast(list[str] | None, spar.img_base_name),
+        first=first,
+        last=last,
     )
 
 
@@ -245,7 +248,7 @@ def run_warmup(
         engine_scores[engine] = _mean_track_length(
             naming["linkage"], first, last, store
         )
-    best_engine = max(engine_scores, key=engine_scores.get)
+    best_engine = max(engine_scores, key=lambda engine: engine_scores[engine])
 
     result = WarmupResult(
         tracker=best_engine,

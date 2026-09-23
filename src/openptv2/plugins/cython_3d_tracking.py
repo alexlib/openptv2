@@ -7,6 +7,7 @@ segment linking cascade for ultra-fast 3D position-space trajectory reconstructi
 from __future__ import annotations
 
 import logging
+from typing import Any, cast
 
 import numpy as np
 
@@ -153,7 +154,7 @@ class Cython3DTracker:
             next_2 = next_links[t + 1]
 
             # Execute compiled Cython track3d_loop_fast kernel!
-            track3d_loop_fast(
+            cast(Any, track3d_loop_fast)(
                 n1,
                 pos_0,
                 prev_0,

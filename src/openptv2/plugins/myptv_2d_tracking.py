@@ -11,6 +11,7 @@ Implements MyPTV's 2D image-space tracking algorithm per camera:
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, cast
 
 import numpy as np
 from scipy.optimize import linear_sum_assignment
@@ -25,7 +26,7 @@ class MyPTV2DTracker:
         self.max_pixel_disp = max_pixel_disp
         self.max_gap = max_gap
 
-    def track_frames(self, frame_particles: list[np.ndarray]) -> list[dict]:
+    def track_frames(self, frame_particles: list[np.ndarray]) -> list[dict[str, Any]]:
         """Track 3D frame particle positions using 2D projection plane search bounds.
 
         Parameters
@@ -58,7 +59,7 @@ class MyPTV2DTracker:
             )
         return trajectories
 
-    def track_2d_blobs(self, frame_blobs: list[np.ndarray]) -> list[dict]:
+    def track_2d_blobs(self, frame_blobs: list[np.ndarray]) -> list[dict[str, Any]]:
         """Track 2D target points across frames for a single camera.
 
         Parameters
@@ -75,8 +76,8 @@ class MyPTV2DTracker:
         if num_frames < 2:
             return []
 
-        active_tracks = []
-        completed_tracks = []
+        active_tracks: list[dict[str, Any]] = []
+        completed_tracks: list[dict[str, Any]] = []
         next_track_id = 1
 
         if len(frame_blobs[0]) > 0:
@@ -179,7 +180,7 @@ class MyPTV2DTracker:
 
         completed_tracks.extend(active_tracks)
 
-        results = []
+        results: list[dict[str, Any]] = []
         for tr in completed_tracks:
             if len(tr["pos_2d"]) >= 2:
                 results.append(
@@ -252,7 +253,7 @@ class Tracking:
         # 1. Fill database using Frame objects; reads through the RunStore
         # when it holds the frame (zarr is the database of record), with the
         # rt_is.# ASCII files as fallback.
-        frames = []
+        frames: list[Frame] = []
         for fn in frame_numbers:
             frame = Frame(num_cams, max_targets)
             frame.read(
@@ -266,7 +267,7 @@ class Tracking:
             frames.append(frame)
 
         # 2. Extract 2D projected points for each camera across frames
-        cams_2d_blobs = []
+        cams_2d_blobs: list[list[np.ndarray]] = []
         for cam_idx in range(num_cams):
             cal = cals[cam_idx] if cam_idx < len(cals) else None
 
@@ -283,7 +284,7 @@ class Tracking:
             cams_2d_blobs.append(frame_blobs_cam)
 
         # 3. Track 2D points per camera & tally multi-camera consensus votes
-        vote_matrices = [
+        vote_matrices: list[np.ndarray] = [
             np.zeros((frames[f].num_parts, frames[f + 1].num_parts), dtype=np.int32)
             for f in range(num_frames - 1)
         ]
@@ -325,8 +326,10 @@ class Tracking:
 
                 for r, c in zip(row_ind, col_ind):
                     if vm[r, c] >= 1:
-                        frame_curr.path_next[r] = c
-                        frame_next.path_prev[c] = r
+                        path_next = cast(np.ndarray, frame_curr.path_next)
+                        path_prev = cast(np.ndarray, frame_next.path_prev)
+                        path_next[r] = c
+                        path_prev[c] = r
 
         # 5. Sync SoA to Pathinfo & Write Frame database out (OUTPUT: the
         # RunStore when attached, res/ptv_is.# ASCII otherwise)
@@ -350,7 +353,8 @@ class Tracking:
             if f_idx < num_frames - 1:
                 curr_c = frame.num_parts
                 next_c = frames[f_idx + 1].num_parts
-                step_links = np.sum(frame.path_next[:curr_c] >= 0)
+                path_next = cast(np.ndarray, frame.path_next)
+                step_links = int(np.sum(path_next[:curr_c] >= 0))
                 total_links += step_links
                 lost_c = curr_c - step_links
                 print(
@@ -387,7 +391,9 @@ class Tracking:
             first, last = frame_numbers[0], frame_numbers[-1]
             dvxmax = float(track_cfg.get("dvxmax", 10.0))
             dacc = float(track_cfg.get("dacc", 5.0))
-            stats = {"links_before": count_links(base, first, last, store=store)}
+            stats: dict[str, Any] = {
+                "links_before": count_links(base, first, last, store=store)
+            }
             stats["cold_start"] = seed_cold_start(
                 base, first, last, float(dvxmax), store=store
             )

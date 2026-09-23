@@ -26,7 +26,7 @@ from __future__ import annotations
 import threading
 import time
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, cast
 
 import numpy as np
 import zarr
@@ -153,8 +153,9 @@ class RunStore:
         # through one re-entrant lock makes each operation atomic; the lock
         # granularity is per-frame-array, so throughput stays I/O-bound.
         self._lock = threading.RLock()
+        self.root: Any
         try:
-            self.root = zarr.open_group(str(self.store_path), mode=mode)
+            self.root = zarr.open_group(str(self.store_path), mode=cast(Any, mode))
         except Exception as exc:
             # Two parallel worker processes racing to create the same store
             # in mode="a"/"w" both see it absent and both try to create the

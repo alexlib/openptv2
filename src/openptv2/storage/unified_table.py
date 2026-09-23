@@ -81,7 +81,7 @@ class UnifiedParticleTable:
 
     def frame_mask(self, frame: int) -> np.ndarray:
         """Boolean mask for rows belonging to a given frame."""
-        return self.time == frame
+        return np.asarray(self.time == frame, dtype=bool)
 
     def frame_slice(self, frame: int) -> "UnifiedParticleTable":
         """Return a new table with only rows from the given frame."""
@@ -107,7 +107,7 @@ class UnifiedParticleTable:
 
     @property
     def num_particles(self) -> int:
-        return self.xyz.shape[0]
+        return int(self.xyz.shape[0])
 
     def ndim_features(self, alpha: float = 1.0) -> np.ndarray:
         """Build N-dimensional feature array: [X, Y, Z, alpha*x0, alpha*y0, ...].

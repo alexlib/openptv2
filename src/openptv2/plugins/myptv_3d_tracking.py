@@ -11,6 +11,7 @@ Implements MyPTV's 3D kinematic prediction tracking algorithm:
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, cast
 
 import numpy as np
 
@@ -192,8 +193,8 @@ class MyPTV3DTracker:
         if num_frames < 2:
             return []
 
-        active_tracks = []
-        completed_tracks = []
+        active_tracks: list[dict[str, Any]] = []
+        completed_tracks: list[dict[str, Any]] = []
         next_track_id = 1
 
         if len(frame_particles[0]) > 0:
@@ -207,7 +208,7 @@ class MyPTV3DTracker:
             )
 
         completed_tracks.extend(active_tracks)
-        return self._finalize(completed_tracks)
+        return cast(list[dict[str, Any]], self._finalize(completed_tracks))
 
 
 class Tracking:
@@ -271,9 +272,10 @@ class Tracking:
         # 1. Fill database using Frame objects reading correspondences from
         # the store (falls back to ascii rt_is.# only when the store has
         # nothing for that frame -- see read_path_frame's docstring).
-        frames = []
-        frame_particles = []
+        frames: list[Frame] = []
+        frame_particles: list[np.ndarray] = []
         for fn in frame_numbers:
+
             frame = Frame(num_cams, max_targets)
             frame.read(
                 corres_base,  # INPUT: res/rt_is (ascii fallback only)
@@ -316,8 +318,10 @@ class Tracking:
                     idx_curr = np.argmin(np.linalg.norm(pts_curr - pos_curr, axis=1))
                     idx_next = np.argmin(np.linalg.norm(pts_next - pos_next, axis=1))
 
-                    frames[f_curr].path_next[idx_curr] = idx_next
-                    frames[f_next].path_prev[idx_next] = idx_curr
+                    path_next = cast(np.ndarray, frames[f_curr].path_next)
+                    path_prev = cast(np.ndarray, frames[f_next].path_prev)
+                    path_next[idx_curr] = idx_next
+                    path_prev[idx_next] = idx_curr
 
         # 4. Sync SoA to Pathinfo & Write Frame database out to ptv_is.# (OUTPUT)
         total_links = 0
@@ -340,7 +344,8 @@ class Tracking:
             if f_idx < num_frames - 1:
                 curr_c = frame.num_parts
                 next_c = frames[f_idx + 1].num_parts
-                step_links = np.sum(frame.path_next[:curr_c] >= 0)
+                path_next = cast(np.ndarray, frame.path_next)
+                step_links = int(np.sum(path_next[:curr_c] >= 0))
                 total_links += step_links
                 lost_c = curr_c - step_links
                 print(
@@ -375,7 +380,9 @@ class Tracking:
 
             base = linkage_base
             first, last = frame_numbers[0], frame_numbers[-1]
-            stats = {"links_before": count_links(base, first, last, store=store)}
+            stats: dict[str, Any] = {
+                "links_before": count_links(base, first, last, store=store)
+            }
             stats["cold_start"] = seed_cold_start(
                 base, first, last, float(dvxmax), store=store
             )

@@ -23,6 +23,7 @@ velocimetry framework", Meas. Sci. Technol. 35, 105302 (2024).
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, cast
 
 import numpy as np
 
@@ -80,7 +81,7 @@ class ProPTVTracker:
         self.config = config or ProPTVConfig()
 
     # ------------------------------------------------------------------
-    def track_frames(self, frame_particles: list[np.ndarray]) -> list[dict]:
+    def track_frames(self, frame_particles: list[np.ndarray]) -> list[dict[str, Any]]:
         """Track a list of per-frame 3D particle arrays (N_i, 3).
 
         Returns a list of trajectory dicts with keys
@@ -91,8 +92,8 @@ class ProPTVTracker:
         if num_frames < 2:
             return []
 
-        active: list[dict] = []
-        completed: list[dict] = []
+        active: list[dict[str, Any]] = []
+        completed: list[dict[str, Any]] = []
         next_track_id = 1
 
         # ── Initialisation: link the first t_init frames █────────────
@@ -115,7 +116,7 @@ class ProPTVTracker:
             )
 
         completed.extend(active)
-        return self._finalize(completed)
+        return cast(list[dict[str, Any]], self._finalize(completed))
 
     # ------------------------------------------------------------------
     def _new_track(self, track_id, pos, frame_idx):
@@ -359,14 +360,11 @@ class Tracking:
             direction == "forward_backward"
         )
         maxacc = float(proptv_cfg.get("maxacc", 10.0))
-        weights = [float(w) for w in proptv_cfg.get("weights", [1.0, 0.6, 0.3])]
 
         cfg = ProPTVConfig(
             t_init=t_init,
             maxvel=maxvel,
             angle=angle,
-            maxacc=maxacc,
-            cost_weights=weights,
             activeMatches_extend=int(proptv_cfg.get("activeMatches_extend", 3)),
             backtracking=backtracking,
             gaptracking=bool(proptv_cfg.get("gaptracking", False)),
@@ -385,8 +383,8 @@ class Tracking:
         num_frames = len(frame_numbers)
 
         # 1. Read 3D particles per frame -- store first, ascii rt_is fallback.
-        frames = []
-        frame_particles = []
+        frames: list[Frame] = []
+        frame_particles: list[np.ndarray] = []
         for fn in frame_numbers:
             frame = Frame(num_cams, max_targets)
             frame.read(
@@ -431,8 +429,10 @@ class Tracking:
                 i_next = int(
                     np.argmin(np.linalg.norm(pts_next - positions[step_i + 1], axis=1))
                 )
-                frames[f_curr].path_next[i_curr] = i_next
-                frames[f_next].path_prev[i_next] = i_curr
+                path_next = cast(np.ndarray, frames[f_curr].path_next)
+                path_prev = cast(np.ndarray, frames[f_next].path_prev)
+                path_next[i_curr] = i_next
+                path_prev[i_next] = i_curr
 
         # 5. Write output.
         total_links = 0
@@ -450,7 +450,8 @@ class Tracking:
                 store=store,
             )
             if f_idx < num_frames - 1:
-                links = int(np.sum(frame.path_next[: frame.num_parts] >= 0))
+                path_next = cast(np.ndarray, frame.path_next)
+                links = int(np.sum(path_next[: frame.num_parts] >= 0))
                 total_links += links
                 print(f"  Frame {fn}: {frame.num_parts} particles, {links} links")
 
@@ -470,7 +471,9 @@ class Tracking:
 
             base = linkage_base
             first, last = frame_numbers[0], frame_numbers[-1]
-            stats = {"links_before": count_links(base, first, last, store=store)}
+            stats: dict[str, Any] = {
+                "links_before": count_links(base, first, last, store=store)
+            }
             stats["cold_start"] = seed_cold_start(
                 base, first, last, float(maxvel), store=store
             )

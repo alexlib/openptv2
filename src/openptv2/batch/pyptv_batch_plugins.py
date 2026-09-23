@@ -62,8 +62,11 @@ def load_plugins_config(exp_path: Path):
     """Load available plugins from experiment parameters (YAML) with fallback to plugins.json"""
     try:
         experiment = Experiment()
-        experiment.pm.from_yaml(exp_path)  # Corrected to use exp_path
-        plugins_params = experiment.pm.parameters.get("plugins", None)
+        pm = experiment.pm
+        if pm is None:
+            raise RuntimeError("Experiment parameter manager is unavailable")
+        pm.from_yaml(exp_path)  # Corrected to use exp_path
+        plugins_params = pm.parameters.get("plugins", None)
         if plugins_params is not None:
             return {
                 "tracking": plugins_params.get("available_tracking", ["default"]),

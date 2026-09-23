@@ -71,8 +71,8 @@ def compute_source_hash(store: RunStore, name: str = "ptv_is") -> str:
 def needs_reseal(store: RunStore, name: str = "ptv_is") -> bool:
     if not store.sealed:
         return True
-    return store.root["meta"].attrs.get("source_hash") != compute_source_hash(
-        store, name
+    return bool(
+        store.root["meta"].attrs.get("source_hash") != compute_source_hash(store, name)
     )
 
 

@@ -6,7 +6,7 @@ cloud-native, lock-free, chunked Zarr directory structure.
 
 import time
 from pathlib import Path
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union, cast
 
 import h5py
 import numpy as np
@@ -42,8 +42,9 @@ class ZarrFrameStore:
             mode: Storage mode ('r', 'r+', 'w', 'w-', 'a').
         """
         self.store_path = Path(store_path)
+        self.root: Any
         try:
-            self.root = zarr.open_group(str(self.store_path), mode=mode)
+            self.root = zarr.open_group(str(self.store_path), mode=cast(Any, mode))
         except (zarr.errors.ContainsGroupError, Exception):
             if mode in ("a", "w", "r+"):
                 self.root = zarr.open_group(str(self.store_path), mode="r+")
@@ -428,7 +429,7 @@ def inspect_zarr_store(zarr_path: Union[str, Path]) -> str:
     import numpy as np
     import zarr
 
-    root = zarr.open_group(str(zarr_path), mode="r")
+    root: Any = zarr.open_group(str(zarr_path), mode="r")
     lines = []
     lines.append("=" * 60)
     lines.append(f"[INSPECT] Zarr Dataset Inspection: {zarr_path}")
@@ -436,7 +437,7 @@ def inspect_zarr_store(zarr_path: Union[str, Path]) -> str:
 
     # 1. Targets
     if "targets" in root:
-        tgt_grp = root["targets"]
+        tgt_grp: Any = root["targets"]
         cams = sorted([k for k in tgt_grp.keys() if k.startswith("cam_")])
         lines.append(f"[Targets]: {len(cams)} camera groups found ({', '.join(cams)})")
         for cam in cams:
@@ -452,7 +453,7 @@ def inspect_zarr_store(zarr_path: Union[str, Path]) -> str:
 
     # 2. Correspondences
     if "correspondences" in root:
-        corr_grp = root["correspondences"]
+        corr_grp: Any = root["correspondences"]
         f_keys = sorted([k for k in corr_grp.keys() if k.startswith("frame_")])
         if f_keys:
             f_min = f_keys[0].split("_")[1]
@@ -468,7 +469,7 @@ def inspect_zarr_store(zarr_path: Union[str, Path]) -> str:
 
     # 3. Trajectories
     if "trajectories" in root:
-        traj_grp = root["trajectories"]
+        traj_grp: Any = root["trajectories"]
         if "trajid" in traj_grp:
             trids = np.asarray(traj_grp["trajid"])
             times = np.asarray(traj_grp["time"])
@@ -490,7 +491,7 @@ def inspect_zarr_store(zarr_path: Union[str, Path]) -> str:
 
     # 4. Eulerian fields
     if "eulerian" in root:
-        eul_grp = root["eulerian"]
+        eul_grp: Any = root["eulerian"]
         vars_found = list(eul_grp.keys())
         lines.append(
             f"[Eulerian Fields]: {len(vars_found)} variables ({', '.join(vars_found[:5])}...)"
@@ -554,8 +555,8 @@ def read_zarr_trajectories(
     import zarr
     from flowtracks.trajectory import Trajectory
 
-    root = zarr.open_group(str(zarr_path), mode="r")
-    target_group = root[group] if group in root else root
+    root: Any = zarr.open_group(str(zarr_path), mode="r")
+    target_group: Any = root[group] if group in root else root
 
     # The tracker's linkage is the source of truth; /trajectories is a derived
     # cache written by post-processing (openptv_cloud.post.convert). A re-track
@@ -623,11 +624,11 @@ def read_zarr_trajectories(
 
     # Case 2: Walk tracker linkage (linkage/<name>/frame_NNNNN)
     elif "linkage" in root:
-        link_root = root["linkage"]
+        link_root: Any = root["linkage"]
         linkage_name = (
             "ptv_is" if "ptv_is" in link_root else next(iter(link_root.keys()), None)
         )
-        link_group = link_root[linkage_name] if linkage_name else None
+        link_group: Any = link_root[linkage_name] if linkage_name else None
         frame_keys = (
             sorted(
                 [k for k in link_group.keys() if k.startswith("frame_")],

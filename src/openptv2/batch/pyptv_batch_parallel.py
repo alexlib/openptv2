@@ -248,8 +248,8 @@ def main(
     last: Union[str, int],
     n_processes: int = 2,
     mode: str = "both",
-    sequence_plugin: str = None,
-    tracking_plugin: str = None,
+    sequence_plugin: str | None = None,
+    tracking_plugin: str | None = None,
 ) -> None:
     """Run PyPTV parallel batch processing with modular mode support.
 

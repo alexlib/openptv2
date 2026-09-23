@@ -1,6 +1,7 @@
 """Streamlined particle tracking control class."""
 
 from pathlib import Path
+from typing import Any, Literal, cast
 
 from openptv2.algorithms.parameters import convert_track_par_to_tuple
 from openptv2.algorithms.track import (
@@ -253,7 +254,9 @@ class Tracker:
         base = self._naming["linkage"]
         first, last = self._spar.get_first(), self._spar.get_last()
         store = self._store
-        stats = {"links_before": count_links(base, first, last, store=store)}
+        stats: dict[str, Any] = {
+            "links_before": count_links(base, first, last, store=store)
+        }
         if cold_start:
             stats["cold_start"] = seed_cold_start(
                 base, first, last, float(self._tpar_algo.dvxmax), store=store
@@ -362,7 +365,7 @@ class Tracker:
             flatten_tol=self._flatten_tol,
             n_workers=n_workers,
             overlap=overlap,
-            mode=mode,
+            mode=cast(Literal["3d", "4be", "corr"], mode),
             postprocess=postprocess,
         )
         self._is_initialized = True

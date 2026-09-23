@@ -30,7 +30,7 @@ def _is_empty_targets(targets) -> bool:
     if targets is None:
         return True
     if hasattr(targets, "shape"):
-        return targets.size == 0 or targets.shape[0] == 0
+        return bool(targets.size == 0 or targets.shape[0] == 0)
     if len(targets) == 0:
         return True
     total_elements = 0

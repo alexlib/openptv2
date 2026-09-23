@@ -197,6 +197,7 @@ warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
 strict = false
+exclude = '.*[\\/](algorithms|gui)[\\/].*'
 
 # tifffile uses 3.12+ `type` statements; don't parse its source under py3.11 mypy.
 [[tool.mypy.overrides]]

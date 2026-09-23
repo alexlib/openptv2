@@ -424,6 +424,8 @@ def label_plate(
         nx = nx if nx is not None else 6
         ny = ny if ny is not None else 7
         y_sign = y_sign if y_sign is not None else 1
+        if coded_mask is None:
+            raise ValueError("coded_mask is required for the coded plate profile")
         return label_coded_6x7(
             centroids,
             coded_mask,

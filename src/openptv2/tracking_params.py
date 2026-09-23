@@ -180,6 +180,7 @@ def recommend_from_store(store, first: int, last: int, name: str = "ptv_is", min
     """Statistics and recommended ``track`` parameters from a (loosely) tracked store.
 
     Returns ``(params, stats, reasons)``."""
-    stats = track_statistics(*tracks_from_store(store, first, last, name), min_len=min_len)
+    tid, frame, pos = tracks_from_store(store, first, last, name)
+    stats = track_statistics(tid, frame, pos, min_len=min_len)
     params, reasons = recommend_trackcorr_params(stats, **kwargs)
     return params, stats, reasons

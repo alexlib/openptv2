@@ -151,7 +151,7 @@ def _append_correspondence(store, frame: int, pos, cam_ids) -> int:
     new_pos = np.vstack([old_pos, np.asarray(pos, dtype=np.float64)[None, :]])
     new_ids = np.vstack([old_ids, np.asarray(cam_ids, dtype=np.int32)[None, :]])
     store.write_correspondences(frame, new_pos, new_ids)
-    return new_pos.shape[0] - 1
+    return int(new_pos.shape[0] - 1)
 
 
 def _empty_linkage():

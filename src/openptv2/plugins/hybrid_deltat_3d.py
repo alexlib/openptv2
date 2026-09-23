@@ -36,6 +36,7 @@ across attached gaps because positions carry their true frame numbers.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 
@@ -220,7 +221,7 @@ def hybrid_track(
             if run and nd[0] != run[-1][0] + 1:
                 flush()
                 run.clear()
-            run.append(nd)
+            run.append((nd[0], cast(np.ndarray, nd[1]), nd[2]))
         flush()
 
     print(

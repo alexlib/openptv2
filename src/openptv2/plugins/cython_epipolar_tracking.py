@@ -121,7 +121,7 @@ class CythonEpipolarTracker:
         from openptv2.plugins.cython_3d_tracking import Cython3DTracker
 
         v_max = max(abs(self.dvxmax), abs(self.dvxmin))
-        alt_tracker = Cython3DTracker(v_max=v_max, a_max=self.dacc, dt=self.dt)
+        alt_tracker = Cython3DTracker(v_max=v_max, dt=self.dt)
         return alt_tracker.track_frames(frame_particles)
 
 

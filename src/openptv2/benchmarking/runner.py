@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
@@ -33,7 +34,9 @@ _CORE_PRESETS = {
 }
 
 
-def _read_path_info(res_dir: str | Path, first: int, last: int, num_cams: int):
+def _read_path_info(
+    res_dir: str | Path, first: int, last: int, num_cams: int
+) -> list[dict[str, Any] | None]:
     """Read linkage (ptv_is) frames and return per-frame path arrays.
 
     The RunStore is tried first when it has an entry for a frame --
@@ -60,15 +63,15 @@ def _read_path_info(res_dir: str | Path, first: int, last: int, num_cams: int):
     except RunStoreError:
         store = None
 
-    frames = []
+    frames: list[dict[str, Any] | None] = []
     for fn in range(first, last + 1):
         if store is not None and store.has_linkage(fn, "ptv_is"):
-            prev, nxt, x = store.read_linkage(fn, "ptv_is")
+            store_prev, store_nxt, store_x = store.read_linkage(fn, "ptv_is")
             frames.append(
                 {
-                    "prev": [int(p) for p in prev],
-                    "next": [int(n) for n in nxt],
-                    "x": np.asarray(x, dtype=np.float64),
+                    "prev": [int(p) for p in store_prev],
+                    "next": [int(n) for n in store_nxt],
+                    "x": np.asarray(store_x, dtype=np.float64),
                 }
             )
             continue
@@ -133,7 +136,10 @@ def read_trajectories(
                 cur_frame = fi
                 cur_slot = slot
                 while True:
-                    nx = frames[cur_frame]["next"][cur_slot]
+                    current_frame = frames[cur_frame]
+                    if current_frame is None:
+                        break
+                    nx = current_frame["next"][cur_slot]
                     if nx < 0:
                         break
                     # A gap-bridged link points >1 frame ahead; recover the step
@@ -256,7 +262,7 @@ def run_tracker(
 
     # Force track3d mode for priority_segment_3d preset automatically.
     if tracker in ("fast", "fast_3d", "priority_segment_3d"):
-        exp.track3d = True
+        setattr(exp, "track3d", True)
 
     # Honor the requested preset even when the YAML says "selected_tracking:
     # default" (otherwise default_tracking.infer_preset would silently force

@@ -11,7 +11,7 @@ import os
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, Optional
+from typing import Any, Literal, Optional, cast
 
 import numpy as np
 
@@ -190,7 +190,7 @@ def _track_single_chunk(
             naming = default_naming.copy()
 
         chunk_spar = SequencePar(
-            img_base_name=spar.img_base_name,
+            img_base_name=cast(list[str] | None, spar.img_base_name),
             first=chunk_first,
             last=chunk_last,
         )

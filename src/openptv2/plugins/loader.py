@@ -22,6 +22,7 @@ import importlib.util
 import sys
 from pathlib import Path
 from types import ModuleType
+from typing import cast
 
 BUILTIN_SEQUENCE_PLUGINS = {
     # "default" is the core algorithm wrapped in the plugin contract, so
@@ -102,7 +103,7 @@ def _load_entry_point(name: str) -> ModuleType | None:
     from importlib.metadata import entry_points
 
     for ep in entry_points(group=ENTRY_POINT_GROUP, name=name):
-        return ep.load()
+            return cast(ModuleType | None, ep.load())
     return None
 
 

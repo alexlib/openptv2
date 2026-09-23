@@ -7,7 +7,7 @@ for tracking algorithm verification.
 """
 
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, cast
 
 import numpy as np
 from scipy.spatial import KDTree
@@ -47,8 +47,8 @@ def _extract_links(
         links: Dict mapping (frame1, frame2) -> (pos1_array, pos2_array)
         lengths: List of trajectory lengths
     """
-    links = {}
-    lengths = []
+    links: dict[tuple[int, int], list[tuple[np.ndarray, np.ndarray]]] = {}
+    lengths: list[int] = []
 
     for track_id, points in tracks.items():
         sorted_points = sorted(points, key=lambda p: p[0])  # Sort by frame
@@ -65,7 +65,7 @@ def _extract_links(
             links[key].append((p1, p2))
 
     # Convert to numpy arrays per frame transition
-    converted_links = {}
+    converted_links: dict[tuple[int, int], tuple[np.ndarray, np.ndarray]] = {}
     for key, pair_list in links.items():
         p1s = np.array([pair[0] for pair in pair_list])
         p2s = np.array([pair[1] for pair in pair_list])
@@ -205,8 +205,10 @@ def generate_synthetic_benchmark_dataset(
         frame_blobs: Dict {frame: [(x, y, z), ...]} noisy detections
     """
     rng = np.random.default_rng(seed)
-    true_tracks = {}
-    frame_blobs = {f: [] for f in range(num_frames)}
+    true_tracks: dict[int, list[tuple[int, float, float, float]]] = {}
+    frame_blobs: dict[int, list[tuple[float, float, float]]] = {
+        f: [] for f in range(num_frames)
+    }
 
     # Initial particle positions
     x0 = rng.uniform(10.0, domain_size[0] - 10.0, size=num_particles)
@@ -369,7 +371,7 @@ def run_multi_tracker_benchmark(
             f0, f1, f2 = step - 1, step, step + 1
             n0, n1, n2 = num_parts_arr[f0], num_parts_arr[f1], num_parts_arr[f2]
             if n1 > 0 and n2 > 0:
-                track3d_loop_fast(
+                cast(Any, track3d_loop_fast)(
                     n1,
                     path_x_arr[f0],
                     path_prev_arr[f0],
