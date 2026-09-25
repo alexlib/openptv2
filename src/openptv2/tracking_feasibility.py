@@ -18,13 +18,13 @@ thing software can do about an *existing* dataset is say so up front.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 from scipy.spatial import cKDTree
 
 
-def measure_motion_scale(pos_a, pos_b) -> Optional[tuple[float, float]]:
+def measure_motion_scale(pos_a: Any, pos_b: Any) -> Optional[tuple[float, float]]:
     """(displacement, spacing) in the same units as pos_a/pos_b, or None if
     there isn't enough data to estimate them.
 
@@ -60,7 +60,7 @@ def measure_motion_scale(pos_a, pos_b) -> Optional[tuple[float, float]]:
 
 
 def z_noise_floor_mm(
-    cals, cpar, detection_noise_px: float = 0.5, probe_mm: float = 10.0
+    cals: Any, cpar: Any, detection_noise_px: float = 0.5, probe_mm: float = 10.0
 ) -> float:
     """Implied z-position noise (mm) from a nominal 2D detection precision,
     via each camera's own depth (z) sensitivity: how many image pixels a
@@ -100,7 +100,7 @@ class ConditioningReport:
 
 
 def assess_tracking_conditioning(
-    pos_a, pos_b, cals, cpar, detection_noise_px: float = 0.5
+    pos_a: Any, pos_b: Any, cals: Any, cpar: Any, detection_noise_px: float = 0.5
 ) -> Optional[ConditioningReport]:
     """Compare the estimated true frame-to-frame motion against the
     calibration's implied z-reconstruction noise floor, and classify

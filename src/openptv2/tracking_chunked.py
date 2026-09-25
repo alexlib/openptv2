@@ -103,12 +103,12 @@ class _InMemoryLinkageStore:
             return self._source_store.has_targets(cam_idx, frame)
         return False
 
-    def read_targets(self, cam_idx: int, frame: int):
+    def read_targets(self, cam_idx: int, frame: int) -> Any:
         if self._source_store is not None:
             return self._source_store.read_targets(cam_idx, frame)
         return []
 
-    def write_targets(self, cam_idx: int, frame: int, targets) -> None:
+    def write_targets(self, cam_idx: int, frame: int, targets: Any) -> None:
         pass
 
     def write_correspondences(
@@ -339,7 +339,9 @@ def stitch_chunked_linkages(
     return total_parts, total_links
 
 
-def run_postprocess_passes(linkage_base, first, last, tpar, store=None) -> dict:
+def run_postprocess_passes(
+    linkage_base: Any, first: int, last: int, tpar: Any, store: Any = None
+) -> dict:
     """Cold-start seeding, gap relinking and reciprocity over a stitched run.
 
     Each pass's stats are printed and returned. A pass that raises is reported

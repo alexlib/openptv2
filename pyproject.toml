@@ -197,12 +197,189 @@ warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
 strict = false
+check_untyped_defs = true
+disallow_incomplete_defs = true
+# Full disallow_untyped_defs is the goal; modules below are opted out until
+# their fully-untyped defs get complete signatures. Remove entries as batches
+# land — when this list is empty the global flag stands alone.
+disallow_untyped_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unreachable = true
+no_implicit_optional = true
+warn_no_return = true
+strict_equality = true
 exclude = '.*[\\/](algorithms|gui)[\\/].*'
 
 # tifffile uses 3.12+ `type` statements; don't parse its source under py3.11 mypy.
 [[tool.mypy.overrides]]
 module = "tifffile.*"
 follow_imports = "skip"
+
+# --- disallow_untyped_defs opt-outs (remove as modules get annotated) ---
+[[tool.mypy.overrides]]
+module = "openptv2"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.autocalibration"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.batch.pyptv_batch"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.batch.pyptv_batch_parallel"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.batch.pyptv_batch_plugins"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.calibration_diagnostics"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.cli"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.correspondences"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.detect_plate"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.epipolar"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.image_processing"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.imgcoord"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.orientation"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plate_bundle"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plate_calibration"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plate_labeler"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins._assignment"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.contour_sequence"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.default_sequence"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.default_tracking"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.four_be_tracking"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.hybrid_deltat_3d"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.myptv_2d_tracking"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.myptv_3d_tracking"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.proptv.initialisation"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.proptv.prediction"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.proptv_tracking"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.rembg_contour_sequence"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.rembg_sequence"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.splitter_sequence"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.plugins.two_phase_tracking"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.segmentation"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.storage.run_store"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.storage.zarr_store"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.track_assisted"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.tracker"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.tracking_params"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.tracking_postprocess"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.tracking_shared"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.transforms"
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "openptv2.validate"
+disallow_untyped_defs = false
 
 [tool.ruff]
 target-version = "py311"

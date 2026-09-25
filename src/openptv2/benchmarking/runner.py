@@ -95,7 +95,7 @@ def _read_path_info(
     return frames
 
 
-def _link_step(frames, fi: int, slot: int, nx: int) -> int:
+def _link_step(frames: Any, fi: int, slot: int, nx: int) -> int:
     """Frame step of the forward link ``next[fi][slot] == nx`` (see
     ``tracking_postprocess.link_step``); 0 when nothing reciprocates it."""
     return link_step(

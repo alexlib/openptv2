@@ -15,6 +15,8 @@ the Multiview loop does).
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 
 
@@ -24,7 +26,7 @@ def solve_opencv_multiview(
     image_size: tuple[int, int],
     *,
     flags: int | None = None,
-):
+) -> tuple[Any, ...]:
     """Multiview solver calling ``cv2.calibrateCamera`` when available.
 
     Parameters
@@ -46,7 +48,7 @@ def solve_opencv_multiview(
     solved ``Z`` and ``Zs`` is the per-plane ``Z`` offset (``Zs[0]==0``).
     """
     try:
-        import cv2 as _cv2  # type: ignore
+        import cv2 as _cv2
     except ImportError as exc:
         raise ImportError(
             "solve_opencv_multiview needs OpenCV (pip install opencv-python or "
@@ -110,7 +112,7 @@ def solve_opencv_multiview(
     # DLT tri per plane (4-cam) to solve Zs, then recalibrate
     def _dlt(P_list, xys):
         # 8×4 A as in multiview DLT
-        A = []
+        A: Any = []
         for P, xy in zip(P_list, xys):
             x, y = float(xy[0]), float(xy[1])
             A.append(y * P[2, :] - P[1, :])
@@ -158,8 +160,8 @@ def solve_opencv_multiview(
 def solve_dlt_per_cam(
     ref_pts: np.ndarray,
     img_pts: np.ndarray,
-    cpar,
-):
+    cpar: Any,
+) -> Any:
     """Single-cam DLT helper — thin wrapper over :func:`seed_from_dlt`.
 
     Useful when the hand-held ``Z`` per plane is already known or triangulated

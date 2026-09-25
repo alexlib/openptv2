@@ -31,7 +31,7 @@ BENCHMARK_TRACKERS = [
 ]
 
 
-def _default_spec(**overrides) -> ScenarioSpec:
+def _default_spec(**overrides: Any) -> ScenarioSpec:
     base = dict(
         num_particles=60,
         num_frames=40,

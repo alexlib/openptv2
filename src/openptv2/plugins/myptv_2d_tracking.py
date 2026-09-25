@@ -22,7 +22,9 @@ from openptv2.plugins._assignment import match_within_radius
 
 
 class MyPTV2DTracker:
-    def __init__(self, max_pixel_disp: float = 0.015, max_gap: int = 2, **kwargs):
+    def __init__(
+        self, max_pixel_disp: float = 0.015, max_gap: int = 2, **kwargs: Any
+    ) -> None:
         self.max_pixel_disp = max_pixel_disp
         self.max_gap = max_gap
 

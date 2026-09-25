@@ -63,7 +63,7 @@ def _vectorized_targ_rec(
     if peak_coords.size == 0:
         return [_empty_target()]
 
-    targets = []
+    targets: list[Target] = []
     for py, px in peak_coords:
         i = int(py + ymin)
         j = int(px + xmin)
@@ -164,7 +164,7 @@ def target_recognition(img, tpar, cam, cpar, subrange_x=None, subrange_y=None):
     img0 = img_u8.copy()
 
     nnmax = int(tpar.get_pixel_count_bounds()[1])
-    n, xs, ys, ns, nxs, nys, sumgs = targ_rec_fast(
+    n, xs, ys, ns, nxs, nys, sumgs = cast(Any, targ_rec_fast)(
         img_u8,
         img0,
         gvthres=int(tpar.get_grey_thresholds()[cam]),
@@ -209,7 +209,9 @@ from openptv2.algorithms.segmentation import detect_targets_batch_parallel  # no
 __all__ = ["target_recognition", "detect_targets_batch_parallel"]
 
 
-def targ_rec_scaled(img, *args, scaling: dict | None = None, **kwargs):
+def targ_rec_scaled(
+    img: Any, *args: Any, scaling: dict | None = None, **kwargs: Any
+) -> Any:
     """``targ_rec`` for images that are not already uint8.
 
     The compiled kernel is typed ``uchar[:, ::1]`` and rejects anything else, so

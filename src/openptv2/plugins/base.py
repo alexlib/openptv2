@@ -9,18 +9,18 @@ themselves.
 
 from __future__ import annotations
 
-from typing import Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 
 @runtime_checkable
 class SequencePlugin(Protocol):
-    def __init__(self, ptv=None, exp=None) -> None: ...
+    def __init__(self, ptv: Any = None, exp: Any = None) -> None: ...
 
     def do_sequence(self) -> None: ...
 
 
 @runtime_checkable
 class TrackingPlugin(Protocol):
-    def __init__(self, ptv=None, exp=None) -> None: ...
+    def __init__(self, ptv: Any = None, exp: Any = None) -> None: ...
 
     def do_tracking(self) -> None: ...

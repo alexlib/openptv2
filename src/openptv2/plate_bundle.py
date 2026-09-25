@@ -62,7 +62,9 @@ def rotvec(R: np.ndarray) -> np.ndarray:
         i = int(np.argmax(k))
         if k[i] > 1e-9:
             k = A[:, i] / k[i]
-        return np.asarray(theta * k / max(float(np.linalg.norm(k)), 1e-12), dtype=np.float64)
+        return np.asarray(
+            theta * k / max(float(np.linalg.norm(k)), 1e-12), dtype=np.float64
+        )
     axis = np.array([R[2, 1] - R[1, 2], R[0, 2] - R[2, 0], R[1, 0] - R[0, 1]])
     return np.asarray(theta * axis / (2.0 * np.sin(theta)), dtype=np.float64)
 
@@ -149,7 +151,9 @@ def _unpack(p, ncam, nframe):
     return cam_rvec, cam_tvec, rest[:, :3], rest[:, 3:]
 
 
-def project(p, obs: PlateObservations, K, ncam, nframe):
+def project(
+    p: np.ndarray, obs: PlateObservations, K: np.ndarray, ncam: int, nframe: int
+) -> np.ndarray:
     """Project every observation's plate point into its camera, in pixels."""
     cam_rvec, cam_tvec, plate_rvec, plate_tvec = _unpack(p, ncam, nframe)
     Rc = np.array([rodrigues(r) for r in cam_rvec])

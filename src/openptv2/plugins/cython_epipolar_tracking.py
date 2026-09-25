@@ -7,6 +7,7 @@ for high-performance 2D+3D trajectory reconstruction across multi-camera setups.
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 import numpy as np
 
@@ -35,10 +36,10 @@ class CythonEpipolarTracker:
         dacc: float = 0.010,
         angle: float = 60.0,
         dt: float = 1.0,
-        ptv=None,
-        exp=None,
-        **kwargs,
-    ):
+        ptv: Any = None,
+        exp: Any = None,
+        **kwargs: Any,
+    ) -> None:
         self.cpar = cpar
         self.vpar = vpar
         self.tpar = tpar

@@ -212,7 +212,9 @@ def seed_from_lookat(
 # ---------------------------------------------------------------------------
 
 
-def _dlt_resection(ref_pts: np.ndarray, metric_pts: np.ndarray):
+def _dlt_resection(
+    ref_pts: np.ndarray, metric_pts: np.ndarray
+) -> tuple[np.ndarray, np.ndarray, float]:
     """Inline DLT (copied from scripts/calibrate_proptv_dlt.py:36) to avoid a
     hard import cycle with scripts/.  Returns (R, C, cc) with R world→camera.
 
@@ -278,7 +280,7 @@ def _dlt_resection(ref_pts: np.ndarray, metric_pts: np.ndarray):
 def seed_from_dlt(
     ref_pts: np.ndarray,
     img_pts: np.ndarray,
-    cpar,
+    cpar: Any,
 ) -> Calibration:
     """DLT resection: pose **and** ``cc`` from ≥6 non-coplanar correspondences.
 
@@ -397,7 +399,7 @@ def read_rig(path: str | Path) -> dict[str, Any]:
 
 def seed_rig(
     path_or_spec: str | Path | dict,
-    cpar=None,
+    cpar: Any = None,
 ) -> dict[int, Calibration]:
     """Build ``{cam_index: Calibration}`` from a ``rig.yaml`` path or dict.
 
@@ -440,7 +442,7 @@ def write_rig_ori(
     dataset_dir: str | Path,
     *,
     overwrite: bool = False,
-    cpar=None,
+    cpar: Any = None,
 ) -> list[Path]:
     """Write ``rig.yaml``-derived ``.ori``/``.addpar`` files into a dataset.
 

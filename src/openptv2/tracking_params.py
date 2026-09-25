@@ -30,6 +30,8 @@ ground truth matched to a 4-camera experiment):
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 
 __all__ = [
@@ -54,7 +56,7 @@ def _sorted(tid, frame, pos):
     return tid[order], frame[order], pos[order]
 
 
-def noise_sigma(tid, frame, pos, min_len: int = 5) -> np.ndarray:
+def noise_sigma(tid: Any, frame: Any, pos: Any, min_len: int = 5) -> np.ndarray:
     """Per-axis position noise from the lag-1 covariance of second differences.
 
     Only consecutive-frame triplets inside tracks of ``min_len`` points or more
@@ -81,7 +83,7 @@ def noise_sigma(tid, frame, pos, min_len: int = 5) -> np.ndarray:
     return sig
 
 
-def track_statistics(tid, frame, pos, min_len: int = 5) -> dict:
+def track_statistics(tid: Any, frame: Any, pos: Any, min_len: int = 5) -> dict:
     """Noise and step statistics of linked tracks (positions in any length unit)."""
     tid, frame, pos = _sorted(tid, frame, pos)
     same = (tid[1:] == tid[:-1]) & (frame[1:] == frame[:-1] + 1)
@@ -122,13 +124,17 @@ def recommend_trackcorr_params(
         + ", ".join(f"{n} +-{params[f'dv{n}max']:g}" for n in "xyz")
     )
     rng = np.random.default_rng(seed)
-    acc_noise = np.linalg.norm(rng.normal(0.0, 1.0, (200_000, 3)) * np.sqrt(6.0) * sig, axis=1)
+    acc_noise = np.linalg.norm(
+        rng.normal(0.0, 1.0, (200_000, 3)) * np.sqrt(6.0) * sig, axis=1
+    )
     q = float(np.percentile(acc_noise, dacc_quantile))
     params["dacc"] = float(np.ceil(dacc_factor * q / (dv_round / 2)) * (dv_round / 2))
     reasons.append(
         f"dacc = {dacc_factor} x p{dacc_quantile:g} of noise acceleration ({q:.4g}) -> {params['dacc']:g}"
     )
-    ratio = stats["step_p50"] / stats["step_noise"] if stats["step_noise"] > 0 else np.inf
+    ratio = (
+        stats["step_p50"] / stats["step_noise"] if stats["step_noise"] > 0 else np.inf
+    )
     if ratio < angle_ratio:
         params["angle"] = 270.0
         reasons.append(
@@ -144,7 +150,9 @@ def recommend_trackcorr_params(
     return params, reasons
 
 
-def tracks_from_store(store, first: int, last: int, name: str = "ptv_is"):
+def tracks_from_store(
+    store: Any, first: int, last: int, name: str = "ptv_is"
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """(tid, frame, pos) of every particle in frames first..last, with track ids
     following the ``prev`` pointers (a pointer claimed twice keeps its first
     claimant)."""
@@ -162,7 +170,11 @@ def tracks_from_store(store, first: int, last: int, name: str = "ptv_is"):
         if prev_tid is not None:
             linked = (prev >= 0) & (prev < len(prev_tid))
             first_claim = np.zeros(n, dtype=bool)
-            first_claim[np.unique(np.where(linked, prev, -1 - np.arange(n)), return_index=True)[1]] = True
+            first_claim[
+                np.unique(np.where(linked, prev, -1 - np.arange(n)), return_index=True)[
+                    1
+                ]
+            ] = True
             linked &= first_claim
             tid[linked] = prev_tid[prev[linked]]
         tid[~linked] = np.arange(next_id, next_id + int((~linked).sum()))
@@ -176,7 +188,14 @@ def tracks_from_store(store, first: int, last: int, name: str = "ptv_is"):
     return np.concatenate(tids), np.concatenate(frames), np.concatenate(positions)
 
 
-def recommend_from_store(store, first: int, last: int, name: str = "ptv_is", min_len: int = 5, **kwargs):
+def recommend_from_store(
+    store: Any,
+    first: int,
+    last: int,
+    name: str = "ptv_is",
+    min_len: int = 5,
+    **kwargs: Any,
+) -> tuple[dict, dict, list[str]]:
     """Statistics and recommended ``track`` parameters from a (loosely) tracked store.
 
     Returns ``(params, stats, reasons)``."""

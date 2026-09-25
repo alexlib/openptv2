@@ -74,8 +74,14 @@ def _track_par_dict(tpar: TrackPar) -> dict[str, float]:
 
 
 def _forward_backward_agreement(
-    cpar, vpar, tpar, spar_window, cals, store, linkage_name
-):
+    cpar: Any,
+    vpar: Any,
+    tpar: TrackPar,
+    spar_window: SequencePar,
+    cals: Any,
+    store: Any,
+    linkage_name: str,
+) -> tuple[float, np.ndarray]:
     """Run trackcorr forward+backward on a scratch linkage group, measure
     reciprocity (link agreement -- a ground-truth-free quality signal) and
     the displacement distribution of the CONFIRMED (reciprocal) links, which
@@ -133,7 +139,7 @@ def _tune_from_displacements(
     )
 
 
-def _mean_track_length(linkage_name: str, first: int, last: int, store) -> float:
+def _mean_track_length(linkage_name: str, first: int, last: int, store: Any) -> float:
     """Ground-truth-free trajectory-quality proxy: mean length of the
     trajectories a forward-only run produced, computed straight from
     prev/next chains (no identity/pid info needed, unlike the benchmark
@@ -170,12 +176,12 @@ def _mean_track_length(linkage_name: str, first: int, last: int, store) -> float
 
 
 def run_warmup(
-    cpar,
-    vpar,
-    tpar,
-    spar,
-    cals,
-    store,
+    cpar: Any,
+    vpar: Any,
+    tpar: TrackPar,
+    spar: SequencePar,
+    cals: Any,
+    store: Any,
     frames: int = 25,
     max_cycles: int = 3,
     plateau_tol: float = 0.01,
@@ -263,7 +269,7 @@ def run_warmup(
     return result
 
 
-def _persist(store, result: WarmupResult) -> None:
+def _persist(store: Any, result: WarmupResult) -> None:
     """RunStore has no generic key/value stats group (write_stats has a
     fixed tracking-telemetry schema) -- store the warmup result as plain
     JSON-serializable data on the meta group's own attrs, next to

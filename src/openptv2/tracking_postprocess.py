@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
@@ -45,7 +46,9 @@ def _path(base: str, frame: int) -> str:
     return f"{base}.{frame}"
 
 
-def read_linkage(linkage_base: str, frame: int, store=None):
+def read_linkage(
+    linkage_base: str, frame: int, store: Any = None
+) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
     """Return (prev, next, xyz) arrays for a frame, or None if the file/store
     entry is absent or empty. ``prev``/``next`` are int32; ``xyz`` is (n, 3)
     float64.
@@ -78,7 +81,14 @@ def read_linkage(linkage_base: str, frame: int, store=None):
     return prev, nxt, xyz
 
 
-def write_linkage(linkage_base: str, frame: int, prev, nxt, xyz, store=None) -> None:
+def write_linkage(
+    linkage_base: str,
+    frame: int,
+    prev: np.ndarray,
+    nxt: np.ndarray,
+    xyz: np.ndarray,
+    store: Any = None,
+) -> None:
     """Write a frame's linkage to the unified RunStore when ``store`` is
     given, otherwise to ASCII (store-backed runs no longer write ASCII --
     see docs/plans/2026-08-15-zarr-only-transition-plan.md and
@@ -102,7 +112,7 @@ def write_linkage(linkage_base: str, frame: int, prev, nxt, xyz, store=None) -> 
             )
 
 
-def count_links(linkage_base: str, first: int, last: int, store=None) -> int:
+def count_links(linkage_base: str, first: int, last: int, store: Any = None) -> int:
     """Total forward links across the sequence (particles with next >= 0)."""
     total = 0
     for k in range(first, last + 1):
@@ -113,7 +123,9 @@ def count_links(linkage_base: str, first: int, last: int, store=None) -> int:
     return total
 
 
-def link_step(prev_of, k: int, i: int, j: int, max_step: int = MAX_LINK_STEP) -> int:
+def link_step(
+    prev_of: Any, k: int, i: int, j: int, max_step: int = MAX_LINK_STEP
+) -> int:
     """Frame step spanned by the forward link ``next_k[i] == j``.
 
     Returns the smallest ``s`` in ``1..max_step`` with ``prev[k+s][j] == i``,
@@ -130,7 +142,7 @@ def link_step(prev_of, k: int, i: int, j: int, max_step: int = MAX_LINK_STEP) ->
 
 
 def back_link_step(
-    next_of, k: int, j: int, i: int, max_step: int = MAX_LINK_STEP
+    next_of: Any, k: int, j: int, i: int, max_step: int = MAX_LINK_STEP
 ) -> int:
     """Mirror of :func:`link_step` for the backward link ``prev_k[j] == i``:
     smallest ``s`` with ``next[k-s][i] == j``, else 0."""
@@ -145,9 +157,9 @@ def enforce_reciprocity(
     linkage_base: str,
     first: int,
     last: int,
-    store=None,
+    store: Any = None,
     max_step: int = MAX_LINK_STEP,
-):
+) -> dict[str, int]:
     """Forward-backward consistency guard: keep only bidirectional links.
 
     A link between frame-k particle ``i`` and particle ``j`` some ``s`` frames
@@ -217,8 +229,8 @@ def seed_cold_start(
     last: int,
     dv_max: float,
     accept_frac: float = 0.5,
-    store=None,
-):
+    store: Any = None,
+) -> dict[str, Any]:
     """Velocity-seeded recovery of the cold-start (first) transition.
 
     The first forward step has no velocity history, so it links far fewer
@@ -289,7 +301,7 @@ def relink_trajectory_gaps(
     last: int,
     max_gap: int = 2,
     max_accel_err: float = 5.0,
-    store=None,
+    store: Any = None,
 ) -> dict[str, int]:
     """
     Multi-pass post-processing gap relinking across linkage files.

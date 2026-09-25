@@ -24,7 +24,7 @@ So the rule is now named, recorded in the parameter file, and applied here.
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 import numpy as np
 
@@ -62,7 +62,7 @@ def describe(
 
 
 def to_uint8(
-    img,
+    img: Any,
     mode: Mode = "fixed",
     *,
     lo: float | None = None,
@@ -153,7 +153,7 @@ def from_parameters(par: dict | None) -> dict:
 
 
 def suggest_range(
-    img, percentiles: tuple[float, float] = (0.5, 99.9)
+    img: Any, percentiles: tuple[float, float] = (0.5, 99.9)
 ) -> tuple[int, int]:
     """A sensible ``grey_range`` for a dataset, from one representative image.
 

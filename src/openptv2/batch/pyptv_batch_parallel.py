@@ -246,7 +246,7 @@ def main(
     yaml_file: Union[str, Path],
     first: Union[str, int],
     last: Union[str, int],
-    n_processes: int = 2,
+    n_processes: int | None = 2,
     mode: str = "both",
     sequence_plugin: str | None = None,
     tracking_plugin: str | None = None,

@@ -120,7 +120,7 @@ def find_smooth_params(
 
     def make_eval(
         param_name: str, get_triple: Callable[[float], tuple[float, float, float]]
-    ):
+    ) -> Callable[[float], float]:
         def eval_fn(value: float) -> float:
             pm = run(*get_triple(value))
             score = fluidity_score(pm)

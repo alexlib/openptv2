@@ -1,6 +1,7 @@
 """Streamlined correspondences matching API."""
 
 import os
+from typing import Any, cast
 
 import numpy as np
 
@@ -66,17 +67,18 @@ class MatchedCoords:
             positions.append([x_val, y_val])
             pnrs.append(pnr_val)
 
-        positions = np.array(positions)
+        positions_arr = np.array(positions)
 
         # Pixel → metric
-        metric = convert_arr_pixel_to_metric(positions, self._cpar)
+        metric = convert_arr_pixel_to_metric(positions_arr, self._cpar)
 
         # Metric → flat (distortion correction)
         flat = distorted_to_flat(metric, self._cal, tol=self._tol)
 
         # Store as Coord2d objects and sort by x coordinate (matching C's quicksort_coord2d_x)
         self._corrected = [
-            Coord2d(x=flat[i, 0], y=flat[i, 1], pnr=pnrs[i]) for i in range(num_targets)
+            cast(Any, Coord2d)(x=flat[i, 0], y=flat[i, 1], pnr=pnrs[i])
+            for i in range(num_targets)
         ]
         self._corrected.sort(key=lambda c: c.x)
 
@@ -156,7 +158,8 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
     )
 
     # Build Frame object from img_pts
-    frame = AlgoFrame(num_cams=num_cams, max_targets=max(max_targets, 1))
+    # Frame declares targets/num_targets as object (Cython buffer); treat as Any here.
+    frame: Any = AlgoFrame(num_cams=num_cams, max_targets=max(max_targets, 1))
 
     # Copy targets to frame
     for cam in range(num_cams):
@@ -199,8 +202,8 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
     )
 
     # Convert NTupel list to optv format
-    sorted_pos = [None] * (num_cams - 1)
-    sorted_corresp = [None] * (num_cams - 1)
+    sorted_pos: list[Any] = [None] * (num_cams - 1)
+    sorted_corresp: list[Any] = [None] * (num_cams - 1)
     last_count = 0
 
     # Build pnr-to-target mapping for each camera to avoid wrong direct indexing on sorted lists

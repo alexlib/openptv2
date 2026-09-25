@@ -28,8 +28,8 @@ class Cython3DTracker:
         max_cands: int = MAX_CANDS,
         dt: float = 1.0,
         cold_start_gate: float = 1.0,
-        ptv=None,
-        exp=None,
+        ptv: Any = None,
+        exp: Any = None,
     ):
         """
         Parameters

@@ -11,6 +11,7 @@ import importlib
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 # Register optv package and its submodules as aliases in sys.modules for legacy compatibility
 try:
@@ -58,7 +59,7 @@ except ImportError:
 from openptv2.gui.experiment import Experiment
 
 
-def load_plugins_config(exp_path: Path):
+def load_plugins_config(exp_path: Path) -> Any:
     """Load available plugins from experiment parameters (YAML) with fallback to plugins.json"""
     try:
         experiment = Experiment()
@@ -94,7 +95,7 @@ def run_batch(
     tracking_plugin: str = "default",
     sequence_plugin: str = "default",
     mode: str = "both",
-):
+) -> None:
     """Deprecated: use openptv2.batch.pyptv_batch.run_batch instead.
 
     Kept for backward compatibility with direct callers/tests using this

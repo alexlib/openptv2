@@ -25,7 +25,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Union
+from typing import Any, Union
 
 
 class ProcessingError(Exception):
@@ -141,15 +141,13 @@ def build_processing_experiment(
     spar.set_first(seq_first)
     spar.set_last(seq_last)
 
-    proc_exp = ProcessingExperiment(
-        pm, cpar, spar, vpar, track_par, tpar, cals, epar
-    )
+    proc_exp = ProcessingExperiment(pm, cpar, spar, vpar, track_par, tpar, cals, epar)
     proc_exp.exp_path = str(exp_path)
     return proc_exp
 
 
 def _warn_if_tracking_poorly_conditioned(
-    proc_exp, seq_first: int, seq_last: int
+    proc_exp: Any, seq_first: int, seq_last: int
 ) -> None:
     """Disabled: advisory check based on heuristic calibration noise floor."""
     return
@@ -356,7 +354,7 @@ def main(
 
 
 def parse_command_line_args(
-    args_list=None,
+    args_list: Any = None,
 ) -> tuple[Path, int, int, str, bool, str, str, str | None]:
     """Parse and validate command line arguments.
 

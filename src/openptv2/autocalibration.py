@@ -37,6 +37,7 @@ import copy
 import dataclasses
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import yaml
@@ -107,7 +108,7 @@ def _matched_pairs(cal, cpar, fix, sorted_pix):
     return ref_arr, det_arr, rep_arr
 
 
-def rms_px(det, rep) -> float:
+def rms_px(det: np.ndarray, rep: np.ndarray) -> float:
     """Root-mean-square reprojection error in pixels."""
     if len(det) == 0:
         return float("inf")
@@ -228,7 +229,7 @@ class DatasetParams:
     source: str  # "yaml" or "par"
 
 
-def _cpar_from_ptv(ptv: dict, num_cams: int):
+def _cpar_from_ptv(ptv: dict, num_cams: int) -> ControlPar:
     """Build a ControlPar from a YAML 'ptv' block (same fields as the .par reader)."""
     mm = MmNp(
         nlay=1,
@@ -252,7 +253,9 @@ def _cpar_from_ptv(ptv: dict, num_cams: int):
     )
 
 
-def _seed_from_par(base: Path, num_cams: int, calblock: Path):
+def _seed_from_par(
+    base: Path, num_cams: int, calblock: Path
+) -> tuple[list[list[int]], list[np.ndarray]]:
     """Fallback seed source: man_ori.par (IDs) + man_ori.dat (clicks)."""
     par = base / "parameters"
     dat_file = (
@@ -328,7 +331,7 @@ def _load_dataset_params(base: Path, calblock: Path) -> DatasetParams:
     return DatasetParams(cpar, num_cams, eps, ids_per_cam, clicks_per_cam, "par")
 
 
-def _tpar_from_dataset(base: Path):
+def _tpar_from_dataset(base: Path) -> Any:
     """Load TargetPar from dataset YAML or legacy targ_rec.par."""
     from openptv2.algorithms.parameters import TargetPar
 
@@ -364,7 +367,7 @@ def _tpar_from_dataset(base: Path):
 def _refine_and_select(
     cam: int,
     cal: Calibration,
-    cpar,
+    cpar: Any,
     fix: np.ndarray,
     nfix: int,
     eps: int,
@@ -437,7 +440,7 @@ def _refine_and_select(
 def calibrate_camera(
     cam: int,
     base: Path,
-    cpar,
+    cpar: Any,
     fix: np.ndarray,
     nfix: int,
     eps: int,
@@ -502,8 +505,8 @@ def calibrate_camera(
 def calibrate_from_source(
     source_name: str,
     cam: int,
-    cpar,
-    point_set,
+    cpar: Any,
+    point_set: Any,
     eps: int = 15,
     *,
     initial_cal: Calibration | None = None,
@@ -570,7 +573,7 @@ def calibrate_from_source(
     )
 
 
-def _target_from_xy(pnr: int, x: float, y: float):
+def _target_from_xy(pnr: int, x: float, y: float) -> Any:
     """Build a Target with the given pixel coordinates (helper for
     calibrate_from_source, which starts from plain (n,2) arrays rather than
     a `_targets` file)."""
@@ -656,7 +659,7 @@ def calibrate_dataset(
     return results
 
 
-def cross_camera_rcm(results: list[CamResult], cpar) -> dict | None:
+def cross_camera_rcm(results: list[CamResult], cpar: Any) -> dict | None:
     """Cross-camera ray-convergence miss distance (mm) over calblock points
     seen by >= 2 cameras. None when < 2 cameras have a valid result or < 3
     common points. Per-camera reprojection RMS cannot see cross-camera
@@ -793,7 +796,7 @@ def joint_plate_bundle_adjust(
     valid_cams = [r.cam for r in valid]
     cal_by_cam = {r.cam: r.cal for r in valid}
     # Per-camera: (point-row indices, observed metric coords) for its points.
-    cam_obs = {}
+    cam_obs: dict[Any, tuple[Any, Any]] = {}
     for cam in valid_cams:
         rows, mets = [], []
         for k in keys:
@@ -812,7 +815,7 @@ def joint_plate_bundle_adjust(
         rejected trial is simply discarded."""
         cals = {c: copy.deepcopy(base_cals[c]) for c in valid_cams}
         # Layout: exterior block, distortion block (group-major), point block.
-        x0 = []
+        x0: Any = []
         for cam in valid_cams:
             x0.extend(cals[cam].get_pos())
             x0.extend(cals[cam].get_angles())
@@ -867,7 +870,7 @@ def joint_plate_bundle_adjust(
         return trial, rcm_med, float(sol.cost * 2), bool(sol.success)
 
     # cost_before: residual at the seed (points=nominal, exterior unmoved).
-    seed_res = []
+    seed_res: list[Any] = []
     for cam in valid_cams:
         rows, mets = cam_obs[cam]
         proj = image_coordinates(nominal_arr[rows], cal_by_cam[cam], mm)
@@ -886,7 +889,7 @@ def joint_plate_bundle_adjust(
 
     shaken_groups: list[str] = []
     rcm_trace: list[tuple] = []
-    accepted = []
+    accepted: list[Any] = []
     if shake_distortion:
         for group in DIST_GROUPS:
             best_cals = {r.cam: r.cal for r in best_results if r.cam in cal_by_cam}
@@ -922,7 +925,7 @@ def joint_plate_bundle_adjust(
     return best_results, info
 
 
-def _cam_view(base: Path, cam: int, raw):
+def _cam_view(base: Path, cam: int, raw: Any) -> Any:
     """The image ONE camera actually sees, given the raw calibration frame.
 
     On a splitter rig every camera shares the same multiplexed frame but its
@@ -1031,7 +1034,8 @@ def suggest_eps0(base, cpar, cals, *, sweep=None, gt_radius=3.0):
     fix, _ = read_calblock(str(resolve_calblock(base)))
     fix = np.asarray(fix, float)
 
-    frm = Frame(4, 1000)
+    # Frame declares targets/num_targets as object (Cython buffer); Any here.
+    frm: Any = Frame(4, 1000)
     gt = []  # per-camera: detected-target-index -> calblock id (1-based) or -1
     for c in range(4):
         proj = np.array([_reproject_px(cals[c], cpar.mm, p, cpar) for p in fix])
@@ -1133,7 +1137,7 @@ def _tracer_rcm_median(obs_list, cals, cpar):
     return float(np.median(rcm))
 
 
-def _load_tracer_frame_data(base: Path, cpar, frames):
+def _load_tracer_frame_data(base: Path, cpar: Any, frames: Any) -> Any:
     """Load the sequence YAML, list tracked-linkage frames, and read each
     frame's tracked 3D points + per-camera detections for
     tracer_self_calibrate.
@@ -1311,11 +1315,11 @@ def tracer_self_calibrate(
             for i, pix in enumerate(obs_list):
                 if cam in pix:
                     rows.append(i)
-                    mets.append(pixel_to_metric(*pix[cam], cpar))
+                    mets.append(pixel_to_metric(pix[cam][0], pix[cam][1], cpar))
             cam_rows[cam] = np.asarray(rows, int)
             cam_mets[cam] = np.asarray(mets, float).reshape(-1, 2)
 
-        x0 = []
+        x0: Any = []
         for cam in free_cams:
             x0.extend(cur[cam].get_pos())
             x0.extend(cur[cam].get_angles())

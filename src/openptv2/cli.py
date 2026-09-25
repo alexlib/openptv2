@@ -63,6 +63,7 @@ def main():
                 track3d,
                 sequence_plugin,
                 tracking_plugin,
+                output,
             ) = parse_command_line_args(sys.argv[2:])
             batch_main(
                 yaml_file,
@@ -72,6 +73,7 @@ def main():
                 track3d=track3d,
                 sequence_plugin=sequence_plugin,
                 tracking_plugin=tracking_plugin,
+                output=output,
             )
 
         except Exception as e:

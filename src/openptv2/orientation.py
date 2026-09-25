@@ -1,5 +1,7 @@
 """Compatibility and direct forwarder for orientation."""
 
+from typing import Any
+
 import numpy as np
 
 from openptv2.algorithms.orientation import (
@@ -25,7 +27,7 @@ from openptv2.algorithms.orientation import (
 )
 
 
-def _is_empty_targets(targets) -> bool:
+def _is_empty_targets(targets: Any) -> bool:
     """Check if the given targets structure represents an empty set of targets."""
     if targets is None:
         return True

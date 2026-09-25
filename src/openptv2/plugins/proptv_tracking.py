@@ -142,7 +142,7 @@ class ProPTVTracker:
 
         # Link frame i -> i+1 for the first t_init frames.
         # Start a candidate from every particle in frame 0, extend greedily.
-        paths = {i: [] for i in range(t_init)}
+        paths: dict[int, list[Any]] = {i: [] for i in range(t_init)}
         for i, p in enumerate(frames[0]):
             paths[0].append((i, p))
         used = [np.zeros(len(frames[i]), dtype=bool) for i in range(t_init)]
@@ -494,7 +494,7 @@ class Tracking:
         """Greedy reverse pass: extend short tracks backward one frame."""
         # Rebuild a map frame -> particle -> track-id occupancy to avoid
         # reassigning an already-used point.
-        used = [set() for _ in frame_particles]
+        used: list[set[int]] = [set() for _ in frame_particles]
         for tr in completed:
             for f, p in zip(tr["time"], tr["pos"]):
                 if 0 <= f < len(used) and len(frame_particles[f]) > 0:

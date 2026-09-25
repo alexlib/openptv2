@@ -23,7 +23,7 @@ def _identify_L(
     pitch: float,
     up_hint: np.ndarray | None = None,
     up_hint_max_deg: float = 60.0,
-):
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Find L corner / axes from 3 coded centroids.
 
     Returns (corner, e_x, e_y) where ``e_x``/``e_y`` are unit vectors in
@@ -393,7 +393,7 @@ def label_plate(
     corner_index: tuple[int, int] | None = None,
     up_hint: np.ndarray | None = None,
     up_hint_max_deg: float = 60.0,
-):
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Auto-dispatch to coded vs uncoded labeler.
 
     ``profile`` can force ``"small_6x7_coded"`` or ``"large_25x19"``; otherwise

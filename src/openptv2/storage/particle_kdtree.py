@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Optional, cast
+from typing import Any, Optional, cast
 
 import numpy as np
 
@@ -34,11 +34,11 @@ class ParticleKDTree:
 
     def __init__(
         self,
-        table,
+        table: Any,
         frames: list[int],
         alpha: float = 1.0,
         mode: str = "3d",
-    ):
+    ) -> None:
         if _KDTree is None:
             raise ImportError("scipy.spatial.KDTree is required: pip install scipy")
 

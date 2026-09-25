@@ -12,6 +12,7 @@ and ``…-illmenau-dots-plate-pipeline.md`` — do not re-derive.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -31,10 +32,10 @@ from openptv2.calibration_seed import exterior_from_rotation
 
 
 def calibration_from_opencv(
-    K,
-    dist,
-    rvec,
-    tvec,
+    K: Any,
+    dist: Any,
+    rvec: Any,
+    tvec: Any,
     *,
     imx: int,
     imy: int,
@@ -238,7 +239,9 @@ def opencv_from_calibration(
 # ---------------------------------------------------------------------------
 
 
-def read_xyXYZ(path: str | Path, *, delimiter: str | None = None):
+def read_xyXYZ(
+    path: str | Path, *, delimiter: str | None = None
+) -> tuple[np.ndarray, np.ndarray]:
     """Read the universal 5-column point file → (img_pts (n,2), ref_pts (n,3)).
 
     Covers proPTV ``markers_cN.txt``, MyPTV ``camN_cal_points``,
