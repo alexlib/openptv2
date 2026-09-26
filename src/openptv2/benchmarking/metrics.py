@@ -186,8 +186,8 @@ def compute_identity_metrics(
         covered_frames = set()
         fragments = set()
         for frame, _, _, _ in pts:
-            pred_here = frame_match.get(frame, {})
-            for pid, tidv in pred_here.items():
+            matches_here = frame_match.get(frame, {})
+            for pid, tidv in matches_here.items():
                 if tidv == true_id:
                     fragments.add(pid)
                     covered_frames.add(frame)
@@ -198,15 +198,17 @@ def compute_identity_metrics(
     # Per-fragment: Cr (purity)
     # ------------------------------------------------------------------
     purities: List[float] = []
-    frag_points: Dict[int, List[Tuple[int, int]]] = {}  # pred_id -> [(true_id,count)]
+    frag_points: Dict[int, Dict[int, int]] = {}
     for frame in frame_match:
         for pid, tidv in frame_match[frame].items():
             frag_points.setdefault(pid, {})
             frag_points[pid][tidv] = frag_points[pid].get(tidv, 0) + 1
-    for pid, counts in frag_points.items():
-        total = sum(counts.values())
-        dominant_true = max(counts, key=counts.get)
-        dom_count = counts[dominant_true]
+    for pid, counts_by_true in frag_points.items():
+        total = sum(counts_by_true.values())
+        dominant_true = max(
+            counts_by_true, key=lambda true_id: counts_by_true[true_id]
+        )
+        dom_count = counts_by_true[dominant_true]
         # purity = fraction of this pred track's matched points belonging to
         # the dominant true particle
         purities.append(dom_count / total)
@@ -221,9 +223,9 @@ def compute_identity_metrics(
         counts: Dict[int, int] = {}
         total_frames = len(pts)
         for frame, _, _, _ in pts:
-            tidv = frame_match.get(frame, {}).get(pid)
-            if tidv is not None:
-                counts[tidv] = counts.get(tidv, 0) + 1
+            matched_true_id = frame_match.get(frame, {}).get(pid)
+            if matched_true_id is not None:
+                counts[matched_true_id] = counts.get(matched_true_id, 0) + 1
         if counts:
             majority = max(counts.values())
             if majority / max(1, total_frames) >= correct_fraction:

@@ -11,7 +11,7 @@ import os
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, Optional
+from typing import Any, Literal, Optional, cast
 
 import numpy as np
 
@@ -103,12 +103,12 @@ class _InMemoryLinkageStore:
             return self._source_store.has_targets(cam_idx, frame)
         return False
 
-    def read_targets(self, cam_idx: int, frame: int):
+    def read_targets(self, cam_idx: int, frame: int) -> Any:
         if self._source_store is not None:
             return self._source_store.read_targets(cam_idx, frame)
         return []
 
-    def write_targets(self, cam_idx: int, frame: int, targets) -> None:
+    def write_targets(self, cam_idx: int, frame: int, targets: Any) -> None:
         pass
 
     def write_correspondences(
@@ -190,7 +190,7 @@ def _track_single_chunk(
             naming = default_naming.copy()
 
         chunk_spar = SequencePar(
-            img_base_name=spar.img_base_name,
+            img_base_name=cast(list[str] | None, spar.img_base_name),
             first=chunk_first,
             last=chunk_last,
         )
@@ -339,7 +339,9 @@ def stitch_chunked_linkages(
     return total_parts, total_links
 
 
-def run_postprocess_passes(linkage_base, first, last, tpar, store=None) -> dict:
+def run_postprocess_passes(
+    linkage_base: Any, first: int, last: int, tpar: Any, store: Any = None
+) -> dict:
     """Cold-start seeding, gap relinking and reciprocity over a stitched run.
 
     Each pass's stats are printed and returned. A pass that raises is reported

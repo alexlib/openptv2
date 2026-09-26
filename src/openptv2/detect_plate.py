@@ -256,7 +256,7 @@ def detect_plate_targets(
     # Filter the single dummy sentinel (pnr=1,x=y=1,n=1) returned when
     # target_recognition finds nothing.  The previous filter dropped any
     # real target with pnr==1 when ≥2 targets were found.
-    def _is_dummy(t) -> bool:
+    def _is_dummy(t: Target) -> bool:
         return (
             getattr(t, "pnr", -999) == 1
             and getattr(t, "n", 0) == 1

@@ -38,6 +38,7 @@ verification trail):
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any
 
 import numpy as np
 
@@ -75,7 +76,7 @@ def _claimed_indices(cam_target_ids: np.ndarray, cam: int) -> set[int]:
 
 
 def _unclaimed_target_list(
-    store, cam: int, frame: int, claimed: set[int]
+    store: Any, cam: int, frame: int, claimed: set[int]
 ) -> list[Target]:
     """Plain, property-based Target objects (what candsearch_in_pix_rest
     needs), preserving read_targets' stored order (already y-sorted --
@@ -93,8 +94,13 @@ def _unclaimed_target_list(
 
 
 def _claim_particle(
-    predicted_pos, cals, cpar, store, frame: int, radius_px: float = ADD_RADIUS_PX
-):
+    predicted_pos: np.ndarray,
+    cals: Any,
+    cpar: Any,
+    store: Any,
+    frame: int,
+    radius_px: float = ADD_RADIUS_PX,
+) -> tuple[np.ndarray, np.ndarray, int] | None:
     """Project predicted_pos into every camera, search unclaimed targets,
     triangulate when >= 2 cameras hit. Returns (pos_3d, cam_target_ids,
     n_cams) or None."""
@@ -141,7 +147,7 @@ def _claim_particle(
     return pos, cam_ids, n_hits
 
 
-def _append_correspondence(store, frame: int, pos, cam_ids) -> int:
+def _append_correspondence(store: Any, frame: int, pos: Any, cam_ids: Any) -> int:
     num_cams = len(cam_ids)
     if store.has_correspondences(frame):
         old_pos, old_ids = store.read_correspondences(frame)
@@ -151,7 +157,7 @@ def _append_correspondence(store, frame: int, pos, cam_ids) -> int:
     new_pos = np.vstack([old_pos, np.asarray(pos, dtype=np.float64)[None, :]])
     new_ids = np.vstack([old_ids, np.asarray(cam_ids, dtype=np.int32)[None, :]])
     store.write_correspondences(frame, new_pos, new_ids)
-    return new_pos.shape[0] - 1
+    return int(new_pos.shape[0] - 1)
 
 
 def _empty_linkage():
@@ -163,7 +169,7 @@ def _empty_linkage():
 
 
 def _backward_walk(
-    cpar, cals, store, linkage_name: str, first: int, last: int
+    cpar: Any, cals: Any, store: Any, linkage_name: str, first: int, last: int
 ) -> tuple[int, int]:
     """One backward sweep, frame last-1 -> first: for every track head at
     t+1 with a known forward velocity, try to claim a particle at t.
@@ -221,12 +227,12 @@ def _backward_walk(
 
 
 def run_corrective_pass(
-    cpar,
-    vpar,
-    tpar,
-    spar,
-    cals,
-    store,
+    cpar: Any,
+    vpar: Any,
+    tpar: Any,
+    spar: Any,
+    cals: Any,
+    store: Any,
     linkage_name: str = "ptv_is",
     max_passes: int = 2,
     min_change_frac: float = 0.01,

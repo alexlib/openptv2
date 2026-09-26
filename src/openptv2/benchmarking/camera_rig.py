@@ -239,7 +239,7 @@ def make_standard_rig(
         # refraction is physical (non-zero +Z/-Z vector maintained).
         view_z = rot[2, :]
         gv = np.array(glass_vec, dtype=np.float64)
-        gv_mag = np.linalg.norm(gv)
+        gv_mag = float(np.linalg.norm(gv))
         if gv_mag < 1e-9:
             gv = np.array([0.0, 0.0, -1.0])
             gv_mag = 1.0
@@ -280,13 +280,13 @@ def project_to_pixels(
         One (N, 2) pixel-coordinate array per camera.
     """
     pts = np.ascontiguousarray(points3d, dtype=np.float64)
-    out = []
+    out: list[np.ndarray] = []
     for cal in rig.cals:
         if flat:
             metric = flat_image_coord_batch(pts, cal, rig.cpar.mm)
         else:
             metric = img_coord_batch(pts, cal, rig.cpar.mm)
-        out.append(metric_to_pixel_batch(metric, rig.cpar))
+        out.append(np.asarray(metric_to_pixel_batch(metric, rig.cpar)))
     return out
 
 

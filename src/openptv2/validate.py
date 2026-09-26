@@ -50,7 +50,7 @@ def _legacy_modules() -> dict[str, Any] | None:
         return None
 
 
-def _load_openptv_calibration(cam_num: int):
+def _load_openptv_calibration(cam_num: int) -> Any:
     cal = openptv2.Calibration()
     cal.from_file(
         str(TEST_DATA / "cal" / f"cam{cam_num}.tif.ori"),
@@ -59,7 +59,7 @@ def _load_openptv_calibration(cam_num: int):
     return cal
 
 
-def _load_legacy_calibration(legacy: dict[str, Any], cam_num: int):
+def _load_legacy_calibration(legacy: dict[str, Any], cam_num: int) -> Any:
     cal = legacy["calibration"].Calibration()
     cal.from_file(
         str(TEST_DATA / "cal" / f"cam{cam_num}.tif.ori"),
@@ -77,9 +77,9 @@ def _build_openptv_control(image_size=(1280, 1024), pixel_size=(0.012, 0.012)):
 
 def _build_legacy_control(
     legacy: dict[str, Any],
-    image_size=(1280, 1024),
-    pixel_size=(0.012, 0.012),
-):
+    image_size: tuple[int, int] = (1280, 1024),
+    pixel_size: tuple[float, float] = (0.012, 0.012),
+) -> Any:
     cpar = legacy["parameters"].ControlParams(4)
     cpar.set_image_size(image_size)
     cpar.set_pixel_size(pixel_size)
@@ -348,7 +348,7 @@ def validate_point_positions(
     return CheckResult("point_positions", "PASS", f"max abs diff {max_diff:.3e}")
 
 
-def _benchmark_operation(func, iterations: int) -> float:
+def _benchmark_operation(func: Any, iterations: int) -> float:
     start = time.perf_counter()
     for _ in range(iterations):
         func()

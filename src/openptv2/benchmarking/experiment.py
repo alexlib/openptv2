@@ -86,7 +86,7 @@ def write_experiment(
     misc = num_cams == 4 and rig.refract
     n2 = _N2_WATER if misc else 1.0
     n3 = _N3_GLASS if misc else 1.0
-    d = rig.cpar.mm.d[0] if rig.refract else 0.0
+    d = float(getattr(rig.cpar.mm, "d", (0.0,))[0]) if rig.refract else 0.0
 
     half = [float(v) for v in (np.array(volume) / 2.0)]
 

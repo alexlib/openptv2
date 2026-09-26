@@ -22,6 +22,7 @@ import importlib.util
 import sys
 from pathlib import Path
 from types import ModuleType
+from typing import Any, cast
 
 BUILTIN_SEQUENCE_PLUGINS = {
     # "default" is the core algorithm wrapped in the plugin contract, so
@@ -102,7 +103,7 @@ def _load_entry_point(name: str) -> ModuleType | None:
     from importlib.metadata import entry_points
 
     for ep in entry_points(group=ENTRY_POINT_GROUP, name=name):
-        return ep.load()
+        return cast(ModuleType | None, ep.load())
     return None
 
 
@@ -144,7 +145,7 @@ def resolve_plugin_module(
     )
 
 
-def run_sequence_plugin(name: str, exp, plugins_dir: Path | None = None) -> None:
+def run_sequence_plugin(name: str, exp: Any, plugins_dir: Path | None = None) -> None:
     """Instantiate and run a sequence plugin's ``Sequence.do_sequence()``."""
     if plugins_dir is None:
         plugins_dir = Path.cwd() / "plugins"
@@ -159,7 +160,7 @@ def run_sequence_plugin(name: str, exp, plugins_dir: Path | None = None) -> None
     plugin.do_sequence()
 
 
-def run_tracking_plugin(name: str, exp, plugins_dir: Path | None = None) -> None:
+def run_tracking_plugin(name: str, exp: Any, plugins_dir: Path | None = None) -> None:
     """Instantiate and run a tracking plugin's ``Tracking.do_tracking()``."""
     if plugins_dir is None:
         plugins_dir = Path.cwd() / "plugins"

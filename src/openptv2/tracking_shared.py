@@ -22,6 +22,8 @@ A "track end" here is identified by (frame, idx) of its last point.
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 
 PREV_NONE = -1
@@ -82,8 +84,9 @@ def mark_shared_observations(frames, first, last, tol, max_share=2):
                     continue
                 v = xyz_k[i] - xyz_p[pi]
                 if np.linalg.norm(xyz_n[j] - (xyz_k[i] + v)) < tol:
-                    claimants.append((i, float(
-                        np.linalg.norm(xyz_n[j] - (xyz_k[i] + v)))))
+                    claimants.append(
+                        (i, float(np.linalg.norm(xyz_n[j] - (xyz_k[i] + v))))
+                    )
             # undercount signature: >= 2 predictors, <= 1 actual claim.
             # actual claims: frame-k particles with next_k[i] == j
             actual = [i for i in range(len(xyz_k)) if int(next_k[i]) == j]
@@ -107,7 +110,7 @@ def assemble_with_shared(frames, first, last, shared):
     # forward chains from every unclaimed start; shared points entered
     # once per sharing track.
     tracks = []
-    visited = set()  # (frame, idx, owner-key) to allow shared re-entry
+    visited: set[Any] = set()  # (frame, idx, owner-key) to allow shared re-entry
     # 1. ordinary chains from particles with no prev link
     for k in range(first, last + 1):
         if k not in frames:
@@ -139,7 +142,7 @@ def assemble_with_shared(frames, first, last, shared):
     # tail would graft the wrong identity onto the sharer (a switch).
     # Continuation past separation is gap-relink's job, not assembly's.
     for (fk, fj), sharers in shared.items():
-        for (sk, si) in sharers:
+        for sk, si in sharers:
             # walk the sharer's own history up to (sk, si)
             hist = []
             ck, ci = sk, si
@@ -165,14 +168,13 @@ def assemble_with_shared(frames, first, last, shared):
                 continue
             visited.add(key)
             # skip if an identical main chain already covers it
-            if any(all(n in c for n in full) for c in tracks
-                   if len(c) >= len(full)):
+            if any(all(n in c for n in full) for c in tracks if len(c) >= len(full)):
                 continue
             tracks.append(full)
     out = []
     for chain in tracks:
         fr, ps = [], []
-        for (ck, ci) in chain:
+        for ck, ci in chain:
             if ck not in frames:
                 continue
             _, _, xyz = frames[ck]

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, Optional, cast
 
 import numpy as np
 
@@ -34,11 +34,11 @@ class ParticleKDTree:
 
     def __init__(
         self,
-        table,
+        table: Any,
         frames: list[int],
         alpha: float = 1.0,
         mode: str = "3d",
-    ):
+    ) -> None:
         if _KDTree is None:
             raise ImportError("scipy.spatial.KDTree is required: pip install scipy")
 
@@ -105,7 +105,13 @@ class ParticleKDTree:
                 np.full((len(q), k), -1, dtype=np.int32),
             )
 
-        dists, idxs = self._tree.query(q, k=k, p=2)
+        tree = self._tree
+        if tree is None:
+            return (
+                np.full((len(q), k), np.inf),
+                np.full((len(q), k), -1, dtype=np.int32),
+            )
+        dists, idxs = tree.query(q, k=k, p=2)
 
         if max_dist is not None:
             mask = dists > max_dist
@@ -130,19 +136,22 @@ class ParticleKDTree:
         """
         if self.is_empty:
             return [[] for _ in range(len(q))]
-        return self._tree.query_ball_point(q, r)
+        tree = self._tree
+        if tree is None:
+            return [[] for _ in range(len(q))]
+        return cast(list[list[int]], tree.query_ball_point(q, r))
 
     def global_index(self, tree_idx: np.ndarray) -> np.ndarray:
         """Convert tree-local indices to global table indices."""
-        return self._global_idx[tree_idx]
+        return cast(np.ndarray, self._global_idx[tree_idx])
 
     def frame_of(self, tree_idx: np.ndarray) -> np.ndarray:
         """Get frame numbers for tree-local indices."""
-        return self._frame_of[tree_idx]
+        return cast(np.ndarray, self._frame_of[tree_idx])
 
     def pid_of(self, tree_idx: np.ndarray) -> np.ndarray:
         """Get particle IDs for tree-local indices."""
-        return self._pid_of[tree_idx]
+        return cast(np.ndarray, self._pid_of[tree_idx])
 
     def get_xy_cam(self, tree_idx: np.ndarray) -> np.ndarray:
         """Get per-camera 2D positions for tree-local indices.
@@ -150,11 +159,11 @@ class ParticleKDTree:
         Returns (M, C, 2) array, NaN where camera didn't detect.
         """
         global_idx = self._global_idx[tree_idx]
-        return self._table.xy_cam[global_idx]
+        return cast(np.ndarray, self._table.xy_cam[global_idx])
 
     def get_xyz(self, tree_idx: np.ndarray) -> np.ndarray:
         """Get 3D positions for tree-local indices."""
-        return self._points[tree_idx]
+        return cast(np.ndarray, self._points[tree_idx])
 
     def build_frame_pairs(
         self,

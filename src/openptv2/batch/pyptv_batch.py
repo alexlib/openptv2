@@ -25,7 +25,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Union
+from typing import Any, Union
 
 
 class ProcessingError(Exception):
@@ -109,6 +109,8 @@ class ProcessingExperiment:
         self.cals = cals
         self.epar = epar
         self.num_cams = pm.num_cams
+        self.exp_path: str = ""
+        self.track3d: bool = False
         # Attributes that may be set during processing
         self.detections = []
         self.corrected = []
@@ -127,24 +129,25 @@ def build_processing_experiment(
     exp_path = yaml_file.parent
 
     experiment = Experiment()
+    pm = experiment.pm
+    if pm is None:
+        raise RuntimeError("Experiment parameter manager is unavailable")
     print(f"Loading parameters from: {yaml_file}")
-    experiment.pm.from_yaml(yaml_file)
+    pm.from_yaml(yaml_file)
 
-    print(f"Initializing processing with num_cams = {experiment.pm.num_cams}")
-    cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(experiment.pm)
+    print(f"Initializing processing with num_cams = {pm.num_cams}")
+    cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(pm)
 
     spar.set_first(seq_first)
     spar.set_last(seq_last)
 
-    proc_exp = ProcessingExperiment(
-        experiment.pm, cpar, spar, vpar, track_par, tpar, cals, epar
-    )
+    proc_exp = ProcessingExperiment(pm, cpar, spar, vpar, track_par, tpar, cals, epar)
     proc_exp.exp_path = str(exp_path)
     return proc_exp
 
 
 def _warn_if_tracking_poorly_conditioned(
-    proc_exp, seq_first: int, seq_last: int
+    proc_exp: Any, seq_first: int, seq_last: int
 ) -> None:
     """Disabled: advisory check based on heuristic calibration noise floor."""
     return
@@ -178,11 +181,12 @@ def run_batch(
     Raises:
         ProcessingError: If processing fails
     """
+    yaml_path = Path(yaml_file).resolve()
     print(f"Starting batch processing: frames {seq_first} to {seq_last}")
-    print(f"Using parameter file: {yaml_file}")
+    print(f"Using parameter file: {yaml_path}")
 
     # Validate experiment setup and get experiment directory
-    exp_path = validate_experiment_setup(yaml_file)
+    exp_path = validate_experiment_setup(yaml_path)
 
     # Store original working directory
     original_cwd = Path.cwd()
@@ -191,7 +195,7 @@ def run_batch(
         # Change to experiment directory
         os.chdir(exp_path)
 
-        proc_exp = build_processing_experiment(yaml_file, seq_first, seq_last)
+        proc_exp = build_processing_experiment(yaml_path, seq_first, seq_last)
 
         sequence_plugin, tracking_plugin = resolve_selected_plugins(
             proc_exp.pm, sequence_plugin, tracking_plugin
@@ -350,8 +354,8 @@ def main(
 
 
 def parse_command_line_args(
-    args_list=None,
-) -> tuple[Path, int, int, str, bool, str, str]:
+    args_list: Any = None,
+) -> tuple[Path, int, int, str, bool, str, str, str | None]:
     """Parse and validate command line arguments.
 
     Returns:

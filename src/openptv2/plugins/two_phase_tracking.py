@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, cast
 
 import numpy as np
 from scipy.optimize import linear_sum_assignment
@@ -125,13 +126,13 @@ def _confirm_links(
     """
     last_t = len(frame_particles) - 1
     fwd: dict[tuple[int, int], list[tuple[int, int]]] = {}
-    for (t0, r0, t1, r1) in links:
+    for t0, r0, t1, r1 in links:
         if t1 - t0 == 1:
             fwd.setdefault((t0, r0), []).append((t1, r1))
     severed = set()
     if tol is not None:
         P = [np.asarray(p, dtype=np.float64) for p in frame_particles]
-        for (t0, r0, t1, r1) in links:
+        for t0, r0, t1, r1 in links:
             if t1 - t0 != 1 or t1 >= last_t:
                 continue
             if r0 >= len(P[t0]) or r1 >= len(P[t1]):
@@ -143,7 +144,7 @@ def _confirm_links(
                 continue
             v = P[t1][r1] - P[t0][r0]
             keep = False
-            for (t2, r2) in onward:
+            for t2, r2 in onward:
                 if t2 - t1 != 1 or r2 >= len(P[t2]):
                     continue
                 kink = float(np.linalg.norm((P[t2][r2] - P[t1][r1]) - v))
@@ -152,8 +153,11 @@ def _confirm_links(
                     break
             if not keep:
                 severed.add(((t0, r0), (t1, r1)))
-    kept = [L for L in links
-            if not (L[2] - L[0] == 1 and ((L[0], L[1]), (L[2], L[3])) in severed)]
+    kept = [
+        L
+        for L in links
+        if not (L[2] - L[0] == 1 and ((L[0], L[1]), (L[2], L[3])) in severed)
+    ]
     return kept, severed
 
 
@@ -171,9 +175,8 @@ def _split_hist(
     for _tid, pts in hist.items():
         cur = []
         prev = None
-        for (f, r, s) in pts:
-            if (prev is not None and f - prev[0] == 1
-                    and (prev, (f, r)) in severed):
+        for f, r, s in pts:
+            if prev is not None and f - prev[0] == 1 and (prev, (f, r)) in severed:
                 if cur:
                     new_hist[nxt] = cur
                     nxt += 1
@@ -206,9 +209,7 @@ def _merge_bidirectional_links(
     fwd_set = set(fwd_links)
     bwd_cands = [L for L in bwd_links if L not in fwd_set]
     fp = [np.asarray(p, dtype=np.float64) for p in frame_particles]
-    bwd_cands.sort(
-        key=lambda x: np.linalg.norm(fp[x[2]][x[3]] - fp[x[0]][x[1]])
-    )
+    bwd_cands.sort(key=lambda x: np.linalg.norm(fp[x[2]][x[3]] - fp[x[0]][x[1]]))
 
     for t0, r0, t1, r1 in bwd_cands:
         if (t0, r0) not in fwd_out and (t1, r1) not in fwd_in:
@@ -239,12 +240,14 @@ def _chains_from_links(
             c.append(k)
         fr = [t for (t, r) in c]
         ps = np.array([fp[t][r] for (t, r) in c])
-        chains.append({
-            "tid": tid,
-            "frames": fr,
-            "pos": ps,
-            "shared": [False] * len(fr),
-        })
+        chains.append(
+            {
+                "tid": tid,
+                "frames": fr,
+                "pos": ps,
+                "shared": [False] * len(fr),
+            }
+        )
         tid += 1
     return chains
 
@@ -300,9 +303,10 @@ def _match_two_phase_frame(
     neighbours = tree3d.query_ball_point(pts0, r=radius)
 
     # Build edge list with 2D costs
-    rows, cols, costs = [], [], []
-    use_leaves = (cost_mode == "projected" and leaf_weight > 0
-                  and xy0.shape[1] > 0)
+    rows: list[int] = []
+    cols: list[int] = []
+    costs: list[float] = []
+    use_leaves = cost_mode == "projected" and leaf_weight > 0 and xy0.shape[1] > 0
     for pi in range(n_pred):
         cands = neighbours[pi]
         if len(cands) == 0:
@@ -336,26 +340,26 @@ def _match_two_phase_frame(
     if len(rows) == 0:
         return set(), set()
 
-    rows = np.array(rows)
-    cols = np.array(cols)
-    costs = np.array(costs)
+    row_arr = np.array(rows)
+    col_arr = np.array(cols)
+    cost_arr = np.array(costs)
 
     # Phase 2: Hungarian via connected components
     n_nodes = n_pred + n_cand
     graph = coo_matrix(
-        (np.ones(len(rows), dtype=np.int8), (rows, cols + n_pred)),
+        (np.ones(len(row_arr), dtype=np.int8), (row_arr, col_arr + n_pred)),
         shape=(n_nodes, n_nodes),
     )
     n_comp, labels = connected_components(graph, directed=False)
 
-    links = set()
+    links: set[tuple[int, int]] = set()
     shared: set[tuple[int, int]] = set()
-    edge_comp = labels[rows]
+    edge_comp = labels[row_arr]
     comp_edges = np.bincount(edge_comp, minlength=n_comp)
 
     # Trivial components: accept directly
     trivial = comp_edges[edge_comp] == 1
-    for r, c in zip(rows[trivial], cols[trivial]):
+    for r, c in zip(row_arr[trivial], col_arr[trivial]):
         links.add((int(p0[r]), int(p1[c])))
 
     # Non-trivial: small dense Hungarian per component
@@ -366,9 +370,9 @@ def _match_two_phase_frame(
         rest = rest[np.argsort(edge_comp[rest], kind="stable")]
         splits = np.flatnonzero(np.diff(edge_comp[rest])) + 1
         for group in np.split(rest, splits):
-            c_rows = rows[group].tolist()
-            c_cols = cols[group].tolist()
-            c_costs = costs[group].tolist()
+            c_rows = row_arr[group].tolist()
+            c_cols = col_arr[group].tolist()
+            c_costs = cost_arr[group].tolist()
             uniq_r = sorted(set(c_rows))
             uniq_c = sorted(set(c_cols))
             if len(uniq_r) + len(uniq_c) > max_group_size:
@@ -389,8 +393,9 @@ def _match_two_phase_frame(
                         for k, (rr, cc) in enumerate(zip(c_rows, c_cols)):
                             if rr == r and c_costs[k] < best_d:
                                 best_d, best_c = c_costs[k], cc
-                        if best_c is not None and \
-                                (share_tol is None or best_d < share_tol):
+                        if best_c is not None and (
+                            share_tol is None or best_d < share_tol
+                        ):
                             links.add((int(p0[r]), int(p1[best_c])))
                             shared.add((int(p0[r]), int(p1[best_c])))
                 continue
@@ -408,8 +413,7 @@ def _match_two_phase_frame(
                 links.add((int(p0[uniq_r[r_i]]), int(p1[uniq_c[c_i]])))
                 assigned_rows.add(int(uniq_r[r_i]))
                 assigned_cols.add(int(uniq_c[c_i]))
-                group_winners.append((int(p0[uniq_r[r_i]]),
-                                      int(p1[uniq_c[c_i]])))
+                group_winners.append((int(p0[uniq_r[r_i]]), int(p1[uniq_c[c_i]])))
             # Prototype shared-observation: more predictors than candidates
             # = detector undercount (occlusion). Unassigned predictors share
             # their best candidate instead of dying. Tracked by the caller
@@ -423,8 +427,11 @@ def _match_two_phase_frame(
                     for c_i, c in enumerate(uniq_c):
                         if sub[r_i, c_i] < best_d:
                             best_d, best_c = sub[r_i, c_i], c
-                    if best_c is not None and best_d < sentinel and \
-                            (share_tol is None or best_d < share_tol):
+                    if (
+                        best_c is not None
+                        and best_d < sentinel
+                        and (share_tol is None or best_d < share_tol)
+                    ):
                         links.add((int(p0[r]), int(p1[best_c])))
                         group_shared.append((int(p0[r]), int(p1[best_c])))
             if group_shared:
@@ -453,9 +460,12 @@ class TwoPhaseTracker:
         self,
         frame_particles: list[np.ndarray],
         frame_leaves: list[np.ndarray] | None = None,
-        project_fn=None,
+        project_fn: Any = None,
         return_chains: bool = False,
-    ) -> list[tuple[int, int, int, int]]:
+    ) -> (
+        list[tuple[int, int, int, int]]
+        | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
+    ):
         """Track particles across frames using two-phase matching.
 
         Stateful: every live track carries a constant-velocity estimate.
@@ -499,24 +509,34 @@ class TwoPhaseTracker:
             )
 
         # Bidirectional tracking: forward + backward on reversed frames
-        fwd_links = self._track_unidirectional(
-            frame_particles, frame_leaves, project_fn, return_chains=False
+        fwd_links = cast(
+            list[tuple[int, int, int, int]],
+            self._track_unidirectional(
+                frame_particles, frame_leaves, project_fn, return_chains=False
+            ),
         )
 
         rev_particles = frame_particles[::-1]
         rev_leaves = frame_leaves[::-1] if frame_leaves is not None else None
-        bwd_vmax = self.cfg.bwd_v_max if self.cfg.bwd_v_max is not None else self.cfg.v_max
-        bwd_links_raw = self._track_unidirectional(
-            rev_particles, rev_leaves, project_fn, return_chains=False, v_max_override=bwd_vmax
+        bwd_vmax = (
+            self.cfg.bwd_v_max if self.cfg.bwd_v_max is not None else self.cfg.v_max
+        )
+        bwd_links_raw = cast(
+            list[tuple[int, int, int, int]],
+            self._track_unidirectional(
+                rev_particles,
+                rev_leaves,
+                project_fn,
+                return_chains=False,
+                v_max_override=bwd_vmax,
+            ),
         )
         bwd_links = [
             (num_frames - 1 - rt1, rr1, num_frames - 1 - rt0, rr0)
             for (rt0, rr0, rt1, rr1) in bwd_links_raw
         ]
 
-        merged_links = _merge_bidirectional_links(
-            fwd_links, bwd_links, frame_particles
-        )
+        merged_links = _merge_bidirectional_links(fwd_links, bwd_links, frame_particles)
         if not return_chains:
             return merged_links
 
@@ -527,9 +547,12 @@ class TwoPhaseTracker:
         self,
         frame_particles: list[np.ndarray],
         frame_leaves: list[np.ndarray] | None = None,
-        project_fn=None,
+        project_fn: Any = None,
         return_chains: bool = False,
         v_max_override: float | None = None,
+    ) -> (
+        list[tuple[int, int, int, int]]
+        | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
     ):
         num_frames = len(frame_particles)
         if num_frames < 2:
@@ -575,20 +598,27 @@ class TwoPhaseTracker:
             n1 = len(pts1)
 
             # Active tracks: seen within max_gap frames.
-            active = [tid for tid, tr in tracks.items()
-                      if t + 1 - tr["last_t"] <= self.cfg.max_gap]
+            active = [
+                tid
+                for tid, tr in tracks.items()
+                if t + 1 - tr["last_t"] <= self.cfg.max_gap
+            ]
             if not active or n1 == 0:
                 pred_pts = np.zeros((0, 3))
                 pred_xy = np.zeros((0, lf1.shape[1] if n1 else 0))
                 tids: list[int] = []
             else:
-                steps = np.array([t + 1 - tracks[tid]["last_t"]
-                                  for tid in active], dtype=np.float64)
+                steps = np.array(
+                    [t + 1 - tracks[tid]["last_t"] for tid in active], dtype=np.float64
+                )
                 if self.cfg.use_velocity:
                     pred_pts = np.array(
-                        [tracks[tid]["pos"]
-                         + tracks[tid]["vel"] * steps[k] * self.cfg.dt
-                         for k, tid in enumerate(active)])
+                        [
+                            tracks[tid]["pos"]
+                            + tracks[tid]["vel"] * steps[k] * self.cfg.dt
+                            for k, tid in enumerate(active)
+                        ]
+                    )
                 else:
                     pred_pts = np.array([tracks[tid]["pos"] for tid in active])
                 if cost_mode == "projected":
@@ -616,8 +646,9 @@ class TwoPhaseTracker:
                 tr = tracks[tid]
                 gap = t + 1 - tr["last_t"]
                 old_pos = tr["pos"]
-                if (int(ai), int(det)) in got_shared and \
-                        tr.get("shared_streak", 0) < self.cfg.max_shared:
+                if (int(ai), int(det)) in got_shared and tr.get(
+                    "shared_streak", 0
+                ) < self.cfg.max_shared:
                     # Shared observation: follow the point, keep own speed.
                     tr["pos"] = pts1[det].copy()
                     tr["shared_streak"] = tr.get("shared_streak", 0) + 1
@@ -661,25 +692,30 @@ class TwoPhaseTracker:
         if not return_chains:
             if self.cfg.confirm_tol is not None:
                 all_links, _ = _confirm_links(
-                    all_links, frame_particles, self.cfg.confirm_tol,
-                    self.cfg.confirm_ends)
+                    all_links,
+                    frame_particles,
+                    self.cfg.confirm_tol,
+                    self.cfg.confirm_ends,
+                )
             return all_links
         if self.cfg.confirm_tol is not None:
             all_links, _sev = _confirm_links(
-                all_links, frame_particles, self.cfg.confirm_tol,
-                self.cfg.confirm_ends)
+                all_links, frame_particles, self.cfg.confirm_tol, self.cfg.confirm_ends
+            )
             hist = _split_hist(hist, _sev)
         chains = []
         fp_arr = [np.asarray(p, dtype=np.float64) for p in frame_particles]
         for tid, pts in hist.items():
             if len(pts) == 0:
                 continue
-            chains.append({
-                "tid": tid,
-                "frames": [f for f, _, _ in pts],
-                "pos": np.array([fp_arr[f][r] for f, r, _ in pts]),
-                "shared": [s for _, _, s in pts],
-            })
+            chains.append(
+                {
+                    "tid": tid,
+                    "frames": [f for f, _, _ in pts],
+                    "pos": np.array([fp_arr[f][r] for f, r, _ in pts]),
+                    "shared": [s for _, _, s in pts],
+                }
+            )
         return all_links, chains
 
 
@@ -729,8 +765,7 @@ class Tracking:
             project_fn(np.zeros((1, 3)))
             return project_fn
         except Exception as exc:
-            print(f"TwoPhaseTracker: no projection ({exc}); "
-                  f"falling back to 3D costs.")
+            print(f"TwoPhaseTracker: no projection ({exc}); falling back to 3D costs.")
             return None
 
     def do_tracking(self) -> None:
@@ -842,21 +877,27 @@ class Tracking:
                     xy[valid, c] = t[cam_ids[valid, c], 1:3]
             frame_leaves.append(np.nan_to_num(xy.reshape(n, -1)))
 
-        cfg = TwoPhaseTrackerConfig(v_max=v_max, leaf_weight=leaf_weight,
-                                      use_velocity=use_velocity,
-                                      cost_mode=cost_mode, max_gap=max_gap,
-                                      allow_shared=allow_shared,
-                                      max_shared=max_shared,
-                                      share_tol=share_tol,
-                                      max_group_size=max_group_size,
-                                      confirm_tol=confirm_tol,
-                                      confirm_ends=confirm_ends,
-                                      bidirectional=bidirectional,
-                                      bwd_v_max=bwd_v_max)
+        cfg = TwoPhaseTrackerConfig(
+            v_max=v_max,
+            leaf_weight=leaf_weight,
+            use_velocity=use_velocity,
+            cost_mode=cost_mode,
+            max_gap=max_gap,
+            allow_shared=allow_shared,
+            max_shared=max_shared,
+            share_tol=share_tol,
+            max_group_size=max_group_size,
+            confirm_tol=confirm_tol,
+            confirm_ends=confirm_ends,
+            bidirectional=bidirectional,
+            bwd_v_max=bwd_v_max,
+        )
         tracker = TwoPhaseTracker(cfg)
         project_fn = self._build_project_fn()
-        links = tracker.track_frames(frame_particles, frame_leaves,
-                                     project_fn=project_fn)
+        links = cast(
+            list[tuple[int, int, int, int]],
+            tracker.track_frames(frame_particles, frame_leaves, project_fn=project_fn),
+        )
 
         # Per-step progress like trackcorr (track3d step: curr/next/links)
         from collections import Counter
@@ -879,8 +920,12 @@ class Tracking:
         # Build prev/next arrays per frame from links
         from collections import defaultdict
 
-        nxt_map = defaultdict(lambda: defaultdict(lambda: -1))
-        prv_map = defaultdict(lambda: defaultdict(lambda: -1))
+        nxt_map: defaultdict[int, defaultdict[int, int]] = defaultdict(
+            lambda: defaultdict(lambda: -1)
+        )
+        prv_map: defaultdict[int, defaultdict[int, int]] = defaultdict(
+            lambda: defaultdict(lambda: -1)
+        )
         for t0, p0, t1, p1 in links:
             f0, f1 = frames[t0], frames[t1]
             nxt_map[f0][p0] = p1

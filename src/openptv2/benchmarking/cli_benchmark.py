@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
+from typing import Any, cast
 
 import numpy as np
 
@@ -30,7 +31,7 @@ BENCHMARK_TRACKERS = [
 ]
 
 
-def _default_spec(**overrides) -> ScenarioSpec:
+def _default_spec(**overrides: Any) -> ScenarioSpec:
     base = dict(
         num_particles=60,
         num_frames=40,
@@ -41,7 +42,7 @@ def _default_spec(**overrides) -> ScenarioSpec:
         ghost_ratio=0.02,
     )
     base.update(overrides)
-    return ScenarioSpec(**base)
+    return ScenarioSpec(**cast(Any, base))
 
 
 def cmd_dataset(

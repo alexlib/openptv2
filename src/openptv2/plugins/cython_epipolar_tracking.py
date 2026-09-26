@@ -7,6 +7,7 @@ for high-performance 2D+3D trajectory reconstruction across multi-camera setups.
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 import numpy as np
 
@@ -35,10 +36,10 @@ class CythonEpipolarTracker:
         dacc: float = 0.010,
         angle: float = 60.0,
         dt: float = 1.0,
-        ptv=None,
-        exp=None,
-        **kwargs,
-    ):
+        ptv: Any = None,
+        exp: Any = None,
+        **kwargs: Any,
+    ) -> None:
         self.cpar = cpar
         self.vpar = vpar
         self.tpar = tpar
@@ -121,7 +122,7 @@ class CythonEpipolarTracker:
         from openptv2.plugins.cython_3d_tracking import Cython3DTracker
 
         v_max = max(abs(self.dvxmax), abs(self.dvxmin))
-        alt_tracker = Cython3DTracker(v_max=v_max, a_max=self.dacc, dt=self.dt)
+        alt_tracker = Cython3DTracker(v_max=v_max, dt=self.dt)
         return alt_tracker.track_frames(frame_particles)
 
 

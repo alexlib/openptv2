@@ -2,9 +2,10 @@ from pathlib import Path
 
 import numpy as np
 from imageio.v3 import imread, imwrite
-from skimage import filters, img_as_ubyte, measure, morphology
+from skimage import filters, measure, morphology
 from skimage.color import label2rgb, rgb2gray
 from skimage.morphology import binary_dilation, binary_erosion, disk
+from skimage.util import img_as_ubyte
 
 from openptv2.correspondences import MatchedCoords, correspondences
 from openptv2.orientation import point_positions

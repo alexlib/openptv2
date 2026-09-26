@@ -134,7 +134,9 @@ def hybrid_track(
         if len(times) < 2:
             continue
 
-        def node(f: int, pos: np.ndarray, gate: float | None):
+        def node(
+            f: int, pos: np.ndarray, gate: float | None
+        ) -> tuple[int, np.ndarray | None, int]:
             """Claim the nearest free point within gate; None breaks chains."""
             nonlocal missing, attached
             k = claim(f, pos)
@@ -220,7 +222,7 @@ def hybrid_track(
             if run and nd[0] != run[-1][0] + 1:
                 flush()
                 run.clear()
-            run.append(nd)
+            run.append((nd[0], nd[1], nd[2]))
         flush()
 
     print(

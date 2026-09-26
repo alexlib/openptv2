@@ -104,7 +104,7 @@ def compute_multi_term_cost_matrix(
 
     # 1. Primary spatial distance cost C_d = ||cand_pos - pred_pos|| (Kalman predicted position)
     dist = cdist(pred_pos, cand_pos)  # (N_pred, N_cand) fast scipy/C cdist
-    cost = w.w_distance * dist
+    cost: np.ndarray = np.asarray(w.w_distance * dist, dtype=np.float64)
 
     # 2. Velocity continuity cost C_v = ||v_implied - pred_vel|| = || (cand - last_pos)/dt - v_pred ||
     if w.w_velocity > 0 and pred_vel is not None and len(pred_vel) == n_pred:

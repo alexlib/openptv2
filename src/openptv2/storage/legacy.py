@@ -289,7 +289,7 @@ def export_run(store: RunStore, experiment_root: Union[str, Path]) -> None:
                     )
 
 
-def main(argv=None) -> int:
+def main(argv: list[str] | None = None) -> int:
     """CLI entrypoint to convert legacy ASCII files to a unified Zarr store."""
     import argparse
     import sys

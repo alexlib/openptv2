@@ -237,7 +237,7 @@ def infer_tracker(plugins_params: Dict[str, Any] | None) -> str:
     the canonical tracker keys. An unrecognised name (a custom
     experiment-local plugin) passes through unchanged."""
     selected = (plugins_params or {}).get("selected_tracking", "default")
-    return _LEGACY_TRACKER_ALIASES.get(selected, selected)
+    return str(_LEGACY_TRACKER_ALIASES.get(selected, selected))
 
 
 def infer_direction(
@@ -250,7 +250,7 @@ def infer_direction(
     if "backward" in track_params:
         return "forward_backward" if track_params["backward"] else "forward"
     if "direction" in track_params:
-        return track_params["direction"]
+        return str(track_params["direction"])
     selected = (plugins_params or {}).get("selected_tracking", "default")
     if selected in _DIRECTION_BACKWARD_PRESETS:
         return "forward_backward"

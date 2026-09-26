@@ -26,7 +26,7 @@ from __future__ import annotations
 import threading
 import time
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, cast
 
 import numpy as np
 import zarr
@@ -153,8 +153,9 @@ class RunStore:
         # through one re-entrant lock makes each operation atomic; the lock
         # granularity is per-frame-array, so throughput stays I/O-bound.
         self._lock = threading.RLock()
+        self.root: Any
         try:
-            self.root = zarr.open_group(str(self.store_path), mode=mode)
+            self.root = zarr.open_group(str(self.store_path), mode=cast(Any, mode))
         except Exception as exc:
             # Two parallel worker processes racing to create the same store
             # in mode="a"/"w" both see it absent and both try to create the
@@ -269,7 +270,7 @@ class RunStore:
     # -- targets ----------------------------------------------------------
 
     @staticmethod
-    def _targets_to_array(targets) -> np.ndarray:
+    def _targets_to_array(targets: Any) -> np.ndarray:
         if isinstance(targets, np.ndarray):
             return np.asarray(targets, dtype=np.float64)
         arr = np.zeros((len(targets), 8), dtype=np.float64)
@@ -282,7 +283,7 @@ class RunStore:
             arr[i] = [t.pnr(), t.x(), t.y(), t.n, t.nx, t.ny, t.sumg, t.tnr()]
         return arr
 
-    def write_targets(self, cam: int, frame: int, targets) -> None:
+    def write_targets(self, cam: int, frame: int, targets: Any) -> None:
         """Write detected 2D targets for one camera/frame.
 
         ``targets``: a ``TargetArray``/list of ``Target``, or an ``(N, 8)``
@@ -533,7 +534,7 @@ class RunStore:
 
     # -- unified particle table -------------------------------------------
 
-    def write_unified_table(self, table) -> None:
+    def write_unified_table(self, table: Any) -> None:
         """Write a UnifiedParticleTable to zarr under ``particle_table/``."""
         grp = _require_group(self.root, "particle_table")
         d = table.to_dict()

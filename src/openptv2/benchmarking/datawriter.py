@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
@@ -152,8 +153,8 @@ def write_dataset_store(
     rig: CameraRig,
     frame_gt: dict[int, list[tuple[int, float, float, float]]],
     spec: DatasetSpec,
-    store=None,
-):
+    store: Any = None,
+) -> Any:
     """Write the same ground-truth dataset as :func:`write_dataset`, but into
     a RunStore (zarr is the database of record). The per-frame content is
     identical to the ASCII writer's output, parsed:

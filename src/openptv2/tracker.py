@@ -1,6 +1,7 @@
 """Streamlined particle tracking control class."""
 
 from pathlib import Path
+from typing import Any, Literal, cast
 
 from openptv2.algorithms.parameters import convert_track_par_to_tuple
 from openptv2.algorithms.track import (
@@ -24,7 +25,9 @@ DEFAULT_MAX_TARGETS = 10000
 _MAX_TARGETS_MARGIN = 1.5  # headroom over the largest frame actually seen
 
 
-def _estimate_max_targets(spar, naming, store, floor=DEFAULT_MAX_TARGETS):
+def _estimate_max_targets(
+    spar: Any, naming: dict[str, str], store: Any, floor: int = DEFAULT_MAX_TARGETS
+) -> int:
     """Per-frame target/particle buffers (Frame(num_cams, max_targets), one
     per slot in the 4-frame ring buffer) are preallocated ONCE for the whole
     run and written into with boundscheck disabled in the compiled kernels --
@@ -74,19 +77,19 @@ class Tracker:
 
     def __init__(
         self,
-        cpar,
-        vpar,
-        tpar,
-        spar,
-        cals,
-        naming=None,
-        flatten_tol=0.0001,
-        store=None,
-        loser_retry=1,
-        cold_start_neighbour=1,
-        app_weight=0.0,
-        use_grid=0,
-    ):
+        cpar: Any,
+        vpar: Any,
+        tpar: Any,
+        spar: Any,
+        cals: Any,
+        naming: dict[str, str] | None = None,
+        flatten_tol: float = 0.0001,
+        store: Any = None,
+        loser_retry: int = 1,
+        cold_start_neighbour: int = 1,
+        app_weight: float = 0.0,
+        use_grid: int = 0,
+    ) -> None:
         """
         Initialize Tracker.
 
@@ -126,16 +129,16 @@ class Tracker:
         # tuple conversion the tracking loop expects.
         self._cpar_algo = cpar
         self._vpar_algo = vpar
-        self._tpar_algo = convert_track_par_to_tuple(tpar)
+        self._tpar_algo: Any = convert_track_par_to_tuple(tpar)
         self._spar_algo = spar
         self._cals_algo = list(cals)
 
         # Tracking run object
-        self._run = None
-        self._current_step = None
+        self._run: TrackingRun | None = None
+        self._current_step: int | None = None
         self._is_initialized = False
 
-    def restart(self):
+    def restart(self) -> None:
         """
         Initialize tracking run (prepare for forward tracking).
         """
@@ -171,7 +174,7 @@ class Tracker:
         self._current_step = self._spar.get_first()
         self._is_initialized = True
 
-    def step_forward(self):
+    def step_forward(self) -> bool:
         """
         Process one frame of forward tracking.
 
@@ -180,6 +183,7 @@ class Tracker:
         """
         if not self._is_initialized:
             raise RuntimeError("Tracker not initialized. Call restart() first.")
+        assert self._current_step is not None
 
         # Stop before the last frame: step k links frame k -> k+1, so the last
         # valid step is (last - 1). Mirrors step_forward_3d / range(first, last).
@@ -192,9 +196,9 @@ class Tracker:
         # Advance to next frame
         self._current_step += 1
 
-        return self._current_step < self._spar.get_last()
+        return bool(self._current_step < self._spar.get_last())
 
-    def finalize(self):
+    def finalize(self) -> None:
         """
         Finalize forward tracking (write the last frame).
         """
@@ -205,7 +209,7 @@ class Tracker:
         # many steps ran.
         trackcorr_c_finish(self._run, self._spar.get_last())
 
-    def full_forward(self):
+    def full_forward(self) -> None:
         """
         Run complete forward tracking (restart + loop + finalize).
         """
@@ -218,7 +222,7 @@ class Tracker:
         # Finalize
         self.finalize()
 
-    def full_backward(self):
+    def full_backward(self) -> None:
         """
         Run backward tracking.
 
@@ -235,7 +239,7 @@ class Tracker:
         reciprocity: bool = True,
         gap_relinking: bool = True,
         max_gap: int = 2,
-    ):
+    ) -> dict[str, Any]:
         """Disk-level trajectory-quality post-passes over the linkage files.
 
         Run after full_forward (+ full_backward). ``cold_start`` recovers the
@@ -253,7 +257,9 @@ class Tracker:
         base = self._naming["linkage"]
         first, last = self._spar.get_first(), self._spar.get_last()
         store = self._store
-        stats = {"links_before": count_links(base, first, last, store=store)}
+        stats: dict[str, Any] = {
+            "links_before": count_links(base, first, last, store=store)
+        }
         if cold_start:
             stats["cold_start"] = seed_cold_start(
                 base, first, last, float(self._tpar_algo.dvxmax), store=store
@@ -272,7 +278,7 @@ class Tracker:
         stats["links_after"] = count_links(base, first, last, store=store)
         return stats
 
-    def step_forward_3d(self):
+    def step_forward_3d(self) -> bool:
         """
         Process one frame of 3D tracking.
 
@@ -281,6 +287,7 @@ class Tracker:
         """
         if not self._is_initialized:
             raise RuntimeError("Tracker not initialized. Call restart() first.")
+        assert self._current_step is not None
 
         # Check if we've reached the end (mirrors range(first, last))
         if self._current_step >= self._spar.get_last():
@@ -292,19 +299,20 @@ class Tracker:
         # Advance to next frame
         self._current_step += 1
 
-        return self._current_step < self._spar.get_last()
+        return bool(self._current_step < self._spar.get_last())
 
-    def step_forward_4be(self):
+    def step_forward_4be(self) -> bool:
         """Process one frame of 4BE tracking. Returns True while frames remain."""
         if not self._is_initialized:
             raise RuntimeError("Tracker not initialized. Call restart() first.")
+        assert self._current_step is not None
 
         if self._current_step >= self._spar.get_last():
             return False
 
         track4be_loop(self._run, self._current_step)
         self._current_step += 1
-        return self._current_step < self._spar.get_last()
+        return bool(self._current_step < self._spar.get_last())
 
     def full_forward_4be(self):
         """Run complete 4BE forward tracking (Ouellette et al. four-frame
@@ -362,7 +370,7 @@ class Tracker:
             flatten_tol=self._flatten_tol,
             n_workers=n_workers,
             overlap=overlap,
-            mode=mode,
+            mode=cast(Literal["3d", "4be", "corr"], mode),
             postprocess=postprocess,
         )
         self._is_initialized = True
