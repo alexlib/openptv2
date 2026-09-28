@@ -56,7 +56,7 @@ nav:
   - Installation & Setup: installation.md
   - First Steps: first_steps.md
   - Tutorials:
-    - End-to-End Particle Tracking: tutorials/getting_started_tutorial.md
+    - Your First Tracking (GUI): tutorials/getting_started_tutorial.md
     - Lid-Driven Cavity Flow: tutorials/cavity_flow_tutorial.md
     - Aorta Flow (cloud-native): aorta_tutorial.md
     - 4-View Image Splitter: tutorials/four_view_splitter/README.md

@@ -1,6 +1,9 @@
 # First Steps with OpenPTV2
 
-This guide gets you started using OpenPTV2 both via Python scripting and through the graphical user interface.
+> **New here?** Start with the [Your First Tracking tutorial](tutorials/getting_started_tutorial.md) —
+> it walks through the bundled `test_cavity` example in the GUI in 10 minutes,
+> step by step. This page covers the same ground in more detail plus
+> scripting and batch options.
 
 ---
 
@@ -88,20 +91,18 @@ from openptv2.correspondence import establish_correspondences
 # )
 ```
 
-### Step 5: Run 3D Tracking Sequence
-Using the `Tracker` object, we track particles across sequential frames.
+### Step 5: Run 3D Tracking over several frames
+Use the batch runner (the same engine the GUI calls). From the repository root:
 
-```python
-from openptv2 import Tracker
-
-# Initialize the tracker with parameter file
-tracker = Tracker(parameter_file="test_data/test_cavity/parameters_Run1.yaml")
-
-# Run sequence tracking on a small frame range
-tracks = tracker.track(first_frame=10000, last_frame=10005)
-
-print(f"Completed tracking! Found {len(tracks)} continuous trajectories.")
+```bash
+# Detection + correspondences, then tracking, on frames 10000–10001
+uv run python -m openptv2.batch.pyptv_batch --workdir=./test_data/test_cavity --first=10000 --last=10001 --mode=sequence
+uv run python -m openptv2.batch.pyptv_batch --workdir=./test_data/test_cavity --first=10000 --last=10001 --mode=tracking
 ```
+
+Trajectories are written to `test_data/test_cavity/res/` as `ptv_is.*` files.
+For the full Python API (loading calibrations, driving the pipeline from a
+script), see the [batch processing tutorial](tutorials/batch_processing.md).
 
 ---
 
@@ -131,7 +132,7 @@ uv run openptv2-gui -w ./test_data/test_cavity
 3. Camera display tabs will populate with blue cross markers representing successfully segmented particles.
 
 ### Step 4: Run Tracking Sequence
-1. Select **Tracking → Track Sequence**.
+1. Select **Tracking → Tracking without display**.
 2. The tracker runs multi-camera tracking.
 3. You can watch the real-time link counter updating in the status panel.
 
