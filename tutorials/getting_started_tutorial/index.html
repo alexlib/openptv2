@@ -27,7 +27,7 @@
     
     
       
-        <title>End-to-End Particle Tracking - OpenPTV2 Documentation</title>
+        <title>Your First Tracking (GUI) - OpenPTV2 Documentation</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tutorial-end-to-end-particle-tracking" class="md-skip">
+        <a href="#tutorial-your-first-tracking-gui-10-minutes" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              End-to-End Particle Tracking
+              Your First Tracking (GUI)
             
           </span>
         </div>
@@ -643,7 +643,7 @@
   <span class="md-ellipsis">
     
   
-    End-to-End Particle Tracking
+    Your First Tracking (GUI)
   
 
     
@@ -661,7 +661,7 @@
   <span class="md-ellipsis">
     
   
-    End-to-End Particle Tracking
+    Your First Tracking (GUI)
   
 
     
@@ -687,10 +687,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
+  <a href="#before-you-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Prerequisites
+        Before you start
       
     </span>
   </a>
@@ -698,82 +698,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-by-step-workflow-script" class="md-nav__link">
+  <a href="#step-1-open-the-example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step-by-Step Workflow Script
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Step-by-Step Workflow Script">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#step-1-initialize-project-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 1: Initialize Project Configuration
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-2-set-up-tracking-parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 2: Set up Tracking Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-3-run-target-segmentation-particle-detection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 3: Run Target Segmentation (Particle Detection)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-4-run-unified-trajectory-tracking" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 4: Run Unified Trajectory Tracking
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-5-exporting-and-analyzing-results" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 5: Exporting and Analyzing Results
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#interactive-plotting-tutorial-matplotlib" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Interactive Plotting Tutorial (Matplotlib)
+        Step 1: Open the example
       
     </span>
   </a>
@@ -781,41 +709,101 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#programmatic-snapshot-generation-for-visual-tutorials" class="md-nav__link">
+  <a href="#step-2-load-parameters-start-init-reload" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Programmatic Snapshot Generation for Visual Tutorials
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Programmatic Snapshot Generation for Visual Tutorials">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-3d-particle-trajectories-snapshot" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. 3D Particle Trajectories Snapshot
+        Step 2: Load parameters — Start → Init / Reload
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#2-2d-camera-projections-and-target-overlays-snapshot" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#step-3-detect-particles-preprocess-image-coord" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 2D Camera Projections and Target Overlays Snapshot
+        Step 3: Detect particles — Preprocess → Image coord
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-match-across-cameras-preprocess-correspondences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Match across cameras — Preprocess → Correspondences
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-process-all-frames-sequence-sequence-without-display" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Process all frames — Sequence → Sequence without display
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-track-over-time-tracking-tracking-without-display" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Track over time — Tracking → Tracking without display
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-see-the-trajectories-tracking-show-trajectories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: See the trajectories — Tracking → Show trajectories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#if-something-goes-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If something goes wrong
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#same-run-without-the-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Same run without the GUI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-go-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to go next
+      
+    </span>
+  </a>
   
 </li>
       
@@ -2263,10 +2251,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
+  <a href="#before-you-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Prerequisites
+        Before you start
       
     </span>
   </a>
@@ -2274,82 +2262,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-by-step-workflow-script" class="md-nav__link">
+  <a href="#step-1-open-the-example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step-by-Step Workflow Script
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Step-by-Step Workflow Script">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#step-1-initialize-project-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 1: Initialize Project Configuration
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-2-set-up-tracking-parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 2: Set up Tracking Parameters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-3-run-target-segmentation-particle-detection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 3: Run Target Segmentation (Particle Detection)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-4-run-unified-trajectory-tracking" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 4: Run Unified Trajectory Tracking
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-5-exporting-and-analyzing-results" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 5: Exporting and Analyzing Results
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#interactive-plotting-tutorial-matplotlib" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Interactive Plotting Tutorial (Matplotlib)
+        Step 1: Open the example
       
     </span>
   </a>
@@ -2357,41 +2273,101 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#programmatic-snapshot-generation-for-visual-tutorials" class="md-nav__link">
+  <a href="#step-2-load-parameters-start-init-reload" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Programmatic Snapshot Generation for Visual Tutorials
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Programmatic Snapshot Generation for Visual Tutorials">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-3d-particle-trajectories-snapshot" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. 3D Particle Trajectories Snapshot
+        Step 2: Load parameters — Start → Init / Reload
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#2-2d-camera-projections-and-target-overlays-snapshot" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#step-3-detect-particles-preprocess-image-coord" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 2D Camera Projections and Target Overlays Snapshot
+        Step 3: Detect particles — Preprocess → Image coord
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-match-across-cameras-preprocess-correspondences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Match across cameras — Preprocess → Correspondences
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-process-all-frames-sequence-sequence-without-display" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Process all frames — Sequence → Sequence without display
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-track-over-time-tracking-tracking-without-display" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Track over time — Tracking → Tracking without display
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-see-the-trajectories-tracking-show-trajectories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: See the trajectories — Tracking → Show trajectories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#if-something-goes-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If something goes wrong
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#same-run-without-the-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Same run without the GUI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-go-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to go next
+      
+    </span>
+  </a>
   
 </li>
       
@@ -2415,134 +2391,112 @@
   
 
 
-<h1 id="tutorial-end-to-end-particle-tracking">Tutorial: End-to-End Particle Tracking<a class="headerlink" href="#tutorial-end-to-end-particle-tracking" title="Permanent link">&para;</a></h1>
-<p>This tutorial guides you through an end-to-end Particle Tracking Velocimetry (PTV) workflow using the <strong>cavity flow</strong> sample dataset. You will learn how to initialize calibrations, detect particles, match correspondences, run 3D tracking, and plot results.</p>
-<hr />
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<p>Before starting, ensure OpenPTV2 is installed with scientific dependencies:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"openptv2[gui]"</span>
-</span></code></pre></div></p>
-<p>For a complete, real-world sample dataset to use with this tutorial, first download the <code>test_cavity</code> case from Git:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/openptv/test_cavity
-</span></code></pre></div></p>
-<p>You can run the interactive OpenPTV2 GUI on this dataset at any time using:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv2-gui<span class="w"> </span>./test_cavity
-</span></code></pre></div></p>
-<p><em>(Note: If you are running code directly from the repository, a small mock version of this dataset is also included under <code>test_data/test_cavity</code>.)</em></p>
-<hr />
-<h2 id="step-by-step-workflow-script">Step-by-Step Workflow Script<a class="headerlink" href="#step-by-step-workflow-script" title="Permanent link">&para;</a></h2>
-<p>Create a Python script named <code>run_cavity_tracking.py</code> inside your project directory and add the following steps:</p>
-<h3 id="step-1-initialize-project-configuration">Step 1: Initialize Project Configuration<a class="headerlink" href="#step-1-initialize-project-configuration" title="Permanent link">&para;</a></h3>
-<p>To track particles across 4 cameras, we need to load camera calibrations and experiment parameter constraints.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">Calibration</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.parameters</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrackingParameters</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1"># Define workspace directory</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">workdir</span> <span class="o">=</span> <span class="s2">"test_data/test_cavity"</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c1"># Load calibration for camera 1-4</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="n">cals</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="k">for</span> <span class="n">cam</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="n">cal</span> <span class="o">=</span> <span class="n">Calibration</span><span class="p">()</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="n">cal</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>        <span class="n">ori_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"cal/cam</span><span class="si">{</span><span class="n">cam</span><span class="si">}</span><span class="s2">.ori"</span><span class="p">),</span>
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>        <span class="n">addpar_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"cal/cam</span><span class="si">{</span><span class="n">cam</span><span class="si">}</span><span class="s2">.addpar"</span><span class="p">),</span>
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    <span class="p">)</span>
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>    <span class="n">cals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cal</span><span class="p">)</span>
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
-</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Loaded </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cals</span><span class="p">)</span><span class="si">}</span><span class="s2"> camera calibrations successfully!"</span><span class="p">)</span>
+<h1 id="tutorial-your-first-tracking-gui-10-minutes">Tutorial: Your First Tracking (GUI, 10 minutes)<a class="headerlink" href="#tutorial-your-first-tracking-gui-10-minutes" title="Permanent link">&para;</a></h1>
+<p>Track real particles in 3D using the example bundled with openptv2.
+No data to download, no parameters to change.</p>
+<p><strong>You will:</strong> open the <code>test_cavity</code> example, detect particles, match them
+across 4 cameras, track them over time, and see the trajectories.</p>
+<h2 id="before-you-start">Before you start<a class="headerlink" href="#before-you-start" title="Permanent link">&para;</a></h2>
+<ul>
+<li>openptv2 installed with the GUI:
+  <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"openptv2[gui]"</span>
+</span></code></pre></div></li>
+<li>A checkout of the openptv2 repository (the example lives in
+  <code>test_data/test_cavity</code>). If you installed from PyPI without the source,
+  clone it:
+  <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/alexlib/openptv2.git
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">cd</span><span class="w"> </span>openptv2
+</span></code></pre></div></li>
+</ul>
+<h2 id="step-1-open-the-example">Step 1: Open the example<a class="headerlink" href="#step-1-open-the-example" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>openptv2-gui<span class="w"> </span>-w<span class="w"> </span>test_data/test_cavity/parameters_Run1.yaml
 </span></code></pre></div>
-<h3 id="step-2-set-up-tracking-parameters">Step 2: Set up Tracking Parameters<a class="headerlink" href="#step-2-set-up-tracking-parameters" title="Permanent link">&para;</a></h3>
-<p>Load tracking physical bounds (e.g. search volume and velocity limits) from the YAML file:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.parameters</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_params_from_yaml</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># Load parameters</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">params</span> <span class="o">=</span> <span class="n">load_params_from_yaml</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="s2">"parameters_Run1.yaml"</span><span class="p">))</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">print</span><span class="p">(</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="s2">"Velocity constraints: dvxmin ="</span><span class="p">,</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">params</span><span class="o">.</span><span class="n">track</span><span class="o">.</span><span class="n">dvxmin</span><span class="p">,</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="s2">"dvxmax ="</span><span class="p">,</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="n">params</span><span class="o">.</span><span class="n">track</span><span class="o">.</span><span class="n">dvxmax</span><span class="p">,</span>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="p">)</span>
+<p>The GUI opens showing 4 camera views of a lid-driven cavity experiment
+(frames 10000–10004).</p>
+<h2 id="step-2-load-parameters-start-init-reload">Step 2: Load parameters — Start → Init / Reload<a class="headerlink" href="#step-2-load-parameters-start-init-reload" title="Permanent link">&para;</a></h2>
+<p>Click <strong>Start → Init / Reload</strong> in the menu bar.</p>
+<p>Success looks like this in the console:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Read all the parameters and calibrations successfully
 </span></code></pre></div>
-<h3 id="step-3-run-target-segmentation-particle-detection">Step 3: Run Target Segmentation (Particle Detection)<a class="headerlink" href="#step-3-run-target-segmentation-particle-detection" title="Permanent link">&para;</a></h3>
-<p>Segment particles from the TIFF images using a brightness threshold.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">skimage.io</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.segmentation</span><span class="w"> </span><span class="kn">import</span> <span class="n">detect_targets</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">frame_number</span> <span class="o">=</span> <span class="mi">10000</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">img_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"img/cam1_</span><span class="si">{</span><span class="n">frame_number</span><span class="si">}</span><span class="s2">.tif"</span><span class="p">)</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">image</span> <span class="o">=</span> <span class="n">skimage</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c1"># Detect targets with a intensity threshold of 12</span>
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="n">targets</span> <span class="o">=</span> <span class="n">detect_targets</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Detected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="si">}</span><span class="s2"> particle targets in Camera 1, Frame </span><span class="si">{</span><span class="n">frame_number</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<p>The 4 camera views now show the first frame. If you see this message,
+everything else in this tutorial will work.</p>
+<h2 id="step-3-detect-particles-preprocess-image-coord">Step 3: Detect particles — Preprocess → Image coord<a class="headerlink" href="#step-3-detect-particles-preprocess-image-coord" title="Permanent link">&para;</a></h2>
+<p>Click <strong>Preprocess → Image coord</strong>.</p>
+<p>The console prints:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Start detection
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Detection finished
 </span></code></pre></div>
-<h3 id="step-4-run-unified-trajectory-tracking">Step 4: Run Unified Trajectory Tracking<a class="headerlink" href="#step-4-run-unified-trajectory-tracking" title="Permanent link">&para;</a></h3>
-<p>Instantiate the high-performance unified <code>Tracker</code> to find continuous 3D coordinate links over multiple frames.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tracker</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Initialize Tracker with configuration file</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">tracker</span> <span class="o">=</span> <span class="n">Tracker</span><span class="p">(</span><span class="n">parameter_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="s2">"parameters_Run1.yaml"</span><span class="p">))</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="c1"># Run 3D tracking sequence on frames 10000 to 10004</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">tracks</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="n">first_frame</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">last_frame</span><span class="o">=</span><span class="mi">10004</span><span class="p">)</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Tracking complete! Formed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tracks</span><span class="p">)</span><span class="si">}</span><span class="s2"> active particle trajectories."</span><span class="p">)</span>
+<p>Each camera view fills with <strong>blue crosses</strong> — one per detected particle
+(several hundred per camera). This is 2D detection: finding bright spots
+in each image.</p>
+<h2 id="step-4-match-across-cameras-preprocess-correspondences">Step 4: Match across cameras — Preprocess → Correspondences<a class="headerlink" href="#step-4-match-across-cameras-preprocess-correspondences" title="Permanent link">&para;</a></h2>
+<p>Click <strong>Preprocess → Correspondences</strong>.</p>
+<p>The console prints:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>correspondence proc started
 </span></code></pre></div>
-<h3 id="step-5-exporting-and-analyzing-results">Step 5: Exporting and Analyzing Results<a class="headerlink" href="#step-5-exporting-and-analyzing-results" title="Permanent link">&para;</a></h3>
-<p>Print and review the calculated 3D coordinates from the tracking trajectories.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Print coordinates for the first 3 continuous trajectories</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">for</span> <span class="n">path_id</span><span class="p">,</span> <span class="n">trajectory</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">tracks</span><span class="o">.</span><span class="n">items</span><span class="p">())[:</span><span class="mi">3</span><span class="p">]:</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Trajectory Path ID: </span><span class="si">{</span><span class="n">path_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="k">for</span> <span class="n">frame</span><span class="p">,</span> <span class="n">pt</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>        <span class="nb">print</span><span class="p">(</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>            <span class="sa">f</span><span class="s2">"  Frame </span><span class="si">{</span><span class="n">frame</span><span class="si">}</span><span class="s2">: [X=</span><span class="si">{</span><span class="n">pt</span><span class="p">[</span><span class="s1">'pos'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, Y=</span><span class="si">{</span><span class="n">pt</span><span class="p">[</span><span class="s1">'pos'</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, Z=</span><span class="si">{</span><span class="n">pt</span><span class="p">[</span><span class="s1">'pos'</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">]"</span>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>        <span class="p">)</span>
+<p>New crosses appear in <strong>yellow</strong> (seen in 2 cameras), <strong>green</strong> (3 cameras),
+and <strong>red</strong> (all 4 cameras). This is stereo matching: the same physical
+particle found in multiple views is triangulated into a 3D position.</p>
+<h2 id="step-5-process-all-frames-sequence-sequence-without-display">Step 5: Process all frames — Sequence → Sequence without display<a class="headerlink" href="#step-5-process-all-frames-sequence-sequence-without-display" title="Permanent link">&para;</a></h2>
+<p>Click <strong>Sequence → Sequence without display</strong>.</p>
+<p>This repeats Steps 3–4 for every frame (10000–10004). It takes under a
+minute. Results are saved to <code>test_data/test_cavity/res/</code> as <code>rt_is.*</code>
+files (one per frame, 3D positions).</p>
+<h2 id="step-6-track-over-time-tracking-tracking-without-display">Step 6: Track over time — Tracking → Tracking without display<a class="headerlink" href="#step-6-track-over-time-tracking-tracking-without-display" title="Permanent link">&para;</a></h2>
+<p>Click <strong>Tracking → Tracking without display</strong>.</p>
+<p>The console prints:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>tracking without display finished
 </span></code></pre></div>
-<hr />
-<h2 id="interactive-plotting-tutorial-matplotlib">Interactive Plotting Tutorial (Matplotlib)<a class="headerlink" href="#interactive-plotting-tutorial-matplotlib" title="Permanent link">&para;</a></h2>
-<p>To plot the 3D particle trajectories we just calculated:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">mpl_toolkits.mplot3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">Axes3D</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s2">"3d"</span><span class="p">)</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="c1"># Draw each path with a unique color</span>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="k">for</span> <span class="n">path_id</span><span class="p">,</span> <span class="n">trajectory</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">tracks</span><span class="o">.</span><span class="n">items</span><span class="p">())[:</span><span class="mi">15</span><span class="p">]:</span>  <span class="c1"># Plot first 15 trajectories</span>
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>    <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">pt</span><span class="p">[</span><span class="s2">"pos"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>    <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">pt</span><span class="p">[</span><span class="s2">"pos"</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>    <span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="n">pt</span><span class="p">[</span><span class="s2">"pos"</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>
-</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"-"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Path </span><span class="si">{</span><span class="n">path_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>
-</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"X Physical Coordinate"</span><span class="p">)</span>
-</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Y Physical Coordinate"</span><span class="p">)</span>
-</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s2">"Z Physical Coordinate"</span><span class="p">)</span>
-</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"3D Trajectories - Cavity Flow Dataset"</span><span class="p">)</span>
-</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span></code></pre></div>
-<p>This completes your end-to-end particle tracking workflow with OpenPTV2!</p>
-<hr />
-<h2 id="programmatic-snapshot-generation-for-visual-tutorials">Programmatic Snapshot Generation for Visual Tutorials<a class="headerlink" href="#programmatic-snapshot-generation-for-visual-tutorials" title="Permanent link">&para;</a></h2>
-<p>For generating premium, publication-quality figures directly from the Python/C API, we include a reference tutorial snapshot generator script inside the repository at <code>docs/tutorials/generate_tutorial_snapshots.py</code>.</p>
-<p>This script:
-1. Loads the camera calibrations and control parameters.
-2. Reads the raw TIFF camera images and loads detected 2D particle targets.
-3. Loads the 3D particle tracking trajectories from disk.
-4. Mapped 3D trajectories back onto the 2D camera image planes using pinhole camera projection equations.
-5. Saves clean, high-resolution figures.</p>
-<p>You can execute this generation script using:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/generate_tutorial_snapshots.py
-</span></code></pre></div></p>
-<p>It generates the following two high-resolution visualizations under the <code>docs/tutorials/images/</code> directory:</p>
-<h3 id="1-3d-particle-trajectories-snapshot">1. 3D Particle Trajectories Snapshot<a class="headerlink" href="#1-3d-particle-trajectories-snapshot" title="Permanent link">&para;</a></h3>
-<p>A modern, transparent grid 3D plot displaying the tracked 3D continuous physical particle trajectories from the cavity flow dataset.</p>
+<p>Particles are now linked frame-to-frame into trajectories, saved as
+<code>res/ptv_is.*</code> files. Expect a few hundred trajectories over these frames.</p>
+<h2 id="step-7-see-the-trajectories-tracking-show-trajectories">Step 7: See the trajectories — Tracking → Show trajectories<a class="headerlink" href="#step-7-see-the-trajectories-tracking-show-trajectories" title="Permanent link">&para;</a></h2>
+<p>Click <strong>Tracking → Show trajectories</strong> to plot the 3D paths.</p>
 <p><img alt="3D Particle Trajectories" src="../images/trajectory_3d.png" /></p>
-<h3 id="2-2d-camera-projections-and-target-overlays-snapshot">2. 2D Camera Projections and Target Overlays Snapshot<a class="headerlink" href="#2-2d-camera-projections-and-target-overlays-snapshot" title="Permanent link">&para;</a></h3>
-<p>The raw camera image frame overlaid with the loaded 2D detected particle targets (cyan <code>+</code>) and the projected 3D trajectory paths (orange lines with gold <code>o</code> endpoints) mapped back onto the camera sensor.</p>
-<p><img alt="2D Camera Overlays" src="../images/camera_projection_2d.png" /></p>
+<p>You just ran a full 3D-PTV pipeline: detect → match → track → visualize.</p>
+<h2 id="if-something-goes-wrong">If something goes wrong<a class="headerlink" href="#if-something-goes-wrong" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GUI fails with <code>No module named 'traitsui'</code></td>
+<td>You installed without the GUI extra. Run <code>pip install "openptv2[gui]"</code>.</td>
+</tr>
+<tr>
+<td><code>Init / Reload</code> reports a missing image</td>
+<td>Check you launched from the repository root so relative paths in the YAML resolve.</td>
+</tr>
+<tr>
+<td>No crosses after Image coord</td>
+<td>The example threshold is pre-tuned; make sure Step 2 succeeded first.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="same-run-without-the-gui">Same run without the GUI<a class="headerlink" href="#same-run-without-the-gui" title="Permanent link">&para;</a></h2>
+<p>Every click above has a command-line equivalent (useful on servers).
+From the repository root:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Steps 3–5 (detection + correspondences, all frames)</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>pyptv_batch<span class="w"> </span>--workdir<span class="o">=</span>test_data/test_cavity<span class="w"> </span>--first<span class="o">=</span><span class="m">10000</span><span class="w"> </span>--last<span class="o">=</span><span class="m">10001</span><span class="w"> </span>--mode<span class="o">=</span>sequence
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Step 6 (tracking)</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>pyptv_batch<span class="w"> </span>--workdir<span class="o">=</span>test_data/test_cavity<span class="w"> </span>--first<span class="o">=</span><span class="m">10000</span><span class="w"> </span>--last<span class="o">=</span><span class="m">10001</span><span class="w"> </span>--mode<span class="o">=</span>tracking
+</span></code></pre></div>
+<h2 id="where-to-go-next">Where to go next<a class="headerlink" href="#where-to-go-next" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../tracking_guide/">Tracking Pipeline &amp; Results</a> — what each step does
+  and where result files land.</li>
+<li><a href="../batch_processing/">Command-Line Batch Processing</a> — headless runs on
+  your own data.</li>
+<li><a href="../../plate-calibration-howto/">Plate Calibration How-To</a> — calibrating
+  your own cameras (only needed for new experiments, not this example).</li>
+<li><a href="../cavity_flow_tutorial/">Lid-Driven Cavity Flow</a> — the advanced,
+  scripted version of this example (autocalibration, self-calibration,
+  warmup).</li>
+</ul>
 
 
 

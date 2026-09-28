@@ -670,10 +670,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-5-run-3d-tracking-sequence" class="md-nav__link">
+  <a href="#step-5-run-3d-tracking-over-several-frames" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 5: Run 3D Tracking Sequence
+        Step 5: Run 3D Tracking over several frames
       
     </span>
   </a>
@@ -883,7 +883,7 @@
   <span class="md-ellipsis">
     
   
-    End-to-End Particle Tracking
+    Your First Tracking (GUI)
   
 
     
@@ -2399,10 +2399,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-5-run-3d-tracking-sequence" class="md-nav__link">
+  <a href="#step-5-run-3d-tracking-over-several-frames" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 5: Run 3D Tracking Sequence
+        Step 5: Run 3D Tracking over several frames
       
     </span>
   </a>
@@ -2557,7 +2557,12 @@
 
 
 <h1 id="first-steps-with-openptv2">First Steps with OpenPTV2<a class="headerlink" href="#first-steps-with-openptv2" title="Permanent link">&para;</a></h1>
-<p>This guide gets you started using OpenPTV2 both via Python scripting and through the graphical user interface.</p>
+<blockquote>
+<p><strong>New here?</strong> Start with the <a href="../tutorials/getting_started_tutorial/">Your First Tracking tutorial</a> —
+it walks through the bundled <code>test_cavity</code> example in the GUI in 10 minutes,
+step by step. This page covers the same ground in more detail plus
+scripting and batch options.</p>
+</blockquote>
 <hr />
 <h2 id="1-obtaining-sample-data">1. Obtaining Sample Data<a class="headerlink" href="#1-obtaining-sample-data" title="Permanent link">&para;</a></h2>
 <p>For a complete, real-world sample dataset to explore, it is highly recommended to download the official <code>test_cavity</code> case from Git using:
@@ -2623,18 +2628,15 @@
 </span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="c1">#     ptv_params</span>
 </span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1"># )</span>
 </span></code></pre></div>
-<h3 id="step-5-run-3d-tracking-sequence">Step 5: Run 3D Tracking Sequence<a class="headerlink" href="#step-5-run-3d-tracking-sequence" title="Permanent link">&para;</a></h3>
-<p>Using the <code>Tracker</code> object, we track particles across sequential frames.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tracker</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Initialize the tracker with parameter file</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">tracker</span> <span class="o">=</span> <span class="n">Tracker</span><span class="p">(</span><span class="n">parameter_file</span><span class="o">=</span><span class="s2">"test_data/test_cavity/parameters_Run1.yaml"</span><span class="p">)</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="c1"># Run sequence tracking on a small frame range</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">tracks</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="n">first_frame</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">last_frame</span><span class="o">=</span><span class="mi">10005</span><span class="p">)</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Completed tracking! Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tracks</span><span class="p">)</span><span class="si">}</span><span class="s2"> continuous trajectories."</span><span class="p">)</span>
+<h3 id="step-5-run-3d-tracking-over-several-frames">Step 5: Run 3D Tracking over several frames<a class="headerlink" href="#step-5-run-3d-tracking-over-several-frames" title="Permanent link">&para;</a></h3>
+<p>Use the batch runner (the same engine the GUI calls). From the repository root:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Detection + correspondences, then tracking, on frames 10000–10001</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>openptv2.batch.pyptv_batch<span class="w"> </span>--workdir<span class="o">=</span>./test_data/test_cavity<span class="w"> </span>--first<span class="o">=</span><span class="m">10000</span><span class="w"> </span>--last<span class="o">=</span><span class="m">10001</span><span class="w"> </span>--mode<span class="o">=</span>sequence
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>openptv2.batch.pyptv_batch<span class="w"> </span>--workdir<span class="o">=</span>./test_data/test_cavity<span class="w"> </span>--first<span class="o">=</span><span class="m">10000</span><span class="w"> </span>--last<span class="o">=</span><span class="m">10001</span><span class="w"> </span>--mode<span class="o">=</span>tracking
 </span></code></pre></div>
+<p>Trajectories are written to <code>test_data/test_cavity/res/</code> as <code>ptv_is.*</code> files.
+For the full Python API (loading calibrations, driving the pipeline from a
+script), see the <a href="../tutorials/batch_processing/">batch processing tutorial</a>.</p>
 <hr />
 <h2 id="3-first-steps-with-the-gui">3. First Steps with the GUI<a class="headerlink" href="#3-first-steps-with-the-gui" title="Permanent link">&para;</a></h2>
 <p>The modern OpenPTV2 GUI provides interactive visual parameter configuration, target threshold adjustments, calibration optimization, and live tracking preview.</p>
@@ -2659,7 +2661,7 @@
 </ol>
 <h3 id="step-4-run-tracking-sequence">Step 4: Run Tracking Sequence<a class="headerlink" href="#step-4-run-tracking-sequence" title="Permanent link">&para;</a></h3>
 <ol>
-<li>Select <strong>Tracking → Track Sequence</strong>.</li>
+<li>Select <strong>Tracking → Tracking without display</strong>.</li>
 <li>The tracker runs multi-camera tracking.</li>
 <li>You can watch the real-time link counter updating in the status panel.</li>
 </ol>
