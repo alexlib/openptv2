@@ -58,7 +58,7 @@ def _(test_yaml):
 
     # Path to the YAML file - check LV calibration first, then fallback
     lv_yaml = Path(
-        r"C:\Users\alex\Downloads\hidimaging_test\LV\calibration\parameters_Run_Cal.yaml"
+        r"C:\Users\alex\Downloads\ptv_data\LV\calibration\parameters_Run_Cal.yaml"
     )
 
     yaml_path = lv_yaml if lv_yaml.exists() else test_yaml

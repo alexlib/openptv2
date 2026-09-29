@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 
 REPO = Path(__file__).resolve().parent.parent
-DS = Path(r"C:\Users\alex\Downloads\HiDImaging\wp1_10_images")
+DS = Path(r"C:\Users\alex\Downloads\ptv_data\wp1_10_images")
 REF = DS / "res_ground_truth_backup"
 FIRST, LAST = 100001, 100010
 

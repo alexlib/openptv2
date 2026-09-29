@@ -69,7 +69,7 @@ def main():
         track_par.dacc = 1.9
         ncams = cpar.num_cams
 
-        DS = Path(r"C:\Users\alex\Downloads\HiDImaging\wp1_10_images")
+        DS = Path(r"C:\Users\alex\Downloads\ptv_data\wp1_10_images")
         REF = DS / "res_ground_truth_backup"
         # pristine inputs: the kernel rewrites rt/tnr in place
         for f in range(100001, 100007):

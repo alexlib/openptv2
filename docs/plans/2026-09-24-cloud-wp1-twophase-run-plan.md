@@ -1,7 +1,7 @@
 # Plan: Cloud Run of wp1 with Bidirectional Two-Phase Tracker & Postprocessing
 
 **Date:** 2026-09-24  
-**Target Dataset:** `C:\Users\alex\Downloads\HiDImaging\CompleteTest\wp1\test`  
+**Target Dataset:** `C:\Users\alex\Downloads\experiment\wp1\test`  
 **GCP Environment:** Project `iucc-alex-liberzon`, Region `europe-west3`, Buckets `openptv-uploads` / `openptv-results`  
 **Objective:** Re-run tracking on the full 5,005 frames directly in the cloud using the new bidirectional Two-Phase tracker, execute flowtracks repair and smoothing, generate Eulerian and phase-averaged Zarr datasets, and fetch trajectories and results locally for analysis against `res_orig` (3dptv.exe `xuap`).
 
@@ -10,7 +10,7 @@
 ## Background & Rationale
 
 1. **Why rerun in Cloud:**
-   The full correspondences and target intermediate files for the 5,005 frames already reside in `openptv-results` on GCS (`CompleteTest-track-20260915-065041/wp1/test/res.tar`). Running tracking on Cloud Run directly where the correspondence data is located avoids pulling tens of gigabytes across the internet and executes in parallel.
+   The full correspondences and target intermediate files for the 5,005 frames already reside in `openptv-results` on GCS (`experiment-track-20260915-065041/wp1/test/res.tar`). Running tracking on Cloud Run directly where the correspondence data is located avoids pulling tens of gigabytes across the internet and executes in parallel.
 
 2. **Why the new Two-Phase Bidirectional Tracker:**
    - Previous runs suffered from overly conservative kinematic limits (`dacc: 0.4`, `dvxmax: 1.4`), which gate-dropped fast systolic bursts in the aorta.
@@ -45,7 +45,7 @@
 
 ### Step 3: Verify & Configure `parameters_twophase.yaml`
 - Parameter file already prepared at:
-  `C:\Users\alex\Downloads\HiDImaging\CompleteTest\wp1\test\parameters_twophase.yaml`
+  `C:\Users\alex\Downloads\experiment\wp1\test\parameters_twophase.yaml`
 - Config details:
   ```yaml
   plugins:
@@ -75,7 +75,7 @@
   ```
 
 ### Step 4: Configure `experiment.yaml` for wp1 Single-Folder Run
-In `C:\Users\alex\Downloads\HiDImaging\CompleteTest\experiment.yaml`:
+In `C:\Users\alex\Downloads\experiment\experiment.yaml`:
 - Scope run folders strictly to `wp1/test`:
   ```yaml
   runs:
@@ -94,19 +94,19 @@ In `C:\Users\alex\Downloads\HiDImaging\CompleteTest\experiment.yaml`:
 ### Step 5: Launch Tracking on GCP Cloud Run
 - Run the cloud pipeline:
   ```bash
-  uv run openptv-cloud run C:\Users\alex\Downloads\HiDImaging\CompleteTest
+  uv run openptv-cloud run C:\Users\alex\Downloads\experiment
   ```
 - Monitor progress:
   ```bash
-  uv run openptv-cloud status C:\Users\alex\Downloads\HiDImaging\CompleteTest --watch
+  uv run openptv-cloud status C:\Users\alex\Downloads\experiment --watch
   ```
 
 ### Step 6: Fetch Trajectories & Postprocess Locally
 - Download the resulting trajectory table and phase-binned Zarr datasets:
   ```bash
-  uv run openptv-cloud fetch C:\Users\alex\Downloads\HiDImaging\CompleteTest
+  uv run openptv-cloud fetch C:\Users\alex\Downloads\experiment
   ```
-- Confirm output files in `C:\Users\alex\Downloads\HiDImaging\CompleteTest\wp1\test\res\`:
+- Confirm output files in `C:\Users\alex\Downloads\experiment\wp1\test\res\`:
   - `run.zarr/trajectories` (repaired & smoothed positions, velocities, accelerations)
   - `run.zarr/eulerian` (Eulerian velocity, TKE, MKE fields)
   - `phase_binned.zarr` (24 cardiac phase bins)

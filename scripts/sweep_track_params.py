@@ -26,7 +26,7 @@ import shutil
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-DATASET = Path(r"C:\Users\alex\Downloads\HiDImaging\wp1_10_images")
+DATASET = Path(r"C:\Users\alex\Downloads\ptv_data\wp1_10_images")
 REF = DATASET / "res_ground_truth_backup"
 FIRST, LAST = 100001, 100010
 SCORE_FIRST, SCORE_LAST = 100003, 100010  # clean frames (100001 is corrupt)

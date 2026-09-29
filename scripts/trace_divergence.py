@@ -10,7 +10,7 @@ to adjudicate by manual vote.
 from collections import Counter
 from pathlib import Path
 
-DS = Path(r"C:\Users\alex\Downloads\HiDImaging\wp1_10_images")
+DS = Path(r"C:\Users\alex\Downloads\ptv_data\wp1_10_images")
 REF = DS / "res_ground_truth_backup"
 TST = Path("scratch/_ens_lr1/res")
 FIRST, LAST = 100001, 100010

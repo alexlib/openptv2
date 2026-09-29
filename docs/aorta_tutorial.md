@@ -185,10 +185,10 @@ gcloud builds submit --config=cloudbuild.yaml --region=europe-west3
 Upload parameter YAMLs and `res/images.zarr` to `gs://openptv-uploads/`:
 
 ```powershell
-gcloud storage cp C:\Users\alex\Downloads\hidimaging_test\aorta\wp1\parameters_wp1_batch.yaml gs://openptv-uploads/aorta_wp1/parameters_wp1_batch.yaml
-gcloud storage cp C:\Users\alex\Downloads\hidimaging_test\aorta\wp2\parameters_wp2_batch.yaml gs://openptv-uploads/aorta_wp2/parameters_wp2_batch.yaml
-gcloud storage cp -r C:\Users\alex\Downloads\hidimaging_test\aorta\wp1\res\images.zarr gs://openptv-uploads/aorta_wp1/res/images.zarr
-gcloud storage cp -r C:\Users\alex\Downloads\hidimaging_test\aorta\wp2\res\images.zarr gs://openptv-uploads/aorta_wp2/res/images.zarr
+gcloud storage cp C:\Users\alex\Downloads\ptv_data\aorta\wp1\parameters_wp1_batch.yaml gs://openptv-uploads/aorta_wp1/parameters_wp1_batch.yaml
+gcloud storage cp C:\Users\alex\Downloads\ptv_data\aorta\wp2\parameters_wp2_batch.yaml gs://openptv-uploads/aorta_wp2/parameters_wp2_batch.yaml
+gcloud storage cp -r C:\Users\alex\Downloads\ptv_data\aorta\wp1\res\images.zarr gs://openptv-uploads/aorta_wp1/res/images.zarr
+gcloud storage cp -r C:\Users\alex\Downloads\ptv_data\aorta\wp2\res\images.zarr gs://openptv-uploads/aorta_wp2/res/images.zarr
 ```
 
 ### D. Launch Parallel Cloud Run Job Executions

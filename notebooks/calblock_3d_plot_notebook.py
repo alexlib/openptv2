@@ -29,7 +29,7 @@ def _(mo):
 @app.cell
 def _(mo):
     cal_file_input = mo.ui.text(
-        value=(       r"C:\Users\alex\Downloads\TT13_aorta\calibration\atrium_calblock_new.txt"
+        value=(       r"C:\Users\alex\Downloads\aorta_phantom\calibration\atrium_calblock_new.txt"
         ),
         label="Calibration File Path",
         full_width=True,

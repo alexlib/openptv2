@@ -23,7 +23,7 @@ import numpy as np  # noqa: E402
 from cascade_track import merge_links, write_ptv_is  # noqa: E402
 
 REPO = Path(__file__).resolve().parent.parent
-DS = Path(r"C:\Users\alex\Downloads\HiDImaging\wp1_10_images")
+DS = Path(r"C:\Users\alex\Downloads\ptv_data\wp1_10_images")
 REF = DS / "res_ground_truth_backup"
 NCAMS = 4
 

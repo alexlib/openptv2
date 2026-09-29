@@ -89,7 +89,7 @@ uv run python -m openptv2.storage.zarr_store res/run.zarr --frame 10000 --type r
 
 ```bash
 # Standalone zarrs (137 MB vs 1637 MB full store)
-uv run python C:/Users/alex/Downloads/TT13_aorta/wp1/copy_trajectories.py --include-traj --overwrite --verify
+uv run python C:/Users/alex/Downloads/aorta_phantom/wp1/copy_trajectories.py --include-traj --overwrite --verify
 # Creates trajectories.zarr (135 MB) + traj.zarr (1.9 MB) — filesystem copy of run.zarr subgroups
 ```
 

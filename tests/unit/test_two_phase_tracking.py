@@ -145,7 +145,7 @@ def test_bidirectional_tracking():
 def test_linkage_drops_gap_links_no_phantom():
     """Gap links never reach ptv_is: two of them with coinciding rows made a
     reciprocal phantom link (964:1161->966:1191 + 965:1161->967:1191 wrote
-    965:1161 <-> 966:1191, an 82 mm one-frame step on CompleteTest wp1)."""
+    965:1161 <-> 966:1191, an 82 mm one-frame step on a real 4-camera run)."""
     frames = [964, 965, 966, 967]
     sizes = [2, 2, 2, 2]
     links = [(0, 1, 2, 1), (1, 1, 3, 1), (0, 0, 1, 0)]  # two gaps + one real link

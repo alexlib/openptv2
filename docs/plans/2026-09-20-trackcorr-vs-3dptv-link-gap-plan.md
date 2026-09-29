@@ -2,7 +2,7 @@
 
 **Date**: 2026-09-20
 **Status**: CLOSED — cause located (config mismatch, T0.1). See "Resolution".
-**Dataset**: `C:\Users\alex\Downloads\HiDImaging\wp1_10_images`
+**Dataset**: `C:\Users\alex\Downloads\ptv_data\wp1_10_images`
 (4 cameras, 512x512, ~1300 particles/frame, 10 frames, `dvxmax=1.9`,
 `dacc=1.9`, `dangle=270` gon, `add=1`)
 **Reference**: `res_ground_truth_backup/` — legacy `3dptv.exe` output, per
@@ -61,7 +61,7 @@ Methodology notes (learned the hard way):
 
 ## Addendum: dataset-folder verification (same session)
 
-Re-ran everything directly in `C:\Users\alex\Downloads\HiDImaging\
+Re-ran everything directly in `C:\Users\alex\Downloads\ptv_data\
 wp1_10_images` (whose own `parameters_Run1.yaml` also carries `dacc: 0.8`)
 with an in-memory `dacc=1.9` override, forward + backward
 (`scripts/verify_same_trajectories.py`):

@@ -1,6 +1,6 @@
 """Long-window validation (50 real frames) for the three shared prototypes.
 
-Data: HiDImaging wp1 test, frames 100001-100050, ~1000 pts/frame.
+Data: real wp1 test, frames 100001-100050, ~1000 pts/frame.
 Input: res_orig/rt_is.* 3D points. Reference: res_orig/ptv_is.* linkages
 (0-based prev/next chains) = the res_orig tracking output itself.
 Prototypes (worktree code): TwoPhase +/-share, Fast3D +/-share_tol,
@@ -13,7 +13,7 @@ import time
 
 import numpy as np
 
-TEST = r"C:\Users\alex\Downloads\HiDImaging\CompleteTest\wp1\test"
+TEST = r"C:\Users\alex\Downloads\experiment\wp1\test"
 F0, NF = 100001, 50
 TOL = 1.0  # mm
 

@@ -134,7 +134,7 @@ store.write_traj_index(trajid, first, last, length, first_row)  # run_store.py:4
 | Plugin | Description |
 | :--- | :--- |
 | `default` (trackcorr) | Cython 3 `track3d_loop_fast` — 3D box search, angle+acc |
-| `two_phase` | **New** — Phase 1: 3D KD-tree candidates within `v_max`; Phase 2: per-camera 2D leaf mean distance → Hungarian assignment (`src/openptv2/plugins/two_phase_tracking.py`). `leaf_weight=0` ≡ 3D-only. **74% more multi-frame traj** on TT13 aorta (poorly-conditioned). |
+| `two_phase` | **New** — Phase 1: 3D KD-tree candidates within `v_max`; Phase 2: per-camera 2D leaf mean distance → Hungarian assignment (`src/openptv2/plugins/two_phase_tracking.py`). `leaf_weight=0` ≡ 3D-only. **74% more multi-frame traj** on aorta phantom (poorly-conditioned). |
 | `myptv_3d_tracking` | MyPTV kinematic predictor |
 | `cython_epipolar` etc. | Epipolar variants |
 
@@ -175,7 +175,7 @@ for tid, fr, ln in zip(idx_tid[order], idx_row[order], idx_len[order]):
 uv run python copy_trajectories.py --include-traj --overwrite  # creates trajectories.zarr + traj.zarr (137 MB vs 1637 MB)
 ```
 
-See `C:\Users\alex\Downloads\TT13_aorta\wp1\copy_trajectories.py` and `docs/zarr-hdf5-storage.md`.
+See `C:\Users\alex\Downloads\aorta_phantom\wp1\copy_trajectories.py` and `docs/zarr-hdf5-storage.md`.
 
 ---
 
@@ -194,7 +194,7 @@ See `C:\Users\alex\Downloads\TT13_aorta\wp1\copy_trajectories.py` and `docs/zarr
 
 ## 7. Interpreting Statistics
 
-`seal` reports `n_trajectories`, `n_rows`, `n_dropped`. With `z-noise/motion≈19` (TT13 aorta) expect short fragments (median ~10 with `min_length=5`, median 1 without filter). For Eulerian `velocity` fields use `flowtracks`/`postptv`, not long Lagrangian `trajid`.
+`seal` reports `n_trajectories`, `n_rows`, `n_dropped`. With `z-noise/motion≈19` (aorta phantom) expect short fragments (median ~10 with `min_length=5`, median 1 without filter). For Eulerian `velocity` fields use `flowtracks`/`postptv`, not long Lagrangian `trajid`.
 
 ---
 

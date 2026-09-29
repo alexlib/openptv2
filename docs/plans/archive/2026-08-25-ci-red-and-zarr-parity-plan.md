@@ -150,7 +150,7 @@ first and re-measure the table above; only touch kernel threading last.
 4. Full suite green locally on py3.11 AND 3.13
    (`scripts/run_regression_tests.py`, then `pytest -m "not slow"`).
 5. Push branch → CI must be green on fresh checkout → merge to main.
-6. Then resume the TT13_aorta cloud benchmark (wp1 tracking phase relaunch
+6. Then resume the aorta_phantom cloud benchmark (wp1 tracking phase relaunch
    needs this fixed image if we want store-fed parallel tracking in-cloud;
    sequential fallback already works).
 

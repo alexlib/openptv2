@@ -1,7 +1,7 @@
 """Full verification on the wp1 dataset folder: same parameters => same trajectories?
 
 Runs openptv2 tracking IN the dataset work folder
-(C:\\Users\\alex\\Downloads\\HiDImaging\\wp1_10_images) with dacc=1.9 to match
+(C:\\Users\\alex\\Downloads\\ptv_data\\wp1_10_images) with dacc=1.9 to match
 the 3dptv reference, then compares against res_ground_truth_backup at two
 levels: per-link exact reproduction and full trajectory-chain reproduction.
 
@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-DS = Path(r"C:\Users\alex\Downloads\HiDImaging\wp1_10_images")
+DS = Path(r"C:\Users\alex\Downloads\ptv_data\wp1_10_images")
 REF = DS / "res_ground_truth_backup"
 FIRST, LAST = 100001, 100010
 SCORE_FIRST, SCORE_LAST = 100003, 100010

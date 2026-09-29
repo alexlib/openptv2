@@ -16,13 +16,13 @@ def _():
 
 @app.cell
 def _(mo):
-    mo.md("# Trajectory Viewer — TT13 aorta WP1")
+    mo.md("# Trajectory Viewer — aorta phantom WP1")
     return
 
 
 @app.cell
 def _(mo):
-    zarr_path = mo.ui.text(value=r"C:\Users\alex\Downloads\TT13_aorta\wp1\res\run.zarr", label="Zarr store")
+    zarr_path = mo.ui.text(value=r"C:\Users\alex\Downloads\aorta_phantom\wp1\res\run.zarr", label="Zarr store")
     ui_n = mo.ui.slider(start=10, stop=500, step=10, value=100, label="Show top N longest")
     ui_color = mo.ui.dropdown(options=["Speed", "Frame"], value="Speed", label="Color by")
     mo.vstack([zarr_path, mo.hstack([ui_n, ui_color], gap=2)])
