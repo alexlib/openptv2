@@ -6,6 +6,10 @@ No data to download, no parameters to change.
 **You will:** open the `test_cavity` example, detect particles, match them
 across 4 cameras, track them over time, and see the trajectories.
 
+Watch the whole walkthrough first (30 seconds, recorded from the real GUI):
+
+![GUI walkthrough animation](images/gui_tutorial.gif)
+
 ## Before you start
 
 - openptv2 installed with the GUI:
@@ -29,6 +33,8 @@ openptv2-gui -w test_data/test_cavity/parameters_Run1.yaml
 The GUI opens showing 4 camera views of a lid-driven cavity experiment
 (frames 10000–10004).
 
+![GUI with example open](images/gui_step1_open.png)
+
 ## Step 2: Load parameters — Start → Init / Reload
 
 Click **Start → Init / Reload** in the menu bar.
@@ -41,6 +47,8 @@ Read all the parameters and calibrations successfully
 
 The 4 camera views now show the first frame. If you see this message,
 everything else in this tutorial will work.
+
+![GUI after Init / Reload](images/gui_step2_init.png)
 
 ## Step 3: Detect particles — Preprocess → Image coord
 
@@ -57,6 +65,8 @@ Each camera view fills with **blue crosses** — one per detected particle
 (several hundred per camera). This is 2D detection: finding bright spots
 in each image.
 
+![GUI after Image coord: blue detection crosses](images/gui_step3_detect.png)
+
 ## Step 4: Match across cameras — Preprocess → Correspondences
 
 Click **Preprocess → Correspondences**.
@@ -71,6 +81,8 @@ New crosses appear in **yellow** (seen in 2 cameras), **green** (3 cameras),
 and **red** (all 4 cameras). This is stereo matching: the same physical
 particle found in multiple views is triangulated into a 3D position.
 
+![GUI after Correspondences: matched particles in color](images/gui_step4_corresp.png)
+
 ## Step 5: Process all frames — Sequence → Sequence without display
 
 Click **Sequence → Sequence without display**.
@@ -78,6 +90,8 @@ Click **Sequence → Sequence without display**.
 This repeats Steps 3–4 for every frame (10000–10004). It takes under a
 minute. Results are saved to `test_data/test_cavity/res/` as `rt_is.*`
 files (one per frame, 3D positions).
+
+![GUI after Sequence: all frames processed](images/gui_step5_sequence.png)
 
 ## Step 6: Track over time — Tracking → Tracking without display
 
@@ -92,11 +106,13 @@ tracking without display finished
 Particles are now linked frame-to-frame into trajectories, saved as
 `res/ptv_is.*` files. Expect a few hundred trajectories over these frames.
 
+![GUI after Tracking: linked trajectories](images/gui_step6_tracking.png)
+
 ## Step 7: See the trajectories — Tracking → Show trajectories
 
 Click **Tracking → Show trajectories** to plot the 3D paths.
 
-![3D Particle Trajectories](images/trajectory_3d.png)
+![GUI trajectories: heads (red), tails (green), ends (orange)](images/gui_step7_trajectories.png)
 
 You just ran a full 3D-PTV pipeline: detect → match → track → visualize.
 
@@ -121,11 +137,21 @@ pyptv_batch --workdir=test_data/test_cavity --first=10000 --last=10001 --mode=se
 pyptv_batch --workdir=test_data/test_cavity --first=10000 --last=10001 --mode=tracking
 ```
 
+## Regenerating these screenshots
+
+All images and the animation on this page are recorded from the real GUI
+by `docs/tutorials/record_gui_tutorial.py`, which drives the same menu
+handlers and captures the window after each step. Re-run it from the
+repository root after GUI changes:
+
+```bash
+uv run python docs/tutorials/record_gui_tutorial.py
+```
+
 ## Where to go next
 
 - [Tracking Pipeline & Results](../tracking_guide.md) — what each step does
-  and where result files land.
-- [Command-Line Batch Processing](batch_processing.md) — headless runs on
+  and where result files land.- [Command-Line Batch Processing](batch_processing.md) — headless runs on
   your own data.
 - [Plate Calibration How-To](../plate-calibration-howto.md) — calibrating
   your own cameras (only needed for new experiments, not this example).
