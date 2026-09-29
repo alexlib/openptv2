@@ -562,6 +562,63 @@ def _oracle(case_dir: Path, n_out: int) -> dict:
     return {"trajid": trajid, "frame": frame, "pos": pos}
 
 
+def _track_optv_c(case: str, label: str, overrides: list[str]) -> Path:
+    """The ORIGINAL C liboptv trackcorr (the ``optv`` package), forward only,
+    on the case exported to ASCII (frames renumbered from 10001: the C
+    library pads names below that). Same gates as the case YAML; ``+key=value``
+    overrides apply. Reference for parity with our Cython port."""
+    import re
+    import tempfile
+
+    import benchmark_utils as bu  # scripts/
+
+    from openptv2.storage import RunStore
+    from openptv2.storage.legacy import export_run
+
+    case_dir = WORK / "cases" / case
+    run_dir = WORK / "runs" / case / label
+    if run_dir.exists():
+        shutil.rmtree(run_dir)
+    run_dir.mkdir(parents=True)
+    n_out = json.loads((case_dir / "case.json").read_text())["n_out"]
+    tr = yaml.safe_load((case_dir / "parameters_Run1.yaml").read_text())["track"]
+    for item in overrides:
+        key, _, val = item.partition("=")
+        tr[key] = yaml.safe_load(val)
+    ov = {k: tr[k] for k in ("dvxmin", "dvxmax", "dvymin", "dvymax", "dvzmin", "dvzmax",
+                             "dacc", "angle", "flagNewParticles") if k in tr}
+    src = Path(tempfile.mkdtemp()) / "case"
+    src.mkdir()
+    shutil.copytree(case_dir / "cal", src / "cal")
+    (src / "res").mkdir()
+    (src / "img").mkdir()
+    export_run(RunStore.open(case_dir, mode="r"), src)
+    shutil.copy2(case_dir / "parameters_Run1.yaml", src / "parameters_Run1.yaml")
+    for d in ("res", "img"):
+        for f in sorted((src / d).iterdir()):
+            m = re.match(r"^(.*?)\.(\d+)(_targets)?$", f.name)
+            if m:
+                f.rename(f.with_name(f"{m.group(1)}.{int(m.group(2)) + 10000}{m.group(3) or ''}"))
+    status = "ok"
+    dt = 0.0
+    try:
+        pred, dt = bu.run_liboptv_tracker(mode="trackcorr", track_overrides=ov, src=src,
+                                          first=10001, n_frames=n_out)
+        tid = np.concatenate([np.full(len(v), i) for i, v in enumerate(pred.values())])
+        arr = np.array([row for v in pred.values() for row in v], float)
+        np.savez_compressed(run_dir / "pred.npz", trajid=tid,
+                            frame=arr[:, 0].astype(int) + 1, pos=arr[:, 1:4])
+    except Exception as e:  # noqa: BLE001
+        import traceback
+
+        traceback.print_exc()
+        status = f"error: {type(e).__name__}: {e}"
+    out = {"tracker": label, "case": case, "time_s": round(dt, 2), "status": status}
+    (run_dir / "run.json").write_text(json.dumps(out, indent=2))
+    print(json.dumps(out))
+    return run_dir
+
+
 def track(case: str, tracker: str) -> Path:
     """Run one tracker on an isolated copy of the case; save its trajectories.
 
@@ -571,6 +628,8 @@ def track(case: str, tracker: str) -> Path:
     label = tracker
     tracker, *overrides = tracker.split("+")  # e.g. two_phase+confirm_tol=null
     tracker, _, mod = tracker.partition("@")
+    if tracker == "optv_c":
+        return _track_optv_c(case, label, overrides)
     if tracker == "oracle":
         case_dir = WORK / "cases" / case
         run_dir = WORK / "runs" / case / tracker

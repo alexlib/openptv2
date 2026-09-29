@@ -128,20 +128,20 @@ def main():
         scenes.append(row)
     out_dir = sb.WORK / "viz"
     out_dir.mkdir(exist_ok=True)
-    nr, nc = len(scenes), len(TRACKERS)
+    nr, ntr = len(scenes), len(TRACKERS)
 
-    # ---- static PNG (matplotlib)
+    # ---- static PNGs (matplotlib): one file per example, trackers stacked vertically
     import matplotlib
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    fig_m = plt.figure(figsize=(5.2 * nc, 5.2 * nr))
-    for r, row in enumerate(scenes):
-        for ci, col in enumerate(row["cols"]):
-            ax = fig_m.add_subplot(nr, nc, r * nc + ci + 1, projection="3d")
+    for r, row in enumerate(scenes, start=1):
+        fig_m = plt.figure(figsize=(7.5, 4.6 * ntr))
+        for ci, col in enumerate(row["cols"], start=1):
+            ax = fig_m.add_subplot(ntr, 1, ci, projection="3d")
             tp = row["truth"]
-            ax.plot(tp[:, 0], tp[:, 1], tp[:, 2], color="black", lw=4, alpha=0.55, label="truth")
+            ax.plot(tp[:, 0], tp[:, 1], tp[:, 2], color="black", lw=4, alpha=0.55)
             for j, (pp, ff, bad) in enumerate(col["pieces"]):
                 ax.plot(pp[:, 0], pp[:, 1], pp[:, 2], "-o", ms=2.5, lw=1.6, color=PALETTE[j % 7])
                 if bad.any():
@@ -150,49 +150,51 @@ def main():
             ax.set_ylim(*row["rng"][1])
             ax.set_zlim(*row["rng"][2])
             ax.set_box_aspect([r_[1] - r_[0] for r_ in row["rng"]])
-            head = f"[{row['title']}]\n" if ci == 1 else ""
-            ax.set_title(f"{head}{col['name']}\ntrue #{row['true_id']}: best piece "
-                         f"{col['cov']:.0%}, {col['npieces']} piece(s)", fontsize=10)
+            head_txt = f"[{row['title']}]  true #{row['true_id']}\n" if ci == 1 else ""
+            ax.set_title(f"{head_txt}{col['name']}: best piece {col['cov']:.0%}, "
+                         f"{col['npieces']} piece(s)", fontsize=11)
             ax.view_init(elev=22, azim=-55)
             ax.tick_params(labelsize=7)
-    fig_m.tight_layout()
-    png = out_dir / f"compare_{case}.png"
-    fig_m.savefig(png, dpi=70)
-    print("wrote", png)
+        fig_m.tight_layout()
+        png = out_dir / f"compare_{case}_ex{r}.png"
+        fig_m.savefig(png, dpi=75)
+        plt.close(fig_m)
+        print("wrote", png)
 
-    # ---- interactive HTML (plotly)
+    # ---- interactive HTML (plotly): a single column, scroll down
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
 
-    titles = [(f"<b>[{row['title']}]</b><br>" if i == 1 else "")
-              + f"<b>{c['name']}</b><br>true #{row['true_id']}: best piece {c['cov']:.0%}, "
-              f"{c['npieces']} piece(s)"
+    total = nr * ntr
+    titles = [(f"<b>[{row['title']}] &mdash; true #{row['true_id']}</b><br>" if i == 0 else "")
+              + f"<b>{c['name']}</b>: best piece {c['cov']:.0%}, {c['npieces']} piece(s)"
               for row in scenes for i, c in enumerate(row["cols"])]
-    fig = make_subplots(rows=nr, cols=nc, specs=[[{"type": "scene"}] * nc] * nr,
-                        subplot_titles=titles, vertical_spacing=0.03, horizontal_spacing=0.01)
-    for r, row in enumerate(scenes, start=1):
-        for ci, col in enumerate(row["cols"], start=1):
+    fig = make_subplots(rows=total, cols=1, specs=[[{"type": "scene"}]] * total,
+                        subplot_titles=titles, vertical_spacing=0.012)
+    for r, row in enumerate(scenes):
+        for ci, col in enumerate(row["cols"]):
+            k = r * ntr + ci + 1  # subplot number == row
             tp = row["truth"]
             fig.add_trace(go.Scatter3d(
                 x=tp[:, 0], y=tp[:, 1], z=tp[:, 2], mode="lines",
                 line=dict(color="black", width=7), name="truth", legendgroup="truth",
-                showlegend=(r == 1 and ci == 1), text=row["truth_f"],
-                hovertemplate="truth, frame %{text}<extra></extra>"), row=r, col=ci)
+                showlegend=(k == 1), text=row["truth_f"],
+                hovertemplate="truth, frame %{text}<extra></extra>"), row=k, col=1)
             for j, (pp, ff, bad) in enumerate(col["pieces"]):
                 fig.add_trace(go.Scatter3d(
                     x=pp[:, 0], y=pp[:, 1], z=pp[:, 2], mode="lines+markers",
                     line=dict(color=PALETTE[j % 7], width=3),
                     marker=dict(size=2.5, color=PALETTE[j % 7]), showlegend=False,
-                    text=ff, hovertemplate="frame %{text}<extra></extra>"), row=r, col=ci)
+                    text=ff, hovertemplate="frame %{text}<extra></extra>"), row=k, col=1)
                 if bad.any():
                     fig.add_trace(go.Scatter3d(
                         x=pp[bad, 0], y=pp[bad, 1], z=pp[bad, 2], mode="markers",
                         marker=dict(size=5, color="red", symbol="x"),
                         name="off the true particle", legendgroup="bad",
-                        showlegend=(r == 1 and ci == 1), text=ff[bad],
+                        showlegend=(k == 1), text=ff[bad],
                         hovertemplate="wrong particle, frame %{text}<extra></extra>"),
-                        row=r, col=ci)
-            name = "scene" if (r - 1) * nc + ci == 1 else f"scene{(r - 1) * nc + ci}"
+                        row=k, col=1)
+            name = "scene" if k == 1 else f"scene{k}"
             fig.layout[name].update(
                 xaxis=dict(range=row["rng"][0], title="x mm"),
                 yaxis=dict(range=row["rng"][1], title="y mm"),
@@ -201,15 +203,16 @@ def main():
     summary = "  |  ".join(f"{n}: whole {np.mean(cov[n] >= .9):.0%}, {pcs[n].mean():.2f} pieces"
                            for n in TRACKERS)
     fig.update_layout(
-        height=430 * nr, width=1900, template="plotly_white",
-        title=f"{case}: {len(ids)} true trajectories of 50+ frames &mdash; {summary}",
-        legend=dict(orientation="h", y=1.02))
+        height=520 * total, width=900, template="plotly_white",
+        title=f"{case}: {len(ids)} true trajectories of 50+ frames<br><sub>{summary}</sub>",
+        legend=dict(orientation="h", y=1.0))
     html = out_dir / f"compare_{case}.html"
     fig.write_html(html, include_plotlyjs="cdn")
     print("wrote", html)
     json.dump({n: {"whole": float(np.mean(cov[n] >= .9)), "coverage": float(cov[n].mean()),
                    "pieces": float(pcs[n].mean())} for n in TRACKERS},
               open(out_dir / f"compare_{case}.json", "w"), indent=1)
+
 
 
 if __name__ == "__main__":
