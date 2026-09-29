@@ -109,30 +109,37 @@ GitHub repo *Settings → Environments → `pypi`*, add yourself as a **required
 reviewer** so each publish waits for one-click approval (guards against
 accidental releases).
 
-### Step 1: Update the Version
-1. Open `pyproject.toml` and locate the `[project]` configuration block.
-2. Increment the version string (following [Semantic Versioning](https://semver.org/)):
-   ```toml
-   [project]
-   name = "openptv2"
-   version = "1.0.1" # Update this line
-   ```
-3. Commit the change:
-   ```bash
-   git add pyproject.toml
-   git commit -m "Bump version to 1.0.1"
-   ```
+### Step 1: Versions come from git tags
+There is no version number to edit. [setuptools-scm](https://setuptools-scm.readthedocs.io)
+derives it from the last `vX.Y.Z` tag: the tagged commit builds `X.Y.Z`, and
+`N` commits after it build `X.Y.(Z+1).devN` (e.g. `0.5.12.dev3`).
 
-### Step 2: Push a Release Tag
-Pushing an annotated Git tag matching the version pattern (e.g., `v*` or `[0-9]*`) will automatically trigger the compilation and release pipelines:
+### Step 2: Push a release tag (stable release)
+Pushing an annotated tag matching `v*` or `[0-9]*` starts the compilation and
+release pipeline; the job fails if the tag and the built version differ:
 
 ```bash
-# Create annotated tag
 git tag -a v1.0.1 -m "Release version 1.0.1"
-
-# Push tag to GitHub
 git push origin v1.0.1
 ```
+
+### Development releases (on demand)
+When downstream code needs something not yet in a stable release, publish a
+development release of `main` -- in GitHub *Actions → Build Wheels → Run
+workflow*, or:
+
+```bash
+gh workflow run cibuildwheel.yml --ref main
+```
+
+This builds and uploads `X.Y.(Z+1).devN` exactly like a stable release (wheels
++ sdist, trusted publishing). `pip install openptv2` ignores development
+releases; ask for one with `pip install --pre openptv2` or a requirement that
+names it, e.g. `openptv2>=0.5.12.dev3` (uv accepts it then too).
+
+They are deliberately **not** published on every push: each release is about
+150 MB of wheels, and PyPI limits a project's total size (10 GB by default).
+Delete old development releases on PyPI (*Manage → Releases*) now and then.
 
 ### Step 3: PyPI Automated Publishing (OIDC)
 When the release tag is pushed, the `.github/workflows/cibuildwheel.yml` action triggers:

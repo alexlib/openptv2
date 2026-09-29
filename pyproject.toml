@@ -1,6 +1,7 @@
 [build-system]
 requires = [
-    "setuptools>=61.0",
+    "setuptools>=64",
+    "setuptools-scm>=8",
     "cython>=3.0.0,<4",
     "numpy>=2.0.0",
 ]
@@ -8,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openptv2"
-version = "0.5.11"
+dynamic = ["version"]   # from git tags (setuptools-scm); see RELEASING.md
 description = "OpenPTV2 single-engine particle tracking with Cython 3 pure Python modules"
 readme = "README.md"
 license = "MIT"
@@ -120,6 +121,17 @@ openptv2-convert-legacy = "openptv2.storage.legacy:main"
 pyptv = "openptv2.gui.pyptv_gui:main"
 pyptv_gui = "openptv2.gui.pyptv_gui:main"
 pyptv_batch = "openptv2.batch.pyptv_batch:main_cli"
+
+
+[tool.setuptools_scm]
+# vX.Y.Z tag -> X.Y.Z; N commits after it -> X.Y.(Z+1).devN. No local
+# "+g<sha>" suffix: PyPI rejects local versions. Development releases are
+# published on demand (Build Wheels workflow, "Run workflow"), not per push:
+# each release is ~150 MB of wheels against PyPI's per-project size limit.
+local_scheme = "no-local-version"
+# Source trees without git history (the docker/ images: .dockerignore drops
+# .git) build as 0.0.0; the release workflow computes and checks its version.
+fallback_version = "0.0.0"
 
 [tool.setuptools]
 packages = [
