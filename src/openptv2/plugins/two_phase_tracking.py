@@ -220,6 +220,30 @@ def _merge_bidirectional_links(
     return sorted(list(resolved))
 
 
+def _links_to_linkage(
+    links: list[tuple[int, int, int, int]],
+    frames: list[int],
+    sizes: list[int],
+) -> list[tuple[np.ndarray, np.ndarray]]:
+    """Per-frame (prev, next) row arrays for the ptv_is linkage.
+
+    ptv_is ``next``/``prev`` index rows of the ADJACENT frame, so only links
+    between consecutive frame numbers are written. A gap link (t -> t+2 over
+    a missed detection) cannot be expressed there: written as-is, its row
+    index lands on an unrelated particle of frame t+1, and two gap links with
+    coinciding row indices form a reciprocal phantom link (seen live: an
+    82 mm one-frame "step"). Gap links are left unlinked at both ends
+    instead; downstream gap repair rejoins them.
+    """
+    out = [(np.full(n, -1, dtype=np.int32), np.full(n, -1, dtype=np.int32)) for n in sizes]
+    for t0, p0, t1, p1 in links:
+        if frames[t1] != frames[t0] + 1 or p0 >= sizes[t0] or p1 >= sizes[t1]:
+            continue
+        out[t0][1][p0] = p1
+        out[t1][0][p1] = p0
+    return out
+
+
 def _chains_from_links(
     links: list[tuple[int, int, int, int]],
     frame_particles: list[np.ndarray],
@@ -917,30 +941,9 @@ class Tracking:
                 f"Average over sequence, particles: {_avg_parts:.1f}, links: {_avg_links:.1f}, lost: {_avg_parts - _avg_links:.1f}"
             )
 
-        # Build prev/next arrays per frame from links
-        from collections import defaultdict
-
-        nxt_map: defaultdict[int, defaultdict[int, int]] = defaultdict(
-            lambda: defaultdict(lambda: -1)
-        )
-        prv_map: defaultdict[int, defaultdict[int, int]] = defaultdict(
-            lambda: defaultdict(lambda: -1)
-        )
-        for t0, p0, t1, p1 in links:
-            f0, f1 = frames[t0], frames[t1]
-            nxt_map[f0][p0] = p1
-            prv_map[f1][p1] = p0
-
+        linkage = _links_to_linkage(links, frames, [len(p) for p in frame_particles])
         for i, f in enumerate(frames):
-            n = len(frame_particles[i])
-            nxt = np.full(n, -1, dtype=np.int32)
-            prv = np.full(n, -1, dtype=np.int32)
-            for p0, p1 in nxt_map[f].items():
-                if p0 < n and p1 < n:
-                    nxt[p0] = p1
-            for p1, p0 in prv_map[f].items():
-                if p1 < n and p0 < n:
-                    prv[p1] = p0
+            prv, nxt = linkage[i]
             store.write_linkage(f, prv, nxt, frame_particles[i], name="ptv_is")
 
         print(

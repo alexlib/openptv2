@@ -8,6 +8,7 @@ import numpy as np
 from openptv2.plugins.two_phase_tracking import (
     TwoPhaseTracker,
     TwoPhaseTrackerConfig,
+    _links_to_linkage,
 )
 
 
@@ -139,3 +140,23 @@ def test_bidirectional_tracking():
     assert len(links) == len(got)
     assert len(chains) == 2
     assert all(len(c["frames"]) == 3 for c in chains)
+
+
+def test_linkage_drops_gap_links_no_phantom():
+    """Gap links never reach ptv_is: two of them with coinciding rows made a
+    reciprocal phantom link (964:1161->966:1191 + 965:1161->967:1191 wrote
+    965:1161 <-> 966:1191, an 82 mm one-frame step on CompleteTest wp1)."""
+    frames = [964, 965, 966, 967]
+    sizes = [2, 2, 2, 2]
+    links = [(0, 1, 2, 1), (1, 1, 3, 1), (0, 0, 1, 0)]  # two gaps + one real link
+    lk = _links_to_linkage(links, frames, sizes)
+    (p964, n964), (p965, n965), (p966, n966), (p967, n967) = lk
+    assert n964.tolist() == [0, -1] and p965.tolist() == [0, -1]  # consecutive kept
+    assert n965[1] == -1 and p966[1] == -1  # no phantom 965:1 <-> 966:1
+    assert p967[1] == -1 and n964[1] == -1  # gap ends left unlinked
+
+
+def test_linkage_skips_missing_frame_numbers():
+    """Consecutive list positions but non-consecutive frame numbers = a gap."""
+    lk = _links_to_linkage([(0, 0, 1, 0)], [10, 12], [1, 1])
+    assert lk[0][1][0] == -1 and lk[1][0][0] == -1
