@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from openptv2.tracking_postprocess import (
+    confirm_links,
     count_links,
     enforce_reciprocity,
     link_step,
@@ -150,3 +151,45 @@ def test_enforce_reciprocity_keeps_gap_bridged_cross_frame_link(tmp_path):
     assert stats == {"severed_next": 0, "severed_prev": 0}
     assert read_linkage(base, 1)[1][0] == 0  # bridge intact
     assert read_linkage(base, 3)[0][0] == 0
+
+
+def _chain(base, xyz_by_frame, links):
+    """One particle per frame at xyz_by_frame[k]; links[k] = True links k->k+1."""
+    n = len(xyz_by_frame)
+    for k in range(n):
+        prev = [0 if k > 0 and links[k - 1] else -1]
+        nxt = [0 if k < n - 1 and links[k] else -2]
+        _write(base, k + 1, prev, nxt, [xyz_by_frame[k]])
+
+
+def test_confirm_links_severs_a_jump_and_keeps_the_straight_part(tmp_path):
+    """Frames 1-3 straight, frame 4 jumps by 5: the link into the jump has an
+    onward link that does not continue the velocity, so it is severed; the
+    straight links stay. The link into the last frame cannot be judged."""
+    base = str(tmp_path / "ptv_is")
+    xyz = [(0, 0, 0), (1, 0, 0), (2, 0, 0), (3, 5, 0), (4, 5, 0)]
+    _chain(base, xyz, [True, True, True, True])
+    stats = confirm_links(base, 1, 5, tol=0.3)
+    assert stats == {"links": 4, "severed": 2}
+    nxt = [read_linkage(base, k)[1][0] for k in range(1, 6)]
+    # 1->2 kept (2->3 continues within 0.3? kink of 2->3 is 5, so 1->2 also
+    # severed); 3->4 severed; 4->5 into last frame untouched
+    assert nxt == [0, -2, -2, 0, -2]
+
+
+def test_confirm_links_is_a_noop_on_a_straight_track(tmp_path):
+    base = str(tmp_path / "ptv_is")
+    xyz = [(k, 0.5 * k, 0) for k in range(6)]
+    _chain(base, xyz, [True] * 5)
+    assert confirm_links(base, 1, 6, tol=0.3)["severed"] == 0
+    assert count_links(base, 1, 6) == 5
+
+
+def test_confirm_links_ends_severs_dead_end_link(tmp_path):
+    """A link into a particle with no onward link (dying track grabbing a
+    stranger) is only severed with ends=True."""
+    base = str(tmp_path / "ptv_is")
+    xyz = [(k, 0, 0) for k in range(6)]
+    _chain(base, xyz, [True, True, True, True, False])  # track ends in frame 5
+    assert confirm_links(base, 1, 6, tol=0.3)["severed"] == 0
+    assert confirm_links(base, 1, 6, tol=0.3, ends=True)["severed"] == 1

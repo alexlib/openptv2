@@ -25,6 +25,8 @@ __all__ = [
     "write_linkage",
     "count_links",
     "enforce_reciprocity",
+    "confirm_links",
+    "confirm_link_tuples",
     "seed_cold_start",
     "relink_trajectory_gaps",
     "MAX_LINK_STEP",
@@ -221,6 +223,112 @@ def enforce_reciprocity(
         write_linkage(linkage_base, k, prev, nxt, xyz, store=store)
 
     return {"severed_next": severed_next, "severed_prev": severed_prev}
+
+
+def confirm_link_tuples(
+    links: list[tuple[int, int, int, int]],
+    frame_particles: list[np.ndarray],
+    tol: float | None,
+    ends: bool,
+) -> tuple[list[tuple[int, int, int, int]], set]:
+    """Two-hop confirmation post-pass over consecutive links.
+
+    A consecutive link (t0,r0)->(t1,r1) survives iff a consecutive onward
+    link from (t1,r1) continues within velocity kink ``tol`` (mm/frame).
+    Links into the last frame cannot be judged and are kept; gap links
+    pass through untouched (gap logic already decided them). With ``ends``,
+    dead-end consecutive links (no onward link, not last frame) are also
+    severed -- a dying track grabbing a stranger. Severing fragments
+    chains; rejoining them is gap-relink/repair's job, not assembly's.
+
+    Returns (kept_links, severed) with severed a set of node pairs.
+    """
+    last_t = len(frame_particles) - 1
+    fwd: dict[tuple[int, int], list[tuple[int, int]]] = {}
+    for t0, r0, t1, r1 in links:
+        if t1 - t0 == 1:
+            fwd.setdefault((t0, r0), []).append((t1, r1))
+    severed = set()
+    if tol is not None:
+        P = [np.asarray(p, dtype=np.float64) for p in frame_particles]
+        for t0, r0, t1, r1 in links:
+            if t1 - t0 != 1 or t1 >= last_t:
+                continue
+            if r0 >= len(P[t0]) or r1 >= len(P[t1]):
+                continue
+            onward = fwd.get((t1, r1), [])
+            if not onward:
+                if ends:
+                    severed.add(((t0, r0), (t1, r1)))
+                continue
+            v = P[t1][r1] - P[t0][r0]
+            keep = False
+            for t2, r2 in onward:
+                if t2 - t1 != 1 or r2 >= len(P[t2]):
+                    continue
+                kink = float(np.linalg.norm((P[t2][r2] - P[t1][r1]) - v))
+                if kink <= tol:
+                    keep = True
+                    break
+            if not keep:
+                severed.add(((t0, r0), (t1, r1)))
+    kept = [
+        L
+        for L in links
+        if not (L[2] - L[0] == 1 and ((L[0], L[1]), (L[2], L[3])) in severed)
+    ]
+    return kept, severed
+
+def confirm_links(
+    linkage_base: str,
+    first: int,
+    last: int,
+    tol: float,
+    ends: bool = False,
+    store: Any = None,
+) -> dict[str, int]:
+    """Two-hop link confirmation over any tracker's stored linkage.
+
+    Severs a consecutive link (frame k particle i -> frame k+1 particle j)
+    unless the link that leaves j continues within a velocity kink of ``tol``
+    (position units per frame, the scale of ``dacc``). A wrong link (to a
+    stranger) almost never gets a second, kinematically consistent link
+    after it. With ``ends`` also severs links into dead ends. This is the
+    rule ``two_phase`` applies internally, which the benchmark identified as
+    the reason it beats every other tracker (see ``scripts/synth_bench.py``).
+
+    Run BEFORE ``relink_trajectory_gaps`` (which writes multi-frame links this
+    pass would misread as consecutive) and rejoin the fragments afterwards.
+    Returns ``{"links", "severed"}``.
+    """
+    frames = {}
+    for k in range(first, last + 1):
+        r = read_linkage(linkage_base, k, store=store)
+        if r is not None:
+            frames[k] = r
+    ks = sorted(frames)
+    if not ks:
+        return {"links": 0, "severed": 0}
+    t_of = {k: t for t, k in enumerate(ks)}
+    particles = [frames[k][2] for k in ks]
+    links = []
+    for k in ks:
+        nxt = frames[k][1]
+        if k + 1 not in frames:
+            continue
+        n_next = len(frames[k + 1][0])
+        for i in np.flatnonzero((nxt >= 0) & (nxt < n_next)):
+            links.append((t_of[k], int(i), t_of[k + 1], int(nxt[i])))
+    _, severed = confirm_link_tuples(links, particles, tol, ends)
+    dirty = set()
+    for (t0, r0), (t1, r1) in severed:
+        frames[ks[t0]][1][r0] = NEXT_NONE
+        frames[ks[t1]][0][r1] = PREV_NONE
+        dirty.update((ks[t0], ks[t1]))
+    for k in dirty:
+        prev, nxt, xyz = frames[k]
+        write_linkage(linkage_base, k, prev, nxt, xyz, store=store)
+    return {"links": len(links), "severed": len(severed)}
 
 
 def seed_cold_start(

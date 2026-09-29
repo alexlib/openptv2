@@ -21,6 +21,8 @@ from scipy.sparse import coo_matrix
 from scipy.sparse.csgraph import connected_components
 from scipy.spatial import cKDTree
 
+from openptv2.tracking_postprocess import confirm_link_tuples as _confirm_links
+
 
 @dataclass
 class TwoPhaseTrackerConfig:
@@ -104,61 +106,6 @@ class TwoPhaseTrackerConfig:
     confirm_ends: bool = False
     bidirectional: bool = False
     bwd_v_max: float | None = None
-
-
-def _confirm_links(
-    links: list[tuple[int, int, int, int]],
-    frame_particles: list[np.ndarray],
-    tol: float | None,
-    ends: bool,
-) -> tuple[list[tuple[int, int, int, int]], set]:
-    """Two-hop confirmation post-pass over consecutive links.
-
-    A consecutive link (t0,r0)->(t1,r1) survives iff a consecutive onward
-    link from (t1,r1) continues within velocity kink ``tol`` (mm/frame).
-    Links into the last frame cannot be judged and are kept; gap links
-    pass through untouched (gap logic already decided them). With ``ends``,
-    dead-end consecutive links (no onward link, not last frame) are also
-    severed -- a dying track grabbing a stranger. Severing fragments
-    chains; rejoining them is gap-relink/repair's job, not assembly's.
-
-    Returns (kept_links, severed) with severed a set of node pairs.
-    """
-    last_t = len(frame_particles) - 1
-    fwd: dict[tuple[int, int], list[tuple[int, int]]] = {}
-    for t0, r0, t1, r1 in links:
-        if t1 - t0 == 1:
-            fwd.setdefault((t0, r0), []).append((t1, r1))
-    severed = set()
-    if tol is not None:
-        P = [np.asarray(p, dtype=np.float64) for p in frame_particles]
-        for t0, r0, t1, r1 in links:
-            if t1 - t0 != 1 or t1 >= last_t:
-                continue
-            if r0 >= len(P[t0]) or r1 >= len(P[t1]):
-                continue
-            onward = fwd.get((t1, r1), [])
-            if not onward:
-                if ends:
-                    severed.add(((t0, r0), (t1, r1)))
-                continue
-            v = P[t1][r1] - P[t0][r0]
-            keep = False
-            for t2, r2 in onward:
-                if t2 - t1 != 1 or r2 >= len(P[t2]):
-                    continue
-                kink = float(np.linalg.norm((P[t2][r2] - P[t1][r1]) - v))
-                if kink <= tol:
-                    keep = True
-                    break
-            if not keep:
-                severed.add(((t0, r0), (t1, r1)))
-    kept = [
-        L
-        for L in links
-        if not (L[2] - L[0] == 1 and ((L[0], L[1]), (L[2], L[3])) in severed)
-    ]
-    return kept, severed
 
 
 def _split_hist(

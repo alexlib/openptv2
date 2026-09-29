@@ -565,9 +565,11 @@ def _oracle(case_dir: Path, n_out: int) -> dict:
 def track(case: str, tracker: str) -> Path:
     """Run one tracker on an isolated copy of the case; save its trajectories.
 
-    ``tracker`` may carry ``@fwd`` (forward pass only); the default is the
-    forward+backward run the case YAML asks for (``run_backward: true``)."""
+    ``tracker`` may carry ``@fwd`` (forward pass only; default is the
+    forward+backward run the case YAML asks for) and ``+key=value`` overrides
+    of the ``track:`` section (YAML values), e.g. ``two_phase+leaf_weight=0``."""
     label = tracker
+    tracker, *overrides = tracker.split("+")  # e.g. two_phase+confirm_tol=null
     tracker, _, mod = tracker.partition("@")
     if tracker == "oracle":
         case_dir = WORK / "cases" / case
@@ -599,6 +601,10 @@ def track(case: str, tracker: str) -> Path:
     n_out = int(raw["sequence"]["last"])
     if mod == "fwd":
         raw["track"].update(run_backward=False, direction="forward", bidirectional=False)
+    for item in overrides:
+        key, _, val = item.partition("=")
+        raw["track"][key] = yaml.safe_load(val)
+    if mod == "fwd" or overrides:
         yaml_path.write_text(yaml.safe_dump(raw, sort_keys=False))
 
     exp = _experiment(run_dir, yaml_path, 1, n_out)
@@ -619,6 +625,17 @@ def track(case: str, tracker: str) -> Path:
         status = f"error: {type(e).__name__}: {e}"
     finally:
         os.chdir(cwd)
+    if status == "ok" and raw["track"].get("postconfirm_tol") is not None:
+        from openptv2.storage import RunStore
+        from openptv2.tracking_postprocess import confirm_links
+
+        t1 = time.perf_counter()
+        st = confirm_links(
+            "res/ptv_is", 1, n_out, float(raw["track"]["postconfirm_tol"]),
+            ends=bool(raw["track"].get("postconfirm_ends", False)),
+            store=RunStore(run_dir / "res" / "run.zarr", mode="a"),
+        )
+        print("confirm_links", st, f"{time.perf_counter() - t1:.1f}s")
     dt = time.perf_counter() - t0
     out = {"tracker": label, "case": case, "time_s": round(dt, 2), "status": status}
     if status == "ok":
