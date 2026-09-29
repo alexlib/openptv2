@@ -797,6 +797,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#regenerating-these-screenshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regenerating these screenshots
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#where-to-go-next" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2361,6 +2372,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#regenerating-these-screenshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regenerating these screenshots
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#where-to-go-next" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2396,6 +2418,8 @@
 No data to download, no parameters to change.</p>
 <p><strong>You will:</strong> open the <code>test_cavity</code> example, detect particles, match them
 across 4 cameras, track them over time, and see the trajectories.</p>
+<p>Watch the whole walkthrough first (30 seconds, recorded from the real GUI):</p>
+<p><img alt="GUI walkthrough animation" src="../images/gui_tutorial.gif" /></p>
 <h2 id="before-you-start">Before you start<a class="headerlink" href="#before-you-start" title="Permanent link">&para;</a></h2>
 <ul>
 <li>openptv2 installed with the GUI:
@@ -2413,6 +2437,7 @@ across 4 cameras, track them over time, and see the trajectories.</p>
 </span></code></pre></div>
 <p>The GUI opens showing 4 camera views of a lid-driven cavity experiment
 (frames 10000–10004).</p>
+<p><img alt="GUI with example open" src="../images/gui_step1_open.png" /></p>
 <h2 id="step-2-load-parameters-start-init-reload">Step 2: Load parameters — Start → Init / Reload<a class="headerlink" href="#step-2-load-parameters-start-init-reload" title="Permanent link">&para;</a></h2>
 <p>Click <strong>Start → Init / Reload</strong> in the menu bar.</p>
 <p>Success looks like this in the console:</p>
@@ -2420,6 +2445,7 @@ across 4 cameras, track them over time, and see the trajectories.</p>
 </span></code></pre></div>
 <p>The 4 camera views now show the first frame. If you see this message,
 everything else in this tutorial will work.</p>
+<p><img alt="GUI after Init / Reload" src="../images/gui_step2_init.png" /></p>
 <h2 id="step-3-detect-particles-preprocess-image-coord">Step 3: Detect particles — Preprocess → Image coord<a class="headerlink" href="#step-3-detect-particles-preprocess-image-coord" title="Permanent link">&para;</a></h2>
 <p>Click <strong>Preprocess → Image coord</strong>.</p>
 <p>The console prints:</p>
@@ -2429,6 +2455,7 @@ everything else in this tutorial will work.</p>
 <p>Each camera view fills with <strong>blue crosses</strong> — one per detected particle
 (several hundred per camera). This is 2D detection: finding bright spots
 in each image.</p>
+<p><img alt="GUI after Image coord: blue detection crosses" src="../images/gui_step3_detect.png" /></p>
 <h2 id="step-4-match-across-cameras-preprocess-correspondences">Step 4: Match across cameras — Preprocess → Correspondences<a class="headerlink" href="#step-4-match-across-cameras-preprocess-correspondences" title="Permanent link">&para;</a></h2>
 <p>Click <strong>Preprocess → Correspondences</strong>.</p>
 <p>The console prints:</p>
@@ -2437,11 +2464,13 @@ in each image.</p>
 <p>New crosses appear in <strong>yellow</strong> (seen in 2 cameras), <strong>green</strong> (3 cameras),
 and <strong>red</strong> (all 4 cameras). This is stereo matching: the same physical
 particle found in multiple views is triangulated into a 3D position.</p>
+<p><img alt="GUI after Correspondences: matched particles in color" src="../images/gui_step4_corresp.png" /></p>
 <h2 id="step-5-process-all-frames-sequence-sequence-without-display">Step 5: Process all frames — Sequence → Sequence without display<a class="headerlink" href="#step-5-process-all-frames-sequence-sequence-without-display" title="Permanent link">&para;</a></h2>
 <p>Click <strong>Sequence → Sequence without display</strong>.</p>
 <p>This repeats Steps 3–4 for every frame (10000–10004). It takes under a
 minute. Results are saved to <code>test_data/test_cavity/res/</code> as <code>rt_is.*</code>
 files (one per frame, 3D positions).</p>
+<p><img alt="GUI after Sequence: all frames processed" src="../images/gui_step5_sequence.png" /></p>
 <h2 id="step-6-track-over-time-tracking-tracking-without-display">Step 6: Track over time — Tracking → Tracking without display<a class="headerlink" href="#step-6-track-over-time-tracking-tracking-without-display" title="Permanent link">&para;</a></h2>
 <p>Click <strong>Tracking → Tracking without display</strong>.</p>
 <p>The console prints:</p>
@@ -2449,9 +2478,10 @@ files (one per frame, 3D positions).</p>
 </span></code></pre></div>
 <p>Particles are now linked frame-to-frame into trajectories, saved as
 <code>res/ptv_is.*</code> files. Expect a few hundred trajectories over these frames.</p>
+<p><img alt="GUI after Tracking: linked trajectories" src="../images/gui_step6_tracking.png" /></p>
 <h2 id="step-7-see-the-trajectories-tracking-show-trajectories">Step 7: See the trajectories — Tracking → Show trajectories<a class="headerlink" href="#step-7-see-the-trajectories-tracking-show-trajectories" title="Permanent link">&para;</a></h2>
 <p>Click <strong>Tracking → Show trajectories</strong> to plot the 3D paths.</p>
-<p><img alt="3D Particle Trajectories" src="../images/trajectory_3d.png" /></p>
+<p><img alt="GUI trajectories: heads (red), tails (green), ends (orange)" src="../images/gui_step7_trajectories.png" /></p>
 <p>You just ran a full 3D-PTV pipeline: detect → match → track → visualize.</p>
 <h2 id="if-something-goes-wrong">If something goes wrong<a class="headerlink" href="#if-something-goes-wrong" title="Permanent link">&para;</a></h2>
 <table>
@@ -2485,11 +2515,17 @@ From the repository root:</p>
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Step 6 (tracking)</span>
 </span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>pyptv_batch<span class="w"> </span>--workdir<span class="o">=</span>test_data/test_cavity<span class="w"> </span>--first<span class="o">=</span><span class="m">10000</span><span class="w"> </span>--last<span class="o">=</span><span class="m">10001</span><span class="w"> </span>--mode<span class="o">=</span>tracking
 </span></code></pre></div>
+<h2 id="regenerating-these-screenshots">Regenerating these screenshots<a class="headerlink" href="#regenerating-these-screenshots" title="Permanent link">&para;</a></h2>
+<p>All images and the animation on this page are recorded from the real GUI
+by <code>docs/tutorials/record_gui_tutorial.py</code>, which drives the same menu
+handlers and captures the window after each step. Re-run it from the
+repository root after GUI changes:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/tutorials/record_gui_tutorial.py
+</span></code></pre></div>
 <h2 id="where-to-go-next">Where to go next<a class="headerlink" href="#where-to-go-next" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../tracking_guide/">Tracking Pipeline &amp; Results</a> — what each step does
-  and where result files land.</li>
-<li><a href="../batch_processing/">Command-Line Batch Processing</a> — headless runs on
+  and where result files land.- <a href="../batch_processing/">Command-Line Batch Processing</a> — headless runs on
   your own data.</li>
 <li><a href="../../plate-calibration-howto/">Plate Calibration How-To</a> — calibrating
   your own cameras (only needed for new experiments, not this example).</li>
