@@ -8,7 +8,7 @@ ran inside a Linux container. See ptv._frame_image_name and
 ptv_calibration._resolve_ci / _read_calibrations.
 """
 
-import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -17,15 +17,24 @@ from openptv2.gui.ptv import _frame_image_name
 from openptv2.gui.ptv_calibration import _read_calibrations, _resolve_ci
 from openptv2.parameters import ControlParams
 
-#: A file named "cam_1.TIF" and one named "cam_1.tif" are the same file on
-#: Windows (case-insensitive filesystem) -- the mismatch these tests exist
-#: for cannot even be constructed there, so the case-insensitive-fallback
-#: path never triggers (the exact-name check already succeeds). Linux CI is
-#: what actually exercises it.
+
+def _fs_case_insensitive() -> bool:
+    """Probe the temp filesystem (where tmp_path lives), not the OS name:
+    Windows AND default macOS APFS are case-insensitive, most Linux is not."""
+    with tempfile.TemporaryDirectory() as d:
+        (Path(d) / "case_probe").write_bytes(b"")
+        return (Path(d) / "CASE_PROBE").exists()
+
+
+#: A file named "cam_1.TIF" and one named "cam_1.tif" are the same file on a
+#: case-insensitive filesystem (Windows, default macOS APFS) -- the mismatch
+#: these tests exist for cannot even be constructed there, so the
+#: case-insensitive-fallback path never triggers (the exact-name check
+#: already succeeds). Linux CI is what actually exercises it.
 _CASE_SENSITIVE_FS = pytest.mark.skipif(
-    sys.platform == "win32",
-    reason="Windows filesystems are case-insensitive; cam_1.TIF and cam_1.tif "
-    "are the same file there, so this scenario can't be constructed",
+    _fs_case_insensitive(),
+    reason="case-insensitive filesystem; cam_1.TIF and cam_1.tif are the same "
+    "file here, so this scenario can't be constructed",
 )
 
 
@@ -48,7 +57,8 @@ def test_frame_image_name_falls_back_case_insensitively(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Parameter file spells it uppercase; actual file on disk is lowercase.
-    resolved = _frame_image_name("img/CAM_1.TIF", 1)
+    # (A %-placeholder pattern: without one the legacy branch appends _0001.)
+    resolved = _frame_image_name("img/CAM_%d.TIF", 1)
 
     assert resolved.exists()
     assert resolved.name == "cam_1.tif"
