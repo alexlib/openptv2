@@ -1955,10 +1955,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-1-update-the-version" class="md-nav__link">
+  <a href="#step-1-versions-come-from-git-tags" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Update the Version
+        Step 1: Versions come from git tags
       
     </span>
   </a>
@@ -1966,10 +1966,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-2-push-a-release-tag" class="md-nav__link">
+  <a href="#step-2-push-a-release-tag-stable-release" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 2: Push a Release Tag
+        Step 2: Push a release tag (stable release)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development-releases-on-demand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development releases (on demand)
       
     </span>
   </a>
@@ -2437,10 +2448,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-1-update-the-version" class="md-nav__link">
+  <a href="#step-1-versions-come-from-git-tags" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Update the Version
+        Step 1: Versions come from git tags
       
     </span>
   </a>
@@ -2448,10 +2459,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-2-push-a-release-tag" class="md-nav__link">
+  <a href="#step-2-push-a-release-tag-stable-release" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 2: Push a Release Tag
+        Step 2: Push a release tag (stable release)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#development-releases-on-demand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development releases (on demand)
       
     </span>
   </a>
@@ -2613,27 +2635,29 @@ in GitHub. Sign in to <a href="https://pypi.org">pypi.org</a> and:</p>
 GitHub repo <em>Settings → Environments → <code>pypi</code></em>, add yourself as a <strong>required
 reviewer</strong> so each publish waits for one-click approval (guards against
 accidental releases).</p>
-<h3 id="step-1-update-the-version">Step 1: Update the Version<a class="headerlink" href="#step-1-update-the-version" title="Permanent link">&para;</a></h3>
-<ol>
-<li>Open <code>pyproject.toml</code> and locate the <code>[project]</code> configuration block.</li>
-<li>Increment the version string (following <a href="https://semver.org/">Semantic Versioning</a>):
-   <div class="language-toml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">[project]</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"openptv2"</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"1.0.1"</span><span class="w"> </span><span class="c1"># Update this line</span>
-</span></code></pre></div></li>
-<li>Commit the change:
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>git<span class="w"> </span>add<span class="w"> </span>pyproject.toml
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Bump version to 1.0.1"</span>
-</span></code></pre></div></li>
-</ol>
-<h3 id="step-2-push-a-release-tag">Step 2: Push a Release Tag<a class="headerlink" href="#step-2-push-a-release-tag" title="Permanent link">&para;</a></h3>
-<p>Pushing an annotated Git tag matching the version pattern (e.g., <code>v*</code> or <code>[0-9]*</code>) will automatically trigger the compilation and release pipelines:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Create annotated tag</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>v1.0.1<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Release version 1.0.1"</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Push tag to GitHub</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>v1.0.1
+<h3 id="step-1-versions-come-from-git-tags">Step 1: Versions come from git tags<a class="headerlink" href="#step-1-versions-come-from-git-tags" title="Permanent link">&para;</a></h3>
+<p>There is no version number to edit. <a href="https://setuptools-scm.readthedocs.io">setuptools-scm</a>
+derives it from the last <code>vX.Y.Z</code> tag: the tagged commit builds <code>X.Y.Z</code>, and
+<code>N</code> commits after it build <code>X.Y.(Z+1).devN</code> (e.g. <code>0.5.12.dev3</code>).</p>
+<h3 id="step-2-push-a-release-tag-stable-release">Step 2: Push a release tag (stable release)<a class="headerlink" href="#step-2-push-a-release-tag-stable-release" title="Permanent link">&para;</a></h3>
+<p>Pushing an annotated tag matching <code>v*</code> or <code>[0-9]*</code> starts the compilation and
+release pipeline; the job fails if the tag and the built version differ:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>v1.0.1<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Release version 1.0.1"</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>v1.0.1
 </span></code></pre></div>
+<h3 id="development-releases-on-demand">Development releases (on demand)<a class="headerlink" href="#development-releases-on-demand" title="Permanent link">&para;</a></h3>
+<p>When downstream code needs something not yet in a stable release, publish a
+development release of <code>main</code> -- in GitHub <em>Actions → Build Wheels → Run
+workflow</em>, or:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>gh<span class="w"> </span>workflow<span class="w"> </span>run<span class="w"> </span>cibuildwheel.yml<span class="w"> </span>--ref<span class="w"> </span>main
+</span></code></pre></div>
+<p>This builds and uploads <code>X.Y.(Z+1).devN</code> exactly like a stable release (wheels
++ sdist, trusted publishing). <code>pip install openptv2</code> ignores development
+releases; ask for one with <code>pip install --pre openptv2</code> or a requirement that
+names it, e.g. <code>openptv2&gt;=0.5.12.dev3</code> (uv accepts it then too).</p>
+<p>They are deliberately <strong>not</strong> published on every push: each release is about
+150 MB of wheels, and PyPI limits a project's total size (10 GB by default).
+Delete old development releases on PyPI (<em>Manage → Releases</em>) now and then.</p>
 <h3 id="step-3-pypi-automated-publishing-oidc">Step 3: PyPI Automated Publishing (OIDC)<a class="headerlink" href="#step-3-pypi-automated-publishing-oidc" title="Permanent link">&para;</a></h3>
 <p>When the release tag is pushed, the <code>.github/workflows/cibuildwheel.yml</code> action triggers:
 1. <strong>Compilation</strong>: Launches parallel compilation tasks for all matrix platforms using <code>cibuildwheel</code>.
