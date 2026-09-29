@@ -129,3 +129,31 @@ def test_proptv_config_defaults_are_sane():
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+# ── backward pass ────────────────────────────────────────────────────────────
+
+
+def test_backtrack_extends_finalized_tracks():
+    """track_frames() returns _finalize()d tracks (numpy arrays); the
+    forward_backward pass must extend them, not crash on list.insert."""
+    from openptv2.plugins.proptv_tracking import ProPTVTracker, Tracking
+
+    frame_particles = [
+        np.array([[0.0, 0.0, 0.0]]),
+        np.array([[1.0, 0.0, 0.0]]),
+        np.array([[2.0, 0.0, 0.0]]),
+        np.array([[3.0, 0.0, 0.0]]),
+    ]
+    track = {
+        "id": 0,
+        "time": [1, 2, 3],
+        "pos": [p[0].copy() for p in frame_particles[1:]],
+        "vel": [np.ones(3)] * 3,
+        "acc": [np.zeros(3)] * 3,
+    }
+    finalized = ProPTVTracker._finalize([track])
+    out = Tracking._backtrack(finalized, frame_particles, maxvel=1.5)
+    np.testing.assert_array_equal(out[0]["time"], [0, 1, 2, 3])
+    np.testing.assert_allclose(out[0]["pos"][0], [0.0, 0.0, 0.0])
+    assert len(out[0]["vel"]) == len(out[0]["acc"]) == 4

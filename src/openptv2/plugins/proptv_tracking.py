@@ -514,11 +514,12 @@ class Tracking:
             j = int(np.argmin(d))
             if d[j] <= maxvel and j not in used[f0 - 1]:
                 used[f0 - 1].add(j)
-                tr["time"].insert(0, f0 - 1)
-                tr["pos"].insert(0, prev_frame[j].copy())
-                vel, acc = _smooth_history(np.array(tr["pos"]))
-                tr["vel"] = [v.copy() for v in vel]
-                tr["acc"] = [a.copy() for a in acc]
+                # tracks come from _finalize(): numpy arrays, not lists
+                tr["time"] = np.insert(np.asarray(tr["time"]), 0, f0 - 1)
+                tr["pos"] = np.vstack([prev_frame[j], np.asarray(tr["pos"])])
+                vel, acc = _smooth_history(tr["pos"])
+                tr["vel"] = np.asarray(vel)
+                tr["acc"] = np.asarray(acc)
                 extended += 1
         print(f"  Backtrack: extended {extended} tracks by one frame")
         return completed
