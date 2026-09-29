@@ -2217,7 +2217,7 @@
 <h1 id="plan-locating-the-trackcorr-vs-3dptv-link-gap-695-vs-590">Plan: locating the trackcorr vs 3dptv link gap (69.5% vs 59.0%)<a class="headerlink" href="#plan-locating-the-trackcorr-vs-3dptv-link-gap-695-vs-590" title="Permanent link">&para;</a></h1>
 <p><strong>Date</strong>: 2026-09-20
 <strong>Status</strong>: CLOSED — cause located (config mismatch, T0.1). See "Resolution".
-<strong>Dataset</strong>: <code>C:\Users\alex\Downloads\HiDImaging\wp1_10_images</code>
+<strong>Dataset</strong>: <code>C:\Users\alex\Downloads\ptv_data\wp1_10_images</code>
 (4 cameras, 512x512, ~1300 particles/frame, 10 frames, <code>dvxmax=1.9</code>,
 <code>dacc=1.9</code>, <code>dangle=270</code> gon, <code>add=1</code>)
 <strong>Reference</strong>: <code>res_ground_truth_backup/</code> — legacy <code>3dptv.exe</code> output, per
@@ -2301,7 +2301,7 @@ by this section.</p>
   deaths). One early <code>dvxmax=2.5</code> reading (673 links/step-1 + vanished
   process) was such a race artifact; clean rerun gives 82.6%.</p>
 <h2 id="addendum-dataset-folder-verification-same-session">Addendum: dataset-folder verification (same session)<a class="headerlink" href="#addendum-dataset-folder-verification-same-session" title="Permanent link">&para;</a></h2>
-<p>Re-ran everything directly in <code>C:\Users\alex\Downloads\HiDImaging\
+<p>Re-ran everything directly in <code>C:\Users\alex\Downloads\ptv_data\
 wp1_10_images</code> (whose own <code>parameters_Run1.yaml</code> also carries <code>dacc: 0.8</code>)
 with an in-memory <code>dacc=1.9</code> override, forward + backward
 (<code>scripts/verify_same_trajectories.py</code>):</p>

@@ -2735,7 +2735,7 @@
 </tr>
 <tr>
 <td style="text-align: left;"><code>two_phase</code></td>
-<td style="text-align: left;"><strong>New</strong> — Phase 1: 3D KD-tree candidates within <code>v_max</code>; Phase 2: per-camera 2D leaf mean distance → Hungarian assignment (<code>src/openptv2/plugins/two_phase_tracking.py</code>). <code>leaf_weight=0</code> ≡ 3D-only. <strong>74% more multi-frame traj</strong> on TT13 aorta (poorly-conditioned).</td>
+<td style="text-align: left;"><strong>New</strong> — Phase 1: 3D KD-tree candidates within <code>v_max</code>; Phase 2: per-camera 2D leaf mean distance → Hungarian assignment (<code>src/openptv2/plugins/two_phase_tracking.py</code>). <code>leaf_weight=0</code> ≡ 3D-only. <strong>74% more multi-frame traj</strong> on aorta phantom (poorly-conditioned).</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>myptv_3d_tracking</code></td>
@@ -2775,7 +2775,7 @@
 <h3 id="copying-to-dropbox">Copying to Dropbox<a class="headerlink" href="#copying-to-dropbox" title="Permanent link">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>copy_trajectories.py<span class="w"> </span>--include-traj<span class="w"> </span>--overwrite<span class="w">  </span><span class="c1"># creates trajectories.zarr + traj.zarr (137 MB vs 1637 MB)</span>
 </span></code></pre></div>
-<p>See <code>C:\Users\alex\Downloads\TT13_aorta\wp1\copy_trajectories.py</code> and <code>docs/zarr-hdf5-storage.md</code>.</p>
+<p>See <code>C:\Users\alex\Downloads\aorta_phantom\wp1\copy_trajectories.py</code> and <code>docs/zarr-hdf5-storage.md</code>.</p>
 <hr />
 <h2 id="6-gui-to-batch-workflow">6. GUI to Batch Workflow<a class="headerlink" href="#6-gui-to-batch-workflow" title="Permanent link">&para;</a></h2>
 <ol>
@@ -2789,7 +2789,7 @@
 </ol>
 <hr />
 <h2 id="7-interpreting-statistics">7. Interpreting Statistics<a class="headerlink" href="#7-interpreting-statistics" title="Permanent link">&para;</a></h2>
-<p><code>seal</code> reports <code>n_trajectories</code>, <code>n_rows</code>, <code>n_dropped</code>. With <code>z-noise/motion≈19</code> (TT13 aorta) expect short fragments (median ~10 with <code>min_length=5</code>, median 1 without filter). For Eulerian <code>velocity</code> fields use <code>flowtracks</code>/<code>postptv</code>, not long Lagrangian <code>trajid</code>.</p>
+<p><code>seal</code> reports <code>n_trajectories</code>, <code>n_rows</code>, <code>n_dropped</code>. With <code>z-noise/motion≈19</code> (aorta phantom) expect short fragments (median ~10 with <code>min_length=5</code>, median 1 without filter). For Eulerian <code>velocity</code> fields use <code>flowtracks</code>/<code>postptv</code>, not long Lagrangian <code>trajid</code>.</p>
 <hr />
 <h2 id="8-developing-custom-plugins">8. Developing Custom Plugins<a class="headerlink" href="#8-developing-custom-plugins" title="Permanent link">&para;</a></h2>
 <p>See <code>docs/developer_guide/custom_tracking_plugins.md</code>.</p>

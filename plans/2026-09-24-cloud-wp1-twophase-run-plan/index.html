@@ -2200,7 +2200,7 @@
 
 <h1 id="plan-cloud-run-of-wp1-with-bidirectional-two-phase-tracker-postprocessing">Plan: Cloud Run of wp1 with Bidirectional Two-Phase Tracker &amp; Postprocessing<a class="headerlink" href="#plan-cloud-run-of-wp1-with-bidirectional-two-phase-tracker-postprocessing" title="Permanent link">&para;</a></h1>
 <p><strong>Date:</strong> 2026-09-24<br />
-<strong>Target Dataset:</strong> <code>C:\Users\alex\Downloads\HiDImaging\CompleteTest\wp1\test</code><br />
+<strong>Target Dataset:</strong> <code>C:\Users\alex\Downloads\experiment\wp1\test</code><br />
 <strong>GCP Environment:</strong> Project <code>iucc-alex-liberzon</code>, Region <code>europe-west3</code>, Buckets <code>openptv-uploads</code> / <code>openptv-results</code><br />
 <strong>Objective:</strong> Re-run tracking on the full 5,005 frames directly in the cloud using the new bidirectional Two-Phase tracker, execute flowtracks repair and smoothing, generate Eulerian and phase-averaged Zarr datasets, and fetch trajectories and results locally for analysis against <code>res_orig</code> (3dptv.exe <code>xuap</code>).</p>
 <hr />
@@ -2208,7 +2208,7 @@
 <ol>
 <li>
 <p><strong>Why rerun in Cloud:</strong>
-   The full correspondences and target intermediate files for the 5,005 frames already reside in <code>openptv-results</code> on GCS (<code>CompleteTest-track-20260915-065041/wp1/test/res.tar</code>). Running tracking on Cloud Run directly where the correspondence data is located avoids pulling tens of gigabytes across the internet and executes in parallel.</p>
+   The full correspondences and target intermediate files for the 5,005 frames already reside in <code>openptv-results</code> on GCS (<code>experiment-track-20260915-065041/wp1/test/res.tar</code>). Running tracking on Cloud Run directly where the correspondence data is located avoids pulling tens of gigabytes across the internet and executes in parallel.</p>
 </li>
 <li>
 <p><strong>Why the new Two-Phase Bidirectional Tracker:</strong></p>
@@ -2246,7 +2246,7 @@
 <h3 id="step-3-verify-configure-parameters_twophaseyaml">Step 3: Verify &amp; Configure <code>parameters_twophase.yaml</code><a class="headerlink" href="#step-3-verify-configure-parameters_twophaseyaml" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Parameter file already prepared at:
-  <code>C:\Users\alex\Downloads\HiDImaging\CompleteTest\wp1\test\parameters_twophase.yaml</code></li>
+  <code>C:\Users\alex\Downloads\experiment\wp1\test\parameters_twophase.yaml</code></li>
 <li>Config details:
   <div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">plugins</span><span class="p">:</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">selected_sequence</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
@@ -2275,7 +2275,7 @@
 </span></code></pre></div></li>
 </ul>
 <h3 id="step-4-configure-experimentyaml-for-wp1-single-folder-run">Step 4: Configure <code>experiment.yaml</code> for wp1 Single-Folder Run<a class="headerlink" href="#step-4-configure-experimentyaml-for-wp1-single-folder-run" title="Permanent link">&para;</a></h3>
-<p>In <code>C:\Users\alex\Downloads\HiDImaging\CompleteTest\experiment.yaml</code>:
+<p>In <code>C:\Users\alex\Downloads\experiment\experiment.yaml</code>:
 - Scope run folders strictly to <code>wp1/test</code>:
   <div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">runs</span><span class="p">:</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">folders</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">wp1/test</span><span class="p p-Indicator">]</span>
@@ -2292,18 +2292,18 @@
 <h3 id="step-5-launch-tracking-on-gcp-cloud-run">Step 5: Launch Tracking on GCP Cloud Run<a class="headerlink" href="#step-5-launch-tracking-on-gcp-cloud-run" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Run the cloud pipeline:
-  <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv-cloud<span class="w"> </span>run<span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\a</span>lex<span class="se">\D</span>ownloads<span class="se">\H</span>iDImaging<span class="se">\C</span>ompleteTest
+  <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv-cloud<span class="w"> </span>run<span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\a</span>lex<span class="se">\D</span>ownloads<span class="se">\e</span>xperiment
 </span></code></pre></div></li>
 <li>Monitor progress:
-  <div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv-cloud<span class="w"> </span>status<span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\a</span>lex<span class="se">\D</span>ownloads<span class="se">\H</span>iDImaging<span class="se">\C</span>ompleteTest<span class="w"> </span>--watch
+  <div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv-cloud<span class="w"> </span>status<span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\a</span>lex<span class="se">\D</span>ownloads<span class="se">\e</span>xperiment<span class="w"> </span>--watch
 </span></code></pre></div></li>
 </ul>
 <h3 id="step-6-fetch-trajectories-postprocess-locally">Step 6: Fetch Trajectories &amp; Postprocess Locally<a class="headerlink" href="#step-6-fetch-trajectories-postprocess-locally" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Download the resulting trajectory table and phase-binned Zarr datasets:
-  <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv-cloud<span class="w"> </span>fetch<span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\a</span>lex<span class="se">\D</span>ownloads<span class="se">\H</span>iDImaging<span class="se">\C</span>ompleteTest
+  <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv-cloud<span class="w"> </span>fetch<span class="w"> </span>C:<span class="se">\U</span>sers<span class="se">\a</span>lex<span class="se">\D</span>ownloads<span class="se">\e</span>xperiment
 </span></code></pre></div></li>
-<li>Confirm output files in <code>C:\Users\alex\Downloads\HiDImaging\CompleteTest\wp1\test\res\</code>:</li>
+<li>Confirm output files in <code>C:\Users\alex\Downloads\experiment\wp1\test\res\</code>:</li>
 <li><code>run.zarr/trajectories</code> (repaired &amp; smoothed positions, velocities, accelerations)</li>
 <li><code>run.zarr/eulerian</code> (Eulerian velocity, TKE, MKE fields)</li>
 <li><code>phase_binned.zarr</code> (24 cardiac phase bins)</li>
