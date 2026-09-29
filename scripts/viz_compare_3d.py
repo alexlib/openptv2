@@ -25,8 +25,9 @@ from flowtracks.repair import repair_arrays  # noqa: E402
 from scipy.spatial import cKDTree  # noqa: E402
 
 TRACKERS = {
-    "trackcorr (as is)": "trackcorr",
-    "trackcorr + confirm": "trackcorr+postconfirm_tol=0.3+postconfirm_ends=true",
+    "trackcorr (original gates)": "trackcorr",
+    "trackcorr, dacc 0.25": "trackcorr+dacc=0.25",
+    "trackcorr, dacc 0.25 + confirm": "trackcorr+dacc=0.25+postconfirm_tol=0.3+postconfirm_ends=true",
     "two_phase": "two_phase",
 }
 PALETTE = ["#1f77b4", "#ff7f0e", "#2ca02c", "#9467bd", "#8c564b", "#17becf", "#bcbd22"]
@@ -75,7 +76,7 @@ def main():
     for n, o in outs.items():
         for k, i in enumerate(ids):
             cov[n][k], pcs[n][k] = coverage(o, i, length[i])
-    a, b, c = (cov[n] for n in TRACKERS)
+    a, b, c = (cov[n] for n in ("trackcorr (original gates)", "trackcorr, dacc 0.25 + confirm", "two_phase"))
     print(f"{len(ids)} true trajectories with >= {args.min_len} frames")
     for n in TRACKERS:
         print(f"  {n:22s} mean best-piece coverage {cov[n].mean():.3f}  "
@@ -91,7 +92,7 @@ def main():
     d2 = np.argsort(-(b - c))
     for k in d2:
         if b[k] >= 0.9 and c[k] <= 0.6:
-            picks.append(("trackcorr+confirm whole, two_phase broken", k))
+            picks.append(("trackcorr tuned+confirm whole, two_phase broken", k))
             break
     d3 = np.argsort(-length[ids])
     for k in d3:
@@ -135,7 +136,7 @@ def main():
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    fig_m = plt.figure(figsize=(6 * nc, 5.2 * nr))
+    fig_m = plt.figure(figsize=(5.2 * nc, 5.2 * nr))
     for r, row in enumerate(scenes):
         for ci, col in enumerate(row["cols"]):
             ax = fig_m.add_subplot(nr, nc, r * nc + ci + 1, projection="3d")
@@ -200,7 +201,7 @@ def main():
     summary = "  |  ".join(f"{n}: whole {np.mean(cov[n] >= .9):.0%}, {pcs[n].mean():.2f} pieces"
                            for n in TRACKERS)
     fig.update_layout(
-        height=430 * nr, width=1500, template="plotly_white",
+        height=430 * nr, width=1900, template="plotly_white",
         title=f"{case}: {len(ids)} true trajectories of 50+ frames &mdash; {summary}",
         legend=dict(orientation="h", y=1.02))
     html = out_dir / f"compare_{case}.html"
