@@ -2437,6 +2437,15 @@ across 4 cameras, track them over time, and see the trajectories.</p>
 </span></code></pre></div>
 <p>The GUI opens showing 4 camera views of a lid-driven cavity experiment
 (frames 10000–10004).</p>
+<p><strong>What it does:</strong> <code>-w</code> points the GUI at one experiment. Passing a YAML
+file makes that run active; passing a directory opens the first run found
+there. Everything the GUI needs — image paths, calibrations, detection and
+tracking settings — lives in that single YAML file.</p>
+<p><strong>Parameters in YAML:</strong> the whole <code>parameters_Run1.yaml</code>. Each <code>Run</code> in the
+left-hand tree is one <code>parameters_*.yaml</code> file in the folder
+(<code>Run1</code> → <code>parameters_Run1.yaml</code>). Right-click a run for
+<strong>Main / Calibration / Tracking parameters</strong> dialogs; edits are saved back
+to its YAML.</p>
 <p><img alt="GUI with example open" src="../images/gui_step1_open.png" /></p>
 <h2 id="step-2-load-parameters-start-init-reload">Step 2: Load parameters — Start → Init / Reload<a class="headerlink" href="#step-2-load-parameters-start-init-reload" title="Permanent link">&para;</a></h2>
 <p>Click <strong>Start → Init / Reload</strong> in the menu bar.</p>
@@ -2445,6 +2454,13 @@ across 4 cameras, track them over time, and see the trajectories.</p>
 </span></code></pre></div>
 <p>The 4 camera views now show the first frame. If you see this message,
 everything else in this tutorial will work.</p>
+<p><strong>What it does:</strong> reads the active YAML, loads the 4 camera calibrations
+(<code>cal/camN.tif.ori</code> + <code>.addpar</code>) and the current frame's images
+(<code>ptv.img_name</code>). No options — it either loads cleanly or reports what is
+missing.</p>
+<p><strong>Parameters in YAML:</strong> <code>ptv</code> section (<code>img_name</code>, <code>imx</code>/<code>imy</code>,
+multimedia <code>mmp_n1/n2/n3</code>, <code>mmp_d</code>) and <code>cal_ori</code> section (calibration
+file locations).</p>
 <p><img alt="GUI after Init / Reload" src="../images/gui_step2_init.png" /></p>
 <h2 id="step-3-detect-particles-preprocess-image-coord">Step 3: Detect particles — Preprocess → Image coord<a class="headerlink" href="#step-3-detect-particles-preprocess-image-coord" title="Permanent link">&para;</a></h2>
 <p>Click <strong>Preprocess → Image coord</strong>.</p>
@@ -2455,6 +2471,13 @@ everything else in this tutorial will work.</p>
 <p>Each camera view fills with <strong>blue crosses</strong> — one per detected particle
 (several hundred per camera). This is 2D detection: finding bright spots
 in each image.</p>
+<p><strong>What it does:</strong> thresholds each image and keeps blobs that look like
+particles (bright enough, right size). Too few crosses → lower the
+threshold; merges and streaks → raise it or tighten the size bounds.</p>
+<p><strong>Parameters in YAML (<code>targ_rec</code> section):</strong> <code>gvthres</code> (brightness
+threshold, one per camera), <code>sumg_min</code> (minimum total brightness),
+<code>nnmin</code>/<code>nnmax</code> (pixel count), <code>nxmin</code>/<code>nxmax</code> and <code>nymin</code>/<code>nymax</code>
+(width/height bounds). Edit via right-click <code>Run1</code> → <strong>Main parameters</strong>.</p>
 <p><img alt="GUI after Image coord: blue detection crosses" src="../images/gui_step3_detect.png" /></p>
 <h2 id="step-4-match-across-cameras-preprocess-correspondences">Step 4: Match across cameras — Preprocess → Correspondences<a class="headerlink" href="#step-4-match-across-cameras-preprocess-correspondences" title="Permanent link">&para;</a></h2>
 <p>Click <strong>Preprocess → Correspondences</strong>.</p>
@@ -2464,23 +2487,54 @@ in each image.</p>
 <p>New crosses appear in <strong>yellow</strong> (seen in 2 cameras), <strong>green</strong> (3 cameras),
 and <strong>red</strong> (all 4 cameras). This is stereo matching: the same physical
 particle found in multiple views is triangulated into a 3D position.</p>
+<p><strong>What it does:</strong> for each detection, searches the other cameras along
+its epipolar line; consistent sightings become one 3D point. Detections
+and 3D points are written to the run's zarr store (<code>run.zarr</code>). Mostly
+blue with little color → calibration or tolerances need work, not the
+detection threshold.</p>
+<p><strong>Parameters in YAML (<code>criteria</code> section):</strong> <code>eps0</code> (epipolar tolerance),
+<code>corrmin</code> (minimum match quality), <code>cn</code>/<code>cnx</code>/<code>cny</code>/<code>csumg</code> (center
+tolerances), <code>X_lay</code>/<code>Zmin_lay</code>/<code>Zmax_lay</code> (allowed 3D volume). The
+<code>ptv</code> section's <code>mmp_*</code> values describe the air–glass–water optics and
+must match your tank.</p>
 <p><img alt="GUI after Correspondences: matched particles in color" src="../images/gui_step4_corresp.png" /></p>
 <h2 id="step-5-process-all-frames-sequence-sequence-without-display">Step 5: Process all frames — Sequence → Sequence without display<a class="headerlink" href="#step-5-process-all-frames-sequence-sequence-without-display" title="Permanent link">&para;</a></h2>
 <p>Click <strong>Sequence → Sequence without display</strong>.</p>
 <p>This repeats Steps 3–4 for every frame (10000–10004). It takes under a
-minute. Results are saved to <code>test_data/test_cavity/res/</code> as <code>rt_is.*</code>
-files (one per frame, 3D positions).</p>
+minute. Per-frame detections and 3D points accumulate in the run's zarr
+store (<code>run.zarr</code>).</p>
+<p><strong>What it does:</strong> runs the active sequence plugin over the whole frame
+range — same detection + correspondence code as Steps 3–4, no new
+science, just all frames.</p>
+<p><strong>Parameters in YAML (<code>sequence</code> section):</strong> <code>base_name</code> (image filename
+pattern per camera), <code>first</code>/<code>last</code> (frame range). To process more frames,
+extend <code>last</code> here — or pass <code>--first</code>/<code>--last</code> to <code>pyptv_batch</code>.</p>
 <p><img alt="GUI after Sequence: all frames processed" src="../images/gui_step5_sequence.png" /></p>
 <h2 id="step-6-track-over-time-tracking-tracking-without-display">Step 6: Track over time — Tracking → Tracking without display<a class="headerlink" href="#step-6-track-over-time-tracking-tracking-without-display" title="Permanent link">&para;</a></h2>
 <p>Click <strong>Tracking → Tracking without display</strong>.</p>
 <p>The console prints:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>tracking without display finished
 </span></code></pre></div>
-<p>Particles are now linked frame-to-frame into trajectories, saved as
-<code>res/ptv_is.*</code> files. Expect a few hundred trajectories over these frames.</p>
+<p>Particles are now linked frame-to-frame into trajectories, stored as
+linkage in the run's zarr store (<code>run.zarr</code>, sealed into trajectories
+automatically). Expect a few hundred trajectories over these frames.</p>
+<p><strong>What it does:</strong> predicts where each 3D particle should appear next frame
+and links nearest matches into paths. Short/broken tracks → widen the
+velocity box or raise <code>dacc</code>; wrong connections → narrow them.</p>
+<p><strong>Parameters in YAML (<code>track</code> section):</strong> <code>dvxmin</code>/<code>dvxmax</code>,
+<code>dvymin</code>/<code>dvymax</code>, <code>dvzmin</code>/<code>dvzmax</code> (velocity search box per axis),
+<code>dacc</code> (acceleration tolerance), <code>angle</code> (max direction change),
+<code>flagNewParticles</code> (start tracks on unmatched particles). The tracker
+itself is chosen in <code>plugins.selected_tracking</code> (this example: <code>default</code>).
+Edit via right-click <code>Run1</code> → <strong>Tracking parameters</strong>. The
+<a href="../warmup_tutorial/">warmup tutorial</a> derives these from your data
+automatically.</p>
 <p><img alt="GUI after Tracking: linked trajectories" src="../images/gui_step6_tracking.png" /></p>
 <h2 id="step-7-see-the-trajectories-tracking-show-trajectories">Step 7: See the trajectories — Tracking → Show trajectories<a class="headerlink" href="#step-7-see-the-trajectories-tracking-show-trajectories" title="Permanent link">&para;</a></h2>
 <p>Click <strong>Tracking → Show trajectories</strong> to plot the 3D paths.</p>
+<p><strong>What it does:</strong> reads the sealed trajectories from the zarr store and
+draws them on the camera views — <strong>red</strong> heads, <strong>green</strong> tails,
+<strong>orange</strong> ends. Pure visualization: no parameters, nothing is recomputed.</p>
 <p><img alt="GUI trajectories: heads (red), tails (green), ends (orange)" src="../images/gui_step7_trajectories.png" /></p>
 <p>You just ran a full 3D-PTV pipeline: detect → match → track → visualize.</p>
 <h2 id="if-something-goes-wrong">If something goes wrong<a class="headerlink" href="#if-something-goes-wrong" title="Permanent link">&para;</a></h2>
@@ -2525,7 +2579,8 @@ repository root after GUI changes:</p>
 <h2 id="where-to-go-next">Where to go next<a class="headerlink" href="#where-to-go-next" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../../tracking_guide/">Tracking Pipeline &amp; Results</a> — what each step does
-  and where result files land.- <a href="../batch_processing/">Command-Line Batch Processing</a> — headless runs on
+  and where result files land.</li>
+<li><a href="../batch_processing/">Command-Line Batch Processing</a> — headless runs on
   your own data.</li>
 <li><a href="../../plate-calibration-howto/">Plate Calibration How-To</a> — calibrating
   your own cameras (only needed for new experiments, not this example).</li>
