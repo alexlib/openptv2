@@ -55,6 +55,7 @@ dependencies = [
     "zarr>=2.16.0",
     "marimo>=0.24.0",
     "nbformat>=5.11.1",
+    "matplotlib>=3.11.2",
 ]
 
 [project.optional-dependencies]
