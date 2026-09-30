@@ -168,3 +168,61 @@
 │ - Field prior can drag particles across shear layers → the disagreement fallback is mandatory, and the clustered                                                │
 │   case (injector blobs in test for it.                 │
 │ - Ghost ownership rule caose targets were stolen by    │ghosts; measure yield a
+
+│ SESSION HANDOFF 2026-09-30 — detailed build order (start here next session) │
+│ Branch survey: `coherent_tracklet`, `measure_coherence`, tracking-side      │
+│ `noise_sigma` exist on NO branch (checked all local + origin branches; the  │
+│ only `noise_sigma` hits are pre-existing calibration-GUI files). Build fresh│
+│ on feat/tracker-improvements. Working branch for viz experiments is         │
+│ feat/tracking-brain-viz (separate project tracking-brain-viz/, do not mix). │
+│                                                                             │
+│ Repo state: EXISTS scripts/synth_bench.py, tracking_postprocess.py          │
+│ (confirm_link_tuples), tracking_warmup.py, tracking_recommender.py,         │
+│ plugins/two_phase_tracking.py (TwoPhaseTrackerConfig has NO noise_sigma).   │
+│ MISSING scripts/measure_coherence.py, plugins/coherent_tracklet.py.         │
+│                                                                             │
+│ STAGE 0 (start here, 1/2 day, no tracker code):                             │
+│  0.1 Write scripts/measure_coherence.py: inputs = CompleteTest run.zarr    │
+│      trajectories + one L1 control case. Outputs per particle: (a) own-     │
+│      history err |x(t+1)-(2x(t)-x(t-1))|, (b) 8-neighbour median-step err,  │
+│      (c) depth noise sigma from confirmed straight tracks. Print the       │
+│      ratios from plan item 6.                                              │
+│  0.2 Fix tracking_recommender._suggest_params: dacc from 2nd differences   │
+│      of confirmed links +3σ noise (not from displacement); velocity window │
+│      stays displacement-based. Re-run hard case, expect 0.51 → ~0.18.       │
+│  DONE = neighbour prior beats own-history by ≲0.5× (else skip Stage 2's B). │
+│                                                                             │
+│ STAGE 1 (1 day):                                                            │
+│  1.1 TwoPhaseTrackerConfig.noise_sigma=(sxy, sxy, sz), default None (=      │
+│      legacy Euclidean). Auto-estimate path via tracking_warmup.py residuals.│
+│  1.2 Mahalanobis in _match_two_phase_frame (gate radius + 3D cost branch)  │
+│      and in tracking_postprocess.confirm_link_tuples.                       │
+│  1.3 Harness: two_phase+noise_sigma vs oracle on 3 reference cases.        │
+│  DONE = existing tests green (test_two_phase_tracking,                     │
+│      test_tracking_postprocess) + measurable gate-shrink win.               │
+│                                                                             │
+│ STAGE 2 (2-3 days): new src/openptv2/plugins/coherent_tracklet.py reusing  │
+│  _match_two_phase_frame, _chains_from_links, _links_to_linkage from        │
+│  plugins/two_phase_tracking.py. Pass 1 = two_phase, tight gate, 4-cam      │
+│  points only + confirmation. Field = per-frame cKDTree kNN median of       │
+│  pass-1 tracklet velocities (±W frames). Pass 2 = same matcher with        │
+│  pred = pos + field(pos); fallback to own history when neighbour-velocity  │
+│  spread > threshold (shear guard). Register in tracking_registry.py,       │
+│  tracking_presets.TRACKER_CHOICES, plugins/loader.py pattern. New          │
+│  tests/unit/test_coherent_tracklet.py (synthetic crossing + gap cases).    │
+│  DONE = clustered + x4 cases improve vs Stage 1.                           │
+│                                                                             │
+│ STAGE 3 (3-4 days): least-squares const-accel fit over W=8-12 as           │
+│  acceptance test; velocity/accel from fit; max_gap≈10 bridging; per-frame  │
+│  2D-target ownership table from correspondences cam_ids (ghost rule: all   │
+│  targets owned by confident tracklets → never seed/extend; shared target → │
+│  keep the tracklet-continuing point); feed fitted tracklets to postptv.    │
+│  DONE = ghost points 7% → <2%, long-track completeness ≥ oracle 0.57.      │
+│                                                                             │
+│ STAGE 4 (2-3 days): predictor hook + noise-sized box + Mahalanobis cost    │
+│  in algorithms/track_kernels_corr.py; C-parity bit-identical with hook off │
+│  (synth_bench L1_d0.3 ≥99.5%); profile scripts/prof_trackcorr.py ≤11 s.    │
+│                                                                             │
+│ After EVERY stage: unit tests → synth_bench.py sweep (L1_d1_c0_k1_n200,    │
+│  L1_d2_c0.3_k4_n150, L1_d4_c0_k1_n150; trackers oracle two_phase           │
+│  coherent_tracklet trackcorr) → compute_physics_metrics must improve.       │
