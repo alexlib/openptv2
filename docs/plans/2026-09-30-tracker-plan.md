@@ -7,7 +7,7 @@ This file replaces all earlier tracking plans, including `new_tracking_plan.md` 
 
 ---
 
-# STATUS AND HANDOFF (updated 2026-10-01 late night, read this first)
+# STATUS AND HANDOFF (updated 2026-10-02 early, read this first)
 
 ## Where we are
 Branch `feat/tracker-improvements`. Goal unchanged: correct Lagrangian trajectories,
@@ -171,6 +171,38 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
   unchanged. `test_end_to_end_reproducibility` failed twice (about 2 of 14 runs) while heavy
   jobs were running and passed 9 of 9 afterwards; treat it as load-sensitive.
 
+### Better ghost mark: blob brightness agreement (2026-10-01 night, committed `94cfe9e9`)
+**Default model is now `rcm_blob`** (`q_model`, alternative `rcm`); details in
+`docs/tracking_quality.md`, numbers in `bench/step10_A10_blob_brightness_model_2026-10-01.json`.
+- **Idea.** A real particle shows a similar brightness in all cameras; a ghost joins blobs of
+  different particles. The spread of the log blob brightness across the seeing cameras is
+  about 0.15 for real points and 0.4 for ghosts. Cameras differ in gain by 0.13–0.17 on
+  real data, so each camera's run median is subtracted first.
+- **The old synthetic cases cannot judge it:** their real particles have exactly the same
+  brightness in every camera (spread 0, AUC 0.93 is an artefact). New option
+  `synth_bench build --amp-jitter 0.18` gives each particle an independent per-camera
+  brightness factor; its spread distribution then matches real data (median 0.160 against
+  0.173). **Use the `_a0.18` cases (`L1_d1_c0_k1_n200_s0.08_a0.18`, `L1_d2_c0_k1_n150_…`,
+  `L1_d4_c0_k1_n150_…`, `L1_d2_c0.3_k4_n150_…`) for anything involving brightness.**
+- **Result** (point-level AUC 0.875 → 0.917; velocity error / true points kept / ghost fraction):
+
+  | Case | Quality off | `rcm` | **`rcm_blob` (default 0.2/3)** | accuracy mode 0.15/6 |
+  |---|---|---|---|---|
+  | Real jitter, sparse | 0.2136 / 0.680 / 7.0% | 0.1982 / 0.675 / 4.8% | **0.1934 / 0.675 / 3.7%** | 0.1889 / 0.670 / 3.2% |
+  | Density ×2 | 0.3658 / 0.510 / 6.9% | 0.3371 / 0.502 / 5.2% | **0.3225 / 0.497 / 4.2%** | 0.3015 / 0.486 / 3.6% |
+  | Density ×4 | 0.5055 / 0.231 / 10.8% | 0.4709 / 0.225 / 8.5% | **0.4307 / 0.218 / 6.5%** | 0.3940 / 0.208 / 5.6% |
+  | Clustered + skip ×4 | 0.1765 / 0.376 / 6.8% | 0.1683 / 0.372 / 5.7% | **0.1647 / 0.372 / 5.5%** | 0.1564 / 0.366 / 5.1% |
+
+  Against `rcm`: −0.005, −0.015, −0.039, −0.004; true points kept down by at most 0.007.
+  The logistic weights were fitted on even frames of the first case; the other three cases are
+  independent. Real wp2 (300 frames): 4.6% fewer trajectories, mean length 20.2 → 20.8,
+  suspect trajectories 10.4% → 9.7%, jump 1.45 → 1.43%. Real lv_multi wp4/wp5: 4–6% fewer
+  trajectories, mean length +2.5%/+4%, jump share 0, but the never-seen-by-4-cameras share is
+  0.3–0.5 points *higher* (the proxy is itself rcm-based, so it does not see the new signal).
+- **Caveats:** the model assumes that brightness differences between cameras are small
+  once the run median is removed (true for the two real sets); constant brightness falls
+  back to `rcm`; the weights come from synthetic data, so real-data checks stay mandatory.
+
 ## What can be next (ranked by expected gain)
 The remaining error on the real-jitter case, step by step (velocity error; perfect linker
 0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →
@@ -203,10 +235,10 @@ test offline with the saved features and the ghost cheats), then A4/A5 together.
    computed from the run that predicts them (nearest-neighbour spacing against the step,
    or the share of links the rule would cut), implement it as the default for the
    plugin, and verify on all five cases and the four real recordings.
-3. **Better ghost mark.** Test extra signals offline (`scripts/a10_features.py`,
-   `scripts/ghost_bound.py`): blob size/brightness agreement across cameras, the
-   second-difference jitter of the trajectory, the per-run fitted probability table instead
-   of the synthetic one.
+3. ~~**Better ghost mark.**~~ **Done for brightness** (`rcm_blob`, see above). Further ideas
+   for the mark: blob size agreement (synthetic sizes are degenerate, needs a generator
+   change first), the 2D reprojection residual per camera, fitting the probability table per
+   run on real data (EM with the rcm model as the first guess).
 4. **A4/A5**, then **A12/A13**, then **A2**; order in section 7.
 5. Later: A11, speed (S0/S1), chunks (P3).
 
