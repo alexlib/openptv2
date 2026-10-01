@@ -35,7 +35,7 @@ def main(argv=None) -> None:
         sys.exit(
             f"'{a.run_dir}' is not a folder. Give the path of a run folder, e.g.\n"
             "  uv run python scripts/tracking_advice.py "
-            "~/Downloads/CompleteTest-e2e-local/wp2/test --fps 5000\n"
+            "~/data/experiment/wp2/test --fps 5000\n"
             "(RUN_DIR in the docs is a placeholder for your own path.)"
         )
     yamls = sorted(run.glob("parameters_*.yaml"))

@@ -66,6 +66,7 @@ nav:
     - Zarr & HDF5 Storage: zarr-hdf5-storage.md
     - Tracking Pipeline & Results: tracking_guide.md
     - Tracking Parameters (what to measure, how to set): tracking_parameters_guide.md
+    - tracking_advice (measure your data, get the values): tracking_advice.md
     - Point Quality and Ghost Marks: tracking_quality.md
     - Tracker Engines & Parameters: tracker-tutorials.md
     - Lagrangian Turbulence Quality: lagrangian_turbulence_quality_guide.md

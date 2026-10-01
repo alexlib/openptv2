@@ -21,7 +21,19 @@ from synth_bench import _experiment
 
 src = Path(
     os.environ.get(
-        "REAL_RUN", Path.home() / "Downloads/CompleteTest-e2e-local/wp2/test"
+        "REAL_RUN",
+        next(
+            (
+                p
+                for p in (
+                    Path.home()
+                    / "Downloads/HiDImaging/CompleteTest-e2e-local/wp2/test",
+                    Path.home() / "Downloads/CompleteTest-e2e-local/wp2/test",
+                )
+                if p.exists()
+            ),
+            Path.home() / "Downloads/CompleteTest-e2e-local/wp2/test",
+        ),
     )
 )
 label = sys.argv[1]
