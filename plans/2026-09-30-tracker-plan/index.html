@@ -1,0 +1,4037 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Tracker plan, in plain words - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tracker-plan-in-plain-words" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tracker plan, in plain words
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../plate-calibration-howto/" class="md-tabs__link">
+          
+  
+  
+  Calibration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../benchmarking_guide/" class="md-tabs__link">
+          
+  
+  
+  Benchmarks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
+          
+  
+  
+  Decisions
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Your First Tracking (GUI)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/cavity_flow_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lid-Driven Cavity Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aorta_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aorta Flow (cloud-native)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/four_view_splitter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4-View Image Splitter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sequence & Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Point Quality and Ghost Marks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracker-tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracker Engines & Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lagrangian_turbulence_quality_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lagrangian Turbulence Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-batch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud-like Batch Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multi-folder-runs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Folder Experiments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Calibration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plate-calibration-howto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plate Calibration How-To
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../illmenau-4cam-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illmenau 4-Camera Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/particle_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle-Based Refinement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/dumbbell_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dumbbell Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/warmup_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auto-Calibration (warmup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-rms-vs-rcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reprojection RMS vs Ray Convergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-bundle-adjustment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bundle Adjustment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracer-self-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracer Self-Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Benchmarks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarking & Tracker Selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking-benchmark-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Engine Benchmark Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/custom_tracking_plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correspondence eps0 Semantics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Decisions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Cython Optimization Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tracker-plan-in-plain-words">Tracker plan, in plain words<a class="headerlink" href="#tracker-plan-in-plain-words" title="Permanent link">&para;</a></h1>
+<p>Branch: <code>feat/tracker-improvements</code>. Date: 2026-09-30, updated 2026-10-01. <strong>Start with the STATUS AND HANDOFF section below.</strong>
+This file replaces all earlier tracking plans, including <code>new_tracking_plan.md</code> and
+<code>two-phase-accuracy-speed-plan.md</code>; their ideas are merged here.</p>
+<hr />
+<h1 id="status-and-handoff-updated-2026-10-01-night-read-this-first">STATUS AND HANDOFF (updated 2026-10-01 night, read this first)<a class="headerlink" href="#status-and-handoff-updated-2026-10-01-night-read-this-first" title="Permanent link">&para;</a></h1>
+<h2 id="where-we-are">Where we are<a class="headerlink" href="#where-we-are" title="Permanent link">&para;</a></h2>
+<p>Branch <code>feat/tracker-improvements</code>. Goal unchanged: correct Lagrangian trajectories,
+accuracy first, speed second, no big slowdown (section 2 has the rules).</p>
+<h3 id="key-facts-learned-details-in-sections-1-and-4">Key facts learned (details in sections 1 and 4)<a class="headerlink" href="#key-facts-learned-details-in-sections-1-and-4" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Ghost points cause about 60% of two_phase's remaining error</strong> and nearly all wrong
+   links. With ghosts removed from the input, link precision goes 0.9325 → 0.9989 and
+   velocity error 0.1977 → 0.1465 (perfect linker 0.1412) on the real-jitter case.</li>
+<li><strong>Search-gate and score tuning do not help two_phase</strong> (A1 tried and reverted; a
+   smaller round ball gains at most 0.007).</li>
+<li><strong>The ray miss distance (rcm) of a 3D point is the best ghost signal</strong> (AUC 0.88 per
+   trajectory). Its scale on real data depends on the distance from the volume centre,
+   so it is divided by a per-run straight-line fit before use.</li>
+<li><strong>Soft use works, hard deletion does not:</strong> link-cost weighting alone has no effect;
+   forbidding doubtful points from starting trajectories (<code>q_seed</code>) and young
+   trajectories from continuing onto them (<code>q_young</code>) gives −0.008…−0.013 velocity
+   error on four cases and −0.038 at 4× density, with at most 0.007 fewer points kept.</li>
+<li><strong>Synthetic data is too gentle:</strong> real data jitters 1.4–2× more. Tune on the
+   "real jitter" case <code>L1_d1_c0_k1_n200_s0.08</code> (matches real wp2), check on the rest.</li>
+<li><strong><code>max_gap</code> counts steps:</strong> <code>max_gap=1</code> = no gap bridging, <code>0</code> = no links at all.</li>
+</ol>
+<h3 id="done-and-committed">Done and committed<a class="headerlink" href="#done-and-committed" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Commit</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7263d414</td>
+<td>Bug 3: batched camera projection (21–29% faster, identical results)</td>
+</tr>
+<tr>
+<td>8bb9917a, 6dd27c02</td>
+<td>Bug 2: separate seen-mask, <code>RunStore.read_seen</code></td>
+</tr>
+<tr>
+<td>81470b35</td>
+<td>Wrong seen-mask now raises; Step 0: <code>scripts/realism_metrics.py</code>, <code>synth_bench build --sigma-px</code>, baselines in <code>bench/realism/</code></td>
+</tr>
+<tr>
+<td>4127a459</td>
+<td>A1 tried and reverted; ghost bound measured (<code>scripts/ghost_bound.py</code>); plan order changed</td>
+</tr>
+<tr>
+<td>0c10c51a, 724684d2, f6f70cea</td>
+<td>A10 findings: rcm feature, distributions, distance dependence</td>
+</tr>
+<tr>
+<td>ca5988c7</td>
+<td>A10 in the tracker: <code>openptv2/point_quality.py</code>, options <code>q_weight</code>, <code>q_seed</code>, <code>q_young</code> (default off)</td>
+</tr>
+<tr>
+<td>f14cd3c3 + next commit</td>
+<td><code>quality_post.py</code> (trim ends, drop spikes, weighted Savitzky–Golay), <code>scripts/quality_postprocess.py</code>, <code>real_trim_check.py</code>, <code>tune_summary.py</code>, weighted smoothing option in <code>synth_bench.evaluate_pred</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="results-of-the-tuning-and-the-after-tracking-work-2026-10-01-evening-committed">Results of the tuning and the after-tracking work (2026-10-01 evening, committed)<a class="headerlink" href="#results-of-the-tuning-and-the-after-tracking-work-2026-10-01-evening-committed" title="Permanent link">&para;</a></h3>
+<p>Numbers: <code>bench/step7_tuning_and_post_2026-10-01.json</code>. Cases: normal, real jitter,
+clustered + skip ×4, 4× density, skip ×8.</p>
+<p><strong>1. Tuning <code>q_seed</code> / <code>q_young</code></strong> (mean change over the five cases against plain
+two_phase; velocity error, then true points kept):</p>
+<table>
+<thead>
+<tr>
+<th>q_seed \ q_young</th>
+<th>3</th>
+<th>6</th>
+<th>10</th>
+<th>15</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.10</td>
+<td>−0.0258 / −0.0123</td>
+<td>−0.0291 / −0.0191</td>
+<td>−0.0319 / −0.0260</td>
+<td>−0.0303 / −0.0319</td>
+</tr>
+<tr>
+<td>0.15</td>
+<td>−0.0215 / −0.0072</td>
+<td>−0.0246 / −0.0108</td>
+<td>−0.0251 / −0.0145</td>
+<td>−0.0251 / −0.0176</td>
+</tr>
+<tr>
+<td>0.20</td>
+<td>−0.0167 / −0.0044</td>
+<td>−0.0196 / −0.0068</td>
+<td>−0.0209 / −0.0086</td>
+<td>−0.0213 / −0.0106</td>
+</tr>
+<tr>
+<td>0.30</td>
+<td>−0.0107 / −0.0020</td>
+<td>−0.0131 / −0.0031</td>
+<td>−0.0134 / −0.0039</td>
+<td>−0.0124 / −0.0046</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>It is a clean trade-off: smaller <code>q_seed</code> and larger <code>q_young</code> give lower error and fewer
+  points. Error gained per point lost is best at <code>q_seed</code> 0.2 and 0.15 with <code>q_young</code> 3.</li>
+<li><strong>Recommended default: <code>q_seed=0.2</code>, <code>q_young=3</code>.</strong> It is the only setting among the
+  strong ones where every case loses at most 0.007 points (the plan's rule).</li>
+<li><strong>Accuracy mode: <code>q_seed=0.15</code>, <code>q_young=6</code></strong> (mean −0.0246) loses 0.014 points at 4×
+  density. <code>q_young</code> larger helps the clustered case most (0.1632 → 0.1401 at 0.1 / 10).</li>
+<li>Real wp2 (first 300 frames) and lv_multi wp5 agree: with <code>q_seed=0.2</code>, <code>q_young=3</code>
+  trajectories 16375 → 15310 (wp2) and 3004 → 2399 (wp5), mean length 19.5 → 20.2 and
+  8.0 → 8.9, long trajectories never seen by 4 cameras 11.6% → 10.4% and 9.6% → 7.8%.
+  The jump share barely moves (wp2 1.46 → 1.45%, wp5 8.4 → 8.1%), so wp5's wrong links
+  are mostly not ghosts (see next steps).</li>
+</ul>
+<p><strong>2. After tracking</strong> (<code>src/openptv2/quality_post.py</code>, <code>scripts/quality_postprocess.py</code>,
+real-jitter case, base = <code>q_seed=0.2</code>, <code>q_young=3</code>; velocity error / points kept):</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Result</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>flowtracks smoother (current benchmark)</td>
+<td>0.1845 / 0.702</td>
+<td>reference</td>
+</tr>
+<tr>
+<td><code>weighted_savgol</code> with unit weights</td>
+<td>0.1790 / 0.701</td>
+<td><strong>better smoother, see below</strong></td>
+</tr>
+<tr>
+<td>quality weights <code>(1−g)^1…3</code></td>
+<td>0.1781–0.1785</td>
+<td>no value (−0.001 vs unit weights)</td>
+</tr>
+<tr>
+<td>drop spikes (g &gt; 0.3 and +0.3 over neighbours)</td>
+<td>0.1786</td>
+<td>no value</td>
+</tr>
+<tr>
+<td>trim end points with g &gt; 0.5</td>
+<td>0.1757 / 0.698</td>
+<td>small gain</td>
+</tr>
+<tr>
+<td><strong>trim end points with g &gt; 0.3</strong></td>
+<td><strong>0.1647 / 0.692</strong></td>
+<td><strong>good: −0.014</strong></td>
+</tr>
+<tr>
+<td>trim end points with g &gt; 0.2</td>
+<td>0.1595 / 0.683</td>
+<td>best error, −0.018 points</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Trimming doubtful ends is what works.</strong> Over the five cases, <code>q_seed=0.2</code>,
+  <code>q_young=3</code>, trim 0.3 and the new smoother, against plain two_phase with the flowtracks
+  smoother (error / points kept): normal 0.1780/0.707 → 0.1420/0.693; real jitter
+  0.1977/0.706 → 0.1647/0.692; clustered 0.1632/0.398 → 0.1285/0.378; 4× density
+  0.4592/0.258 → 0.3928/0.240; skip ×8 0.1218/0.669 → 0.1048/0.649. Trim 0.2 gains
+  another 0.005–0.01 and loses about 0.01 more points.</li>
+<li><strong>Weights and spike dropping do not pay.</strong> After <code>q_seed</code>/<code>q_young</code>, doubtful points
+  inside trajectories are few, and weighting <code>(1−g)^p</code> leaves them with half their weight.</li>
+<li><strong>A better smoother, independent of the quality marks.</strong> The flowtracks
+  <code>savitzky_golay</code> assumes consecutive frames (it ignores gaps), uses a fixed window and
+  discards trajectories shorter than the window. <code>weighted_savgol</code> fits at the real frame
+  times and shrinks the window for short trajectories. With unit weights it lowers the
+  error by 0.002–0.008 on every case (e.g. 0.1652 → 0.1610 normal, 0.1529 → 0.1449
+  clustered). Use it for the final output (upstream to postptv).</li>
+<li><strong>Real data:</strong> trimming at 0.3 removes 3.1% (wp2) and 8.8% (wp5) of the points and
+  leaves the answer-free scores unchanged on wp2; on wp5 the jump share goes 8.1 → 7.8%
+  (trim 0.3) and 7.5% (trim 0.2, 15% of the points). <code>scripts/real_trim_check.py</code>.</li>
+<li><strong>Cost of trimming is points kept</strong> (−0.010 at 0.3, −0.018 at 0.2). Under the
+  "accuracy ranks above density" rule this is accepted, but it is a decision: make it an
+  option with the threshold visible, default 0.3.</li>
+</ul>
+<h3 id="repeat-of-the-real-data-check-and-what-was-put-into-the-product-2026-10-01-night">Repeat of the real-data check and what was put into the product (2026-10-01 night)<a class="headerlink" href="#repeat-of-the-real-data-check-and-what-was-put-into-the-product-2026-10-01-night" title="Permanent link">&para;</a></h3>
+<p><strong>Real data, <code>q_seed=0.2</code>, <code>q_young=3</code> against off</strong> (re-tracked on scratch copies; the
+CompleteTest runs use their own settings, the lv_multi runs were re-done with
+<code>confirm_tol=0.3</code>, <code>confirm_ends=true</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Trajectories</th>
+<th>Mean length</th>
+<th>Long trajectories never seen by 4 cameras</th>
+<th>Jump share</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CompleteTest wp1 (300 fr)</td>
+<td>17036 → 15874</td>
+<td>19.0 → 19.7</td>
+<td>11.3% → 9.9%</td>
+<td>1.47% → 1.45%</td>
+</tr>
+<tr>
+<td>CompleteTest wp2 (300 fr)</td>
+<td>16375 → 15310</td>
+<td>19.5 → 20.2</td>
+<td>11.6% → 10.4%</td>
+<td>1.46% → 1.45%</td>
+</tr>
+<tr>
+<td>lv_multi wp4 (20 fr, confirm on)</td>
+<td>2106 → 1721</td>
+<td>7.9 → 8.6</td>
+<td>11.8% → 9.1%</td>
+<td>0.0% → 0.0%</td>
+</tr>
+<tr>
+<td>lv_multi wp5 (20 fr, confirm on)</td>
+<td>2763 → 2368</td>
+<td>7.3 → 7.7</td>
+<td>9.6% → 8.1%</td>
+<td>0.0% → 0.0%</td>
+</tr>
+</tbody>
+</table>
+<p>All four agree with the synthetic result, so the values are kept. <strong>Finding: the lv_multi
+jump steps (wp4 6.7%, wp5 8.4%) were not ghosts but the missing <code>confirm_tol</code>:</strong> the
+lv_multi <code>parameters_*.yaml</code> have no <code>confirm_tol</code>; with <code>confirm_tol=0.3</code>,
+<code>confirm_ends=true</code> (as the CompleteTest yaml) both go to 0.0%. Every synthetic benchmark
+case already uses it, so the synthetic gains are on top of confirmation. <strong>Open decision:</strong>
+make <code>confirm_tol</code> a default of the two_phase plugin (it is the one proven win; the scale
+should follow the data, the CompleteTest value is 0.3 for a 0.08 mm step).</p>
+<p><strong>Flagged share</strong> (stored marks, share of points with ghost probability above 0.2 / 0.3 /
+0.5): synthetic 10.3 / 5.7 / 2.0%; CompleteTest 9.9 / 4.4 / 0.6%; lv_multi 18 / 10 / 2.2%
+(half of its points have three cameras). Used in the documentation as a sanity check.</p>
+<p><strong>Implemented (committed):</strong>
+- openptv2 <code>33a65c06</code>: <code>two_phase</code> plugin has <code>q_seed=0.2</code>, <code>q_young=3</code> as defaults (switch
+  off with <code>q_seed: null</code>, <code>q_young: 0</code>; it also switches off by itself, with a message,
+  without calibrations); the ghost probability is stored in the run store
+  (<code>quality/frame_NNNNNN</code>, <code>RunStore.write_point_quality</code> / <code>read_point_quality</code>);
+  <code>trim_doubtful_ends</code> never cuts more than a quarter of a trajectory per end;
+  <code>weighted_savgol</code> uses the largest odd window for short tracks;
+  <strong>documentation <code>docs/tracking_quality.md</code></strong> (what the marks are, the thresholds, when
+  to change them, how to test them, trim and smoother) linked from <code>mkdocs.yml</code>,
+  <code>docs/trackers.md</code> and <code>docs/two-phase-tracking.md</code>.
+- openptv-cloud, branch <code>feat/gap-aware-smoothing-trim</code> (commit <code>614f86d</code>, not pushed,
+  <code>main</code> untouched): <code>trajectories.smoothing_method</code> (<code>gap_aware</code> default, or
+  <code>flowtracks</code>), optional <code>trajectories.trim_doubtful</code> / <code>trim_max_points</code>, validation in
+  <code>review.py</code>, docs in <code>docs/experiment-yaml.md</code>, 9 new tests. <code>gap_aware</code> needs an
+  openptv2 that contains <code>quality_post</code> (not in the released 0.5.11); with the old one it
+  falls back to flowtracks and prints a warning. <strong>To make it effective: release openptv2
+  and raise the <code>openptv2&gt;=</code> pin in openptv-cloud's <code>pyproject.toml</code>.</strong></p>
+<p><strong>Baseline label change:</strong> plain <code>two_phase</code> now includes the quality rules. The old
+behaviour is <code>two_phase+q_seed=null+q_young=0</code>. Old <code>eval.json</code> files under the label
+<code>two_phase</code> are the old behaviour.</p>
+<h2 id="next-steps-in-this-order">Next steps, in this order<a class="headerlink" href="#next-steps-in-this-order" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Release step (needs the user):</strong> release openptv2 with <code>quality_post</code>, bump the pin in
+   openptv-cloud, merge <code>feat/gap-aware-smoothing-trim</code>. Decide on <code>confirm_tol</code> as a
+   default (see above).</li>
+<li><strong>A7b: choose the confirmation tolerance from the data</strong> (A7 as designed was tried and
+   reverted, see section 4): the best <code>confirm_tol</code> is loose for sparse and tight for dense
+   data (4× density: −0.051 with a tight one). Find a data-driven rule (density, measured
+   kink distribution) and check it on all five cases and on real data.</li>
+<li><strong>A2</strong> (camera count in the cost that also works with <code>leaf_weight=0</code>), <strong>A12</strong>, <strong>A13</strong>;
+   order in section 7.</li>
+<li>Later: soft use at the correspondence step (A11), speed (S0/S1), chunks (P3). Speed note:
+   the quality rules add about 1 s to a 200-frame run (rcm per frame, mark storage), +14%;
+   within the budget but worth a profile in S0.</li>
+</ol>
+<h2 id="commands-all-from-the-repo-root-always-uv-run">Commands (all from the repo root, always <code>uv run</code>)<a class="headerlink" href="#commands-all-from-the-repo-root-always-uv-run" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># unit tests / lint for the touched code</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_two_phase_tracking.py<span class="w"> </span>tests/unit/test_point_quality.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>tests/unit/test_quality_post.py<span class="w"> </span>tests/unit/test_tracking_postprocess.py<span class="w"> </span>-q
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>src<span class="w"> </span>scripts
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># synthetic benchmark (work dir ~/Downloads/HiDImaging/tracker-bench-2026-09-29)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/synth_bench.py<span class="w"> </span>build<span class="w"> </span>--level<span class="w"> </span>L1<span class="w"> </span>--sigma-px<span class="w"> </span><span class="m">0</span>.08<span class="w">      </span><span class="c1"># real-jitter case</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/synth_bench.py<span class="w"> </span>track<span class="w"> </span>--case<span class="w"> </span>L1_d1_c0_k1_n200_s0.08<span class="w"> </span>--tracker<span class="w"> </span><span class="s2">"two_phase+q_seed=0.2+q_young=3"</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/synth_bench.py<span class="w"> </span><span class="nb">eval</span><span class="w">  </span>--case<span class="w"> </span>L1_d1_c0_k1_n200_s0.08<span class="w"> </span>--trackers<span class="w"> </span>oracle<span class="w"> </span>two_phase<span class="w"> </span><span class="s2">"two_phase+q_seed=0.2+q_young=3"</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/synth_bench.py<span class="w"> </span>sweep<span class="w"> </span>--cases<span class="w"> </span>A<span class="w"> </span>B<span class="w"> </span>--trackers<span class="w"> </span>T1<span class="w"> </span>T2<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span><span class="w"> </span>--no-eval<span class="w">   </span><span class="c1"># then eval</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># cases: L1_d1_c0_k1_n200 (normal), L1_d1_c0_k1_n200_s0.08 (real jitter), L1_d2_c0.3_k4_n150,</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1">#        L1_d4_c0_k1_n150, L1_d1_c0_k8_n150</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1"># answer-free scores on real data, ghost bound, ghost features</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/realism_metrics.py<span class="w"> </span>~/Downloads/CompleteTest-e2e-local/wp2/test/res/run.zarr<span class="w"> </span>--last<span class="w"> </span><span class="m">300</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/real_retrack.py<span class="w"> </span>LABEL<span class="w"> </span><span class="m">300</span><span class="w"> </span><span class="nv">q_seed</span><span class="o">=</span><span class="m">0</span>.2<span class="w"> </span><span class="nv">q_young</span><span class="o">=</span><span class="m">3</span><span class="w">     </span><span class="c1"># scratch copy, never the source</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/ghost_bound.py<span class="w"> </span>L1_d1_c0_k1_n200_s0.08
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/a10_features.py<span class="w"> </span>L1_d1_c0_k1_n200_s0.08
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="c1"># after tracking: trim / weights on a tracker run, then score it</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/quality_postprocess.py<span class="w"> </span>CASE<span class="w"> </span><span class="s2">"two_phase+q_seed=0.2+q_young=3"</span><span class="w"> </span>unit<span class="w"> </span>trim0.3_unit<span class="w"> </span>trim0.2_unit
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/synth_bench.py<span class="w"> </span><span class="nb">eval</span><span class="w"> </span>--case<span class="w"> </span>CASE<span class="w"> </span>--trackers<span class="w"> </span><span class="s2">"two_phase+q_seed=0.2+q_young=3~trim0.3_unit"</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="nv">REAL_RUN</span><span class="o">=</span>~/Documents/Github/openptv-cloud/examples/lv-multi/wp5<span class="w"> </span>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/real_retrack.py<span class="w"> </span>wp5_q<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="nv">q_seed</span><span class="o">=</span><span class="m">0</span>.2<span class="w"> </span><span class="nv">q_young</span><span class="o">=</span><span class="m">3</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/real_trim_check.py<span class="w"> </span>/private/tmp/claude-501/real_runs/wp5_q<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="m">0</span>.5<span class="w"> </span><span class="m">0</span>.3<span class="w"> </span><span class="m">0</span>.2
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/tune_summary.py<span class="w"> </span>q_seed<span class="w"> </span>q_young
+</span></code></pre></div>
+<h2 id="pitfalls">Pitfalls<a class="headerlink" href="#pitfalls" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Another agent may be committing to this branch at the same time</strong> (it did, commit
+  6dd27c02). Run <code>git log --oneline -5</code> and <code>git status</code> before starting. Use
+  <code>git add</code> with explicit paths, not <code>git add -A</code>, unless the tree is only yours.</li>
+<li><strong>Shell:</strong> zsh. Pass lists to <code>synth_bench</code> as bash/zsh arrays (<code>"${V[@]}"</code>), not as
+  one string. BSD <code>sed -i ''</code>. No <code>timeout</code> command on this Mac.</li>
+<li><strong>Timing</strong> is only meaningful with <code>-j 1</code>; sweeps with <code>-j 4</code> are for accuracy only.
+  <code>eval</code> is slow (about a minute per tracker); run one process per case in parallel.</li>
+<li><strong>Never overwrite real data.</strong> The real runs are in <code>~/Downloads/CompleteTest-e2e-local</code>
+  and <code>~/Documents/Github/openptv-cloud/examples/lv-multi</code> (do not run
+  <code>generate_synthetic_lv_multi.py</code> there). <code>wp1_10_images</code> is on the Windows machine only.</li>
+<li>One unit test, <code>test_run_store.py::test_traj_index_matches_legacy_reader_after_singleton_filter</code>,
+  fails on a missing <code>flowtracks</code> module; it is not related to this work.</li>
+<li>The synthetic ghosts are almost stationary (static false targets); real data has far
+  fewer. Never tune a ghost rule on speed.</li>
+<li><strong>openptv-cloud is a separate repo</strong> (<code>~/Documents/Github/openptv-cloud</code>, python 3.12 venv
+  with the released openptv2). Work on a branch, never on <code>main</code>. Its tests import
+  <code>quality_post</code> from the openptv2 checkout (see <code>tests/test_trajectory_quality.py</code>).
+  <code>tests/test_e2e_reproducibility.py</code> failed once in a full run and passed on rerun (flaky).</li>
+<li>zsh has no <code>read -a</code>; pass override lists to <code>scripts/real_retrack.py</code> as separate
+  arguments (<code>key=value key=value</code>), never as one string.</li>
+<li>Scratch measurement scripts that are NOT in <code>scripts/</code> (they live in a session scratch
+  folder): <code>rcm_geom.py</code>, <code>rcm_norm.py</code>, <code>plot_rcm.py</code>, <code>ghost_feats.py</code>, <code>a10_lite.py</code>.
+  The results they produced are written into section 4 and <code>bench/</code>; re-create them only
+  if needed.</li>
+</ul>
+<hr />
+<h2 id="goal">Goal<a class="headerlink" href="#goal" title="Permanent link">&para;</a></h2>
+<p>We want correct Lagrangian trajectories:
+- each trajectory follows one real particle;
+- no fake points;
+- trajectories are long.</p>
+<p>The tracker should also be reasonably fast. The order of importance is:
+1. correct;
+2. fast;
+3. runs in parallel.</p>
+<p><strong>Accuracy first, but no big speed penalty.</strong> Slow, careful trackers already
+exist: the proPTV-style tracker is 12× slower than two_phase. two_phase's place
+is "accurate <strong>and</strong> fast", so it must stay fast. Section 2 sets the speed
+budget.</p>
+<hr />
+<h2 id="1-what-we-have-today">1. What we have today<a class="headerlink" href="#1-what-we-have-today" title="Permanent link">&para;</a></h2>
+<h3 id="the-input">The input<a class="headerlink" href="#the-input" title="Permanent link">&para;</a></h3>
+<p>Each frame gives about 1500 3D points:
+- about 92% are real particles;
+- about 8% are fake points ("ghosts"). The camera-matching step makes a fake
+  point when it combines blobs that belong to different particles.</p>
+<h3 id="the-core-difficulty">The core difficulty<a class="headerlink" href="#the-core-difficulty" title="Permanent link">&para;</a></h3>
+<p>Each measured position is shaky:
+- about 0.09 mm along the camera viewing direction (depth);
+- about 0.02 mm sideways.</p>
+<p>A typical particle moves only about 0.085 mm per frame. So the position error is
+as big as the real motion in one frame.</p>
+<p>Most of this error is a slow offset, not frame-to-frame jitter (see "How
+realistic is the synthetic data?" below). The real frame-to-frame jitter is
+smaller: about 0.03 mm in depth and 0.006 mm sideways.</p>
+<h3 id="what-the-two_phase-tracker-does-step-by-step">What the two_phase tracker does, step by step<a class="headerlink" href="#what-the-two_phase-tracker-does-step-by-step" title="Permanent link">&para;</a></h3>
+<p>File: <code>src/openptv2/plugins/two_phase_tracking.py</code>. For each frame:</p>
+<ol>
+<li><strong>Guess.</strong> For every live trajectory, guess the next position from its last
+   two positions ("keep going the same way"). A new trajectory has no velocity
+   yet, so its guess is "stays where it is".</li>
+<li><strong>Search.</strong> Look for candidates inside a ball around the guess. The ball size,
+   <code>v_max</code>, is set for the fastest particle, about ±2 mm.</li>
+<li><strong>Score.</strong> Give each candidate a score: its distance in pixels from the guess,
+   measured in the cameras. With <code>leaf_weight=0</code>, plain 3D distance is used
+   instead.</li>
+<li><strong>Group.</strong> Split the frame into groups of trajectories that compete for the
+   same points.</li>
+<li><strong>Decide who gets whom.</strong> No two trajectories may take the same point:</li>
+<li>a group with only one trajectory and one point is accepted directly;</li>
+<li>a small group is solved exactly (the "Hungarian" solver);</li>
+<li>a group with more than 128 members falls back to a quick approximation:
+     take the cheapest pair first, then the next cheapest, and so on.</li>
+<li><strong>Update.</strong> Update each trajectory's position and velocity.</li>
+<li>A trajectory unseen for more than <code>max_gap</code> frames is ended.</li>
+<li>A point that no trajectory took starts a new trajectory.</li>
+<li>A trajectory that loses a contested point just stops. It never gets a
+     second choice.</li>
+<li><strong>Confirm (optional).</strong> Check that the next step also continues smoothly, and
+   cut the link if it doesn't (<code>confirm_tol</code>).</li>
+<li><strong>Backward run (optional).</strong> With <code>bidirectional=True</code>, a second run goes
+   backward through the frames. It may only fill in trajectory ends that are
+   still free, closest first.</li>
+</ol>
+<h3 id="what-we-already-measured">What we already measured<a class="headerlink" href="#what-we-already-measured" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The 2D score, the velocity guess and the backward run each change the result
+  by less than 0.01.</li>
+<li>The smoothness check in step 7 is the only part that clearly helps.</li>
+</ul>
+<h3 id="what-the-fake-points-look-like-measured-2026-10-01">What the fake points look like (measured 2026-10-01)<a class="headerlink" href="#what-the-fake-points-look-like-measured-2026-10-01" title="Permanent link">&para;</a></h3>
+<p>Measured on two_phase's output, normal case <code>L1_d1_c0_k1_n200</code>:
+- <strong>Most fake points form long fake trajectories, not one-frame blips.</strong>
+  - 90% of fake points sit in trajectories made only of fake points.
+  - 57% are in fake runs longer than 30 frames.
+  - Only 5% are in runs of 1–2 frames.
+- <strong>Long fake trajectories are smoother than real ones.</strong> The frame-to-frame
+  change in depth is about 0.013 mm for fake trajectories and 0.037 mm for real
+  ones. So "drop what is not smooth" cannot remove them.
+- <strong>They are real ghosts, not slightly misplaced real particles.</strong> They sit
+  1–4 mm from the nearest real particle.
+- <strong>They are mostly seen by only 3 cameras.</strong>
+  - 73% of fake points are 3-camera points.
+  - 17.5% of all 3-camera points are fake, against 3% of 4-camera points.
+- <strong>Over a whole trajectory the difference is sharper.</strong> 65% of long fake
+  trajectories are never seen by all 4 cameras in any frame, against 6% of long
+  real trajectories.
+- <strong>At 4× density the picture changes.</strong> Fake runs are shorter there (mostly
+  3–5 frames).</p>
+<h3 id="how-realistic-is-the-synthetic-data-measured-2026-10-01">How realistic is the synthetic data? (measured 2026-10-01)<a class="headerlink" href="#how-realistic-is-the-synthetic-data-measured-2026-10-01" title="Permanent link">&para;</a></h3>
+<p>Measured on the normal case, on two_phase trajectories that follow one true
+particle all along (<code>L1_d1_c0_k1_n200</code> and the image-based <code>L2_d1_c0_k1_n200</code>
+agree within 5%):</p>
+<table>
+<thead>
+<tr>
+<th>Quantity (mm)</th>
+<th>Sideways (x, y)</th>
+<th>Depth (z)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>True change of velocity per frame (the flow itself)</td>
+<td>0.001</td>
+<td>0.0004</td>
+</tr>
+<tr>
+<td>Measured change of velocity per frame (flow + noise)</td>
+<td>0.015</td>
+<td>0.080</td>
+</tr>
+<tr>
+<td>Position error vs truth</td>
+<td>0.019</td>
+<td>0.090</td>
+</tr>
+<tr>
+<td>Frame-to-frame jitter (from the line above)</td>
+<td>0.006</td>
+<td>0.033</td>
+</tr>
+<tr>
+<td>Slow offset (the rest of the position error)</td>
+<td>0.018</td>
+<td>0.083</td>
+</tr>
+</tbody>
+</table>
+<p>In plain words:
+- <strong>The synthetic flow has almost no acceleration.</strong> Its true change of velocity
+  per frame is about 80× smaller than the noise. Real turbulence accelerates
+  much more. So on this data, "keep going the same way" is almost always right,
+  and every smoothness rule looks better than it will on real data.
+- <strong>Most of the position error is a slow offset.</strong> The offset comes from the
+  mismatch between the calibration used to make the images and the one used to
+  process them. It follows a particle slowly, so it barely affects velocity.
+  Only about a third of the error is frame-to-frame jitter. Real data may have
+  more jitter: worse blob centres, real optics, vibration.
+- <strong>Consequence.</strong> A rule tuned on the synthetic data alone may cut real,
+  accelerating particles on real data. Examples: a tight smoothness tolerance
+  (A7, A9), a strong velocity filter (A4), a small ball (A1). Every such rule
+  must pass the realism checks in section 2.</p>
+<h3 id="real-data-vs-synthetic-data-measured-2026-10-01">Real data vs synthetic data (measured 2026-10-01)<a class="headerlink" href="#real-data-vs-synthetic-data-measured-2026-10-01" title="Permanent link">&para;</a></h3>
+<p>Real data has no known answer, so I compared what can be measured without it,
+on the stored two_phase trajectories.</p>
+<p><strong>1. Frame-to-frame numbers</strong> (trajectories of at least 8 frames):
+- the typical step per frame;
+- the typical change of velocity per frame (median |2nd difference|);
+- how often that change is a jump bigger than 0.3 mm in depth.</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Step per frame (mm)</th>
+<th>Typical change of velocity x, y, z (mm)</th>
+<th>Jumps &gt; 0.3 mm in depth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Synthetic normal case (L1)</td>
+<td>0.085</td>
+<td>0.007, 0.006, 0.036</td>
+<td>0.6%</td>
+</tr>
+<tr>
+<td>Real CompleteTest wp1 (1072 frames)</td>
+<td>0.079</td>
+<td>0.009, 0.008, 0.045</td>
+<td>1.2%</td>
+</tr>
+<tr>
+<td>Real CompleteTest wp2 (1072 frames)</td>
+<td>0.078</td>
+<td>0.009, 0.008, 0.044</td>
+<td>1.2%</td>
+</tr>
+<tr>
+<td>Real lv_multi wp4 (20 frames)</td>
+<td>0.078</td>
+<td>0.007, 0.007, 0.031</td>
+<td>0.0%</td>
+</tr>
+<tr>
+<td>Real lv_multi wp5 (20 frames)</td>
+<td>0.077</td>
+<td>0.011, 0.010, 0.055</td>
+<td><strong>9.6%</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>2. Position jitter.</strong> How far points scatter around a smooth curve fitted over
+11 frames. This removes real acceleration, so it measures the jitter itself.</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Jitter sideways (mm)</th>
+<th>Jitter depth (mm)</th>
+<th>Worst 10% of windows, depth (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Synthetic normal case (L1)</td>
+<td>0.005</td>
+<td>0.027</td>
+<td>0.062</td>
+</tr>
+<tr>
+<td>Real CompleteTest wp2 (first 300 frames)</td>
+<td>0.008 (<strong>1.7×</strong>)</td>
+<td>0.039 (<strong>1.4×</strong>)</td>
+<td>0.079</td>
+</tr>
+<tr>
+<td>Real lv_multi wp5</td>
+<td>0.010 (<strong>2×</strong>)</td>
+<td>0.049 (<strong>1.8×</strong>)</td>
+<td>0.178 (<strong>3×</strong>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>3. Fake-point signal.</strong>
+- 3-camera points: 39% in real wp1/wp2, against 33% in synthetic.
+- Long trajectories (11 frames or more) never seen by 4 cameras: 14% in real
+  wp1/wp2, against about 9% in synthetic.</p>
+<p>In synthetic data, 65% of fake long trajectories are like that, against 6% of
+  real ones. So the real data probably holds more fake trajectories.</p>
+<p>In plain words:
+- <strong>Real data jitters more than the synthetic data.</strong>
+  - 1.4–2× more jitter in each direction.
+  - In the worst recording (wp5), the worst tenth of trajectory pieces jitter
+    3× more.</p>
+<p>The synthetic data is too gentle in two ways: the flow has almost no
+  acceleration, and the points jitter less.
+- <strong>wp5 also has many wrong links.</strong> About 1 in 10 steps jumps by more than
+  0.3 mm, while particles move only 0.077 mm per frame. A real particle can't
+  change its velocity by 4× its own speed in one frame. wp5 has more points per
+  frame (about 1300 vs 1000 in wp4), with the same settings.
+- <strong>The jitter shows up in the results.</strong> In <code>CompleteTest-e2e-local/outputs</code>,
+  shear stress (VSS) and dissipation (eps) come out above the legacy MATLAB
+  curve. Both come from velocity gradients, and jitter inflates gradients.
+- <strong>What the tracker can and can't do about jitter.</strong>
+  - The jitter is already in the 3D points; linking can't remove it.
+  - The tracker's job is to deliver long, correct trajectories, so that the
+    smoothing afterwards (Savitzky-Golay) can average the jitter out. Wrong
+    links and broken trajectories are what defeat the smoothing.
+  - Reducing the jitter itself belongs to blob centring, calibration and camera
+    matching. Check below whether 3-camera points jitter more than 4-camera
+    points.</p>
+<h3 id="score-on-the-normal-test-case-velocity-error-lower-is-better">Score on the normal test case (velocity error, lower is better)<a class="headerlink" href="#score-on-the-normal-test-case-velocity-error-lower-is-better" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tracker</th>
+<th>Velocity error</th>
+<th>Fake points kept</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Perfect linker (a cheat that knows the answer)</td>
+<td>0.130 mm/frame</td>
+<td>0.5%</td>
+</tr>
+<tr>
+<td>two_phase (our best)</td>
+<td>0.178 mm/frame</td>
+<td>7%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="how-much-error-is-due-to-ghosts-measured-2026-10-01">How much error is due to ghosts? (measured 2026-10-01)<a class="headerlink" href="#how-much-error-is-due-to-ghosts-measured-2026-10-01" title="Permanent link">&para;</a></h3>
+<p>On the real-jitter case (<code>L1_d1_c0_k1_n200_s0.08</code>) I removed all ghost points
+from the tracker's input, using the truth labels (<code>scripts/ghost_bound.py</code>),
+and tracked again:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>With ghosts</th>
+<th>Without ghosts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Correct links among links made (two_phase)</td>
+<td>0.9325</td>
+<td><strong>0.9989</strong></td>
+</tr>
+<tr>
+<td>Velocity error (two_phase)</td>
+<td>0.1977</td>
+<td><strong>0.1465</strong></td>
+</tr>
+<tr>
+<td>Velocity error (perfect linker)</td>
+<td>0.1412</td>
+<td>0.1236</td>
+</tr>
+<tr>
+<td>Gap between two_phase and perfect linker</td>
+<td>0.0565</td>
+<td><strong>0.0229</strong></td>
+</tr>
+</tbody>
+</table>
+<p>In plain words: <strong>ghosts cause about 60% of two_phase's remaining error and
+nearly all of its wrong links.</strong> Without ghosts, two_phase is almost as good as
+the perfect linker. So removing ghosts is the main lever. Search-ball tuning
+and score tuning are not (see A1 below).</p>
+<h3 id="three-problems-i-found-in-the-code">Three problems I found in the code<a class="headerlink" href="#three-problems-i-found-in-the-code" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>The search ball is far too big for slow particles.</strong> It holds several wrong
+   candidates, including fake points.</li>
+<li><strong>The 2D score treats a missing camera as pixel (0,0).</strong> <code>do_tracking</code> and
+   <code>project_fn</code> both replace "no data" with 0 (<code>np.nan_to_num</code>). The code then
+   tries to skip missing cameras, but it never sees one, because none are
+   "missing" any more. So a candidate seen by 3 of 4 cameras gets a huge
+   penalty. This may be why the 2D score never helped in tests.</li>
+<li><strong>Projecting the guesses to the cameras runs one point at a time</strong>
+   (<code>_build_project_fn</code>): a Python loop over points × cameras. It is slow for
+   no reason, and one batched call per camera gives the same result.
+   <strong>Done</strong> (commit 7263d414, 21–29% faster, identical results).</li>
+<li><strong><code>max_gap</code> counts steps, not missing frames.</strong> A track is searched while
+   <code>frames since last point &lt;= max_gap</code>, and a consecutive step is 1. So
+   <code>max_gap=1</code> means "no gap bridging", <code>max_gap=2</code> bridges one missing frame,
+   and <code>max_gap=0</code> finds no links at all. Keep this in mind for A5 ("bridge up to
+   10 frames" needs <code>max_gap=11</code>), and for any benchmark label with <code>max_gap=0</code>.</li>
+</ol>
+<hr />
+<h2 id="2-rules-for-every-change">2. Rules for every change<a class="headerlink" href="#2-rules-for-every-change" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Every new implementation comes with a test and a before/after benchmark.</strong></li>
+<li><strong>Test.</strong> At least one unit test in <code>tests/unit/</code> that fails before the change
+    and passes after it. For a bug fix, the test reproduces the bug first.</li>
+<li><strong>Benchmark before.</strong> Run the Step 0 scoreboard on the current code and save
+    the JSON in <code>bench/</code>.</li>
+<li><strong>Benchmark after.</strong> Run the same cases on the same machine and save the
+    JSON too.</li>
+<li><strong>Timing.</strong> Time one run at a time (<code>-j 1</code>). Runs executed side by side can
+    only be compared with each other.</li>
+<li><strong>Record.</strong> Put a before/after table in the commit message or PR. No table,
+    no merge.</li>
+<li><strong>One change at a time.</strong> Each change gets its own name in the benchmark (for
+  example <code>two_phase+smallball</code>), so each gets exactly one measurement.</li>
+<li><strong>Keep it only if it helps:</strong></li>
+<li>it gains at least 0.01 on at least 2 of the synthetic cases;</li>
+<li>no case gets worse by more than 0.005;</li>
+<li>it keeps at least as many true points as before;</li>
+<li>it keeps at least as many true trajectories as before. This matters for
+    filters that drop short trajectories: a real particle that enters late
+    starts out short.</li>
+<li>Otherwise it is reverted the same day. This keeps the list of options short.</li>
+<li><strong>Always report "points kept" next to velocity error.</strong> A tracker can lower its
+  error just by throwing away hard particles. At 4× density, two_phase already
+  "beats" the perfect linker this way: error 0.460 vs 0.535, because it keeps
+  fewer points.</li>
+<li><strong>Fake points must not increase.</strong></li>
+<li><strong>Speed budget.</strong></li>
+<li>Speed changes must be at least 20% faster with the same accuracy.</li>
+<li>An accuracy change may make the run at most 10% slower.</li>
+<li>After all accuracy steps together, two_phase must stay within 1.5× of
+    today's run time on the scoreboard cases.</li>
+<li>A change that needs more time goes in as an <strong>option, off by default</strong>. It
+    may not change the default tracker.</li>
+<li><strong>Realism checks (the synthetic data is too smooth, section 1).</strong> A change is
+  kept only if it also passes:</li>
+<li><strong>Acceleration stress.</strong> The frame-skip cases <code>L1_d1_c0_k4_n150</code> and
+    <code>L1_d1_c0_k8_n150</code>. Skipping k frames makes the change of velocity per frame
+    k² larger, which brings it up to the noise level at k = 8. The change must
+    not get worse there.</li>
+<li><strong>Real jitter.</strong> A new stress case with the jitter measured on real data:
+    about 1.7× sideways and 1.5× in depth, plus a heavy tail, i.e. a few points
+    with 3× jitter (see Step 0, 0.3). The change must not get worse there. This
+    case, not the smooth normal case, is the main tuning case for tolerances.</li>
+<li><strong>Real data</strong> (CompleteTest wp1 and wp2, lv_multi wp4 and wp5,
+    wp1_10_images). There is no known answer here, so check:<ul>
+<li><strong>jump share:</strong> steps whose velocity changes by more than 0.3 mm in
+  depth. It must go <strong>down</strong>: 1.2% today on CompleteTest wp1/wp2, 9.6% on
+  lv_multi wp5. This is the main real-data accuracy score;</li>
+<li>the share of long trajectories never seen by 4 cameras (14% today on
+  CompleteTest wp1/wp2) should go down: it is our best real-data hint of
+  fake trajectories;</li>
+<li>the typical change of velocity per frame must not grow;</li>
+<li>trajectory lengths must not get worse;</li>
+<li>acceleration kurtosis (<code>compute_physics_metrics</code>) must not get worse;</li>
+<li>the share of links cut by the smoothness check must not jump. A jump
+  means the rule is cutting real, accelerating particles;</li>
+<li>on wp1_10_images, agreement with the original 3dptv results must not get
+  worse.</li>
+</ul>
+</li>
+<li><strong>Tuning.</strong> Tune on the synthetic "real jitter" case (0.3), where the answer
+  is known and the jitter is realistic, then check on all the others. Never
+  tune on real data, where there is no known answer.</li>
+</ul>
+<hr />
+<h2 id="3-step-0-a-scoreboard-and-a-way-to-look-inside-1-day">3. Step 0: a scoreboard and a way to look inside (1 day)<a class="headerlink" href="#3-step-0-a-scoreboard-and-a-way-to-look-inside-1-day" title="Permanent link">&para;</a></h2>
+<h3 id="01-scoreboard">0.1 Scoreboard<a class="headerlink" href="#01-scoreboard" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>What.</strong> Run each tracker once on fixed cases and save one JSON file per run in
+  <code>bench/</code>. Every later change is compared against these files.</li>
+<li><strong>Where.</strong> Extend <code>scripts/synth_bench.py</code>. It already has the cases and the
+  metrics. (<code>scripts/bench_two_phase.py</code> is a different, small crossing test.)</li>
+<li><strong>Cases.</strong></li>
+<li>normal: <code>L1_d1_c0_k1_n200</code></li>
+<li>clustered + skip ×4: <code>L1_d2_c0.3_k4_n150</code></li>
+<li>4× density: <code>L1_d4_c0_k1_n150</code></li>
+<li>real jitter: the normal case with real-level jitter (new, see 0.3)</li>
+<li>real data, long: CompleteTest wp2 (1072 frames), with wp1 as a second check</li>
+<li>real data, short: lv_multi wp4 and wp5 (20 frames each), and
+    <code>wp1_10_images</code> (10 frames). See 0.3.</li>
+<li><strong>Numbers.</strong></li>
+<li>correct links;</li>
+<li>wrong links;</li>
+<li>points kept;</li>
+<li>fake points;</li>
+<li>long trajectories;</li>
+<li>velocity error;</li>
+<li>run time (total, and per frame: average and slowest 5%);</li>
+<li>fake trajectories by length (1–2, 3–5, 6–10, 11–30, over 30 frames);</li>
+<li>for long trajectories, real and fake, the share of frames seen by all
+    4 cameras.</li>
+</ul>
+<p>The last two numbers track the fake-trajectory problem (section 1), which A10
+  and A11 attack.
+- <strong>Fairness fix.</strong> The perfect linker's "long trajectory" score counts gaps of up
+  to 3 frames. If we let the tracker bridge gaps of 10 frames, score the perfect
+  linker with 10 as well.</p>
+<h3 id="02-decision-log">0.2 Decision log<a class="headerlink" href="#02-decision-log" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>What.</strong> Add <code>debug=False</code> to <code>TwoPhaseTrackerConfig</code>. When it is on, each
+  group records:</li>
+<li>its candidates and their scores;</li>
+<li>the winner;</li>
+<li>how close the runner-up was;</li>
+<li>whether the quick approximation was used.</li>
+<li><strong>Why.</strong> Then every accuracy question below can be answered by looking, not by
+  arguing. The same log feeds <code>tracking-brain-viz/brain_viz.py</code>. Today it can
+  only show the final links, not why they were chosen.</li>
+<li><strong>Safety.</strong> When it is off, nothing changes.</li>
+</ul>
+<h3 id="03-realism-check-and-stress-cases">0.3 Realism check and stress cases<a class="headerlink" href="#03-realism-check-and-stress-cases" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>First result (section 1).</strong></li>
+<li>Real data jitters 1.4–2× more than the synthetic data, with a heavier tail.</li>
+<li>It also has more 3-camera points and more long trajectories never seen by
+    4 cameras.</li>
+<li>lv_multi wp5 also has 9.6% jump steps, most likely wrong links.</li>
+<li>So the synthetic normal case is too gentle for tuning tolerances. Build the
+    "real jitter" case below and tune on it.</li>
+<li>Repeat the measurement on <code>wp1_10_images</code> once it is copied to the Mac.</li>
+<li><strong>Also check: do 3-camera points jitter more than 4-camera points?</strong> If yes,
+  the smoothing afterwards should trust 4-camera points more, and it is one
+  more reason to prefer 4-camera candidates (A2).</li>
+<li><strong>Measure the same numbers on real data.</strong> Section 1 has them for the
+  synthetic cases. On confident trajectories in real data, measure:</li>
+<li>the frame-to-frame jitter per axis;</li>
+<li>the change of velocity per frame;</li>
+<li>the position error of the "keep going the same way" guess.</li>
+<li><strong>Compare with the synthetic data.</strong></li>
+<li>If real jitter or acceleration is several times larger, the synthetic cases
+    can't be trusted for tuning tolerances.</li>
+<li>In that case, build a synthetic case that matches the real numbers and use it
+    as the main tuning case.</li>
+<li><strong>Build a "real jitter" stress case</strong> in <code>scripts/synth_bench.py</code>: the normal
+  case with more blob-centre noise.</li>
+<li>Tune it until its jitter matches CompleteTest wp2 (section 1, table 2):
+    about 0.008 mm sideways and 0.039 mm in depth, and a worst 10% near
+    0.08 mm.</li>
+<li>Add a heavy-tail version: about 10% of points with 3× the noise, like
+    lv_multi wp5.</li>
+<li>This adds frame-to-frame jitter, not slow offset.</li>
+<li>Check the jitter with the same 11-frame fit used for section 1.</li>
+<li><strong>Real data 1: CompleteTest wp1 and wp2</strong> (confirmed real, 2026-10-01).</li>
+<li><strong>Location.</strong> <code>~/Downloads/CompleteTest-e2e-local/wp1/test</code> and <code>.../wp2/test</code>,
+    on this Mac.</li>
+<li><strong>Size.</strong> 1072 frames each, about 1180 3D points per frame. 4 camera views
+    split from one image, 5000 fps.</li>
+<li><strong>Ready to use.</strong> 3D points, blobs and two_phase links are stored in
+    <code>res/run.zarr</code>.</li>
+<li><strong>Results.</strong> <code>CompleteTest-e2e-local/outputs</code> has the flow-rate, shear-stress
+    and dissipation results, with the comparison against the legacy MATLAB
+    results (<code>outputs/run_all/figures/06_reference_overlay.png</code>). A better
+    tracker should bring shear stress and dissipation closer to the legacy
+    curve.</li>
+<li><strong>Best use.</strong> The main real dataset:<ul>
+<li>long enough for trajectory lengths, the 4-camera signal, gap bridging and
+  timing;</li>
+<li>the right place to profile speed (S0).</li>
+</ul>
+</li>
+<li><strong>Don't overwrite it.</strong> Copy the folder before re-running.</li>
+<li><strong>Real data 2: lv_multi</strong> (confirmed real, 2026-10-01; part of openptv-cloud).</li>
+<li><strong>Location.</strong> <code>~/Documents/Github/openptv-cloud/examples/lv-multi</code>, on this
+    Mac.</li>
+<li><strong>Two runs, wp4 and wp5.</strong><ul>
+<li>20 frames each, about 1000 and 1300 3D points per frame.</li>
+<li>4 camera views split from one image.</li>
+<li>Shared calibration in <code>cal/</code>.</li>
+</ul>
+</li>
+<li><strong>Ready to use.</strong> 3D points, blobs and two_phase links are already stored
+    in <code>wp4/res/run.zarr</code> and <code>wp5/res/run.zarr</code>.</li>
+<li><strong>Don't overwrite it.</strong> Copy the folder before re-running. Also, openptv-cloud
+    has <code>scripts/generate_synthetic_lv_multi.py</code>, which writes synthetic images
+    into <code>examples/lv-multi</code>; never run it on the real copy.</li>
+<li><strong>Best use.</strong> wp5 is the real-data accuracy test (9.6% jump steps today).
+    wp4 is the "easy real" control.</li>
+<li><strong>Real data 3: <code>wp1_10_images</code></strong> (confirmed real, 2026-10-01).</li>
+<li><strong>Location.</strong> <code>C:\Users\alex\Downloads\ptv_data\wp1_10_images</code> on the Windows
+    machine. Copy it to the Mac before starting; it is not here yet.</li>
+<li><strong>Frames.</strong> 10 frames, 100001–100010, 4 cameras.</li>
+<li><strong>Reference.</strong> It includes the original 3dptv program's results
+    (<code>res_ground_truth_backup</code>). The existing scripts already compare against
+    them link by link: <code>verify_two_phase_wp1.py</code>, <code>sweep_twophase_wp1.py</code>,
+    <code>run_postprocess_wp1.py</code>.</li>
+<li>
+<p><strong>What 10 frames are enough for:</strong></p>
+<ul>
+<li>frame-to-frame jitter;</li>
+<li>change of velocity per frame;</li>
+<li>the error of the "keep going the same way" guess;</li>
+<li>the share of links cut by the smoothness check;</li>
+<li>agreement with 3dptv.</li>
+</ul>
+<p>These are exactly the realism numbers above.
+  - <strong>What 10 frames are not enough for:</strong> long-trajectory numbers, fake runs
+longer than 10 frames, gap bridging up to 10 frames, and timing. Use
+CompleteTest wp2 and the synthetic cases for those.
+- <strong>Synthetic, not real:</strong> <code>~/Downloads/HiDImaging/Synthetic-CompleteTest</code> and the
+  benchmark cases built from it (<code>tracker-bench-2026-09-29</code>).
+- <strong>Script.</strong> Start from the scratch measurements used for section 1 and move
+  them into <code>scripts/</code>:
+  - <code>smoothness.py</code>: synthetic cases;
+  - <code>real_smoothness.py</code> and <code>real_long.py</code>: real data;
+  - <code>jitter_fit.py</code>: jitter around an 11-frame fit.</p>
+</li>
+</ul>
+<hr />
+<h2 id="4-accuracy">4. Accuracy<a class="headerlink" href="#4-accuracy" title="Permanent link">&para;</a></h2>
+<h3 id="what-we-borrow-from-other-trackers">What we borrow from other trackers<a class="headerlink" href="#what-we-borrow-from-other-trackers" title="Permanent link">&para;</a></h3>
+<p>Checked in their code, not only in their descriptions. Numbers are from the
+benchmark, normal case unless stated.</p>
+<table>
+<thead>
+<tr>
+<th>Borrowed idea</th>
+<th>From</th>
+<th>Why it works there</th>
+<th>Goes into</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Look ahead before deciding:</strong> score a candidate by how well it continues 2 frames ahead</td>
+<td>trackcorr (4-frame cost), 4BE (n+2 check)</td>
+<td>In two_phase, the smoothness check (a crude after-the-fact look-ahead) is the only measured win</td>
+<td>A13, now a firm step</td>
+</tr>
+<tr>
+<td><strong>Velocity from a smooth fit, not from 2 points</strong></td>
+<td>proPTV-style (<code>_smooth_history</code>)</td>
+<td>Best continuity (0.572 = perfect linker) and 99.5% of true links found</td>
+<td>A4</td>
+</tr>
+<tr>
+<td><strong>Camera count in the score:</strong> candidates seen by more cameras win</td>
+<td>trackcorr (<code>rr = (...) / quali</code>)</td>
+<td>17.5% of 3-camera points are fake, against 3% of 4-camera points</td>
+<td>A2, now a firm item</td>
+</tr>
+<tr>
+<td><strong>Trajectories with history go first; newborns guess from neighbours</strong></td>
+<td>track3d (<code>priority_segment_3d</code>, 3 levels)</td>
+<td>A newborn has no velocity; its neighbours do</td>
+<td>A12 + new A14</td>
+</tr>
+<tr>
+<td><strong>Smooth motion as a soft penalty</strong></td>
+<td>proPTV-style cost (velocity + acceleration terms); myPTV angle limit</td>
+<td>myPTV has the most correct links (0.953)</td>
+<td>A2, on smoothed velocity only</td>
+</tr>
+<tr>
+<td><strong>Build points from blobs near the guess</strong></td>
+<td>trackcorr (added points)</td>
+<td>Rebuilds particles the camera matching missed</td>
+<td>A11's engine</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Not borrowed:</strong>
+- trackcorr's greedy conflict settling. The Hungarian solver is better; it is
+  one reason two_phase wins at 4× density (0.460 vs 0.769).
+- myPTV's hard speed, acceleration and angle limits. They lose true links: it
+  finds only 88% of them.
+- proPTV-style's single fixed radius for every trajectory. It is part of why
+  that tracker fails with skipped frames (0.772).
+- proPTV-style's refit of the whole history at every frame. It is the reason
+  that tracker is 12× slower.</p>
+<h3 id="a1-a-small-search-ball-shaped-like-the-shake-tried-2026-10-01-reverted">A1. A small search ball shaped like the shake (TRIED 2026-10-01, REVERTED)<a class="headerlink" href="#a1-a-small-search-ball-shaped-like-the-shake-tried-2026-10-01-reverted" title="Permanent link">&para;</a></h3>
+<p><strong>Result: it does not help two_phase.</strong> Implemented as designed: seeded tracks
+searched in the ellipsoid <code>|d_i / sigma_i| &lt;= k * sqrt(1+(1+g)^2+g^2)</code> with
+<code>sigma = (0.008, 0.008, 0.045)</code> mm (the measured jitter), new tracks keep the
+round ball. Full numbers: <code>bench/step4_A1_noise_gate_REVERTED_2026-10-01.json</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Baseline vErr / points kept / true links found</th>
+<th>A1, k = 6</th>
+<th>A1, k = 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normal</td>
+<td>0.1780 / 0.707 / 0.987</td>
+<td>0.1784 / 0.706 / 0.980</td>
+<td>0.1881 / 0.694 / 0.925</td>
+</tr>
+<tr>
+<td>Real jitter</td>
+<td>0.1977 / 0.706 / 0.975</td>
+<td>0.2018 / 0.704 / 0.963</td>
+<td>0.2448 / 0.682 / 0.820</td>
+</tr>
+<tr>
+<td>Skip ×8</td>
+<td>0.1218 / 0.669 / 0.930</td>
+<td>0.1285 / 0.628 / 0.855</td>
+<td>0.1557 / 0.512 / 0.657</td>
+</tr>
+<tr>
+<td>4× density</td>
+<td>0.4592 / 0.258 / 0.937</td>
+<td>0.4341 / 0.256 / 0.921</td>
+<td>0.3682 / 0.241 / 0.842</td>
+</tr>
+<tr>
+<td>Clustered + skip ×4</td>
+<td>0.1632 / 0.398 / 0.891</td>
+<td>0.1504 / 0.386 / 0.863</td>
+<td>0.1475 / 0.328 / 0.697</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>A tighter gate <strong>loses true links</strong> and breaks trajectories apart. It "wins"
+  at 4× density and on the clustered case only by keeping fewer points, which
+  section 2 forbids.</li>
+<li>Link precision hardly moves (0.933 → 0.934–0.936). So extra candidates inside
+  the ball are not what causes wrong links; ghosts are (section 1).</li>
+<li>Control: a smaller <em>round</em> ball (<code>v_max</code> 0.5) gains at most 0.007, and breaks
+  skip ×8 (0.1218 → 0.1656).</li>
+<li>The earlier trackcorr result (0.51 → 0.18 with a tight <code>dacc</code>) came from
+  trackcorr's greedy conflict settling, which two_phase does not have.</li>
+<li><strong>Kept from this work:</strong> the <code>scripts/synth_bench.py build --sigma-px</code> option,
+  the measured jitter numbers (section 1), and the knowledge that real
+  accelerations and heavy-tailed noise make a Gaussian gate too tight.</li>
+<li><strong>Still open from the A1 text below:</strong> the automatic-parameter fixes in
+  <code>tracking_recommender._suggest_params</code> and <code>tracking_warmup._tune_from_displacements</code>.
+  They matter for trackcorr and the other trackers, not for two_phase. Park
+  them.</li>
+</ul>
+<p>The original text of A1 follows, for reference.</p>
+<h4 id="a1-original-design">A1 original design<a class="headerlink" href="#a1-original-design" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Problem.</strong> One round ball sized for the fastest particle. For a slow particle
+  it holds many wrong points.</li>
+<li><strong>Change.</strong></li>
+<li>Add <code>noise_sigma = (sideways, sideways, depth)</code> to <code>TwoPhaseTrackerConfig</code>.
+    The default is None, meaning the old behaviour.</li>
+<li>The ball becomes long in depth and thin sideways, "k times the shake".</li>
+<li>It grows the longer a particle has been missing.</li>
+<li>Use the same scaled distance in the 3D score and in <code>confirm_link_tuples</code>
+    (<code>tracking_postprocess.py</code>).</li>
+<li>To do this cheaply, divide the coordinates by the shake before the
+    nearest-point search. Then the stretched ball becomes a plain round ball.</li>
+<li><strong>Watch out.</strong> The guess itself is shaky, because it comes from two shaky
+  positions. The ball must be about 2.5× the point shake, not 1×, or true links
+  are lost. <code>synth_bench._kinematic_bounds</code> already uses this factor.</li>
+<li><strong>Automatic setting.</strong></li>
+<li>Estimate the shake from warm-up tracks: how much confident trajectories
+    wiggle, per axis (<code>tracking_warmup.py</code>).</li>
+<li>Use this frame-to-frame wiggle, <strong>not</strong> the position error against truth.
+    Most of the position error is a slow offset that doesn't affect the next
+    step (section 1). Using it would make the ball about 2.5× too big in depth.</li>
+<li>Also fix the automatic parameter suggestions. Today both
+    <code>tracking_recommender._suggest_params</code> and
+    <code>tracking_warmup._tune_from_displacements</code> size this box from how far
+    particles move, not from the shake.</li>
+<li><strong>Evidence.</strong> On trackcorr, only shrinking this box cut the hard-case error from
+  0.51 to 0.18, and it also ran faster.</li>
+<li><strong>Stop if</strong> we lose correct links while wrong links stay the same.</li>
+</ul>
+<h3 id="a2-a-fairer-score">A2. A fairer score<a class="headerlink" href="#a2-a-fairer-score" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>First, fix bug 2</strong> (missing camera = pixel 0,0), then measure again. This alone
+  may make the 2D score useful for the first time.</li>
+<li><strong>Then add the camera count (from trackcorr, firm item).</strong> A candidate seen by
+  more cameras gets a lower score, as trackcorr divides by <code>quali</code>.</li>
+<li>two_phase already loads the camera ids in <code>do_tracking</code>.</li>
+<li>It only helps when trajectories compete for a point. Long fake trajectories
+    rarely compete, so it complements A10/A11 but doesn't replace them.</li>
+<li><strong>Only if the score still loses,</strong> try the richer score. It adds together:</li>
+<li>the 3D distance scaled by the shake;</li>
+<li>the pixel distance in each camera, divided by that camera's pixel noise;</li>
+<li>a <strong>soft</strong> penalty for changes of velocity and direction (from the
+    proPTV-style cost and myPTV's angle limit).</li>
+</ul>
+<p>The direction penalty stops two particles that cross from "bouncing" off each
+  other. Use it only with the <strong>smoothed</strong> velocity from A4: between two raw
+  steps the direction is mostly noise. Never use a hard angle limit; it costs
+  true links (myPTV finds only 88%).
+- <strong>Tuning.</strong> Tune the weights on one case, then check them on the others.
+  <code>leaf_weight=0</code> must still mean "3D distance only".</p>
+<h3 id="a3-crowded-groups-and-second-chances">A3. Crowded groups and second chances<a class="headerlink" href="#a3-crowded-groups-and-second-chances" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Problem 1.</strong> Groups with more than 128 members fall back to the quick
+  approximation. So the most crowded frames get the weakest solver.</li>
+<li><strong>Problem 2.</strong> A trajectory that loses a contested point just dies. It never
+  tries its second-best candidate.</li>
+<li><strong>First, count</strong> how often the quick approximation runs (decision log, 0.2).
+  The small ball from A1 makes groups much smaller, so this may go away by
+  itself.</li>
+<li><strong>Only if still needed:</strong></li>
+<li>Cut giant groups into smaller pieces in space and solve each exactly.</li>
+<li>Give the loser its second choice when the winner only barely won.</li>
+</ul>
+<h3 id="a4-smoother-velocity">A4. Smoother velocity<a class="headerlink" href="#a4-smoother-velocity" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Problem.</strong></li>
+<li>Velocity from two shaky points is about as shaky as the motion itself.</li>
+<li>One bad link spoils every later guess of that trajectory, and it never
+    recovers.</li>
+<li><strong>Change.</strong></li>
+<li>Estimate velocity from several frames (a simple running filter, "α-β" or
+    Kalman), not from the last two points. The filter also knows how uncertain
+    its guess is, and that uncertainty sets the ball size.</li>
+<li><strong>Borrowed from the proPTV-style tracker,</strong> which has the best continuity.
+    Keep the cost fixed per step: use the running filter, or fit only the last
+    ~10 points. That tracker refits the whole history at every frame, and that
+    is why it is 12× slower.</li>
+<li><strong>Don't over-smooth.</strong> The synthetic flow has almost no acceleration
+    (section 1), so a very strong filter looks perfect there. It must pass the
+    frame-skip stress cases (k = 4, 8) and the real-data check (section 2).</li>
+<li>If a link is later cut by the smoothness check, undo the velocity update it
+    caused.</li>
+<li>Add a hook, <code>pred_fn</code>, so a different guesser can be plugged in later. One
+    example is "neighbours move together". The default is None, meaning the
+    built-in filter.</li>
+<li><strong>Expected.</strong> Much better guesses. So the ball can be smaller, and fewer
+  particles fall outside it.</li>
+</ul>
+<h3 id="a5-honest-gap-handling">A5. Honest gap handling<a class="headerlink" href="#a5-honest-gap-handling" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Problem.</strong> After a gap, the tracker uses a stale velocity with the same ball.
+  A wrong link across a gap looks like a confident long jump.</li>
+<li><strong>Change.</strong></li>
+<li>The ball grows with the gap. This comes free with A4.</li>
+<li>Add a gap penalty to the score, so a fresh new trajectory can win against a
+    stale one.</li>
+<li>Links across gaps already stay out of the stored <code>ptv_is</code> files. They once
+    made an 82 mm phantom jump. Extend the existing test
+    <code>test_linkage_drops_gap_links_no_phantom</code> to keep it that way.</li>
+<li><strong>Reconnect afterwards.</strong> <code>relink_trajectory_gaps</code> (<code>tracking_postprocess.py</code>)
+  already reconnects broken pieces with a straight-line guess. Give it the
+  smooth-curve guess from A4 or A9 instead, so it can bridge up to about
+  10 frames.</li>
+</ul>
+<h3 id="a6-fake-points-the-simple-rule-only">A6. Fake points: the simple rule only<a class="headerlink" href="#a6-fake-points-the-simple-rule-only" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Keep.</strong> Add an option <code>min_cams</code>: a candidate must be seen in at least N
+  cameras.</li>
+<li><strong>Drop the "blob ownership" rules for now.</strong> They were: "two points share a
+  camera blob → keep one", and "all blobs already owned by other trajectories →
+  never start a trajectory". Neither can trigger on today's data:</li>
+<li>The stored 3D points never share a blob. The camera-matching step refuses a
+    blob that is already used (<code>correspondences.py</code>, <code>take_best_candidates</code>).</li>
+<li>trackcorr's "added" points also use only unused blobs (<code>track.py</code>, the
+    <code>t.tnr == TR_UNUSED</code> search).</li>
+<li>Revisit these rules if a tracker ever builds 3D points that reuse blobs.</li>
+<li><strong>The real fake-point fix is A10 + A11.</strong> A9 only removes the short fake runs.</li>
+</ul>
+<h3 id="a7-better-smoothness-check-the-one-proven-win-tried-2026-10-01-reverted">A7. Better smoothness check (the one proven win) - TRIED 2026-10-01, REVERTED<a class="headerlink" href="#a7-better-smoothness-check-the-one-proven-win-tried-2026-10-01-reverted" title="Permanent link">&para;</a></h3>
+<p><strong>Result: none of the variants beats the current rule on average</strong>
+(<code>bench/step8_A7_confirmation_variants_REVERTED_2026-10-01.json</code>). Tested on top of the
+quality defaults, on five cases (base = forward check, absolute <code>confirm_tol=0.3</code>):
+a kink measured per axis in units of <code>sqrt(6)*sigma</code> with <code>sigma=(0.008, 0.008, 0.045)</code> and
+tolerance k = 3, 4, 5, 7, and a two-sided check (<code>either</code>: keep when the onward OR the
+preceding step is consistent; <code>both</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Mean change of velocity error</th>
+<th>Mean change of points kept</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sigma k=3 / 4 / 5 / 7</td>
+<td>+0.0033 / +0.0023 / +0.0010 / +0.0083</td>
+<td>−0.033 / −0.015 / −0.005 / +0.004</td>
+</tr>
+<tr>
+<td>either 0.3</td>
+<td>+0.0035</td>
+<td>+0.001</td>
+</tr>
+<tr>
+<td>both 0.3</td>
+<td>+0.0008</td>
+<td>−0.008</td>
+</tr>
+<tr>
+<td>sigma 5 + either</td>
+<td>+0.0029</td>
+<td>−0.004</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Best tolerance depends on density.</strong> Per case the best variant was: normal and
+  real-jitter sigma k=7 (0.1604, 0.1766 against 0.1652, 0.1845); clustered + skip ×4
+  <code>both</code> or k=4 (0.145–0.147 against 0.153); <strong>4× density sigma k=3 (0.3695 against
+  0.4207, −0.051)</strong>; skip ×8 the base. A loose tolerance suits sparse data, a tight one
+  dense data; one fixed value cannot win everywhere.</li>
+<li><strong>Next idea (A7b, not done):</strong> choose <code>confirm_tol</code> from the data, e.g. from the density
+  (typical spacing) or from the measured distribution of kinks of the links that
+  survive, and check that it picks k≈7 for the normal case and k≈3 for 4× density.
+  Potential: about −0.005 on sparse cases and −0.05 on dense ones.</li>
+<li>The code for <code>confirm_sigma</code> / <code>confirm_mode</code> was removed again (rule: a change that
+  does not gain is reverted); the idea text below is kept for reference.</li>
+</ul>
+<h4 id="a7-original-design">A7 original design<a class="headerlink" href="#a7-original-design" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Problem.</strong> <code>confirm_tol</code> is yes/no. It only looks forward, uses a fixed number
+  in mm, and cuts on one kink, even when the kink is only shake.</li>
+<li><strong>Change.</strong></li>
+<li>Also check backward: cut a link whose previous step kinks.</li>
+<li>For long trajectories, cut only if 2 of 3 steps in a row fail.</li>
+<li>Set the tolerance from the shake (A1), not as a fixed mm value.</li>
+<li>Use the decision log: a kinked link that clearly won may stay; a smooth link
+    that barely won is suspect.</li>
+<li><strong>Where.</strong> <code>tracking_postprocess.py</code>, so every tracker benefits, not only
+  two_phase.</li>
+</ul>
+<h3 id="a8-forward-backward-done-right-or-removed">A8. Forward + backward, done right or removed<a class="headerlink" href="#a8-forward-backward-done-right-or-removed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Problem.</strong></li>
+<li>The backward run starts from scratch.</li>
+<li>It can only fill free ends, so it can never fix a bad forward link.</li>
+<li>It measured a gain of less than 0.01.</li>
+<li><strong>Change.</strong></li>
+<li>Start the backward run from the ends of the forward trajectories.</li>
+<li>Settle conflicts by score, not "forward always wins".</li>
+<li>Join a forward trajectory's end to a backward trajectory's start when they
+    fit. This is where the real gain would be.</li>
+<li><strong>Rule.</strong> If it still gains less than 0.02, delete the backward option.</li>
+</ul>
+<h3 id="a9-smoothness-filter-for-fake-points-new-not-in-the-earlier-plans">A9. Smoothness filter for fake points (new, not in the earlier plans)<a class="headerlink" href="#a9-smoothness-filter-for-fake-points-new-not-in-the-earlier-plans" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Idea.</strong> A real particle follows a smooth path; a fake point jumps around.</li>
+<li><strong>Change.</strong></li>
+<li>Fit a smooth curve through about 10 frames of each trajectory.</li>
+<li>Drop points that fit on no smooth curve.</li>
+<li>Drop trajectories that are too short to fit.</li>
+<li><strong>Gaps.</strong> Fit the piece on each side of a gap separately. Never cut a
+  reconnected gap (from A5) just because the jump across it looks like a kink.
+  This is why A9 comes after A4, A5 and A7 in the work order: by then the filter
+  knows where the reconnected gaps are and how clearly each link won.</li>
+<li><strong>Check.</strong> It must keep as many true trajectories as before (section 2).
+  Short trajectories from real particles that entered late must survive.</li>
+<li><strong>Expected.</strong></li>
+<li>It removes fake points inside real trajectories and short fake runs: about
+    10–15% of fake points in the normal case, more at 4× density.</li>
+<li>It does <strong>not</strong> remove the long fake trajectories, which are smoother than
+    real ones (section 1). A10 and A11 handle those.</li>
+<li>It works for every tracker.</li>
+</ul>
+<h3 id="a10-camera-test-for-whole-trajectories-finds-the-long-fake-trajectories-now-the-first-step">A10. Camera test for whole trajectories (finds the long fake trajectories) - NOW THE FIRST STEP<a class="headerlink" href="#a10-camera-test-for-whole-trajectories-finds-the-long-fake-trajectories-now-the-first-step" title="Permanent link">&para;</a></h3>
+<p><strong>First measurements (2026-10-01, real-jitter case, two_phase output):</strong>
+- <strong>Where the ghost damage is.</strong> Dropping ghosts from the <em>output</em> gives the same
+  gain as dropping them from the input (vErr 0.1977 → 0.1471 vs 0.1465). So A11
+  is not needed for accuracy if ghosts can be recognized afterwards.
+  - 17196 of 18736 ghost points sit in ghost-only trajectories (4739 of them).
+    Dropping just those: vErr 0.1977 → 0.1636, about 60% of the gain.
+  - The other 1540 ghost points sit inside real trajectories; removing them
+    brings vErr to 0.1471.
+- <strong>The 4-camera rule alone is too weak.</strong> "Long trajectory never seen by 4
+  cameras" removes only 28% of ghost points but 3.2% of real ones, and vErr gets
+  slightly <em>worse</em> (0.2022, points kept 0.706 → 0.682). Looser rules lose more
+  real points (see the bench files). Do not use it as a hard filter.
+- <strong>Ghost trajectories are almost stationary.</strong> Median speed 0.021 mm/frame
+  against 0.126 for real ones, and much lower jitter. They come from static
+  false targets in the images. The same happens in L2 (the real image
+  pipeline), so it is not only an L1 artefact.
+- <strong>But do not tune on this.</strong> Real data has almost no stationary trajectories:
+  0.1% below 0.01 mm/frame against 0.9% in L1. Its slow trajectories (7% below
+  0.03 mm/frame) are probably real slow flow (pulsatile flow, walls), and
+  dropping them would bias the mean flow. The synthetic ghosts are probably
+  easier to recognize than the real ones.
+- <strong>Ray miss distance (rcm) is the best feature found</strong> (second measurement,
+  <code>bench/step5_A10_rcm_postfilter_2026-10-01.json</code>). Ghost points miss by about
+  1.8× more than real points (median 0.068 vs 0.038 mm). Per trajectory, the
+  mean rcm separates ghost-only from real trajectories with AUC 0.88 (4-camera
+  share 0.78 after flipping, speed 0.95 but not trusted). It needs no truth and
+  no speed.
+- <strong>As a post-filter it still costs real points.</strong> Dropping trajectories of at
+  least 6 frames with mean rcm above 0.06 mm removes 35% of ghost points and 2.2%
+  of real points: vErr 0.1977 → 0.1888, points kept 0.706 → 0.689. Stricter
+  settings reach vErr 0.1683 (length ≥ 3, rcm &gt; 0.05) but keep only 0.648.
+  The cheat limit is 0.1636 with no points lost.
+- <strong>The absolute scale does not transfer to real data.</strong> On real wp2 (300
+  frames) the median point rcm is 0.044 (4-camera) and 0.052 (3-camera); on
+  synthetic both are 0.037. A threshold of 0.06 would flag 26% of real
+  trajectories against about 4% of synthetic ones. The real values probably
+  include calibration error that varies over the volume, so a fixed threshold
+  would delete real particles in badly calibrated regions and bias the flow.
+- <strong>Consequences for A10:</strong>
+  1. Use rcm <strong>relative</strong> to its local typical value (neighbouring points of the
+     same frame, or the same region over time), not as an absolute number.
+  2. Map real rcm against position first (is it spatially structured?) before any
+     rule goes near the tracker.
+  3. Prefer a <strong>soft</strong> use over a hard filter: add rcm to the link score (A2) and
+     penalize starting a new trajectory on a high-rcm point, so doubtful points
+     lose contests instead of being deleted.
+  4. Amend the "points kept" rule for filters: points may be removed if the
+     removed points are mostly ghosts (e.g. at least 10 ghost points removed per
+     real point), because accuracy ranks above density.
+- <strong>The distributions (figure: <code>docs/plans/figs/rcm_distributions.png</code>).</strong> No
+  single cut-off is right; the ghost share changes smoothly with rcm:</p>
+<table>
+<thead>
+<tr>
+<th>rcm band (mm)</th>
+<th>Ghost share, 3-camera points</th>
+<th>Ghost share, 4-camera points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>below 0.03</td>
+<td>4%</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>0.03–0.05</td>
+<td>9%</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>0.05–0.07</td>
+<td>29%</td>
+<td>6%</td>
+</tr>
+<tr>
+<td>0.07–0.10</td>
+<td>52%</td>
+<td>27%</td>
+</tr>
+<tr>
+<td>above 0.10</td>
+<td>76%</td>
+<td>41%</td>
+</tr>
+</tbody>
+</table>
+<p>Real points form a narrow peak near 0.035 mm; ghosts form a broad hump from
+  0.05 to 0.12 mm. At the same rcm, a 3-camera point is far more likely to be a
+  ghost than a 4-camera point. Per trajectory, the mean rcm of real trajectories
+  is a narrow peak near 0.04 mm, ghost-only trajectories are broad with a long
+  tail, and mixed trajectories sit between them.
+- <strong>Real data is broader, partly because of position.</strong> Real wp2 point rcm has
+  median 0.044 (4-camera) and 0.052 (3-camera), with a heavy tail (3-camera
+  p90 0.090 vs 0.063 synthetic). The map over the volume is structured: about
+  0.035–0.04 mm in the middle and 0.065 mm or more at the edges.
+- <strong>After dividing by the local typical rcm</strong> (median of 4-camera points in a
+  10×10×10 grid of cells) the real distribution matches the synthetic one:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>median</th>
+<th>p90</th>
+<th>p99</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real wp2, 4-camera</td>
+<td>1.00</td>
+<td>1.48</td>
+<td>2.14</td>
+</tr>
+<tr>
+<td>Synthetic real points, 4-camera</td>
+<td>0.99</td>
+<td>1.54</td>
+<td>2.20</td>
+</tr>
+<tr>
+<td>Real wp2, 3-camera</td>
+<td>1.02</td>
+<td>1.81</td>
+<td>2.72</td>
+</tr>
+<tr>
+<td>Synthetic real points, 3-camera</td>
+<td>0.97</td>
+<td>1.64</td>
+<td>2.54</td>
+</tr>
+</tbody>
+</table>
+<p>So the relative rcm is a sensible scale on real data, and the synthetic ghost
+  share by relative rcm is a plausible guide. Synthetic ghost share by relative
+  rcm: below 0.9 → 9% / 1%; 1.2–1.6 → 20% / 4%; 1.6–2.2 → 37% / 9%; above 2.2 →
+  62% / 28% (3-camera / 4-camera).
+- <strong>Design from this (soft, no cut-off).</strong>
+  1. For every point: relative rcm = rcm / local typical rcm (map built from the
+     run itself, 4-camera points, with cells of at least 60 points and the global
+     median elsewhere).
+  2. Turn (relative rcm, number of cameras) into a ghost probability, using the
+     bands above as a first table; later fit a smooth curve.
+  3. Use it in three places, all soft: add a cost to links onto doubtful points
+     (A2); penalize starting a new trajectory on a doubtful point; and weight
+     the points of a trajectory when smoothing afterwards, instead of deleting
+     them.
+  4. Judge it on the real-jitter case against the plan's rules, with the
+     amended "points kept" rule.
+- <strong>Is rcm more distinctive relative to a distance? (tested 2026-10-01)</strong> Share of
+  rcm variance explained by a binned curve of each variable, 4-camera points:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Real wp2</th>
+<th>Synthetic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Distance from the volume centre</td>
+<td><strong>0.115</strong></td>
+<td>0.004</td>
+</tr>
+<tr>
+<td>Nearest image edge, any camera</td>
+<td><strong>0.100</strong></td>
+<td>0.006</td>
+</tr>
+<tr>
+<td>Edge distance, single camera 1 / 2 / 3 / 4</td>
+<td>0.104 / 0.104 / 0.091 / 0.087</td>
+<td>about 0.004</td>
+</tr>
+<tr>
+<td>Depth z</td>
+<td>0.012</td>
+<td>0.001</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>On real data, rcm grows away from the centre:</strong> median 0.035 mm within
+    10 mm of the centre to 0.058 mm at 50–60 mm. Equivalently, within 50 px of an
+    image edge the median is 0.056 mm against 0.039 mm in the image interior.
+    The two are the same effect (outer points are near image edges). Together
+    they explain about 11% of the variance; edge distance adds only 0.018 once
+    the centre distance is used.</li>
+<li><strong>Depth does not matter.</strong> So normalizing by z is useless.</li>
+<li><strong>Synthetic data has none of this structure</strong> (all R² below 0.01), so it
+    cannot show whether such a normalization improves ghost separation; the
+    synthetic ghost-vs-real AUC stays at 0.82 (3-camera) and 0.87 (4-camera)
+    for every normalization.</li>
+<li><strong>Consequence.</strong> The right scale for real data is a smooth curve in the
+    distance from the centre (or nearest image edge), fitted per run from the
+    4-camera points. The 10×10×10 cell medians already capture it, but a smooth
+    curve with 2–3 parameters is more stable in sparse cells. To <em>validate</em> the
+    gain, build a synthetic case with a radial calibration error (rcm growing
+    with distance, like real wp2) and check that ghost separation improves
+    after normalization.</li>
+<li><strong>Built and measured (2026-10-01): quality marks in the tracker</strong>
+  (<code>src/openptv2/point_quality.py</code>, options <code>q_weight</code>, <code>q_seed</code>, <code>q_young</code> in
+  two_phase, default off; <code>bench/step6_A10_quality_mark_2026-10-01.json</code>).
+  The mark is the ghost probability from the relative rcm (scale = straight line
+  in the distance from the volume centre, fitted per run on 4-camera points).</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>What the mark does</th>
+<th>Effect on velocity error (real-jitter case)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raises the cost of linking onto a doubtful point (<code>q_weight</code> 3 or 10)</td>
+<td>none (0.1977 → 0.1976): such links are rarely contested</td>
+</tr>
+<tr>
+<td>A doubtful point may not start a trajectory (<code>q_seed</code> 0.2)</td>
+<td>0.1977 → 0.1929</td>
+</tr>
+<tr>
+<td>+ a trajectory with fewer than 3 points may not continue onto a doubtful point (<code>q_young</code> 3)</td>
+<td><strong>0.1977 → 0.1845</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Best setting, <code>q_seed=0.2</code>, <code>q_young=3</code>, against the default:</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Velocity error</th>
+<th>Points kept</th>
+<th>Correct links</th>
+<th>Fake points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normal</td>
+<td>0.1780 → 0.1652</td>
+<td>0.707 → 0.703</td>
+<td>0.934 → 0.957</td>
+<td>6.9% → 4.3%</td>
+</tr>
+<tr>
+<td>Real jitter</td>
+<td>0.1977 → 0.1845</td>
+<td>0.706 → 0.702</td>
+<td>0.933 → 0.951</td>
+<td>6.9% → 4.8%</td>
+</tr>
+<tr>
+<td>Clustered + skip ×4</td>
+<td>0.1632 → 0.1529</td>
+<td>0.398 → 0.394</td>
+<td>0.929 → 0.944</td>
+<td>6.5% → 5.3%</td>
+</tr>
+<tr>
+<td>4× density</td>
+<td>0.4592 → 0.4207</td>
+<td>0.258 → 0.251</td>
+<td>0.867 → 0.911</td>
+<td>11.8% → 8.6%</td>
+</tr>
+<tr>
+<td>Skip ×8</td>
+<td>0.1218 → 0.1134</td>
+<td>0.669 → 0.667</td>
+<td>0.933 → 0.946</td>
+<td>6.6% → 5.5%</td>
+</tr>
+</tbody>
+</table>
+<p>On real wp2 (first 300 frames, re-tracked with the project's own settings):
+  trajectories 16375 → 15310 (fewer fragments and ghost trajectories), mean
+  length 19.5 → 20.2, long trajectories never seen by 4 cameras 11.6% → 10.4%,
+  jump share unchanged (1.46% → 1.45%), jitter unchanged, track time +6%.</p>
+<p>It meets the plan's rules: gain of at least 0.01 on four cases, nothing worse,
+  fake points down everywhere, points kept down by at most 0.007 (and the removed
+  points are mostly ghosts), time within the budget.
+  About 40% of the possible ghost gain on the real-jitter case is reached (the
+  cheat with all ghosts removed reaches 0.1465).
+- <strong>Open check.</strong> The real tail may contain more ghosts than the synthetic one
+  (real 3-camera tail is heavier). There is no truth on real data, so compare
+  the share of points above relative rcm 2.2 (real vs synthetic) after each
+  change, and watch the jump share.
+- <strong>Next for A10 (older text).</strong> Find features that separate ghosts without relying on speed:
+  the mix of 3- and 4-camera frames over the whole trajectory (ghost-only
+  trajectories are mostly 3-camera: median share 1.0 vs 0.31), and the ray miss
+  distance. Check that any rule flags a similar share of trajectories on the
+  real wp2 data as it does on the synthetic data.
+- <strong>Idea.</strong> A real particle is usually seen by all 4 cameras at least now and
+  then. A long fake trajectory is usually never seen by all 4.
+  - 65% of long fake trajectories are never seen by 4 cameras.
+  - Only 6% of long real trajectories are like that.
+- <strong>Change.</strong> For each long trajectory, count the frames in which it is seen by
+  all 4 cameras. The camera ids are already loaded in <code>do_tracking</code>, so this is
+  cheap.
+- <strong>Not a hard rule by itself.</strong> "Drop if never seen by 4 cameras" would remove
+  about 145 fake trajectories but also about 230 real ones in the normal case.
+- <strong>Combine it with a second signal:</strong> how closely the camera rays meet,
+  averaged over the whole trajectory.
+  - A real particle's rays meet within the shake; a fake one's may miss more.
+  - This value is not stored today, so measure first whether it separates real
+    from fake.
+- <strong>Output.</strong> A list of suspected fake trajectories. A11 uses it.</p>
+<h3 id="a11-feed-tracking-back-into-camera-matching-removes-fake-points-at-birth-the-biggest-lever">A11. Feed tracking back into camera matching (removes fake points at birth) - THE BIGGEST LEVER<a class="headerlink" href="#a11-feed-tracking-back-into-camera-matching-removes-fake-points-at-birth-the-biggest-lever" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Idea.</strong> A fake 3D point is made from blobs that belong to real particles, and
+  those real particles then go missing. Tracking can tell which points are
+  suspect; today that knowledge never goes back to the camera-matching step.</li>
+<li><strong>Change.</strong></li>
+<li>Take A10's suspected fake trajectories.</li>
+<li>Release their blobs.</li>
+<li>Re-run camera matching for those frames with the suspect combinations
+     excluded.</li>
+<li>Track again locally.</li>
+<li><strong>Different from trackcorr.</strong> trackcorr only builds new points from blobs
+  nobody used. A11 also frees the blobs a fake point stole, so the real particle
+  can come back. The original proPTV does something similar; our proPTV-style
+  plugin skipped that part.</li>
+<li><strong>Check.</strong></li>
+<li>Fake points go down.</li>
+<li>True points kept go <strong>up</strong>: the freed blobs should give back real particles.</li>
+<li><strong>Where.</strong> A new step between tracking and output. It calls
+  <code>algorithms/correspondences.py</code> for the affected frames only.</li>
+<li><strong>Engine borrowed from trackcorr.</strong> Rebuild points by projecting the guess
+  into each camera, searching the freed blobs near it, and triangulating. Reuse
+  trackcorr's code for this (<code>track.py</code> search, <code>assess_new_position</code>).</li>
+<li><strong>Speed.</strong> It runs only on suspect trajectories and their frames, so the cost
+  should be small. Check it against the speed budget (section 2).</li>
+</ul>
+<h3 id="a12-a-no-link-option-in-the-solver-fewer-broken-trajectories">A12. A "no link" option in the solver (fewer broken trajectories)<a class="headerlink" href="#a12-a-no-link-option-in-the-solver-fewer-broken-trajectories" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Problem.</strong> Starting and ending a trajectory costs nothing. So the solver
+  never weighs "link to this doubtful candidate" against "end here and start
+  fresh". Only the ball edge decides.</li>
+<li><strong>Change.</strong> Give the solver an explicit "no link" choice with a cost: end
+  this trajectory and start a new one.</li>
+<li>A link is made only if it is cheaper than that choice.</li>
+<li>Tune the cost on synthetic data so the number of trajectory pieces matches
+    the perfect linker's.</li>
+<li><strong>History first (from track3d).</strong> In a contest, a trajectory with history
+  should beat a newborn. Give newborns a slightly higher score (cost) than
+  established trajectories.</li>
+<li><strong>Expected.</strong> Fewer broken trajectories and fewer doubtful links. Little effect
+  on long fake trajectories: they are born once and live 30+ frames.</li>
+<li><strong>When.</strong> Right after A1: the cost is in the same units as A1's scaled
+  distance.</li>
+</ul>
+<h3 id="a13-look-ahead-before-deciding-from-trackcorr-and-4be">A13. Look ahead before deciding (from trackcorr and 4BE)<a class="headerlink" href="#a13-look-ahead-before-deciding-from-trackcorr-and-4be" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Problem.</strong> The smoothness check runs after the whole movie. A cut link frees
+  nothing, and the trajectory that lost the contest is already gone.</li>
+<li><strong>Idea (borrowed).</strong> trackcorr and 4BE score a candidate by how well it
+  continues 2 frames ahead. In two_phase, the smoothness check (a crude
+  after-the-fact look-ahead) is the only measured win, so moving the look-ahead
+  into the decision should give more of the same gain.</li>
+<li><strong>Change.</strong></li>
+<li>Keep the 2 best candidates of each trajectory for one extra frame.</li>
+<li>Decide when the next step is known: take the pair that continues smoothly,
+    including the loser's second choice.</li>
+<li><strong>Speed.</strong> Do it only for <strong>contested</strong> groups. Uncontested links are decided
+  as today, so the extra cost stays small.</li>
+<li><strong>Where.</strong> <code>_track_unidirectional</code>: a small buffer of undecided links and a
+  one-frame delay.</li>
+<li><strong>When.</strong> A firm step, right after A7.</li>
+</ul>
+<h3 id="a14-newborns-guess-from-their-neighbours-from-track3d">A14. Newborns guess from their neighbours (from track3d)<a class="headerlink" href="#a14-newborns-guess-from-their-neighbours-from-track3d" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Problem.</strong> A newborn trajectory has no velocity, so its first guess is
+  "stays where it is".</li>
+<li><strong>Change (borrowed from track3d's level 2).</strong> For a newborn only, use the
+  average velocity of nearby trajectories that already have history. Fall back
+  to "stays where it is" if there are no such neighbours.</li>
+<li><strong>Why it is safe.</strong> It only affects the first step of a new trajectory.</li>
+<li>Unlike the full "neighbours move together" idea, it doesn't replace any
+    trajectory's own history.</li>
+<li>It doesn't need the big real-data test first. It still must pass the
+    realism checks.</li>
+<li><strong>Where.</strong> The cold-start block in <code>_track_unidirectional</code>, using the
+  <code>pred_fn</code> hook from A4.</li>
+</ul>
+<h3 id="considered-and-parked-or-dropped">Considered and parked or dropped<a class="headerlink" href="#considered-and-parked-or-dropped" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Parked (only if the numbers ask for it):</strong></li>
+<li>"A new trajectory needs 2 links before it counts." Runs of 1–2 fake points
+    are only 5% of fake points, and a single point already produces no link.</li>
+<li>"Solve several frames together as one big optimization." It fixes swaps and
+    gaps better, but it cannot fix long fake trajectories, which are valid
+    smooth paths. Last resort if A3, A5 and A8 stall.</li>
+<li><strong>Dropped:</strong></li>
+<li>"Re-check contested points with 3 of the 4 cameras." 73% of fake points
+    use only 3 cameras; drop one and 2 remain, and any 2 rays meet somewhere.
+    Also, long fake trajectories are rarely contested.</li>
+<li>"Ball size depends on how crowded the region is." The ball should match
+    the uncertainty of the guess (A1 + A4), whatever the crowding. Shrinking it
+    in crowds loses true links; the solver handles crowds.</li>
+</ul>
+<h3 id="later-neighbours-move-together">Later: "neighbours move together"<a class="headerlink" href="#later-neighbours-move-together" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Idea.</strong> Guess a particle's next position from its neighbours' motion, through
+  the <code>pred_fn</code> hook from A4.</li>
+<li><strong>Test first on real data.</strong> Our synthetic flow was smoothed when it was made,
+  so neighbours agree there by construction. The test is described in section 9.</li>
+<li><strong>Watch out.</strong> Near a shear layer, neighbours move differently. So fall back to
+  the particle's own history when the neighbours disagree.</li>
+</ul>
+<hr />
+<h2 id="5-speed-after-accuracy">5. Speed (after accuracy)<a class="headerlink" href="#5-speed-after-accuracy" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>S0. Profile first</strong> on real CompleteTest wp2 (1072 frames) and on the
+  synthetic 4× density case. Likely slow spots, in
+  order:</li>
+<li>camera projection one point at a time (bug 3). Batch it: big gain, same
+     result;</li>
+<li>the Python loop that builds candidate scores one pair at a time. Do it with
+     numpy arrays;</li>
+<li>thousands of tiny groups each sent to scipy. Solve 1-against-1 groups
+     directly, without scipy;</li>
+<li>the smaller ball from A1, which makes everything above cheaper.</li>
+<li><strong>S1.</strong> Measure how often a whole frame needs no solver at all (every group is
+  1-against-1). If this is rare, frames are too crowded, which the decision log
+  will show.</li>
+</ul>
+<h2 id="6-running-in-parallel-after-speed">6. Running in parallel (after speed)<a class="headerlink" href="#6-running-in-parallel-after-speed" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>P1. Forward and backward at the same time.</strong> The two runs are independent.
+  Run them in 2 processes: about 2× faster, same result.</li>
+<li><strong>P2. Groups at the same time.</strong> The groups in one frame are independent. Solve
+  them in threads: scipy lets threads run in parallel. Keep the quick
+  approximation single-threaded.</li>
+<li><strong>P3. Split the movie into chunks.</strong> <code>tracking_chunked.py</code> already has
+  <code>partition_tracking_chunks</code> and <code>stitch_chunked_linkages</code>.</li>
+<li>Chunks overlap by at least <code>max_gap</code> + the smoothness-check length.</li>
+<li>Accuracy is lost only at the chunk borders, and the stitching repairs it.</li>
+<li>Test the stitching on synthetic data before the long real wp1 run
+    (5005 frames).</li>
+<li><strong>P4. Many runs at once.</strong> <code>scripts/_tracker_run_worker.py</code> already runs
+  parameter sweeps in parallel. Just add two_phase settings to it.</li>
+<li><strong>P5. No GPU or Cython</strong> until S0 and S1 are done. The gains are in batching
+  and in the ball size, not in faster arithmetic.</li>
+</ul>
+<hr />
+<h2 id="7-order-of-work-with-the-gain-we-expect">7. Order of work, with the gain we expect<a class="headerlink" href="#7-order-of-work-with-the-gain-we-expect" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>What</th>
+<th>Expected gain</th>
+<th>Days</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Every step: a test and a before/after benchmark (section 2).</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>What</th>
+<th>Expected gain</th>
+<th>Days</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Step 0: scoreboard (with "points kept", fake trajectories by length, 4-camera share) + decision log + realism check and stress cases (0.3)</td>
+<td>Honest numbers, and knowing how far to trust the synthetic data</td>
+<td>1.5</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bug 3: batched projection</td>
+<td>Faster, same result</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Bug 2: missing camera ≠ pixel 0,0 (see below), then measure</td>
+<td>Unknown; possibly the first time the 2D score helps</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>4</td>
+<td>A1 small, shake-shaped ball</td>
+<td><strong>Tried and reverted</strong> (no gain, loses true links)</td>
+<td>done</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A10 camera test for whole trajectories, plus a check of what else separates ghost trajectories on real data (ray miss distance, jitter of 3- vs 4-camera points)</td>
+<td>A list of suspected ghost trajectories</td>
+<td>1–2</td>
+</tr>
+<tr>
+<td>6</td>
+<td>A11 feed tracking back into camera matching (trackcorr's add-point engine). Upper bound from <code>ghost_bound.py</code>: vErr 0.1977 → 0.1465</td>
+<td>Fewer fake points <strong>and</strong> more real ones; the main lever</td>
+<td>3–4</td>
+</tr>
+<tr>
+<td>7</td>
+<td>A7 better smoothness check</td>
+<td>More accurate</td>
+<td>1</td>
+</tr>
+<tr>
+<td>8</td>
+<td>A2 camera count in the score (from trackcorr); place it in the cost that also works with <code>leaf_weight=0</code></td>
+<td>Fewer fake points in contests</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>9</td>
+<td>A12 "no link" option + history first (from track3d)</td>
+<td>Fewer broken trajectories, fewer doubtful links</td>
+<td>1</td>
+</tr>
+<tr>
+<td>10</td>
+<td>A13 look ahead before deciding, contested groups only (from trackcorr/4BE)</td>
+<td>More of the one proven gain; fewer trajectories dying in contests</td>
+<td>1–2</td>
+</tr>
+<tr>
+<td>11</td>
+<td>A4 + A5 smoother velocity (from proPTV-style, fixed cost), gap handling, reconnect</td>
+<td>Better guesses, longer trajectories</td>
+<td>2</td>
+</tr>
+<tr>
+<td>12</td>
+<td>A14 newborns guess from neighbours (from track3d)</td>
+<td>Better first links for new trajectories</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>13</td>
+<td>A9 smoothness filter (gap-aware)</td>
+<td>Removes short fake runs and fakes inside real trajectories</td>
+<td>2</td>
+</tr>
+<tr>
+<td>14</td>
+<td>P3 parallel: split the movie into chunks</td>
+<td>Several × faster on long runs, no accuracy loss</td>
+<td>1–2</td>
+</tr>
+<tr>
+<td>15</td>
+<td>S0 + S1 remaining speed items</td>
+<td>Faster</td>
+<td>1</td>
+</tr>
+<tr>
+<td>16</td>
+<td>A8 decision on forward + backward. <strong>Then</strong> P1 (run both at once), only if forward + backward survives. A6 <code>min_cams</code>, the rest of A2 (richer score), A3, and the parked ideas (section 4) only if the numbers ask for them</td>
+<td>Measured case by case</td>
+<td>—</td>
+</tr>
+<tr>
+<td>17</td>
+<td>"Neighbours move together" for all trajectories (only if the real-data test in section 9 says yes)</td>
+<td>Better guesses in dense regions</td>
+<td>2–3</td>
+</tr>
+</tbody>
+</table>
+<p>Why this order:
+- <strong>Ghosts first (new, 2026-10-01).</strong> With ghosts removed, two_phase reaches
+  precision 0.9989 and cuts its gap to the perfect linker from 0.0565 to
+  0.0229. Everything that only changes the search ball or the score cannot
+  reach that (A1 showed it).
+- The realism check (0.3) comes first. It decides whether tolerances can be
+  tuned on the synthetic cases at all.
+- A2's camera count comes right after A1: it is small and uses data two_phase
+  already loads.
+- A12 comes right after A1, because its "no link" cost is in the same units as
+  A1's scaled distance.
+- A13 comes right after A7: it moves A7's proven gain into the decision itself.
+- A14 comes after A4, because it uses A4's <code>pred_fn</code> hook.
+- A9 comes after A4, A5 and A7, so the filter knows which jumps are reconnected
+  gaps and does not cut them.
+- A10 and A11 come after A9. They carry the main fake-point target, and A9 has
+  already removed the easy cases, so the suspects left are the long fake
+  trajectories.
+- P1 comes after the A8 decision, so we don't make fast something we might
+  delete.</p>
+<p><strong>Step 3 in detail.</strong> Fixing bug 2 is not enough on its own:
+- <strong>Add a test</strong> (<code>tests/unit/test_two_phase_tracking.py</code>): one candidate seen by
+  3 of 4 cameras must not be penalized for the missing camera. No current test
+  has a missing camera, which is how the bug survived.
+- <strong>Carry a separate "camera seen: yes/no" array</strong> next to the pixel positions.
+  Don't mark "not seen" with NaN inside the numbers: any later <code>nan_to_num</code> would
+  silently break it again.</p>
+<hr />
+<h2 id="8-how-we-check-each-step">8. How we check each step<a class="headerlink" href="#8-how-we-check-each-step" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Unit tests:
+  <code>uv run pytest tests/unit/test_two_phase_tracking.py tests/unit/test_tracking_postprocess.py -q</code></li>
+<li>A new unit test for the change: it fails before the change and passes after.</li>
+<li>The Step 0 benchmark before and after the change, on:</li>
+<li>the three synthetic cases;</li>
+<li>the stress cases (frame skip ×4 and ×8, more jitter);</li>
+<li>the real data.</li>
+</ul>
+<p>Save both JSON files in <code>bench/</code> and put the before/after table in the commit
+  message or PR.
+- Timing runs one at a time (<code>-j 1</code>), checked against the speed budget.
+- Look at a few trajectories in 3D with <code>scripts/viz_compare_3d.py</code>.
+- Apply the rules in section 2 before keeping any change.</p>
+<h2 id="9-the-real-data-test-for-neighbours-move-together">9. The real-data test for "neighbours move together"<a class="headerlink" href="#9-the-real-data-test-for-neighbours-move-together" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Data.</strong> Real CompleteTest wp2 (1072 frames), plus lv_multi and
+  <code>wp1_10_images</code>; see Step 0, 0.3. That is enough: the test compares one-step
+  guesses, which needs only a few frames per trajectory.</li>
+<li><strong>Method.</strong> Real data has no known answer, so compare the two guesses directly.
+  On confident trajectories, predict the next position two ways:</li>
+<li>from the particle's own history;</li>
+<li>from its neighbours' motion.</li>
+</ul>
+<p>Then measure which guess lands closer to the point actually measured next.
+- <strong>Decision.</strong> Build this idea (step 17) only if the neighbour guess has less
+  than half the error of the own-history guess. Otherwise skip it.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

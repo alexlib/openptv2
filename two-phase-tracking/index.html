@@ -903,6 +903,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../tracking_quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Point Quality and Ghost Marks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tracker-tutorials/" class="md-nav__link">
         
   
@@ -2242,6 +2270,44 @@ the <code>track</code> section (same names as below).</p>
 <td>1.0</td>
 <td>a shared claim needs an edge cost below this (mutual-prediction gate)</td>
 <td>Without it, a stranded track hijacks strangers' detections (observed live). ~5–10× your position noise; <code>null</code> disables the gate (not advised)</td>
+</tr>
+</tbody>
+</table>
+<p>Point-quality rules (ghost marks from ray convergence, <strong>on by default</strong>; details,
+when to change them and how to test them: <a href="../tracking_quality/">Point quality</a>):</p>
+<table>
+<thead>
+<tr>
+<th>parameter</th>
+<th>default</th>
+<th>what it does</th>
+<th>how to set it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>q_seed</code> [–]</td>
+<td>0.2</td>
+<td>a point with ghost probability above this may not start a trajectory</td>
+<td>lower (0.15) for more ghost removal, higher (0.3) or <code>null</code> for clean data</td>
+</tr>
+<tr>
+<td><code>q_young</code> [points]</td>
+<td>3</td>
+<td>a trajectory with fewer points may not continue onto such a point</td>
+<td>3–6; 0 switches the rules off</td>
+</tr>
+<tr>
+<td><code>q_weight</code> [–]</td>
+<td>0</td>
+<td>scales link cost by the ghost probability</td>
+<td>measured to have no effect; leave 0</td>
+</tr>
+<tr>
+<td><code>confirm_tol</code> [mm/frame], <code>confirm_ends</code></td>
+<td><strong>0.3</strong> / <strong>true</strong> (when <code>v_max</code> ≤ 3)</td>
+<td>two-hop link confirmation: a link survives only if the next step continues within this velocity kink</td>
+<td>on by default for small steps; <code>confirm_tol: null</code> switches it off. It removed all jump steps on lv_multi wp4/wp5 (8.4% → 0%). The best value is loose for sparse and tight for dense data (4× density: a tighter one lowered the error by 0.05); for large <code>v_max</code> set it explicitly, about 3–4× your position noise</td>
 </tr>
 </tbody>
 </table>

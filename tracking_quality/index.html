@@ -13,24 +13,28 @@
       
       
       
+        <link rel="prev" href="../tracking_guide/">
+      
+      
+        <link rel="next" href="../tracker-tutorials/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Plan: make track3d (level-3 cascade) beat 3dptv.exe's own GT, not just match it - OpenPTV2 Documentation</title>
+        <title>Point Quality and Ghost Marks - OpenPTV2 Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,7 +53,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#plan-make-track3d-level-3-cascade-beat-3dptvexes-own-gt-not-just-match-it" class="md-skip">
+        <a href="#point-quality-in-tracking-ghost-marks-thresholds-trimming-smoothing" class="md-skip">
           Skip to content
         </a>
       
@@ -88,7 +92,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+    <a href=".." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -108,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Plan: make track3d (level-3 cascade) beat 3dptv.exe's own GT, not just match it
+              Point Quality and Ghost Marks
             
           </span>
         </div>
@@ -221,7 +225,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href=".." class="md-tabs__link">
         
   
   
@@ -240,7 +244,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../installation/" class="md-tabs__link">
+      <a href="../installation/" class="md-tabs__link">
         
   
   
@@ -259,7 +263,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../first_steps/" class="md-tabs__link">
+      <a href="../first_steps/" class="md-tabs__link">
         
   
   
@@ -280,7 +284,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+        <a href="../tutorials/getting_started_tutorial/" class="md-tabs__link">
           
   
   
@@ -296,11 +300,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../zarr-hdf5-storage/" class="md-tabs__link">
           
   
   
@@ -320,7 +326,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../plate-calibration-howto/" class="md-tabs__link">
+        <a href="../plate-calibration-howto/" class="md-tabs__link">
           
   
   
@@ -340,7 +346,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../benchmarking_guide/" class="md-tabs__link">
+        <a href="../benchmarking_guide/" class="md-tabs__link">
           
   
   
@@ -358,7 +364,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../tests/" class="md-tabs__link">
+      <a href="../tests/" class="md-tabs__link">
         
   
   
@@ -379,7 +385,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../developer_guide/building/" class="md-tabs__link">
+        <a href="../developer_guide/building/" class="md-tabs__link">
           
   
   
@@ -399,7 +405,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../algorithms/tracking/" class="md-tabs__link">
+        <a href="../algorithms/tracking/" class="md-tabs__link">
           
   
   
@@ -419,7 +425,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
+        <a href="../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
           
   
   
@@ -453,7 +459,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+    <a href=".." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -483,7 +489,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -510,7 +516,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/" class="md-nav__link">
+      <a href="../installation/" class="md-nav__link">
         
   
   
@@ -537,7 +543,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../first_steps/" class="md-nav__link">
+      <a href="../first_steps/" class="md-nav__link">
         
   
   
@@ -618,7 +624,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
+      <a href="../tutorials/getting_started_tutorial/" class="md-nav__link">
         
   
   
@@ -646,7 +652,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/cavity_flow_tutorial/" class="md-nav__link">
+      <a href="../tutorials/cavity_flow_tutorial/" class="md-nav__link">
         
   
   
@@ -674,7 +680,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../aorta_tutorial/" class="md-nav__link">
+      <a href="../aorta_tutorial/" class="md-nav__link">
         
   
   
@@ -702,7 +708,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/four_view_splitter/" class="md-nav__link">
+      <a href="../tutorials/four_view_splitter/" class="md-nav__link">
         
   
   
@@ -730,7 +736,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/plugins/" class="md-nav__link">
+      <a href="../tutorials/plugins/" class="md-nav__link">
         
   
   
@@ -758,7 +764,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/parameters/" class="md-nav__link">
+      <a href="../tutorials/parameters/" class="md-nav__link">
         
   
   
@@ -790,28 +796,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
@@ -829,7 +838,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -847,7 +856,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+      <a href="../zarr-hdf5-storage/" class="md-nav__link">
         
   
   
@@ -875,7 +884,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tracking_guide/" class="md-nav__link">
+      <a href="../tracking_guide/" class="md-nav__link">
         
   
   
@@ -900,10 +909,162 @@
                 
   
   
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Point Quality and Ghost Marks
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Point Quality and Ghost Marks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-problem-this-solves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What problem this solves
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-how-the-mark-is-computed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. How the mark is computed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-two-thresholds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The two thresholds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-when-to-change-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. When to change them
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-how-to-test-a-threshold-on-your-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. How to test a threshold on your data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-after-tracking-trimming-doubtful-ends-and-the-smoother" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. After tracking: trimming doubtful ends and the smoother
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
   
   
     <li class="md-nav__item">
-      <a href="../../tracker-tutorials/" class="md-nav__link">
+      <a href="../tracker-tutorials/" class="md-nav__link">
         
   
   
@@ -931,7 +1092,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../lagrangian_turbulence_quality_guide/" class="md-nav__link">
+      <a href="../lagrangian_turbulence_quality_guide/" class="md-nav__link">
         
   
   
@@ -959,7 +1120,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+      <a href="../tutorials/batch_processing/" class="md-nav__link">
         
   
   
@@ -987,7 +1148,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-batch/" class="md-nav__link">
+      <a href="../cloud-batch/" class="md-nav__link">
         
   
   
@@ -1015,7 +1176,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../multi-folder-runs/" class="md-nav__link">
+      <a href="../multi-folder-runs/" class="md-nav__link">
         
   
   
@@ -1043,7 +1204,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+      <a href="../tutorials/tracking_visualization/" class="md-nav__link">
         
   
   
@@ -1071,7 +1232,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+      <a href="../tutorials/tracking_debug_visualization/" class="md-nav__link">
         
   
   
@@ -1160,7 +1321,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../plate-calibration-howto/" class="md-nav__link">
+      <a href="../plate-calibration-howto/" class="md-nav__link">
         
   
   
@@ -1188,7 +1349,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../illmenau-4cam-calibration/" class="md-nav__link">
+      <a href="../illmenau-4cam-calibration/" class="md-nav__link">
         
   
   
@@ -1216,7 +1377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calibration_best_practices/" class="md-nav__link">
+      <a href="../calibration_best_practices/" class="md-nav__link">
         
   
   
@@ -1244,7 +1405,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/calibration/" class="md-nav__link">
+      <a href="../tutorials/calibration/" class="md-nav__link">
         
   
   
@@ -1272,7 +1433,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/particle_calibration/" class="md-nav__link">
+      <a href="../tutorials/particle_calibration/" class="md-nav__link">
         
   
   
@@ -1300,7 +1461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/dumbbell_calibration/" class="md-nav__link">
+      <a href="../tutorials/dumbbell_calibration/" class="md-nav__link">
         
   
   
@@ -1328,7 +1489,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/warmup_tutorial/" class="md-nav__link">
+      <a href="../tutorials/warmup_tutorial/" class="md-nav__link">
         
   
   
@@ -1356,7 +1517,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calibration-rms-vs-rcm/" class="md-nav__link">
+      <a href="../calibration-rms-vs-rcm/" class="md-nav__link">
         
   
   
@@ -1384,7 +1545,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calibration-bundle-adjustment/" class="md-nav__link">
+      <a href="../calibration-bundle-adjustment/" class="md-nav__link">
         
   
   
@@ -1412,7 +1573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tracer-self-calibration/" class="md-nav__link">
+      <a href="../tracer-self-calibration/" class="md-nav__link">
         
   
   
@@ -1501,7 +1662,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../benchmarking_guide/" class="md-nav__link">
+      <a href="../benchmarking_guide/" class="md-nav__link">
         
   
   
@@ -1529,7 +1690,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tracking-benchmark-results/" class="md-nav__link">
+      <a href="../tracking-benchmark-results/" class="md-nav__link">
         
   
   
@@ -1564,7 +1725,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tests/" class="md-nav__link">
+      <a href="../tests/" class="md-nav__link">
         
   
   
@@ -1645,7 +1806,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/building/" class="md-nav__link">
+      <a href="../developer_guide/building/" class="md-nav__link">
         
   
   
@@ -1673,7 +1834,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+      <a href="../developer_guide/cython_and_pure_python/" class="md-nav__link">
         
   
   
@@ -1701,7 +1862,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/custom_tracking_plugins/" class="md-nav__link">
+      <a href="../developer_guide/custom_tracking_plugins/" class="md-nav__link">
         
   
   
@@ -1729,7 +1890,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+      <a href="../developer_guide/documentation_workflow/" class="md-nav__link">
         
   
   
@@ -1757,7 +1918,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+      <a href="../developer_guide/packaging_and_releases/" class="md-nav__link">
         
   
   
@@ -1785,7 +1946,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+      <a href="../HOW_TO_TEST_GUI/" class="md-nav__link">
         
   
   
@@ -1874,7 +2035,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../algorithms/tracking/" class="md-nav__link">
+      <a href="../algorithms/tracking/" class="md-nav__link">
         
   
   
@@ -1902,7 +2063,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
+      <a href="../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
         
   
   
@@ -1930,7 +2091,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+      <a href="../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
         
   
   
@@ -2019,7 +2180,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
+      <a href="../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
         
   
   
@@ -2074,10 +2235,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#where-we-are-now-this-sessions-findings" class="md-nav__link">
+  <a href="#1-what-problem-this-solves" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Where we are now (this session's findings)
+        1. What problem this solves
       
     </span>
   </a>
@@ -2085,10 +2246,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-goal-precisely-stated" class="md-nav__link">
+  <a href="#2-how-the-mark-is-computed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The goal, precisely stated
+        2. How the mark is computed
       
     </span>
   </a>
@@ -2096,10 +2257,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#concrete-next-steps-in-priority-order-highest-expected-win-first" class="md-nav__link">
+  <a href="#3-the-two-thresholds" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Concrete next steps, in priority order (highest expected win first)
+        3. The two thresholds
       
     </span>
   </a>
@@ -2107,10 +2268,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#visual-comparison-harness-build-first-before-step-1" class="md-nav__link">
+  <a href="#4-when-to-change-them" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Visual comparison harness (build first, before step 1)
+        4. When to change them
       
     </span>
   </a>
@@ -2118,10 +2279,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#trajectory-trees-for-cross-tracker-decision-comparison" class="md-nav__link">
+  <a href="#5-how-to-test-a-threshold-on-your-data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Trajectory trees for cross-tracker decision comparison
+        5. How to test a threshold on your data
       
     </span>
   </a>
@@ -2129,10 +2290,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tooling-already-built-this-session-wp1_10_imagesscripts" class="md-nav__link">
+  <a href="#6-after-tracking-trimming-doubtful-ends-and-the-smoother" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Tooling already built this session (wp1_10_images/scripts/)
+        6. After tracking: trimming doubtful ends and the smoother
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Limits
       
     </span>
   </a>
@@ -2159,221 +2331,214 @@
   
 
 
-<h1 id="plan-make-track3d-level-3-cascade-beat-3dptvexes-own-gt-not-just-match-it">Plan: make <code>track3d</code> (level-3 cascade) beat 3dptv.exe's own GT, not just match it<a class="headerlink" href="#plan-make-track3d-level-3-cascade-beat-3dptvexes-own-gt-not-just-match-it" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>Update 2026-09-01:</strong> After zarr-only cutover (<code>archive/2026-09-01-zarr-only-final-cutover-plan.md</code>, <code>6a1e81aa</code>), the visual harness and <code>wp1_10_images/scripts/</code> examples that read <code>res/rt_is.*</code> / <code>img/*_targets</code> should use <code>RunStore</code> (<code>res/run.zarr</code>, <code>targets/cam_*/frame_*</code> + <code>correspondences/frame_*</code>).</p>
-</blockquote>
-<p>Context: wp1 10-frame dataset, <code>C:\Users\alex\Downloads\wp1_10_images</code>. GT
-(<code>run_ground_truth.zarr</code>) is 3dptv.exe's own tracked output (<code>rt_is</code>/<code>ptv_is</code>),
-almost certainly produced by <code>track3d.c</code> (<code>track_mode: 1</code> in this dataset's
-params) — confirmed by feeding GT's own point cloud into our <code>track3d</code>
-translation with liboptv-parity settings and getting 90% precision / 95.6%
-recall against it (see <code>scripts/ab_dist_weight.py</code>,
-<code>scripts/compare_track3d_vs_trackcorr.py</code> in the wp1 folder). The earlier
-<code>cold_start_gate</code> tuning session (jumps 322→159) was measured against a
-different, contaminated baseline (our own detection/correspondence output,
-not GT's cloud) and understated true tracker quality by conflating
-correspondence-stage error with tracking-stage error — that comparison should
-not be reused; the clean control is GT's own <code>rt_is</code> cloud fed straight into
-the tracker.</p>
-<h2 id="where-we-are-now-this-sessions-findings">Where we are now (this session's findings)<a class="headerlink" href="#where-we-are-now-this-sessions-findings" title="Permanent link">&para;</a></h2>
-<p>Best config so far on GT's own cloud (<code>v_max=1.9, a_max=1.9, dist_weight=1.827,
-cold_start_gate=1.5</code>): prec 0.918, rec 0.958, jumps 119 (down from 229 at
-liboptv parity). Per-cascade-level breakdown
-(<code>wp1_10_images/scripts/classify_by_level.py</code>):</p>
+<h1 id="point-quality-in-tracking-ghost-marks-thresholds-trimming-smoothing">Point quality in tracking: ghost marks, thresholds, trimming, smoothing<a class="headerlink" href="#point-quality-in-tracking-ghost-marks-thresholds-trimming-smoothing" title="Permanent link">&para;</a></h1>
+<p>This page explains the quality marks the <code>two_phase</code> tracker uses by default, how to
+change the two thresholds, <strong>when</strong> to change them, and <strong>how to test</strong> a choice on
+your own data. Evidence and measurements are in
+<code>docs/plans/2026-09-30-tracker-plan.md</code> (sections 1 and 4, A10) and <code>bench/</code>.</p>
+<h2 id="1-what-problem-this-solves">1. What problem this solves<a class="headerlink" href="#1-what-problem-this-solves" title="Permanent link">&para;</a></h2>
+<p>About 5–10% of the 3D points that camera matching produces are <em>ghosts</em>: made from
+blobs of different particles. A ghost often links into a long, smooth, wrong
+trajectory. On the synthetic benchmark ghosts cause about 60% of the remaining
+velocity error of <code>two_phase</code> and nearly all of its wrong links.</p>
+<p>A ghost's camera rays usually meet worse than a real particle's rays. The distance by
+which they miss each other is the <strong>ray miss distance (rcm)</strong>. It is the best ghost
+signal we found (AUC 0.88 per trajectory). No single cut-off works, so the tracker uses
+it softly, as a <em>ghost probability</em> between 0 and 1 for every point.</p>
+<h2 id="2-how-the-mark-is-computed">2. How the mark is computed<a class="headerlink" href="#2-how-the-mark-is-computed" title="Permanent link">&para;</a></h2>
+<ol>
+<li>rcm of every stored 3D point (<code>openptv2.point_quality.frame_rcm</code>), from the targets
+   and calibrations in the run store.</li>
+<li>rcm grows away from the volume centre on real data (about 0.035 mm near the centre,
+   0.058 mm at 50–60 mm), so it is divided by a straight line in the distance from the
+   centre, fitted per run on the 4-camera points (<code>fit_scale</code>).</li>
+<li>The relative rcm and the number of cameras give the probability
+   (<code>ghost_probability</code>; a 3-camera point is far more likely to be a ghost than a
+   4-camera point with the same relative rcm).</li>
+<li>The probability is stored in the run store (<code>quality/frame_NNNNNN</code>,
+   <code>RunStore.read_point_quality</code>) so later steps can use it without recomputing.</li>
+</ol>
+<p>Nothing is deleted at this stage.</p>
+<h2 id="3-the-two-thresholds">3. The two thresholds<a class="headerlink" href="#3-the-two-thresholds" title="Permanent link">&para;</a></h2>
+<p>Set them in the <code>track</code> section (YAML / GUI parameters) of the <code>two_phase</code> tracker.</p>
 <table>
 <thead>
 <tr>
-<th>level</th>
-<th>volume (TP+FN)</th>
-<th>TP</th>
-<th>FP</th>
-<th>FN</th>
-<th>prec</th>
-<th>rec</th>
+<th>parameter</th>
+<th>default</th>
+<th>what it does</th>
+<th>switch off</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>1 (has own velocity history)</td>
-<td>6384</td>
-<td>6240</td>
-<td>333</td>
-<td>144</td>
-<td>0.949</td>
-<td>0.977</td>
+<td><code>q_seed</code></td>
+<td>0.2</td>
+<td>A point whose ghost probability is above this <strong>may not start a trajectory</strong> (an existing trajectory can still pick it up). It is also the limit for <code>q_young</code>.</td>
+<td><code>q_seed: null</code></td>
 </tr>
 <tr>
-<td>2 (neighbor-average velocity)</td>
-<td>322</td>
-<td>246</td>
-<td>108</td>
-<td>76</td>
-<td>0.695</td>
-<td>0.764</td>
+<td><code>q_young</code></td>
+<td>3</td>
+<td>A trajectory with <strong>fewer than this many points</strong> may not continue onto a point above <code>q_seed</code>. Established trajectories are not affected.</td>
+<td><code>q_young: 0</code></td>
 </tr>
 <tr>
-<td>3 (cold-start / gated static)</td>
-<td>1312</td>
-<td>1198</td>
-<td>241</td>
-<td>114</td>
-<td>0.833</td>
-<td>0.913</td>
+<td><code>q_weight</code></td>
+<td>0</td>
+<td>Multiplies the link cost by <code>1 + q_weight * probability</code>. Measured: <strong>no effect</strong> (links onto doubtful points are rarely contested). Leave at 0.</td>
+<td><code>0</code></td>
 </tr>
 </tbody>
 </table>
-<p>Level 1 is high-volume and already good. <strong>Level 2 is the worst performer by
-precision</strong> (0.695) despite tiny volume. Level 3 is the second-worst and by
-far the largest error contributor in absolute FP/FN counts.</p>
-<p>FN root-cause split (<code>classify_by_level.py</code>'s <code>fn_reason</code> table):</p>
+<p>To switch the whole feature off: <code>q_seed: null</code> and <code>q_young: 0</code>. It also switches off
+by itself, with a message, when the experiment has no calibrations (the mark needs the
+camera models).</p>
+<p>The values 0.2 / 3 were chosen from 16 combinations on five synthetic cases (normal,
+real-jitter, clustered with frame skip ×4, 4× density, frame skip ×8). They are the
+strongest setting where <strong>no case lost more than 0.007 of the true points kept</strong>. Mean
+change against switching it off: velocity error −0.017, true points kept −0.004, ghost
+fraction −0.021. Checked on four real recordings (CompleteTest wp1 and wp2, lv_multi wp4
+and wp5): 5–21% fewer trajectories, 3–10% longer mean length, fewer long trajectories
+that no frame sees with all four cameras, jump share unchanged or lower.</p>
+<h2 id="4-when-to-change-them">4. When to change them<a class="headerlink" href="#4-when-to-change-them" title="Permanent link">&para;</a></h2>
+<p>The choice is a trade-off: a <strong>lower <code>q_seed</code></strong> and a <strong>higher <code>q_young</code></strong> remove more
+ghosts and lower the error, and also remove a few real points.</p>
+<table>
+<thead>
+<tr>
+<th>mean change vs off (5 synthetic cases)</th>
+<th><code>q_young</code> 3</th>
+<th>6</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>q_seed</code> 0.10</td>
+<td>err −0.026, pts −0.012</td>
+<td>−0.029, −0.019</td>
+<td>−0.032, −0.026</td>
+</tr>
+<tr>
+<td><code>q_seed</code> 0.15</td>
+<td>−0.022, −0.007</td>
+<td>−0.025, −0.011</td>
+<td>−0.025, −0.015</td>
+</tr>
+<tr>
+<td><code>q_seed</code> 0.20 (default)</td>
+<td><strong>−0.017, −0.004</strong></td>
+<td>−0.020, −0.007</td>
+<td>−0.021, −0.009</td>
+</tr>
+<tr>
+<td><code>q_seed</code> 0.30</td>
+<td>−0.011, −0.002</td>
+<td>−0.013, −0.003</td>
+<td>−0.013, −0.004</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>your data</th>
+<th>change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Many 3-camera points (above ~45%), dense seeding, many short suspect trajectories; accuracy matters more than the number of points</td>
+<td><strong>Accuracy mode:</strong> <code>q_seed: 0.15</code>, <code>q_young: 6</code>. Clustered flow gains most from a larger <code>q_young</code> (up to 10).</td>
+</tr>
+<tr>
+<td>Few ghosts: good calibration, mostly 4-camera points (3-camera share below ~20%), low density</td>
+<td>Raise <code>q_seed</code> to 0.3, or switch it off. The gain is small and points are not worth losing.</td>
+</tr>
+<tr>
+<td>Every real point counts (e.g. you compute statistics that need all samples)</td>
+<td><code>q_seed: 0.3</code>, <code>q_young: 3</code>.</td>
+</tr>
+<tr>
+<td>Very short recordings (below ~30 frames)</td>
+<td>The scale line needs at least 200 four-camera points; with fewer it falls back to one global value. Check the flagged share (section 5).</td>
+</tr>
+<tr>
+<td>Poor or drifting calibration</td>
+<td>rcm is large everywhere; the per-run scale compensates, but if the flagged share (section 5) is far above 20% the table is mismatched: raise <code>q_seed</code> or switch off.</td>
+</tr>
+<tr>
+<td>Very fast flow / large frame skip</td>
+<td>No change needed: tested up to skip ×8 (error −0.008).</td>
+</tr>
+</tbody>
+</table>
+<p>Always combine with <code>confirm_tol</code> (two-hop link confirmation; <strong>on by default</strong> for
+<code>v_max</code> ≤ 3 mm/frame, <code>0.3</code> with <code>confirm_ends</code>). On lv_multi wp5 the
+jump steps (velocity change above 0.3 mm in depth) were 8.4% <strong>without</strong> it and 0.0%
+<strong>with</strong> <code>confirm_tol: 0.3</code>, <code>confirm_ends: true</code>; the quality marks add to that, they
+do not replace it.</p>
+<h2 id="5-how-to-test-a-threshold-on-your-data">5. How to test a threshold on your data<a class="headerlink" href="#5-how-to-test-a-threshold-on-your-data" title="Permanent link">&para;</a></h2>
+<p><strong>Sanity check, no truth needed.</strong> Count the flagged share from the stored marks:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.storage</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunStore</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">s</span> <span class="o">=</span> <span class="n">RunStore</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"res/run.zarr"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"r"</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">read_point_quality</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">print</span><span class="p">((</span><span class="n">g</span> <span class="o">&gt;</span> <span class="mf">0.2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="p">(</span><span class="n">g</span> <span class="o">&gt;</span> <span class="mf">0.3</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="p">(</span><span class="n">g</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+</span></code></pre></div>
+<p>Expected on well-behaved data: about 10% above 0.2, 4–6% above 0.3, 0.6–2% above 0.5
+(synthetic 10.3 / 5.7 / 2.0%; CompleteTest wp1/wp2 9.9 / 4.4 / 0.6%; lv_multi 18 / 10 /
+2.2% because half of its points have only three cameras). A flagged share far above
+this means the data differ from what the table was built on.</p>
+<p><strong>Answer-free scores on real data</strong> (<code>scripts/realism_metrics.py</code>), before and after a
+change of the thresholds. Keep a setting only if:</p>
 <ul>
-<li><strong>Level 2</strong>: 43/76 FN are "unlinked; target already claimed" — the correct
-  candidate existed but a competing particle (almost always processed in
-  Level 1, which runs and claims exclusively <em>before</em> Level 2 even starts)
-  took it first, and Level 2 has no fallback. This is a <strong>cascade-ordering
-  loss</strong>, not a prediction-quality problem.</li>
-<li><strong>Level 3</strong>: 66/114 FN are "unlinked; target free" — the correct candidate
-  was available and unclaimed, but <code>cold_start_gate=1.5</code> rejected it as
-  inconsistent with the local-flow prediction. This is a <strong>direct gate
-  false-reject</strong>, the explicit cost of the jump-suppression win.</li>
-<li><strong>Level 1</strong>: 78/144 FN are "linked elsewhere" — the true continuation was
-  available but a different, wrong candidate outranked it under the current
-  cost function (<code>acc + dist_weight * dist_from_curr</code>). This is a <strong>ranking
-  problem</strong>, not an availability problem.</li>
+<li><code>jump_share</code> does not rise (it should fall);</li>
+<li><code>never4_share</code> (long trajectories never seen by all four cameras, the best real-data
+  hint of ghost trajectories) falls;</li>
+<li>the number of trajectories falls and <code>mean_len</code> rises (fewer fragments);</li>
+<li><code>jitter_z_p90</code> does not rise.</li>
 </ul>
-<h2 id="the-goal-precisely-stated">The goal, precisely stated<a class="headerlink" href="#the-goal-precisely-stated" title="Permanent link">&para;</a></h2>
-<p>"Better than 3dptv.exe's GT" cannot be measured as pure agreement with GT —
-GT is itself <code>track3d.c</code>/<code>trackcorr</code> output, a heuristic tracker, not
-ground truth in the metrological sense. Agreement-with-GT caps us at
-<em>reproducing</em> a possibly-flawed reference. Two separate objectives, don't
-conflate them:</p>
-<ol>
-<li><strong>Faithful, well-tuned reproduction on real data</strong> (wp1): agreement with
-   GT is still the right proxy here because it's the only real-world
-   correctness signal we have for this dataset — but the target is "as high
-   as the algorithm family allows," not "byte-identical to a specific run."</li>
-<li><strong>Genuine correctness on synthetic ground truth</strong>
-   (<code>tests/unit/test_synthetic_tracking.py</code>, exact known trajectories): this
-   is the only place "better than GT" is even measurable, because there the
-   true continuation is known independent of any tracker's output. Every
-   change below must be checked against the synthetic suite, not just wp1 —
-   a change that improves wp1 agreement by exploiting a quirk of this
-   dataset's density/geometry is worthless (or harmful) if it regresses
-   synthetic recovery rate.</li>
-</ol>
-<h2 id="concrete-next-steps-in-priority-order-highest-expected-win-first">Concrete next steps, in priority order (highest expected win first)<a class="headerlink" href="#concrete-next-steps-in-priority-order-highest-expected-win-first" title="Permanent link">&para;</a></h2>
-<ol>
-<li>
-<p><strong>Cross-level losers-retry for Level 2</strong> (mirrors the fix already proven
-   for <code>trackcorr_c_loop</code>'s Phase 3, documented in
-   <code>docs/algorithms/tracking.md</code>). When a Level 1 edge and a Level 2 edge
-   compete for the same Level-2-eligible target and Level 1 wins, currently
-   Level 2's particle is simply dropped. Instead: after Level 1 finishes,
-   let Level 2 also consider candidates Level 1 rejected in <em>its own</em>
-   contested set (fallback to 2nd/3rd-best), same way <code>track.py</code>'s Phase 3
-   works. Expected to recover a meaningful slice of the 43 "target claimed"
-   Level-2 FN without touching Level 1 at all (Level 1 is already claiming
-   correctly in these cases — it's Level 2 that has nowhere to go).
-   Implement in <code>track_kernels_track3d.track3d_loop_fast</code>, verify against
-   both wp1 (per-level breakdown must show Level 2 FN drop, other levels
-   unchanged) and the synthetic suite (recovery rate must not regress).</p>
-</li>
-<li>
-<p><strong>Per-particle cold_start_gate that adapts to local neighbor density</strong>,
-   not a single global constant. The gate's 66 false-rejects vs its jump
-   suppression is a precision/recall knob tuned on one dataset; a gate
-   scaled by the local point spacing (e.g. <code>gate = f(local NN distance)</code>
-   instead of a flat 1.5mm) should let dense regions stay conservative while
-   sparse regions (where the true continuation is farther away and jumps are
-   less ambiguous anyway) loosen up. Test the current flat value against a
-   density-scaled variant on both wp1 (does the FN-66 bucket shrink without
-   jumps climbing back) and synthetic (recovery rate).</p>
-</li>
-<li>
-<p><strong>Level 1 ranking</strong>: test adding a mild angle-consistency term to the
-   Level 1 cost (currently <code>acc + dist_weight * dist_from_curr</code>, no angular
-   term at all — <code>track.c</code>'s equivalent uses angle+acc jointly, our port
-   dropped angle entirely per the "Fixed same day" notes about avoiding
-   decoy candidates). A candidate physically consistent in direction as well
-   as magnitude should out-rank the current 78 "linked elsewhere" wrong
-   picks. Needs a synthetic-suite regression check since angle terms are the
-   documented culprit <code>track_kernels_track3d.py</code> warns against
-   over-constraining (comment blocks at top of Level 1 cost computation).</p>
-</li>
-<li>
-<p><strong>Re-validate on a second real dataset</strong> (burgers, or a different wp1
-   frame window) before locking in any parameter changes from steps 1-3 —
-   everything found this session is from a single 10-frame window; avoid
-   overfitting <code>cold_start_gate</code>/<code>dist_weight</code> to it.</p>
-</li>
-<li>
-<p><strong>Only after 1-4</strong>: revisit whether <code>cold_start_gate</code> should default to
-   something in production <code>Cython3DTracker</code>/<code>tracking_presets.py</code> (it's
-   currently opt-in, default 0.0). Don't flip that default until the
-   cascade-order and gate-adaptivity fixes above are in, since today's
-   1.5mm value was picked to compensate for a fixable structural loss
-   (item 1), not because 1.5mm is intrinsically the right number.</p>
-</li>
-</ol>
-<h2 id="visual-comparison-harness-build-first-before-step-1">Visual comparison harness (build first, before step 1)<a class="headerlink" href="#visual-comparison-harness-build-first-before-step-1" title="Permanent link">&para;</a></h2>
-<p>Every change in steps 1-5 above must be judged visually, not just by the
-TP/FP/FN table. Build a reusable 4-panel figure and regenerate it after each
-change:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/real_retrack.py<span class="w"> </span>base<span class="w"> </span><span class="m">300</span><span class="w"> </span><span class="nv">q_seed</span><span class="o">=</span>null<span class="w"> </span><span class="nv">q_young</span><span class="o">=</span><span class="m">0</span><span class="w">   </span><span class="c1"># scratch copy</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/real_retrack.py<span class="w"> </span>new<span class="w">  </span><span class="m">300</span><span class="w"> </span><span class="nv">q_seed</span><span class="o">=</span><span class="m">0</span>.15<span class="w"> </span><span class="nv">q_young</span><span class="o">=</span><span class="m">6</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/realism_metrics.py<span class="w"> </span>/private/tmp/claude-501/real_runs/new/res/run.zarr<span class="w"> </span>--last<span class="w"> </span><span class="m">300</span>
+</span></code></pre></div>
+<p><strong>With known truth</strong> (synthetic cases from <code>scripts/synth_bench.py</code>): sweep a grid and
+read velocity error against true points kept, tuning on the real-jitter case and
+checking on the others; never tune on real data.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/synth_bench.py<span class="w"> </span>build<span class="w"> </span>--level<span class="w"> </span>L1<span class="w"> </span>--sigma-px<span class="w"> </span><span class="m">0</span>.08
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/synth_bench.py<span class="w"> </span>sweep<span class="w"> </span>--cases<span class="w"> </span>CASE<span class="w"> </span>--trackers<span class="w"> </span><span class="s2">"two_phase+q_seed=0.15+q_young=6"</span><span class="w"> </span>-j<span class="w"> </span><span class="m">4</span><span class="w"> </span>--no-eval
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/synth_bench.py<span class="w"> </span><span class="nb">eval</span><span class="w"> </span>--case<span class="w"> </span>CASE<span class="w"> </span>--trackers<span class="w"> </span>two_phase<span class="w"> </span><span class="s2">"two_phase+q_seed=0.15+q_young=6"</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/tune_summary.py<span class="w"> </span>q_seed<span class="w"> </span>q_young
+</span></code></pre></div>
+<h2 id="6-after-tracking-trimming-doubtful-ends-and-the-smoother">6. After tracking: trimming doubtful ends and the smoother<a class="headerlink" href="#6-after-tracking-trimming-doubtful-ends-and-the-smoother" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>3 orthogonal projections</strong> (XY, XZ, YZ) + <strong>1 isometric 3D view</strong>, one
-  figure, e.g. a 2x2 matplotlib grid.</li>
-<li><strong>GT trajectories in blue</strong>, <strong>our tracker's trajectories in red</strong>, same
-  axes/limits across all 4 panels so the eye can compare directly.</li>
-<li>Target look: red should overlay blue as closely as possible — the visual
-  read is "did this change reduce noise (jagged red segments where blue is
-  smooth), lengthen red trajectories (fewer premature breaks vs blue's
-  longer runs), and kill wrong-link jumps (a red segment that suddenly darts
-  away from its blue counterpart)."</li>
-<li>Save each run's figure with a name tied to the config that produced it
-  (e.g. <code>viz_gate1.5_dw1.827.png</code>) so consecutive changes can be flipped
-  through/diffed, not just eyeballed once and discarded. <code>wp1_10_images/</code>
-  already has <code>viz_data*/</code> and <code>make_viz_data*.py</code> scripts from earlier
-  sessions — check whether one of those already builds most of this before
-  writing a new one from scratch.</li>
+<li><strong>Trim.</strong> <code>openptv2.quality_post.trim_doubtful_ends(trajid, frame, ghost, thr=0.3,
+  max_trim=3, max_frac=0.25)</code> removes up to three end points of a trajectory whose ghost
+  probability is above <code>thr</code> (never more than a quarter of the trajectory per end). On
+  the synthetic cases it lowers the velocity error by another 0.014–0.04 for 0.010 fewer
+  points kept at <code>thr</code> 0.3 (0.2: more error gain, 0.018 fewer points). It is <strong>optional</strong>
+  and costs points; lower <code>thr</code> for more accuracy, raise it to keep more. Short
+  trajectories (lv_multi: about 8 frames) lose 9–16% of their points at 0.3/0.2: use 0.5
+  there or skip it.</li>
+<li><strong>Smoother.</strong> <code>openptv2.quality_post.weighted_savgol</code> is a Savitzky–Golay fit at the
+  true frame times (the flowtracks filter assumes consecutive frames), with a shrinking
+  odd window for short trajectories and optional point weights. With unit weights it
+  lowers the velocity error by 0.002–0.008 on every case. Quality weights <code>(1−g)^p</code> and
+  spike removal gave nothing (&lt;0.001), so use <strong>unit weights</strong>.</li>
+<li>openptv-cloud uses both in its <code>post</code> step; see its configuration reference
+  (<code>trajectories.smoothing_method</code>, <code>trajectories.trim_doubtful</code>).</li>
 </ul>
-<h2 id="trajectory-trees-for-cross-tracker-decision-comparison">Trajectory trees for cross-tracker decision comparison<a class="headerlink" href="#trajectory-trees-for-cross-tracker-decision-comparison" title="Permanent link">&para;</a></h2>
-<p>Alongside the visual harness, build/extend a <strong>trajectory tree</strong> extractor:
-for each trajectory, walk it frame by frame and record, per node, the 3D
-position + row id, and the per-camera 2D target (pixel coords + target id)
-that the 3D point resolved from. <code>wp1_10_images/scripts/analyze_trajectory_trees.py</code>
-already does most of this (<code>extract_trees()</code> — frame, rt_row, pos, per-cam
-<code>cam_ids</code>/2D target lookup) — extend it rather than rewriting:</p>
+<h2 id="7-limits">7. Limits<a class="headerlink" href="#7-limits" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Run it once per tracker config (GT, current best <code>track3d</code> config, any
-  candidate change from steps 1-3) to get one tree set each.</li>
-<li>At each frame step, diff trees node-by-node: same particle (matched by 3D
-  position within tolerance, or by shared 2D target ids where available)
-  but a different <code>next</code> link between two tracker outputs marks exactly the
-  frame/particle where the decision diverged.</li>
-<li>This is the mechanism for turning "FN reason: linked elsewhere" (from
-  <code>classify_by_level.py</code>) into "linked WHERE, TO WHAT, and why that
-  candidate outranked the correct one" — pull the actual competing
-  candidates' costs at that decision point, not just the aggregate count.</li>
-<li>Needs the real 2D targets to be meaningful for the per-camera layer (see
-  the <code>compare_track3d_vs_trackcorr.py</code> caveat below — GT's own 2D targets,
-  not a mismatched detection run's, or the per-camera comparison is noise).</li>
-</ul>
-<h2 id="tooling-already-built-this-session-wp1_10_imagesscripts">Tooling already built this session (wp1_10_images/scripts/)<a class="headerlink" href="#tooling-already-built-this-session-wp1_10_imagesscripts" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>ab_dist_weight.py</code>, <code>gate_sweep_gt_cloud.py</code> — config sweeps on GT's own
-  cloud (the correct control).</li>
-<li><code>classify_by_level.py</code> — per-level TP/FP/FN + FN-reason breakdown; reuse
-  and extend this for steps 1-3 above (add a level-2-losers-retry variant,
-  a density-scaled-gate variant, and an angle-term variant, each re-run
-  through this same classifier to see which FN bucket actually shrinks).</li>
-<li><code>compare_track3d_vs_trackcorr.py</code> — do <strong>not</strong> trust its trackcorr number;
-  it feeds mismatched 2D targets (copied by frame-index from an unrelated
-  detection run) into <code>trackcorr_c_loop</code>, so its trackcorr row (rec 0.001) is
-  meaningless. Fix if trackcorr comparison is needed again: either find
-  GT's actual original 2D targets (check <code>res_ground_truth_backup/</code> for
-  <code>_targets</code> files) or drop the trackcorr comparison until real targets are
-  available.</li>
+<li>The probability table was measured on synthetic data (about 8% ghosts); real data may
+  have a different ghost rate. The real-data checks above are the guard.</li>
+<li>The synthetic ghosts are almost stationary (static false targets); real data have few
+  stationary trajectories. Do not build a ghost rule on speed.</li>
+<li>It cannot remove ghosts that have good rcm; about 40% of the possible ghost gain is
+  reached (all ghosts removed: velocity error 0.1465 vs 0.1845 with the marks, 0.1977
+  without, on the real-jitter case).</li>
 </ul>
 
 
@@ -2430,10 +2595,10 @@ already does most of this (<code>extract_trees()</code> — frame, rt_row, pos, 
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

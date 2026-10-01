@@ -903,6 +903,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../tracking_quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Point Quality and Ghost Marks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tracker-tutorials/" class="md-nav__link">
         
   
@@ -2369,7 +2397,8 @@ trajectories over the default on a poorly-conditioned aorta dataset.
 pure 3D (<code>leaf_weight=0</code>) without them. <strong>Tips:</strong> start with
 <code>leaf_weight=1</code>, <code>v_max</code> at ~3× your typical step; see
 <a href="../two-phase-tracking/">Two-Phase Tracking</a> for the full parameter guide
-including the shared-observation prototype flags.</p>
+including the shared-observation prototype flags. Ghost-point quality rules
+(<code>q_seed</code>, <code>q_young</code>) are on by default; see <a href="../tracking_quality/">Point quality</a>.</p>
 <h3 id="hybrid-multi-t-hybrid_deltat_3d-the-slow-flow-specialist">Hybrid multi-Δt (<code>hybrid_deltat_3d</code>) — the slow-flow specialist<a class="headerlink" href="#hybrid-multi-t-hybrid_deltat_3d-the-slow-flow-specialist" title="Permanent link">&para;</a></h3>
 <p>When particles crawl, frame-to-frame steps drown in noise — so it matches
 every N-th frame (where displacement beats noise) and fills the middle with
