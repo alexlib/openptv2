@@ -7,7 +7,7 @@ This file replaces all earlier tracking plans, including `new_tracking_plan.md` 
 
 ---
 
-# STATUS AND HANDOFF (updated 2026-10-01 night, read this first)
+# STATUS AND HANDOFF (updated 2026-10-01 late night, read this first)
 
 ## Where we are
 Branch `feat/tracker-improvements`. Goal unchanged: correct Lagrangian trajectories,
@@ -147,19 +147,55 @@ should follow the data, the CompleteTest value is 0.3 for a 0.08 mm step).
 behaviour is `two_phase+q_seed=null+q_young=0`. Old `eval.json` files under the label
 `two_phase` are the old behaviour.
 
+### Decisions taken and release (2026-10-01 night)
+The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
+(2) two-hop confirmation on by default; (3) merge and push the openptv-cloud branch.
+- **Confirmation default** (`02033eed`): the `two_phase` plugin uses `confirm_tol=0.3`,
+  `confirm_ends=true` when the `track` section has no `confirm_tol` and `v_max <= 3`
+  mm/frame (the regime it was tested in); an explicit number or `null` wins; a large
+  `v_max` leaves it off with a printed note. lv_multi wp4/wp5 with no overrides: jump steps
+  0.0% (were 6.7% and 8.4%). `docs/two-phase-tracking.md` has the parameter row.
+- **Release:** `main` fast-forwarded to `02033eed` and pushed; version from git tag
+  (RELEASING.md: tag `v0.5.12`, CI builds wheels and publishes to PyPI). See the status
+  line at the top of this section for the final state.
+- **openptv-cloud:** after the PyPI release, raise `openptv2>=` in `pyproject.toml`, update
+  the lock file, run its tests, merge `feat/gap-aware-smoothing-trim` into `main`, push.
+
+## What can be next (ranked by expected gain)
+The remaining error on the real-jitter case, step by step (velocity error; perfect linker
+0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →
+with trimming at 0.3 0.1647. With all ghosts removed from the input two_phase reaches 0.1465.
+So about 0.02 of the gap to the perfect linker is **fragmentation and wrong links that are
+not ghosts** (link precision 0.9989, recall 0.974, 2.2 pieces per long track against 1.8,
+long-track completeness 0.526 against 0.569), and about 0.02 is **ghosts that still pass**.
+
+| Candidate | What it attacks | Expected gain | Cost / risk |
+|---|---|---|---|
+| **A7b** confirmation tolerance from the data | wrong links; best tolerance is loose for sparse and tight for dense data | −0.005 sparse, −0.05 at 4× density | medium: needs a rule (density, kink distribution) that picks 7σ / 3σ correctly |
+| **A12 + A13** "no link" option, wait one frame | fragmentation and links forced onto doubtful points | probably −0.01 | medium; A13 only if the decision log shows lost second chances |
+| **A4 + A5** velocity from several frames, gap bridging | fragmentation (longer tracks), better guesses | −0.005…−0.01; long-track completeness up | medium; must pass the frame-skip and real-jitter checks |
+| **A11** feed marks back into camera matching | ghosts that still pass; also recovers real particles | up to ~0.02 (ghost bound) | high: touches correspondences |
+| **Improve the mark itself** (a better ghost probability: add the 2D blob size/brightness agreement, the jitter of the trajectory, a table fitted per run) | ghosts that still pass | up to ~0.02 | low-medium; measurable with `ghost_bound`-style cheats |
+| **S0 speed profile** | the quality rules add ~14% (rcm per frame, mark storage, young filter) | speed only | low; do before the next accuracy item that costs time |
+| **Upstream the smoother** to postptv/flowtracks | all users of the final output | −0.002…−0.008 | needs a flowtracks release |
+
+Recommended next: **A7b** (largest measured, concrete), then **the better mark** (cheap to
+test offline with the saved features and the ghost cheats), then A4/A5 together.
+
 ## Next steps, in this order
-1. **Release step (needs the user):** release openptv2 with `quality_post`, bump the pin in
-   openptv-cloud, merge `feat/gap-aware-smoothing-trim`. Decide on `confirm_tol` as a
-   default (see above).
-2. **A7b: choose the confirmation tolerance from the data** (A7 as designed was tried and
-   reverted, see section 4): the best `confirm_tol` is loose for sparse and tight for dense
-   data (4× density: −0.051 with a tight one). Find a data-driven rule (density, measured
-   kink distribution) and check it on all five cases and on real data.
-3. **A2** (camera count in the cost that also works with `leaf_weight=0`), **A12**, **A13**;
-   order in section 7.
-4. Later: soft use at the correspondence step (A11), speed (S0/S1), chunks (P3). Speed note:
-   the quality rules add about 1 s to a 200-frame run (rcm per frame, mark storage), +14%;
-   within the budget but worth a profile in S0.
+1. **Finish the release chain** (see "Decisions taken and release").
+2. **A7b:** data-driven `confirm_tol`. Per-case optima are in
+   `bench/step8_A7_confirmation_variants_REVERTED_2026-10-01.json` (normal and real jitter
+   sigma k=7, clustered k≈4, 4× density k=3, skip ×8 the absolute 0.3). Look for a statistic
+   computed from the run that predicts them (nearest-neighbour spacing against the step,
+   or the share of links the rule would cut), implement it as the default for the
+   plugin, and verify on all five cases and the four real recordings.
+3. **Better ghost mark.** Test extra signals offline (`scripts/a10_features.py`,
+   `scripts/ghost_bound.py`): blob size/brightness agreement across cameras, the
+   second-difference jitter of the trajectory, the per-run fitted probability table instead
+   of the synthetic one.
+4. **A4/A5**, then **A12/A13**, then **A2**; order in section 7.
+5. Later: A11, speed (S0/S1), chunks (P3).
 
 ## Commands (all from the repo root, always `uv run`)
 ```bash
