@@ -24,7 +24,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from synth_bench import WORK, _experiment  # noqa: E402
 
 from openptv2.point_quality import (  # noqa: E402
+    brightness_spread,
     fit_scale,
+    frame_log_brightness,
     frame_rcm,
     ghost_probability,
 )
@@ -42,14 +44,19 @@ def point_ghost_probability(case: str, pred: dict) -> np.ndarray:
     exp = _experiment(cd, cd / "parameters_Run1.yaml", 1, n_out)
     store = RunStore.open(cd, mode="r")
     frames = list(range(1, n_out + 1))
-    pos, rcm, nseen = [], [], []
+    pos, rcm, nseen, logb = [], [], [], []
     for f in frames:
         p, c = store.read_correspondences(f)
         pos.append(p)
         rcm.append(frame_rcm(store, f, exp.cals, exp.cpar))
         nseen.append((c >= 0).sum(axis=1))
+        logb.append(frame_log_brightness(store, f))
     scale = fit_scale(np.vstack(pos), np.concatenate(rcm), np.concatenate(nseen))
-    pg = [ghost_probability(p, r, n, scale) for p, r, n in zip(pos, rcm, nseen)]
+    offsets = np.nanmedian(np.vstack(logb), axis=0)  # per-camera gain, as the tracker
+    pg = [
+        ghost_probability(p, r, n, scale, brightness_spread(lb, offsets))
+        for p, r, n, lb in zip(pos, rcm, nseen, logb)
+    ]
     out = np.full(len(pred["frame"]), 0.5)
     for f in np.unique(pred["frame"]):
         m = pred["frame"] == f

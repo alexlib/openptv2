@@ -155,8 +155,9 @@ uv run python scripts/tune_summary.py q_seed q_young
   trajectories (lv_multi: about 8 frames) lose 9–16% of their points at 0.3/0.2: use 0.5
   there or skip it.
 - **Smoother.** `openptv2.quality_post.weighted_savgol` is a Savitzky–Golay fit at the
-  true frame times (the flowtracks filter assumes consecutive frames), with a shrinking
-  odd window for short trajectories and optional point weights. With unit weights it
+  true frame times (the flowtracks filter assumes consecutive frames), with all points of a
+  short trajectory fitted when it is shorter than the window (dropping one point to get an odd
+  window made the error 0.008 worse), and optional point weights. With unit weights it
   lowers the velocity error by 0.002–0.008 on every case. Quality weights `(1−g)^p` and
   spike removal gave nothing (<0.001), so use **unit weights**.
 - openptv-cloud uses both in its `post` step; see its configuration reference

@@ -102,9 +102,9 @@ def weighted_savgol(
         n = len(idx)
         if n < min_window:
             continue
+        # a track shorter than the window is fitted with all its points: dropping one
+        # to make the window odd was measurably worse (0.1790 -> 0.1869 vErr)
         w = min(window, n)
-        if w % 2 == 0:
-            w -= 1  # largest odd window the trajectory fills (as flowtracks min_window)
         deg = min(order, w - 1)
         h = max(w // 2, 1)
         i = np.arange(n)

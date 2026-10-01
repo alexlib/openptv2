@@ -131,7 +131,7 @@ should follow the data, the CompleteTest value is 0.3 for a 0.08 mm step).
   without calibrations); the ghost probability is stored in the run store
   (`quality/frame_NNNNNN`, `RunStore.write_point_quality` / `read_point_quality`);
   `trim_doubtful_ends` never cuts more than a quarter of a trajectory per end;
-  `weighted_savgol` uses the largest odd window for short tracks;
+  `weighted_savgol` fits tracks shorter than the window with all their points (an "odd window" variant tried on 2026-10-02 was worse and was reverted);
   **documentation `docs/tracking_quality.md`** (what the marks are, the thresholds, when
   to change them, how to test them, trim and smoother) linked from `mkdocs.yml`,
   `docs/trackers.md` and `docs/two-phase-tracking.md`.

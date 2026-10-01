@@ -1,0 +1,13 @@
+{"date": "2026-10-02", "base": "default two_phase (rcm_blob, q 0.2/3, confirm 0.3) on the four _a0.18 cases",
+ "cells vErr/yield (s0.08a, d2, d4, clustered k4)": {
+  "two_phase + flowtracks smoother": [[0.1934,0.675],[0.3225,0.497],[0.4307,0.218],[0.1647,0.372]],
+  "+ weighted_savgol unit weights": [[0.1844,0.673],[0.3182,0.494],[0.4266,0.214],[0.1601,0.367]],
+  "+ trim 0.3": [[0.1783,0.670],[0.3113,0.490],[0.4196,0.213],[0.1563,0.364]],
+  "+ trim 0.2 + drop whole trajectories mean>0.25 (len>=6)": [[0.1747,0.664],[0.3089,0.484],[0.4184,0.210],[0.1495,0.359]],
+  "+ trim 0.3 + drop mean>0.25": [[0.1772,0.666],[0.3118,0.486],[0.4197,0.211],[0.1540,0.362]]},
+ "findings": {
+  "smoother": "unit-weight weighted_savgol beats flowtracks by 0.009/0.004/0.004/0.005",
+  "trim 0.3": "a further -0.006/-0.007/-0.007/-0.004 for -0.003..-0.004 points kept",
+  "drop whole trajectories": "only about -0.001 beyond trim: code removed",
+  "odd-window edit": "making short-track windows odd (dropping one point) cost +0.008 vErr (0.1790 -> 0.1869 on the s0.08 case): reverted"},
+ "ghost_free_bound_a0.18_case": {"two_phase default": 0.1551, "quality off": 0.1605, "oracle": 0.1375, "with ghosts default": 0.1934, "with ghosts quality off": 0.2136}}
