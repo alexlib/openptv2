@@ -1,0 +1,71 @@
+##### L1_d1_c0_k1_n200_s0.08_a0.18_f0.05
+tracker                 time    lnkP   lnkR*    vErr    aErr   ghost   longC   frag  yield
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit~sm6_d1     0.0  0.9631  0.9776  0.1387   7.900  0.0357   0.545   1.78  0.670
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit     0.0  0.9597  0.9773  0.1500   8.524  0.0367   0.554   1.76  0.679
+oracle                   5.7  1.0000  1.0000  0.1515  10.701  0.0050   0.557   1.83  0.691
+two_phase~trim0.3_unit     0.0  0.9621  0.9571  0.1724   9.893  0.0366   0.503   2.26  0.676
+two_phase+q_seed=null+q_young=0     9.9  0.9299  0.9723  0.2008  12.663  0.0716   0.510   2.30  0.687
+priority_segment_3d     25.4  0.9220  0.9995  0.2452  18.612  0.0738   0.555   1.86  0.693
+nearest_hungarian_3d    23.4  0.9466  0.8134  0.2602  17.912  0.0733   0.422   3.31  0.680
+full_multipass          36.7  0.9216  0.8747  0.3047  22.804  0.0724   0.439   3.00  0.683
+##### L1_d1_c0_k1_n120_s0.16_a0.18_f0.05
+tracker                 time    lnkP   lnkR*    vErr    aErr   ghost   longC   frag  yield
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit~sm6_d1     0.0  0.9500  0.9726  0.1917  12.375  0.0429   0.585   1.38  0.673
+oracle                   2.4  1.0000  1.0000  0.1918  15.235  0.0050   0.592   1.41  0.687
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit     0.0  0.9462  0.9724  0.2014  13.590  0.0436   0.588   1.37  0.676
+two_phase~trim0.3_unit     0.0  0.9495  0.8805  0.2975  19.574  0.0450   0.456   2.34  0.660
+priority_segment_3d     14.8  0.9105  0.9966  0.3050  24.843  0.0769   0.593   1.43  0.693
+two_phase+q_seed=null+q_young=0     5.6  0.9189  0.8958  0.3116  21.720  0.0761   0.462   2.36  0.673
+nearest_hungarian_3d    14.1  0.9330  0.7288  0.3829  28.628  0.0788   0.390   3.00  0.668
+full_multipass          21.4  0.9036  0.7753  0.4120  32.012  0.0769   0.405   2.92  0.673
+##### L1_d2_c0_k1_n150_s0.08_a0.18_f0.05
+tracker                 time    lnkP   lnkR*    vErr    aErr   ghost   longC   frag  yield
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit~sm6_d1     0.0  0.9600  0.9091  0.2957  18.148  0.0404   0.352   2.25  0.489
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit     0.0  0.9586  0.9081  0.3046  18.511  0.0413   0.356   2.24  0.494
+two_phase~trim0.3_unit     0.0  0.9588  0.9079  0.3121  18.679  0.0413   0.341   2.44  0.496
+oracle                   6.7  1.0000  1.0000  0.3427  25.816  0.0165   0.387   2.20  0.531
+two_phase+q_seed=null+q_young=0     9.5  0.9248  0.9479  0.3622  24.768  0.0729   0.346   2.59  0.517
+nearest_hungarian_3d    34.2  0.9192  0.7964  0.4970  36.717  0.0789   0.294   3.10  0.521
+full_multipass          38.4  0.9061  0.8524  0.5386  39.210  0.0774   0.313   2.87  0.522
+priority_segment_3d     22.7  0.9014  0.9984  0.5667  45.018  0.0806   0.388   2.20  0.533
+##### L1_d4_c0_k1_n150_s0.08_a0.18_f0.05
+tracker                 time    lnkP   lnkR*    vErr    aErr   ghost   longC   frag  yield
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit~sm6_d1     0.0  0.9320  0.8403  0.4105  25.242  0.0671   0.160   1.41  0.217
+two_phase~trim0.3_unit     0.0  0.9307  0.8397  0.4177  25.542  0.0674   0.156   1.47  0.220
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit     0.0  0.9306  0.8400  0.4232  25.683  0.0684   0.161   1.41  0.220
+two_phase+q_seed=null+q_young=0    11.9  0.8614  0.9110  0.5110  34.745  0.1249   0.162   1.65  0.239
+oracle                  13.6  1.0000  1.0000  0.5899  46.333  0.0361   0.183   1.61  0.258
+nearest_hungarian_3d    54.8  0.7994  0.7726  0.8059  58.950  0.1513   0.135   1.99  0.248
+priority_segment_3d     29.1  0.7905  0.9957  1.5218 123.542  0.1848   0.181   1.57  0.260
+full_multipass       no result (crashed?)
+##### L1_d2_c0.3_k4_n150_s0.08_a0.18_f0.05
+tracker                 time    lnkP   lnkR*    vErr    aErr   ghost   longC   frag  yield
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit     0.0  0.9447  0.8481  0.1516   2.616  0.0502   0.333   2.16  0.368
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit~sm6_d1     0.0  0.9459  0.8487  0.1517   2.668  0.0500   0.330   2.17  0.366
+two_phase~trim0.3_unit     0.0  0.9453  0.8470  0.1548   2.730  0.0496   0.316   2.33  0.367
+oracle                   6.9  1.0000  1.0000  0.1621   3.131  0.0130   0.400   1.79  0.412
+two_phase+q_seed=null+q_young=0    10.0  0.9243  0.8732  0.1694   3.052  0.0681   0.322   2.37  0.380
+nearest_hungarian_3d    25.0  0.8985  0.8982  0.4700   6.361  0.0743   0.348   2.18  0.404
+full_multipass          87.7  0.8680  0.9210  0.8179  10.918  0.0834   0.347   2.13  0.404
+priority_segment_3d     20.4  0.8225  0.9567  1.3105  18.164  0.1198   0.334   2.14  0.393
+##### L1_d1_c0_k4_n150_s0.08_a0.18_f0.05
+tracker                 time    lnkP   lnkR*    vErr    aErr   ghost   longC   frag  yield
+oracle                   3.6  1.0000  1.0000  0.0812   1.407  0.0046   0.585   1.47  0.679
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit     0.0  0.9521  0.9242  0.1022   1.502  0.0478   0.526   1.75  0.653
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit~sm6_d1     0.0  0.9527  0.9252  0.1023   1.579  0.0476   0.516   1.80  0.648
+two_phase~trim0.3_unit     0.0  0.9534  0.9232  0.1050   1.499  0.0475   0.514   1.89  0.662
+two_phase+q_seed=null+q_young=0     7.7  0.9304  0.9361  0.1165   1.646  0.0690   0.513   1.92  0.669
+nearest_hungarian_3d    18.3  0.9395  0.8983  0.2120   3.257  0.0675   0.516   2.00  0.674
+full_multipass          57.6  0.9077  0.9283  0.3865   7.173  0.0654   0.525   1.85  0.668
+priority_segment_3d     19.9  0.8990  0.9903  0.4387   7.958  0.0827   0.540   1.79  0.673
+##### L1_d1_c0_k8_n150_s0.08_a0.18_f0.05
+tracker                 time    lnkP   lnkR*    vErr    aErr   ghost   longC   frag  yield
+oracle                   3.5  1.0000  1.0000  0.0923   0.991  0.0083   0.564   1.51  0.667
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit     0.0  0.9486  0.8971  0.1153   1.048  0.0516   0.479   2.06  0.630
+two_phase~trim0.3_unit     0.0  0.9496  0.8962  0.1165   1.038  0.0516   0.474   2.11  0.636
+two_phase+confirm_auto=8~rc6_4_d1~trim0.3_unit~sm6_d1     0.0  0.9481  0.8986  0.1201   1.133  0.0525   0.475   2.07  0.621
+two_phase+q_seed=null+q_young=0    13.3  0.9291  0.9086  0.1299   1.117  0.0695   0.479   2.13  0.645
+nearest_hungarian_3d    17.3  0.9093  0.9091  0.3203   2.169  0.0615   0.471   2.06  0.642
+full_multipass         176.1  0.8690  0.9177  0.8139   7.138  0.0950   0.445   2.18  0.635
+priority_segment_3d     18.7  0.8230  0.9336  1.2442  10.566  0.1340   0.404   2.42  0.605
+ALL_DONE
