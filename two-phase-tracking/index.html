@@ -903,6 +903,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../tracking_parameters_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Parameters (what to measure, how to set)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tracking_quality/" class="md-nav__link">
         
   
@@ -2199,6 +2227,11 @@ the <code>track</code> section (same names as below).</p>
 <p>Without leaves/<code>project_fn</code> it falls back to pure 3D distance costs
 (<code>cost_mode="3d"</code>); pass <code>leaf_weight=0</code> to force that explicitly.</p>
 <h2 id="2-parameters">2. Parameters<a class="headerlink" href="#2-parameters" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>Which values suit <strong>your</strong> data, how to measure that, and what each one changes: see
+<a href="../tracking_parameters_guide/">Tracking parameters</a> and run
+<code>scripts/tracking_advice.py RUN_DIR</code>.</p>
+</blockquote>
 <p>All live in the <code>track</code> YAML section (batch/GUI) or on
 <code>TwoPhaseTrackerConfig</code> (Python). Units in brackets.</p>
 <table>

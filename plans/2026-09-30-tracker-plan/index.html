@@ -903,6 +903,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../tracking_parameters_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Parameters (what to measure, how to set)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../tracking_quality/" class="md-nav__link">
         
   
@@ -2680,8 +2708,22 @@ behaviour is <code>two_phase+q_seed=null+q_young=0</code>. Old <code>eval.json</
     suspect-trajectory share): quality off 16375 / 19.5 / 1562 / 11.6%; default 14674 / 20.7 /
     1533 / 9.6%; accuracy mode (0.15/6) 14345 / 20.7 / 1515 / 8.9%; with <code>blob_gate</code> 0.5 14335 /
     20.6 / 1489 / 8.8%: monotone, with ≤3% fewer long tracks.</li>
-<li><strong>Needs a release (0.5.14) and a cloud e2e reference update</strong> (lv_multi has no explicit
-    <code>confirm_tol</code>, so the automatic tolerance becomes active there).</li>
+<li>
+<p><strong>Needs a release (0.5.14) and a cloud e2e reference update</strong> (lv_multi has no explicit
+    <code>confirm_tol</code>, so the automatic tolerance becomes active there).</p>
+</li>
+<li>
+<p><strong>No hard-coded values, and a user guide (2026-10-02).</strong> The guard of the automatic
+  confirmation tolerance is now YAML (<code>confirm_auto_max_neighbours</code> 7, <code>confirm_auto_min_ratio</code>
+  0.5, <code>confirm_auto_radius</code> 5 mm), as are the other data-dependent values (<code>q_seed</code>, <code>q_young</code>,
+  <code>q_model</code>, <code>blob_gate</code>, <code>confirm_tol</code>, <code>confirm_auto</code>). New: <code>openptv2/tracking_advice.py</code>
+  and <code>scripts/tracking_advice.py RUN_DIR</code>: measures density, step, kink, 3-camera and flagged
+  shares from the user's data (about 100 frames) and prints each recommended value with the
+  measurement behind it (checked on real wp2 and lv_multi wp5 and on five synthetic cases);
+  <code>docs/tracking_parameters_guide.md</code> explains what to measure, what depends on what and what
+  each parameter changes. A change of a yaml value never needs a release; only new options do
+  (the options above are in code that is not yet released, 0.5.14).</p>
+</li>
 </ul>
 <h2 id="what-can-be-next-ranked-by-expected-gain">What can be next (ranked by expected gain)<a class="headerlink" href="#what-can-be-next-ranked-by-expected-gain" title="Permanent link">&para;</a></h2>
 <p>The remaining error on the real-jitter case, step by step (velocity error; perfect linker

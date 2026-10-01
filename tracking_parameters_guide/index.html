@@ -13,26 +13,28 @@
       
       
       
+        <link rel="prev" href="../tracking_guide/">
       
-        <link rel="next" href="installation/">
+      
+        <link rel="next" href="../tracking_quality/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>OpenPTV2 Documentation</title>
+        <title>Tracking Parameters (what to measure, how to set) - OpenPTV2 Documentation</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,7 +53,7 @@
       
     
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#openptv2-documentation" class="md-skip">
+        <a href="#tracking-parameters-what-to-measure-how-to-set-them-what-changes" class="md-skip">
           Skip to content
         </a>
       
@@ -90,7 +92,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+    <a href=".." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -110,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Tracking Parameters (what to measure, how to set)
             
           </span>
         </div>
@@ -221,11 +223,9 @@
   
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="." class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
         
   
   
@@ -244,7 +244,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="installation/" class="md-tabs__link">
+      <a href="../installation/" class="md-tabs__link">
         
   
   
@@ -263,7 +263,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="first_steps/" class="md-tabs__link">
+      <a href="../first_steps/" class="md-tabs__link">
         
   
   
@@ -284,7 +284,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="tutorials/getting_started_tutorial/" class="md-tabs__link">
+        <a href="../tutorials/getting_started_tutorial/" class="md-tabs__link">
           
   
   
@@ -300,11 +300,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="zarr-hdf5-storage/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../zarr-hdf5-storage/" class="md-tabs__link">
           
   
   
@@ -324,7 +326,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="plate-calibration-howto/" class="md-tabs__link">
+        <a href="../plate-calibration-howto/" class="md-tabs__link">
           
   
   
@@ -344,7 +346,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="benchmarking_guide/" class="md-tabs__link">
+        <a href="../benchmarking_guide/" class="md-tabs__link">
           
   
   
@@ -362,7 +364,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="tests/" class="md-tabs__link">
+      <a href="../tests/" class="md-tabs__link">
         
   
   
@@ -383,7 +385,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="developer_guide/building/" class="md-tabs__link">
+        <a href="../developer_guide/building/" class="md-tabs__link">
           
   
   
@@ -403,7 +405,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="algorithms/tracking/" class="md-tabs__link">
+        <a href="../algorithms/tracking/" class="md-tabs__link">
           
   
   
@@ -423,7 +425,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
+        <a href="../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
           
   
   
@@ -457,7 +459,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+    <a href=".." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -484,37 +486,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -530,48 +505,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#start-here-10-minutes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Start here (10 minutes)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation-map" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Documentation map
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -583,7 +516,7 @@
   
   
     <li class="md-nav__item">
-      <a href="installation/" class="md-nav__link">
+      <a href="../installation/" class="md-nav__link">
         
   
   
@@ -610,7 +543,7 @@
   
   
     <li class="md-nav__item">
-      <a href="first_steps/" class="md-nav__link">
+      <a href="../first_steps/" class="md-nav__link">
         
   
   
@@ -691,7 +624,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/getting_started_tutorial/" class="md-nav__link">
+      <a href="../tutorials/getting_started_tutorial/" class="md-nav__link">
         
   
   
@@ -719,7 +652,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/cavity_flow_tutorial/" class="md-nav__link">
+      <a href="../tutorials/cavity_flow_tutorial/" class="md-nav__link">
         
   
   
@@ -747,7 +680,7 @@
   
   
     <li class="md-nav__item">
-      <a href="aorta_tutorial/" class="md-nav__link">
+      <a href="../aorta_tutorial/" class="md-nav__link">
         
   
   
@@ -775,7 +708,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/four_view_splitter/" class="md-nav__link">
+      <a href="../tutorials/four_view_splitter/" class="md-nav__link">
         
   
   
@@ -803,7 +736,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/plugins/" class="md-nav__link">
+      <a href="../tutorials/plugins/" class="md-nav__link">
         
   
   
@@ -831,7 +764,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/parameters/" class="md-nav__link">
+      <a href="../tutorials/parameters/" class="md-nav__link">
         
   
   
@@ -863,28 +796,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
@@ -902,7 +838,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -920,7 +856,7 @@
   
   
     <li class="md-nav__item">
-      <a href="zarr-hdf5-storage/" class="md-nav__link">
+      <a href="../zarr-hdf5-storage/" class="md-nav__link">
         
   
   
@@ -948,7 +884,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tracking_guide/" class="md-nav__link">
+      <a href="../tracking_guide/" class="md-nav__link">
         
   
   
@@ -973,10 +909,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="tracking_parameters_guide/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Parameters (what to measure, how to set)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -992,6 +955,114 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-quick-way-let-the-program-measure-your-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The quick way: let the program measure your data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-how-the-pieces-fit-together-what-depends-on-what" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. How the pieces fit together (what depends on what)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-numbers-to-measure-the-advisor-prints-all-of-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The numbers to measure (the advisor prints all of them)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-to-expect-measured-on-synthetic-data-with-known-truth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What to expect (measured on synthetic data with known truth)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-how-to-check-a-setting-on-your-own-real-data-no-ground-truth-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. How to check a setting on your own real data (no ground truth needed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-testing-a-setting-on-synthetic-data-with-known-truth-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Testing a setting on synthetic data with known truth (optional)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-limits-to-keep-in-mind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Limits to keep in mind
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1004,7 +1075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tracking_quality/" class="md-nav__link">
+      <a href="../tracking_quality/" class="md-nav__link">
         
   
   
@@ -1032,7 +1103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tracker-tutorials/" class="md-nav__link">
+      <a href="../tracker-tutorials/" class="md-nav__link">
         
   
   
@@ -1060,7 +1131,7 @@
   
   
     <li class="md-nav__item">
-      <a href="lagrangian_turbulence_quality_guide/" class="md-nav__link">
+      <a href="../lagrangian_turbulence_quality_guide/" class="md-nav__link">
         
   
   
@@ -1088,7 +1159,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/batch_processing/" class="md-nav__link">
+      <a href="../tutorials/batch_processing/" class="md-nav__link">
         
   
   
@@ -1116,7 +1187,7 @@
   
   
     <li class="md-nav__item">
-      <a href="cloud-batch/" class="md-nav__link">
+      <a href="../cloud-batch/" class="md-nav__link">
         
   
   
@@ -1144,7 +1215,7 @@
   
   
     <li class="md-nav__item">
-      <a href="multi-folder-runs/" class="md-nav__link">
+      <a href="../multi-folder-runs/" class="md-nav__link">
         
   
   
@@ -1172,7 +1243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/tracking_visualization/" class="md-nav__link">
+      <a href="../tutorials/tracking_visualization/" class="md-nav__link">
         
   
   
@@ -1200,7 +1271,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/tracking_debug_visualization/" class="md-nav__link">
+      <a href="../tutorials/tracking_debug_visualization/" class="md-nav__link">
         
   
   
@@ -1289,7 +1360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="plate-calibration-howto/" class="md-nav__link">
+      <a href="../plate-calibration-howto/" class="md-nav__link">
         
   
   
@@ -1317,7 +1388,7 @@
   
   
     <li class="md-nav__item">
-      <a href="illmenau-4cam-calibration/" class="md-nav__link">
+      <a href="../illmenau-4cam-calibration/" class="md-nav__link">
         
   
   
@@ -1345,7 +1416,7 @@
   
   
     <li class="md-nav__item">
-      <a href="calibration_best_practices/" class="md-nav__link">
+      <a href="../calibration_best_practices/" class="md-nav__link">
         
   
   
@@ -1373,7 +1444,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/calibration/" class="md-nav__link">
+      <a href="../tutorials/calibration/" class="md-nav__link">
         
   
   
@@ -1401,7 +1472,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/particle_calibration/" class="md-nav__link">
+      <a href="../tutorials/particle_calibration/" class="md-nav__link">
         
   
   
@@ -1429,7 +1500,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/dumbbell_calibration/" class="md-nav__link">
+      <a href="../tutorials/dumbbell_calibration/" class="md-nav__link">
         
   
   
@@ -1457,7 +1528,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/warmup_tutorial/" class="md-nav__link">
+      <a href="../tutorials/warmup_tutorial/" class="md-nav__link">
         
   
   
@@ -1485,7 +1556,7 @@
   
   
     <li class="md-nav__item">
-      <a href="calibration-rms-vs-rcm/" class="md-nav__link">
+      <a href="../calibration-rms-vs-rcm/" class="md-nav__link">
         
   
   
@@ -1513,7 +1584,7 @@
   
   
     <li class="md-nav__item">
-      <a href="calibration-bundle-adjustment/" class="md-nav__link">
+      <a href="../calibration-bundle-adjustment/" class="md-nav__link">
         
   
   
@@ -1541,7 +1612,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tracer-self-calibration/" class="md-nav__link">
+      <a href="../tracer-self-calibration/" class="md-nav__link">
         
   
   
@@ -1630,7 +1701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="benchmarking_guide/" class="md-nav__link">
+      <a href="../benchmarking_guide/" class="md-nav__link">
         
   
   
@@ -1658,7 +1729,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tracking-benchmark-results/" class="md-nav__link">
+      <a href="../tracking-benchmark-results/" class="md-nav__link">
         
   
   
@@ -1693,7 +1764,7 @@
   
   
     <li class="md-nav__item">
-      <a href="tests/" class="md-nav__link">
+      <a href="../tests/" class="md-nav__link">
         
   
   
@@ -1774,7 +1845,7 @@
   
   
     <li class="md-nav__item">
-      <a href="developer_guide/building/" class="md-nav__link">
+      <a href="../developer_guide/building/" class="md-nav__link">
         
   
   
@@ -1802,7 +1873,7 @@
   
   
     <li class="md-nav__item">
-      <a href="developer_guide/cython_and_pure_python/" class="md-nav__link">
+      <a href="../developer_guide/cython_and_pure_python/" class="md-nav__link">
         
   
   
@@ -1830,7 +1901,7 @@
   
   
     <li class="md-nav__item">
-      <a href="developer_guide/custom_tracking_plugins/" class="md-nav__link">
+      <a href="../developer_guide/custom_tracking_plugins/" class="md-nav__link">
         
   
   
@@ -1858,7 +1929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="developer_guide/documentation_workflow/" class="md-nav__link">
+      <a href="../developer_guide/documentation_workflow/" class="md-nav__link">
         
   
   
@@ -1886,7 +1957,7 @@
   
   
     <li class="md-nav__item">
-      <a href="developer_guide/packaging_and_releases/" class="md-nav__link">
+      <a href="../developer_guide/packaging_and_releases/" class="md-nav__link">
         
   
   
@@ -1914,7 +1985,7 @@
   
   
     <li class="md-nav__item">
-      <a href="HOW_TO_TEST_GUI/" class="md-nav__link">
+      <a href="../HOW_TO_TEST_GUI/" class="md-nav__link">
         
   
   
@@ -2003,7 +2074,7 @@
   
   
     <li class="md-nav__item">
-      <a href="algorithms/tracking/" class="md-nav__link">
+      <a href="../algorithms/tracking/" class="md-nav__link">
         
   
   
@@ -2031,7 +2102,7 @@
   
   
     <li class="md-nav__item">
-      <a href="algorithms/correspondence-eps0-semantics/" class="md-nav__link">
+      <a href="../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
         
   
   
@@ -2059,7 +2130,7 @@
   
   
     <li class="md-nav__item">
-      <a href="algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+      <a href="../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
         
   
   
@@ -2148,7 +2219,7 @@
   
   
     <li class="md-nav__item">
-      <a href="decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
+      <a href="../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
         
   
   
@@ -2203,10 +2274,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#start-here-10-minutes" class="md-nav__link">
+  <a href="#1-the-quick-way-let-the-program-measure-your-data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Start here (10 minutes)
+        1. The quick way: let the program measure your data
       
     </span>
   </a>
@@ -2214,10 +2285,76 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#documentation-map" class="md-nav__link">
+  <a href="#2-how-the-pieces-fit-together-what-depends-on-what" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Documentation map
+        2. How the pieces fit together (what depends on what)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-numbers-to-measure-the-advisor-prints-all-of-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The numbers to measure (the advisor prints all of them)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-to-expect-measured-on-synthetic-data-with-known-truth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What to expect (measured on synthetic data with known truth)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-how-to-check-a-setting-on-your-own-real-data-no-ground-truth-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. How to check a setting on your own real data (no ground truth needed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-testing-a-setting-on-synthetic-data-with-known-truth-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Testing a setting on synthetic data with known truth (optional)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-limits-to-keep-in-mind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Limits to keep in mind
       
     </span>
   </a>
@@ -2244,67 +2381,281 @@
   
 
 
-<h1 id="openptv2-documentation">openptv2 Documentation<a class="headerlink" href="#openptv2-documentation" title="Permanent link">&para;</a></h1>
-<p>Particle Tracking Velocimetry: track particles in 3D from 4 camera views.</p>
-<h2 id="start-here-10-minutes">Start here (10 minutes)<a class="headerlink" href="#start-here-10-minutes" title="Permanent link">&para;</a></h2>
-<p>New to openptv2? Do this first:</p>
-<ol>
-<li><strong>Install</strong> — <a href="installation/">Installation</a>:
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"openptv2[gui]"</span>
-</span></code></pre></div></li>
-<li><strong>Run your first tracking</strong> — <a href="tutorials/getting_started_tutorial/">GUI First Tracking tutorial</a>:
-   open the bundled <code>test_data/test_cavity</code> example in the desktop GUI and
-   track particles in 5 clicks. No data to download, no parameters to tune.</li>
-<li><strong>Understand what happened</strong> — <a href="tracking_guide/">Tracking Pipeline &amp; Results</a>:
-   what detection, correspondences, and tracking do, and where results land.</li>
-</ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>openptv2-gui<span class="w"> </span>-w<span class="w"> </span>test_data/test_cavity/parameters_Run1.yaml
+<h1 id="tracking-parameters-what-to-measure-how-to-set-them-what-changes">Tracking parameters: what to measure, how to set them, what changes<a class="headerlink" href="#tracking-parameters-what-to-measure-how-to-set-them-what-changes" title="Permanent link">&para;</a></h1>
+<p>This guide is for the <code>two_phase</code> tracker. Every value here is a line in the <code>track:</code>
+section of your <code>parameters_*.yaml</code> (or <code>trajectories:</code> in <code>experiment.yaml</code> for the
+last two). <strong>Changing a value in the yaml never needs a new software release.</strong> A release
+is only needed when a <em>new option</em> is added to the code.</p>
+<h2 id="1-the-quick-way-let-the-program-measure-your-data">1. The quick way: let the program measure your data<a class="headerlink" href="#1-the-quick-way-let-the-program-measure-your-data" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/tracking_advice.py<span class="w"> </span>RUN_DIR<span class="w"> </span>--fps<span class="w"> </span><span class="m">5000</span>
 </span></code></pre></div>
-<p>If you prefer the command line, the same example runs headless:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pyptv_batch<span class="w"> </span>--workdir<span class="o">=</span>test_data/test_cavity<span class="w"> </span>--first<span class="o">=</span><span class="m">10000</span><span class="w"> </span>--last<span class="o">=</span><span class="m">10001</span>
+<p><code>RUN_DIR</code> is the run folder (it has <code>parameters_*.yaml</code>, <code>cal/</code> and <code>res/run.zarr</code> after
+the sequence phase). The program reads about 100 frames, measures the numbers in section 3,
+and prints for every parameter <strong>the value it recommends and the measurement behind it</strong>,
+then YAML lines you can paste. It writes nothing.</p>
+<h2 id="2-how-the-pieces-fit-together-what-depends-on-what">2. How the pieces fit together (what depends on what)<a class="headerlink" href="#2-how-the-pieces-fit-together-what-depends-on-what" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>position noise (jitter) ──► size of the "kink" ──► confirmation tolerance (confirm_tol)
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>point density           ──► chance of a wrong neighbour ──► how tight things must be
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>camera matching quality ──► ray miss distance, brightness agreement ──► ghost marks (q_seed, q_young)
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>step per frame          ──► (large steps = frame skip / low frame rate) ──► blob_gate, fixed tolerance
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>frame rate + noise      ──► how long a window you need ──► smoothing window
 </span></code></pre></div>
-<h2 id="documentation-map">Documentation map<a class="headerlink" href="#documentation-map" title="Permanent link">&para;</a></h2>
+<p>Three words used below:
+- <strong>Step</strong>: how far a particle moves between two frames (mm).
+- <strong>Kink</strong>: how much that step changes from one frame to the next, <code>|x(t+1) − 2 x(t) + x(t−1)|</code>.
+  With a fast camera, real accelerations are tiny, so the kink is almost entirely
+  <strong>position noise</strong>. Its median is a direct measurement of your noise.
+- <strong>Ghost</strong>: a 3D point made from blobs of different particles. It is smooth and can form
+  a long wrong trajectory; the tracker cannot tell by motion alone.</p>
+<h2 id="3-the-numbers-to-measure-the-advisor-prints-all-of-them">3. The numbers to measure (the advisor prints all of them)<a class="headerlink" href="#3-the-numbers-to-measure-the-advisor-prints-all-of-them" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>I want to...</th>
-<th>Go to</th>
+<th>Measurement</th>
+<th>How it is measured</th>
+<th>Typical value</th>
+<th>What it tells you</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Track my first particles</td>
-<td><a href="tutorials/getting_started_tutorial/">GUI First Tracking</a></td>
+<td>Density</td>
+<td>median number of other 3D points within 5 mm of a point</td>
+<td>5–6 sparse, 10–11 dense</td>
+<td>many neighbours = wrong links are likelier</td>
 </tr>
 <tr>
-<td>Install on my platform</td>
-<td><a href="installation/">Installation</a></td>
+<td>Median step</td>
+<td>median distance between linked points in consecutive frames</td>
+<td>0.1 mm at 5000 fps</td>
+<td>large (≥ 0.2) = frame-skipped or slow camera</td>
 </tr>
 <tr>
-<td>Run without the GUI</td>
-<td><a href="tutorials/batch_processing/">Command-Line Batch Processing</a></td>
+<td>Median kink</td>
+<td>median of the kink over all linked triples</td>
+<td>0.04–0.14 (grows with noise)</td>
+<td>the noise level</td>
 </tr>
 <tr>
-<td>Calibrate my own cameras</td>
-<td><a href="plate-calibration-howto/">Plate Calibration How-To</a></td>
+<td>Kink / step</td>
+<td>the two above divided</td>
+<td>0.4–0.9</td>
+<td>high = noise dominates; low = real motion dominates</td>
 </tr>
 <tr>
-<td>Pick a tracker</td>
-<td><a href="tracker-tutorials/">Tracker Engines &amp; Parameters</a></td>
+<td>3-camera share</td>
+<td>share of points seen by only 3 cameras</td>
+<td>35–40% (lv_multi 50%)</td>
+<td>more = more doubtful points</td>
 </tr>
 <tr>
-<td>Store large runs efficiently</td>
-<td><a href="zarr-hdf5-storage/">Zarr &amp; HDF5 Storage</a></td>
-</tr>
-<tr>
-<td>Contribute code</td>
-<td><a href="developer_guide/building/">Building from Source</a></td>
+<td>Flagged share</td>
+<td>share of points with ghost probability &gt; 0.2</td>
+<td>about 10% (lv_multi 18%)</td>
+<td>how many points the ghost rules will treat as doubtful</td>
 </tr>
 </tbody>
 </table>
-<p>Advanced case studies (<a href="tutorials/cavity_flow_tutorial/">cavity flow</a>,
-<a href="aorta_tutorial/">aorta flow</a>) and calibration references live in the
-navigation sidebar. Start with the tutorial above first.</p>
+<h2 id="4-the-parameters">4. The parameters<a class="headerlink" href="#4-the-parameters" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>What it does (one sentence)</th>
+<th>How to choose</th>
+<th>Higher value does</th>
+<th>Lower value does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>q_seed</code> (default 0.2)</td>
+<td>a point with ghost probability above this cannot start a trajectory</td>
+<td>0.2 normally; 0.15 if 3-camera share &gt; 45% or flagged &gt; 14%; 0.3 if &lt; 20% / &lt; 4%</td>
+<td>keeps more points, more ghosts</td>
+<td>removes more ghosts, also ~1% real points</td>
+</tr>
+<tr>
+<td><code>q_young</code> (default 3)</td>
+<td>a trajectory with fewer points than this cannot continue onto a doubtful point</td>
+<td>3 normally, 6 in accuracy mode</td>
+<td>removes more ghosts</td>
+<td>keeps more points</td>
+</tr>
+<tr>
+<td><code>q_model</code> (default <code>rcm_blob</code>)</td>
+<td>how the ghost probability is computed: <code>rcm</code> = ray miss distance + camera count; <code>rcm_blob</code> also uses blob brightness agreement</td>
+<td><code>rcm</code> if blobs have no usable brightness</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>confirm_tol</code> (mm/frame)</td>
+<td>a link survives only if the next step continues within this kink</td>
+<td><strong>leave unset</strong> for sparse, noisy data (automatic); <code>0.3</code> for dense or frame-skipped data</td>
+<td>fewer cut links, longer tracks, more outliers kept</td>
+<td>cuts true links when the noise is larger than the tolerance</td>
+</tr>
+<tr>
+<td><code>confirm_auto</code> (default 8)</td>
+<td>with <code>confirm_tol</code> unset: tolerance = this × the median kink</td>
+<td>8</td>
+<td>looser</td>
+<td>tighter</td>
+</tr>
+<tr>
+<td><code>confirm_auto_max_neighbours</code> (7), <code>confirm_auto_min_ratio</code> (0.5), <code>confirm_auto_radius</code> (5 mm)</td>
+<td>the guard: the automatic tolerance is used only if the density is at most 7 neighbours and kink/step is at least 0.5</td>
+<td>change only if the advisor's measurements are near the limit and you have tested</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>confirm_ends</code> (default true)</td>
+<td>a track may not end by stepping onto a stranger</td>
+<td>keep true: it is the most valuable part of the confirmation</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>blob_gate</code> (default off)</td>
+<td>a candidate whose blob brightness changed by more than this (log units) is rejected</td>
+<td>0.5 for frame-skipped or low-frame-rate data (step ≥ 0.2 mm)</td>
+<td>looser</td>
+<td>stricter, cuts ~0.3% of real links at 0.5</td>
+</tr>
+<tr>
+<td><code>v_max</code> (mm/frame)</td>
+<td>search radius</td>
+<td>about 3× the typical step, or the largest real step</td>
+<td>more candidates</td>
+<td>loses fast particles</td>
+</tr>
+<tr>
+<td><code>max_gap</code></td>
+<td>frames a track may be missing</td>
+<td>2 (one missing frame)</td>
+<td>bridges longer dropouts, more mistakes</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>trajectories.smoothing_window</code></td>
+<td>frames in the smoothing window</td>
+<td>about 4 ms of frames (21 at 5000 fps)</td>
+<td>smoother velocities, blurs real changes</td>
+<td>noisier velocities</td>
+</tr>
+<tr>
+<td><code>trajectories.trim_doubtful</code> (off)</td>
+<td>cut up to 3 doubtful end points of a trajectory</td>
+<td>0.3 when accuracy matters more than the number of points</td>
+<td>cuts fewer points</td>
+<td>cuts more (0.2: ~2% of points)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-what-to-expect-measured-on-synthetic-data-with-known-truth">5. What to expect (measured on synthetic data with known truth)<a class="headerlink" href="#5-what-to-expect-measured-on-synthetic-data-with-known-truth" title="Permanent link">&para;</a></h2>
+<p>Velocity error relative to the true flow, lower is better; "perfect linker" is the best
+any tracker can do on the same 3D points.</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Effect on the velocity error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ghost rules on (<code>q_seed</code> 0.2, <code>q_young</code> 3)</td>
+<td>−0.020 (sparse) … −0.075 (4× density)</td>
+</tr>
+<tr>
+<td>Brightness agreement (<code>q_model: rcm_blob</code>, instead of <code>rcm</code>)</td>
+<td>a further −0.005 … −0.039</td>
+</tr>
+<tr>
+<td>Trim doubtful ends (0.3) + gap-aware smoother</td>
+<td>a further −0.01</td>
+</tr>
+<tr>
+<td>Automatic confirmation tolerance, real noise level</td>
+<td>−0.018 (and more with more noise: −0.070 at 2× the real noise)</td>
+</tr>
+<tr>
+<td><code>blob_gate: 0.5</code> on frame-skipped data</td>
+<td>−0.007 … −0.015</td>
+</tr>
+<tr>
+<td>Accuracy mode (<code>q_seed</code> 0.15, <code>q_young</code> 6)</td>
+<td>a further −0.004 … −0.04, about 0.5–1% fewer points</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-how-to-check-a-setting-on-your-own-real-data-no-ground-truth-needed">6. How to check a setting on your own real data (no ground truth needed)<a class="headerlink" href="#6-how-to-check-a-setting-on-your-own-real-data-no-ground-truth-needed" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/real_retrack.py<span class="w"> </span>NAME<span class="w"> </span><span class="m">300</span><span class="w"> </span><span class="nv">q_seed</span><span class="o">=</span><span class="m">0</span>.15<span class="w"> </span><span class="nv">q_young</span><span class="o">=</span><span class="m">6</span><span class="w">     </span><span class="c1"># a scratch copy</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/realism_metrics.py<span class="w"> </span>/private/tmp/claude-501/real_runs/NAME/res/run.zarr<span class="w"> </span>--last<span class="w"> </span><span class="m">300</span>
+</span></code></pre></div>
+<p>Compare two settings with these numbers:</p>
+<table>
+<thead>
+<tr>
+<th>Number</th>
+<th>Better when</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>trajectories</code> (tracks)</td>
+<td>lower</td>
+<td>fewer fragments and ghost pieces</td>
+</tr>
+<tr>
+<td><code>mean_len</code></td>
+<td>higher</td>
+<td>longer tracks</td>
+</tr>
+<tr>
+<td><code>n_ge50</code> (tracks of ≥ 50 frames)</td>
+<td>about equal</td>
+<td>long tracks must not be lost</td>
+</tr>
+<tr>
+<td><code>never4_share</code></td>
+<td>lower</td>
+<td>long trajectories never seen by all 4 cameras are the best hint of ghosts</td>
+</tr>
+<tr>
+<td><code>jitter_z_p90</code></td>
+<td>lower</td>
+<td>scatter of the points around a smooth curve</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Do not use <code>jump_share</code> to judge the confirmation tolerance.</strong> It counts large depth
+changes between frames; a looser tolerance keeps more of these noise outliers although the
+smoothed result is better (it reproduces identically on synthetic data, where the truth
+shows the looser setting wins). Judge a tolerance by the smoothed velocities, or on a
+synthetic copy of your data with known truth (<code>scripts/synth_bench.py</code>, section 7).</p>
+<h2 id="7-testing-a-setting-on-synthetic-data-with-known-truth-optional">7. Testing a setting on synthetic data with known truth (optional)<a class="headerlink" href="#7-testing-a-setting-on-synthetic-data-with-known-truth-optional" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/synth_bench.py<span class="w"> </span>build<span class="w"> </span>--level<span class="w"> </span>L1<span class="w"> </span>--sigma-px<span class="w"> </span><span class="m">0</span>.08<span class="w"> </span>--amp-jitter<span class="w"> </span><span class="m">0</span>.18<span class="w"> </span>--amp-flicker<span class="w"> </span><span class="m">0</span>.05
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/synth_bench.py<span class="w"> </span>sweep<span class="w"> </span>--cases<span class="w"> </span>CASE<span class="w"> </span>--trackers<span class="w"> </span><span class="s2">"two_phase+q_seed=0.15+q_young=6"</span><span class="w"> </span>-j<span class="w"> </span><span class="m">3</span><span class="w"> </span>--no-eval
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/synth_bench.py<span class="w"> </span><span class="nb">eval</span><span class="w">  </span>--case<span class="w"> </span>CASE<span class="w"> </span>--trackers<span class="w"> </span>two_phase<span class="w"> </span><span class="s2">"two_phase+q_seed=0.15+q_young=6"</span>
+</span></code></pre></div>
+<p><code>--sigma-px</code> sets the position noise (0.08 matches real CompleteTest data); the other two
+options give realistic blob brightness. Never tune on real data; tune on the synthetic copy
+and check on the real data with section 6.</p>
+<h2 id="8-limits-to-keep-in-mind">8. Limits to keep in mind<a class="headerlink" href="#8-limits-to-keep-in-mind" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The numbers in sections 4–5 come from one flow field and one camera geometry. Where
+  your measurements are near a limit (density 6–8, kink/step 0.4–0.6) test before trusting
+  the automatic tolerance.</li>
+<li>The automatic tolerance assumes a fast camera (kink = noise). With frame skipping the
+  kink contains real motion and the guard switches it off.</li>
+<li>Very short smoothing windows (about 9 frames) make the looser tolerance slightly worse
+  (+0.008 at the real noise level).</li>
+<li>See <a href="../tracking_quality/">Point quality</a> for how the ghost probability is computed.</li>
+</ul>
 
 
 
@@ -2360,10 +2711,10 @@ navigation sidebar. Start with the tutorial above first.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
