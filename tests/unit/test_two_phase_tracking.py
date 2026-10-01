@@ -6,6 +6,7 @@ Pure array-level tests: no work dir, no calibration (identity project_fn).
 import numpy as np
 
 from openptv2.plugins.two_phase_tracking import (
+    Tracking,
     TwoPhaseTracker,
     TwoPhaseTrackerConfig,
     _links_to_linkage,
@@ -160,3 +161,41 @@ def test_linkage_skips_missing_frame_numbers():
     """Consecutive list positions but non-consecutive frame numbers = a gap."""
     lk = _links_to_linkage([(0, 0, 1, 0)], [10, 12], [1, 1])
     assert lk[0][1][0] == -1 and lk[1][0][0] == -1
+
+
+def test_project_fn_batched_matches_pointwise():
+    """Bug 3 (plan step 2): batched project_fn == old point-by-point loop."""
+    from types import SimpleNamespace
+
+    from openptv2.algorithms.calibration import Calibration
+    from openptv2.algorithms.imgcoord import img_coord_batch
+    from openptv2.algorithms.parameters import ControlPar
+
+    base = (
+        __import__("pathlib").Path(__file__).resolve().parent.parent.parent
+        / "test_data"
+        / "test_cavity"
+    )
+    cals = [
+        Calibration.from_file(
+            str(base / f"cal/cam{c}.tif.ori"),
+            str(base / f"cal/cam{c}.tif.addpar"),
+        )
+        for c in (1, 2)
+    ]
+    cpar = ControlPar()
+    cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y = 1280, 1024, 0.012, 0.012
+    fn = Tracking(ptv=None,
+                  exp=SimpleNamespace(cals=cals, cpar=cpar))._build_project_fn()
+    assert fn is not None
+    rng = np.random.default_rng(1)
+    pts = rng.uniform([-60, -30, -20], [50, 50, 20], size=(25, 3))
+    got = fn(pts)
+    want = np.full_like(got, np.nan)
+    for i in range(len(pts)):
+        for ci in range(2):
+            m = img_coord_batch(pts[i : i + 1], cals[ci], cpar.mm)[0]
+            want[i, 2 * ci] = m[0] / 0.012 + 640.0
+            want[i, 2 * ci + 1] = 512.0 - m[1] / 0.012
+    np.testing.assert_allclose(got, np.nan_to_num(want), rtol=1e-12, atol=1e-12)
+    assert fn(np.zeros((0, 3))).shape == (0, 4)

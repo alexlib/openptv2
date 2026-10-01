@@ -720,15 +720,18 @@ class Tracking:
             from openptv2.algorithms.imgcoord import img_coord_batch
 
             def project_fn(pred):
+                # Batched: one img_coord_batch call per camera for all points
+                # (was a Python loop over points x cameras).
                 pred = np.asarray(pred, dtype=np.float64)
                 n = len(pred)
                 nc = len(cals)
                 xy = np.full((n, nc * 2), np.nan)
-                for i in range(n):
-                    for ci, cal in enumerate(cals):
-                        m = img_coord_batch(pred[i : i + 1], cal, mm)[0]
-                        xy[i, 2 * ci] = m[0] / pix_x + imx / 2
-                        xy[i, 2 * ci + 1] = imy / 2 - m[1] / pix_y
+                if n == 0:
+                    return xy
+                for ci, cal in enumerate(cals):
+                    m = np.asarray(img_coord_batch(pred, cal, mm))
+                    xy[:, 2 * ci] = m[:, 0] / pix_x + imx / 2
+                    xy[:, 2 * ci + 1] = imy / 2 - m[:, 1] / pix_y
                 return np.nan_to_num(xy)
 
             # Smoke-test on one point so a broken model fails here, not
