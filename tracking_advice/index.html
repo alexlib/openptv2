@@ -2486,6 +2486,10 @@ experiment.</p>
 <td>median step ≥ 0.2 mm/frame (large steps: frame skip or slow camera) → <strong>0.5</strong>.</td>
 </tr>
 <tr>
+<td><code>trajectories.reconnect_gap</code>, <code>smooth_filter_k</code></td>
+<td>reconnect: always 6. Smoothness filter: 6 when kink/step ≥ 0.5 (noise dominated), otherwise off.</td>
+</tr>
+<tr>
 <td><code>trajectories.smoothing_window</code></td>
 <td>about 4 ms of frames: <code>0.004 × fps</code>, rounded to an odd number, at least 5.</td>
 </tr>

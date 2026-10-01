@@ -2576,6 +2576,20 @@ then YAML lines you can paste. It writes nothing.</p>
 <td>noisier velocities</td>
 </tr>
 <tr>
+<td><code>trajectories.reconnect_gap</code> (6; 0 = off)</td>
+<td>join broken pieces of a trajectory across up to <code>gap − 1</code> missing frames, using a straight line from each side; tolerance <code>trajectories.reconnect_tol</code> (4 noise sigmas)</td>
+<td>6 for all data; better in 8 of 9 benchmark cases</td>
+<td>joins more pieces, risk of a wrong join</td>
+<td>fewer joins</td>
+</tr>
+<tr>
+<td><code>trajectories.smooth_filter_k</code> (6; off = 0)</td>
+<td>drop points farther than <code>k</code> median residuals from the curve their neighbours define</td>
+<td>6 when noise dominates (kink/step ≥ 0.5); <strong>off</strong> for frame-skipped data</td>
+<td>milder: keeps more points</td>
+<td>stricter: 4 gives −0.02 velocity error and drops 4% of the points</td>
+</tr>
+<tr>
 <td><code>trajectories.trim_doubtful</code> (off)</td>
 <td>cut up to 3 doubtful end points of a trajectory</td>
 <td>0.3 when accuracy matters more than the number of points</td>
@@ -2610,6 +2624,14 @@ any tracker can do on the same 3D points.</p>
 <tr>
 <td>Automatic confirmation tolerance, real noise level</td>
 <td>−0.018 (and more with more noise: −0.070 at 2× the real noise)</td>
+</tr>
+<tr>
+<td>Reconnect broken pieces (gap 6, 4σ)</td>
+<td>−0.002 … −0.019 (+0.004 at 4× density)</td>
+</tr>
+<tr>
+<td>Smoothness filter (k = 6) after reconnect</td>
+<td>a further −0.001 … −0.015, about 1% fewer points (skip ×8: +0.0075, so off there)</td>
 </tr>
 <tr>
 <td><code>blob_gate: 0.5</code> on frame-skipped data</td>
