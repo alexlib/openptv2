@@ -188,7 +188,7 @@ def _grid_candsearch_nogil(
         for cx in range(cx0, cx1 + 1):
             j = head[cy * gnx + cx]
             while j >= 0:
-                if targ_tnr[j] != tr_unused:
+                if targ_tnr[j] >= 0:
                     tx = targ_x[j]
                     ty = targ_y[j]
                     if tx > xmin and tx < xmax and ty > ymin and ty < ymax:
@@ -652,7 +652,7 @@ def candsearch_in_pix_fast_nogil(
 
     for j in range(j0, num_targets):
         ty = targ_y[j]
-        if targ_tnr[j] != tr_unused:
+        if targ_tnr[j] >= 0:
             if ty > ymax:
                 break
             tx = targ_x[j]

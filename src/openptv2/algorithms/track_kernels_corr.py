@@ -49,6 +49,9 @@ cython.declare(
     ADD_PART_K=cython.double,
 )
 PT_UNUSED = -999
+# NOTE: assess_new_position_fast_nogil marks a camera without a candidate with TR_UNUSED_K
+# (-1), not PT_UNUSED (-999). Test candidate indexes with `>= 0`; `!= PT_UNUSED` lets -1
+# through and indexes targ_tnr[ci, -1] (an out-of-bounds read/write in the compiled build).
 POSI_K = 80
 MAX_CANDS_K = 32
 TR_UNUSED_K = -1
@@ -776,10 +779,16 @@ def _trackcorr_particle_fast(
                         claimed_ok = 1
                         for ci in range(num_cams):
                             cand_idx = _assess_inds[ci]
-                            if cand_idx != PT_UNUSED:
-                                if targ_tnr_3[ci, cand_idx] != TR_UNUSED_K:
-                                    claimed_ok = 0
-                                    break
+                            # An added particle needs a free blob in EVERY camera. (This
+                            # is what the compiled build effectively did: the old guard
+                            # read targ_tnr_3[ci, -1], an unused slot, and rejected. Done
+                            # explicitly so it no longer depends on the memory read.)
+                            if cand_idx < 0:
+                                claimed_ok = 0
+                                break
+                            if targ_tnr_3[ci, cand_idx] != TR_UNUSED_K:
+                                claimed_ok = 0
+                                break
 
                         if claimed_ok:
                             idx_add = added_count_3[0]
@@ -790,7 +799,7 @@ def _trackcorr_particle_fast(
                                 for ci in range(num_cams):
                                     cand_idx = _assess_inds[ci]
                                     added_cand_3[idx_add, ci] = cand_idx
-                                    if cand_idx != PT_UNUSED:
+                                    if cand_idx >= 0:
                                         targ_tnr_3[ci, cand_idx] = -100
                                 added_count_3[0] = idx_add + 1
 
@@ -956,7 +965,7 @@ def _trackcorr_particle_fast(
                             app_n = 0
                             for ci2 in range(num_cams):
                                 tidx = _assess_inds2[ci2]
-                                if tidx != PT_UNUSED:
+                                if tidx >= 0:
                                     app_c += targ_sumg_2[ci2, tidx]
                                     app_n += 1
                             if app_n > 0:
@@ -969,10 +978,16 @@ def _trackcorr_particle_fast(
                         claimed_ok = 1
                         for ci in range(num_cams):
                             cand_idx = _assess_inds2[ci]
-                            if cand_idx != PT_UNUSED:
-                                if targ_tnr_2[ci, cand_idx] != TR_UNUSED_K:
-                                    claimed_ok = 0
-                                    break
+                            # An added particle needs a free blob in EVERY camera. (This
+                            # is what the compiled build effectively did: the old guard
+                            # read targ_tnr_2[ci, -1], an unused slot, and rejected. Done
+                            # explicitly so it no longer depends on the memory read.)
+                            if cand_idx < 0:
+                                claimed_ok = 0
+                                break
+                            if targ_tnr_2[ci, cand_idx] != TR_UNUSED_K:
+                                claimed_ok = 0
+                                break
 
                         if claimed_ok:
                             idx_add = added_count_2[0]
@@ -985,7 +1000,7 @@ def _trackcorr_particle_fast(
                                 for ci in range(num_cams):
                                     cand_idx = _assess_inds2[ci]
                                     added_cand_2[idx_add, ci] = cand_idx
-                                    if cand_idx != PT_UNUSED:
+                                    if cand_idx >= 0:
                                         targ_tnr_2[ci, cand_idx] = -100
                                 added_count_2[0] = idx_add + 1
 
@@ -1396,8 +1411,8 @@ def trackcorr_loop_fast(
             corres_nr_3[np3] = np3
             for ci in range(num_cams):
                 cand_idx = added_cand_3[idx_add, ci]
-                if cand_idx != PT_UNUSED:
-                    if 0 <= cand_idx < targ_tnr_3.shape[1]:
+                if cand_idx >= 0:
+                    if cand_idx < targ_tnr_3.shape[1]:
                         targ_tnr_3[ci, cand_idx] = np3
                         corres_p_3[np3, ci] = cand_idx
             num_parts_3[0] = np3 + 1
@@ -1429,8 +1444,8 @@ def trackcorr_loop_fast(
             corres_nr_2[np2] = np2
             for ci in range(num_cams):
                 cand_idx = added_cand_2[idx_add, ci]
-                if cand_idx != PT_UNUSED:
-                    if 0 <= cand_idx < targ_tnr_2.shape[1]:
+                if cand_idx >= 0:
+                    if cand_idx < targ_tnr_2.shape[1]:
                         targ_tnr_2[ci, cand_idx] = np2
                         corres_p_2[np2, ci] = cand_idx
             num_parts_2[0] = np2 + 1
@@ -1889,7 +1904,7 @@ def trackback_loop_fast(
                                 corres_p_2[np2, ci] = CORRES_NONE_K
                             corres_nr_2[np2] = np2
                             for ci in range(num_cams):
-                                if cand_inds[ci] != PT_UNUSED:
+                                if cand_inds[ci] >= 0:
                                     idx = cand_inds[ci]
                                     targ_tnr_2[ci, idx] = np2
                                     corres_p_2[np2, ci] = idx

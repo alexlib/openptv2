@@ -127,7 +127,7 @@ def candsearch_in_pix_fast(
 
     for j in range(j0, num_targets):
         ty = targ_y[j]
-        if targ_tnr[j] != tr_unused:
+        if targ_tnr[j] >= 0:
             if ty > ymax:
                 break
             tx = targ_x[j]
