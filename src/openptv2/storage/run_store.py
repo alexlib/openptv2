@@ -112,6 +112,13 @@ def find_existing_store(experiment_root: Union[str, Path]) -> Optional[Path]:
     return existing[0]
 
 
+def seen_mask(cam_ids: np.ndarray) -> np.ndarray:
+    """(N, C) bool: the single definition of "seen" (camera target id >= 0), for
+    callers that already hold the camera-id columns of a frame (``RunStore.read_seen``
+    uses it too)."""
+    return np.asarray(cam_ids) >= 0
+
+
 class RunStoreError(RuntimeError):
     """A RunStore operation failed.
 
@@ -410,7 +417,7 @@ class RunStore:
             ) from None
         if data.ndim == 1:
             return np.empty((0, 0), dtype=bool)
-        return data[:, 3:] >= 0
+        return seen_mask(data[:, 3:])
 
     # -- linkage --------------------------------------------------------
 

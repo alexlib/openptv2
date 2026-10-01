@@ -11,7 +11,7 @@ This exploits the tree-forest architecture: 3D positions are the "trunk"
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
 
@@ -771,9 +771,7 @@ class TwoPhaseTracker:
                             for tid in tids
                         ]
                     )
-                    if frame_logb is not None
-                    and self.cfg.blob_gate
-                    and tids
+                    if frame_logb is not None and self.cfg.blob_gate and tids
                     else None
                 ),
                 logb1=frame_logb[t + 1] if frame_logb is not None else None,
@@ -878,28 +876,20 @@ class Tracking:
         self.ptv = ptv
         self.exp = exp
 
-    def _ghost_probabilities(self, store, frames, frame_particles, frame_seen):
-        """Per-point ghost probability from ray convergence (A10)."""
+    def _ghost_probabilities(self, frame_particles, rcm, n_seen, logb):
+        """Per-point ghost probability (A10) from per-frame ray miss distances, camera
+        counts and (for the ``rcm_blob`` model) log blob brightness."""
         from openptv2.point_quality import (
             brightness_spread,
             fit_scale,
-            frame_log_brightness,
-            frame_rcm,
             ghost_probability,
         )
 
-        cals = list(getattr(self.exp, "cals", None) or [])
-        cpar = getattr(self.exp, "cpar", None)
-        if not cals or cpar is None:
-            raise ValueError("q_weight/q_seed need exp.cals and exp.cpar")
-        rcm = [frame_rcm(store, f, cals, cpar) for f in frames]
-        n_seen = [np.asarray(s).sum(axis=1) for s in frame_seen]
         scale = fit_scale(
             np.vstack(frame_particles), np.concatenate(rcm), np.concatenate(n_seen)
         )
-        spreads = [None] * len(frames)
-        if self.q_model == "rcm_blob":
-            logb = [frame_log_brightness(store, f) for f in frames]
+        spreads = [None] * len(frame_particles)
+        if self.q_model == "rcm_blob" and logb is not None:
             allb = np.vstack(logb)
             with np.errstate(all="ignore"):
                 offsets = np.nanmedian(allb, axis=0)  # per-camera gain
@@ -1058,30 +1048,52 @@ class Tracking:
         corr_shape = store.root[f"correspondences/frame_{first_frame:06d}"].shape
         num_cams = corr_shape[1] - 3
 
+        # Point-quality rules need the camera models; without them they are off.
+        want_q = q_weight > 0 or q_seed is not None or q_young > 0
+        cals = list(getattr(self.exp, "cals", None) or [])
+        cpar = getattr(self.exp, "cpar", None)
+        if want_q and not (cals and cpar):
+            print(
+                "TwoPhaseTracker: no calibrations on the experiment; "
+                "point-quality rules (q_seed/q_young) are off."
+            )
+            q_weight, q_seed, q_young, want_q = 0.0, None, 0, False
+        need_logb = bool(blob_gate) or (want_q and self.q_model == "rcm_blob")
+
+        from openptv2.point_quality import (
+            log_brightness_from_arrays,
+            rcm_from_arrays,
+            read_frame_arrays,
+        )
+        from openptv2.storage.run_store import seen_mask
+
         frame_particles = []
         frame_leaves = []
         frame_seen = []
+        rcm_list, nseen_list, logb_list = [], [], []
         for f in frames:
-            pos_3d, _ = store.read_correspondences(f)
+            # every array of the frame is read ONCE (zarr reads were half the run time)
+            pos_3d, cam_ids, rows = read_frame_arrays(store, f, num_cams)
             pos_3d = np.asarray(pos_3d)
             frame_particles.append(pos_3d)
 
             n = len(pos_3d)
-            cam_ids = np.asarray(store.root[f"correspondences/frame_{f:06d}"])[
-                :, 3:
-            ].astype(int)
             xy = np.full((n, num_cams, 2), np.nan)
             for c in range(num_cams):
-                key = f"targets/cam_{c}/frame_{f:06d}"
-                if key in store.root:
-                    t = np.asarray(store.root[key])
+                if rows[c] is not None:
                     valid = cam_ids[:, c] >= 0
-                    xy[valid, c] = t[cam_ids[valid, c], 1:3]
+                    xy[valid, c] = rows[c][cam_ids[valid, c], 1:3]
             frame_leaves.append(np.nan_to_num(xy.reshape(n, -1)))
             # Bug 2 fix: the seen-mask is authoritative; NaN no longer marks
             # "missing" (any nan_to_num would silently un-mark it). Single
-            # definition via RunStore.read_seen — do not re-derive per reader.
-            frame_seen.append(np.asarray(store.read_seen(f), dtype=bool))
+            # definition: run_store.seen_mask -- do not re-derive per reader.
+            seen = seen_mask(cam_ids)
+            frame_seen.append(seen)
+            if want_q:
+                rcm_list.append(rcm_from_arrays(pos_3d, cam_ids, rows, cals, cpar))
+                nseen_list.append(seen.sum(axis=1))
+            if need_logb:
+                logb_list.append(log_brightness_from_arrays(cam_ids, rows))
 
         cfg = TwoPhaseTrackerConfig(
             v_max=v_max,
@@ -1104,26 +1116,14 @@ class Tracking:
         )
         tracker = TwoPhaseTracker(cfg)
         project_fn = self._build_project_fn()
-        frame_logb = None
-        if blob_gate:
-            from openptv2.point_quality import frame_log_brightness
-
-            frame_logb = [frame_log_brightness(store, f) for f in frames]
+        frame_logb = logb_list if blob_gate else None
         frame_ghost = None
-        if q_weight > 0 or q_seed is not None or q_young > 0:
-            if getattr(self.exp, "cals", None) and getattr(self.exp, "cpar", None):
-                frame_ghost = self._ghost_probabilities(
-                    store, frames, frame_particles, frame_seen
-                )
-                for f, g in zip(frames, frame_ghost):
-                    store.write_point_quality(f, g)
-            else:
-                print(
-                    "TwoPhaseTracker: no calibrations on the experiment; "
-                    "point-quality rules (q_seed/q_young) are off."
-                )
-                cfg = replace(cfg, q_weight=0.0, q_seed=None, q_young=0)
-                tracker = TwoPhaseTracker(cfg)
+        if want_q:
+            frame_ghost = self._ghost_probabilities(
+                frame_particles, rcm_list, nseen_list, logb_list or None
+            )
+            for f, g in zip(frames, frame_ghost):
+                store.write_point_quality(f, g)
         links = cast(
             list[tuple[int, int, int, int]],
             tracker.track_frames(

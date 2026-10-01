@@ -23,8 +23,22 @@ _P_GHOST = {
 }
 
 
-def frame_rcm(store: Any, frame: int, cals: list, cpar: Any) -> np.ndarray:
-    """Ray miss distance (mm) of every stored 3D point of one frame."""
+def read_frame_arrays(store: Any, frame: int, n_cams: int | None = None):
+    """(pos, cam_ids, target_rows_per_camera) of one frame, each array read once.
+    ``target_rows_per_camera[c]`` is None when the store has no targets for camera c."""
+    pos, cam_ids = store.read_correspondences(frame)
+    n_cams = cam_ids.shape[1] if n_cams is None else n_cams
+    rows = []
+    for cam in range(n_cams):
+        key = f"targets/cam_{cam}/frame_{frame:06d}"
+        rows.append(np.asarray(store.root[key]) if key in store.root else None)
+    return pos, cam_ids, rows
+
+
+def rcm_from_arrays(
+    pos: np.ndarray, cam_ids: np.ndarray, rows: list, cals: list, cpar: Any
+) -> np.ndarray:
+    """Ray miss distance (mm) of every 3D point of one frame, from its arrays."""
     from openptv2.algorithms.orientation import (
         COORD_UNUSED,
         multi_cam_point_positions,
@@ -34,19 +48,19 @@ def frame_rcm(store: Any, frame: int, cals: list, cpar: Any) -> np.ndarray:
         pixel_to_metric_batch,
     )
 
-    pos, cam_ids = store.read_correspondences(frame)
     n, n_cams = len(pos), len(cals)
     if n == 0:
         return np.zeros(0)
     targets = np.full((n, n_cams, 2), COORD_UNUSED, dtype=np.float64)
     for cam in range(n_cams):
-        rows = np.asarray(store.root[f"targets/cam_{cam}/frame_{frame:06d}"])
         sel = np.flatnonzero(cam_ids[:, cam] >= 0)
         if not len(sel):
             continue
         cal = cals[cam]
         a = cal.added_par
-        xy = np.ascontiguousarray(rows[cam_ids[sel, cam]][:, 1:3], dtype=np.float64)
+        xy = np.ascontiguousarray(
+            rows[cam][cam_ids[sel, cam]][:, 1:3], dtype=np.float64
+        )
         met = np.ascontiguousarray(pixel_to_metric_batch(xy, cpar), dtype=np.float64)
         flat = np.asarray(
             correct_brown_affine_batch(met, a.k1, a.k2, a.k3, a.p1, a.p2, a.scx, a.she)
@@ -57,21 +71,33 @@ def frame_rcm(store: Any, frame: int, cals: list, cpar: Any) -> np.ndarray:
     return np.asarray(rcm, dtype=np.float64)
 
 
-def frame_log_brightness(store: Any, frame: int) -> np.ndarray:
-    """(N, C) log blob brightness (``sumg``) of every stored 3D point in each camera
-    that sees it; NaN where the camera does not see the point."""
-    pos, cam_ids = store.read_correspondences(frame)
-    n, n_cams = len(pos), cam_ids.shape[1]
+def frame_rcm(store: Any, frame: int, cals: list, cpar: Any) -> np.ndarray:
+    """Ray miss distance (mm) of every stored 3D point of one frame."""
+    pos, cam_ids, rows = read_frame_arrays(store, frame, len(cals))
+    return rcm_from_arrays(pos, cam_ids, rows, cals, cpar)
+
+
+def log_brightness_from_arrays(cam_ids: np.ndarray, rows: list) -> np.ndarray:
+    """(N, C) log blob brightness (``sumg``) in each camera that sees the point;
+    NaN where the camera does not see it."""
+    n, n_cams = len(cam_ids), cam_ids.shape[1]
     logb = np.full((n, n_cams), np.nan)
     for cam in range(n_cams):
-        rows = np.asarray(store.root[f"targets/cam_{cam}/frame_{frame:06d}"])
         sel = np.flatnonzero(cam_ids[:, cam] >= 0)
         if len(sel):
-            logb[sel, cam] = np.log(np.maximum(rows[cam_ids[sel, cam]][:, 6], 1.0))
+            logb[sel, cam] = np.log(np.maximum(rows[cam][cam_ids[sel, cam]][:, 6], 1.0))
     return logb
 
 
-def brightness_spread(logb: np.ndarray, offsets: np.ndarray | None = None) -> np.ndarray:
+def frame_log_brightness(store: Any, frame: int) -> np.ndarray:
+    """(N, C) log blob brightness of every stored 3D point of one frame."""
+    pos, cam_ids, rows = read_frame_arrays(store, frame)
+    return log_brightness_from_arrays(cam_ids, rows)
+
+
+def brightness_spread(
+    logb: np.ndarray, offsets: np.ndarray | None = None
+) -> np.ndarray:
     """Std over the seeing cameras of the log brightness, after subtracting each
     camera's typical value (``offsets``, e.g. its run median): cameras differ in gain
     by 0.13-0.17 in log on real data, which must not look like inconsistency. A real
