@@ -8,10 +8,11 @@ is only needed when a *new option* is added to the code.
 ## 1. The quick way: let the program measure your data
 
 ```bash
-uv run python scripts/tracking_advice.py RUN_DIR --fps 5000
+# replace the path by YOUR run folder; --fps is the camera frame rate
+uv run python scripts/tracking_advice.py ~/data/experiment/wp2/test --fps 5000
 ```
 
-`RUN_DIR` is the run folder (it has `parameters_*.yaml`, `cal/` and `res/run.zarr` after
+The path is a run folder (it has `parameters_*.yaml`, `cal/` and `res/run.zarr` after
 the sequence phase). The program reads about 100 frames, measures the numbers in section 3,
 and prints for every parameter **the value it recommends and the measurement behind it**,
 then YAML lines you can paste. It writes nothing.

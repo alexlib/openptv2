@@ -374,7 +374,7 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
   confirmation tolerance is now YAML (`confirm_auto_max_neighbours` 7, `confirm_auto_min_ratio`
   0.5, `confirm_auto_radius` 5 mm), as are the other data-dependent values (`q_seed`, `q_young`,
   `q_model`, `blob_gate`, `confirm_tol`, `confirm_auto`). New: `openptv2/tracking_advice.py`
-  and `scripts/tracking_advice.py RUN_DIR`: measures density, step, kink, 3-camera and flagged
+  and `scripts/tracking_advice.py PATH_TO_RUN_FOLDER`: measures density, step, kink, 3-camera and flagged
   shares from the user's data (about 100 frames) and prints each recommended value with the
   measurement behind it (checked on real wp2 and lv_multi wp5 and on five synthetic cases);
   `docs/tracking_parameters_guide.md` explains what to measure, what depends on what and what

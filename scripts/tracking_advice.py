@@ -1,8 +1,9 @@
 """Measure a run and print the recommended two_phase tracking parameters.
 
-    uv run python scripts/tracking_advice.py RUN_DIR [--first 1] [--last 200] [--fps 5000]
+    uv run python scripts/tracking_advice.py PATH_TO_RUN_FOLDER [--first 1] [--last 200] [--fps 5000]
+    e.g. uv run python scripts/tracking_advice.py ~/data/experiment/wp2/test --fps 5000
 
-RUN_DIR holds parameters_*.yaml, cal/ and res/run.zarr (with correspondences and
+The run folder holds parameters_*.yaml, cal/ and res/run.zarr (with correspondences and
 targets, i.e. after the sequence phase). Reads only; writes nothing. The numbers it
 reports, and what to do with them, are explained in docs/tracking_parameters_guide.md.
 """
@@ -29,8 +30,34 @@ def main(argv=None) -> None:
         "--fps", type=float, default=None, help="frame rate, for the window"
     )
     a = ap.parse_args(argv)
-    run = Path(a.run_dir).resolve()
-    yaml_path = next(run.glob("parameters_*.yaml"))
+    run = Path(a.run_dir).expanduser().resolve()
+    if not run.is_dir():
+        sys.exit(
+            f"'{a.run_dir}' is not a folder. Give the path of a run folder, e.g.\n"
+            "  uv run python scripts/tracking_advice.py "
+            "~/Downloads/CompleteTest-e2e-local/wp2/test --fps 5000\n"
+            "(RUN_DIR in the docs is a placeholder for your own path.)"
+        )
+    yamls = sorted(run.glob("parameters_*.yaml"))
+    if not yamls:
+        found = sorted(
+            p.parent for p in run.glob("**/parameters_*.yaml") if "res" not in p.parts
+        )[:8]
+        hint = (
+            "\nRun folders found below it:\n" + "\n".join(f"  {p}" for p in found)
+            if found
+            else ""
+        )
+        sys.exit(
+            f"No parameters_*.yaml in {run}. A run folder contains parameters_*.yaml, "
+            f"cal/ and res/run.zarr.{hint}"
+        )
+    if not (run / "res" / "run.zarr").exists():
+        sys.exit(
+            f"No res/run.zarr in {run}: run the sequence phase first (it creates the "
+            "correspondences and targets this tool measures)."
+        )
+    yaml_path = yamls[0]
     track_cfg = (yaml.safe_load(yaml_path.read_text()) or {}).get("track", {})
     store = RunStore.open(run, mode="r")
     frames = sorted(int(k.split("_")[1]) for k in store.root["correspondences"].keys())

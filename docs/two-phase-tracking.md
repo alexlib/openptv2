@@ -44,7 +44,7 @@ Without leaves/`project_fn` it falls back to pure 3D distance costs
 
 > Which values suit **your** data, how to measure that, and what each one changes: see
 > [Tracking parameters](tracking_parameters_guide.md) and run
-> `scripts/tracking_advice.py RUN_DIR`.
+> `scripts/tracking_advice.py PATH_TO_RUN_FOLDER`.
 
 All live in the `track` YAML section (batch/GUI) or on
 `TwoPhaseTrackerConfig` (Python). Units in brackets.
