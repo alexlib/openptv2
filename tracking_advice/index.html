@@ -13,10 +13,10 @@
       
       
       
-        <link rel="prev" href="../calibration-bundle-adjustment/">
+        <link rel="prev" href="../tracking_parameters_guide/">
       
       
-        <link rel="next" href="../benchmarking_guide/">
+        <link rel="next" href="../tracking_quality/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Tracer Self-Calibration - OpenPTV2 Documentation</title>
+        <title>tracking_advice (measure your data, get the values) - OpenPTV2 Documentation</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tracer-self-calibration-shaking" class="md-skip">
+        <a href="#tracking_advice-measure-your-data-get-the-tracking-parameters" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Tracer Self-Calibration
+              tracking_advice (measure your data, get the values)
             
           </span>
         </div>
@@ -300,10 +300,12 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../zarr-hdf5-storage/" class="md-tabs__link">
           
   
@@ -320,12 +322,10 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
+      <li class="md-tabs__item">
         <a href="../plate-calibration-howto/" class="md-tabs__link">
           
   
@@ -796,28 +796,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
@@ -835,7 +838,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -934,10 +937,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../tracking_advice/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tracking_advice (measure your data, get the values)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -953,6 +983,103 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#use-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-measures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it measures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-rules-it-applies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The rules it applies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demo-the-advisor-on-real-and-synthetic-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo: the advisor on real and synthetic data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-full-example-of-the-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A full example of the output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guided-tuning-with-an-ai-assistant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guided tuning with an AI assistant
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1193,31 +1320,28 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -1235,7 +1359,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1502,37 +1626,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Tracer Self-Calibration
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../tracer-self-calibration/" class="md-nav__link">
         
   
   
@@ -1548,142 +1645,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#why-this-exists" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why this exists
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prerequisites
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Prerequisites">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#store-backed-runs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Store-backed runs
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#using-it-from-the-gui" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Using it from the GUI
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#parameters-shaking-calibration-parameters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Parameters ("Shaking calibration parameters")
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-actually-happens-algorithm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What actually happens (algorithm)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#after-running-it" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        After running it
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Troubleshooting
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#future-work" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Future work
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2330,10 +2291,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-this-exists" class="md-nav__link">
+  <a href="#use-it" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why this exists
+        Use it
       
     </span>
   </a>
@@ -2341,38 +2302,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
+  <a href="#what-it-measures" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Prerequisites
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Prerequisites">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#store-backed-runs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Store-backed runs
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#using-it-from-the-gui" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Using it from the GUI
+        What it measures
       
     </span>
   </a>
@@ -2380,10 +2313,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#parameters-shaking-calibration-parameters" class="md-nav__link">
+  <a href="#the-rules-it-applies" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Parameters ("Shaking calibration parameters")
+        The rules it applies
       
     </span>
   </a>
@@ -2391,10 +2324,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-actually-happens-algorithm" class="md-nav__link">
+  <a href="#demo-the-advisor-on-real-and-synthetic-data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What actually happens (algorithm)
+        Demo: the advisor on real and synthetic data
       
     </span>
   </a>
@@ -2402,10 +2335,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#after-running-it" class="md-nav__link">
+  <a href="#a-full-example-of-the-output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        After running it
+        A full example of the output
       
     </span>
   </a>
@@ -2413,10 +2346,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
+  <a href="#limits" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Troubleshooting
+        Limits
       
     </span>
   </a>
@@ -2424,21 +2357,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#future-work" class="md-nav__link">
+  <a href="#guided-tuning-with-an-ai-assistant" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Future work
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related
+        Guided tuning with an AI assistant
       
     </span>
   </a>
@@ -2465,205 +2387,400 @@
   
 
 
-<h1 id="tracer-self-calibration-shaking">Tracer Self-Calibration ("Shaking")<a class="headerlink" href="#tracer-self-calibration-shaking" title="Permanent link">&para;</a></h1>
-<p>Refine an existing camera calibration using real tracked tracer particles
-from your flow, instead of only the calibration plate. This is the "modern
-shaking" step: after a normal plate calibration, particles that were tracked
-through the actual measurement volume are fed back into a joint bundle
-adjustment that couples all cameras together.</p>
-<h2 id="why-this-exists">Why this exists<a class="headerlink" href="#why-this-exists" title="Permanent link">&para;</a></h2>
-<p>A calibration plate is shallow and roughly planar. Reprojection error from
-plate points alone constrains a camera's pose well in the two directions
-across the plate, but poorly along the camera's line of sight (depth) —
-shallow parallax leaves that direction loose. Real tracer particles are
-distributed through the full depth of the measurement volume, so fitting
-against them tightens exactly the direction the plate can't see.</p>
-<p>The fit couples every free camera: minimizing the <em>joint</em> reprojection error
-of shared 3D particle positions (not independent per-camera resection) is
-what actually reduces cross-camera disagreement — measured as the
-<strong>ray-convergence miss distance (RCM)</strong>, the median gap between the rays
-different cameras draw through the same real particle. RCM, not per-camera
-reprojection RMS, is the diagnostic this step optimizes and reports, because
-RMS can look fine even when cameras subtly disagree with each other (see
-<a href="../calibration-rms-vs-rcm/"><code>calibration-rms-vs-rcm.md</code></a>).</p>
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>A working calibration already exists.</strong> This step <em>refines</em> <code>.ori</code>/
-   <code>.addpar</code> files you already have — it does not calibrate from scratch. Do
-   the normal plate calibration first (detection → manual/sortgrid → raw
-   orientation → fine tuning).</li>
-<li><strong>Tracked 3D data exists on real flow images.</strong> The routine reads tracked
-   3D positions and matches them back to per-camera 2D detections, so you
-   need a completed <strong>sequence + tracking</strong> run on actual flow data (not the
-   calibration plate) before running this step.</li>
-</ol>
-<h3 id="store-backed-runs">Store-backed runs<a class="headerlink" href="#store-backed-runs" title="Permanent link">&para;</a></h3>
-<p>Tracer self-calibration reads tracked 3D points and detections from
-<code>res/ptv_is.*</code>/<code>img/*_targets</code> ASCII when present, or from <code>res/run.zarr</code>
-(the <code>RunStore</code>) directly when they aren't — which is the normal case since
-the zarr-only storage migration, since batch/GUI sequence+tracking runs
-write only to the store now. No manual export step is needed.</p>
-<h2 id="using-it-from-the-gui">Using it from the GUI<a class="headerlink" href="#using-it-from-the-gui" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>Launch calibration</strong>: from the main <code>pyptv2-gui</code>, open your experiment
-   and use the menu action that starts the calibration dialog. Standalone
-   alternative: <code>python -m openptv2.gui.calibration_gui path/to/parameters_Run1.yaml</code>.</li>
-<li><strong>Load images/parameters</strong> (first left-panel button) — required before
-   any other button, including "Tracer self-cal", becomes active.</li>
-<li><strong>Edit calibration parameters</strong> → the <strong>"Shaking calibration
-   parameters"</strong> group holds the settings for this step (see table below).</li>
-<li>Click <strong>Tracer self-cal</strong> (left panel, below "Suggest eps0"). Console
-   output now prints progress as it runs:</li>
-</ol>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Tracer self-cal: button clicked, starting...
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>[tracer self-cal] starting: base=..., frames=10000-10004 (5), tol_px=2.0, hold_cam=1, max_particles=400, iters=3
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>[tracer self-cal] loaded 5 frames of tracked data
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>[tracer self-cal] initial match: 214 particles (&gt;=2 cams), RCM before = 84.3 um
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>[tracer self-cal] iter 1/3: fitting 214 particles (this may take a moment)...
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>[tracer self-cal] iter 1/3: RCM = 61.7 um (accepted, improved)
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>[tracer self-cal] iter 2/3: fitting 226 particles (this may take a moment)...
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>[tracer self-cal] iter 2/3: RCM = 58.9 um (accepted, improved)
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>[tracer self-cal] iter 3/3: fitting 229 particles (this may take a moment)...
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>[tracer self-cal] iter 3/3: RCM = 58.9 um (not improved, stopping)
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>[tracer self-cal] done
+<h1 id="tracking_advice-measure-your-data-get-the-tracking-parameters">tracking_advice: measure your data, get the tracking parameters<a class="headerlink" href="#tracking_advice-measure-your-data-get-the-tracking-parameters" title="Permanent link">&para;</a></h1>
+<p><code>scripts/tracking_advice.py</code> looks at a run, measures the few numbers that decide how the
+<code>two_phase</code> tracker should be set, and prints <strong>each recommended value together with the
+measurement that led to it</strong>, plus YAML lines to paste. It takes 1–2 seconds, reads about
+100 frames and writes nothing.</p>
+<p>For what every parameter does and how the pieces depend on each other, see
+<a href="../tracking_parameters_guide/">Tracking parameters</a>.</p>
+<h2 id="use-it">Use it<a class="headerlink" href="#use-it" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># the path is YOUR run folder (it contains parameters_*.yaml, cal/ and res/run.zarr)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/tracking_advice.py<span class="w"> </span>~/data/experiment/wp2/test<span class="w"> </span>--fps<span class="w"> </span><span class="m">5000</span>
 </span></code></pre></div>
-<ol>
-<li><strong>Read the status line / console summary</strong>: <code>Tracer self-cal:
-   cross-camera RCM &lt;before&gt; -&gt; &lt;after&gt; um (N particles, camK held)</code>.</li>
-<li><strong>Automatic accept/reject</strong>: the refined calibration is kept only if
-   <code>after &lt; before</code>. If it improved, the GUI backs up your current
-   <code>.ori</code>/<code>.addpar</code> and applies the new calibration in memory to every
-   camera except the held one — <strong>save</strong> the result the same way you would
-   after any other orientation step to persist it to disk. If it did not
-   improve, nothing is written.</li>
-</ol>
-<h2 id="parameters-shaking-calibration-parameters">Parameters ("Shaking calibration parameters")<a class="headerlink" href="#parameters-shaking-calibration-parameters" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Field</th>
+<th>Option</th>
 <th>Meaning</th>
-<th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>shaking_first_frame</code> / <code>shaking_last_frame</code></td>
-<td>Tracked frame range to pull particles from</td>
-<td>Use a range with good particle coverage across the volume, not just a couple of frames</td>
+<td><code>--fps</code></td>
+<td>camera frame rate; used only for the smoothing-window advice</td>
 </tr>
 <tr>
-<td><code>shaking_max_num_frames</code></td>
-<td>Subsample down to this many frames (evenly spaced) if the range is larger</td>
-<td>Keeps the fit fast on long sequences</td>
-</tr>
-<tr>
-<td><code>shaking_max_num_points</code></td>
-<td>Cap on total particles used in the joint fit</td>
-<td>200–400 is a reasonable range; more particles cost more solver time for diminishing returns</td>
-</tr>
-<tr>
-<td><code>shaking_tol_px</code></td>
-<td>Pixel tolerance for matching a tracked 3D point's reprojection to a real detection in each camera</td>
-<td>The first thing to tune if you get too few/no matches (loosen) or suspiciously large post-fit RCM (tighten — you're pulling in wrong matches)</td>
-</tr>
-<tr>
-<td><code>shaking_hold_cam</code></td>
-<td>1-indexed camera held fixed as the gauge reference; every other camera's exterior is free</td>
-<td>Pick your most trusted/best-calibrated camera</td>
+<td><code>--first</code>, <code>--last</code></td>
+<td>frames to read (default 1–200)</td>
 </tr>
 </tbody>
 </table>
-<p>Internally, a tracked particle only enters the fit if it is matched in at
-least 2 cameras (<code>min_cams=2</code>); it is <strong>not</strong> restricted to 4-camera
-quadruplets today — see <a href="#future-work">Future work</a>.</p>
-<h2 id="what-actually-happens-algorithm">What actually happens (algorithm)<a class="headerlink" href="#what-actually-happens-algorithm" title="Permanent link">&para;</a></h2>
-<ol>
-<li>Load tracked 3D positions (<code>res/ptv_is.*</code>) and per-camera detections
-   (<code>img/*_targets</code>) for the configured frames.</li>
-<li><strong>Match</strong>: for each tracked 3D point, reproject it into every camera with
-   the <em>current</em> calibration and find the nearest real detection within
-   <code>shaking_tol_px</code>. Keep points matched in at least 2 cameras.</li>
-<li><strong>Fit</strong>: one joint least-squares bundle adjustment (<code>scipy.optimize.
-   least_squares</code>, sparse Jacobian) refines every free camera's exterior
-   orientation (position + angles) <em>and</em> the matched particles' free 3D
-   positions together, minimizing total reprojection error. Distortion
-   parameters are held fixed. The held camera's exterior fixes the 7-DOF
-   gauge freedom (translation/rotation/scale) that an unconstrained joint
-   fit would otherwise leave undetermined.</li>
-<li><strong>Accept or reject</strong>: compute the median RCM on the refit. If it beats
-   the previous best, keep the new calibration and continue; otherwise stop.</li>
-<li><strong>Iterate</strong> (<code>iters</code>, default 3 from the GUI): re-run match → fit with
-   the improved calibration, since a better calibration recovers different
-   (better) matches. Stops early once RCM plateaus or a pass doesn't
-   improve.</li>
-</ol>
-<h2 id="after-running-it">After running it<a class="headerlink" href="#after-running-it" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Re-run sequence + tracking with the refined calibration, then run tracer
-  self-cal again if useful — since it's inherently iterative across
-  match/fit/re-track cycles, a second pass on fresh tracking output can
-  keep improving RCM further.</li>
-<li>Cross-check the improvement with the <code>visualize-calibration</code> skill or
-  <code>openptv2.calibration_diagnostics</code> (sight-line angle, cross-camera
-  symmetry, cross-camera RCM) — the single before/after number the button
-  prints is a summary, not the full picture.</li>
-</ul>
-<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<p>The run must have been through the <strong>sequence</strong> phase (it needs the stored correspondences
+and targets). If you give a wrong path, the tool says what is missing and lists run folders
+it finds below the path you gave.</p>
+<h2 id="what-it-measures">What it measures<a class="headerlink" href="#what-it-measures" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Symptom</th>
-<th>Likely cause</th>
-<th>Try</th>
+<th>Measurement</th>
+<th>Meaning</th>
+<th>Decides</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>"n/a: no res/ptv_is.* frames. Run the sequence + tracking first."</td>
-<td>Sequence+tracking never actually completed for the configured frame range (neither ASCII nor <code>res/run.zarr</code> has linkage data)</td>
-<td>Confirm the sequence+tracking step succeeded and produced tracking output for those exact frames; widen/adjust <code>shaking_first_frame</code>/<code>shaking_last_frame</code></td>
+<td>Density</td>
+<td>median number of other 3D points within 5 mm of a point</td>
+<td>whether the automatic confirmation tolerance is safe; the ghost rule strength</td>
 </tr>
 <tr>
-<td>"only N multi-cam tracer particles" (skipped, N &lt; 10)</td>
-<td>Too few particles matched in ≥2 cameras for the configured frames</td>
-<td>Widen the frame range, loosen <code>shaking_tol_px</code>, or check that detection/tracking actually found particles in those frames</td>
+<td>Median step</td>
+<td>typical distance a particle moves per frame (mm)</td>
+<td>whether data are frame-skipped (brightness gate)</td>
 </tr>
 <tr>
-<td>RCM doesn't improve on iteration 1</td>
-<td>Starting calibration is already good for this data, or <code>tol_px</code> is too tight/loose</td>
-<td>Try a different <code>hold_cam</code>, adjust <code>tol_px</code>, or accept that this dataset doesn't need further refinement</td>
+<td>Median kink</td>
+<td>typical change of the step from one frame to the next (mm); with a fast camera this is the position noise</td>
+<td>the size of the automatic confirmation tolerance</td>
 </tr>
 <tr>
-<td>Console shows nothing after clicking the button</td>
-<td>Fixed — progress is now printed at start, per match, and per iteration (see the example output above)</td>
-<td>Update if you're on an older build without this</td>
+<td>Kink / step</td>
+<td>the two above divided: high = noise dominates, low = real motion dominates</td>
+<td>whether the automatic tolerance is safe</td>
+</tr>
+<tr>
+<td>3-camera share</td>
+<td>share of points seen by only 3 cameras</td>
+<td>ghost rule strength</td>
+</tr>
+<tr>
+<td>Flagged share</td>
+<td>share of points whose ghost probability is above 0.2</td>
+<td>ghost rule strength</td>
 </tr>
 </tbody>
 </table>
-<h2 id="future-work">Future work<a class="headerlink" href="#future-work" title="Permanent link">&para;</a></h2>
-<p>The current fit accepts any tracked particle seen by 2 or more cameras
-(<code>min_cams=2</code>). A quadruplet-gated variant — requiring all 4 cameras to see
-a particle before it enters the fit — would trade point count for
-per-point confidence, since a 4-camera correspondence is far less likely to
-be a spurious match than a 2-camera one. This isn't implemented yet; see
-<code>four_camera_matching()</code> in <code>src/openptv2/algorithms/correspondences.py</code>
-for the existing quadruplet-matching machinery this would build on.</p>
-<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<p>The kink and the step come from a short first tracking pass (no confirmation, no ghost
+rules) over the first 60 frames; the ghost numbers need the camera models from the
+experiment.</p>
+<h2 id="the-rules-it-applies">The rules it applies<a class="headerlink" href="#the-rules-it-applies" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>q_seed</code>, <code>q_young</code> (ghost rules)</td>
+<td>3-camera share above 45% <strong>or</strong> flagged share above 14% → <strong>accuracy mode</strong> <code>0.15 / 6</code>. 3-camera share below 20% <strong>and</strong> flagged below 4% → light rule <code>0.3 / 3</code>. Otherwise the default <code>0.2 / 3</code>.</td>
+</tr>
+<tr>
+<td><code>confirm_tol</code></td>
+<td>density ≤ 7 neighbours <strong>and</strong> kink/step ≥ 0.5 → <strong>leave unset</strong>: the tracker uses 8 × the median kink (the output states the value). Otherwise → fixed <strong>0.3</strong> mm/frame, and the reason is printed (dense data, or motion dominates = frame skipping).</td>
+</tr>
+<tr>
+<td><code>blob_gate</code></td>
+<td>median step ≥ 0.2 mm/frame (large steps: frame skip or slow camera) → <strong>0.5</strong>.</td>
+</tr>
+<tr>
+<td><code>trajectories.smoothing_window</code></td>
+<td>about 4 ms of frames: <code>0.004 × fps</code>, rounded to an odd number, at least 5.</td>
+</tr>
+</tbody>
+</table>
+<p>The thresholds come from the benchmark (the plan in <code>docs/plans/2026-09-30-tracker-plan.md</code>).
+They can be changed in the yaml (<code>confirm_auto_max_neighbours</code>, <code>confirm_auto_min_ratio</code>,
+<code>confirm_auto_radius</code>).</p>
+<h2 id="demo-the-advisor-on-real-and-synthetic-data">Demo: the advisor on real and synthetic data<a class="headerlink" href="#demo-the-advisor-on-real-and-synthetic-data" title="Permanent link">&para;</a></h2>
+<p>Real data are two CompleteTest recordings and two lv_multi recordings. The synthetic
+cases come from <code>scripts/synth_bench.py</code> with realistic position noise and blob brightness;
+their true best settings are known from the benchmark, shown in the last column.
+(<code>step</code> and <code>kink</code> in mm; <code>nb</code> = neighbours within 5 mm; 3cam = share of 3-camera points;
+flag = share with ghost probability above 0.2.)</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>pts/frame</th>
+<th>nb</th>
+<th>step</th>
+<th>kink</th>
+<th>kink/step</th>
+<th>3cam</th>
+<th>flag</th>
+<th><code>q_seed</code>/<code>q_young</code></th>
+<th><code>confirm_tol</code></th>
+<th><code>blob_gate</code></th>
+<th>time</th>
+<th>What the benchmark found best</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>real</strong> CompleteTest wp1</td>
+<td>1184</td>
+<td>5.0</td>
+<td>0.123</td>
+<td>0.063</td>
+<td>0.51</td>
+<td>39%</td>
+<td>12.1%</td>
+<td>0.2 / 3</td>
+<td>automatic (≈ 0.50)</td>
+<td>–</td>
+<td>1.5 s</td>
+<td>(no truth)</td>
+</tr>
+<tr>
+<td><strong>real</strong> CompleteTest wp2</td>
+<td>1170</td>
+<td>5.0</td>
+<td>0.124</td>
+<td>0.064</td>
+<td>0.52</td>
+<td>39%</td>
+<td>11.9%</td>
+<td>0.2 / 3</td>
+<td>automatic (≈ 0.51)</td>
+<td>–</td>
+<td>1.3 s</td>
+<td>(no truth)</td>
+</tr>
+<tr>
+<td><strong>real</strong> lv_multi wp4</td>
+<td>1016</td>
+<td>4.8</td>
+<td>0.083</td>
+<td>0.060</td>
+<td>0.73</td>
+<td>50%</td>
+<td>22.3%</td>
+<td>0.15 / 6</td>
+<td>automatic (≈ 0.48)</td>
+<td>–</td>
+<td>0.3 s</td>
+<td>(no truth)</td>
+</tr>
+<tr>
+<td><strong>real</strong> lv_multi wp5</td>
+<td>1306</td>
+<td>6.3</td>
+<td>0.083</td>
+<td>0.066</td>
+<td>0.80</td>
+<td>52%</td>
+<td>23.4%</td>
+<td>0.15 / 6</td>
+<td>automatic (≈ 0.53)</td>
+<td>–</td>
+<td>0.3 s</td>
+<td>(no truth)</td>
+</tr>
+<tr>
+<td>synthetic, noise 0.04 px</td>
+<td>1154</td>
+<td>6.0</td>
+<td>0.100</td>
+<td>0.042</td>
+<td>0.42</td>
+<td>35%</td>
+<td>11.5%</td>
+<td>0.2 / 3</td>
+<td>0.3 (kink/step &lt; 0.5)</td>
+<td>–</td>
+<td>1.0 s</td>
+<td>fixed ≈ automatic ✓</td>
+</tr>
+<tr>
+<td>synthetic, noise 0.08 px (real level)</td>
+<td>1154</td>
+<td>6.1</td>
+<td>0.116</td>
+<td>0.076</td>
+<td>0.65</td>
+<td>35%</td>
+<td>11.3%</td>
+<td>0.2 / 3</td>
+<td>automatic (≈ 0.61)</td>
+<td>–</td>
+<td>1.0 s</td>
+<td>automatic: −0.018 ✓</td>
+</tr>
+<tr>
+<td>synthetic, noise 0.12 px</td>
+<td>1151</td>
+<td>6.1</td>
+<td>0.133</td>
+<td>0.107</td>
+<td>0.81</td>
+<td>36%</td>
+<td>11.0%</td>
+<td>0.2 / 3</td>
+<td>automatic (≈ 0.86)</td>
+<td>–</td>
+<td>1.0 s</td>
+<td>automatic: −0.030 ✓</td>
+</tr>
+<tr>
+<td>synthetic, noise 0.16 px</td>
+<td>1148</td>
+<td>6.0</td>
+<td>0.150</td>
+<td>0.137</td>
+<td>0.92</td>
+<td>36%</td>
+<td>10.6%</td>
+<td>0.2 / 3</td>
+<td>automatic (≈ 1.10)</td>
+<td>–</td>
+<td>1.0 s</td>
+<td>automatic: −0.070 ✓</td>
+</tr>
+<tr>
+<td>synthetic, density ×2</td>
+<td>1872</td>
+<td>9.7</td>
+<td>0.118</td>
+<td>0.085</td>
+<td>0.72</td>
+<td>47%</td>
+<td>18.3%</td>
+<td>0.15 / 6</td>
+<td>0.3 (dense)</td>
+<td>–</td>
+<td>1.3 s</td>
+<td>fixed 0.3 (automatic: +0.008 worse) ✓</td>
+</tr>
+<tr>
+<td>synthetic, density ×4</td>
+<td>2578</td>
+<td>10.7</td>
+<td>0.118</td>
+<td>0.088</td>
+<td>0.74</td>
+<td>63%</td>
+<td>38.5%</td>
+<td>0.15 / 6</td>
+<td>0.3 (dense)</td>
+<td>–</td>
+<td>1.4 s</td>
+<td>fixed 0.3 (automatic: +0.063 worse); accuracy mode better ✓</td>
+</tr>
+<tr>
+<td>synthetic, clustered + frame skip 4</td>
+<td>1463</td>
+<td>8.3</td>
+<td>0.358</td>
+<td>0.123</td>
+<td>0.34</td>
+<td>46%</td>
+<td>18.6%</td>
+<td>0.15 / 6</td>
+<td>0.3 (dense, motion)</td>
+<td>0.5</td>
+<td>1.3 s</td>
+<td>fixed 0.3 (automatic: 0.1689 → 0.4293); gate −0.015 ✓</td>
+</tr>
+<tr>
+<td>synthetic, frame skip ×4</td>
+<td>1124</td>
+<td>6.6</td>
+<td>0.328</td>
+<td>0.099</td>
+<td>0.30</td>
+<td>37%</td>
+<td>11.7%</td>
+<td>0.2 / 3</td>
+<td>0.3 (motion)</td>
+<td>0.5</td>
+<td>1.1 s</td>
+<td>fixed 0.3 (automatic: +0.047 worse); gate −0.007 ✓</td>
+</tr>
+<tr>
+<td>synthetic, frame skip ×8</td>
+<td>1118</td>
+<td>7.0</td>
+<td>0.533</td>
+<td>0.134</td>
+<td>0.25</td>
+<td>37%</td>
+<td>11.8%</td>
+<td>0.2 / 3</td>
+<td>0.3 (motion)</td>
+<td>0.5</td>
+<td>1.2 s</td>
+<td>fixed 0.3 (automatic: +0.023 worse); gate −0.007 ✓</td>
+</tr>
+</tbody>
+</table>
+<p>How to read it:
+- The <strong>real</strong> recordings look like the synthetic "noise 0.08 px" case (5–6 neighbours,
+  step 0.08–0.12 mm, kink 0.06): the advisor leaves the confirmation tolerance automatic
+  (≈ 0.5 mm/frame), which was the clearly better setting at that noise level.
+- <strong>Dense</strong> and <strong>frame-skipped</strong> data get the fixed 0.3 <em>and the reason</em>. On those the
+  automatic tolerance made the result worse in the benchmark (up to 0.1689 → 0.4293), so the
+  advice is the safe one.
+- The <strong>lv_multi</strong> data have many 3-camera points (50%) and a high flagged share (22–23%),
+  so the advisor recommends the accuracy mode for the ghost rules.
+- The advisor agrees with the benchmark's best choice in every synthetic case. The real
+  recordings have no truth, so for them it can only report what is measured and what that
+  implied in the synthetic cases.</p>
+<h2 id="a-full-example-of-the-output">A full example of the output<a class="headerlink" href="#a-full-example-of-the-output" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>MEASURED ON YOUR DATA
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>---------------------
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  3D points per frame (median)                                   1170
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  other points within 5 mm of a point (median) = density         5.0
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  share of points seen by only 3 cameras                         39%
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  share of points with ghost probability &gt; 0.2                   11.9%
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  share of points with ghost probability &gt; 0.5                   4.5%
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  median step per frame (mm)                                     0.124
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>  median kink = change of the step (mm), measures the noise      0.064
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>  kink / step (high = noise dominated)                           0.52
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>RECOMMENDATION
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>--------------
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>  q_seed = 0.2
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>      why: default: 39% 3-camera points, 12% flagged
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>  q_young = 3
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>      why: default
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>  confirm_tol = leave unset (automatic)
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>      why: sparse (5.0 neighbours within 5 mm, limit 7) and noise dominated (median kink
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>           0.064 = 0.52 x median step 0.124, limit 0.5): the tolerance is set from the
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>           data, about 0.51 mm/frame. A pinned `confirm_tol:` in the yaml would switch this off.
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>  trajectories.smoothing_window = 21
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>      why: about 4 ms of frames at 5000 fps
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>YAML (track: section)
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>---------------------
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>track:
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>  q_seed: 0.2
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>  q_young: 3
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>  # confirm_tol: leave unset (automatic)
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>trajectories:
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>  smoothing_window: 21
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>NOTE: your yaml already sets confirm_tol: 0.3
+</span></code></pre></div>
+<p>The last line matters: the CompleteTest yaml pins <code>confirm_tol: 0.3</code>, which switches the
+automatic tolerance off. Remove that line to use it.</p>
+<h2 id="limits">Limits<a class="headerlink" href="#limits" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../calibration-bundle-adjustment/"><code>calibration-bundle-adjustment.md</code></a> —
-  design doc covering both plate-based joint bundle adjustment
-  (<code>joint_plate_bundle_adjust</code>) and this tracer-based step
-  (<code>tracer_self_calibrate</code>), plus the wider roadmap.</li>
-<li><a href="../calibration-rms-vs-rcm/"><code>calibration-rms-vs-rcm.md</code></a> — why RCM catches
-  cross-camera disagreement that per-camera RMS misses.</li>
-<li><a href="../calibration_best_practices/"><code>calibration_best_practices.md</code></a> — the
-  broader plate-calibration workflow this step follows on from.</li>
-<li><code>src/openptv2/autocalibration.py</code> — <code>tracer_self_calibrate()</code>,
-  <code>cross_camera_rcm()</code>.</li>
-<li><code>src/openptv2/gui/calibration_gui.py</code> — the "Tracer self-cal" button and
-  "Shaking calibration parameters" dialog group.</li>
+<li>It recommends starting values from a benchmark with one flow field and one camera
+  geometry. When a measurement is close to a limit (density 6–8, kink/step 0.4–0.6),
+  confirm on your data with the checks in the parameter guide.</li>
+<li>It does not know your flow. It cannot detect, for example, strong real accelerations
+  that raise the kink; the kink/step ratio is the safeguard.</li>
+<li><code>blob_gate</code> and the ghost model need blob brightness in the stored targets; without it the
+  ghost marks fall back to ray convergence only.</li>
 </ul>
+<h2 id="guided-tuning-with-an-ai-assistant">Guided tuning with an AI assistant<a class="headerlink" href="#guided-tuning-with-an-ai-assistant" title="Permanent link">&para;</a></h2>
+<p>The repository carries a Claude Code skill, <code>.claude/skills/openptv-tuning-advisor</code>,
+that walks through the whole chain (image processing, correspondences, tracker choice,
+tracking parameters, checks, smoothing) in pipeline order and uses this tool in the
+tracking step. Ask, for example: "which tracker and parameters for this run folder?".</p>
 
 
 
