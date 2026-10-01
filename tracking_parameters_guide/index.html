@@ -2387,9 +2387,10 @@ section of your <code>parameters_*.yaml</code> (or <code>trajectories:</code> in
 last two). <strong>Changing a value in the yaml never needs a new software release.</strong> A release
 is only needed when a <em>new option</em> is added to the code.</p>
 <h2 id="1-the-quick-way-let-the-program-measure-your-data">1. The quick way: let the program measure your data<a class="headerlink" href="#1-the-quick-way-let-the-program-measure-your-data" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/tracking_advice.py<span class="w"> </span>RUN_DIR<span class="w"> </span>--fps<span class="w"> </span><span class="m">5000</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># replace the path by YOUR run folder; --fps is the camera frame rate</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/tracking_advice.py<span class="w"> </span>~/data/experiment/wp2/test<span class="w"> </span>--fps<span class="w"> </span><span class="m">5000</span>
 </span></code></pre></div>
-<p><code>RUN_DIR</code> is the run folder (it has <code>parameters_*.yaml</code>, <code>cal/</code> and <code>res/run.zarr</code> after
+<p>The path is a run folder (it has <code>parameters_*.yaml</code>, <code>cal/</code> and <code>res/run.zarr</code> after
 the sequence phase). The program reads about 100 frames, measures the numbers in section 3,
 and prints for every parameter <strong>the value it recommends and the measurement behind it</strong>,
 then YAML lines you can paste. It writes nothing.</p>
