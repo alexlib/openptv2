@@ -76,3 +76,30 @@ def test_q_young_blocks_young_trajectory_but_not_established_one():
     g3 = [np.zeros(1), np.zeros(1), np.zeros(1), np.array([0.9])]
     got = TwoPhaseTracker(cfg).track_frames(f3, None, frame_ghost=g3)
     assert (2, 0, 3, 0) in got
+
+
+def test_brightness_spread_removes_camera_gain_offsets():
+    from openptv2.point_quality import brightness_spread
+
+    gain = np.array([0.0, 0.3, 0.1, 0.0])
+    same = np.log(500.0) + gain + np.zeros((5, 4))  # equal particle, unequal cameras
+    assert brightness_spread(same).min() > 0.1  # raw: looks inconsistent
+    assert np.allclose(brightness_spread(same, gain), 0.0, atol=1e-12)
+    ghost = same.copy()
+    ghost[:, 2] += 1.2  # one blob belongs to another particle
+    assert (brightness_spread(ghost, gain) > 0.4).all()
+    ghost[:, 3] = np.nan  # unseen camera ignored
+    assert np.isfinite(brightness_spread(ghost, gain)).all()
+
+
+def test_ghost_probability_with_spread_orders_points_and_handles_nan():
+    pos = np.zeros((4, 3))
+    scale = (np.zeros(3), 0.04, 0.0)
+    rcm = np.full(4, 0.04)
+    n4 = np.full(4, 4)
+    p = ghost_probability(pos, rcm, n4, scale, np.array([0.05, 0.15, 0.4, 0.9]))
+    # at equal rcm and spread, a 3-camera point is more likely a ghost
+    p3 = ghost_probability(pos, rcm, np.full(4, 3), scale, np.array([0.05, 0.15, 0.4, 0.9]))
+    assert np.all(np.diff(p) > 0) and p[0] < 0.05 and p[-1] > 0.1 and p3[-1] > 0.5
+    assert np.all(p3 > p)
+    assert ghost_probability(pos[:1], rcm[:1], n4[:1], scale, np.array([np.nan]))[0] == 0.5

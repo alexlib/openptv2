@@ -30,6 +30,25 @@ it softly, as a *ghost probability* between 0 and 1 for every point.
 4. The probability is stored in the run store (`quality/frame_NNNNNN`,
    `RunStore.read_point_quality`) so later steps can use it without recomputing.
 
+**Model `q_model`** (`track` section; default **`rcm_blob`**, alternative `rcm`):
+
+- `rcm`: steps 1-3 above.
+- `rcm_blob`: also uses the **brightness agreement of the blobs** across cameras. A real
+  particle shows a similar brightness in all cameras that see it (spread of the log
+  brightness about 0.15 on real data); a ghost combines blobs of different particles (about
+  0.4). The brightness of each camera is first divided by that camera's typical value (its
+  run median), because real cameras differ in gain by 0.13-0.17 in log, as much as the
+  spread itself. It is a logistic model on [relative rcm, 3-camera flag, log spread], fitted
+  on synthetic data whose per-camera brightness scatter matches real data
+  (`synth_bench build --amp-jitter 0.18`). If the blobs carry no brightness (constant
+  values) the plugin falls back to `rcm` with a message.
+- Measured on four independent realistic synthetic cases (against `rcm`): velocity error
+  −0.005 (sparse), −0.015 (×2 density), −0.039 (×4 density), −0.001 (clustered with frame
+  skip ×4); ghost fraction 1 to 2 points lower; true points kept at most 0.007 lower. On
+  real wp2: 4.6% fewer trajectories, mean length 20.2 → 20.8, suspect trajectories 10.4% →
+  9.7%, jump share unchanged. The share of points confidently flagged (probability above
+  0.5) is about 5% in both the synthetic test and wp2.
+
 Nothing is deleted at this stage.
 
 ## 3. The two thresholds
@@ -40,6 +59,7 @@ Set them in the `track` section (YAML / GUI parameters) of the `two_phase` track
 |---|---|---|---|
 | `q_seed` | 0.2 | A point whose ghost probability is above this **may not start a trajectory** (an existing trajectory can still pick it up). It is also the limit for `q_young`. | `q_seed: null` |
 | `q_young` | 3 | A trajectory with **fewer than this many points** may not continue onto a point above `q_seed`. Established trajectories are not affected. | `q_young: 0` |
+| `q_model` | `rcm_blob` | ghost model: `rcm_blob` (rcm + camera count + blob brightness agreement) or `rcm` | `q_model: rcm` if your blobs have no usable brightness or the cameras are saturated |
 | `q_weight` | 0 | Multiplies the link cost by `1 + q_weight * probability`. Measured: **no effect** (links onto doubtful points are rarely contested). Leave at 0. | `0` |
 
 To switch the whole feature off: `q_seed: null` and `q_young: 0`. It also switches off

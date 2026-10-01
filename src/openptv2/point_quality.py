@@ -57,6 +57,42 @@ def frame_rcm(store: Any, frame: int, cals: list, cpar: Any) -> np.ndarray:
     return np.asarray(rcm, dtype=np.float64)
 
 
+def frame_log_brightness(store: Any, frame: int) -> np.ndarray:
+    """(N, C) log blob brightness (``sumg``) of every stored 3D point in each camera
+    that sees it; NaN where the camera does not see the point."""
+    pos, cam_ids = store.read_correspondences(frame)
+    n, n_cams = len(pos), cam_ids.shape[1]
+    logb = np.full((n, n_cams), np.nan)
+    for cam in range(n_cams):
+        rows = np.asarray(store.root[f"targets/cam_{cam}/frame_{frame:06d}"])
+        sel = np.flatnonzero(cam_ids[:, cam] >= 0)
+        if len(sel):
+            logb[sel, cam] = np.log(np.maximum(rows[cam_ids[sel, cam]][:, 6], 1.0))
+    return logb
+
+
+def brightness_spread(logb: np.ndarray, offsets: np.ndarray | None = None) -> np.ndarray:
+    """Std over the seeing cameras of the log brightness, after subtracting each
+    camera's typical value (``offsets``, e.g. its run median): cameras differ in gain
+    by 0.13-0.17 in log on real data, which must not look like inconsistency. A real
+    particle shows a similar brightness in all cameras (spread about 0.15); a ghost
+    combines blobs of different particles (about 0.4)."""
+    x = logb if offsets is None else logb - np.asarray(offsets)[None, :]
+    with np.errstate(all="ignore"):
+        return np.nanstd(x, axis=1)
+
+
+def frame_brightness_spread(store: Any, frame: int) -> np.ndarray:
+    """``brightness_spread`` of one frame without gain normalisation."""
+    return brightness_spread(frame_log_brightness(store, frame))
+
+
+# Logistic model on [1, log rel_rcm, 3-camera flag, log(spread + 0.05),
+# log(spread + 0.05) * 3-camera flag]; fitted on the synthetic real-jitter case with
+# realistic per-camera brightness scatter (docs/plans/2026-09-30-tracker-plan.md, A10).
+_BLOB_W = np.array([-1.71, 2.34, 2.5, 1.73, 0.57])
+
+
 def fit_scale(
     pos: np.ndarray, rcm: np.ndarray, n_cams_seen: np.ndarray, centre=None
 ) -> tuple[np.ndarray, float, float]:
@@ -81,12 +117,22 @@ def ghost_probability(
     rcm: np.ndarray,
     n_cams_seen: np.ndarray,
     scale: tuple[np.ndarray, float, float],
+    spread: np.ndarray | None = None,
 ) -> np.ndarray:
     """Probability that each point is a ghost, from relative rcm and camera
-    count. Points seen by 2 cameras use the 3-camera curve; NaN rcm -> 0.5."""
+    count (and, with ``spread`` = ``frame_brightness_spread``, the brightness
+    agreement across cameras; model ``rcm_blob``). Points seen by 2 cameras use the 3-camera curve; NaN rcm -> 0.5."""
     centre, a, b = scale
     d = np.linalg.norm(pos - centre, axis=1)
     rel = rcm / np.maximum(a + b * d, 1e-6)
+    if spread is not None:
+        three = (np.asarray(n_cams_seen) < 4).astype(np.float64)
+        ls = np.log(np.asarray(spread, dtype=np.float64) + 0.05)
+        x = np.c_[
+            np.ones(len(rel)), np.log(np.maximum(rel, 1e-3)), three, ls, ls * three
+        ]
+        p = 1.0 / (1.0 + np.exp(-(x @ _BLOB_W)))
+        return np.where(np.isfinite(rel) & np.isfinite(ls), p, 0.5)
     p = np.where(
         n_cams_seen >= 4,
         np.interp(rel, _REL_X, _P_GHOST[4]),

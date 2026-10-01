@@ -1,0 +1,12 @@
+{"change": "A10: ghost model rcm_blob = relative rcm + 3-camera flag + brightness spread of the blobs across cameras (gain-normalised per camera); default q_model=rcm_blob",
+ "date": "2026-10-01",
+ "cases": "four realistic synthetic cases with per-camera brightness scatter 0.18 and sigma-px 0.08: real-jitter d1 n200 (the logistic was fitted on its even frames), d2 n150, d4 n150, clustered d2 k4 n150",
+ "point_level_auc_ghost_vs_real": {"current table (rcm, cameras)": 0.875, "brightness spread only": 0.839, "rcm + cameras + brightness": 0.917},
+ "vErr_yield_ghost (OFF -> rcm -> rcm_blob default 0.2/3 -> accuracy mode 0.15/6 with rcm_blob)": {
+  "d1_n200": {"OFF": [0.2136,0.680,0.0700], "rcm": [0.1982,0.675,0.0480], "rcm_blob": [0.1934,0.675,0.0372], "acc_mode": [0.1889,0.670,0.0318], "oracle": [0.1575,0.688,0.0047]},
+  "d2_n150": {"OFF": [0.3658,0.510,0.0689], "rcm": [0.3371,0.502,0.0520], "rcm_blob": [0.3225,0.497,0.0422], "acc_mode": [0.3015,0.486,0.0358], "oracle": [0.3469,0.529,0.0166]},
+  "d4_n150": {"OFF": [0.5055,0.231,0.1081], "rcm": [0.4709,0.225,0.0854], "rcm_blob": [0.4307,0.218,0.0653], "acc_mode": [0.3940,0.208,0.0561], "oracle": [0.6081,0.257,0.0337]},
+  "clustered_k4": {"OFF": [0.1765,0.376,0.0681], "rcm": [0.1683,0.372,0.0573], "rcm_blob": [0.1647,0.372,0.0545], "acc_mode": [0.1564,0.366,0.0509], "oracle": [0.1585,0.410,0.0128]}},
+ "real_wp2_300_frames": {"rcm": {"trajectories": 15310, "mean_len": 20.16, "never4": 0.1036, "jump": 0.0145, "flagged>0.5": 0.006}, "rcm_blob": {"trajectories": 14613, "mean_len": 20.8, "never4": 0.0967, "jump": 0.0143, "flagged>0.5": 0.048}},
+ "per_camera_median_log_brightness_real": {"wp2": [6.412,6.468,6.545,6.504], "lv_wp5": [6.148,6.229,6.319,6.314]},
+ "verdict": "KEEP as default. Gains over rcm: -0.005/-0.015/-0.039/-0.004 vErr, ghost fraction -1.1/-1.0/-2.0/-0.3 points, true points kept -0.000/-0.005/-0.007/0 vs rcm. Note: the earlier cases without --amp-jitter give real particles zero brightness spread (unrealistic), so they must not be used to judge this model."}

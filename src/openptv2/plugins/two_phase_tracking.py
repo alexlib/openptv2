@@ -27,6 +27,9 @@ from openptv2.tracking_postprocess import confirm_link_tuples as _confirm_links
 #: four real recordings; see docs/tracking_quality.md and the tracker plan).
 DEFAULT_Q_SEED = 0.2
 DEFAULT_Q_YOUNG = 3
+#: ghost model: "rcm" (ray miss distance + camera count) or "rcm_blob" (adds the
+#: brightness agreement of the blobs across cameras, gain-normalised per camera)
+DEFAULT_Q_MODEL = "rcm_blob"
 
 
 #: Two-hop link confirmation is ON by default in the plugin (the one measured big win:
@@ -820,13 +823,21 @@ class Tracking:
     RunStore, runs two-phase matching, and writes links back.
     """
 
+    q_model = DEFAULT_Q_MODEL
+
     def __init__(self, ptv=None, exp=None):
         self.ptv = ptv
         self.exp = exp
 
     def _ghost_probabilities(self, store, frames, frame_particles, frame_seen):
         """Per-point ghost probability from ray convergence (A10)."""
-        from openptv2.point_quality import fit_scale, frame_rcm, ghost_probability
+        from openptv2.point_quality import (
+            brightness_spread,
+            fit_scale,
+            frame_log_brightness,
+            frame_rcm,
+            ghost_probability,
+        )
 
         cals = list(getattr(self.exp, "cals", None) or [])
         cpar = getattr(self.exp, "cpar", None)
@@ -837,9 +848,23 @@ class Tracking:
         scale = fit_scale(
             np.vstack(frame_particles), np.concatenate(rcm), np.concatenate(n_seen)
         )
+        spreads = [None] * len(frames)
+        if self.q_model == "rcm_blob":
+            logb = [frame_log_brightness(store, f) for f in frames]
+            allb = np.vstack(logb)
+            with np.errstate(all="ignore"):
+                offsets = np.nanmedian(allb, axis=0)  # per-camera gain
+                varies = float(np.nanstd(allb)) > 1e-6
+            if varies:
+                spreads = [brightness_spread(lb, offsets) for lb in logb]
+            else:
+                print(
+                    "TwoPhaseTracker: blob brightness is constant in this store; "
+                    "ghost marks use ray convergence only."
+                )
         return [
-            ghost_probability(p, r, n, scale)
-            for p, r, n in zip(frame_particles, rcm, n_seen)
+            ghost_probability(p, r, n, scale, sp)
+            for p, r, n, sp in zip(frame_particles, rcm, n_seen, spreads)
         ]
 
     def _build_project_fn(self):
@@ -913,6 +938,9 @@ class Tracking:
         q_seed_raw = track_cfg.get("q_seed", DEFAULT_Q_SEED)
         q_seed = None if q_seed_raw is None else float(q_seed_raw)
         q_young = int(track_cfg.get("q_young", DEFAULT_Q_YOUNG))
+        self.q_model = str(track_cfg.get("q_model", DEFAULT_Q_MODEL))
+        if self.q_model not in ("rcm", "rcm_blob"):
+            raise ValueError(f"q_model must be rcm or rcm_blob, got {self.q_model!r}")
         bwd_v_max_raw = track_cfg.get("bwd_v_max", None)
         bwd_v_max = None if bwd_v_max_raw is None else float(bwd_v_max_raw)
 
