@@ -237,6 +237,14 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
   *worse* than `rcm` (brightness may change more over skipped frames; `q_model: rcm` is the
   setting for such data).
 
+- **A2, A12, A13 closed by measurement** (`bench/step14_A2_A12_A13_contest_rate_2026-10-02.json`).
+  Only **2.7%** (sparse) and **5.6%** (4× density) of tracks face a contested decision, and the
+  average track has about **one** candidate in its search ball (0.97 and 0.78). So no cost term
+  (A2), no-link cost (A12) or look-ahead (A13) can change more than a few percent of the links;
+  the existing `q_weight` (cost scaled by the ghost probability, which contains the camera count
+  and brightness) gives results identical to the baseline. Tracks fail by having **no
+  candidate** (22% at 4× density), not by competition.
+
 ## What can be next (ranked by expected gain)
 The remaining error on the real-jitter case, step by step (velocity error; perfect linker
 0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →

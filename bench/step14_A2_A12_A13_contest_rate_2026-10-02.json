@@ -1,0 +1,7 @@
+{"date": "2026-10-02", "question": "can cost-based refinements (A2 camera count in cost, A12 explicit no-link cost, A13 look-ahead for contested links) matter?",
+ "contested_decisions (plugin path, forward+backward passes)": {
+  "L1_d1_c0_k1_n200_s0.08_a0.18_f0.05": {"tracks_searched": 438418, "with_more_than_one_candidate": 0.020, "in_contested_group": 0.027, "mean_candidates_per_track": 0.97},
+  "L1_d4_c0_k1_n150_s0.08_a0.18_f0.05": {"tracks_searched": 594250, "with_more_than_one_candidate": 0.038, "in_contested_group": 0.056, "mean_candidates_per_track": 0.78}},
+ "q_weight_cost_by_ghost_probability (includes camera count and brightness)": {
+  "two_phase": [0.1862, 0.4214, 0.1689], "q_weight=3": [0.1862, 0.4215, 0.1668], "q_weight=10": [0.1862, 0.4215, 0.1701]},
+ "verdict": "A2/A12/A13 CLOSED without implementation: only 2.7% (sparse) to 5.6% (4x density) of tracks face a contested decision, the average track has about ONE candidate (0.97 / 0.78), so no cost, no-link cost or look-ahead can change more than a few percent of links; the cost weighting measured above is identical to the baseline. Tracks fail by having no candidate (22% at 4x density), not by competition."}
