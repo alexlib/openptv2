@@ -155,9 +155,16 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
   mm/frame (the regime it was tested in); an explicit number or `null` wins; a large
   `v_max` leaves it off with a printed note. lv_multi wp4/wp5 with no overrides: jump steps
   0.0% (were 6.7% and 8.4%). `docs/two-phase-tracking.md` has the parameter row.
-- **Release:** `main` fast-forwarded to `02033eed` and pushed; version from git tag
-  (RELEASING.md: tag `v0.5.12`, CI builds wheels and publishes to PyPI). See the status
-  line at the top of this section for the final state.
+- **Release status: NOT finished, waiting for the user.** `main` was fast-forwarded to
+  `02033eed` and pushed; CI (tests) and docs deployment passed; "Build Wheels" ran on the
+  push. The last step, creating and pushing the tag `v0.5.12` (RELEASING.md: the tag push
+  builds wheels and publishes to PyPI), was **blocked by the permission system** and was
+  not retried. The user has to push the tag (or allow it); nothing downstream can proceed
+  before that.
+- **Blocked until the tag is published:** raising the `openptv2>=` pin in openptv-cloud,
+  updating its lock file, and merging `feat/gap-aware-smoothing-trim` (the cloud branch
+  works without the new openptv2 but falls back to flowtracks with a warning on every
+  run, so it should be merged only together with the pin).
 - **openptv-cloud:** after the PyPI release, raise `openptv2>=` in `pyproject.toml`, update
   the lock file, run its tests, merge `feat/gap-aware-smoothing-trim` into `main`, push.
 
@@ -183,7 +190,8 @@ Recommended next: **A7b** (largest measured, concrete), then **the better mark**
 test offline with the saved features and the ghost cheats), then A4/A5 together.
 
 ## Next steps, in this order
-1. **Finish the release chain** (see "Decisions taken and release").
+1. **Finish the release chain** (see "Decisions taken and release"): user pushes the tag
+   `v0.5.12` for commit `02033eed`; then bump the openptv-cloud pin, lock, test, merge.
 2. **A7b:** data-driven `confirm_tol`. Per-case optima are in
    `bench/step8_A7_confirmation_variants_REVERTED_2026-10-01.json` (normal and real jitter
    sigma k=7, clustered k≈4, 4× density k=3, skip ×8 the absolute 0.3). Look for a statistic
