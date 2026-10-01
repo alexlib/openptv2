@@ -66,7 +66,7 @@ when to change them and how to test them: [Point quality](tracking_quality.md)):
 | `q_seed` [–] | 0.2 | a point with ghost probability above this may not start a trajectory | lower (0.15) for more ghost removal, higher (0.3) or `null` for clean data |
 | `q_young` [points] | 3 | a trajectory with fewer points may not continue onto such a point | 3–6; 0 switches the rules off |
 | `q_weight` [–] | 0 | scales link cost by the ghost probability | measured to have no effect; leave 0 |
-| `confirm_tol`, `confirm_ends` | none | two-hop link confirmation | **use it**: `0.3` / `true` removed all jump steps on lv_multi wp4/wp5 |
+| `confirm_tol` [mm/frame], `confirm_ends` | **0.3** / **true** (when `v_max` ≤ 3) | two-hop link confirmation: a link survives only if the next step continues within this velocity kink | on by default for small steps; `confirm_tol: null` switches it off. It removed all jump steps on lv_multi wp4/wp5 (8.4% → 0%). The best value is loose for sparse and tight for dense data (4× density: a tighter one lowered the error by 0.05); for large `v_max` set it explicitly, about 3–4× your position noise |
 
 ## 3. How it behaves (caveats)
 

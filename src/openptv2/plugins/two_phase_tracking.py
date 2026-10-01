@@ -29,6 +29,37 @@ DEFAULT_Q_SEED = 0.2
 DEFAULT_Q_YOUNG = 3
 
 
+#: Two-hop link confirmation is ON by default in the plugin (the one measured big win:
+#: lv_multi jump steps 8.4% -> 0.0%; every synthetic benchmark case uses it). The
+#: tolerance is a velocity kink in mm/frame, tested for steps of 0.05-0.1 mm/frame, so
+#: the default only applies when v_max is small (<= 3 mm/frame). Larger scales need an
+#: explicit confirm_tol. An explicit ``confirm_tol: null`` switches it off.
+DEFAULT_CONFIRM_TOL = 0.3
+DEFAULT_CONFIRM_MAX_VMAX = 3.0
+
+
+def resolve_confirm(track_cfg: dict, v_max: float) -> tuple[float | None, bool, str]:
+    """(confirm_tol, confirm_ends, note) from the ``track`` section.
+
+    Explicit ``confirm_tol`` (a number or null) always wins and keeps the old
+    ``confirm_ends`` default (False). Absent: 0.3 mm/frame with ``confirm_ends``
+    True when ``v_max`` is small, otherwise off with a note."""
+    if "confirm_tol" in track_cfg:
+        raw = track_cfg["confirm_tol"]
+        tol = None if raw is None else float(raw)
+        return tol, bool(track_cfg.get("confirm_ends", False)), ""
+    ends = bool(track_cfg.get("confirm_ends", True))
+    if v_max <= DEFAULT_CONFIRM_MAX_VMAX:
+        return DEFAULT_CONFIRM_TOL, ends, ""
+    return (
+        None,
+        ends,
+        f"v_max={v_max:g} mm/frame is large; two-hop confirmation (confirm_tol) is "
+        "not switched on by default. Set confirm_tol explicitly (about 3-4x your "
+        "position noise scale).",
+    )
+
+
 @dataclass
 class TwoPhaseTrackerConfig:
     """Configuration for the two-phase tracker.
@@ -870,9 +901,9 @@ class Tracking:
         share_tol_raw = track_cfg.get("share_tol", 1.0)
         share_tol = None if share_tol_raw is None else float(share_tol_raw)
         max_group_size = int(track_cfg.get("max_group_size", 128))
-        confirm_raw = track_cfg.get("confirm_tol", None)
-        confirm_tol = None if confirm_raw is None else float(confirm_raw)
-        confirm_ends = bool(track_cfg.get("confirm_ends", False))
+        confirm_tol, confirm_ends, confirm_note = resolve_confirm(track_cfg, v_max)
+        if confirm_note:
+            print(f"TwoPhaseTracker: {confirm_note}")
         bidirectional = bool(track_cfg.get("bidirectional", False))
         # Point-quality rules (A10, ray convergence). ON by default: a point whose
         # camera rays meet badly may not start a trajectory (q_seed) and a young

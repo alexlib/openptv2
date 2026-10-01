@@ -295,3 +295,22 @@ def test_track_frames_uses_seen_mask_end_to_end():
         [f0, f1], [leaf0, leaf1], project_fn=lambda p: np.tile(leaf0, (len(p), 1)),
         frame_seen=seen)
     assert (0, 0, 1, 0) in links
+
+
+def test_resolve_confirm_defaults_and_explicit_values():
+    from openptv2.plugins.two_phase_tracking import resolve_confirm
+
+    # absent: on for small v_max, with confirm_ends
+    assert resolve_confirm({}, 1.0) == (0.3, True, "")
+    assert resolve_confirm({"confirm_ends": False}, 0.86) == (0.3, False, "")
+    # absent but large v_max: off, with a note
+    tol, ends, note = resolve_confirm({}, 15.5)
+    assert tol is None and "confirm_tol" in note
+    # explicit number / null always wins; old confirm_ends default stays False
+    assert resolve_confirm({"confirm_tol": 0.5}, 1.0) == (0.5, False, "")
+    assert resolve_confirm({"confirm_tol": None}, 1.0) == (None, False, "")
+    assert resolve_confirm({"confirm_tol": 0.2, "confirm_ends": True}, 20.0) == (
+        0.2,
+        True,
+        "",
+    )
