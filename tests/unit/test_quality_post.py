@@ -63,8 +63,8 @@ def test_quality_weights_floor_and_order():
     assert w[0] == 1.0 and w[1] < w[0] and w[2] == 0.05
 
 
-def test_short_trajectory_uses_largest_odd_window():
-    n = 10  # window 21 asked, only 10 points: uses 9
+def test_short_trajectory_uses_all_its_points():
+    n = 10  # window 21 asked, only 10 points: all 10 are fitted
     t = np.arange(n, dtype=float)
     x = np.c_[0.1 * t, 0 * t, 0 * t]
     _, _, p, v, _ = weighted_savgol(np.zeros(n, int), np.arange(n), x, None, 1.0, 21, 3)

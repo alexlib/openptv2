@@ -279,11 +279,14 @@ def _render_cals(cals, cpar):
 DEFAULT_SIGMA_PX = 0.04
 
 
-def case_name(level, mult, cluster, k, n_out, sigma_px=DEFAULT_SIGMA_PX, amp_jitter=0.0):
+def case_name(
+    level, mult, cluster, k, n_out, sigma_px=DEFAULT_SIGMA_PX, amp_jitter=0.0, amp_flicker=None
+):
     """sigma_px (blob-centre noise) is part of the name only when changed, so
     the existing case names stay valid; e.g. ..._s0.06 is the real-jitter case."""
     tag = "" if sigma_px == DEFAULT_SIGMA_PX else f"_s{sigma_px:g}"
     tag += f"_a{amp_jitter:g}" if amp_jitter else ""
+    tag += f"_f{amp_flicker:g}" if amp_flicker is not None else ""
     return f"{level}_d{mult:g}_c{cluster:g}_k{k}_n{n_out}{tag}"
 
 
@@ -443,10 +446,11 @@ NOISE_MM = {"L0": 0.0, "L1": 0.094, "L2": 0.094}
 
 def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
                seed: int = 0, sigma_px: float = DEFAULT_SIGMA_PX,
-               amp_min: float = 49.0, amp_jitter: float = 0.0) -> Path:
+               amp_min: float = 49.0, amp_jitter: float = 0.0,
+               amp_flicker: float | None = None) -> Path:
     from openptv2.storage import RunStore
 
-    name = case_name(level, mult, cluster, k, n_out, sigma_px, amp_jitter)
+    name = case_name(level, mult, cluster, k, n_out, sigma_px, amp_jitter, amp_flicker)
     case_dir = WORK / "cases" / name
     if case_dir.exists():
         shutil.rmtree(case_dir)
@@ -491,6 +495,7 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
         imx, imy = cpar.imx, cpar.imy
         false_t = _false_targets(k, n_out) if level == "L1" else {}
         lost = []
+        persist: dict = {}
         for fo in range(1, n_out + 1):
             sel = np.flatnonzero(fr == fo)
             tid = np.full((len(sel), NUM_CAMS), -1, np.int32)
@@ -499,8 +504,21 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
                 vis = (xy[:, 0] >= 0) & (xy[:, 0] < imx) & (xy[:, 1] >= 0) & (xy[:, 1] < imy)
                 if level == "L1":
                     a_cam = amp[sel][vis]
-                    if amp_jitter:  # real blobs differ between cameras (~0.18 in log)
+                    if amp_jitter and amp_flicker is None:
+                        # real blobs differ between cameras (~0.18 in log), redrawn
+                        # every frame (the old, unrealistic version)
                         a_cam = a_cam * np.exp(rng.normal(0, amp_jitter, len(a_cam)))
+                    elif amp_jitter:
+                        # persistent per particle and camera (real brightness is stable
+                        # in time: linked pairs change by ~0.06), small flicker per frame
+                        if cam not in persist:
+                            persist[cam] = np.random.default_rng([seed + 7, cam]).normal(
+                                0, amp_jitter, int(truth["particle_id"].max()) + 1
+                            )
+                        pid_c = truth["particle_id"][sel][vis]
+                        a_cam = a_cam * np.exp(
+                            persist[cam][pid_c] + rng.normal(0, amp_flicker, len(a_cam))
+                        )
                     rows, t_of = _target_rows(xy[vis], a_cam, True, sigma_px, rng,
                                               extra=false_t[fo, cam], amp_min=amp_min)
                 else:
@@ -1058,6 +1076,9 @@ def main(argv=None) -> None:
     b.add_argument("--seed", type=int, default=0)
     b.add_argument("--amp-jitter", type=float, default=0.0,
                    help="per-camera log-brightness scatter of a particle; ~0.18 matches real")
+    b.add_argument("--amp-flicker", type=float, default=None,
+                   help="with --amp-jitter: make the per-camera factor persistent per "
+                        "particle and add this per-frame flicker (real: ~0.05)")
     b.add_argument("--sigma-px", type=float, default=DEFAULT_SIGMA_PX,
                    help="blob-centre noise (px); ~0.06 matches real jitter")
     t = sub.add_parser("track")
@@ -1078,7 +1099,7 @@ def main(argv=None) -> None:
     args = ap.parse_args(argv)
     if args.cmd == "build":
         build_case(args.level, args.mult, args.cluster, args.k, args.n_out, args.seed,
-                   args.sigma_px, amp_jitter=args.amp_jitter)
+                   args.sigma_px, amp_jitter=args.amp_jitter, amp_flicker=args.amp_flicker)
     elif args.cmd == "track":
         track(args.case, args.tracker)
     elif args.cmd == "report":

@@ -124,6 +124,13 @@ class TwoPhaseTrackerConfig:
         added greedily by 3D distance). Closes ~75% of the accuracy gap
         to 4-frame trackcorr on dense data in a fraction of the time.
         Default False (unidirectional forward).
+    blob_gate : float | None
+        Brightness continuity: a real particle keeps its blob brightness in each camera
+        from frame to frame (mean |change of log brightness| median 0.06 on real data,
+        0.33 for a random neighbour). A candidate whose mean absolute change over the
+        cameras that see both points exceeds this is not a candidate. None = off
+        (needs ``frame_logb`` in ``track_frames``). 0.5 is a good value for frame-skipped
+        or low-frame-rate data (see docs/tracking_quality.md).
     q_weight : float
         A10: per-point ghost probability ``g`` (from ray convergence, see
         ``openptv2.point_quality``) raises the cost of linking onto that
@@ -142,6 +149,7 @@ class TwoPhaseTrackerConfig:
     """
 
     v_max: float = 5.0
+    blob_gate: float | None = None
     q_weight: float = 0.0
     q_seed: float | None = None
     q_young: int = 0
@@ -234,7 +242,9 @@ def _links_to_linkage(
     82 mm one-frame "step"). Gap links are left unlinked at both ends
     instead; downstream gap repair rejoins them.
     """
-    out = [(np.full(n, -1, dtype=np.int32), np.full(n, -1, dtype=np.int32)) for n in sizes]
+    out = [
+        (np.full(n, -1, dtype=np.int32), np.full(n, -1, dtype=np.int32)) for n in sizes
+    ]
     for t0, p0, t1, p1 in links:
         if frames[t1] != frames[t0] + 1 or p0 >= sizes[t0] or p1 >= sizes[t1]:
             continue
@@ -292,6 +302,9 @@ def _match_two_phase_frame(
     seen1: np.ndarray | None = None,
     ghost1: np.ndarray | None = None,
     q_weight: float = 0.0,
+    logb0: np.ndarray | None = None,
+    logb1: np.ndarray | None = None,
+    blob_gate: float | None = None,
     young0: np.ndarray | None = None,
     q_block: float = 1.0,
 ) -> tuple[set[tuple[int, int]], set[tuple[int, int]]]:
@@ -400,6 +413,14 @@ def _match_two_phase_frame(
     row_arr = np.array(rows)
     col_arr = np.array(cols)
     cost_arr = np.array(costs)
+    if logb0 is not None and logb1 is not None and blob_gate:
+        with np.errstate(all="ignore"):
+            delta = np.nanmean(np.abs(logb1[col_arr] - logb0[row_arr]), axis=1)
+        ok = ~(delta > blob_gate)  # NaN (no common camera) stays a candidate
+        if not ok.all():
+            row_arr, col_arr, cost_arr = row_arr[ok], col_arr[ok], cost_arr[ok]
+            if len(row_arr) == 0:
+                return set(), set()
     if ghost1 is not None and q_weight > 0:
         cost_arr = cost_arr * (1.0 + q_weight * np.asarray(ghost1)[col_arr])
 
@@ -523,6 +544,7 @@ class TwoPhaseTracker:
         return_chains: bool = False,
         frame_seen: list[np.ndarray] | None = None,
         frame_ghost: list[np.ndarray] | None = None,
+        frame_logb: list[np.ndarray] | None = None,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
@@ -570,16 +592,26 @@ class TwoPhaseTracker:
 
         if not self.cfg.bidirectional:
             return self._track_unidirectional(
-                frame_particles, frame_leaves, project_fn, return_chains,
-                frame_seen=frame_seen, frame_ghost=frame_ghost,
+                frame_particles,
+                frame_leaves,
+                project_fn,
+                return_chains,
+                frame_seen=frame_seen,
+                frame_ghost=frame_ghost,
+                frame_logb=frame_logb,
             )
 
         # Bidirectional tracking: forward + backward on reversed frames
         fwd_links = cast(
             list[tuple[int, int, int, int]],
             self._track_unidirectional(
-                frame_particles, frame_leaves, project_fn, return_chains=False,
-                frame_seen=frame_seen, frame_ghost=frame_ghost,
+                frame_particles,
+                frame_leaves,
+                project_fn,
+                return_chains=False,
+                frame_seen=frame_seen,
+                frame_ghost=frame_ghost,
+                frame_logb=frame_logb,
             ),
         )
 
@@ -587,6 +619,7 @@ class TwoPhaseTracker:
         rev_leaves = frame_leaves[::-1] if frame_leaves is not None else None
         rev_seen = frame_seen[::-1] if frame_seen is not None else None
         rev_ghost = frame_ghost[::-1] if frame_ghost is not None else None
+        rev_logb = frame_logb[::-1] if frame_logb is not None else None
         bwd_vmax = (
             self.cfg.bwd_v_max if self.cfg.bwd_v_max is not None else self.cfg.v_max
         )
@@ -600,6 +633,7 @@ class TwoPhaseTracker:
                 v_max_override=bwd_vmax,
                 frame_seen=rev_seen,
                 frame_ghost=rev_ghost,
+                frame_logb=rev_logb,
             ),
         )
         bwd_links = [
@@ -623,6 +657,7 @@ class TwoPhaseTracker:
         v_max_override: float | None = None,
         frame_seen: list[np.ndarray] | None = None,
         frame_ghost: list[np.ndarray] | None = None,
+        frame_logb: list[np.ndarray] | None = None,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
@@ -729,6 +764,20 @@ class TwoPhaseTracker:
                     else None
                 ),
                 q_block=1.0 if self.cfg.q_seed is None else self.cfg.q_seed,
+                logb0=(
+                    np.array(
+                        [
+                            frame_logb[tracks[tid]["last_t"]][tracks[tid]["last_row"]]
+                            for tid in tids
+                        ]
+                    )
+                    if frame_logb is not None
+                    and self.cfg.blob_gate
+                    and tids
+                    else None
+                ),
+                logb1=frame_logb[t + 1] if frame_logb is not None else None,
+                blob_gate=self.cfg.blob_gate,
             )
             matched_det = set()
             for ai, det in got:
@@ -934,6 +983,8 @@ class Tracking:
         # camera rays meet badly may not start a trajectory (q_seed) and a young
         # trajectory may not continue onto it (q_young). Switch off with
         # ``q_seed: null`` and ``q_young: 0``. See docs/tracking_quality.md.
+        bg_raw = track_cfg.get("blob_gate", None)
+        blob_gate = None if bg_raw is None else float(bg_raw)
         q_weight = float(track_cfg.get("q_weight", 0.0))
         q_seed_raw = track_cfg.get("q_seed", DEFAULT_Q_SEED)
         q_seed = None if q_seed_raw is None else float(q_seed_raw)
@@ -1034,6 +1085,7 @@ class Tracking:
 
         cfg = TwoPhaseTrackerConfig(
             v_max=v_max,
+            blob_gate=blob_gate,
             q_weight=q_weight,
             q_seed=q_seed,
             q_young=q_young,
@@ -1052,6 +1104,11 @@ class Tracking:
         )
         tracker = TwoPhaseTracker(cfg)
         project_fn = self._build_project_fn()
+        frame_logb = None
+        if blob_gate:
+            from openptv2.point_quality import frame_log_brightness
+
+            frame_logb = [frame_log_brightness(store, f) for f in frames]
         frame_ghost = None
         if q_weight > 0 or q_seed is not None or q_young > 0:
             if getattr(self.exp, "cals", None) and getattr(self.exp, "cpar", None):
@@ -1069,9 +1126,14 @@ class Tracking:
                 tracker = TwoPhaseTracker(cfg)
         links = cast(
             list[tuple[int, int, int, int]],
-            tracker.track_frames(frame_particles, frame_leaves,
-                                 project_fn=project_fn, frame_seen=frame_seen,
-                                 frame_ghost=frame_ghost),
+            tracker.track_frames(
+                frame_particles,
+                frame_leaves,
+                project_fn=project_fn,
+                frame_seen=frame_seen,
+                frame_ghost=frame_ghost,
+                frame_logb=frame_logb,
+            ),
         )
 
         # Per-step progress like trackcorr (track3d step: curr/next/links)

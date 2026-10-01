@@ -60,6 +60,7 @@ Set them in the `track` section (YAML / GUI parameters) of the `two_phase` track
 | `q_seed` | 0.2 | A point whose ghost probability is above this **may not start a trajectory** (an existing trajectory can still pick it up). It is also the limit for `q_young`. | `q_seed: null` |
 | `q_young` | 3 | A trajectory with **fewer than this many points** may not continue onto a point above `q_seed`. Established trajectories are not affected. | `q_young: 0` |
 | `q_model` | `rcm_blob` | ghost model: `rcm_blob` (rcm + camera count + blob brightness agreement) or `rcm` | `q_model: rcm` if your blobs have no usable brightness or the cameras are saturated |
+| `blob_gate` | none | **brightness continuity gate**: a candidate whose blob brightness (mean over the cameras that see both points) changed by more than this in log units is not a candidate. A real particle keeps its brightness in each camera from frame to frame (median change 0.06, p90 0.21 on CompleteTest wp2; a random neighbour 0.33). | off. Use **0.5** for frame-skipped or low-frame-rate data (velocity error −0.007 at skip ×4 and ×8, −0.015 clustered; at most 0.005 fewer points kept; it cuts 0.3% of real links on wp2); 0.3 gains more and loses more points; 0.8 does little. Neutral on normal data (−0.001 to −0.003), so not a default |
 | `q_weight` | 0 | Multiplies the link cost by `1 + q_weight * probability`. Measured: **no effect** (links onto doubtful points are rarely contested). Leave at 0. | `0` |
 
 To switch the whole feature off: `q_seed: null` and `q_young: 0`. It also switches off
