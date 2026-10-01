@@ -5,6 +5,8 @@ Skip when the compiled .so is active (coverage measures the .py source).
 Run the interpreted-source variant per openptv2/CLAUDE.md (pure-Python fallback tests).
 """
 
+import inspect
+
 import numpy as np
 import pytest
 
@@ -684,9 +686,16 @@ def test_candsearch_pix_fast_unused_targets_skipped():
 # ---------------------------------------------------------------------------
 
 
-@_needs_pure_python_semantics
-def test_sorted_candidates_raises_unbound_local():
-    """quader_buf: cython.double[24] at L702 — never assigned, raises on access."""
+def test_sorted_candidates_with_no_targets_returns_zero_and_resets_outputs():
+    """No targets anywhere -> no candidates; the caller-owned output buffers are reset.
+
+    (This used to be ``test_sorted_candidates_raises_unbound_local``, asserting that the
+    interpreted function raised because ``quader_buf`` was never assigned. That was fixed
+    long ago; the old test kept passing only because its own ``pt_buf`` was too small
+    (size 2, the function writes ``pt_buf[2]``), which raised IndexError for the wrong
+    reason. Now every argument is valid, including the grid arguments, and the function
+    must simply work in both the compiled and the interpreted build.)
+    """
     nc = 1
     cal = _make_cal_arr(nc)
     mo, mnr, mnz, mrw = _make_mmlut(nc)
@@ -697,57 +706,29 @@ def test_sorted_candidates_raises_unbound_local():
     ty = np.zeros((nc, 1), dtype=np.float64, order="C")
     tnr = np.full((nc, 1), -1, dtype=np.int32, order="C")
     ntarg = np.zeros(nc, dtype=np.int32)
-    ftnr = np.full(nc * MAX_CANDS_K, -1, dtype=np.int32)
-    freq = np.zeros(nc * MAX_CANDS_K, dtype=np.int32)
-    wc = np.zeros((nc * MAX_CANDS_K, nc), dtype=np.int32, order="C")
-    pt_buf = np.zeros(2, dtype=np.float64)
+    # garbage in the outputs: the function must overwrite all of it
+    ftnr = np.full(nc * MAX_CANDS_K, -7, dtype=np.int32)
+    freq = np.full(nc * MAX_CANDS_K, -7, dtype=np.int32)
+    wc = np.full((nc * MAX_CANDS_K, nc), -7, dtype=np.int32, order="C")
+    pt_buf = np.zeros(3, dtype=np.float64)
     pp = np.zeros(2, dtype=np.float64)
     md = [np.zeros(4, dtype=np.float64)] * 8
+    grid = np.zeros((1, 1), dtype=np.int32)
 
-    with pytest.raises((UnboundLocalError, NameError, IndexError)):
-        _sorted_candidates_fast_out_nogil(
-            center,
-            cpx,
-            cpy,
-            nc,
-            MAX_CANDS_K,
-            cal,
-            md[0],
-            md[1],
-            md[2],
-            md[3],
-            md[4],
-            md[5],
-            md[6],
-            md[7],
-            mo,
-            mnr,
-            mnz,
-            mrw,
-            tx,
-            ty,
-            tnr,
-            ntarg,
-            -1.0,
-            1.0,
-            -1.0,
-            1.0,
-            -1.0,
-            1.0,
-            50.0,
-            50.0,
-            1.0,
-            1.0,
-            0,
-            100.0,
-            100.0,
-            -1,
-            ftnr,
-            freq,
-            wc,
-            pt_buf,
-            pp,
-        )
+    n = _sorted_candidates_fast_out_nogil(
+        center, cpx, cpy, nc, MAX_CANDS_K, cal,
+        md[0], md[1], md[2], md[3], md[4], md[5], md[6], md[7],
+        mo, mnr, mnz, mrw, tx, ty, tnr, ntarg,
+        -1.0, 1.0, -1.0, 1.0, -1.0, 1.0,  # dvx/dvy/dvz min/max
+        50.0, 50.0, 1.0, 1.0, 0, 100.0, 100.0,  # imx_half .. imy
+        TR_UNUSED_K, ftnr, freq, wc, pt_buf, pp,
+        0, grid, grid, 0, 0, 16.0,  # use_grid, grid_head, grid_next, grid_nx, grid_ny, grid_cell
+    )  # fmt: skip
+
+    assert n == 0
+    assert set(ftnr.tolist()) == {TR_UNUSED_K}
+    assert set(freq.tolist()) == {0}
+    assert set(wc.ravel().tolist()) == {0}
 
 
 # ---------------------------------------------------------------------------
@@ -1820,13 +1801,18 @@ def test_trackcorr_stub_nonzero_enters_for_mm_loop():
 
     call_count = [0]
 
+    # Find the output arrays by NAME in the real signature: counting from the end broke
+    # when the grid arguments were appended (ftnr_out was then read from the wrong slot
+    # and the kernel used uninitialised memory).
+    _names = list(inspect.signature(_corr_mod._sorted_candidates_fast_out_nogil).parameters)
+    _i_ftnr, _i_freq = _names.index("ftnr_out"), _names.index("freq_out")
+
     def _stub(*a, **k):
         call_count[0] += 1
         if call_count[0] == 1:
             # First call (frame 2 search): return 1 candidate at index 0
-            # _sorted_candidates_fast_out_nogil ends with ..., ftnr_out, freq_out, whichcam_out, pt_buf, _pp
-            ftnr_out = a[-5]  # ftnr_out is 5th from end
-            freq_out = a[-4]  # freq_out is 4th from end
+            ftnr_out = a[_i_ftnr]
+            freq_out = a[_i_freq]
             ftnr_out[0] = 0
             freq_out[0] = 1
             return 1

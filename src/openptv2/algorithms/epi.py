@@ -22,17 +22,21 @@ MAXCAND: cython.int = 200
 @cython.cclass
 @dataclass
 class Candidate:
-    pnr = cython.declare(cython.int, 0, visibility="public")
-    tol = cython.declare(cython.double, 0.0, visibility="public")
-    corr = cython.declare(cython.double, 0.0, visibility="public")
+    # Annotation-only fields: a bare ``name = cython.declare(...)`` has no annotation, so
+    # when interpreted (the pure-Python fallback) @dataclass sees no fields and the
+    # constructor rejects every argument. The annotation alone is the declaration
+    # (Cython 3.3 rejects declaring the same field twice).
+    pnr: cython.int = 0
+    tol: cython.double = 0.0
+    corr: cython.double = 0.0
 
 
 @cython.cclass
 @dataclass
 class Coord2d:
-    pnr = cython.declare(cython.int, 0, visibility="public")
-    x = cython.declare(cython.double, 0.0, visibility="public")
-    y = cython.declare(cython.double, 0.0, visibility="public")
+    pnr: cython.int = 0
+    x: cython.double = 0.0
+    y: cython.double = 0.0
 
 
 @cython.ccall

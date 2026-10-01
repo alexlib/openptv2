@@ -1282,6 +1282,15 @@ def trackcorr_loop_fast(
                 targ_x_3[_gc], targ_y_3[_gc], num_targets_3[_gc],
                 grid_cell, grid_nx, grid_ny,
                 grid_head_3[_gc], grid_next_3[_gc])
+    else:
+        # The kernel never reads these when use_grid == 0, but they are passed on, and an
+        # interpreted (pure-Python fallback) build raises UnboundLocalError for a local
+        # that was only declared. Bind them to a placeholder.
+        _g0 = np.zeros((1, 1), dtype=np.int32)
+        grid_head_2 = _g0
+        grid_next_2 = _g0
+        grid_head_3 = _g0
+        grid_next_3 = _g0
 
     # Serial particle loop
     for h in range(orig_parts_1):

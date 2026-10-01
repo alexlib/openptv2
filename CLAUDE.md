@@ -71,9 +71,13 @@ pytest` above) they always skip. They exist for two reasons:
 2. **The pure-Python backup path.** If the Cython build fails on a user's
    machine (missing compiler, ABI mismatch, etc.), `openptv2` still imports
    and runs on the interpreted `.py` sources — `cython.compiled` is just
-   `False` and every module falls back automatically. These 952 tests are the
+   `False` and every module falls back automatically. These tests (about 1250
+   with `test_epi_dataclasses.py` and `test_assess_sentinel.py`) are the
    only thing that actually exercises that fallback; without them a break in
-   it would go unnoticed until a user hit it.
+   it would go unnoticed until a user hit it. They are NOT run in CI, so run
+   them yourself after touching `algorithms/`: the fallback was broken from
+   2026-08-22 (`Coord2d`/`Candidate` lost their dataclass fields) until
+   2026-10-02 without anyone noticing.
 
 Run them by making the compiled extensions unimportable for one Python
 version, so the pure-Python source loads instead:
@@ -98,11 +102,13 @@ uncompiled; they can run for tens of minutes without failing. The 16
 stays fast (<15s) — that's the intended scope for this mode, not a general
 "run everything without Cython" substitute.
 
-Last verified 2026-08-21: passes clean (952/952) after fixing three real bugs
-this mode caught that the compiled build's `@cython.boundscheck(False)`
-hides — see `git log --oneline -- src/openptv2/algorithms/track.py
-src/openptv2/algorithms/track_kernels_search.py` around that date. Re-run
-this before relying on the fallback after any change to `algorithms/`.
+Last verified 2026-10-02: passes clean (1256/1256, Python 3.13, Cython 3.3.0)
+after fixing `Coord2d`/`Candidate` (annotation-only dataclass fields), the
+unbound `grid_head_2` locals in `trackcorr_loop_fast`, and two stale kernel
+tests. Earlier (2026-08-21) the same mode caught three real bugs the compiled
+build's `@cython.boundscheck(False)` hides — see `git log --oneline --
+src/openptv2/algorithms/track.py src/openptv2/algorithms/track_kernels_search.py`.
+Re-run this before relying on the fallback after any change to `algorithms/`.
 
 ## Architecture
 
