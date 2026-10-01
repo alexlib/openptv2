@@ -2784,6 +2784,17 @@ behaviour is <code>two_phase+q_seed=null+q_young=0</code>. Old <code>eval.json</
 - <strong>Reconnect vectorised</strong> (batched line fits, array candidate pairs): identical groupings, 3.4 s -&gt; 0.09 s on the realistic case (228k points), 33 s -&gt; 0.65 s at 4x density. The post steps now cost 0.25 s per 200 frames, so the total time of <code>main</code> is 8.9 s + 0.25 s against 8.0 s for 0.5.13.
 - <strong>Not wired into the cloud pipeline yet</strong> (needs the release): <code>trajectories.reconnect_gap</code>,
   <code>reconnect_tol</code>, <code>smooth_filter_k</code> in openptv-cloud <code>post.py</code>.</p>
+<h3 id="nondeterministic-trackcorr-add-particle-found-2026-10-02-via-the-cloud-e2e-flake-benchstep22_">Nondeterministic trackcorr add-particle (found 2026-10-02 via the cloud e2e flake, <code>bench/step22_…</code>)<a class="headerlink" href="#nondeterministic-trackcorr-add-particle-found-2026-10-02-via-the-cloud-e2e-flake-benchstep22_" title="Permanent link">&para;</a></h3>
+<p>The openptv-cloud e2e test failed intermittently (about half of the runs with all cores busy). Cause: <strong>out-of-bounds
+reads and writes in the compiled trackcorr kernel</strong> (<code>track_kernels_corr.py</code>). <code>assess_new_position_fast_nogil</code>
+marks a camera without a candidate with −1, the consumers tested <code>!= PT_UNUSED</code> (−999), so <code>targ_tnr[ci, -1]</code> was read
+and written (camera 0: the memory before the array), and the candidate search also returned the temporary claim marker
+−100 as a particle index. Whether a particle was added then depended on heap contents. Found by bisecting the pipeline
+(inputs identical, kernel output different), <code>MallocScribble</code>, then <code>libgmalloc</code> + <code>lldb</code>. Fixed: indexes are tested
+with <code>&gt;= 0</code>, an added particle needs a free blob in every camera (what the old code effectively did; the literal
+reading, 2–3 camera adds, is much worse: trackcorr vErr 0.3047 → 0.5105), and the search requires <code>tnr &gt;= 0</code>.
+Trackcorr accuracy is unchanged and now deterministic (25/25 identical runs under full load, cloud e2e 10/10).
+<strong>two_phase is not affected</strong> (it does not use this kernel). Needs a release (0.5.15) for the cloud pipeline.</p>
 <h2 id="what-can-be-next-ranked-by-expected-gain">What can be next (ranked by expected gain)<a class="headerlink" href="#what-can-be-next-ranked-by-expected-gain" title="Permanent link">&para;</a></h2>
 <p>The remaining error on the real-jitter case, step by step (velocity error; perfect linker
 0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →
