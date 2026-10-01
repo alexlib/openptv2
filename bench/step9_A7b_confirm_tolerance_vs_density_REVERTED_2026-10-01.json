@@ -1,0 +1,10 @@
+{"change": "A7b: confirmation tolerance in sigma units (sigma=(0.008,0.008,0.045)) over k=1.5..10 and density; experimental code reverted",
+ "date": "2026-10-01",
+ "vErr_yield_by_k (base = absolute 0.3 mm/frame, forward, ends)": {
+  "L1_d1_c0_k1_n200_s0.08 (N=1157, neighbours@5mm=6)": {"base": [0.1845,0.702], "1.5": [0.2459,0.59], "2": [0.2407,0.66], "3": [0.2173,0.69], "4": [0.1953,0.70], "5": [0.1851,0.70], "7": [0.1766,0.70], "10": [0.1716,0.71]},
+  "L1_d2_c0_k1_n150 (N=1914, nb@5=10)": {"base": [0.2961,0.533], "1.5": [0.2432,0.47], "2": [0.2699,0.49], "3": [0.2946,0.52], "4": [0.2975,0.53], "5": [0.2972,0.53], "7": [0.3062,0.54], "10": [0.3134,0.54]},
+  "L1_d4_c0_k1_n150 (N=2663, nb@5=11)": {"base": [0.4207,0.251], "1.5": [0.2799,0.21], "2": [0.3197,0.22], "3": [0.3695,0.24], "4": [0.4036,0.25], "5": [0.4270,0.25], "7": [0.4728,0.26], "10": [0.4988,0.26]},
+  "L1_d2_c0.3_k4_n150 (N=1498, nb@5=7.7)": {"base": [0.1529,0.394], "1.5": [0.1403,0.26], "2": [0.1408,0.30], "3": [0.1475,0.36], "4": [0.1471,0.38], "5": [0.1474,0.39], "7": [0.1526,0.40], "10": [0.1646,0.41]},
+  "L1_d1_c0_k8_n150 (N=1169, nb@5=6)": {"base": [0.1134,0.667], "1.5": [0.1788,0.39], "2": [0.1498,0.47], "3": [0.1369,0.57], "4": [0.1292,0.61], "5": [0.1190,0.64], "7": [0.1158,0.67], "10": [0.1191,0.68]}},
+ "best_k_under_points_kept_rule (yield >= base - 0.007)": {"s0.08": "10 (-0.0129)", "d2": "none (+0.001)", "d4": "4 (-0.0171)", "clustered_k4": "5 (-0.0055)", "k8": "none (+0.0024)"},
+ "verdict": "REVERT. The large gains at tight k (d4 k=1.5: -0.14) are obtained by dropping 16% of the true points. Under the points-kept rule the gain is -0.013 (sparse, loose k) and -0.017 (dense, k=4); no fixed k passes (k=10: +0.079 at d4). A density rule would be fitted on the same five cases (overfit). Keep the absolute 0.3 default; note for users: sparse data may use a looser confirm_tol, dense data a tighter one."}

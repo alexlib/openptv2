@@ -192,7 +192,8 @@ test offline with the saved features and the ghost cheats), then A4/A5 together.
 ## Next steps, in this order
 1. **Finish the release chain** (see "Decisions taken and release"): tag `v0.5.12` is
    pushed; when the wheels are on PyPI, bump the openptv-cloud pin, lock, test, merge, push.
-2. **A7b:** data-driven `confirm_tol`. Per-case optima are in
+2. ~~**A7b:** data-driven `confirm_tol`.~~ **Done: measured and reverted, see section 4 A7.**
+   (Original text:) data-driven `confirm_tol`. Per-case optima are in
    `bench/step8_A7_confirmation_variants_REVERTED_2026-10-01.json` (normal and real jitter
    sigma k=7, clustered k≈4, 4× density k=3, skip ×8 the absolute 0.3). Look for a statistic
    computed from the run that predicts them (nearest-neighbour spacing against the step,
@@ -876,10 +877,26 @@ preceding step is consistent; `both`).
   `both` or k=4 (0.145–0.147 against 0.153); **4× density sigma k=3 (0.3695 against
   0.4207, −0.051)**; skip ×8 the base. A loose tolerance suits sparse data, a tight one
   dense data; one fixed value cannot win everywhere.
-- **Next idea (A7b, not done):** choose `confirm_tol` from the data, e.g. from the density
-  (typical spacing) or from the measured distribution of kinks of the links that
-  survive, and check that it picks k≈7 for the normal case and k≈3 for 4× density.
-  Potential: about −0.005 on sparse cases and −0.05 on dense ones.
+- **A7b measured (2026-10-01), reverted** (`bench/step9_A7b_confirm_tolerance_vs_density_REVERTED_2026-10-01.json`).
+  Tolerance k = 1.5…10 in sigma units against density, seven cases. The big gains at tight k
+  are **obtained by dropping true points** (4× density k=1.5: error −0.14, but 16% fewer
+  true points). With the points-kept rule (no more than 0.007 fewer points):
+
+  | Case | Points per frame | Neighbours within 5 mm | Best k | Gain vs absolute 0.3 |
+  |---|---|---|---|---|
+  | real jitter | 1157 | 6 | 10 | −0.0129 (and +0.008 points) |
+  | skip ×8 | 1169 | 6 | none | +0.0024 |
+  | clustered + skip ×4 | 1498 | 7.7 | 5 | −0.0055 |
+  | density ×2 | 1914 | 10 | none | +0.001 |
+  | density ×4 | 2663 | 11 | 4 | −0.0171 |
+
+  No fixed k passes the plan's rule (k=10: +0.079 at ×4 density). A rule "k from the local
+  neighbour count" fits these five points but would be tuned on the same cases it is judged
+  on. **Decision: keep the absolute `confirm_tol=0.3` default.** Advice for users, in
+  `docs/two-phase-tracking.md`: sparse data (about 6 neighbours within 5 mm) can try a
+  looser `confirm_tol`, dense data (10 or more) a tighter one, and should check it with
+  `scripts/realism_metrics.py`. A proper data-driven rule needs more cases of different
+  density and, ideally, a mixture fit of the measured kink distribution.
 - The code for `confirm_sigma` / `confirm_mode` was removed again (rule: a change that
   does not gain is reverted); the idea text below is kept for reference.
 
