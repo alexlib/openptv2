@@ -496,9 +496,11 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
         false_t = _false_targets(k, n_out) if level == "L1" else {}
         lost = []
         persist: dict = {}
+        ndet_list: list = []
         for fo in range(1, n_out + 1):
             sel = np.flatnonzero(fr == fo)
             tid = np.full((len(sel), NUM_CAMS), -1, np.int32)
+            ndet_frame = np.zeros(len(sel), np.int32)
             for cam in range(NUM_CAMS):
                 xy = _project(pos[sel], render[cam] if level == "L1" else cals[cam], cpar)
                 vis = (xy[:, 0] >= 0) & (xy[:, 0] < imx) & (xy[:, 1] >= 0) & (xy[:, 1] < imy)
@@ -524,8 +526,10 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
                 else:
                     rows, t_of = _target_rows(xy[vis], np.full(vis.sum(), 150.0), False, 0, rng)
                 tid[np.flatnonzero(vis), cam] = t_of
+                ndet_frame += (tid[:, cam] >= 0).astype(np.int32)
                 store.write_targets(cam, fo, rows)
                 lost.append(1 - (t_of >= 0).sum() / max(len(sel), 1))
+            ndet_list.append((sel, ndet_frame))
             if level == "L0":
                 seen = (tid >= 0).sum(1) >= 2
                 store.write_correspondences(fo, pos[sel][seen], tid[seen])
@@ -539,6 +543,11 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
                 n_workers=min(16, n_out), write_to_store=True,
             )
 
+    if level != "L2" and "ndet_list" in dir():
+        nd = np.zeros(len(truth["frame"]), np.int32)
+        for sel_, nd_ in ndet_list:
+            nd[sel_] = nd_
+        truth["ndet"] = nd  # cameras that detected each truth point (for recovery bounds)
     np.savez_compressed(case_dir / "truth.npz", **truth)
     (case_dir / "case.json").write_text(json.dumps(stats, indent=2))
     if level != "L2":  # L2's targets already carry the pipeline's tnr

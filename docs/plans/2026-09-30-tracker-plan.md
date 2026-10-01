@@ -245,6 +245,21 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
   and brightness) gives results identical to the baseline. Tracks fail by having **no
   candidate** (22% at 4× density), not by competition.
 
+- **S0 speed profile: done** (`bench/step15_…`). About half of a 200-frame run was zarr I/O:
+  correspondences and targets were read 4–5 times per frame. One read per frame now feeds
+  the leaves, the seen mask, the ray miss distance and the brightness: **9.75 s → 8.1 s
+  (−17%), identical results** (velocity error 0.1862, yield 0.680). The remaining time is the
+  matcher's Python loops (self time 1.8 s of 4.2 s per 200 frames) and `confirm_link_tuples`
+  (1.3 s); both could be vectorized for another ~15%.
+- **A11 closed after two probes.** (1) Truth recovery bound: 12.8% of all truth points are
+  detected in ≥3 cameras but missing from the 3D cloud. (2) Re-matching with the blobs of
+  all suspects (probability above 0.2) freed reproduces exactly the same 607 points (281 real,
+  326 ghost) because nothing forbids the same combination; and **46% of the suspects are
+  real**, so destroying points on this mark would hurt. A real A11 needs a matcher that can
+  forbid a combination and a purer mark. A further cue for 3-camera points (is there a blob at
+  the projection in the missing camera?) is weak (AUC 0.69). The ghost cues available
+  saturate near AUC 0.92.
+
 ## What can be next (ranked by expected gain)
 The remaining error on the real-jitter case, step by step (velocity error; perfect linker
 0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →

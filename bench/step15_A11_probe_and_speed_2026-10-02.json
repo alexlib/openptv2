@@ -1,0 +1,14 @@
+{"date": "2026-10-02",
+ "speed_S0": {"profile": "200-frame run of the plugin on L1_d1_..._f0.05: about half the time is zarr I/O; correspondences and targets read 4-5x per frame (leaf building, seen mask, rcm, brightness)",
+   "fix": "one read per frame feeds leaves, seen mask, rcm and log brightness (point_quality.read_frame_arrays / rcm_from_arrays / log_brightness_from_arrays)",
+   "time_s_3_runs": {"before": [9.78, 9.74, 9.71], "after": [8.16, 8.06, 8.13]}, "result": "17% faster, velocity error 0.1862 / yield 0.680 identical"},
+ "truth_recovery_bound (L1_d1_..._f0.05, 200 frames)": {
+   "truth points reconstructed": 0.700, "detected in 4 cameras": 0.792, "of those reconstructed": 0.858,
+   "detected in >=3 cameras": 0.827, "of those reconstructed": 0.845, "detected in >=3 cameras but NOT reconstructed": 0.128},
+ "A11_probe (5 frames, pg<0.2 confident, free all other blobs, rematch)": {
+   "confident points": {"true": 4959, "ghost": 155}, "suspect points removed": {"total": 607, "true": 281, "ghost": 326},
+   "rematch result": {"new points": 607, "new real": 281, "ghosts": 326, "duplicates": 0},
+   "meaning": "re-matching the freed blobs reproduces exactly the same points (nothing forbids the same combination); 46% of the suspects at pg>0.2 are REAL, so the mark is too impure to destroy points"},
+ "fourth_camera_blob_cue (3-camera points, distance to nearest blob in the missing camera)": {
+   "real median px": 1.47, "ghost median px": 2.12, "auc": 0.688, "verdict": "weak: blobs are dense in the image everywhere"},
+ "verdict": "A11 CLOSED: needs an exclusion-capable matcher and a purer mark (AUC 0.92 now); the ghost cues available saturate near AUC 0.92."}
