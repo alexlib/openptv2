@@ -223,3 +223,40 @@ def test_missing_camera_not_penalized():
         np.array([0], dtype=np.int32), np.array([0, 1], dtype=np.int32),
         5.0, 1.0, cost_mode="projected", seen0=seen0, seen1=seen1)
     assert got == {(0, 0)}
+
+
+def _seen_scene():
+    """3-frame scene where a 3-of-4 true partner fights a 4-cam stranger."""
+    C = 4
+    frames = [
+        np.array([[0.0, 0, 0]]),
+        np.array([[1.0, 0, 0]]),
+        np.array([[2.0, 0, 0], [2.0, 0.3, 0]]),
+    ]
+    full = np.tile([100.0, 100.0], (1, C))
+    leaves = [full.copy(), full.copy(), np.zeros((2, 2 * C))]
+    leaves[2][0, :] = np.tile([100.5, 100.0], C)  # true partner
+    leaves[2][0, 2 * 3:2 * 4] = [0.0, 0.0]  # cam 4 missing (nan_to_num'd)
+    leaves[2][1, :] = np.tile([101.0, 100.0], C)  # stranger, all cams
+    seen = [
+        np.ones((1, C), dtype=bool),
+        np.ones((1, C), dtype=bool),
+        np.array([[True, True, True, False], [True] * C]),
+    ]
+
+    def project_fn(P):
+        n = len(np.asarray(P))
+        return np.tile(np.array([100.0, 100.0]), (n, C))
+
+    return frames, leaves, seen, project_fn
+
+
+def test_frame_seen_wires_into_track_frames():
+    """End-to-end: the seen-mask (as do_tracking builds it via
+    RunStore.read_seen) decides the link. Without it the stranger wins."""
+    frames, leaves, seen, project_fn = _seen_scene()
+    tr = TwoPhaseTracker(TwoPhaseTrackerConfig())
+    assert (1, 0, 2, 0) in tr.track_frames(frames, leaves, project_fn,
+                                           frame_seen=seen)
+    tr2 = TwoPhaseTracker(TwoPhaseTrackerConfig())
+    assert (1, 0, 2, 1) in tr2.track_frames(frames, leaves, project_fn)

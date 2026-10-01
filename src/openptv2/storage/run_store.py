@@ -371,6 +371,26 @@ class RunStore:
     def has_correspondences(self, frame: int) -> bool:
         return f"correspondences/{_frame_key(frame)}" in self.root
 
+    def read_seen(self, frame: int) -> np.ndarray:
+        """(N, C) bool mask: 3D point really seen in camera (cam id >= 0).
+
+        Single definition of "seen" for all readers (tracking, viz, QC).
+        Do NOT re-derive it per reader and do NOT mark "missing" with NaN
+        inside pixel arrays: any later nan_to_num silently un-marks it
+        (two_phase bug 2, plan step 3). Raises RunStoreError when the frame
+        has no correspondences.
+        """
+        key = f"correspondences/{_frame_key(frame)}"
+        try:
+            data = np.asarray(self.root[key])
+        except KeyError:
+            raise RunStoreError(
+                f"No correspondences stored for frame {frame}"
+            ) from None
+        if data.ndim == 1:
+            return np.empty((0, 0), dtype=bool)
+        return data[:, 3:] >= 0
+
     # -- linkage --------------------------------------------------------
 
     def write_linkage(

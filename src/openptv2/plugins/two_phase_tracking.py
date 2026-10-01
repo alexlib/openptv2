@@ -886,8 +886,9 @@ class Tracking:
                     xy[valid, c] = t[cam_ids[valid, c], 1:3]
             frame_leaves.append(np.nan_to_num(xy.reshape(n, -1)))
             # Bug 2 fix: the seen-mask is authoritative; NaN no longer marks
-            # "missing" (any nan_to_num would silently un-mark it).
-            frame_seen.append((cam_ids[:, :num_cams] >= 0))
+            # "missing" (any nan_to_num would silently un-mark it). Single
+            # definition via RunStore.read_seen — do not re-derive per reader.
+            frame_seen.append(np.asarray(store.read_seen(f), dtype=bool))
 
         cfg = TwoPhaseTrackerConfig(
             v_max=v_max,

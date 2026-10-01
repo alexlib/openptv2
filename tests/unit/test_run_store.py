@@ -325,3 +325,37 @@ def test_seal_carries_trajid_across_a_bridged_gap(tmp_path):
     summary = seal(store)
     assert summary["n_trajectories"] == 1  # one trajectory, not two
     assert list(store.traj_index()["length"]) == [3]
+
+
+def _make_seen_store(tmp_path):
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    pos = np.array([[0.0, 0, 0], [1.0, 1, 1], [2.0, 2, 2]])
+    cids = np.array([[0, 1, -1, 3], [-1, -1, -1, -1], [5, 6, 7, 8]],
+                    dtype=np.int32)
+    store.write_correspondences(10000, pos, cids)
+    return store
+
+
+def test_read_seen_single_definition(tmp_path):
+    """read_seen is THE definition of seen: agrees with cam_ids >= 0."""
+    seen = _make_seen_store(tmp_path).read_seen(10000)
+    assert seen.dtype == bool
+    assert seen.tolist() == [
+        [True, True, False, True],
+        [False, False, False, False],
+        [True, True, True, True],
+    ]
+
+
+def test_read_seen_missing_frame_raises(tmp_path):
+    store = _make_seen_store(tmp_path)
+    with pytest.raises(RunStoreError):
+        store.read_seen(99999)
+
+
+def test_read_seen_empty_frame(tmp_path):
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    store.write_correspondences(10001, np.empty((0, 3)),
+                                np.empty((0, 4), dtype=np.int32))
+    seen = store.read_seen(10001)
+    assert seen.dtype == bool and seen.shape == (0, 4)
