@@ -11,7 +11,7 @@ This exploits the tree-forest architecture: 3D positions are the "trunk"
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, cast
 
@@ -22,6 +22,11 @@ from scipy.sparse.csgraph import connected_components
 from scipy.spatial import cKDTree
 
 from openptv2.tracking_postprocess import confirm_link_tuples as _confirm_links
+
+#: A10 defaults of the two_phase plugin (tuned over five synthetic cases, checked on
+#: four real recordings; see docs/tracking_quality.md and the tracker plan).
+DEFAULT_Q_SEED = 0.2
+DEFAULT_Q_YOUNG = 3
 
 
 @dataclass
@@ -869,10 +874,14 @@ class Tracking:
         confirm_tol = None if confirm_raw is None else float(confirm_raw)
         confirm_ends = bool(track_cfg.get("confirm_ends", False))
         bidirectional = bool(track_cfg.get("bidirectional", False))
+        # Point-quality rules (A10, ray convergence). ON by default: a point whose
+        # camera rays meet badly may not start a trajectory (q_seed) and a young
+        # trajectory may not continue onto it (q_young). Switch off with
+        # ``q_seed: null`` and ``q_young: 0``. See docs/tracking_quality.md.
         q_weight = float(track_cfg.get("q_weight", 0.0))
-        q_seed_raw = track_cfg.get("q_seed", None)
+        q_seed_raw = track_cfg.get("q_seed", DEFAULT_Q_SEED)
         q_seed = None if q_seed_raw is None else float(q_seed_raw)
-        q_young = int(track_cfg.get("q_young", 0))
+        q_young = int(track_cfg.get("q_young", DEFAULT_Q_YOUNG))
         bwd_v_max_raw = track_cfg.get("bwd_v_max", None)
         bwd_v_max = None if bwd_v_max_raw is None else float(bwd_v_max_raw)
 
@@ -986,9 +995,19 @@ class Tracking:
         project_fn = self._build_project_fn()
         frame_ghost = None
         if q_weight > 0 or q_seed is not None or q_young > 0:
-            frame_ghost = self._ghost_probabilities(
-                store, frames, frame_particles, frame_seen
-            )
+            if getattr(self.exp, "cals", None) and getattr(self.exp, "cpar", None):
+                frame_ghost = self._ghost_probabilities(
+                    store, frames, frame_particles, frame_seen
+                )
+                for f, g in zip(frames, frame_ghost):
+                    store.write_point_quality(f, g)
+            else:
+                print(
+                    "TwoPhaseTracker: no calibrations on the experiment; "
+                    "point-quality rules (q_seed/q_young) are off."
+                )
+                cfg = replace(cfg, q_weight=0.0, q_seed=None, q_young=0)
+                tracker = TwoPhaseTracker(cfg)
         links = cast(
             list[tuple[int, int, int, int]],
             tracker.track_frames(frame_particles, frame_leaves,

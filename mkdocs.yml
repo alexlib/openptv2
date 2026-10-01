@@ -65,6 +65,7 @@ nav:
   - User Guides:
     - Zarr & HDF5 Storage: zarr-hdf5-storage.md
     - Tracking Pipeline & Results: tracking_guide.md
+    - Point Quality and Ghost Marks: tracking_quality.md
     - Tracker Engines & Parameters: tracker-tutorials.md
     - Lagrangian Turbulence Quality: lagrangian_turbulence_quality_guide.md
     - Command-Line Batch Processing: tutorials/batch_processing.md

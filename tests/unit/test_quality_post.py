@@ -16,6 +16,10 @@ def test_trim_cuts_doubtful_ends_only():
     g = np.array([0.9, 0.8, 0.1, 0.9, 0.1, 0.1, 0.7, 0.95])
     keep = trim_doubtful_ends(tid, fr, g, thr=0.5, max_trim=3)
     assert keep.tolist() == [False, False, True, True, True, True, False, False]
+    keep_short = trim_doubtful_ends(tid, fr, g, thr=0.5, max_trim=3, max_frac=0.25)
+    assert keep_short.tolist() == [False, False, True, True, True, True, False, False]
+    # an 8-point track loses at most int(8 * 0.1) = 0 points per end
+    assert trim_doubtful_ends(tid, fr, g, 0.5, 3, max_frac=0.1).all()
     keep1 = trim_doubtful_ends(tid, fr, g, thr=0.5, max_trim=1)
     assert keep1.tolist() == [False, True, True, True, True, True, True, False]
 
@@ -57,3 +61,11 @@ def test_low_weight_point_is_ignored():
 def test_quality_weights_floor_and_order():
     w = quality_weights(np.array([0.0, 0.5, 1.0]))
     assert w[0] == 1.0 and w[1] < w[0] and w[2] == 0.05
+
+
+def test_short_trajectory_uses_largest_odd_window():
+    n = 10  # window 21 asked, only 10 points: uses 9
+    t = np.arange(n, dtype=float)
+    x = np.c_[0.1 * t, 0 * t, 0 * t]
+    _, _, p, v, _ = weighted_savgol(np.zeros(n, int), np.arange(n), x, None, 1.0, 21, 3)
+    assert np.allclose(p, x, atol=1e-9) and np.allclose(v[:, 0], 0.1, atol=1e-9)

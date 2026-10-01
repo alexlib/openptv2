@@ -27,17 +27,22 @@ def trim_doubtful_ends(
     ghost: np.ndarray,
     thr: float,
     max_trim: int = 3,
+    max_frac: float = 0.25,
 ) -> np.ndarray:
     """Keep-mask: from each end, remove up to ``max_trim`` consecutive points
-    whose ghost probability is above ``thr`` (stops at the first good point)."""
+    whose ghost probability is above ``thr`` (stops at the first good point),
+    but never more than ``max_frac`` of the trajectory from one end (a short
+    track of 8 points loses at most 2 per end)."""
     keep = np.ones(len(trajid), bool)
     order, groups = _sorted(trajid, frame)
     for g in groups:
         idx = order[g]
         bad = ghost[idx] > thr
+        # never cut more than max_frac of a trajectory from one end
+        limit = min(max_trim, int(len(idx) * max_frac))
         for seq in (range(len(idx)), range(len(idx) - 1, -1, -1)):
             for n, k in enumerate(seq):
-                if n >= max_trim or not bad[k]:
+                if n >= limit or not bad[k]:
                     break
                 keep[idx[k]] = False
     return keep
@@ -98,6 +103,8 @@ def weighted_savgol(
         if n < min_window:
             continue
         w = min(window, n)
+        if w % 2 == 0:
+            w -= 1  # largest odd window the trajectory fills (as flowtracks min_window)
         deg = min(order, w - 1)
         h = max(w // 2, 1)
         i = np.arange(n)

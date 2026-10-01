@@ -58,6 +58,16 @@ All live in the `track` YAML section (batch/GUI) or on
 | `max_shared` [frames] | 2 | max consecutive shared frames per track | 2 covers brief overlaps; higher risks twin tracks that never separate |
 | `share_tol` [cost] | 1.0 | a shared claim needs an edge cost below this (mutual-prediction gate) | Without it, a stranded track hijacks strangers' detections (observed live). ~5–10× your position noise; `null` disables the gate (not advised) |
 
+Point-quality rules (ghost marks from ray convergence, **on by default**; details,
+when to change them and how to test them: [Point quality](tracking_quality.md)):
+
+| parameter | default | what it does | how to set it |
+|---|---|---|---|
+| `q_seed` [–] | 0.2 | a point with ghost probability above this may not start a trajectory | lower (0.15) for more ghost removal, higher (0.3) or `null` for clean data |
+| `q_young` [points] | 3 | a trajectory with fewer points may not continue onto such a point | 3–6; 0 switches the rules off |
+| `q_weight` [–] | 0 | scales link cost by the ghost probability | measured to have no effect; leave 0 |
+| `confirm_tol`, `confirm_ends` | none | two-hop link confirmation | **use it**: `0.3` / `true` removed all jump steps on lv_multi wp4/wp5 |
+
 ## 3. How it behaves (caveats)
 
 - **No motion model to be wrong** — but also none to help: if particles move

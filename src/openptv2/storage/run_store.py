@@ -371,6 +371,27 @@ class RunStore:
     def has_correspondences(self, frame: int) -> bool:
         return f"correspondences/{_frame_key(frame)}" in self.root
 
+    def write_point_quality(self, frame: int, ghost_prob: np.ndarray) -> None:
+        """Per-point ghost probability (N,) from ray convergence, row-aligned with
+        the correspondences of ``frame`` (openptv2.point_quality, plan A10)."""
+        ghost_prob = np.asarray(ghost_prob, dtype=np.float32).reshape(-1)
+        try:
+            self.root.require_group("quality").create_array(
+                _frame_key(frame), data=ghost_prob, overwrite=True
+            )
+        except Exception as exc:
+            raise RunStoreError(
+                f"Failed to write point quality for frame {frame}: {exc}"
+            ) from exc
+        self._mark_unsealed()
+
+    def read_point_quality(self, frame: int) -> np.ndarray | None:
+        """Ghost probability per point of ``frame``, or None if never computed."""
+        try:
+            return np.asarray(self.root["quality"][_frame_key(frame)])
+        except KeyError:
+            return None
+
     def read_seen(self, frame: int) -> np.ndarray:
         """(N, C) bool mask: 3D point really seen in camera (cam id >= 0).
 

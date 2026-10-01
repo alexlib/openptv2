@@ -359,3 +359,15 @@ def test_read_seen_empty_frame(tmp_path):
                                 np.empty((0, 4), dtype=np.int32))
     seen = store.read_seen(10001)
     assert seen.dtype == bool and seen.shape == (0, 4)
+
+
+def test_point_quality_roundtrip_and_missing(tmp_path):
+    from openptv2.storage import RunStore
+
+    s = RunStore(tmp_path / "run.zarr", mode="a")
+    assert s.read_point_quality(3) is None
+    s.write_point_quality(3, np.array([0.1, 0.9, 0.5]))
+    got = s.read_point_quality(3)
+    assert got.shape == (3,) and np.allclose(got, [0.1, 0.9, 0.5], atol=1e-6)
+    s.write_point_quality(3, np.array([0.2]))  # overwrite
+    assert s.read_point_quality(3).shape == (1,)

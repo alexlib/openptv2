@@ -111,7 +111,8 @@ trajectories over the default on a poorly-conditioned aorta dataset.
 pure 3D (`leaf_weight=0`) without them. **Tips:** start with
 `leaf_weight=1`, `v_max` at ~3× your typical step; see
 [Two-Phase Tracking](two-phase-tracking.md) for the full parameter guide
-including the shared-observation prototype flags.
+including the shared-observation prototype flags. Ghost-point quality rules
+(`q_seed`, `q_young`) are on by default; see [Point quality](tracking_quality.md).
 
 ### Hybrid multi-Δt (`hybrid_deltat_3d`) — the slow-flow specialist
 When particles crawl, frame-to-frame steps drown in noise — so it matches
