@@ -409,6 +409,7 @@ Base: two_phase with the guarded `confirm_auto`. Velocity error at the best smoo
   0.004 clustered and 0.007 at skip ×8 (3% fewer points), and 40% faster. The plan's old rule
   ("delete if it gains less than 0.02") predates the post steps; it stays an option, forward-only
   for dense data when speed matters.
+- **Reconnect vectorised** (batched line fits, array candidate pairs): identical groupings, 3.4 s -> 0.09 s on the realistic case (228k points), 33 s -> 0.65 s at 4x density. The post steps now cost 0.25 s per 200 frames, so the total time of `main` is 8.9 s + 0.25 s against 8.0 s for 0.5.13.
 - **Not wired into the cloud pipeline yet** (needs the release): `trajectories.reconnect_gap`,
   `reconnect_tol`, `smooth_filter_k` in openptv-cloud `post.py`.
 
