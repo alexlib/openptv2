@@ -1,0 +1,17 @@
+{"date": "2026-10-02", "question": "why do the Eulerian numbers of the analysis stage differ so much from the 'legacy' table?",
+ "two_references": {
+  "legacy_direct": "legacy 3dptv xuap tracks run through the SAME openptv-analysis stage (CompleteTest-e2e-legacy); differences to ours = differences of the TRACKS only",
+  "matlab_reference": "TT13PRE_shifted_flow_field_phaseRegionMetrics.csv from the MATLAB analysis of wp1-wp4 (about 3x more particles per bin: 480-579k vs 168-192k); copied as C4_vs_matlab_ref in comparison_vs_legacy.json"},
+ "tracks (C2_tracking in comparison_vs_legacy.json)": {
+  "wp1": {"openptv2": {"tracks": 20814, "mean_len": 57.3, "speed_p50": 64.3, "speed_p99": 344.7}, "legacy": {"tracks": 30358, "mean_len": 34.5, "speed_p50": 93.2, "speed_p99": 751.4}}},
+ "ours_vs_legacy_tracks_same_analysis (ratio, mean over phases 5-10)": {
+  "vel_mean": {"no_smoothing": 0.91, "smoothed": 0.88}, "vel_max": {"no_smoothing": 0.73, "smoothed": 0.35}, "MKE": {"no_smoothing": 0.80, "smoothed": 0.73},
+  "VSS": {"no_smoothing": 0.82, "smoothed": 0.77}, "eps": {"no_smoothing": 0.63, "smoothed": 0.55}, "vort": {"no_smoothing": 0.84, "smoothed": 0.79}},
+ "ours_vs_matlab_reference (%, phases 5..11)": {
+  "vel_mean": [0,-8,-10,-5,-8,-13,-25], "MKE": [-5,-20,-18,-6,-13,-24,-36], "VSS": [6,12,15,28,24,17,null], "eps": [18,22,32,69,63,44,null], "vort": [29,36,35,29,14,-1,null]},
+ "eps_mean_global by phase 5..10": {
+  "both wp, min_count 5": [388,383,324,238,163,122], "wp1 only (half the data), min_count 5": [438,453,361,274,138,102],
+  "both wp, min_count 20": [274,309,294,196,136,99], "wp1 only, min_count 20": [105,183,236,179,92,95], "legacy tracks, min_count 5": [592,603,491,430,335,366]},
+ "smoothing_window_effect_on_eps_vs_matlab (%)": {"21": [18,22,31,69,65,43], "41": [19,17,27,68,61,41], "61": [18,15,25,65,57,39]},
+ "jet_region": {"vel_mean_jet ours": 0.047, "legacy tracks": 0.75, "note": "our jet mask selects almost-stationary voxels: a mask-definition difference in the analysis, not tracking"},
+ "finding": "see plan: tracks (legacy noisier), sampling (3x fewer particles per voxel, count threshold) and the mask explain it; the smoothing window is not the cause"}

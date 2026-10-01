@@ -276,9 +276,46 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
   So: 16% fewer (short, junk) tracks, 14% longer mean length, the long tracks kept, 2–3%
   smoother velocities; the acceleration kurtosis is mixed (up on wp1, down on wp2). The
   Eulerian averages barely move (velocity and kinetic energy about 1.4 points closer to the
-  legacy table, shear stress and dissipation unchanged); the offsets to that legacy table
-  (−12% velocity, −23% shear stress, −45% dissipation, jet region −90%) come from other
-  differences in the analysis, not from tracking.
+  reference, shear stress and dissipation unchanged). *(An earlier version of this text said
+  the offsets come from the analysis, not from tracking. That was wrong for the table I used:
+  see the next entry.)*
+- **Why the Eulerian numbers differ so much from "legacy"** (`bench/step17_…`). There are two
+  different references in `comparison_vs_legacy.json`; I had used the wrong one for the
+  statement above.
+  1. **"Legacy" table = legacy 3dptv tracks through the same analysis stage.** Same code, grid
+     and thresholds, so the difference is entirely the **tracks**. Legacy tracks are much
+     noisier and shorter: 30358 tracks of mean length 34.5 against 20814 of 57.3 (wp1), median
+     speed 93 against 64, p99 speed 751 against 345, maximum phase-averaged velocity 2× higher.
+     Squared-gradient quantities inflate with velocity noise, so ours are lower: velocity
+     −4…−16%, shear stress −20…−33%, **dissipation −35…−67%**. Even our *unsmoothed* tracks
+     give dissipation 0.63× the legacy value (smoothed 0.55×), so legacy velocities are noisier
+     than raw finite differences of our positions.
+  2. **The real MATLAB reference** (wp1–wp4, about 3× more particles per bin: 480–579k against
+     168–192k) is **much closer to ours**: at phase 5 velocity +0%, kinetic energy −3%, shear
+     stress +6%, dissipation +18%. It drifts later in the cycle (shear stress +28%,
+     dissipation +69% at phase 8) where the flow is slow.
+  3. **What explains the remaining gap, tested here:**
+     - *Smoothing window:* 21 → 41 → 61 changes the worst-phase dissipation only from +69% to
+       +65% (and +43% → +39%): **not temporal noise in the tracks**.
+     - *Number of particles:* analysing wp1 alone (half the data) raises dissipation by 13–18%
+       in phases 5–6 (388 → 438, 383 → 453), so the 2× larger reference sample accounts for a
+       good part of the early-phase excess. (Later phases change sign because the set of
+       voxels that pass the threshold changes.)
+     - *Voxel threshold:* `min_count` 5 → 20 lowers the global dissipation by about 30%
+       (388 → 274 at phase 5): the global mean of a squared-gradient quantity depends strongly
+       on which sparse, edge voxels are included. The reference used the production thresholds
+       (50 / 100) on 3× more data. A like-for-like comparison needs wp3 and wp4, which are not
+       on this Mac (they were on the external drive).
+     - *Phase alignment* of two workpackages (shift stage) may add smearing in the slow phases;
+       not tested.
+  4. **Jet-region columns are not comparable:** our "jet" mask selects almost stationary voxels
+     (mean velocity 0.047 against 0.75), a mask-definition difference in the analysis stage
+     (`mask: frozen: null` computes it adaptively; the legacy run used its own mask), not a
+     tracking result.
+  5. **A cloud-pipeline observation:** `openptv-cloud run` with `phases: [post, analyze]` on
+     existing results printed "phases to execute: post, analyze" but did not rerun the post
+     step (the run log was unchanged); calling `openptv_cloud.post.convert` directly worked.
+     To be checked in openptv-cloud.
 
 ## What can be next (ranked by expected gain)
 The remaining error on the real-jitter case, step by step (velocity error; perfect linker
