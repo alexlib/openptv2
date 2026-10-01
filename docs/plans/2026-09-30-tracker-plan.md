@@ -155,18 +155,21 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
   mm/frame (the regime it was tested in); an explicit number or `null` wins; a large
   `v_max` leaves it off with a printed note. lv_multi wp4/wp5 with no overrides: jump steps
   0.0% (were 6.7% and 8.4%). `docs/two-phase-tracking.md` has the parameter row.
-- **Release status: tagged and pushed, build running.** `main` was fast-forwarded to
-  `02033eed` and pushed; CI (tests) and docs deployment passed. The tag **`v0.5.12`
-  (commit `02033eed`) was pushed by the user** (the permission system had blocked the
-  agent from doing it); the "Build Wheels" run for the tag builds wheels for Linux,
-  Windows and macOS (Python 3.11–3.13) and publishes to PyPI. Check it with
-  `gh run list --limit 3` and `pip index versions openptv2`.
-- **Waiting for the PyPI publish of 0.5.12:** raising the `openptv2>=` pin in openptv-cloud,
-  updating its lock file, and merging `feat/gap-aware-smoothing-trim` (the cloud branch
-  works without the new openptv2 but falls back to flowtracks with a warning on every
-  run, so it should be merged only together with the pin).
-- **openptv-cloud:** after the PyPI release, raise `openptv2>=` in `pyproject.toml`, update
-  the lock file, run its tests, merge `feat/gap-aware-smoothing-trim` into `main`, push.
+- **Release status (final, 2026-10-01):** tag **`v0.5.12`** (commit `02033eed`, pushed by the
+  user) is **on PyPI with all nine wheels** (macOS arm64, Linux x86_64, Windows; Python
+  3.11–3.13), so `pip install openptv2==0.5.12` works. **The sdist (source distribution) was
+  rejected: 143 MB against PyPI's 100 MB limit** (v0.5.11: 5 MB). Cause: the earlier switch to
+  versions from git tags (`88a834d0`, setuptools-scm) puts *every tracked file* into the sdist
+  (test data, docs, generated C). Fixed in `f262aaf7` (`MANIFEST.in` prunes them; local sdist
+  0.9 MB); it takes effect with the next release (on `feat/tracker-improvements`, not yet on
+  `main`). 0.5.12 has no sdist on PyPI.
+- **openptv-cloud merged and pushed** (`main` = `f3146bf`): `openptv2>=0.5.12`, lock updated,
+  `trajectories.smoothing_method: gap_aware` is active (the released `quality_post` is
+  used), `trim_doubtful` available. The new two_phase defaults change the lv-multi fixture's
+  physics on purpose, so `tests/e2e_expected.json` was regenerated and reviewed: wp5
+  2736 → 1885 tracks and 24390 → 20356 rows (confirmation removes the wrong links), wp4
+  unchanged. `test_end_to_end_reproducibility` failed twice (about 2 of 14 runs) while heavy
+  jobs were running and passed 9 of 9 afterwards; treat it as load-sensitive.
 
 ## What can be next (ranked by expected gain)
 The remaining error on the real-jitter case, step by step (velocity error; perfect linker
@@ -190,8 +193,9 @@ Recommended next: **A7b** (largest measured, concrete), then **the better mark**
 test offline with the saved features and the ghost cheats), then A4/A5 together.
 
 ## Next steps, in this order
-1. **Finish the release chain** (see "Decisions taken and release"): tag `v0.5.12` is
-   pushed; when the wheels are on PyPI, bump the openptv-cloud pin, lock, test, merge, push.
+1. ~~Finish the release chain~~ **Done** (wheels on PyPI, cloud merged). Open: put the
+   sdist fix (`f262aaf7`) onto `main` and cut `v0.5.13` when there is something to release;
+   consider a cloud release tag (0.9.18) for the changed defaults.
 2. ~~**A7b:** data-driven `confirm_tol`.~~ **Done: measured and reverted, see section 4 A7.**
    (Original text:) data-driven `confirm_tol`. Per-case optima are in
    `bench/step8_A7_confirmation_variants_REVERTED_2026-10-01.json` (normal and real jitter
