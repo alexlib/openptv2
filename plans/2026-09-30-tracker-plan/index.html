@@ -2626,6 +2626,21 @@ behaviour is <code>two_phase+q_seed=null+q_young=0</code>. Old <code>eval.json</
      existing results printed "phases to execute: post, analyze" but did not rerun the post
      step (the run log was unchanged); calling <code>openptv_cloud.post.convert</code> directly worked.
      To be checked in openptv-cloud.</p>
+<ul>
+<li><strong>Why true links are still missing, and whether a track-level rule can recover them</strong>
+  (<code>bench/step18_…</code>, realistic sparse case). Of 198637 consecutive true pairs whose points
+  both exist in the input, the default tracker links 95.5% raw and 97.8% after repair. <strong>With
+  the two added rules switched off it links 100.0%</strong>: the matcher itself loses nothing. The
+  2.2% that stay broken are caused by the quality rules (1.1%) and by confirmation (0.9%);
+  71% of them are pairs where both points are isolated singletons (real particles judged
+  doubtful). I tested deciding per <em>track</em> instead (relaxed tracker rules plus dropping whole
+  trajectories whose mean mark is high): it is worse everywhere (sparse 0.1752–0.1846 against
+  0.1724 for defaults + trim; dense 0.4519–0.4711 against 0.4177), because a ghost track that
+  formed has already taken part in the assignments. Dropping whole doubtful tracks on top of the
+  defaults gains only 0.002 (sparse) and 0.0006 (dense): not kept. <strong>Conclusion: the point-level
+  rules in the tracker are the right place; what remains broken is the price of removing
+  ghosts.</strong></li>
+</ul>
 <h2 id="what-can-be-next-ranked-by-expected-gain">What can be next (ranked by expected gain)<a class="headerlink" href="#what-can-be-next-ranked-by-expected-gain" title="Permanent link">&para;</a></h2>
 <p>The remaining error on the real-jitter case, step by step (velocity error; perfect linker
 0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →
