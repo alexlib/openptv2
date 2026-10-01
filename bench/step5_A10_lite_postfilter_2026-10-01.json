@@ -1,0 +1,10 @@
+{"change": "A10-lite as a post-filter (drop trajectories by share of 4-camera frames), measured only; not implemented in the tracker",
+ "case": "L1_d1_c0_k1_n200_s0.08", "date": "2026-10-01",
+ "rows": {
+  "two_phase":                    {"vErr": 0.1977, "yield": 0.706, "lnkP": 0.9325, "ghost": 0.0690},
+  "drop len>=11 & share4==0":     {"vErr": 0.2022, "yield": 0.682, "lnkP": 0.9540, "ghost": 0.0479, "ghost_pts_removed": "28%", "real_pts_removed": "3.2%"},
+  "drop len>=11 & share4<0.15":   {"vErr": 0.2046, "yield": 0.671, "lnkP": 0.9555, "ghost": 0.0467, "ghost_pts_removed": "31%", "real_pts_removed": "4.8%"},
+  "drop len>=6 & share4<0.30":    {"vErr": 0.2094, "yield": 0.634, "lnkP": 0.9601, "ghost": 0.0415, "ghost_pts_removed": "38%", "real_pts_removed": "9.7%"},
+  "CHEAT drop ghost-only trajs":  {"vErr": 0.1636, "yield": 0.705, "lnkP": 0.9900, "ghost": 0.0059},
+  "CHEAT drop all ghost points":  {"vErr": 0.1471, "yield": 0.704, "lnkP": 0.9988, "ghost": 0.0003}},
+ "verdict": "4-camera share alone does not pay; ghost-only trajectories are the target (60% of the gain)."}

@@ -1,6 +1,6 @@
 # Tracker plan, in plain words
 
-Branch: `feat/tracker-improvements`. Date: 2026-09-30, updated 2026-10-01.
+Branch: `feat/tracker-improvements`. Date: 2026-09-30, updated 2026-10-01 (A1 tried and reverted; ghost bound measured).
 This file replaces all earlier tracking plans, including `new_tracking_plan.md` and
 `two-phase-accuracy-speed-plan.md`; their ideas are merged here.
 
@@ -188,6 +188,23 @@ In plain words:
 | Perfect linker (a cheat that knows the answer) | 0.130 mm/frame | 0.5% |
 | two_phase (our best) | 0.178 mm/frame | 7% |
 
+### How much error is due to ghosts? (measured 2026-10-01)
+On the real-jitter case (`L1_d1_c0_k1_n200_s0.08`) I removed all ghost points
+from the tracker's input, using the truth labels (`scripts/ghost_bound.py`),
+and tracked again:
+
+| | With ghosts | Without ghosts |
+|---|---|---|
+| Correct links among links made (two_phase) | 0.9325 | **0.9989** |
+| Velocity error (two_phase) | 0.1977 | **0.1465** |
+| Velocity error (perfect linker) | 0.1412 | 0.1236 |
+| Gap between two_phase and perfect linker | 0.0565 | **0.0229** |
+
+In plain words: **ghosts cause about 60% of two_phase's remaining error and
+nearly all of its wrong links.** Without ghosts, two_phase is almost as good as
+the perfect linker. So removing ghosts is the main lever. Search-ball tuning
+and score tuning are not (see A1 below).
+
 ### Three problems I found in the code
 1. **The search ball is far too big for slow particles.** It holds several wrong
    candidates, including fake points.
@@ -199,6 +216,12 @@ In plain words:
 3. **Projecting the guesses to the cameras runs one point at a time**
    (`_build_project_fn`): a Python loop over points × cameras. It is slow for
    no reason, and one batched call per camera gives the same result.
+   **Done** (commit 7263d414, 21–29% faster, identical results).
+4. **`max_gap` counts steps, not missing frames.** A track is searched while
+   `frames since last point <= max_gap`, and a consecutive step is 1. So
+   `max_gap=1` means "no gap bridging", `max_gap=2` bridges one missing frame,
+   and `max_gap=0` finds no links at all. Keep this in mind for A5 ("bridge up to
+   10 frames" needs `max_gap=11`), and for any benchmark label with `max_gap=0`.
 
 ---
 
@@ -429,7 +452,40 @@ benchmark, normal case unless stated.
 - proPTV-style's refit of the whole history at every frame. It is the reason
   that tracker is 12× slower.
 
-### A1. A small search ball shaped like the shake (highest value)
+### A1. A small search ball shaped like the shake (TRIED 2026-10-01, REVERTED)
+**Result: it does not help two_phase.** Implemented as designed: seeded tracks
+searched in the ellipsoid `|d_i / sigma_i| <= k * sqrt(1+(1+g)^2+g^2)` with
+`sigma = (0.008, 0.008, 0.045)` mm (the measured jitter), new tracks keep the
+round ball. Full numbers: `bench/step4_A1_noise_gate_REVERTED_2026-10-01.json`.
+
+| Case | Baseline vErr / points kept / true links found | A1, k = 6 | A1, k = 3 |
+|---|---|---|---|
+| Normal | 0.1780 / 0.707 / 0.987 | 0.1784 / 0.706 / 0.980 | 0.1881 / 0.694 / 0.925 |
+| Real jitter | 0.1977 / 0.706 / 0.975 | 0.2018 / 0.704 / 0.963 | 0.2448 / 0.682 / 0.820 |
+| Skip ×8 | 0.1218 / 0.669 / 0.930 | 0.1285 / 0.628 / 0.855 | 0.1557 / 0.512 / 0.657 |
+| 4× density | 0.4592 / 0.258 / 0.937 | 0.4341 / 0.256 / 0.921 | 0.3682 / 0.241 / 0.842 |
+| Clustered + skip ×4 | 0.1632 / 0.398 / 0.891 | 0.1504 / 0.386 / 0.863 | 0.1475 / 0.328 / 0.697 |
+
+- A tighter gate **loses true links** and breaks trajectories apart. It "wins"
+  at 4× density and on the clustered case only by keeping fewer points, which
+  section 2 forbids.
+- Link precision hardly moves (0.933 → 0.934–0.936). So extra candidates inside
+  the ball are not what causes wrong links; ghosts are (section 1).
+- Control: a smaller *round* ball (`v_max` 0.5) gains at most 0.007, and breaks
+  skip ×8 (0.1218 → 0.1656).
+- The earlier trackcorr result (0.51 → 0.18 with a tight `dacc`) came from
+  trackcorr's greedy conflict settling, which two_phase does not have.
+- **Kept from this work:** the `scripts/synth_bench.py build --sigma-px` option,
+  the measured jitter numbers (section 1), and the knowledge that real
+  accelerations and heavy-tailed noise make a Gaussian gate too tight.
+- **Still open from the A1 text below:** the automatic-parameter fixes in
+  `tracking_recommender._suggest_params` and `tracking_warmup._tune_from_displacements`.
+  They matter for trackcorr and the other trackers, not for two_phase. Park
+  them.
+
+The original text of A1 follows, for reference.
+
+#### A1 original design
 - **Problem.** One round ball sized for the fastest particle. For a slow particle
   it holds many wrong points.
 - **Change.**
@@ -586,7 +642,33 @@ benchmark, normal case unless stated.
     real ones (section 1). A10 and A11 handle those.
   - It works for every tracker.
 
-### A10. Camera test for whole trajectories (finds the long fake trajectories)
+### A10. Camera test for whole trajectories (finds the long fake trajectories) - NOW THE FIRST STEP
+**First measurements (2026-10-01, real-jitter case, two_phase output):**
+- **Where the ghost damage is.** Dropping ghosts from the *output* gives the same
+  gain as dropping them from the input (vErr 0.1977 → 0.1471 vs 0.1465). So A11
+  is not needed for accuracy if ghosts can be recognized afterwards.
+  - 17196 of 18736 ghost points sit in ghost-only trajectories (4739 of them).
+    Dropping just those: vErr 0.1977 → 0.1636, about 60% of the gain.
+  - The other 1540 ghost points sit inside real trajectories; removing them
+    brings vErr to 0.1471.
+- **The 4-camera rule alone is too weak.** "Long trajectory never seen by 4
+  cameras" removes only 28% of ghost points but 3.2% of real ones, and vErr gets
+  slightly *worse* (0.2022, points kept 0.706 → 0.682). Looser rules lose more
+  real points (see the bench files). Do not use it as a hard filter.
+- **Ghost trajectories are almost stationary.** Median speed 0.021 mm/frame
+  against 0.126 for real ones, and much lower jitter. They come from static
+  false targets in the images. The same happens in L2 (the real image
+  pipeline), so it is not only an L1 artefact.
+- **But do not tune on this.** Real data has almost no stationary trajectories:
+  0.1% below 0.01 mm/frame against 0.9% in L1. Its slow trajectories (7% below
+  0.03 mm/frame) are probably real slow flow (pulsatile flow, walls), and
+  dropping them would bias the mean flow. The synthetic ghosts are probably
+  easier to recognize than the real ones.
+- **Next for A10.** Find features that separate ghosts without relying on speed:
+  the mix of 3- and 4-camera frames over the whole trajectory (ghost-only
+  trajectories are mostly 3-camera: median share 1.0 vs 0.31), and the ray miss
+  distance. Check that any rule flags a similar share of trajectories on the
+  real wp2 data as it does on the synthetic data.
 - **Idea.** A real particle is usually seen by all 4 cameras at least now and
   then. A long fake trajectory is usually never seen by all 4.
   - 65% of long fake trajectories are never seen by 4 cameras.
@@ -603,7 +685,7 @@ benchmark, normal case unless stated.
     from fake.
 - **Output.** A list of suspected fake trajectories. A11 uses it.
 
-### A11. Feed tracking back into camera matching (removes fake points at birth)
+### A11. Feed tracking back into camera matching (removes fake points at birth) - THE BIGGEST LEVER
 - **Idea.** A fake 3D point is made from blobs that belong to real particles, and
   those real particles then go missing. Tracking can tell which points are
   suspect; today that knowledge never goes back to the camera-matching step.
@@ -748,22 +830,26 @@ Every step: a test and a before/after benchmark (section 2).
 | 1 | Step 0: scoreboard (with "points kept", fake trajectories by length, 4-camera share) + decision log + realism check and stress cases (0.3) | Honest numbers, and knowing how far to trust the synthetic data | 1.5 |
 | 2 | Bug 3: batched projection | Faster, same result | 0.5 |
 | 3 | Bug 2: missing camera ≠ pixel 0,0 (see below), then measure | Unknown; possibly the first time the 2D score helps | 0.5 |
-| 4 | A1 small, shake-shaped ball (sized from the frame-to-frame wiggle) + fix automatic settings | More accurate **and** faster | 1 |
-| 5 | A2 camera count in the score (from trackcorr) | Fewer fake points in contests | 0.5 |
-| 6 | A12 "no link" option + history first (from track3d) | Fewer broken trajectories, fewer doubtful links | 1 |
+| 4 | A1 small, shake-shaped ball | **Tried and reverted** (no gain, loses true links) | done |
+| 5 | A10 camera test for whole trajectories, plus a check of what else separates ghost trajectories on real data (ray miss distance, jitter of 3- vs 4-camera points) | A list of suspected ghost trajectories | 1–2 |
+| 6 | A11 feed tracking back into camera matching (trackcorr's add-point engine). Upper bound from `ghost_bound.py`: vErr 0.1977 → 0.1465 | Fewer fake points **and** more real ones; the main lever | 3–4 |
 | 7 | A7 better smoothness check | More accurate | 1 |
-| 8 | A13 look ahead before deciding, contested groups only (from trackcorr/4BE) | More of the one proven gain; fewer trajectories dying in contests | 1–2 |
-| 9 | A4 + A5 smoother velocity (from proPTV-style, fixed cost), gap handling, reconnect | Better guesses, longer trajectories | 2 |
-| 10 | A14 newborns guess from neighbours (from track3d) | Better first links for new trajectories | 0.5 |
-| 11 | A9 smoothness filter (gap-aware) | Removes short fake runs and fakes inside real trajectories (about 10–15% of fake points) | 2 |
-| 12 | A10 camera test for whole trajectories | A list of suspected fake trajectories | 1–2 |
-| 13 | A11 feed tracking back into camera matching (trackcorr's add-point engine) | Fewer fake points **and** more real ones; the main fake-point fix | 3–4 |
+| 8 | A2 camera count in the score (from trackcorr); place it in the cost that also works with `leaf_weight=0` | Fewer fake points in contests | 0.5 |
+| 9 | A12 "no link" option + history first (from track3d) | Fewer broken trajectories, fewer doubtful links | 1 |
+| 10 | A13 look ahead before deciding, contested groups only (from trackcorr/4BE) | More of the one proven gain; fewer trajectories dying in contests | 1–2 |
+| 11 | A4 + A5 smoother velocity (from proPTV-style, fixed cost), gap handling, reconnect | Better guesses, longer trajectories | 2 |
+| 12 | A14 newborns guess from neighbours (from track3d) | Better first links for new trajectories | 0.5 |
+| 13 | A9 smoothness filter (gap-aware) | Removes short fake runs and fakes inside real trajectories | 2 |
 | 14 | P3 parallel: split the movie into chunks | Several × faster on long runs, no accuracy loss | 1–2 |
 | 15 | S0 + S1 remaining speed items | Faster | 1 |
 | 16 | A8 decision on forward + backward. **Then** P1 (run both at once), only if forward + backward survives. A6 `min_cams`, the rest of A2 (richer score), A3, and the parked ideas (section 4) only if the numbers ask for them | Measured case by case | — |
 | 17 | "Neighbours move together" for all trajectories (only if the real-data test in section 9 says yes) | Better guesses in dense regions | 2–3 |
 
 Why this order:
+- **Ghosts first (new, 2026-10-01).** With ghosts removed, two_phase reaches
+  precision 0.9989 and cuts its gap to the perfect linker from 0.0565 to
+  0.0229. Everything that only changes the search ball or the score cannot
+  reach that (A1 showed it).
 - The realism check (0.3) comes first. It decides whether tolerances can be
   tuned on the synthetic cases at all.
 - A2's camera count comes right after A1: it is small and uses data two_phase

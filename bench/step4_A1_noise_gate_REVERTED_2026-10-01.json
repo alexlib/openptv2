@@ -1,0 +1,20 @@
+{"change": "A1: per-axis noise-shaped gate for seeded tracks (noise_sigma=[0.008,0.008,0.045], noise_k=3|4|6); code reverted",
+ "date": "2026-10-01",
+ "verdict": "REVERT. Tighter gate loses true links on 3 of 5 cases at every k; wins on d4/clustered only by keeping fewer points (forbidden by plan rule). Link precision barely moves (0.933 -> 0.934-0.936), so candidate ambiguity in the ball is not what limits two_phase.",
+ "vErr_yield_lnkR": {
+  "L1_d1_c0_k1_n200":      {"two_phase": [0.1780, 0.707, 0.9871], "k6": [0.1784, 0.706, 0.9802], "k4": [0.1880, 0.702, 0.9580], "k3": [0.1881, 0.694, 0.9251]},
+  "L1_d1_c0_k1_n200_s0.08": {"two_phase": [0.1977, 0.706, 0.9752], "k6": [0.2018, 0.704, 0.9629], "k4": [0.2203, 0.697, 0.9114], "k3": [0.2448, 0.682, 0.8200]},
+  "L1_d2_c0.3_k4_n150":    {"two_phase": [0.1632, 0.398, 0.8905], "k6": [0.1504, 0.386, 0.8627], "k4": [0.1480, 0.365, 0.7821], "k3": [0.1475, 0.328, 0.6970]},
+  "L1_d4_c0_k1_n150":      {"two_phase": [0.4592, 0.258, 0.9369], "k6": [0.4341, 0.256, 0.9209], "k4": [0.4040, 0.250, 0.8880], "k3": [0.3682, 0.241, 0.8424]},
+  "L1_d1_c0_k8_n150":      {"two_phase": [0.1218, 0.669, 0.9301], "k6": [0.1285, 0.628, 0.8546], "k4": [0.1457, 0.574, 0.7500], "k3": [0.1557, 0.512, 0.6571]}},
+ "control_round_ball_v_max": {
+  "L1_d1_c0_k1_n200_s0.08": {"0.86(default)": 0.1977, "0.5": 0.1943, "0.35": 0.1991},
+  "L1_d4_c0_k1_n150":       {"0.86(default)": 0.4592, "0.5": 0.4519, "0.35": 0.4381},
+  "L1_d1_c0_k8_n150":       {"0.86(default)": 0.1218, "0.5": 0.1656, "0.35": 0.2108},
+  "note": "a smaller round ball gains <= 0.007 and breaks skip x8: gate size is not the lever"},
+ "ghost_bound": {
+  "case": "L1_d1_c0_k1_n200_s0.08 with ghost points removed (scripts/ghost_bound.py)",
+  "two_phase": {"vErr": "0.1977 -> 0.1465", "lnkP": "0.9325 -> 0.9989", "ghost": "0.069 -> 0.0003"},
+  "oracle": {"vErr": "0.1412 -> 0.1236"},
+  "gap_to_oracle": "0.0565 -> 0.0229",
+  "meaning": "ghosts explain ~60% of two_phase's remaining vErr gap and nearly all wrong links"}}
