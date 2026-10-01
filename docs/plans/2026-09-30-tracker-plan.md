@@ -738,6 +738,34 @@ The original text of A1 follows, for reference.
      them.
   4. Judge it on the real-jitter case against the plan's rules, with the
      amended "points kept" rule.
+- **Is rcm more distinctive relative to a distance? (tested 2026-10-01)** Share of
+  rcm variance explained by a binned curve of each variable, 4-camera points:
+
+  | Variable | Real wp2 | Synthetic |
+  |---|---|---|
+  | Distance from the volume centre | **0.115** | 0.004 |
+  | Nearest image edge, any camera | **0.100** | 0.006 |
+  | Edge distance, single camera 1 / 2 / 3 / 4 | 0.104 / 0.104 / 0.091 / 0.087 | about 0.004 |
+  | Depth z | 0.012 | 0.001 |
+
+  - **On real data, rcm grows away from the centre:** median 0.035 mm within
+    10 mm of the centre to 0.058 mm at 50–60 mm. Equivalently, within 50 px of an
+    image edge the median is 0.056 mm against 0.039 mm in the image interior.
+    The two are the same effect (outer points are near image edges). Together
+    they explain about 11% of the variance; edge distance adds only 0.018 once
+    the centre distance is used.
+  - **Depth does not matter.** So normalizing by z is useless.
+  - **Synthetic data has none of this structure** (all R² below 0.01), so it
+    cannot show whether such a normalization improves ghost separation; the
+    synthetic ghost-vs-real AUC stays at 0.82 (3-camera) and 0.87 (4-camera)
+    for every normalization.
+  - **Consequence.** The right scale for real data is a smooth curve in the
+    distance from the centre (or nearest image edge), fitted per run from the
+    4-camera points. The 10×10×10 cell medians already capture it, but a smooth
+    curve with 2–3 parameters is more stable in sparse cells. To *validate* the
+    gain, build a synthetic case with a radial calibration error (rcm growing
+    with distance, like real wp2) and check that ghost separation improves
+    after normalization.
 - **Open check.** The real tail may contain more ghosts than the synthetic one
   (real 3-camera tail is heavier). There is no truth on real data, so compare
   the share of points above relative rcm 2.2 (real vs synthetic) after each
