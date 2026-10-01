@@ -1,8 +1,132 @@
 # Tracker plan, in plain words
 
-Branch: `feat/tracker-improvements`. Date: 2026-09-30, updated 2026-10-01 (A1 tried and reverted; ghost bound measured).
+Branch: `feat/tracker-improvements`. Date: 2026-09-30, updated 2026-10-01. **Start with the STATUS AND HANDOFF section below.**
 This file replaces all earlier tracking plans, including `new_tracking_plan.md` and
 `two-phase-accuracy-speed-plan.md`; their ideas are merged here.
+
+
+---
+
+# STATUS AND HANDOFF (updated 2026-10-01 afternoon, read this first)
+
+## Where we are
+Branch `feat/tracker-improvements`. Goal unchanged: correct Lagrangian trajectories,
+accuracy first, speed second, no big slowdown (section 2 has the rules).
+
+### Key facts learned (details in sections 1 and 4)
+1. **Ghost points cause about 60% of two_phase's remaining error** and nearly all wrong
+   links. With ghosts removed from the input, link precision goes 0.9325 → 0.9989 and
+   velocity error 0.1977 → 0.1465 (perfect linker 0.1412) on the real-jitter case.
+2. **Search-gate and score tuning do not help two_phase** (A1 tried and reverted; a
+   smaller round ball gains at most 0.007).
+3. **The ray miss distance (rcm) of a 3D point is the best ghost signal** (AUC 0.88 per
+   trajectory). Its scale on real data depends on the distance from the volume centre,
+   so it is divided by a per-run straight-line fit before use.
+4. **Soft use works, hard deletion does not:** link-cost weighting alone has no effect;
+   forbidding doubtful points from starting trajectories (`q_seed`) and young
+   trajectories from continuing onto them (`q_young`) gives −0.008…−0.013 velocity
+   error on four cases and −0.038 at 4× density, with at most 0.007 fewer points kept.
+5. **Synthetic data is too gentle:** real data jitters 1.4–2× more. Tune on the
+   "real jitter" case `L1_d1_c0_k1_n200_s0.08` (matches real wp2), check on the rest.
+6. **`max_gap` counts steps:** `max_gap=1` = no gap bridging, `0` = no links at all.
+
+### Done and committed
+| Commit | What |
+|---|---|
+| 7263d414 | Bug 3: batched camera projection (21–29% faster, identical results) |
+| 8bb9917a, 6dd27c02 | Bug 2: separate seen-mask, `RunStore.read_seen` |
+| 81470b35 | Wrong seen-mask now raises; Step 0: `scripts/realism_metrics.py`, `synth_bench build --sigma-px`, baselines in `bench/realism/` |
+| 4127a459 | A1 tried and reverted; ghost bound measured (`scripts/ghost_bound.py`); plan order changed |
+| 0c10c51a, 724684d2, f6f70cea | A10 findings: rcm feature, distributions, distance dependence |
+| ca5988c7 | A10 in the tracker: `openptv2/point_quality.py`, options `q_weight`, `q_seed`, `q_young` (default off) |
+
+### In progress (uncommitted or unfinished when this was written)
+- `src/openptv2/quality_post.py` + `tests/unit/test_quality_post.py` (5 tests pass):
+  `trim_doubtful_ends`, `drop_spikes`, `quality_weights`, `weighted_savgol` (Savitzky–Golay
+  with per-point weights). **Written and unit-tested, not yet benchmarked.**
+- Tuning grid `q_seed` ∈ {0.1, 0.15, 0.2, 0.3} × `q_young` ∈ {3, 6, 10, 15} on 5 cases:
+  all tracking runs are done; the **evaluations were still running** (slow, about 1 min
+  per run). Partial result on the normal case only (velocity error / points kept; baseline
+  0.1780 / 0.707):
+
+  | q_seed \ q_young | 3 | 6 | 10 | 15 |
+  |---|---|---|---|---|
+  | 0.10 | 0.1549 / 0.694 | 0.1523 / 0.686 | 0.1535 / 0.682 | 0.1548 / 0.677 |
+  | 0.15 | 0.1598 / 0.700 | 0.1589 / 0.696 | 0.1589 / 0.694 | 0.1609 / 0.691 |
+  | 0.20 | 0.1652 / 0.703 | 0.1625 / 0.702 | 0.1618 / 0.701 | 0.1626 / 0.699 |
+
+  Smaller `q_seed` lowers the error more but costs points; the choice is a trade-off
+  that must be made over all five cases (see next steps).
+
+## Next steps, in this order
+1. **Finish the tuning.** Run `uv run python scripts/tune_summary.py q_seed q_young`
+   (reads the saved `eval.json` files; if rows say "incomplete", re-run
+   `uv run python scripts/synth_bench.py eval --case CASE --trackers two_phase "two_phase+q_seed=0.2+q_young=6" ...`
+   for the missing cases). Choose the setting by the mean velocity-error change over the
+   five cases, with points kept down by at most 0.007 on every case. Then confirm on real
+   wp2 with `scripts/real_retrack.py` (see commands) and make that the recommended
+   setting; consider making it the default for the `two_phase` preset only after the real
+   check on lv_multi wp5 too.
+2. **Use the mark after tracking** (the user asked for this explicitly):
+   - trim doubtful trajectory ends (`trim_doubtful_ends`), especially where the ghost
+     probability jumps sharply from one frame to the next or near the ends;
+   - drop spikes (`drop_spikes`);
+   - weight points in the smoothing by quality (`weighted_savgol` with `quality_weights`).
+   To benchmark it: add to `synth_bench.evaluate_pred` an optional per-point weight array
+   `w` stored in `pred.npz`; if present, call `weighted_savgol` instead of `_smooth`
+   (flowtracks' Savitzky–Golay has no weights). First check that unit weights reproduce
+   the flowtracks result. The per-point ghost probability for output points is found by
+   matching output positions to the stored correspondences (see `scripts/a10_features.py`
+   for the matching code) and then `point_quality.ghost_probability`.
+   Keep the rules in section 2 (test + before/after table, points-kept rule amended for
+   ghost-dominated removals).
+3. **A7** better smoothness check (the one measured win), then **A2** (camera count in the
+   cost that works also with `leaf_weight=0`), **A12**, **A13**; order in section 7.
+4. Later: soft use at the correspondence step (A11), speed (S0/S1), chunks (P3).
+
+## Commands (all from the repo root, always `uv run`)
+```bash
+# unit tests / lint for the touched code
+uv run pytest tests/unit/test_two_phase_tracking.py tests/unit/test_point_quality.py \
+  tests/unit/test_quality_post.py tests/unit/test_tracking_postprocess.py -q
+uv run ruff check src scripts
+
+# synthetic benchmark (work dir ~/Downloads/HiDImaging/tracker-bench-2026-09-29)
+uv run python scripts/synth_bench.py build --level L1 --sigma-px 0.08      # real-jitter case
+uv run python scripts/synth_bench.py track --case L1_d1_c0_k1_n200_s0.08 --tracker "two_phase+q_seed=0.2+q_young=3"
+uv run python scripts/synth_bench.py eval  --case L1_d1_c0_k1_n200_s0.08 --trackers oracle two_phase "two_phase+q_seed=0.2+q_young=3"
+uv run python scripts/synth_bench.py sweep --cases A B --trackers T1 T2 -j 4 --no-eval   # then eval
+# cases: L1_d1_c0_k1_n200 (normal), L1_d1_c0_k1_n200_s0.08 (real jitter), L1_d2_c0.3_k4_n150,
+#        L1_d4_c0_k1_n150, L1_d1_c0_k8_n150
+
+# answer-free scores on real data, ghost bound, ghost features
+uv run python scripts/realism_metrics.py ~/Downloads/CompleteTest-e2e-local/wp2/test/res/run.zarr --last 300
+uv run python scripts/real_retrack.py LABEL 300 q_seed=0.2 q_young=3     # scratch copy, never the source
+uv run python scripts/ghost_bound.py L1_d1_c0_k1_n200_s0.08
+uv run python scripts/a10_features.py L1_d1_c0_k1_n200_s0.08
+```
+
+## Pitfalls
+- **Another agent may be committing to this branch at the same time** (it did, commit
+  6dd27c02). Run `git log --oneline -5` and `git status` before starting. Use
+  `git add` with explicit paths, not `git add -A`, unless the tree is only yours.
+- **Shell:** zsh. Pass lists to `synth_bench` as bash/zsh arrays (`"${V[@]}"`), not as
+  one string. BSD `sed -i ''`. No `timeout` command on this Mac.
+- **Timing** is only meaningful with `-j 1`; sweeps with `-j 4` are for accuracy only.
+  `eval` is slow (about a minute per tracker); run one process per case in parallel.
+- **Never overwrite real data.** The real runs are in `~/Downloads/CompleteTest-e2e-local`
+  and `~/Documents/Github/openptv-cloud/examples/lv-multi` (do not run
+  `generate_synthetic_lv_multi.py` there). `wp1_10_images` is on the Windows machine only.
+- One unit test, `test_run_store.py::test_traj_index_matches_legacy_reader_after_singleton_filter`,
+  fails on a missing `flowtracks` module; it is not related to this work.
+- The synthetic ghosts are almost stationary (static false targets); real data has far
+  fewer. Never tune a ghost rule on speed.
+- Scratch measurement scripts that are NOT in `scripts/` (they live in a session scratch
+  folder): `rcm_geom.py`, `rcm_norm.py`, `plot_rcm.py`, `ghost_feats.py`, `a10_lite.py`.
+  The results they produced are written into section 4 and `bench/`; re-create them only
+  if needed.
+
+---
 
 ## Goal
 We want correct Lagrangian trajectories:
