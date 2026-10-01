@@ -1,0 +1,7 @@
+{"change": "Step 0.3: new synthetic 'real jitter' case L1_d1_c0_k1_n200_s0.08 (synth_bench build --sigma-px 0.08)",
+ "date": "2026-10-01",
+ "calibration": "sigma 0.08 px reproduces CompleteTest wp2: jitter x,y,z 0.0083,0.0077,0.0447 (real 0.0083,0.0077,0.0393), z p90 0.078 (real 0.0786), jump share 1.43% (real 1.46%). sigma 0.06 was too low (0.0067,0.0062,0.0368).",
+ "baseline_default_two_phase": {
+   "oracle":    {"vErr": 0.1412, "aErr": 9.126, "lnkP": 1.0, "lnkR": 1.0, "ghost": 0.0049, "longC": 0.571, "frag": 1.82, "yield": 0.709, "time_s": 6.0},
+   "two_phase": {"vErr": 0.1977, "aErr": 12.198, "lnkP": 0.9325, "lnkR": 0.9752, "ghost": 0.0690, "longC": 0.525, "frag": 2.26, "yield": 0.706, "time_s": 9.6}},
+ "note": "vErr gap to oracle is 0.0565 here vs 0.0478 on the smooth normal case; realism numbers for real runs are in bench/realism/."}

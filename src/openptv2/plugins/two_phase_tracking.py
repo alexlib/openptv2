@@ -285,12 +285,23 @@ def _match_two_phase_frame(
     costs: list[float] = []
     use_leaves = cost_mode == "projected" and leaf_weight > 0 and xy0.shape[1] > 0
     C = xy0.shape[1] // 2 if use_leaves else 0
-    def _legacy_seen(xy, n):
-        return ~np.isnan(xy.reshape(n, -1, 2)[:, :, 0]) if C else np.zeros((n, 0), dtype=bool)
-    if seen0 is None or np.shape(seen0) != (n_pred, C):
-        seen0 = _legacy_seen(xy0, n_pred)
-    if seen1 is None or np.shape(seen1) != (n_cand, C):
-        seen1 = _legacy_seen(xy1, n_cand)
+
+    def _resolve_seen(seen, xy, n, name):
+        if not C:
+            return np.zeros((n, 0), dtype=bool)  # 2D leaves unused
+        if seen is None:
+            # Legacy: NaN marks a missing camera (only valid if the caller
+            # never ran nan_to_num on the leaves).
+            return ~np.isnan(xy.reshape(n, -1, 2)[:, :, 0])
+        seen = np.asarray(seen, dtype=bool)
+        if seen.shape != (n, C):
+            # A wrong mask must never fall back to the NaN check: after
+            # nan_to_num that silently re-creates the missing-camera bug.
+            raise ValueError(f"{name} has shape {seen.shape}, expected {(n, C)}")
+        return seen
+
+    seen0 = _resolve_seen(seen0, xy0, n_pred, "seen0")
+    seen1 = _resolve_seen(seen1, xy1, n_cand, "seen1")
     for pi in range(n_pred):
         cands = neighbours[pi]
         if len(cands) == 0:
@@ -626,10 +637,7 @@ class TwoPhaseTracker:
             pred_seen = np.ones((len(tids), n_leaf_cams), dtype=bool)
             det_seen = None
             if frame_seen is not None and frame_seen[t + 1] is not None:
-                _ds = np.asarray(frame_seen[t + 1], dtype=bool)
-                if _ds.shape == (n1, n_leaf_cams):
-                    det_seen = _ds
-                # else: misaligned mask — fall back to legacy NaN check
+                det_seen = np.asarray(frame_seen[t + 1], dtype=bool)
             got, got_shared = _match_two_phase_frame(
                 np.asarray(pred_pts, dtype=np.float64),
                 np.asarray(pts1, dtype=np.float64),

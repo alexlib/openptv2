@@ -260,3 +260,38 @@ def test_frame_seen_wires_into_track_frames():
                                            frame_seen=seen)
     tr2 = TwoPhaseTracker(TwoPhaseTrackerConfig())
     assert (1, 0, 2, 1) in tr2.track_frames(frames, leaves, project_fn)
+
+
+def test_wrong_seen_mask_raises_not_falls_back():
+    """A misshaped mask must not silently revert to the NaN check (bug 2)."""
+    import pytest
+
+    pts0 = np.zeros((1, 3))
+    pts1 = np.array([[0.1, 0, 0]])
+    xy = np.zeros((1, 8))
+    with pytest.raises(ValueError, match="seen1"):
+        _match_two_phase_frame(
+            pts0, pts1, xy, xy,
+            np.array([0], dtype=np.int32), np.array([0], dtype=np.int32),
+            5.0, 1.0, cost_mode="projected",
+            seen0=np.ones((1, 4), dtype=bool), seen1=np.ones((1, 3), dtype=bool))
+
+
+def test_track_frames_uses_seen_mask_end_to_end():
+    """Full tracker path: leaves went through nan_to_num (missing = 0,0), the
+    mask says cam 4 is missing for the true partner; the stranger must lose."""
+    C = 4
+    f0 = np.array([[0.0, 0, 0]])
+    f1 = np.array([[0.05, 0, 0], [0.30, 0, 0]])
+    leaf0 = np.tile([100.0, 100.0], C).reshape(1, -1)
+    leaf1 = np.vstack([
+        np.array([[101.0, 100.0]] * 3 + [[0.0, 0.0]]).reshape(1, -1),
+        np.full((C, 2), [105.0, 100.0]).reshape(1, -1),
+    ])
+    seen = [np.ones((1, C), bool), np.array([[1, 1, 1, 0], [1, 1, 1, 1]], bool)]
+    cfg = TwoPhaseTrackerConfig(v_max=1.0, use_velocity=False, max_gap=1)
+    # projection of the (stationary) prediction = the frame-0 leaf
+    links = TwoPhaseTracker(cfg).track_frames(
+        [f0, f1], [leaf0, leaf1], project_fn=lambda p: np.tile(leaf0, (len(p), 1)),
+        frame_seen=seen)
+    assert (0, 0, 1, 0) in links
