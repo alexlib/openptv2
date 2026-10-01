@@ -664,7 +664,35 @@ The original text of A1 follows, for reference.
   0.03 mm/frame) are probably real slow flow (pulsatile flow, walls), and
   dropping them would bias the mean flow. The synthetic ghosts are probably
   easier to recognize than the real ones.
-- **Next for A10.** Find features that separate ghosts without relying on speed:
+- **Ray miss distance (rcm) is the best feature found** (second measurement,
+  `bench/step5_A10_rcm_postfilter_2026-10-01.json`). Ghost points miss by about
+  1.8× more than real points (median 0.068 vs 0.038 mm). Per trajectory, the
+  mean rcm separates ghost-only from real trajectories with AUC 0.88 (4-camera
+  share 0.78 after flipping, speed 0.95 but not trusted). It needs no truth and
+  no speed.
+- **As a post-filter it still costs real points.** Dropping trajectories of at
+  least 6 frames with mean rcm above 0.06 mm removes 35% of ghost points and 2.2%
+  of real points: vErr 0.1977 → 0.1888, points kept 0.706 → 0.689. Stricter
+  settings reach vErr 0.1683 (length ≥ 3, rcm > 0.05) but keep only 0.648.
+  The cheat limit is 0.1636 with no points lost.
+- **The absolute scale does not transfer to real data.** On real wp2 (300
+  frames) the median point rcm is 0.044 (4-camera) and 0.052 (3-camera); on
+  synthetic both are 0.037. A threshold of 0.06 would flag 26% of real
+  trajectories against about 4% of synthetic ones. The real values probably
+  include calibration error that varies over the volume, so a fixed threshold
+  would delete real particles in badly calibrated regions and bias the flow.
+- **Consequences for A10:**
+  1. Use rcm **relative** to its local typical value (neighbouring points of the
+     same frame, or the same region over time), not as an absolute number.
+  2. Map real rcm against position first (is it spatially structured?) before any
+     rule goes near the tracker.
+  3. Prefer a **soft** use over a hard filter: add rcm to the link score (A2) and
+     penalize starting a new trajectory on a high-rcm point, so doubtful points
+     lose contests instead of being deleted.
+  4. Amend the "points kept" rule for filters: points may be removed if the
+     removed points are mostly ghosts (e.g. at least 10 ghost points removed per
+     real point), because accuracy ranks above density.
+- **Next for A10 (older text).** Find features that separate ghosts without relying on speed:
   the mix of 3- and 4-camera frames over the whole trajectory (ghost-only
   trajectories are mostly 3-camera: median share 1.0 vs 0.31), and the ray miss
   distance. Check that any rule flags a similar share of trajectories on the

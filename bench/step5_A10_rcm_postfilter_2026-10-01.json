@@ -1,0 +1,14 @@
+{"change": "A10 with ray-convergence (rcm = ray miss distance, from multi_cam_point_positions) as a post-filter; measured only, not implemented in the tracker",
+ "case": "L1_d1_c0_k1_n200_s0.08", "date": "2026-10-01",
+ "feature_auc_ghost_only_vs_real_trajs_len>=6": {"rcm_mean": 0.882, "rcm_median": 0.883, "rcm_p90": 0.771, "share_4cam": 0.218, "z_second_diff": 0.198, "speed": 0.053, "len": 0.418},
+ "point_level_rcm_median": {"3cam_real": 0.0375, "3cam_ghost": 0.0638, "4cam_real": 0.0373, "4cam_ghost": 0.0693},
+ "rows": {
+  "two_phase":            {"vErr": 0.1977, "yield": 0.706, "lnkP": 0.9325, "ghost": 0.0690},
+  "len>=6 mean rcm>0.060": {"vErr": 0.1888, "yield": 0.689, "lnkP": 0.9604, "ghost": 0.0411, "ghost_pts_removed": "35%", "real_pts_removed": "2.2%"},
+  "len>=6 mean rcm>0.050": {"vErr": 0.1916, "yield": 0.657, "lnkP": 0.9728, "ghost": 0.0294, "ghost_pts_removed": "50%", "real_pts_removed": "6.6%"},
+  "len>=3 mean rcm>0.050": {"vErr": 0.1683, "yield": 0.648, "lnkP": 0.9788, "ghost": 0.0203, "ghost_pts_removed": "59%", "real_pts_removed": "7.8%"},
+  "len>=6 mean rcm>0.045": {"vErr": 0.1985, "yield": 0.604, "lnkP": 0.9771, "ghost": 0.0257, "ghost_pts_removed": "57%", "real_pts_removed": "13.8%"},
+  "len>=11 mean rcm>0.050": {"vErr": 0.1987, "yield": 0.669, "lnkP": 0.9683, "ghost": 0.0346, "ghost_pts_removed": "45%", "real_pts_removed": "5.0%"}},
+ "real_data_wp2_300frames": {"point_rcm_median_4cam": 0.0443, "point_rcm_median_3cam": 0.0516, "traj_mean_rcm_p10_50_90": [0.0318, 0.0488, 0.0745],
+   "share_traj_flagged": {"rcm>0.045": 0.597, "rcm>0.05": 0.470, "rcm>0.06": 0.260}},
+ "verdict": "rcm is the best ghost feature found (AUC 0.88, physical, no speed) but (1) every setting costs real points, (2) an absolute threshold does not transfer to real data (26% flagged at 0.06 vs ~4% synthetic; 3-cam points have higher rcm than 4-cam on real data but equal on synthetic), (3) real rcm likely contains calibration-error structure. Needs a relative/local normalisation before use."}
