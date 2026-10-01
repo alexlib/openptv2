@@ -2409,6 +2409,12 @@ it softly, as a <em>ghost probability</em> between 0 and 1 for every point.</p>
 <td><code>q_model: rcm</code> if your blobs have no usable brightness or the cameras are saturated</td>
 </tr>
 <tr>
+<td><code>blob_gate</code></td>
+<td>none</td>
+<td><strong>brightness continuity gate</strong>: a candidate whose blob brightness (mean over the cameras that see both points) changed by more than this in log units is not a candidate. A real particle keeps its brightness in each camera from frame to frame (median change 0.06, p90 0.21 on CompleteTest wp2; a random neighbour 0.33).</td>
+<td>off. Use <strong>0.5</strong> for frame-skipped or low-frame-rate data (velocity error −0.007 at skip ×4 and ×8, −0.015 clustered; at most 0.005 fewer points kept; it cuts 0.3% of real links on wp2); 0.3 gains more and loses more points; 0.8 does little. Neutral on normal data (−0.001 to −0.003), so not a default</td>
+</tr>
+<tr>
 <td><code>q_weight</code></td>
 <td>0</td>
 <td>Multiplies the link cost by <code>1 + q_weight * probability</code>. Measured: <strong>no effect</strong> (links onto doubtful points are rarely contested). Leave at 0.</td>

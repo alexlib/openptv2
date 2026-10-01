@@ -2118,7 +2118,7 @@
 This file replaces all earlier tracking plans, including <code>new_tracking_plan.md</code> and
 <code>two-phase-accuracy-speed-plan.md</code>; their ideas are merged here.</p>
 <hr />
-<h1 id="status-and-handoff-updated-2026-10-02-early-read-this-first">STATUS AND HANDOFF (updated 2026-10-02 early, read this first)<a class="headerlink" href="#status-and-handoff-updated-2026-10-02-early-read-this-first" title="Permanent link">&para;</a></h1>
+<h1 id="status-and-handoff-updated-2026-10-02-read-this-first">STATUS AND HANDOFF (updated 2026-10-02, read this first)<a class="headerlink" href="#status-and-handoff-updated-2026-10-02-read-this-first" title="Permanent link">&para;</a></h1>
 <h2 id="where-we-are">Where we are<a class="headerlink" href="#where-we-are" title="Permanent link">&para;</a></h2>
 <p>Branch <code>feat/tracker-improvements</code>. Goal unchanged: correct Lagrangian trajectories,
 accuracy first, speed second, no big slowdown (section 2 has the rules).</p>
@@ -2470,6 +2470,44 @@ behaviour is <code>two_phase+q_seed=null+q_young=0</code>. Old <code>eval.json</
 - <strong>Caveats:</strong> the model assumes that brightness differences between cameras are small
   once the run median is removed (true for the two real sets); constant brightness falls
   back to <code>rcm</code>; the weights come from synthetic data, so real-data checks stay mandatory.</p>
+<h3 id="session-of-2026-10-02-a4-max_gap-post-steps-brightness-continuity">Session of 2026-10-02: A4, max_gap, post steps, brightness continuity<a class="headerlink" href="#session-of-2026-10-02-a4-max_gap-post-steps-brightness-continuity" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>A4 velocity filter: reverted</strong> (<code>bench/step11_…</code>): an α–β filter (vel_beta 0.25–0.6) is
+  worse by +0.001…+0.004 and gains 0.001 completeness. The velocity guess does not limit
+  the tracker. <strong><code>max_gap</code> 3, 4, 6: no gain either</strong> (+0.003…+0.008).</li>
+<li><strong>Ghosts are still two thirds of the gap.</strong> With ghosts removed, the default tracker reaches
+  0.1551 on the realistic case (perfect linker 0.1375, with ghosts 0.1934, quality off 0.2136).
+  The marks have captured about 38% of the ghost cost.</li>
+<li><strong>A bug in my own smoother, found by re-measuring:</strong> making a short track's window odd (drop
+  one point) cost +0.008 velocity error (unit-weight smoother 0.1790 → 0.1869, worse than
+  flowtracks' 0.1845). <strong>The released 0.5.12 contains it</strong>, so openptv-cloud's new
+  <code>gap_aware</code> default is slightly worse than flowtracks on short-track-heavy output until
+  0.5.13. Fixed on <code>main</code> (<code>5b27bd0c</code>, with the sdist fix). <strong>Needs: tag <code>v0.5.13</code>
+  (the user has to push the tag), then raise the cloud pin to <code>&gt;=0.5.13</code>.</strong> With the fix, on
+  the four realistic cases: weighted smoother −0.004…−0.009 against flowtracks, trimming ends
+  at 0.3 a further −0.004…−0.007 (−0.003…−0.008 points kept); dropping whole doubtful
+  trajectories adds only ~0.001 (removed); weights and spike removal nothing.</li>
+<li>
+<p><strong>Brightness continuity</strong> (<code>bench/step13_…</code>). On real wp2 a linked pair changes its blob
+  brightness per camera by a median of only 0.058 (random neighbour 0.33, AUC 0.84), so the
+  cross-camera brightness differences are <em>persistent per particle</em> (my first generator
+  redrew them every frame; fixed: <code>--amp-jitter 0.18 --amp-flicker 0.05</code>, cases <code>…_f0.05</code>).
+  As a link-cost term it has <strong>no effect</strong> (costs rarely decide; removed). As a candidate gate
+  (<code>blob_gate</code>) it gives −0.007 at frame skip ×4 and ×8 and −0.015 on the clustered skip ×4
+  case for gate 0.5, at most 0.005 fewer points, neutral on real data (cuts 0.3% of real
+  links on wp2): <strong>kept as a documented opt-in, default off.</strong></p>
+</li>
+<li>
+<p><strong>Re-check of the quality rules on the persistent-brightness cases</strong> (velocity error /
+  points kept / ghost fraction; off → <code>rcm</code> → <code>rcm_blob</code> default): sparse 0.2008/0.687/7.2% →
+  0.1915/0.682/4.8% → <strong>0.1862/0.680/3.8%</strong>; ×2 0.3622/0.517/7.3% → 0.3369/0.509/5.4% →
+  <strong>0.3208/0.503/4.4%</strong>; ×4 0.5110/0.239/12.5% → 0.4741/0.233/9.9% → <strong>0.4214/0.225/7.2%</strong>;
+  clustered skip ×4 0.1694/0.380/6.8% → <strong>0.1638</strong>/0.375/5.7% → 0.1689/0.375/5.4%. The
+  conclusions hold, with one exception: on the clustered frame-skip case <code>rcm_blob</code> is 0.005
+  <em>worse</em> than <code>rcm</code> (brightness may change more over skipped frames; <code>q_model: rcm</code> is the
+  setting for such data).</p>
+</li>
+</ul>
 <h2 id="what-can-be-next-ranked-by-expected-gain">What can be next (ranked by expected gain)<a class="headerlink" href="#what-can-be-next-ranked-by-expected-gain" title="Permanent link">&para;</a></h2>
 <p>The remaining error on the real-jitter case, step by step (velocity error; perfect linker
 0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →
@@ -2535,6 +2573,7 @@ long-track completeness 0.526 against 0.569), and about 0.02 is <strong>ghosts t
 test offline with the saved features and the ghost cheats), then A4/A5 together.</p>
 <h2 id="next-steps-in-this-order">Next steps, in this order<a class="headerlink" href="#next-steps-in-this-order" title="Permanent link">&para;</a></h2>
 <ol>
+<li><strong>Cut <code>v0.5.13</code> now</strong> (the user pushes the tag; <code>main</code> has the smoother fix <code>5b27bd0c</code> and the sdist fix), then raise the openptv-cloud pin to <code>&gt;=0.5.13</code> and fix its docstrings that still say "largest odd window" (<code>experiment.py</code>, <code>post.py</code>, <code>review.py</code>).</li>
 <li>~~Finish the release chain~~ <strong>Done</strong> (wheels on PyPI, cloud merged). Open: put the
    sdist fix (<code>f262aaf7</code>) onto <code>main</code> and cut <code>v0.5.13</code> when there is something to release;
    consider a cloud release tag (0.9.18) for the changed defaults.</li>
