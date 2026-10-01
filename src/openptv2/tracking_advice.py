@@ -15,6 +15,7 @@ Rules (from the benchmark, docs/plans/2026-09-30-tracker-plan.md):
 * confirmation tolerance (confirm_tol / confirm_auto): follows the position noise when the
   data are sparse and the kink is noise dominated, otherwise the fixed 0.3 mm/frame.
 * blob_gate: for frame-skipped or low-frame-rate data (large steps).
+* reconnect_gap / smooth_filter_k: post steps on the trajectories (A5, A9).
 * smoothing window: about 4 ms of frames.
 """
 
@@ -238,7 +239,37 @@ def advise(
                 "brightness continuity removes wrong candidates",
             )
         )
-    # 4. smoothing window
+    # 4. post steps on the finished trajectories (A5 reconnect, A9 smoothness filter)
+    out.append(
+        Advice(
+            "trajectories.reconnect_gap",
+            6,
+            "join broken pieces across up to 5 missing frames with a straight-line guess "
+            "from each side (tolerance 4 noise sigmas, `trajectories.reconnect_tol`); "
+            "better in 8 of 9 benchmark cases (-0.002 to -0.019), +0.004 only at 4x density",
+        )
+    )
+    if ratio >= min_ratio:
+        out.append(
+            Advice(
+                "trajectories.smooth_filter_k",
+                6,
+                f"noise dominated (kink/step {ratio:.2f}): drop points farther than 6 "
+                "median residuals from the curve their neighbours define "
+                "(-0.007 to -0.015, costs about 1% of the points; 4 = stricter, "
+                "-0.02 and 4% of the points)",
+            )
+        )
+    else:
+        out.append(
+            Advice(
+                "trajectories.smooth_filter_k",
+                "off",
+                f"motion dominates the kink (kink/step {ratio:.2f}): real accelerations "
+                "between skipped frames would be mistaken for outliers (skip x8: +0.0075)",
+            )
+        )
+    # 5. smoothing window
     if fps:
         w = max(5, int(round(0.004 * fps)) // 2 * 2 + 1)
         out.append(
@@ -290,5 +321,10 @@ def report(m: dict[str, float], advice: list[Advice]) -> str:
             lines.append(f"  {a.parameter}: {a.value}")
     tw = [a for a in advice if a.parameter.startswith("trajectories.")]
     if tw:
-        lines += ["trajectories:", f"  smoothing_window: {tw[0].value}"]
+        lines.append("trajectories:")
+        for a in tw:
+            key = a.parameter.split(".", 1)[1]
+            lines.append(
+                f"  # {key}: {a.value}" if a.value == "off" else f"  {key}: {a.value}"
+            )
     return "\n".join(lines)

@@ -63,3 +63,13 @@ def test_report_lists_measurements_reasons_and_yaml():
     assert "MEASURED ON YOUR DATA" in txt and "why:" in txt and "track:" in txt
     assert "q_seed: 0.2" in txt and "smoothing_window: 21" in txt
     assert "# confirm_tol: leave unset (automatic)" in txt
+
+
+def test_post_steps_follow_the_noise_dominance_guard():
+    a = advise(_m())
+    assert _get(a, "trajectories.reconnect_gap").value == 6
+    assert _get(a, "trajectories.smooth_filter_k").value == 6
+    b = advise(_m(median_step=0.5, median_kink=0.13, kink_step_ratio=0.26))
+    assert _get(b, "trajectories.smooth_filter_k").value == "off"
+    txt = report(_m(), a)
+    assert "reconnect_gap: 6" in txt and "smooth_filter_k: 6" in txt

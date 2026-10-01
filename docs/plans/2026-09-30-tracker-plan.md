@@ -381,6 +381,37 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
   each parameter changes. A change of a yaml value never needs a release; only new options do
   (the options above are in code that is not yet released, 0.5.14).
 
+### A5, A9, A14, A8 (2026-10-02, `bench/step20_…`)
+Base: two_phase with the guarded `confirm_auto`. Velocity error at the best smoothing window.
+- **A5 reconnect: adopted as a post step** (`openptv2/reconnect.py`, `reconnect_gap` 6,
+  tolerance 4σ). Join a piece end to a later piece start when straight lines fitted to 10
+  points on each side agree across the gap; best first, each end/start once. **A quadratic is
+  worse than a line** (0.1653 vs 0.1616: extrapolating a quadratic amplifies the noise); gaps
+  of 3 or 4 frames give nothing, 6 is best (the long gaps are cuts made by the ghost rules),
+  10 is too many wrong joins. Across the nine cases: sparse 0.1683 → 0.1616, σ 0.04
+  0.1708 → 0.1612, σ 0.16 0.2372 → 0.2186, ×2 0.3208 → 0.3149, clustered 0.1689 → 0.1666,
+  skip ×4 0.1125 → 0.1099, skip ×8 0.1295 → 0.1267; **×4 density 0.4214 → 0.4257 (worse)**.
+  Fragments per long track 1.95 → 1.76. Real wp2: 7% fewer tracks, roughness median −6%, p95 −28%.
+- **A9 smoothness filter: adopted as a post step** (`openptv2/smoothness_filter.py`,
+  `smooth_filter_k` 6). Leave-one-out residual from a straight line through 11 neighbours at the
+  true frame times, so a reconnected gap is not a kink. On top of A5: sparse 0.1616 → 0.1467
+  (−0.015, 0.9% fewer points), σ 0.16 −0.015, ×4 −0.0135 (this turns A5's loss at ×4 into a net
+  gain: 0.4214 → 0.4122), ×2 −0.007, skip ×4 −0.003; **skip ×8 +0.0075 worse, so it is off when
+  kink/step < 0.5.** Strict k = 4 gives another −0.004 and drops 4% of the points. Real wp2:
+  roughness a further −5% / −11% for 1.2% of the points. **Dropping whole short tracks looks
+  better (0.1012) but is a selection effect (4% fewer points): a user choice via the minimum
+  trajectory length, not a default.** Together A5 + A9: sparse 0.1683 → 0.1467, σ 0.16 0.2372 →
+  0.2036, ×2 −0.013, ×4 −0.009, clustered −0.003, skip ×4 −0.006.
+- **A14 newborn guesses: no effect, code removed** (0.1683 → 0.1682; dense and skip ≤ 0.002):
+  it only changes the second point of a track and contests are rare.
+- **A8 forward+backward: kept.** After the post steps, forward-only is worse by 0.017 on the
+  realistic sparse case, 0.007 at ×2, 0.004 at skip ×4, but better by 0.009 at ×4 density,
+  0.004 clustered and 0.007 at skip ×8 (3% fewer points), and 40% faster. The plan's old rule
+  ("delete if it gains less than 0.02") predates the post steps; it stays an option, forward-only
+  for dense data when speed matters.
+- **Not wired into the cloud pipeline yet** (needs the release): `trajectories.reconnect_gap`,
+  `reconnect_tol`, `smooth_filter_k` in openptv-cloud `post.py`.
+
 ## What can be next (ranked by expected gain)
 The remaining error on the real-jitter case, step by step (velocity error; perfect linker
 0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →

@@ -46,6 +46,7 @@ experiment.
 | `q_seed`, `q_young` (ghost rules) | 3-camera share above 45% **or** flagged share above 14% → **accuracy mode** `0.15 / 6`. 3-camera share below 20% **and** flagged below 4% → light rule `0.3 / 3`. Otherwise the default `0.2 / 3`. |
 | `confirm_tol` | density ≤ 7 neighbours **and** kink/step ≥ 0.5 → **leave unset**: the tracker uses 8 × the median kink (the output states the value). Otherwise → fixed **0.3** mm/frame, and the reason is printed (dense data, or motion dominates = frame skipping). |
 | `blob_gate` | median step ≥ 0.2 mm/frame (large steps: frame skip or slow camera) → **0.5**. |
+| `trajectories.reconnect_gap`, `smooth_filter_k` | reconnect: always 6. Smoothness filter: 6 when kink/step ≥ 0.5 (noise dominated), otherwise off. |
 | `trajectories.smoothing_window` | about 4 ms of frames: `0.004 × fps`, rounded to an odd number, at least 5. |
 
 The thresholds come from the benchmark (the plan in `docs/plans/2026-09-30-tracker-plan.md`).

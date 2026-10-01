@@ -63,6 +63,8 @@ Three words used below:
 | `v_max` (mm/frame) | search radius | about 3× the typical step, or the largest real step | more candidates | loses fast particles |
 | `max_gap` | frames a track may be missing | 2 (one missing frame) | bridges longer dropouts, more mistakes | – |
 | `trajectories.smoothing_window` | frames in the smoothing window | about 4 ms of frames (21 at 5000 fps) | smoother velocities, blurs real changes | noisier velocities |
+| `trajectories.reconnect_gap` (6; 0 = off) | join broken pieces of a trajectory across up to `gap − 1` missing frames, using a straight line from each side; tolerance `trajectories.reconnect_tol` (4 noise sigmas) | 6 for all data; better in 8 of 9 benchmark cases | joins more pieces, risk of a wrong join | fewer joins |
+| `trajectories.smooth_filter_k` (6; off = 0) | drop points farther than `k` median residuals from the curve their neighbours define | 6 when noise dominates (kink/step ≥ 0.5); **off** for frame-skipped data | milder: keeps more points | stricter: 4 gives −0.02 velocity error and drops 4% of the points |
 | `trajectories.trim_doubtful` (off) | cut up to 3 doubtful end points of a trajectory | 0.3 when accuracy matters more than the number of points | cuts fewer points | cuts more (0.2: ~2% of points) |
 
 ## 5. What to expect (measured on synthetic data with known truth)
@@ -76,6 +78,8 @@ any tracker can do on the same 3D points.
 | Brightness agreement (`q_model: rcm_blob`, instead of `rcm`) | a further −0.005 … −0.039 |
 | Trim doubtful ends (0.3) + gap-aware smoother | a further −0.01 |
 | Automatic confirmation tolerance, real noise level | −0.018 (and more with more noise: −0.070 at 2× the real noise) |
+| Reconnect broken pieces (gap 6, 4σ) | −0.002 … −0.019 (+0.004 at 4× density) |
+| Smoothness filter (k = 6) after reconnect | a further −0.001 … −0.015, about 1% fewer points (skip ×8: +0.0075, so off there) |
 | `blob_gate: 0.5` on frame-skipped data | −0.007 … −0.015 |
 | Accuracy mode (`q_seed` 0.15, `q_young` 6) | a further −0.004 … −0.04, about 0.5–1% fewer points |
 
