@@ -692,6 +692,56 @@ The original text of A1 follows, for reference.
   4. Amend the "points kept" rule for filters: points may be removed if the
      removed points are mostly ghosts (e.g. at least 10 ghost points removed per
      real point), because accuracy ranks above density.
+- **The distributions (figure: `docs/plans/figs/rcm_distributions.png`).** No
+  single cut-off is right; the ghost share changes smoothly with rcm:
+
+  | rcm band (mm) | Ghost share, 3-camera points | Ghost share, 4-camera points |
+  |---|---|---|
+  | below 0.03 | 4% | 0% |
+  | 0.03–0.05 | 9% | 1% |
+  | 0.05–0.07 | 29% | 6% |
+  | 0.07–0.10 | 52% | 27% |
+  | above 0.10 | 76% | 41% |
+
+  Real points form a narrow peak near 0.035 mm; ghosts form a broad hump from
+  0.05 to 0.12 mm. At the same rcm, a 3-camera point is far more likely to be a
+  ghost than a 4-camera point. Per trajectory, the mean rcm of real trajectories
+  is a narrow peak near 0.04 mm, ghost-only trajectories are broad with a long
+  tail, and mixed trajectories sit between them.
+- **Real data is broader, partly because of position.** Real wp2 point rcm has
+  median 0.044 (4-camera) and 0.052 (3-camera), with a heavy tail (3-camera
+  p90 0.090 vs 0.063 synthetic). The map over the volume is structured: about
+  0.035–0.04 mm in the middle and 0.065 mm or more at the edges.
+- **After dividing by the local typical rcm** (median of 4-camera points in a
+  10×10×10 grid of cells) the real distribution matches the synthetic one:
+
+  | | median | p90 | p99 |
+  |---|---|---|---|
+  | Real wp2, 4-camera | 1.00 | 1.48 | 2.14 |
+  | Synthetic real points, 4-camera | 0.99 | 1.54 | 2.20 |
+  | Real wp2, 3-camera | 1.02 | 1.81 | 2.72 |
+  | Synthetic real points, 3-camera | 0.97 | 1.64 | 2.54 |
+
+  So the relative rcm is a sensible scale on real data, and the synthetic ghost
+  share by relative rcm is a plausible guide. Synthetic ghost share by relative
+  rcm: below 0.9 → 9% / 1%; 1.2–1.6 → 20% / 4%; 1.6–2.2 → 37% / 9%; above 2.2 →
+  62% / 28% (3-camera / 4-camera).
+- **Design from this (soft, no cut-off).**
+  1. For every point: relative rcm = rcm / local typical rcm (map built from the
+     run itself, 4-camera points, with cells of at least 60 points and the global
+     median elsewhere).
+  2. Turn (relative rcm, number of cameras) into a ghost probability, using the
+     bands above as a first table; later fit a smooth curve.
+  3. Use it in three places, all soft: add a cost to links onto doubtful points
+     (A2); penalize starting a new trajectory on a doubtful point; and weight
+     the points of a trajectory when smoothing afterwards, instead of deleting
+     them.
+  4. Judge it on the real-jitter case against the plan's rules, with the
+     amended "points kept" rule.
+- **Open check.** The real tail may contain more ghosts than the synthetic one
+  (real 3-camera tail is heavier). There is no truth on real data, so compare
+  the share of points above relative rcm 2.2 (real vs synthetic) after each
+  change, and watch the jump share.
 - **Next for A10 (older text).** Find features that separate ghosts without relying on speed:
   the mix of 3- and 4-camera frames over the whole trajectory (ghost-only
   trajectories are mostly 3-camera: median share 1.0 vs 0.31), and the ray miss
