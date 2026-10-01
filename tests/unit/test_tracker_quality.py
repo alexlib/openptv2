@@ -127,10 +127,22 @@ def test_fast_3d_quality_floor_at_1k_density():
 #   sg_hungarian_3d:     precision 0.579, yield_recall 0.514, ghost 0.038
 #   nearest_hungarian_3d:precision 0.688, yield_recall 0.646, ghost 0.038
 #   predictive_gmm_3d:   precision 0.707, yield_recall 0.690, ghost 0.035
+#
+# priority_segment_3d floors lowered precision 0.88 -> 0.86, yield_recall 0.86 -> 0.79
+# (2026-10-02): commit 6e86c138 (2026-08-27, "Align track3d_loop_fast with liboptv
+# track3d.c") deliberately removed the distance term from the Level-1 cost and the dacc
+# parameter to match the C library exactly. Bisected on this dataset (20 frames, same
+# data at every commit): every earlier commit measures precision 0.9016 / yield_recall
+# 0.8807 / ghost 0.0379; from 6e86c138 on, precision 0.8818 / yield_recall 0.8146 /
+# ghost 0.0379. So the floors follow the intentional change (the policy above: a drop
+# is a regression only "without an intentional algorithm change"), at 2 pp below the
+# new measurement like the other trackers. This is a real accuracy cost of C parity: the
+# distance-weighted cost scored 6.6 pp higher recall here. Restoring it (e.g. as an
+# option) would justify raising these floors again.
 _STAGE0B_FLOORS = {
     "priority_segment_3d": {
-        "precision": 0.88,
-        "yield_recall": 0.86,
+        "precision": 0.86,
+        "yield_recall": 0.79,
         "ghost_capture_rate": 0.06,
     },
     "trackcorr": {"precision": 0.88, "yield_recall": 0.80, "ghost_capture_rate": 0.06},

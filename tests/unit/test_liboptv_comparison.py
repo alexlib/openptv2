@@ -22,12 +22,18 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 import benchmark_utils as bu  # noqa: E402
 import compare_trackers_vs_liboptv as cmp_mod  # noqa: E402
+from create_synthetic_turbulent import make_dataset  # noqa: E402
 
 pytestmark = pytest.mark.slow
 
 
 @pytest.mark.skipif(not bu.has_liboptv(), reason="optv (Cython bindings) not available")
 def test_all_trackers_run_and_clear_a_quality_floor():
+    # res/ and img/ are gitignored (generated, deterministic): only cal/ and the yaml are
+    # checked in, so recreate them on a fresh checkout, as test_tracker_quality does.
+    if not (bu.SRC / "res").exists():
+        make_dataset(bu.SRC)
+
     # Short frame range: enough to exercise every tracker + both liboptv
     # reference modes without a multi-minute CI run.
     rows = cmp_mod.run_comparison(bu.SRC, bu.FIRST, n_frames=8)

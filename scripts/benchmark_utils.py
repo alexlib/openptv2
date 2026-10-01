@@ -135,6 +135,12 @@ def combined_metrics(
 def _isolate_run_dir(src: Path = SRC) -> tuple[Path, Path]:
     run_dir = Path(tempfile.mkdtemp())
     for sub in ("cal", "res", "img"):
+        if not (src / sub).is_dir():
+            raise FileNotFoundError(
+                f"{src / sub} is missing. res/ and img/ are generated, not checked in: "
+                "run `uv run python scripts/create_synthetic_turbulent.py` (see "
+                "test_data/synthetic_turbulent/README.md)."
+            )
         shutil.copytree(src / sub, run_dir / sub)
     yaml_run = run_dir / "parameters_Run1.yaml"
     shutil.copy(src / "parameters_Run1.yaml", yaml_run)

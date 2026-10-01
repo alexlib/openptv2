@@ -636,11 +636,15 @@ def test_burgers():
             trackcorr_c_loop(run, step)
         trackcorr_c_finish(run, run.seq_par.last)
 
-        # CAS fix (Approach B) prevents double-claiming targets:
-        # the add-flag can't create NEW particles when all targets
-        # are already claimed by existing links (same as add=0 run).
-        assert run.npart == 19
-        assert run.nlinks == 17
+        # With the add flag on, the tracker adds 1 particle and 3 links
+        # (npart 19 -> 20, nlinks 17 -> 20): the values of liboptv's own
+        # test_burgers. The expectation was loosened to 19/17 on 2026-07-08 (commit
+        # b7121406) to fit CAS target claiming that suppressed every add; the claiming
+        # has since been reworked (deferred, conflict-free adds) and the C values are
+        # reproduced again. Verified on the fixture before and after its 2026-08-14
+        # refresh, so this is not a data effect.
+        assert run.npart == 20
+        assert run.nlinks == 20
 
     finally:
         os.chdir(original)
