@@ -31,10 +31,13 @@ out = Path("/private/tmp/claude-501/real_runs") / label
 if out.exists():
     shutil.rmtree(out)
 (out / "res").mkdir(parents=True)
-shutil.copytree(src / "cal", out / "cal")
+cal_src = src / "cal" if (src / "cal").exists() else src.parent / "cal"
+shutil.copytree(cal_src, out / "cal")
+if not (out.parent / "cal").exists():
+    shutil.copytree(cal_src, out.parent / "cal")  # lv-multi yaml uses ../cal
 shutil.copytree(src / "res" / "run.zarr", out / "res" / "run.zarr")
 (out / "img").mkdir()
-raw = yaml.safe_load((src / "parameters_Run1.yaml").read_text())
+raw = yaml.safe_load((next(src.glob("parameters_*.yaml"))).read_text())
 raw["sequence"]["last"] = last
 for o in overrides:
     k, _, v = o.partition("=")

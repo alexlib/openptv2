@@ -7,7 +7,7 @@ This file replaces all earlier tracking plans, including `new_tracking_plan.md` 
 
 ---
 
-# STATUS AND HANDOFF (updated 2026-10-01 afternoon, read this first)
+# STATUS AND HANDOFF (updated 2026-10-01 evening, read this first)
 
 ## Where we are
 Branch `feat/tracker-improvements`. Goal unchanged: correct Lagrangian trajectories,
@@ -39,47 +39,81 @@ accuracy first, speed second, no big slowdown (section 2 has the rules).
 | 4127a459 | A1 tried and reverted; ghost bound measured (`scripts/ghost_bound.py`); plan order changed |
 | 0c10c51a, 724684d2, f6f70cea | A10 findings: rcm feature, distributions, distance dependence |
 | ca5988c7 | A10 in the tracker: `openptv2/point_quality.py`, options `q_weight`, `q_seed`, `q_young` (default off) |
+| f14cd3c3 + next commit | `quality_post.py` (trim ends, drop spikes, weighted Savitzky–Golay), `scripts/quality_postprocess.py`, `real_trim_check.py`, `tune_summary.py`, weighted smoothing option in `synth_bench.evaluate_pred` |
 
-### In progress (uncommitted or unfinished when this was written)
-- `src/openptv2/quality_post.py` + `tests/unit/test_quality_post.py` (5 tests pass):
-  `trim_doubtful_ends`, `drop_spikes`, `quality_weights`, `weighted_savgol` (Savitzky–Golay
-  with per-point weights). **Written and unit-tested, not yet benchmarked.**
-- Tuning grid `q_seed` ∈ {0.1, 0.15, 0.2, 0.3} × `q_young` ∈ {3, 6, 10, 15} on 5 cases:
-  all tracking runs are done; the **evaluations were still running** (slow, about 1 min
-  per run). Partial result on the normal case only (velocity error / points kept; baseline
-  0.1780 / 0.707):
+### Results of the tuning and the after-tracking work (2026-10-01 evening, committed)
+Numbers: `bench/step7_tuning_and_post_2026-10-01.json`. Cases: normal, real jitter,
+clustered + skip ×4, 4× density, skip ×8.
 
-  | q_seed \ q_young | 3 | 6 | 10 | 15 |
-  |---|---|---|---|---|
-  | 0.10 | 0.1549 / 0.694 | 0.1523 / 0.686 | 0.1535 / 0.682 | 0.1548 / 0.677 |
-  | 0.15 | 0.1598 / 0.700 | 0.1589 / 0.696 | 0.1589 / 0.694 | 0.1609 / 0.691 |
-  | 0.20 | 0.1652 / 0.703 | 0.1625 / 0.702 | 0.1618 / 0.701 | 0.1626 / 0.699 |
+**1. Tuning `q_seed` / `q_young`** (mean change over the five cases against plain
+two_phase; velocity error, then true points kept):
 
-  Smaller `q_seed` lowers the error more but costs points; the choice is a trade-off
-  that must be made over all five cases (see next steps).
+| q_seed \ q_young | 3 | 6 | 10 | 15 |
+|---|---|---|---|---|
+| 0.10 | −0.0258 / −0.0123 | −0.0291 / −0.0191 | −0.0319 / −0.0260 | −0.0303 / −0.0319 |
+| 0.15 | −0.0215 / −0.0072 | −0.0246 / −0.0108 | −0.0251 / −0.0145 | −0.0251 / −0.0176 |
+| 0.20 | −0.0167 / −0.0044 | −0.0196 / −0.0068 | −0.0209 / −0.0086 | −0.0213 / −0.0106 |
+| 0.30 | −0.0107 / −0.0020 | −0.0131 / −0.0031 | −0.0134 / −0.0039 | −0.0124 / −0.0046 |
+
+- It is a clean trade-off: smaller `q_seed` and larger `q_young` give lower error and fewer
+  points. Error gained per point lost is best at `q_seed` 0.2 and 0.15 with `q_young` 3.
+- **Recommended default: `q_seed=0.2`, `q_young=3`.** It is the only setting among the
+  strong ones where every case loses at most 0.007 points (the plan's rule).
+- **Accuracy mode: `q_seed=0.15`, `q_young=6`** (mean −0.0246) loses 0.014 points at 4×
+  density. `q_young` larger helps the clustered case most (0.1632 → 0.1401 at 0.1 / 10).
+- Real wp2 (first 300 frames) and lv_multi wp5 agree: with `q_seed=0.2`, `q_young=3`
+  trajectories 16375 → 15310 (wp2) and 3004 → 2399 (wp5), mean length 19.5 → 20.2 and
+  8.0 → 8.9, long trajectories never seen by 4 cameras 11.6% → 10.4% and 9.6% → 7.8%.
+  The jump share barely moves (wp2 1.46 → 1.45%, wp5 8.4 → 8.1%), so wp5's wrong links
+  are mostly not ghosts (see next steps).
+
+**2. After tracking** (`src/openptv2/quality_post.py`, `scripts/quality_postprocess.py`,
+real-jitter case, base = `q_seed=0.2`, `q_young=3`; velocity error / points kept):
+
+| Variant | Result | Verdict |
+|---|---|---|
+| flowtracks smoother (current benchmark) | 0.1845 / 0.702 | reference |
+| `weighted_savgol` with unit weights | 0.1790 / 0.701 | **better smoother, see below** |
+| quality weights `(1−g)^1…3` | 0.1781–0.1785 | no value (−0.001 vs unit weights) |
+| drop spikes (g > 0.3 and +0.3 over neighbours) | 0.1786 | no value |
+| trim end points with g > 0.5 | 0.1757 / 0.698 | small gain |
+| **trim end points with g > 0.3** | **0.1647 / 0.692** | **good: −0.014** |
+| trim end points with g > 0.2 | 0.1595 / 0.683 | best error, −0.018 points |
+
+- **Trimming doubtful ends is what works.** Over the five cases, `q_seed=0.2`,
+  `q_young=3`, trim 0.3 and the new smoother, against plain two_phase with the flowtracks
+  smoother (error / points kept): normal 0.1780/0.707 → 0.1420/0.693; real jitter
+  0.1977/0.706 → 0.1647/0.692; clustered 0.1632/0.398 → 0.1285/0.378; 4× density
+  0.4592/0.258 → 0.3928/0.240; skip ×8 0.1218/0.669 → 0.1048/0.649. Trim 0.2 gains
+  another 0.005–0.01 and loses about 0.01 more points.
+- **Weights and spike dropping do not pay.** After `q_seed`/`q_young`, doubtful points
+  inside trajectories are few, and weighting `(1−g)^p` leaves them with half their weight.
+- **A better smoother, independent of the quality marks.** The flowtracks
+  `savitzky_golay` assumes consecutive frames (it ignores gaps), uses a fixed window and
+  discards trajectories shorter than the window. `weighted_savgol` fits at the real frame
+  times and shrinks the window for short trajectories. With unit weights it lowers the
+  error by 0.002–0.008 on every case (e.g. 0.1652 → 0.1610 normal, 0.1529 → 0.1449
+  clustered). Use it for the final output (upstream to postptv).
+- **Real data:** trimming at 0.3 removes 3.1% (wp2) and 8.8% (wp5) of the points and
+  leaves the answer-free scores unchanged on wp2; on wp5 the jump share goes 8.1 → 7.8%
+  (trim 0.3) and 7.5% (trim 0.2, 15% of the points). `scripts/real_trim_check.py`.
+- **Cost of trimming is points kept** (−0.010 at 0.3, −0.018 at 0.2). Under the
+  "accuracy ranks above density" rule this is accepted, but it is a decision: make it an
+  option with the threshold visible, default 0.3.
 
 ## Next steps, in this order
-1. **Finish the tuning.** Run `uv run python scripts/tune_summary.py q_seed q_young`
-   (reads the saved `eval.json` files; if rows say "incomplete", re-run
-   `uv run python scripts/synth_bench.py eval --case CASE --trackers two_phase "two_phase+q_seed=0.2+q_young=6" ...`
-   for the missing cases). Choose the setting by the mean velocity-error change over the
-   five cases, with points kept down by at most 0.007 on every case. Then confirm on real
-   wp2 with `scripts/real_retrack.py` (see commands) and make that the recommended
-   setting; consider making it the default for the `two_phase` preset only after the real
-   check on lv_multi wp5 too.
-2. **Use the mark after tracking** (the user asked for this explicitly):
-   - trim doubtful trajectory ends (`trim_doubtful_ends`), especially where the ghost
-     probability jumps sharply from one frame to the next or near the ends;
-   - drop spikes (`drop_spikes`);
-   - weight points in the smoothing by quality (`weighted_savgol` with `quality_weights`).
-   To benchmark it: add to `synth_bench.evaluate_pred` an optional per-point weight array
-   `w` stored in `pred.npz`; if present, call `weighted_savgol` instead of `_smooth`
-   (flowtracks' Savitzky–Golay has no weights). First check that unit weights reproduce
-   the flowtracks result. The per-point ghost probability for output points is found by
-   matching output positions to the stored correspondences (see `scripts/a10_features.py`
-   for the matching code) and then `point_quality.ghost_probability`.
-   Keep the rules in section 2 (test + before/after table, points-kept rule amended for
-   ghost-dominated removals).
+1. **Put the results into the product, behind options:**
+   - make `q_seed=0.2`, `q_young=3` the `two_phase` preset values once the real-data
+     checks above are repeated on wp1 and lv_multi wp4 (they agreed so far on wp2, wp5);
+   - add a post step `trim_doubtful_ends` (threshold 0.3, max 3 points) to the pipeline
+     after `postptv` repair, and use `weighted_savgol` (unit weights) for the final
+     smoothing; look where smoothing is called in the postptv step and in
+     `openptv2.benchmarking`;
+   - unit tests exist for `quality_post`; add an end-to-end test of the pipeline step.
+2. **Find out why lv_multi wp5 has 8% jump steps.** Quality marks and trimming only
+   lower it by 0.3–0.9 points, so the wrong links there are not mainly ghosts. Compare
+   the density and the jitter of wp5 with wp4 (0% jumps), look at where the jumps are
+   (by position and by camera count) and test `q_seed` smaller, `v_max` and `dacc`.
 3. **A7** better smoothness check (the one measured win), then **A2** (camera count in the
    cost that works also with `leaf_weight=0`), **A12**, **A13**; order in section 7.
 4. Later: soft use at the correspondence step (A11), speed (S0/S1), chunks (P3).
@@ -104,6 +138,12 @@ uv run python scripts/realism_metrics.py ~/Downloads/CompleteTest-e2e-local/wp2/
 uv run python scripts/real_retrack.py LABEL 300 q_seed=0.2 q_young=3     # scratch copy, never the source
 uv run python scripts/ghost_bound.py L1_d1_c0_k1_n200_s0.08
 uv run python scripts/a10_features.py L1_d1_c0_k1_n200_s0.08
+# after tracking: trim / weights on a tracker run, then score it
+uv run python scripts/quality_postprocess.py CASE "two_phase+q_seed=0.2+q_young=3" unit trim0.3_unit trim0.2_unit
+uv run python scripts/synth_bench.py eval --case CASE --trackers "two_phase+q_seed=0.2+q_young=3~trim0.3_unit"
+REAL_RUN=~/Documents/Github/openptv-cloud/examples/lv-multi/wp5 uv run python scripts/real_retrack.py wp5_q 20 q_seed=0.2 q_young=3
+uv run python scripts/real_trim_check.py /private/tmp/claude-501/real_runs/wp5_q 20 0.5 0.3 0.2
+uv run python scripts/tune_summary.py q_seed q_young
 ```
 
 ## Pitfalls

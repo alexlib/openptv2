@@ -833,7 +833,18 @@ def evaluate_pred(case_dir: Path, pred: dict, flow: Flow, eps: float = 0.4,
     # so ghost points count against the flow like everything else.
     r["by_window"] = {}
     for w in windows:
-        s_id, s_fr, s_pos, s_vel, s_acc = _smooth(new_id, frame, pos, fps, w, 3, min_len)
+        if pred.get("w") is not None:
+            # per-point quality weights (A10 after tracking): weighted
+            # Savitzky-Golay; unit weights reproduce the flowtracks filter
+            from openptv2.quality_post import weighted_savgol
+
+            s_id, s_fr, s_pos, s_vel, s_acc = weighted_savgol(
+                new_id, frame, pos, pred["w"], fps, w, 3, min_len
+            )
+        else:
+            s_id, s_fr, s_pos, s_vel, s_acc = _smooth(
+                new_id, frame, pos, fps, w, 3, min_len
+            )
         n_out = len(s_fr)
         if not n_out:
             continue
