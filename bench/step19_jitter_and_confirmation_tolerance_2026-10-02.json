@@ -1,0 +1,23 @@
+{"date": "2026-10-02", "question": "behaviour with more position jitter, and the confirmation tolerance",
+ "cases": "L1 d1, persistent per-camera brightness (--amp-jitter 0.18 --amp-flicker 0.05), centroid noise sigma 0.04/0.08(real)/0.12/0.16 px",
+ "jitter_sweep_vErr/yield/ghost": {
+  "perfect linker": [[0.1377,0.696,0.5],[0.1515,0.691,0.5],[0.1712,0.693,0.5],[0.1918,0.687,0.5]],
+  "quality off": [[0.1789,0.693,7.4],[0.2008,0.687,7.2],[0.2368,0.686,7.4],[0.3116,0.673,7.6]],
+  "default (fixed 0.3)": [[0.1708,0.687,3.7],[0.1862,0.680,3.8],[0.2249,0.680,4.0],[0.3072,0.667,4.7]],
+  "default + trim 0.3 + unit smoother": [[0.1567,0.682,3.5],[0.1724,0.676,3.7],[0.2154,0.675,3.8],[0.2975,0.660,4.5]]},
+ "confirmation_components (best window vErr)": {
+  "kink 0.3 + dead ends (old default)": [0.1708,0.1862,0.2249,0.3072], "kink 0.6 + dead ends": [0.1588,0.1691,0.1945,0.2419],
+  "dead ends only": [0.1567,0.1694,0.1949,0.2372], "kink 0.3, no dead ends": [0.1940,0.2096,0.2580,0.3394], "no confirmation": [0.1761,0.1973,0.2275,0.2495]},
+ "raw_jump_share_synthetic_vs_real": {"synthetic real level: kink 0.3 / 0.6 / dead-only / none": [0.0143,0.0456,0.048,0.0518], "real wp2: kink 0.3 / 0.45 / 0.6 / 0.9 / none": [0.0144,0.0383,0.047,0.0521,0.0579],
+   "note": "the raw jump share reproduces on synthetic data; it counts depth-noise outliers kept by looser tracks, it is not a measure of wrong links"},
+ "median_kink_vs_jitter": {"sigma 0.04/0.08/0.12/0.16": [0.043,0.076,0.109,0.140], "real wp2": 0.061, "real lv wp5": 0.062, "real lv wp4": 0.056},
+ "auto_tolerance (8 x median kink) unguarded": {"helps": "sparse, noise-dominated cases", "hurts": "density x2/x4 (+0.008/+0.063), clustered skip 4 (0.1689 -> 0.4293), skip x4 (0.1125 -> 0.1591), skip x8 (0.1295 -> 0.1527)"},
+ "criteria": {"neighbours within 5 mm / kink-step ratio": {"sigma 0.04": [6.0,0.42], "sigma 0.08": [6.0,0.68], "sigma 0.16": [6.0,0.93], "density x2": [9.4,0.74], "density x4": [10.8,0.79], "clustered skip4": [7.6,0.44], "skip x4": [5.8,0.39], "skip x8": [6.1,0.31], "real wp2": [5.0,0.52], "real wp5": [6.0,0.78], "real wp4": [5.0,0.72]}},
+ "guarded_auto_8 (neighbours<=7 and ratio>=0.5, else fixed 0.3), vErr best window / window 21": {
+  "sigma 0.04": ["0.1708 -> 0.1708","0.1958 -> 0.1958"], "sigma 0.08": ["0.1862 -> 0.1683","0.2142 -> 0.2053"], "sigma 0.12": ["0.2249 -> 0.1949","0.2515 -> 0.2333"], "sigma 0.16": ["0.3072 -> 0.2372","0.3307 -> 0.2771"],
+  "density x2, x4, clustered skip4, skip x4, x8": "identical to fixed 0.3 (guard falls back)"},
+ "real_wp2_300_frames_smoothed_window21": {"fixed 0.3": {"tracks": 8858, "points": 282180, "median |dv|": 12.51, "p95 |dv|": 60.5}, "auto 8": {"tracks": 7531, "points": 291374, "median |dv|": 12.45, "p95 |dv|": 56.2}},
+ "real_lv_multi_20_frames_window9": {"fixed 0.3 wp5": {"points": 13703, "median |dv|": 24.6, "p95": 99.2}, "auto wp5": {"points": 14989, "median |dv|": 26.6, "p95": 118.1}, "note": "short sequences / window 9: slightly rougher, as the synthetic window-9 result"},
+ "real_wp2_variants_300_frames (tracks, mean_len, >=50, jump, jitter_z_p90, never4)": {
+  "quality off": [16375,19.48,1562,0.0146,0.0786,0.116], "default": [14674,20.74,1533,0.0144,0.0781,0.0957], "acc mode 0.15/6": [14345,20.68,1515,0.0137,0.0772,0.0889], "acc + blob_gate 0.5": [14335,20.58,1489,0.0134,0.0769,0.0875]},
+ "verdict": "KEEP guarded automatic tolerance as default (confirm_auto 8, guard: neighbours<=7 and kink/step>=0.5)."}

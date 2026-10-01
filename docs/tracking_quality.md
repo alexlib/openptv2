@@ -96,8 +96,14 @@ ghosts and lower the error, and also remove a few real points.
 | Poor or drifting calibration | rcm is large everywhere; the per-run scale compensates, but if the flagged share (section 5) is far above 20% the table is mismatched: raise `q_seed` or switch off. |
 | Very fast flow / large frame skip | No change needed: tested up to skip ×8 (error −0.008). |
 
-Always combine with `confirm_tol` (two-hop link confirmation; **on by default** for
-`v_max` ≤ 3 mm/frame, `0.3` with `confirm_ends`). On lv_multi wp5 the
+Always combine with the two-hop link confirmation (**on by default**). Its tolerance is
+set from the data when the data are sparse and noise-dominated (8 × the median kink,
+about 0.5–0.6 mm/frame at the real jitter level) and is the fixed 0.3 otherwise; see
+`docs/two-phase-tracking.md`. On the benchmark the confirmation has two parts: the
+dead-end rule (a track may not end by stepping onto a stranger) is worth 0.02–0.1 of
+velocity error everywhere, while the kink test must follow the noise: a fixed 0.3 cuts
+true links as soon as the jitter exceeds the real level (2× jitter: 0.3072 with 0.3,
+0.2372 with the automatic value). On lv_multi wp5 the
 jump steps (velocity change above 0.3 mm in depth) were 8.4% **without** it and 0.0%
 **with** `confirm_tol: 0.3`, `confirm_ends: true`; the quality marks add to that, they
 do not replace it.

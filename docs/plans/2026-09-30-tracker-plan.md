@@ -331,6 +331,45 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
   rules in the tracker are the right place; what remains broken is the price of removing
   ghosts.**
 
+- **Synthetic data with more jitter, and the confirmation tolerance** (`bench/step19_…`; cases
+  with persistent per-camera brightness at centroid noise 0.04 / 0.08 (real level) / 0.12 / 0.16 px).
+  - **All errors grow with jitter, the tracker's more than the perfect linker's:** with the old
+    default the gap to the perfect linker is 0.033 / 0.035 / 0.054 / 0.115 at best window.
+    The gains of the ghost rules shrink with jitter (default against quality off: −0.008,
+    −0.015, −0.012, −0.004).
+  - **The cause is the fixed confirmation tolerance 0.3.** Separating the two parts of the
+    confirmation: the **dead-end rule** is the useful part (it alone gives 0.1567 / 0.1694 /
+    0.1949 / 0.2372, against 0.1708 / 0.1862 / 0.2249 / 0.3072 for the old default); the kink
+    test at 0.3 cuts true links once the kink noise exceeds it, and no confirmation at all is
+    worse than dead-ends-only (0.1761 / 0.1973 / 0.2275 / 0.2495).
+  - **The median kink of the raw tracks measures the noise** (0.043 / 0.076 / 0.109 / 0.140 mm
+    for the four levels; real wp2 0.061, lv_multi 0.056–0.062), so a tolerance of 8 × median
+    kink follows the jitter. Unguarded it is **harmful** where the kink is not noise
+    (clustered skip 4: 0.1689 → 0.4293; density ×4: 0.4214 → 0.4846; skip ×4/×8 worse), so
+    it is guarded by two criteria that separate every benchmark case: at most 7 neighbours
+    within 5 mm (sparse; density ×2/×4 have 9–11) and median kink ≥ 0.5 × median step (noise
+    dominated; frame skipping gives 0.31–0.44). The real recordings pass (5–6 neighbours,
+    ratio 0.52–0.78).
+  - **Result of the guarded rule** (new default, `confirm_auto=8`; best window / production
+    window 21): sigma 0.04 unchanged; real level 0.1862 → 0.1683 / 0.2142 → 0.2053; 0.12
+    0.2249 → 0.1949 / 0.2515 → 0.2333; 0.16 0.3072 → 0.2372 / 0.3307 → 0.2771; density ×2/×4,
+    clustered, skip ×4/×8 identical (guard falls back). More true points are kept
+    (+0.004…+0.017). On a very short window (9 frames) the looser tolerance is slightly worse
+    (+0.008 at the real level), which is not a production setting at 5000 fps.
+  - **Real wp2** (300 frames, project yaml pins `confirm_tol: 0.3`, so use `confirm_auto: 8`
+    to enable it): at window 21, 3.3% more points in longer tracks (7531 against 8858 tracks),
+    median roughness unchanged, p95 −7%. **The raw "jump share" of the tracks is not a quality
+    measure:** it reproduces on the synthetic data (1.4% with 0.3; 4.8% dead-ends-only; 5.2%
+    none; real 1.4% / 5.3% / 5.8%) and counts depth-noise outliers that looser tracks keep.
+    I had used it as an accuracy proxy earlier (e.g. lv_multi 8.4% → 0%); the truth-based
+    evidence above is the better guide.
+  - **Real wp2 across the ghost-rule variants** (300 frames; tracks, mean length, ≥50 frames,
+    suspect-trajectory share): quality off 16375 / 19.5 / 1562 / 11.6%; default 14674 / 20.7 /
+    1533 / 9.6%; accuracy mode (0.15/6) 14345 / 20.7 / 1515 / 8.9%; with `blob_gate` 0.5 14335 /
+    20.6 / 1489 / 8.8%: monotone, with ≤3% fewer long tracks.
+  - **Needs a release (0.5.14) and a cloud e2e reference update** (lv_multi has no explicit
+    `confirm_tol`, so the automatic tolerance becomes active there).
+
 ## What can be next (ranked by expected gain)
 The remaining error on the real-jitter case, step by step (velocity error; perfect linker
 0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →

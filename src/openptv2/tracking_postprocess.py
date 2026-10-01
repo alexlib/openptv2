@@ -225,6 +225,66 @@ def enforce_reciprocity(
     return {"severed_next": severed_next, "severed_prev": severed_prev}
 
 
+def median_kink(
+    links: list[tuple[int, int, int, int]], frame_particles: list[np.ndarray]
+) -> float:
+    """Median velocity kink |x2 - 2 x1 + x0| over all pairs of consecutive links.
+
+    On tracks the kink is dominated by position noise (real accelerations are tiny at
+    high frame rates), so it measures the noise level of the data itself; it scaled
+    linearly with the position jitter on the benchmark (median 0.043 / 0.076 / 0.109 /
+    0.140 mm for centroid noise 0.04 / 0.08 / 0.12 / 0.16 px) and was 0.06 on real
+    CompleteTest data."""
+    nxt: dict[tuple[int, int], tuple[int, int]] = {}
+    for t0, r0, t1, r1 in links:
+        if t1 - t0 == 1:
+            nxt[(t0, r0)] = (t1, r1)
+    P = [np.asarray(p, dtype=np.float64) for p in frame_particles]
+    kinks = []
+    for (t0, r0), (t1, r1) in nxt.items():
+        n2 = nxt.get((t1, r1))
+        if n2 is None or r0 >= len(P[t0]) or r1 >= len(P[t1]) or n2[1] >= len(P[n2[0]]):
+            continue
+        kinks.append(np.linalg.norm(P[n2[0]][n2[1]] - 2.0 * P[t1][r1] + P[t0][r0]))
+    return float(np.median(kinks)) if kinks else float("nan")
+
+
+def kink_statistics(
+    links: list[tuple[int, int, int, int]],
+    frame_particles: list[np.ndarray],
+    radius: float = 5.0,
+    n_frames: int = 5,
+) -> dict[str, float]:
+    """Data statistics that decide whether the noise-scaled confirmation tolerance is
+    safe: ``median_kink``, ``median_step`` (both mm/frame), their ratio, and
+    ``neighbours``: the median number of other 3D points within ``radius`` mm of a point
+    (density), averaged over ``n_frames`` frames spread over the sequence."""
+    from scipy.spatial import cKDTree
+
+    mk = median_kink(links, frame_particles)
+    nxt = {(t0, r0): (t1, r1) for t0, r0, t1, r1 in links if t1 - t0 == 1}
+    P = [np.asarray(p, dtype=np.float64) for p in frame_particles]
+    steps = [
+        np.linalg.norm(P[t1][r1] - P[t0][r0])
+        for (t0, r0), (t1, r1) in nxt.items()
+        if r0 < len(P[t0]) and r1 < len(P[t1])
+    ]
+    ms = float(np.median(steps)) if steps else float("nan")
+    idx = np.unique(np.linspace(0, len(P) - 1, min(n_frames, len(P))).astype(int))
+    nb = []
+    for i in idx:
+        if len(P[i]) > 10:
+            tree = cKDTree(P[i])
+            counts = [len(x) - 1 for x in tree.query_ball_point(P[i][::6], radius)]
+            nb.append(np.median(counts))
+    return {
+        "median_kink": mk,
+        "median_step": ms,
+        "ratio": mk / ms if ms and np.isfinite(ms) else float("nan"),
+        "neighbours": float(np.mean(nb)) if nb else float("nan"),
+    }
+
+
 def confirm_link_tuples(
     links: list[tuple[int, int, int, int]],
     frame_particles: list[np.ndarray],
@@ -278,6 +338,7 @@ def confirm_link_tuples(
         if not (L[2] - L[0] == 1 and ((L[0], L[1]), (L[2], L[3])) in severed)
     ]
     return kept, severed
+
 
 def confirm_links(
     linkage_base: str,

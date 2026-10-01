@@ -373,3 +373,74 @@ def test_blob_gate_removes_candidates_whose_brightness_changed():
         *args, cost_mode="3d", logb0=logb0, logb1=nan1, blob_gate=0.5
     )
     assert kept == {(0, 0)}
+
+
+def test_resolve_confirm_auto_defaults_and_overrides():
+    from openptv2.plugins.two_phase_tracking import (
+        DEFAULT_CONFIRM_AUTO,
+        resolve_confirm_auto,
+    )
+
+    assert resolve_confirm_auto({}) == DEFAULT_CONFIRM_AUTO
+    assert resolve_confirm_auto({"confirm_tol": 0.5}) is None  # explicit wins
+    assert resolve_confirm_auto({"confirm_tol": None}) is None
+    assert resolve_confirm_auto({"confirm_auto": 5}) == 5.0
+    assert resolve_confirm_auto({"confirm_auto": None}) is None
+    assert resolve_confirm_auto({"confirm_tol": 0.5, "confirm_auto": 4}) == 4.0
+
+
+def test_confirm_auto_sets_tolerance_from_the_noise_level():
+    """Two tracks with the same shape but 10x the noise: a fixed tolerance would treat
+    them differently, the automatic one follows the median kink."""
+    from openptv2.tracking_postprocess import median_kink
+
+    rng = np.random.default_rng(0)
+    t = np.arange(40)[:, None]
+    base = np.hstack([0.05 * t, 0 * t, 0 * t]).astype(float)
+    frames_lo = [base[i : i + 1] + rng.normal(0, 0.01, (1, 3)) for i in range(40)]
+    frames_hi = [base[i : i + 1] + rng.normal(0, 0.10, (1, 3)) for i in range(40)]
+    links = [(i, 0, i + 1, 0) for i in range(39)]
+    lo, hi = median_kink(links, frames_lo), median_kink(links, frames_hi)
+    assert 7 < hi / lo < 14
+    assert np.isnan(median_kink([], frames_lo))
+
+
+def _noisy_tracks(n_tracks, n_frames, sigma, spacing, seed=0):
+    """Straight slow tracks with position noise, on a grid with the given spacing."""
+    rng = np.random.default_rng(seed)
+    g = int(np.ceil(n_tracks ** (1 / 3)))
+    base = (
+        np.array(np.meshgrid(*[np.arange(g)] * 3)).reshape(3, -1).T[:n_tracks] * spacing
+    ).astype(float)
+    v = np.array([0.08, 0.0, 0.0])
+    return [base + v * t + rng.normal(0, sigma, base.shape) for t in range(n_frames)]
+
+
+def test_kink_statistics_measure_noise_density_and_ratio():
+    from openptv2.tracking_postprocess import kink_statistics
+
+    frames = _noisy_tracks(200, 12, 0.03, spacing=4.5)
+    links = [(t, i, t + 1, i) for t in range(11) for i in range(200)]
+    st = kink_statistics(links, frames)
+    assert 0.05 < st["median_kink"] < 0.25 and st["median_step"] > 0.05
+    assert st["ratio"] == st["median_kink"] / st["median_step"]
+    assert st["neighbours"] <= 7  # 4.5 mm grid: few neighbours within 5 mm
+    dense = kink_statistics(links, _noisy_tracks(200, 12, 0.03, spacing=1.5))
+    assert dense["neighbours"] > st["neighbours"] * 3
+
+
+def test_confirm_auto_is_guarded_by_density_and_noise_dominated_kink():
+    cfg = TwoPhaseTrackerConfig(
+        v_max=1.0, cost_mode="3d", max_gap=1, confirm_tol=0.3, confirm_auto=8.0
+    )
+    # sparse + noisy: the automatic tolerance is used and follows the noise
+    sparse = _noisy_tracks(200, 14, 0.04, spacing=4.5)
+    tr = TwoPhaseTracker(cfg)
+    tr.track_frames(sparse, None)
+    assert tr.last_confirm_info["auto"] is True
+    assert tr.last_confirm_tol == tr.last_confirm_info["median_kink"] * 8.0
+    # dense: the guard falls back to the fixed tolerance
+    dense = _noisy_tracks(200, 14, 0.04, spacing=1.2)
+    tr2 = TwoPhaseTracker(cfg)
+    tr2.track_frames(dense, None)
+    assert tr2.last_confirm_info["auto"] is False and tr2.last_confirm_tol == 0.3

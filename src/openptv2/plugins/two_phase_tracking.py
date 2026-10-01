@@ -22,6 +22,7 @@ from scipy.sparse.csgraph import connected_components
 from scipy.spatial import cKDTree
 
 from openptv2.tracking_postprocess import confirm_link_tuples as _confirm_links
+from openptv2.tracking_postprocess import kink_statistics as _kink_statistics
 
 #: A10 defaults of the two_phase plugin (tuned over five synthetic cases, checked on
 #: four real recordings; see docs/tracking_quality.md and the tracker plan).
@@ -39,6 +40,30 @@ DEFAULT_Q_MODEL = "rcm_blob"
 #: explicit confirm_tol. An explicit ``confirm_tol: null`` switches it off.
 DEFAULT_CONFIRM_TOL = 0.3
 DEFAULT_CONFIRM_MAX_VMAX = 3.0
+#: Data-driven tolerance: confirm_tol = DEFAULT_CONFIRM_AUTO * median kink of the
+#: unconfirmed links (the kink measures the position noise, so the tolerance follows the
+#: jitter). 8 beat the fixed 0.3 at every jitter level on the benchmark (real level:
+#: -0.009 at a 21-frame window, 2x jitter: -0.054). The fixed value is only the fallback.
+DEFAULT_CONFIRM_AUTO = 8.0
+#: ... but ONLY in the regime where it was validated (sparse data with a noise-dominated
+#: kink); everywhere else the fixed tolerance stays. On the benchmark the automatic value
+#: helped at 6 neighbours within 5 mm and kink/step >= 0.68 and hurt badly at density x2/x4
+#: (9-11 neighbours) and with frame skipping (kink/step 0.31-0.44).
+AUTO_MAX_NEIGHBOURS = 7.0
+AUTO_MIN_KINK_RATIO = 0.5
+
+
+def resolve_confirm_auto(track_cfg: dict) -> float | None:
+    """Multiplier of the median kink for the confirmation tolerance, or None.
+
+    An explicit ``confirm_tol`` (number or null) switches the automatic tolerance off
+    unless ``confirm_auto`` is given too; with neither, DEFAULT_CONFIRM_AUTO is used."""
+    if "confirm_auto" in track_cfg:
+        raw = track_cfg["confirm_auto"]
+        return None if raw is None else float(raw)
+    if "confirm_tol" in track_cfg:
+        return None
+    return DEFAULT_CONFIRM_AUTO
 
 
 def resolve_confirm(track_cfg: dict, v_max: float) -> tuple[float | None, bool, str]:
@@ -118,6 +143,10 @@ class TwoPhaseTrackerConfig:
         Also sever consecutive links into dead ends (no onward link, not
         the last frame): dying tracks grabbing strangers. Only meaningful
         with confirm_tol set. Default False.
+    confirm_auto : float | None
+        Set the confirmation tolerance from the data: ``confirm_tol = confirm_auto *
+        median kink`` of the unconfirmed links (the kink is noise dominated, so this
+        follows the position jitter). Overrides ``confirm_tol``. None = off.
     bidirectional : bool
         Run forward tracking, backward tracking on reversed frames, and
         merge the two sets (reciprocal-first core, non-conflicting links
@@ -164,6 +193,7 @@ class TwoPhaseTrackerConfig:
     max_group_size: int = 128
     confirm_tol: float | None = None
     confirm_ends: bool = False
+    confirm_auto: float | None = None
     bidirectional: bool = False
     bwd_v_max: float | None = None
 
@@ -832,18 +862,30 @@ class TwoPhaseTracker:
                     hist[next_tid] = [(t + 1, det, False)]
                     next_tid += 1
 
+        confirm_tol = self.cfg.confirm_tol
+        if self.cfg.confirm_auto:
+            st = _kink_statistics(all_links, frame_particles)
+            ok = (
+                np.isfinite(st["median_kink"])
+                and st["neighbours"] <= AUTO_MAX_NEIGHBOURS
+                and st["ratio"] >= AUTO_MIN_KINK_RATIO
+            )
+            self.last_confirm_info = {**st, "auto": bool(ok)}
+            if ok:
+                confirm_tol = self.cfg.confirm_auto * st["median_kink"]
+        self.last_confirm_tol = confirm_tol
         if not return_chains:
-            if self.cfg.confirm_tol is not None:
+            if confirm_tol is not None:
                 all_links, _ = _confirm_links(
                     all_links,
                     frame_particles,
-                    self.cfg.confirm_tol,
+                    confirm_tol,
                     self.cfg.confirm_ends,
                 )
             return all_links
-        if self.cfg.confirm_tol is not None:
+        if confirm_tol is not None:
             all_links, _sev = _confirm_links(
-                all_links, frame_particles, self.cfg.confirm_tol, self.cfg.confirm_ends
+                all_links, frame_particles, confirm_tol, self.cfg.confirm_ends
             )
             hist = _split_hist(hist, _sev)
         chains = []
@@ -966,6 +1008,7 @@ class Tracking:
         share_tol = None if share_tol_raw is None else float(share_tol_raw)
         max_group_size = int(track_cfg.get("max_group_size", 128))
         confirm_tol, confirm_ends, confirm_note = resolve_confirm(track_cfg, v_max)
+        confirm_auto = resolve_confirm_auto(track_cfg)
         if confirm_note:
             print(f"TwoPhaseTracker: {confirm_note}")
         bidirectional = bool(track_cfg.get("bidirectional", False))
@@ -1111,6 +1154,7 @@ class Tracking:
             max_group_size=max_group_size,
             confirm_tol=confirm_tol,
             confirm_ends=confirm_ends,
+            confirm_auto=confirm_auto,
             bidirectional=bidirectional,
             bwd_v_max=bwd_v_max,
         )
