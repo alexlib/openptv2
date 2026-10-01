@@ -2781,6 +2781,7 @@ behaviour is <code>two_phase+q_seed=null+q_young=0</code>. Old <code>eval.json</
   0.004 clustered and 0.007 at skip ×8 (3% fewer points), and 40% faster. The plan's old rule
   ("delete if it gains less than 0.02") predates the post steps; it stays an option, forward-only
   for dense data when speed matters.
+- <strong>Reconnect vectorised</strong> (batched line fits, array candidate pairs): identical groupings, 3.4 s -&gt; 0.09 s on the realistic case (228k points), 33 s -&gt; 0.65 s at 4x density. The post steps now cost 0.25 s per 200 frames, so the total time of <code>main</code> is 8.9 s + 0.25 s against 8.0 s for 0.5.13.
 - <strong>Not wired into the cloud pipeline yet</strong> (needs the release): <code>trajectories.reconnect_gap</code>,
   <code>reconnect_tol</code>, <code>smooth_filter_k</code> in openptv-cloud <code>post.py</code>.</p>
 <h2 id="what-can-be-next-ranked-by-expected-gain">What can be next (ranked by expected gain)<a class="headerlink" href="#what-can-be-next-ranked-by-expected-gain" title="Permanent link">&para;</a></h2>
