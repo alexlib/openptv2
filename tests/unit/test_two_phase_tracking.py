@@ -10,6 +10,7 @@ from openptv2.plugins.two_phase_tracking import (
     TwoPhaseTracker,
     TwoPhaseTrackerConfig,
     _links_to_linkage,
+    _match_two_phase_frame,
 )
 
 
@@ -199,3 +200,26 @@ def test_project_fn_batched_matches_pointwise():
             want[i, 2 * ci + 1] = 512.0 - m[1] / 0.012
     np.testing.assert_allclose(got, np.nan_to_num(want), rtol=1e-12, atol=1e-12)
     assert fn(np.zeros((0, 3))).shape == (0, 4)
+
+
+def test_missing_camera_not_penalized():
+    """Bug 2 (plan step 3): a 3-of-4 candidate must not pay for the 4th cam.
+
+    Candidate row 0 is the true partner, 1 px away in 3 shared cameras,
+    missing in cam 4 (stored as pixel 0,0 after nan_to_num). Candidate row 1
+    is a 4-camera stranger 5 px away everywhere. The stranger must not win.
+    """
+    C = 4
+    pts0 = np.array([[0.0, 0, 0]])
+    pts1 = np.array([[0.5, 0, 0], [0.6, 0, 0]])
+    pred_xy = np.tile(np.array([100.0, 100.0]), C).reshape(1, -1)
+    row_true = np.array([[101.0, 100.0]] * 3 + [[0.0, 0.0]])
+    row_stranger = np.full((C, 2), [105.0, 100.0])
+    xy1 = np.vstack([row_true, row_stranger]).reshape(2, -1)
+    seen0 = np.ones((1, C), dtype=bool)
+    seen1 = np.array([[True, True, True, False], [True] * C])
+    got, _ = _match_two_phase_frame(
+        pts0, pts1, pred_xy, xy1,
+        np.array([0], dtype=np.int32), np.array([0, 1], dtype=np.int32),
+        5.0, 1.0, cost_mode="projected", seen0=seen0, seen1=seen1)
+    assert got == {(0, 0)}

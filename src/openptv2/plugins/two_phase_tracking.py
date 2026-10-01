@@ -236,6 +236,8 @@ def _match_two_phase_frame(
     allow_shared: bool = False,
     share_tol: float | None = None,
     max_group_size: int = 128,
+    seen0: np.ndarray | None = None,
+    seen1: np.ndarray | None = None,
 ) -> tuple[set[tuple[int, int]], set[tuple[int, int]]]:
     """Two-phase frame-to-frame matching: 3D search + 2D ranking.
 
@@ -257,6 +259,10 @@ def _match_two_phase_frame(
         instead of going unmatched.
     share_tol : float | None — maximum edge cost for a shared claim
         (mutual-good-prediction gate). None disables the gate.
+    seen0, seen1 : (N, C) and (M, C) bool arrays — per-camera "really seen".
+        Missing cameras must be marked here, NOT as NaN inside xy0/xy1 (any
+        later nan_to_num would silently un-mark them, which is bug 2). None
+        falls back to the legacy NaN check.
 
     Returns
     -------
@@ -278,18 +284,24 @@ def _match_two_phase_frame(
     cols: list[int] = []
     costs: list[float] = []
     use_leaves = cost_mode == "projected" and leaf_weight > 0 and xy0.shape[1] > 0
+    C = xy0.shape[1] // 2 if use_leaves else 0
+    def _legacy_seen(xy, n):
+        return ~np.isnan(xy.reshape(n, -1, 2)[:, :, 0]) if C else np.zeros((n, 0), dtype=bool)
+    if seen0 is None or np.shape(seen0) != (n_pred, C):
+        seen0 = _legacy_seen(xy0, n_pred)
+    if seen1 is None or np.shape(seen1) != (n_cand, C):
+        seen1 = _legacy_seen(xy1, n_cand)
     for pi in range(n_pred):
         cands = neighbours[pi]
         if len(cands) == 0:
             continue
         if use_leaves:
             # 2D cost: mean Euclidean distance per camera, weighted by overlap count
-            C = xy0.shape[1] // 2
             xy0_cam = xy0[pi].reshape(C, 2)
             d2d = np.zeros(len(cands))
             for ci_idx, ci in enumerate(cands):
                 xy1_cam = xy1[ci].reshape(C, 2)
-                valid = ~np.isnan(xy0_cam[:, 0]) & ~np.isnan(xy1_cam[:, 0])
+                valid = np.asarray(seen0[pi]) & np.asarray(seen1[ci])
                 n_valid = valid.sum()
                 if n_valid > 0:
                     cam_dists = np.linalg.norm(xy0_cam[valid] - xy1_cam[valid], axis=1)
@@ -433,6 +445,7 @@ class TwoPhaseTracker:
         frame_leaves: list[np.ndarray] | None = None,
         project_fn: Any = None,
         return_chains: bool = False,
+        frame_seen: list[np.ndarray] | None = None,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
@@ -458,6 +471,10 @@ class TwoPhaseTracker:
             features (re-projection through the camera models). Required
             for ``cost_mode="projected"``; without it costs fall back to
             3D distance (see ``cost_mode``).
+        frame_seen : list of (N_i, C) bool arrays, optional
+            Per-camera "really seen" masks matching frame_leaves. Predictions
+            are always fully seen (projection is defined everywhere); only
+            the detection side uses these. None = legacy NaN check.
 
         Returns
         -------
@@ -476,19 +493,22 @@ class TwoPhaseTracker:
 
         if not self.cfg.bidirectional:
             return self._track_unidirectional(
-                frame_particles, frame_leaves, project_fn, return_chains
+                frame_particles, frame_leaves, project_fn, return_chains,
+                frame_seen=frame_seen,
             )
 
         # Bidirectional tracking: forward + backward on reversed frames
         fwd_links = cast(
             list[tuple[int, int, int, int]],
             self._track_unidirectional(
-                frame_particles, frame_leaves, project_fn, return_chains=False
+                frame_particles, frame_leaves, project_fn, return_chains=False,
+                frame_seen=frame_seen,
             ),
         )
 
         rev_particles = frame_particles[::-1]
         rev_leaves = frame_leaves[::-1] if frame_leaves is not None else None
+        rev_seen = frame_seen[::-1] if frame_seen is not None else None
         bwd_vmax = (
             self.cfg.bwd_v_max if self.cfg.bwd_v_max is not None else self.cfg.v_max
         )
@@ -500,6 +520,7 @@ class TwoPhaseTracker:
                 project_fn,
                 return_chains=False,
                 v_max_override=bwd_vmax,
+                frame_seen=rev_seen,
             ),
         )
         bwd_links = [
@@ -521,6 +542,7 @@ class TwoPhaseTracker:
         project_fn: Any = None,
         return_chains: bool = False,
         v_max_override: float | None = None,
+        frame_seen: list[np.ndarray] | None = None,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
@@ -598,6 +620,16 @@ class TwoPhaseTracker:
                     pred_xy = np.zeros((len(active), 0))
                 tids = active
 
+            # Predictions are re-projected everywhere: fully "seen". Only the
+            # detection side needs a real mask (bug 2: NaN no longer marks it).
+            n_leaf_cams = np.asarray(lf1).shape[1] // 2 if n1 else 0
+            pred_seen = np.ones((len(tids), n_leaf_cams), dtype=bool)
+            det_seen = None
+            if frame_seen is not None and frame_seen[t + 1] is not None:
+                _ds = np.asarray(frame_seen[t + 1], dtype=bool)
+                if _ds.shape == (n1, n_leaf_cams):
+                    det_seen = _ds
+                # else: misaligned mask — fall back to legacy NaN check
             got, got_shared = _match_two_phase_frame(
                 np.asarray(pred_pts, dtype=np.float64),
                 np.asarray(pts1, dtype=np.float64),
@@ -610,6 +642,8 @@ class TwoPhaseTracker:
                 cost_mode=cost_mode,
                 allow_shared=self.cfg.allow_shared,
                 share_tol=self.cfg.share_tol,
+                seen0=pred_seen,
+                seen1=det_seen,
             )
             matched_det = set()
             for ai, det in got:
@@ -833,6 +867,7 @@ class Tracking:
 
         frame_particles = []
         frame_leaves = []
+        frame_seen = []
         for f in frames:
             pos_3d, _ = store.read_correspondences(f)
             pos_3d = np.asarray(pos_3d)
@@ -850,6 +885,9 @@ class Tracking:
                     valid = cam_ids[:, c] >= 0
                     xy[valid, c] = t[cam_ids[valid, c], 1:3]
             frame_leaves.append(np.nan_to_num(xy.reshape(n, -1)))
+            # Bug 2 fix: the seen-mask is authoritative; NaN no longer marks
+            # "missing" (any nan_to_num would silently un-mark it).
+            frame_seen.append((cam_ids[:, :num_cams] >= 0))
 
         cfg = TwoPhaseTrackerConfig(
             v_max=v_max,
@@ -870,7 +908,8 @@ class Tracking:
         project_fn = self._build_project_fn()
         links = cast(
             list[tuple[int, int, int, int]],
-            tracker.track_frames(frame_particles, frame_leaves, project_fn=project_fn),
+            tracker.track_frames(frame_particles, frame_leaves,
+                                 project_fn=project_fn, frame_seen=frame_seen),
         )
 
         # Per-step progress like trackcorr (track3d step: curr/next/links)
