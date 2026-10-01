@@ -370,6 +370,17 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
   - **Needs a release (0.5.14) and a cloud e2e reference update** (lv_multi has no explicit
     `confirm_tol`, so the automatic tolerance becomes active there).
 
+- **No hard-coded values, and a user guide (2026-10-02).** The guard of the automatic
+  confirmation tolerance is now YAML (`confirm_auto_max_neighbours` 7, `confirm_auto_min_ratio`
+  0.5, `confirm_auto_radius` 5 mm), as are the other data-dependent values (`q_seed`, `q_young`,
+  `q_model`, `blob_gate`, `confirm_tol`, `confirm_auto`). New: `openptv2/tracking_advice.py`
+  and `scripts/tracking_advice.py RUN_DIR`: measures density, step, kink, 3-camera and flagged
+  shares from the user's data (about 100 frames) and prints each recommended value with the
+  measurement behind it (checked on real wp2 and lv_multi wp5 and on five synthetic cases);
+  `docs/tracking_parameters_guide.md` explains what to measure, what depends on what and what
+  each parameter changes. A change of a yaml value never needs a release; only new options do
+  (the options above are in code that is not yet released, 0.5.14).
+
 ## What can be next (ranked by expected gain)
 The remaining error on the real-jitter case, step by step (velocity error; perfect linker
 0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →

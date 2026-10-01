@@ -147,6 +147,13 @@ class TwoPhaseTrackerConfig:
         Set the confirmation tolerance from the data: ``confirm_tol = confirm_auto *
         median kink`` of the unconfirmed links (the kink is noise dominated, so this
         follows the position jitter). Overrides ``confirm_tol``. None = off.
+    confirm_auto_max_neighbours, confirm_auto_min_ratio, confirm_auto_radius : float
+        The guard of ``confirm_auto`` (all measured on the data, see
+        ``docs/tracking_parameters_guide.md`` and ``scripts/tracking_advice.py``): the
+        automatic tolerance is used only if the median number of other points within
+        ``confirm_auto_radius`` mm of a point is at most ``confirm_auto_max_neighbours``
+        (sparse data) and the median kink is at least ``confirm_auto_min_ratio`` times the
+        median step (noise dominated). Otherwise the fixed ``confirm_tol`` is used.
     bidirectional : bool
         Run forward tracking, backward tracking on reversed frames, and
         merge the two sets (reciprocal-first core, non-conflicting links
@@ -194,6 +201,9 @@ class TwoPhaseTrackerConfig:
     confirm_tol: float | None = None
     confirm_ends: bool = False
     confirm_auto: float | None = None
+    confirm_auto_max_neighbours: float = 7.0
+    confirm_auto_min_ratio: float = 0.5
+    confirm_auto_radius: float = 5.0
     bidirectional: bool = False
     bwd_v_max: float | None = None
 
@@ -864,11 +874,13 @@ class TwoPhaseTracker:
 
         confirm_tol = self.cfg.confirm_tol
         if self.cfg.confirm_auto:
-            st = _kink_statistics(all_links, frame_particles)
+            st = _kink_statistics(
+                all_links, frame_particles, radius=self.cfg.confirm_auto_radius
+            )
             ok = (
                 np.isfinite(st["median_kink"])
-                and st["neighbours"] <= AUTO_MAX_NEIGHBOURS
-                and st["ratio"] >= AUTO_MIN_KINK_RATIO
+                and st["neighbours"] <= self.cfg.confirm_auto_max_neighbours
+                and st["ratio"] >= self.cfg.confirm_auto_min_ratio
             )
             self.last_confirm_info = {**st, "auto": bool(ok)}
             if ok:
@@ -1009,6 +1021,15 @@ class Tracking:
         max_group_size = int(track_cfg.get("max_group_size", 128))
         confirm_tol, confirm_ends, confirm_note = resolve_confirm(track_cfg, v_max)
         confirm_auto = resolve_confirm_auto(track_cfg)
+        confirm_guard = {
+            "confirm_auto_max_neighbours": float(
+                track_cfg.get("confirm_auto_max_neighbours", AUTO_MAX_NEIGHBOURS)
+            ),
+            "confirm_auto_min_ratio": float(
+                track_cfg.get("confirm_auto_min_ratio", AUTO_MIN_KINK_RATIO)
+            ),
+            "confirm_auto_radius": float(track_cfg.get("confirm_auto_radius", 5.0)),
+        }
         if confirm_note:
             print(f"TwoPhaseTracker: {confirm_note}")
         bidirectional = bool(track_cfg.get("bidirectional", False))
@@ -1155,6 +1176,7 @@ class Tracking:
             confirm_tol=confirm_tol,
             confirm_ends=confirm_ends,
             confirm_auto=confirm_auto,
+            **confirm_guard,
             bidirectional=bidirectional,
             bwd_v_max=bwd_v_max,
         )

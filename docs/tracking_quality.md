@@ -1,5 +1,9 @@
 # Point quality in tracking: ghost marks, thresholds, trimming, smoothing
 
+> For a short, plain explanation of **all** the tracking parameters (what to measure, how to
+> set them, what changes) see [Tracking parameters](tracking_parameters_guide.md); this page
+> goes deeper on the ghost marks.
+
 This page explains the quality marks the `two_phase` tracker uses by default, how to
 change the two thresholds, **when** to change them, and **how to test** a choice on
 your own data. Evidence and measurements are in
