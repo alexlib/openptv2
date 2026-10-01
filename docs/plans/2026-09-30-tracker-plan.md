@@ -413,6 +413,18 @@ Base: two_phase with the guarded `confirm_auto`. Velocity error at the best smoo
 - **Not wired into the cloud pipeline yet** (needs the release): `trajectories.reconnect_gap`,
   `reconnect_tol`, `smooth_filter_k` in openptv-cloud `post.py`.
 
+### Nondeterministic trackcorr add-particle (found 2026-10-02 via the cloud e2e flake, `bench/step22_…`)
+The openptv-cloud e2e test failed intermittently (about half of the runs with all cores busy). Cause: **out-of-bounds
+reads and writes in the compiled trackcorr kernel** (`track_kernels_corr.py`). `assess_new_position_fast_nogil`
+marks a camera without a candidate with −1, the consumers tested `!= PT_UNUSED` (−999), so `targ_tnr[ci, -1]` was read
+and written (camera 0: the memory before the array), and the candidate search also returned the temporary claim marker
+−100 as a particle index. Whether a particle was added then depended on heap contents. Found by bisecting the pipeline
+(inputs identical, kernel output different), `MallocScribble`, then `libgmalloc` + `lldb`. Fixed: indexes are tested
+with `>= 0`, an added particle needs a free blob in every camera (what the old code effectively did; the literal
+reading, 2–3 camera adds, is much worse: trackcorr vErr 0.3047 → 0.5105), and the search requires `tnr >= 0`.
+Trackcorr accuracy is unchanged and now deterministic (25/25 identical runs under full load, cloud e2e 10/10).
+**two_phase is not affected** (it does not use this kernel). Needs a release (0.5.15) for the cloud pipeline.
+
 ## What can be next (ranked by expected gain)
 The remaining error on the real-jitter case, step by step (velocity error; perfect linker
 0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →
