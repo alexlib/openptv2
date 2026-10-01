@@ -7,7 +7,7 @@ This file replaces all earlier tracking plans, including `new_tracking_plan.md` 
 
 ---
 
-# STATUS AND HANDOFF (updated 2026-10-02 early, read this first)
+# STATUS AND HANDOFF (updated 2026-10-02, read this first)
 
 ## Where we are
 Branch `feat/tracker-improvements`. Goal unchanged: correct Lagrangian trajectories,
@@ -203,6 +203,40 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
   once the run median is removed (true for the two real sets); constant brightness falls
   back to `rcm`; the weights come from synthetic data, so real-data checks stay mandatory.
 
+### Session of 2026-10-02: A4, max_gap, post steps, brightness continuity
+- **A4 velocity filter: reverted** (`bench/step11_…`): an α–β filter (vel_beta 0.25–0.6) is
+  worse by +0.001…+0.004 and gains 0.001 completeness. The velocity guess does not limit
+  the tracker. **`max_gap` 3, 4, 6: no gain either** (+0.003…+0.008).
+- **Ghosts are still two thirds of the gap.** With ghosts removed, the default tracker reaches
+  0.1551 on the realistic case (perfect linker 0.1375, with ghosts 0.1934, quality off 0.2136).
+  The marks have captured about 38% of the ghost cost.
+- **A bug in my own smoother, found by re-measuring:** making a short track's window odd (drop
+  one point) cost +0.008 velocity error (unit-weight smoother 0.1790 → 0.1869, worse than
+  flowtracks' 0.1845). **The released 0.5.12 contains it**, so openptv-cloud's new
+  `gap_aware` default is slightly worse than flowtracks on short-track-heavy output until
+  0.5.13. Fixed on `main` (`5b27bd0c`, with the sdist fix). **Needs: tag `v0.5.13`
+  (the user has to push the tag), then raise the cloud pin to `>=0.5.13`.** With the fix, on
+  the four realistic cases: weighted smoother −0.004…−0.009 against flowtracks, trimming ends
+  at 0.3 a further −0.004…−0.007 (−0.003…−0.008 points kept); dropping whole doubtful
+  trajectories adds only ~0.001 (removed); weights and spike removal nothing.
+- **Brightness continuity** (`bench/step13_…`). On real wp2 a linked pair changes its blob
+  brightness per camera by a median of only 0.058 (random neighbour 0.33, AUC 0.84), so the
+  cross-camera brightness differences are *persistent per particle* (my first generator
+  redrew them every frame; fixed: `--amp-jitter 0.18 --amp-flicker 0.05`, cases `…_f0.05`).
+  As a link-cost term it has **no effect** (costs rarely decide; removed). As a candidate gate
+  (`blob_gate`) it gives −0.007 at frame skip ×4 and ×8 and −0.015 on the clustered skip ×4
+  case for gate 0.5, at most 0.005 fewer points, neutral on real data (cuts 0.3% of real
+  links on wp2): **kept as a documented opt-in, default off.**
+
+- **Re-check of the quality rules on the persistent-brightness cases** (velocity error /
+  points kept / ghost fraction; off → `rcm` → `rcm_blob` default): sparse 0.2008/0.687/7.2% →
+  0.1915/0.682/4.8% → **0.1862/0.680/3.8%**; ×2 0.3622/0.517/7.3% → 0.3369/0.509/5.4% →
+  **0.3208/0.503/4.4%**; ×4 0.5110/0.239/12.5% → 0.4741/0.233/9.9% → **0.4214/0.225/7.2%**;
+  clustered skip ×4 0.1694/0.380/6.8% → **0.1638**/0.375/5.7% → 0.1689/0.375/5.4%. The
+  conclusions hold, with one exception: on the clustered frame-skip case `rcm_blob` is 0.005
+  *worse* than `rcm` (brightness may change more over skipped frames; `q_model: rcm` is the
+  setting for such data).
+
 ## What can be next (ranked by expected gain)
 The remaining error on the real-jitter case, step by step (velocity error; perfect linker
 0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →
@@ -225,6 +259,7 @@ Recommended next: **A7b** (largest measured, concrete), then **the better mark**
 test offline with the saved features and the ghost cheats), then A4/A5 together.
 
 ## Next steps, in this order
+0. **Cut `v0.5.13` now** (the user pushes the tag; `main` has the smoother fix `5b27bd0c` and the sdist fix), then raise the openptv-cloud pin to `>=0.5.13` and fix its docstrings that still say "largest odd window" (`experiment.py`, `post.py`, `review.py`).
 1. ~~Finish the release chain~~ **Done** (wheels on PyPI, cloud merged). Open: put the
    sdist fix (`f262aaf7`) onto `main` and cut `v0.5.13` when there is something to release;
    consider a cloud release tag (0.9.18) for the changed defaults.
