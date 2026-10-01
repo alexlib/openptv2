@@ -2505,8 +2505,14 @@ ghosts and lower the error, and also remove a few real points.</p>
 </tr>
 </tbody>
 </table>
-<p>Always combine with <code>confirm_tol</code> (two-hop link confirmation; <strong>on by default</strong> for
-<code>v_max</code> ≤ 3 mm/frame, <code>0.3</code> with <code>confirm_ends</code>). On lv_multi wp5 the
+<p>Always combine with the two-hop link confirmation (<strong>on by default</strong>). Its tolerance is
+set from the data when the data are sparse and noise-dominated (8 × the median kink,
+about 0.5–0.6 mm/frame at the real jitter level) and is the fixed 0.3 otherwise; see
+<code>docs/two-phase-tracking.md</code>. On the benchmark the confirmation has two parts: the
+dead-end rule (a track may not end by stepping onto a stranger) is worth 0.02–0.1 of
+velocity error everywhere, while the kink test must follow the noise: a fixed 0.3 cuts
+true links as soon as the jitter exceeds the real level (2× jitter: 0.3072 with 0.3,
+0.2372 with the automatic value). On lv_multi wp5 the
 jump steps (velocity change above 0.3 mm in depth) were 8.4% <strong>without</strong> it and 0.0%
 <strong>with</strong> <code>confirm_tol: 0.3</code>, <code>confirm_ends: true</code>; the quality marks add to that, they
 do not replace it.</p>

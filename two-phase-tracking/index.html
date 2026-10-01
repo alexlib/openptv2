@@ -2304,10 +2304,10 @@ when to change them and how to test them: <a href="../tracking_quality/">Point q
 <td>measured to have no effect; leave 0</td>
 </tr>
 <tr>
-<td><code>confirm_tol</code> [mm/frame], <code>confirm_ends</code></td>
-<td><strong>0.3</strong> / <strong>true</strong> (when <code>v_max</code> ≤ 3)</td>
-<td>two-hop link confirmation: a link survives only if the next step continues within this velocity kink</td>
-<td>on by default for small steps; <code>confirm_tol: null</code> switches it off. It removed all jump steps on lv_multi wp4/wp5 (8.4% → 0%). The best value is loose for sparse and tight for dense data (4× density: a tighter one lowered the error by 0.05); for large <code>v_max</code> set it explicitly, about 3–4× your position noise</td>
+<td><code>confirm_tol</code> [mm/frame], <code>confirm_ends</code>, <code>confirm_auto</code></td>
+<td><strong>auto</strong> / <strong>true</strong></td>
+<td>two-hop link confirmation: a link survives only if the next step continues within this velocity kink, and a track may not end by stepping onto a stranger (<code>confirm_ends</code>)</td>
+<td>By default the tolerance is <code>confirm_auto</code> (8) × the <strong>median kink</strong> of the data, which follows the position jitter (real level ≈ 0.5–0.6 mm/frame, 2× jitter ≈ 1.1), <strong>but only when the data are sparse and noise-dominated</strong> (≤ 7 neighbours within 5 mm and median kink ≥ 0.5 × median step); otherwise the fixed 0.3 is used. An explicit <code>confirm_tol: 0.3</code> (a number) switches the automatic mode off; <code>confirm_tol: null</code> switches confirmation off (not advised: the dead-end rule alone is worth 0.02–0.1 velocity error); <code>confirm_auto: null</code> keeps the fixed value</td>
 </tr>
 </tbody>
 </table>
