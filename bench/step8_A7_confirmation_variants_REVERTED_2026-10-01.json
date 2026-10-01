@@ -1,0 +1,14 @@
+{"change": "A7: noise-scaled kink (confirm_sigma, tol in units of sqrt(6)*sigma) and two-sided check (confirm_mode either/both) in tracking_postprocess.confirm_link_tuples; code reverted",
+ "date": "2026-10-01", "base": "two_phase with q_seed=0.2 q_young=3 and the case yaml's confirm_tol=0.3 confirm_ends=true (forward, absolute)",
+ "vErr_yield_per_case (normal, real-jitter, clustered-k4, d4, k8)": {
+  "base": [[0.1652,0.703],[0.1845,0.702],[0.1529,0.394],[0.4207,0.251],[0.1134,0.667]],
+  "sigma k=3": [[0.1819,0.696],[0.2173,0.691],[0.1475,0.355],[0.3695,0.240],[0.1369,0.572]],
+  "sigma k=4": [[0.1730,0.701],[0.1953,0.700],[0.1471,0.379],[0.4036,0.248],[0.1292,0.613]],
+  "sigma k=5": [[0.1630,0.703],[0.1851,0.703],[0.1474,0.393],[0.4270,0.251],[0.1190,0.642]],
+  "sigma k=7": [[0.1604,0.705],[0.1766,0.705],[0.1526,0.404],[0.4728,0.256],[0.1158,0.668]],
+  "either 0.3": [[0.1684,0.704],[0.1877,0.703],[0.1567,0.396],[0.4236,0.251],[0.1177,0.669]],
+  "both 0.3": [[0.1720,0.701],[0.2074,0.698],[0.1451,0.377],[0.4012,0.248],[0.1148,0.651]],
+  "sigma5+either": [[0.1630,0.704],[0.1861,0.703],[0.1500,0.395],[0.4310,0.252],[0.1212,0.644]]},
+ "mean_dvErr_vs_base": {"sigma k=3": 0.0033, "k=4": 0.0023, "k=5": 0.0010, "k=7": 0.0083, "either": 0.0035, "both": 0.0008, "sigma5+either": 0.0029},
+ "best_per_case": {"normal": "sigma k=7 (0.1604)", "real-jitter": "sigma k=7 (0.1766)", "clustered-k4": "both 0.3 (0.1451) / sigma k=4 (0.1471)", "d4": "sigma k=3 (0.3695, -0.051)", "k8": "base (0.1134)"},
+ "verdict": "REVERT: no variant is better on average; the best tolerance depends on density (loose for sparse, tight for dense), so one fixed noise-scaled or absolute value cannot win everywhere. Next idea: choose the tolerance from the data (density / measured kink distribution)."}

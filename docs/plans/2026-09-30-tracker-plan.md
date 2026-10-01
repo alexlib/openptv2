@@ -151,10 +151,10 @@ behaviour is `two_phase+q_seed=null+q_young=0`. Old `eval.json` files under the 
 1. **Release step (needs the user):** release openptv2 with `quality_post`, bump the pin in
    openptv-cloud, merge `feat/gap-aware-smoothing-trim`. Decide on `confirm_tol` as a
    default (see above).
-2. **A7 better smoothness check** (the one measured win): backward check, a tolerance from
-   the measured shake instead of a fixed number, and "2 of 3 steps must fail" on long
-   tracks. Measure against `confirm_tol` 0.15 / 0.2 / 0.3 / 0.45 / 0.6 on all five cases
-   and on real data; the plan's rules in section 2 apply.
+2. **A7b: choose the confirmation tolerance from the data** (A7 as designed was tried and
+   reverted, see section 4): the best `confirm_tol` is loose for sparse and tight for dense
+   data (4× density: −0.051 with a tight one). Find a data-driven rule (density, measured
+   kink distribution) and check it on all five cases and on real data.
 3. **A2** (camera count in the cost that also works with `leaf_weight=0`), **A12**, **A13**;
    order in section 7.
 4. Later: soft use at the correspondence step (A11), speed (S0/S1), chunks (P3). Speed note:
@@ -812,7 +812,34 @@ The original text of A1 follows, for reference.
   - Revisit these rules if a tracker ever builds 3D points that reuse blobs.
 - **The real fake-point fix is A10 + A11.** A9 only removes the short fake runs.
 
-### A7. Better smoothness check (the one proven win)
+### A7. Better smoothness check (the one proven win) - TRIED 2026-10-01, REVERTED
+**Result: none of the variants beats the current rule on average**
+(`bench/step8_A7_confirmation_variants_REVERTED_2026-10-01.json`). Tested on top of the
+quality defaults, on five cases (base = forward check, absolute `confirm_tol=0.3`):
+a kink measured per axis in units of `sqrt(6)*sigma` with `sigma=(0.008, 0.008, 0.045)` and
+tolerance k = 3, 4, 5, 7, and a two-sided check (`either`: keep when the onward OR the
+preceding step is consistent; `both`).
+
+| Variant | Mean change of velocity error | Mean change of points kept |
+|---|---|---|
+| sigma k=3 / 4 / 5 / 7 | +0.0033 / +0.0023 / +0.0010 / +0.0083 | −0.033 / −0.015 / −0.005 / +0.004 |
+| either 0.3 | +0.0035 | +0.001 |
+| both 0.3 | +0.0008 | −0.008 |
+| sigma 5 + either | +0.0029 | −0.004 |
+
+- **Best tolerance depends on density.** Per case the best variant was: normal and
+  real-jitter sigma k=7 (0.1604, 0.1766 against 0.1652, 0.1845); clustered + skip ×4
+  `both` or k=4 (0.145–0.147 against 0.153); **4× density sigma k=3 (0.3695 against
+  0.4207, −0.051)**; skip ×8 the base. A loose tolerance suits sparse data, a tight one
+  dense data; one fixed value cannot win everywhere.
+- **Next idea (A7b, not done):** choose `confirm_tol` from the data, e.g. from the density
+  (typical spacing) or from the measured distribution of kinks of the links that
+  survive, and check that it picks k≈7 for the normal case and k≈3 for 4× density.
+  Potential: about −0.005 on sparse cases and −0.05 on dense ones.
+- The code for `confirm_sigma` / `confirm_mode` was removed again (rule: a change that
+  does not gain is reverted); the idea text below is kept for reference.
+
+#### A7 original design
 - **Problem.** `confirm_tol` is yes/no. It only looks forward, uses a fixed number
   in mm, and cuts on one kink, even when the kink is only shake.
 - **Change.**
