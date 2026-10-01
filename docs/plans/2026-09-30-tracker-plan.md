@@ -317,6 +317,20 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
      step (the run log was unchanged); calling `openptv_cloud.post.convert` directly worked.
      To be checked in openptv-cloud.
 
+- **Why true links are still missing, and whether a track-level rule can recover them**
+  (`bench/step18_…`, realistic sparse case). Of 198637 consecutive true pairs whose points
+  both exist in the input, the default tracker links 95.5% raw and 97.8% after repair. **With
+  the two added rules switched off it links 100.0%**: the matcher itself loses nothing. The
+  2.2% that stay broken are caused by the quality rules (1.1%) and by confirmation (0.9%);
+  71% of them are pairs where both points are isolated singletons (real particles judged
+  doubtful). I tested deciding per *track* instead (relaxed tracker rules plus dropping whole
+  trajectories whose mean mark is high): it is worse everywhere (sparse 0.1752–0.1846 against
+  0.1724 for defaults + trim; dense 0.4519–0.4711 against 0.4177), because a ghost track that
+  formed has already taken part in the assignments. Dropping whole doubtful tracks on top of the
+  defaults gains only 0.002 (sparse) and 0.0006 (dense): not kept. **Conclusion: the point-level
+  rules in the tracker are the right place; what remains broken is the price of removing
+  ghosts.**
+
 ## What can be next (ranked by expected gain)
 The remaining error on the real-jitter case, step by step (velocity error; perfect linker
 0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →

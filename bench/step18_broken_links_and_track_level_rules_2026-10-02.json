@@ -1,0 +1,11 @@
+{"date": "2026-10-02", "case": "L1_d1_c0_k1_n200_s0.08_a0.18_f0.05 (and d4 for the rule comparison)",
+ "broken_true_links (consecutive true pairs with both points in the input: 198637)": {
+  "default": {"linked raw": 0.955, "after repair": 0.978, "broken": 4434, "both singletons": 0.71, "this point singleton": 0.12, "next point singleton": 0.10, "track ended, new started": 0.06, "stolen/wrong": 0.0},
+  "quality rules off": {"linked raw": 0.972, "after repair": 0.989, "broken": 2280},
+  "confirmation off": {"after repair": 0.991, "broken": 1727, "both singletons": 0.93},
+  "both off": {"linked raw": 1.000, "after repair": 1.000, "broken": 9}},
+ "finding": "the matcher alone links 100.0% of the true consecutive pairs; all breakage (2.2% after repair) is caused by the two added rules (quality 1.1%, confirmation 0.9%), mostly real particles judged doubtful and left as singletons",
+ "track_level_rules (vErr / yield)": {
+  "sparse": {"default + trim0.3": [0.1724, 0.676], "default + trim0.3 + drop mean>0.25": [0.1703, 0.671], "q off + trim + drop0.25": [0.1764, 0.671], "q_seed 0.5/young 3 + trim + drop0.18": [0.1733, 0.666], "default": [0.1862, 0.680], "q off": [0.2008, 0.687]},
+  "dense x4": {"default + trim0.3": [0.4177, 0.220], "default + trim0.3 + drop0.25": [0.4171, 0.217], "q_seed 0.5/young 3 + trim + drop0.25": [0.4519, 0.222], "q off + trim + drop0.25": [0.4624, 0.221], "default": [0.4214, 0.225], "q off": [0.5110, 0.239]}},
+ "verdict": "KEEP the point-level rules in the tracker (they act before ghost tracks take part in the assignments); track-level dropping adds only -0.002 / -0.0006 on top of trim and is not kept (function removed)."}
