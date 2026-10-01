@@ -2118,7 +2118,7 @@
 This file replaces all earlier tracking plans, including <code>new_tracking_plan.md</code> and
 <code>two-phase-accuracy-speed-plan.md</code>; their ideas are merged here.</p>
 <hr />
-<h1 id="status-and-handoff-updated-2026-10-01-night-read-this-first">STATUS AND HANDOFF (updated 2026-10-01 night, read this first)<a class="headerlink" href="#status-and-handoff-updated-2026-10-01-night-read-this-first" title="Permanent link">&para;</a></h1>
+<h1 id="status-and-handoff-updated-2026-10-02-early-read-this-first">STATUS AND HANDOFF (updated 2026-10-02 early, read this first)<a class="headerlink" href="#status-and-handoff-updated-2026-10-02-early-read-this-first" title="Permanent link">&para;</a></h1>
 <h2 id="where-we-are">Where we are<a class="headerlink" href="#where-we-are" title="Permanent link">&para;</a></h2>
 <p>Branch <code>feat/tracker-improvements</code>. Goal unchanged: correct Lagrangian trajectories,
 accuracy first, speed second, no big slowdown (section 2 has the rules).</p>
@@ -2383,20 +2383,174 @@ should follow the data, the CompleteTest value is 0.3 for a 0.08 mm step).</p>
 <p><strong>Baseline label change:</strong> plain <code>two_phase</code> now includes the quality rules. The old
 behaviour is <code>two_phase+q_seed=null+q_young=0</code>. Old <code>eval.json</code> files under the label
 <code>two_phase</code> are the old behaviour.</p>
+<h3 id="decisions-taken-and-release-2026-10-01-night">Decisions taken and release (2026-10-01 night)<a class="headerlink" href="#decisions-taken-and-release-2026-10-01-night" title="Permanent link">&para;</a></h3>
+<p>The user decided <strong>yes</strong> to all three: (1) release openptv2 with <code>quality_post</code>;
+(2) two-hop confirmation on by default; (3) merge and push the openptv-cloud branch.
+- <strong>Confirmation default</strong> (<code>02033eed</code>): the <code>two_phase</code> plugin uses <code>confirm_tol=0.3</code>,
+  <code>confirm_ends=true</code> when the <code>track</code> section has no <code>confirm_tol</code> and <code>v_max &lt;= 3</code>
+  mm/frame (the regime it was tested in); an explicit number or <code>null</code> wins; a large
+  <code>v_max</code> leaves it off with a printed note. lv_multi wp4/wp5 with no overrides: jump steps
+  0.0% (were 6.7% and 8.4%). <code>docs/two-phase-tracking.md</code> has the parameter row.
+- <strong>Release status (final, 2026-10-01):</strong> tag <strong><code>v0.5.12</code></strong> (commit <code>02033eed</code>, pushed by the
+  user) is <strong>on PyPI with all nine wheels</strong> (macOS arm64, Linux x86_64, Windows; Python
+  3.11–3.13), so <code>pip install openptv2==0.5.12</code> works. <strong>The sdist (source distribution) was
+  rejected: 143 MB against PyPI's 100 MB limit</strong> (v0.5.11: 5 MB). Cause: the earlier switch to
+  versions from git tags (<code>88a834d0</code>, setuptools-scm) puts <em>every tracked file</em> into the sdist
+  (test data, docs, generated C). Fixed in <code>f262aaf7</code> (<code>MANIFEST.in</code> prunes them; local sdist
+  0.9 MB); it takes effect with the next release (on <code>feat/tracker-improvements</code>, not yet on
+  <code>main</code>). 0.5.12 has no sdist on PyPI.
+- <strong>openptv-cloud merged and pushed</strong> (<code>main</code> = <code>f3146bf</code>): <code>openptv2&gt;=0.5.12</code>, lock updated,
+  <code>trajectories.smoothing_method: gap_aware</code> is active (the released <code>quality_post</code> is
+  used), <code>trim_doubtful</code> available. The new two_phase defaults change the lv-multi fixture's
+  physics on purpose, so <code>tests/e2e_expected.json</code> was regenerated and reviewed: wp5
+  2736 → 1885 tracks and 24390 → 20356 rows (confirmation removes the wrong links), wp4
+  unchanged. <code>test_end_to_end_reproducibility</code> failed twice (about 2 of 14 runs) while heavy
+  jobs were running and passed 9 of 9 afterwards; treat it as load-sensitive.</p>
+<h3 id="better-ghost-mark-blob-brightness-agreement-2026-10-01-night-committed-94cfe9e9">Better ghost mark: blob brightness agreement (2026-10-01 night, committed <code>94cfe9e9</code>)<a class="headerlink" href="#better-ghost-mark-blob-brightness-agreement-2026-10-01-night-committed-94cfe9e9" title="Permanent link">&para;</a></h3>
+<p><strong>Default model is now <code>rcm_blob</code></strong> (<code>q_model</code>, alternative <code>rcm</code>); details in
+<code>docs/tracking_quality.md</code>, numbers in <code>bench/step10_A10_blob_brightness_model_2026-10-01.json</code>.
+- <strong>Idea.</strong> A real particle shows a similar brightness in all cameras; a ghost joins blobs of
+  different particles. The spread of the log blob brightness across the seeing cameras is
+  about 0.15 for real points and 0.4 for ghosts. Cameras differ in gain by 0.13–0.17 on
+  real data, so each camera's run median is subtracted first.
+- <strong>The old synthetic cases cannot judge it:</strong> their real particles have exactly the same
+  brightness in every camera (spread 0, AUC 0.93 is an artefact). New option
+  <code>synth_bench build --amp-jitter 0.18</code> gives each particle an independent per-camera
+  brightness factor; its spread distribution then matches real data (median 0.160 against
+  0.173). <strong>Use the <code>_a0.18</code> cases (<code>L1_d1_c0_k1_n200_s0.08_a0.18</code>, <code>L1_d2_c0_k1_n150_…</code>,
+  <code>L1_d4_c0_k1_n150_…</code>, <code>L1_d2_c0.3_k4_n150_…</code>) for anything involving brightness.</strong>
+- <strong>Result</strong> (point-level AUC 0.875 → 0.917; velocity error / true points kept / ghost fraction):</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Quality off</th>
+<th><code>rcm</code></th>
+<th><strong><code>rcm_blob</code> (default 0.2/3)</strong></th>
+<th>accuracy mode 0.15/6</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real jitter, sparse</td>
+<td>0.2136 / 0.680 / 7.0%</td>
+<td>0.1982 / 0.675 / 4.8%</td>
+<td><strong>0.1934 / 0.675 / 3.7%</strong></td>
+<td>0.1889 / 0.670 / 3.2%</td>
+</tr>
+<tr>
+<td>Density ×2</td>
+<td>0.3658 / 0.510 / 6.9%</td>
+<td>0.3371 / 0.502 / 5.2%</td>
+<td><strong>0.3225 / 0.497 / 4.2%</strong></td>
+<td>0.3015 / 0.486 / 3.6%</td>
+</tr>
+<tr>
+<td>Density ×4</td>
+<td>0.5055 / 0.231 / 10.8%</td>
+<td>0.4709 / 0.225 / 8.5%</td>
+<td><strong>0.4307 / 0.218 / 6.5%</strong></td>
+<td>0.3940 / 0.208 / 5.6%</td>
+</tr>
+<tr>
+<td>Clustered + skip ×4</td>
+<td>0.1765 / 0.376 / 6.8%</td>
+<td>0.1683 / 0.372 / 5.7%</td>
+<td><strong>0.1647 / 0.372 / 5.5%</strong></td>
+<td>0.1564 / 0.366 / 5.1%</td>
+</tr>
+</tbody>
+</table>
+<p>Against <code>rcm</code>: −0.005, −0.015, −0.039, −0.004; true points kept down by at most 0.007.
+  The logistic weights were fitted on even frames of the first case; the other three cases are
+  independent. Real wp2 (300 frames): 4.6% fewer trajectories, mean length 20.2 → 20.8,
+  suspect trajectories 10.4% → 9.7%, jump 1.45 → 1.43%. Real lv_multi wp4/wp5: 4–6% fewer
+  trajectories, mean length +2.5%/+4%, jump share 0, but the never-seen-by-4-cameras share is
+  0.3–0.5 points <em>higher</em> (the proxy is itself rcm-based, so it does not see the new signal).
+- <strong>Caveats:</strong> the model assumes that brightness differences between cameras are small
+  once the run median is removed (true for the two real sets); constant brightness falls
+  back to <code>rcm</code>; the weights come from synthetic data, so real-data checks stay mandatory.</p>
+<h2 id="what-can-be-next-ranked-by-expected-gain">What can be next (ranked by expected gain)<a class="headerlink" href="#what-can-be-next-ranked-by-expected-gain" title="Permanent link">&para;</a></h2>
+<p>The remaining error on the real-jitter case, step by step (velocity error; perfect linker
+0.1412): plain two_phase 0.1977 → with quality rules 0.1845 → with better smoother 0.1790 →
+with trimming at 0.3 0.1647. With all ghosts removed from the input two_phase reaches 0.1465.
+So about 0.02 of the gap to the perfect linker is <strong>fragmentation and wrong links that are
+not ghosts</strong> (link precision 0.9989, recall 0.974, 2.2 pieces per long track against 1.8,
+long-track completeness 0.526 against 0.569), and about 0.02 is <strong>ghosts that still pass</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>What it attacks</th>
+<th>Expected gain</th>
+<th>Cost / risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A7b</strong> confirmation tolerance from the data</td>
+<td>wrong links; best tolerance is loose for sparse and tight for dense data</td>
+<td>−0.005 sparse, −0.05 at 4× density</td>
+<td>medium: needs a rule (density, kink distribution) that picks 7σ / 3σ correctly</td>
+</tr>
+<tr>
+<td><strong>A12 + A13</strong> "no link" option, wait one frame</td>
+<td>fragmentation and links forced onto doubtful points</td>
+<td>probably −0.01</td>
+<td>medium; A13 only if the decision log shows lost second chances</td>
+</tr>
+<tr>
+<td><strong>A4 + A5</strong> velocity from several frames, gap bridging</td>
+<td>fragmentation (longer tracks), better guesses</td>
+<td>−0.005…−0.01; long-track completeness up</td>
+<td>medium; must pass the frame-skip and real-jitter checks</td>
+</tr>
+<tr>
+<td><strong>A11</strong> feed marks back into camera matching</td>
+<td>ghosts that still pass; also recovers real particles</td>
+<td>up to ~0.02 (ghost bound)</td>
+<td>high: touches correspondences</td>
+</tr>
+<tr>
+<td><strong>Improve the mark itself</strong> (a better ghost probability: add the 2D blob size/brightness agreement, the jitter of the trajectory, a table fitted per run)</td>
+<td>ghosts that still pass</td>
+<td>up to ~0.02</td>
+<td>low-medium; measurable with <code>ghost_bound</code>-style cheats</td>
+</tr>
+<tr>
+<td><strong>S0 speed profile</strong></td>
+<td>the quality rules add ~14% (rcm per frame, mark storage, young filter)</td>
+<td>speed only</td>
+<td>low; do before the next accuracy item that costs time</td>
+</tr>
+<tr>
+<td><strong>Upstream the smoother</strong> to postptv/flowtracks</td>
+<td>all users of the final output</td>
+<td>−0.002…−0.008</td>
+<td>needs a flowtracks release</td>
+</tr>
+</tbody>
+</table>
+<p>Recommended next: <strong>A7b</strong> (largest measured, concrete), then <strong>the better mark</strong> (cheap to
+test offline with the saved features and the ghost cheats), then A4/A5 together.</p>
 <h2 id="next-steps-in-this-order">Next steps, in this order<a class="headerlink" href="#next-steps-in-this-order" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Release step (needs the user):</strong> release openptv2 with <code>quality_post</code>, bump the pin in
-   openptv-cloud, merge <code>feat/gap-aware-smoothing-trim</code>. Decide on <code>confirm_tol</code> as a
-   default (see above).</li>
-<li><strong>A7b: choose the confirmation tolerance from the data</strong> (A7 as designed was tried and
-   reverted, see section 4): the best <code>confirm_tol</code> is loose for sparse and tight for dense
-   data (4× density: −0.051 with a tight one). Find a data-driven rule (density, measured
-   kink distribution) and check it on all five cases and on real data.</li>
-<li><strong>A2</strong> (camera count in the cost that also works with <code>leaf_weight=0</code>), <strong>A12</strong>, <strong>A13</strong>;
-   order in section 7.</li>
-<li>Later: soft use at the correspondence step (A11), speed (S0/S1), chunks (P3). Speed note:
-   the quality rules add about 1 s to a 200-frame run (rcm per frame, mark storage), +14%;
-   within the budget but worth a profile in S0.</li>
+<li>~~Finish the release chain~~ <strong>Done</strong> (wheels on PyPI, cloud merged). Open: put the
+   sdist fix (<code>f262aaf7</code>) onto <code>main</code> and cut <code>v0.5.13</code> when there is something to release;
+   consider a cloud release tag (0.9.18) for the changed defaults.</li>
+<li>~~<strong>A7b:</strong> data-driven <code>confirm_tol</code>.~~ <strong>Done: measured and reverted, see section 4 A7.</strong>
+   (Original text:) data-driven <code>confirm_tol</code>. Per-case optima are in
+   <code>bench/step8_A7_confirmation_variants_REVERTED_2026-10-01.json</code> (normal and real jitter
+   sigma k=7, clustered k≈4, 4× density k=3, skip ×8 the absolute 0.3). Look for a statistic
+   computed from the run that predicts them (nearest-neighbour spacing against the step,
+   or the share of links the rule would cut), implement it as the default for the
+   plugin, and verify on all five cases and the four real recordings.</li>
+<li>~~<strong>Better ghost mark.</strong>~~ <strong>Done for brightness</strong> (<code>rcm_blob</code>, see above). Further ideas
+   for the mark: blob size agreement (synthetic sizes are degenerate, needs a generator
+   change first), the 2D reprojection residual per camera, fitting the probability table per
+   run on real data (EM with the rcm model as the first guess).</li>
+<li><strong>A4/A5</strong>, then <strong>A12/A13</strong>, then <strong>A2</strong>; order in section 7.</li>
+<li>Later: A11, speed (S0/S1), chunks (P3).</li>
 </ol>
 <h2 id="commands-all-from-the-repo-root-always-uv-run">Commands (all from the repo root, always <code>uv run</code>)<a class="headerlink" href="#commands-all-from-the-repo-root-always-uv-run" title="Permanent link">&para;</a></h2>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># unit tests / lint for the touched code</span>
@@ -3279,13 +3433,68 @@ preceding step is consistent; <code>both</code>).</p>
   <code>both</code> or k=4 (0.145–0.147 against 0.153); <strong>4× density sigma k=3 (0.3695 against
   0.4207, −0.051)</strong>; skip ×8 the base. A loose tolerance suits sparse data, a tight one
   dense data; one fixed value cannot win everywhere.</li>
-<li><strong>Next idea (A7b, not done):</strong> choose <code>confirm_tol</code> from the data, e.g. from the density
-  (typical spacing) or from the measured distribution of kinks of the links that
-  survive, and check that it picks k≈7 for the normal case and k≈3 for 4× density.
-  Potential: about −0.005 on sparse cases and −0.05 on dense ones.</li>
-<li>The code for <code>confirm_sigma</code> / <code>confirm_mode</code> was removed again (rule: a change that
-  does not gain is reverted); the idea text below is kept for reference.</li>
+<li><strong>A7b measured (2026-10-01), reverted</strong> (<code>bench/step9_A7b_confirm_tolerance_vs_density_REVERTED_2026-10-01.json</code>).
+  Tolerance k = 1.5…10 in sigma units against density, seven cases. The big gains at tight k
+  are <strong>obtained by dropping true points</strong> (4× density k=1.5: error −0.14, but 16% fewer
+  true points). With the points-kept rule (no more than 0.007 fewer points):</li>
 </ul>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Points per frame</th>
+<th>Neighbours within 5 mm</th>
+<th>Best k</th>
+<th>Gain vs absolute 0.3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>real jitter</td>
+<td>1157</td>
+<td>6</td>
+<td>10</td>
+<td>−0.0129 (and +0.008 points)</td>
+</tr>
+<tr>
+<td>skip ×8</td>
+<td>1169</td>
+<td>6</td>
+<td>none</td>
+<td>+0.0024</td>
+</tr>
+<tr>
+<td>clustered + skip ×4</td>
+<td>1498</td>
+<td>7.7</td>
+<td>5</td>
+<td>−0.0055</td>
+</tr>
+<tr>
+<td>density ×2</td>
+<td>1914</td>
+<td>10</td>
+<td>none</td>
+<td>+0.001</td>
+</tr>
+<tr>
+<td>density ×4</td>
+<td>2663</td>
+<td>11</td>
+<td>4</td>
+<td>−0.0171</td>
+</tr>
+</tbody>
+</table>
+<p>No fixed k passes the plan's rule (k=10: +0.079 at ×4 density). A rule "k from the local
+  neighbour count" fits these five points but would be tuned on the same cases it is judged
+  on. <strong>Decision: keep the absolute <code>confirm_tol=0.3</code> default.</strong> Advice for users, in
+  <code>docs/two-phase-tracking.md</code>: sparse data (about 6 neighbours within 5 mm) can try a
+  looser <code>confirm_tol</code>, dense data (10 or more) a tighter one, and should check it with
+  <code>scripts/realism_metrics.py</code>. A proper data-driven rule needs more cases of different
+  density and, ideally, a mixture fit of the measured kink distribution.
+- The code for <code>confirm_sigma</code> / <code>confirm_mode</code> was removed again (rule: a change that
+  does not gain is reverted); the idea text below is kept for reference.</p>
 <h4 id="a7-original-design">A7 original design<a class="headerlink" href="#a7-original-design" title="Permanent link">&para;</a></h4>
 <ul>
 <li><strong>Problem.</strong> <code>confirm_tol</code> is yes/no. It only looks forward, uses a fixed number
