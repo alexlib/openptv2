@@ -766,6 +766,38 @@ The original text of A1 follows, for reference.
     gain, build a synthetic case with a radial calibration error (rcm growing
     with distance, like real wp2) and check that ghost separation improves
     after normalization.
+- **Built and measured (2026-10-01): quality marks in the tracker**
+  (`src/openptv2/point_quality.py`, options `q_weight`, `q_seed`, `q_young` in
+  two_phase, default off; `bench/step6_A10_quality_mark_2026-10-01.json`).
+  The mark is the ghost probability from the relative rcm (scale = straight line
+  in the distance from the volume centre, fitted per run on 4-camera points).
+
+  | What the mark does | Effect on velocity error (real-jitter case) |
+  |---|---|
+  | Raises the cost of linking onto a doubtful point (`q_weight` 3 or 10) | none (0.1977 → 0.1976): such links are rarely contested |
+  | A doubtful point may not start a trajectory (`q_seed` 0.2) | 0.1977 → 0.1929 |
+  | + a trajectory with fewer than 3 points may not continue onto a doubtful point (`q_young` 3) | **0.1977 → 0.1845** |
+
+  Best setting, `q_seed=0.2`, `q_young=3`, against the default:
+
+  | Case | Velocity error | Points kept | Correct links | Fake points |
+  |---|---|---|---|---|
+  | Normal | 0.1780 → 0.1652 | 0.707 → 0.703 | 0.934 → 0.957 | 6.9% → 4.3% |
+  | Real jitter | 0.1977 → 0.1845 | 0.706 → 0.702 | 0.933 → 0.951 | 6.9% → 4.8% |
+  | Clustered + skip ×4 | 0.1632 → 0.1529 | 0.398 → 0.394 | 0.929 → 0.944 | 6.5% → 5.3% |
+  | 4× density | 0.4592 → 0.4207 | 0.258 → 0.251 | 0.867 → 0.911 | 11.8% → 8.6% |
+  | Skip ×8 | 0.1218 → 0.1134 | 0.669 → 0.667 | 0.933 → 0.946 | 6.6% → 5.5% |
+
+  On real wp2 (first 300 frames, re-tracked with the project's own settings):
+  trajectories 16375 → 15310 (fewer fragments and ghost trajectories), mean
+  length 19.5 → 20.2, long trajectories never seen by 4 cameras 11.6% → 10.4%,
+  jump share unchanged (1.46% → 1.45%), jitter unchanged, track time +6%.
+
+  It meets the plan's rules: gain of at least 0.01 on four cases, nothing worse,
+  fake points down everywhere, points kept down by at most 0.007 (and the removed
+  points are mostly ghosts), time within the budget.
+  About 40% of the possible ghost gain on the real-jitter case is reached (the
+  cheat with all ghosts removed reaches 0.1465).
 - **Open check.** The real tail may contain more ghosts than the synthetic one
   (real 3-camera tail is heavier). There is no truth on real data, so compare
   the share of points above relative rcm 2.2 (real vs synthetic) after each

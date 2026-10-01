@@ -85,6 +85,16 @@ class TwoPhaseTrackerConfig:
         added greedily by 3D distance). Closes ~75% of the accuracy gap
         to 4-frame trackcorr on dense data in a fraction of the time.
         Default False (unidirectional forward).
+    q_weight : float
+        A10: per-point ghost probability ``g`` (from ray convergence, see
+        ``openptv2.point_quality``) raises the cost of linking onto that
+        candidate: ``cost * (1 + q_weight * g)``. 0 = off.
+    q_seed : float | None
+        A detection with ghost probability above this does not start a new
+        trajectory (it can still be picked up by an existing one). None = off.
+    q_young : int
+        A trajectory with fewer than this many points may not continue onto a
+        point whose ghost probability is above ``q_seed``. 0 = off.
     bwd_v_max : float | None
         Optional search radius for the backward pass in bidirectional mode.
         None defaults to v_max. Setting a slightly wider bwd_v_max (e.g. 2.5
@@ -93,6 +103,9 @@ class TwoPhaseTrackerConfig:
     """
 
     v_max: float = 5.0
+    q_weight: float = 0.0
+    q_seed: float | None = None
+    q_young: int = 0
     max_gap: int = 2
     dt: float = 1.0
     leaf_weight: float = 1.0
@@ -238,6 +251,10 @@ def _match_two_phase_frame(
     max_group_size: int = 128,
     seen0: np.ndarray | None = None,
     seen1: np.ndarray | None = None,
+    ghost1: np.ndarray | None = None,
+    q_weight: float = 0.0,
+    young0: np.ndarray | None = None,
+    q_block: float = 1.0,
 ) -> tuple[set[tuple[int, int]], set[tuple[int, int]]]:
     """Two-phase frame-to-frame matching: 3D search + 2D ranking.
 
@@ -278,6 +295,13 @@ def _match_two_phase_frame(
     # Phase 1: 3D KD-tree candidate search
     tree3d = cKDTree(pts1)
     neighbours = tree3d.query_ball_point(pts0, r=radius)
+
+    if young0 is not None and ghost1 is not None:
+        g1 = np.asarray(ghost1)
+        neighbours = [
+            [c for c in lst if g1[c] <= q_block] if young0[i] else lst
+            for i, lst in enumerate(neighbours)
+        ]
 
     # Build edge list with 2D costs
     rows: list[int] = []
@@ -337,6 +361,8 @@ def _match_two_phase_frame(
     row_arr = np.array(rows)
     col_arr = np.array(cols)
     cost_arr = np.array(costs)
+    if ghost1 is not None and q_weight > 0:
+        cost_arr = cost_arr * (1.0 + q_weight * np.asarray(ghost1)[col_arr])
 
     # Phase 2: Hungarian via connected components
     n_nodes = n_pred + n_cand
@@ -457,6 +483,7 @@ class TwoPhaseTracker:
         project_fn: Any = None,
         return_chains: bool = False,
         frame_seen: list[np.ndarray] | None = None,
+        frame_ghost: list[np.ndarray] | None = None,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
@@ -505,7 +532,7 @@ class TwoPhaseTracker:
         if not self.cfg.bidirectional:
             return self._track_unidirectional(
                 frame_particles, frame_leaves, project_fn, return_chains,
-                frame_seen=frame_seen,
+                frame_seen=frame_seen, frame_ghost=frame_ghost,
             )
 
         # Bidirectional tracking: forward + backward on reversed frames
@@ -513,13 +540,14 @@ class TwoPhaseTracker:
             list[tuple[int, int, int, int]],
             self._track_unidirectional(
                 frame_particles, frame_leaves, project_fn, return_chains=False,
-                frame_seen=frame_seen,
+                frame_seen=frame_seen, frame_ghost=frame_ghost,
             ),
         )
 
         rev_particles = frame_particles[::-1]
         rev_leaves = frame_leaves[::-1] if frame_leaves is not None else None
         rev_seen = frame_seen[::-1] if frame_seen is not None else None
+        rev_ghost = frame_ghost[::-1] if frame_ghost is not None else None
         bwd_vmax = (
             self.cfg.bwd_v_max if self.cfg.bwd_v_max is not None else self.cfg.v_max
         )
@@ -532,6 +560,7 @@ class TwoPhaseTracker:
                 return_chains=False,
                 v_max_override=bwd_vmax,
                 frame_seen=rev_seen,
+                frame_ghost=rev_ghost,
             ),
         )
         bwd_links = [
@@ -554,6 +583,7 @@ class TwoPhaseTracker:
         return_chains: bool = False,
         v_max_override: float | None = None,
         frame_seen: list[np.ndarray] | None = None,
+        frame_ghost: list[np.ndarray] | None = None,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
@@ -652,6 +682,14 @@ class TwoPhaseTracker:
                 share_tol=self.cfg.share_tol,
                 seen0=pred_seen,
                 seen1=det_seen,
+                ghost1=None if frame_ghost is None else frame_ghost[t + 1],
+                q_weight=self.cfg.q_weight,
+                young0=(
+                    np.array([len(hist[tid]) < self.cfg.q_young for tid in tids])
+                    if frame_ghost is not None and self.cfg.q_young > 0 and tids
+                    else None
+                ),
+                q_block=1.0 if self.cfg.q_seed is None else self.cfg.q_seed,
             )
             matched_det = set()
             for ai, det in got:
@@ -690,6 +728,12 @@ class TwoPhaseTracker:
             # Cold start: unmatched detections become zero-velocity tracks.
             for det in range(n1):
                 if det not in matched_det:
+                    if (
+                        frame_ghost is not None
+                        and self.cfg.q_seed is not None
+                        and frame_ghost[t + 1][det] > self.cfg.q_seed
+                    ):
+                        continue  # doubtful point: may not start a trajectory
                     tracks[next_tid] = {
                         "pos": pts1[det].copy(),
                         "vel": np.zeros(3),
@@ -743,6 +787,24 @@ class Tracking:
     def __init__(self, ptv=None, exp=None):
         self.ptv = ptv
         self.exp = exp
+
+    def _ghost_probabilities(self, store, frames, frame_particles, frame_seen):
+        """Per-point ghost probability from ray convergence (A10)."""
+        from openptv2.point_quality import fit_scale, frame_rcm, ghost_probability
+
+        cals = list(getattr(self.exp, "cals", None) or [])
+        cpar = getattr(self.exp, "cpar", None)
+        if not cals or cpar is None:
+            raise ValueError("q_weight/q_seed need exp.cals and exp.cpar")
+        rcm = [frame_rcm(store, f, cals, cpar) for f in frames]
+        n_seen = [np.asarray(s).sum(axis=1) for s in frame_seen]
+        scale = fit_scale(
+            np.vstack(frame_particles), np.concatenate(rcm), np.concatenate(n_seen)
+        )
+        return [
+            ghost_probability(p, r, n, scale)
+            for p, r, n in zip(frame_particles, rcm, n_seen)
+        ]
 
     def _build_project_fn(self):
         """Re-project predicted 3D positions to leaf pixels via exp cals.
@@ -807,6 +869,10 @@ class Tracking:
         confirm_tol = None if confirm_raw is None else float(confirm_raw)
         confirm_ends = bool(track_cfg.get("confirm_ends", False))
         bidirectional = bool(track_cfg.get("bidirectional", False))
+        q_weight = float(track_cfg.get("q_weight", 0.0))
+        q_seed_raw = track_cfg.get("q_seed", None)
+        q_seed = None if q_seed_raw is None else float(q_seed_raw)
+        q_young = int(track_cfg.get("q_young", 0))
         bwd_v_max_raw = track_cfg.get("bwd_v_max", None)
         bwd_v_max = None if bwd_v_max_raw is None else float(bwd_v_max_raw)
 
@@ -900,6 +966,9 @@ class Tracking:
 
         cfg = TwoPhaseTrackerConfig(
             v_max=v_max,
+            q_weight=q_weight,
+            q_seed=q_seed,
+            q_young=q_young,
             leaf_weight=leaf_weight,
             use_velocity=use_velocity,
             cost_mode=cost_mode,
@@ -915,10 +984,16 @@ class Tracking:
         )
         tracker = TwoPhaseTracker(cfg)
         project_fn = self._build_project_fn()
+        frame_ghost = None
+        if q_weight > 0 or q_seed is not None or q_young > 0:
+            frame_ghost = self._ghost_probabilities(
+                store, frames, frame_particles, frame_seen
+            )
         links = cast(
             list[tuple[int, int, int, int]],
             tracker.track_frames(frame_particles, frame_leaves,
-                                 project_fn=project_fn, frame_seen=frame_seen),
+                                 project_fn=project_fn, frame_seen=frame_seen,
+                                 frame_ghost=frame_ghost),
         )
 
         # Per-step progress like trackcorr (track3d step: curr/next/links)

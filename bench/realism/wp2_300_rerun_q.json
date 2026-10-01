@@ -1,0 +1,21 @@
+{
+ "frames": 300,
+ "trajectories": 15310,
+ "mean_len": 20.16,
+ "n_ge50": 1538,
+ "median_step_mm": 0.1105,
+ "median_abs_2nd_diff_xyz": [
+  0.0101,
+  0.0089,
+  0.0478
+ ],
+ "jump_share": 0.0145,
+ "jitter_median_xyz": [
+  0.0083,
+  0.0076,
+  0.0391
+ ],
+ "jitter_z_p90": 0.0782,
+ "never4_share": 0.1036,
+ "three_cam_share": 0.3845
+}

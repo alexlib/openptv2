@@ -1,0 +1,13 @@
+{"change": "A10 soft use: per-point ghost probability from ray convergence (openptv2/point_quality.py). Options: q_weight (cost*(1+w*g), no effect), q_seed (doubtful point may not start a trajectory), q_young (young trajectories may not continue onto doubtful points). Best: q_seed=0.2 + q_young=3.",
+ "date": "2026-10-01",
+ "vErr_yield_lnkP_ghost": {
+  "L1_d1_c0_k1_n200":       {"two_phase": [0.1780, 0.707, 0.9338, 0.0687], "q_seed0.2_young3": [0.1652, 0.703, 0.9573, 0.0427], "q_seed0.2_young6": [0.1625, 0.702, 0.9611, 0.0393]},
+  "L1_d1_c0_k1_n200_s0.08": {"two_phase": [0.1977, 0.706, 0.9325, 0.0690], "q_seed0.2_young3": [0.1845, 0.702, 0.9508, 0.0484], "q_seed0.2_young6": [0.1858, 0.700, 0.9561, 0.0438]},
+  "L1_d2_c0.3_k4_n150":     {"two_phase": [0.1632, 0.398, 0.9294, 0.0652], "q_seed0.2_young3": [0.1529, 0.394, 0.9436, 0.0528], "q_seed0.2_young6": [0.1525, 0.391, 0.9473, 0.0498]},
+  "L1_d4_c0_k1_n150":       {"two_phase": [0.4592, 0.258, 0.8668, 0.1179], "q_seed0.2_young3": [0.4207, 0.251, 0.9111, 0.0859], "q_seed0.2_young6": [0.4063, 0.249, 0.9166, 0.0810]},
+  "L1_d1_c0_k8_n150":       {"two_phase": [0.1218, 0.669, 0.9332, 0.0661], "q_seed0.2_young3": [0.1134, 0.667, 0.9463, 0.0546], "q_seed0.2_young6": [0.1149, 0.664, 0.9487, 0.0524]}},
+ "real_data_wp2_first300_frames_rerun": {
+  "base":            {"trajectories": 16375, "mean_len": 19.48, "n_ge50": 1562, "jump_share": 0.0146, "never4_share": 0.116, "track_time_s": 12.0},
+  "q_seed0.2_young3": {"trajectories": 15310, "mean_len": 20.16, "n_ge50": 1538, "jump_share": 0.0145, "never4_share": 0.1036, "track_time_s": 12.8}},
+ "single_variant_s0.08_sweep": {"q_weight=3": 0.1977, "q_weight=10": 0.1976, "q_seed=0.1": 0.1918, "q_seed=0.15": 0.1922, "q_seed=0.2": 0.1929, "q_seed=0.3": 0.1982, "q_seed0.15_young6": 0.1809},
+ "verdict": "KEEP as option (default off). vErr -0.008..-0.013 on 4 cases, -0.038 at 4x density, points kept -0.002..-0.007, ghost fraction down everywhere; real wp2: fewer fragments, fewer never-4-camera trajectories, jump share unchanged, +6% time. Link-cost weighting alone does nothing (links onto doubtful points are rarely contested)."}
