@@ -8,3 +8,20 @@ recursive-include src/openptv2 *.py *.json
 
 # Include tests
 recursive-include tests *.py
+
+# The version comes from git tags (setuptools-scm), which adds EVERY tracked file to
+# the sdist: that made v0.5.12's sdist 143 MB and PyPI rejected it (limit 100 MB;
+# v0.5.11 was 5 MB). Keep the source distribution to what a build needs.
+prune test_data
+prune docs
+prune site
+prune bench
+prune res
+prune notebooks
+prune tracking-brain-viz
+prune docker
+prune skills
+prune .agents
+prune tests/gui
+prune scripts
+global-exclude *.c *.html *.so *.pyd *.gif *.png *.jpg *.tif *.tiff *.zarr *.ipynb
