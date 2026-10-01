@@ -1,0 +1,10 @@
+{"date": "2026-10-02", "data": "real CompleteTest wp1 and wp2, all 1072 frames, openptv-cloud 'tracking, post, analyze' on scratch copies; released openptv2 0.5.13",
+ "variants": {"old": "q_seed null, q_young 0 (no ghost marks), smoothing_method flowtracks", "new": "defaults (rcm_blob marks 0.2/3, confirm 0.3, gap_aware smoother)", "newtrim": "defaults + trajectories.trim_doubtful 0.3"},
+ "trajectory_level (tracks, rows, mean_len, tracks>=50, median |dv| between frames mm/s, acceleration kurtosis)": {
+  "old_wp1": [20778, 1193399, 57.44, 6279, 8.13, 58.7], "new_wp1": [17518, 1148287, 65.55, 6218, 7.94, 66.2], "newtrim_wp1": [16999, 1133723, 66.69, 6157, 7.86, 71.2],
+  "old_wp2": [19753, 1153113, 58.38, 6099, 8.27, 58.6], "new_wp2": [16656, 1110395, 66.67, 5994, 8.09, 47.1], "newtrim_wp2": [16196, 1097052, 67.74, 5941, 8.01, 42.1]},
+ "eulerian_vs_legacy_table (mean over phases 5-11 of (ours-legacy)/legacy, %)": {
+  "vel_mean_global": {"old": -12.6, "new": -11.2, "newtrim": -11.2}, "MKE_mean_global": {"old": -27.7, "new": -26.3, "newtrim": -26.4},
+  "VSS_mean_global": {"old": -23.4, "new": -23.4, "newtrim": -23.3}, "eps_mean_global": {"old": -44.7, "new": -44.6, "newtrim": -44.6},
+  "note": "jet-region quantities differ by 90%+ in every variant (region masks / analysis differ from this legacy table), so this table is dominated by other differences"},
+ "verdict": "new defaults: 16% fewer tracks, 14% longer mean length, long tracks kept, velocity roughness -2.3% (-3.3% with trim), Eulerian averages essentially unchanged (+1.4 points closer on vel/MKE); acceleration kurtosis mixed (wp1 up, wp2 down)."}

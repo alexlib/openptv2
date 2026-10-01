@@ -7,7 +7,7 @@ This file replaces all earlier tracking plans, including `new_tracking_plan.md` 
 
 ---
 
-# STATUS AND HANDOFF (updated 2026-10-02, read this first)
+# STATUS AND HANDOFF (updated 2026-10-02 evening, read this first)
 
 ## Where we are
 Branch `feat/tracker-improvements`. Goal unchanged: correct Lagrangian trajectories,
@@ -259,6 +259,26 @@ The user decided **yes** to all three: (1) release openptv2 with `quality_post`;
   forbid a combination and a purer mark. A further cue for 3-camera points (is there a blob at
   the projection in the missing camera?) is weak (AUC 0.69). The ghost cues available
   saturate near AUC 0.92.
+
+- **End-to-end on the full real CompleteTest data** (1072 frames, wp1 and wp2, released openptv2
+  0.5.13 through the openptv-cloud tracking, post and analyze phases; `bench/step16_…`).
+  Old behaviour (no ghost marks, flowtracks smoother) → new defaults → new defaults + trimming
+  (wp1 / wp2):
+
+  | | Old | New defaults | + trim 0.3 |
+  |---|---|---|---|
+  | Tracks | 20778 / 19753 | **17518 / 16656** | 16999 / 16196 |
+  | Mean length (frames) | 57.4 / 58.4 | **65.6 / 66.7** | 66.7 / 67.7 |
+  | Tracks of ≥50 frames | 6279 / 6099 | 6218 / 5994 | 6157 / 5941 |
+  | Median velocity change between frames (mm/s) | 8.13 / 8.27 | **7.94 / 8.09** | 7.86 / 8.01 |
+  | Acceleration kurtosis | 58.7 / 58.6 | 66.2 / 47.1 | 71.2 / 42.1 |
+
+  So: 16% fewer (short, junk) tracks, 14% longer mean length, the long tracks kept, 2–3%
+  smoother velocities; the acceleration kurtosis is mixed (up on wp1, down on wp2). The
+  Eulerian averages barely move (velocity and kinetic energy about 1.4 points closer to the
+  legacy table, shear stress and dissipation unchanged); the offsets to that legacy table
+  (−12% velocity, −23% shear stress, −45% dissipation, jet region −90%) come from other
+  differences in the analysis, not from tracking.
 
 ## What can be next (ranked by expected gain)
 The remaining error on the real-jitter case, step by step (velocity error; perfect linker
