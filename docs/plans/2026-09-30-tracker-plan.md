@@ -7,7 +7,7 @@ This file replaces all earlier tracking plans, including `new_tracking_plan.md` 
 
 ---
 
-# STATUS AND HANDOFF (updated 2026-10-01 evening, read this first)
+# STATUS AND HANDOFF (updated 2026-10-01 night, read this first)
 
 ## Where we are
 Branch `feat/tracker-improvements`. Goal unchanged: correct Lagrangian trajectories,
@@ -101,22 +101,65 @@ real-jitter case, base = `q_seed=0.2`, `q_young=3`; velocity error / points kept
   "accuracy ranks above density" rule this is accepted, but it is a decision: make it an
   option with the threshold visible, default 0.3.
 
+### Repeat of the real-data check and what was put into the product (2026-10-01 night)
+**Real data, `q_seed=0.2`, `q_young=3` against off** (re-tracked on scratch copies; the
+CompleteTest runs use their own settings, the lv_multi runs were re-done with
+`confirm_tol=0.3`, `confirm_ends=true`):
+
+| Dataset | Trajectories | Mean length | Long trajectories never seen by 4 cameras | Jump share |
+|---|---|---|---|---|
+| CompleteTest wp1 (300 fr) | 17036 → 15874 | 19.0 → 19.7 | 11.3% → 9.9% | 1.47% → 1.45% |
+| CompleteTest wp2 (300 fr) | 16375 → 15310 | 19.5 → 20.2 | 11.6% → 10.4% | 1.46% → 1.45% |
+| lv_multi wp4 (20 fr, confirm on) | 2106 → 1721 | 7.9 → 8.6 | 11.8% → 9.1% | 0.0% → 0.0% |
+| lv_multi wp5 (20 fr, confirm on) | 2763 → 2368 | 7.3 → 7.7 | 9.6% → 8.1% | 0.0% → 0.0% |
+
+All four agree with the synthetic result, so the values are kept. **Finding: the lv_multi
+jump steps (wp4 6.7%, wp5 8.4%) were not ghosts but the missing `confirm_tol`:** the
+lv_multi `parameters_*.yaml` have no `confirm_tol`; with `confirm_tol=0.3`,
+`confirm_ends=true` (as the CompleteTest yaml) both go to 0.0%. Every synthetic benchmark
+case already uses it, so the synthetic gains are on top of confirmation. **Open decision:**
+make `confirm_tol` a default of the two_phase plugin (it is the one proven win; the scale
+should follow the data, the CompleteTest value is 0.3 for a 0.08 mm step).
+
+**Flagged share** (stored marks, share of points with ghost probability above 0.2 / 0.3 /
+0.5): synthetic 10.3 / 5.7 / 2.0%; CompleteTest 9.9 / 4.4 / 0.6%; lv_multi 18 / 10 / 2.2%
+(half of its points have three cameras). Used in the documentation as a sanity check.
+
+**Implemented (committed):**
+- openptv2 `33a65c06`: `two_phase` plugin has `q_seed=0.2`, `q_young=3` as defaults (switch
+  off with `q_seed: null`, `q_young: 0`; it also switches off by itself, with a message,
+  without calibrations); the ghost probability is stored in the run store
+  (`quality/frame_NNNNNN`, `RunStore.write_point_quality` / `read_point_quality`);
+  `trim_doubtful_ends` never cuts more than a quarter of a trajectory per end;
+  `weighted_savgol` uses the largest odd window for short tracks;
+  **documentation `docs/tracking_quality.md`** (what the marks are, the thresholds, when
+  to change them, how to test them, trim and smoother) linked from `mkdocs.yml`,
+  `docs/trackers.md` and `docs/two-phase-tracking.md`.
+- openptv-cloud, branch `feat/gap-aware-smoothing-trim` (commit `614f86d`, not pushed,
+  `main` untouched): `trajectories.smoothing_method` (`gap_aware` default, or
+  `flowtracks`), optional `trajectories.trim_doubtful` / `trim_max_points`, validation in
+  `review.py`, docs in `docs/experiment-yaml.md`, 9 new tests. `gap_aware` needs an
+  openptv2 that contains `quality_post` (not in the released 0.5.11); with the old one it
+  falls back to flowtracks and prints a warning. **To make it effective: release openptv2
+  and raise the `openptv2>=` pin in openptv-cloud's `pyproject.toml`.**
+
+**Baseline label change:** plain `two_phase` now includes the quality rules. The old
+behaviour is `two_phase+q_seed=null+q_young=0`. Old `eval.json` files under the label
+`two_phase` are the old behaviour.
+
 ## Next steps, in this order
-1. **Put the results into the product, behind options:**
-   - make `q_seed=0.2`, `q_young=3` the `two_phase` preset values once the real-data
-     checks above are repeated on wp1 and lv_multi wp4 (they agreed so far on wp2, wp5);
-   - add a post step `trim_doubtful_ends` (threshold 0.3, max 3 points) to the pipeline
-     after `postptv` repair, and use `weighted_savgol` (unit weights) for the final
-     smoothing; look where smoothing is called in the postptv step and in
-     `openptv2.benchmarking`;
-   - unit tests exist for `quality_post`; add an end-to-end test of the pipeline step.
-2. **Find out why lv_multi wp5 has 8% jump steps.** Quality marks and trimming only
-   lower it by 0.3–0.9 points, so the wrong links there are not mainly ghosts. Compare
-   the density and the jitter of wp5 with wp4 (0% jumps), look at where the jumps are
-   (by position and by camera count) and test `q_seed` smaller, `v_max` and `dacc`.
-3. **A7** better smoothness check (the one measured win), then **A2** (camera count in the
-   cost that works also with `leaf_weight=0`), **A12**, **A13**; order in section 7.
-4. Later: soft use at the correspondence step (A11), speed (S0/S1), chunks (P3).
+1. **Release step (needs the user):** release openptv2 with `quality_post`, bump the pin in
+   openptv-cloud, merge `feat/gap-aware-smoothing-trim`. Decide on `confirm_tol` as a
+   default (see above).
+2. **A7 better smoothness check** (the one measured win): backward check, a tolerance from
+   the measured shake instead of a fixed number, and "2 of 3 steps must fail" on long
+   tracks. Measure against `confirm_tol` 0.15 / 0.2 / 0.3 / 0.45 / 0.6 on all five cases
+   and on real data; the plan's rules in section 2 apply.
+3. **A2** (camera count in the cost that also works with `leaf_weight=0`), **A12**, **A13**;
+   order in section 7.
+4. Later: soft use at the correspondence step (A11), speed (S0/S1), chunks (P3). Speed note:
+   the quality rules add about 1 s to a 200-frame run (rcm per frame, mark storage), +14%;
+   within the budget but worth a profile in S0.
 
 ## Commands (all from the repo root, always `uv run`)
 ```bash
@@ -161,6 +204,12 @@ uv run python scripts/tune_summary.py q_seed q_young
   fails on a missing `flowtracks` module; it is not related to this work.
 - The synthetic ghosts are almost stationary (static false targets); real data has far
   fewer. Never tune a ghost rule on speed.
+- **openptv-cloud is a separate repo** (`~/Documents/Github/openptv-cloud`, python 3.12 venv
+  with the released openptv2). Work on a branch, never on `main`. Its tests import
+  `quality_post` from the openptv2 checkout (see `tests/test_trajectory_quality.py`).
+  `tests/test_e2e_reproducibility.py` failed once in a full run and passed on rerun (flaky).
+- zsh has no `read -a`; pass override lists to `scripts/real_retrack.py` as separate
+  arguments (`key=value key=value`), never as one string.
 - Scratch measurement scripts that are NOT in `scripts/` (they live in a session scratch
   folder): `rcm_geom.py`, `rcm_norm.py`, `plot_rcm.py`, `ghost_feats.py`, `a10_lite.py`.
   The results they produced are written into section 4 and `bench/`; re-create them only
