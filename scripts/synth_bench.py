@@ -279,10 +279,11 @@ def _render_cals(cals, cpar):
 DEFAULT_SIGMA_PX = 0.04
 
 
-def case_name(level, mult, cluster, k, n_out, sigma_px=DEFAULT_SIGMA_PX):
+def case_name(level, mult, cluster, k, n_out, sigma_px=DEFAULT_SIGMA_PX, amp_jitter=0.0):
     """sigma_px (blob-centre noise) is part of the name only when changed, so
     the existing case names stay valid; e.g. ..._s0.06 is the real-jitter case."""
     tag = "" if sigma_px == DEFAULT_SIGMA_PX else f"_s{sigma_px:g}"
+    tag += f"_a{amp_jitter:g}" if amp_jitter else ""
     return f"{level}_d{mult:g}_c{cluster:g}_k{k}_n{n_out}{tag}"
 
 
@@ -442,10 +443,10 @@ NOISE_MM = {"L0": 0.0, "L1": 0.094, "L2": 0.094}
 
 def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
                seed: int = 0, sigma_px: float = DEFAULT_SIGMA_PX,
-               amp_min: float = 49.0) -> Path:
+               amp_min: float = 49.0, amp_jitter: float = 0.0) -> Path:
     from openptv2.storage import RunStore
 
-    name = case_name(level, mult, cluster, k, n_out, sigma_px)
+    name = case_name(level, mult, cluster, k, n_out, sigma_px, amp_jitter)
     case_dir = WORK / "cases" / name
     if case_dir.exists():
         shutil.rmtree(case_dir)
@@ -497,7 +498,10 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
                 xy = _project(pos[sel], render[cam] if level == "L1" else cals[cam], cpar)
                 vis = (xy[:, 0] >= 0) & (xy[:, 0] < imx) & (xy[:, 1] >= 0) & (xy[:, 1] < imy)
                 if level == "L1":
-                    rows, t_of = _target_rows(xy[vis], amp[sel][vis], True, sigma_px, rng,
+                    a_cam = amp[sel][vis]
+                    if amp_jitter:  # real blobs differ between cameras (~0.18 in log)
+                        a_cam = a_cam * np.exp(rng.normal(0, amp_jitter, len(a_cam)))
+                    rows, t_of = _target_rows(xy[vis], a_cam, True, sigma_px, rng,
                                               extra=false_t[fo, cam], amp_min=amp_min)
                 else:
                     rows, t_of = _target_rows(xy[vis], np.full(vis.sum(), 150.0), False, 0, rng)
@@ -1052,6 +1056,8 @@ def main(argv=None) -> None:
     b.add_argument("--k", type=int, default=1)
     b.add_argument("--n-out", type=int, default=200)
     b.add_argument("--seed", type=int, default=0)
+    b.add_argument("--amp-jitter", type=float, default=0.0,
+                   help="per-camera log-brightness scatter of a particle; ~0.18 matches real")
     b.add_argument("--sigma-px", type=float, default=DEFAULT_SIGMA_PX,
                    help="blob-centre noise (px); ~0.06 matches real jitter")
     t = sub.add_parser("track")
@@ -1072,7 +1078,7 @@ def main(argv=None) -> None:
     args = ap.parse_args(argv)
     if args.cmd == "build":
         build_case(args.level, args.mult, args.cluster, args.k, args.n_out, args.seed,
-                   args.sigma_px)
+                   args.sigma_px, amp_jitter=args.amp_jitter)
     elif args.cmd == "track":
         track(args.case, args.tracker)
     elif args.cmd == "report":
