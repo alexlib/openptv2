@@ -114,6 +114,29 @@ def write_linkage(
             )
 
 
+def write_linkage_frames(
+    linkage_base: str,
+    frames: dict[int, tuple[np.ndarray, np.ndarray, np.ndarray]],
+    dirty: Any,
+    store: Any = None,
+) -> None:
+    """Write the ``dirty`` frames of ``frames`` ({k: (prev, next, xyz)}). With a
+    store this is ONE committed block write instead of a write per frame."""
+    ks = sorted(dirty)
+    if store is not None:
+        if ks:
+            store.write_linkage_many(
+                ks,
+                [(frames[k][0], frames[k][1]) for k in ks],
+                [frames[k][2] for k in ks],
+                name=Path(linkage_base).name,
+            )
+        return
+    for k in ks:
+        prev, nxt, xyz = frames[k]
+        write_linkage(linkage_base, k, prev, nxt, xyz, store=None)
+
+
 def count_links(linkage_base: str, first: int, last: int, store: Any = None) -> int:
     """Total forward links across the sequence (particles with next >= 0)."""
     total = 0
@@ -218,9 +241,7 @@ def enforce_reciprocity(
                     severed_prev += 1
                     dirty.add(k)
 
-    for k in dirty:
-        prev, nxt, xyz = frames[k]
-        write_linkage(linkage_base, k, prev, nxt, xyz, store=store)
+    write_linkage_frames(linkage_base, frames, dirty, store=store)
 
     return {"severed_next": severed_next, "severed_prev": severed_prev}
 
@@ -386,9 +407,7 @@ def confirm_links(
         frames[ks[t0]][1][r0] = NEXT_NONE
         frames[ks[t1]][0][r1] = PREV_NONE
         dirty.update((ks[t0], ks[t1]))
-    for k in dirty:
-        prev, nxt, xyz = frames[k]
-        write_linkage(linkage_base, k, prev, nxt, xyz, store=store)
+    write_linkage_frames(linkage_base, frames, dirty, store=store)
     return {"links": len(links), "severed": len(severed)}
 
 
@@ -586,8 +605,6 @@ def relink_trajectory_gaps(
                 dirty.add(k)
                 dirty.add(k + gap + 1)
 
-    for m in dirty:
-        prev_m, next_m, xyz_m = frames[m]
-        write_linkage(linkage_base, m, prev_m, next_m, xyz_m, store=store)
+    write_linkage_frames(linkage_base, frames, dirty, store=store)
 
     return {"bridged_gaps": bridged}

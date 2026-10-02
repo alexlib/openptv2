@@ -629,28 +629,21 @@ def read_zarr_trajectories(
             "ptv_is" if "ptv_is" in link_root else next(iter(link_root.keys()), None)
         )
         link_group: Any = link_root[linkage_name] if linkage_name else None
-        frame_keys = (
-            sorted(
-                [k for k in link_group.keys() if k.startswith("frame_")],
-                key=lambda k: int(k.split("_")[1]),
-            )
-            if link_group is not None
-            else []
-        )
-        if first is not None:
-            frame_keys = [k for k in frame_keys if int(k.split("_")[1]) >= first]
-        if last is not None:
-            frame_keys = [k for k in frame_keys if int(k.split("_")[1]) <= last]
+        from .linkage_blocks import iter_linkage
+
+        frame_iter = iter_linkage(link_group) if link_group is not None else iter(())
 
         pos_l, time_l, trajid_l = [], [], []
         prev_trajids = None
         prev_frame_num = None
         next_trajid = 0
-        for fkey in frame_keys:
-            frame_num = int(fkey.split("_")[1])
-            fg = link_group[fkey]
+        for frame_num, fg in frame_iter:
+            if (first is not None and frame_num < first) or (
+                last is not None and frame_num > last
+            ):
+                continue
             prev_ids = np.asarray(fg["prev"])
-            pos = np.asarray(fg["pos"]) / 1000.0  # mm to meters for Flowtracks standard
+            pos = np.asarray(fg["pos"]).reshape(-1, 3) / 1000.0  # mm to meters for Flowtracks standard
             n = len(pos)
             trajids = np.empty(n, dtype=np.int64)
             if prev_trajids is not None and prev_frame_num != frame_num - 1:

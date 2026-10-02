@@ -45,7 +45,7 @@ import hashlib
 import numpy as np
 
 from ..tracking_postprocess import MAX_LINK_STEP
-from .run_store import RunStore, RunStoreError, _frame_num
+from .run_store import RunStore, RunStoreError
 
 MM_TO_M = 1.0 / 1000.0
 
@@ -53,14 +53,7 @@ MM_TO_M = 1.0 / 1000.0
 def compute_source_hash(store: RunStore, name: str = "ptv_is") -> str:
     """Deterministic hash of one linkage stream's content, in frame order."""
     h = hashlib.sha256()
-    frames = (
-        sorted(
-            (_frame_num(k) for k in store.root[f"linkage/{name}"].keys()),
-        )
-        if f"linkage/{name}" in store.root
-        else []
-    )
-    for frame in frames:
+    for frame in store.linkage_frames(name):
         prev, next_, pos = store.read_linkage(frame, name)
         h.update(prev.tobytes())
         h.update(next_.tobytes())
@@ -97,8 +90,7 @@ def seal(
     ):
         return {"skipped": True, "reason": "already sealed at this source_hash"}
 
-    frame_keys = sorted(store.root[f"linkage/{name}"].keys(), key=_frame_num)
-    frames = [_frame_num(k) for k in frame_keys]
+    frames = store.linkage_frames(name)
 
     pos_l, time_l, trajid_l = [], [], []
     per_frame_trajid: dict[int, np.ndarray] = {}
@@ -165,8 +157,7 @@ def seal(
             del history[old]
 
     # Write the labelling back onto each linkage frame group.
-    for frame, trajids in per_frame_trajid.items():
-        store.set_trajid(frame, name, trajids)
+    store.set_trajid_many(name, per_frame_trajid)
 
     if not pos_l:
         store.write_traj_index(

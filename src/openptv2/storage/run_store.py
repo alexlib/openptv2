@@ -14,8 +14,11 @@ there that this module fixes:
   numeric sort agree past 5-digit frame numbers.
 
 Per-frame groups (``targets/``, ``correspondences/``, ``linkage/``) are the
-permanent format: each frame's arrays are independent Zarr arrays, so
-parallel workers can write distinct frames with no locking. ``seal()`` (see
+format for many concurrent writers: each frame's arrays are independent Zarr
+arrays, so parallel workers can write distinct frames with no locking. The
+tracker, a single sequential writer, stores its output (``linkage/``,
+``quality/``) as blocks instead (see ``linkage_blocks``): ~100x fewer zarr
+objects, committed atomically. Per-frame linkage still reads. ``seal()`` (see
 ``seal.py``) is the only code path in the project that walks the
 ``prev``/``next`` linkage graph; everything else reads one frame directly, or
 reads the sealed ``trajectories/`` / ``traj/`` groups it produces.
@@ -30,6 +33,8 @@ from typing import Any, Optional, Union, cast
 
 import numpy as np
 import zarr
+
+from .linkage_blocks import BlockSet, committed_gen
 
 
 def _require_group(parent: Any, name: str) -> Any:
@@ -160,6 +165,7 @@ class RunStore:
         # through one re-entrant lock makes each operation atomic; the lock
         # granularity is per-frame-array, so throughput stays I/O-bound.
         self._lock = threading.RLock()
+        self._bs: dict[str, BlockSet] = {}  # linkage name -> blocks ('' = quality)
         self.root: Any
         try:
             self.root = zarr.open_group(str(self.store_path), mode=cast(Any, mode))
@@ -378,22 +384,78 @@ class RunStore:
     def has_correspondences(self, frame: int) -> bool:
         return f"correspondences/{_frame_key(frame)}" in self.root
 
+    def _blocks(self, group_path: str) -> Optional[BlockSet]:
+        """BlockSet of an existing group, cached; None if the group is absent."""
+        if group_path not in self.root:
+            return None
+        bs = self._bs.get(group_path)
+        if bs is None:
+            bs = self._bs[group_path] = BlockSet(self.root[group_path])
+        return bs
+
+    def _block_mode(self, group_path: str) -> Optional[BlockSet]:
+        """The BlockSet if the group already holds committed blocks (then every
+        new write goes to blocks so the newest generation always wins)."""
+        bs = self._blocks(group_path)
+        return bs if bs is not None and committed_gen(bs.group) > 0 else None
+
+    def _drop_per_frame(self, group_path: str, frames: list[int]) -> None:
+        """Best-effort removal of legacy per-frame entries a committed block now
+        shadows (re-tracking over an older store). Runs AFTER the commit, so an
+        interruption only leaves harmless, already-shadowed data behind."""
+        if group_path not in self.root:
+            return
+        grp = self.root[group_path]
+        for f in frames:
+            key = _frame_key(f)
+            try:
+                if key in grp:
+                    del grp[key]
+            except Exception:
+                pass
+
     def write_point_quality(self, frame: int, ghost_prob: np.ndarray) -> None:
         """Per-point ghost probability (N,) from ray convergence, row-aligned with
         the correspondences of ``frame`` (openptv2.point_quality, plan A10)."""
         ghost_prob = np.asarray(ghost_prob, dtype=np.float32).reshape(-1)
         try:
-            self.root.require_group("quality").create_array(
-                _frame_key(frame), data=ghost_prob, overwrite=True
-            )
+            bs = self._block_mode("quality")
+            if bs is not None:
+                bs.write([frame], {"ghost": [ghost_prob]})
+            else:
+                self.root.require_group("quality").create_array(
+                    _frame_key(frame), data=ghost_prob, overwrite=True
+                )
         except Exception as exc:
             raise RunStoreError(
                 f"Failed to write point quality for frame {frame}: {exc}"
             ) from exc
         self._mark_unsealed()
 
+    def write_point_quality_many(
+        self, frames: list[int], ghost_prob: list[np.ndarray]
+    ) -> None:
+        """Whole-run point quality as blocks (see ``linkage_blocks``)."""
+        cols = {
+            "ghost": [np.asarray(g, dtype=np.float32).reshape(-1) for g in ghost_prob]
+        }
+        try:
+            self.root.require_group("quality")
+            self._blocks("quality").write(list(frames), cols)  # type: ignore[union-attr]
+            self._drop_per_frame("quality", list(frames))
+        except Exception as exc:
+            raise RunStoreError(
+                f"Failed to write point quality for {len(frames)} frames: {exc}"
+            ) from exc
+        self._mark_unsealed()
+
     def read_point_quality(self, frame: int) -> np.ndarray | None:
         """Ghost probability per point of ``frame``, or None if never computed."""
+        bs = self._blocks("quality")
+        if bs is not None:
+            cols = bs.read(frame)
+            if cols is not None:
+                return cols["ghost"]
         try:
             return np.asarray(self.root["quality"][_frame_key(frame)])
         except KeyError:
@@ -446,6 +508,14 @@ class RunStore:
                 f"prev={prev_ids.shape[0]} next={next_ids.shape[0]} pos={n}"
             )
         try:
+            bs = self._block_mode(f"linkage/{name}")
+            if bs is not None:
+                cols = {"prev": [prev_ids], "next": [next_ids], "pos": [pos_3d]}
+                if prio is not None:
+                    cols["prio"] = [np.asarray(prio, dtype=np.int32)]
+                bs.write([frame], cols)
+                self._mark_unsealed()
+                return
             fg = _require_group(
                 _require_group(self.root["linkage"], name), _frame_key(frame)
             )
@@ -462,96 +532,50 @@ class RunStore:
             ) from exc
         self._mark_unsealed()
 
-    def _write_many(self, group_path: str, jobs: list[tuple[str, dict]]) -> None:
-        """Create many per-frame arrays concurrently on zarr's event loop.
-
-        ``jobs``: ``(array path relative to group_path, data-by-name)`` pairs.
-        Layout and per-array atomicity are identical to the one-at-a-time
-        writers; only the 3 blocking round trips per frame are overlapped.
-        """
-        from zarr.core.sync import sync
-
-        async def run() -> None:
-            import asyncio
-
-            grp = await self.root._async_group.require_group(group_path)
-            sem = asyncio.Semaphore(32)
-
-            async def one(frame_key: str, arrays: dict) -> None:
-                async with sem:
-                    fg = await grp.require_group(frame_key)
-                    await asyncio.gather(
-                        *(
-                            fg.create_array(k, data=v, overwrite=True)
-                            for k, v in arrays.items()
-                        )
-                    )
-
-            await asyncio.gather(*(one(k, a) for k, a in jobs))
-
-        sync(run())
-
     def write_linkage_many(
         self,
         frames: list[int],
         linkage: list[tuple[np.ndarray, np.ndarray]],
         pos_3d: list[np.ndarray],
         name: str = "ptv_is",
+        prio: Optional[list[np.ndarray]] = None,
     ) -> None:
-        """Batched :meth:`write_linkage` for one tracker output (same layout)."""
-        jobs = []
+        """Write many frames of linkage as blocks, committed by one attribute
+        write (see ``linkage_blocks``): a halted write leaves the previous
+        linkage intact. ``prio``: optional per-frame priority columns."""
+        cols: dict[str, list[np.ndarray]] = {"prev": [], "next": [], "pos": []}
         for f, (prv, nxt), pos in zip(frames, linkage, pos_3d):
             prv = np.asarray(prv, dtype=np.int32)
             nxt = np.asarray(nxt, dtype=np.int32)
-            pos = np.asarray(pos, dtype=np.float64)
+            pos = np.asarray(pos, dtype=np.float64).reshape(-1, 3)
             if prv.shape[0] != pos.shape[0] or nxt.shape[0] != pos.shape[0]:
                 raise RunStoreError(
                     f"linkage row-count mismatch for frame {f} ({name}): "
                     f"prev={prv.shape[0]} next={nxt.shape[0]} pos={pos.shape[0]}"
                 )
-            jobs.append((_frame_key(f), {"prev": prv, "next": nxt, "pos": pos}))
+            cols["prev"].append(prv)
+            cols["next"].append(nxt)
+            cols["pos"].append(pos)
+        if prio is not None:
+            cols["prio"] = [np.asarray(p, dtype=np.int32) for p in prio]
         try:
             _require_group(self.root["linkage"], name)
-            self._write_many(f"linkage/{name}", jobs)
+            self._blocks(f"linkage/{name}").write(list(frames), cols)  # type: ignore[union-attr]
+            self._drop_per_frame(f"linkage/{name}", list(frames))
         except Exception as exc:
             raise RunStoreError(
-                f"Failed to write linkage '{name}' for {len(jobs)} frames: {exc}"
-            ) from exc
-        self._mark_unsealed()
-
-    def write_point_quality_many(
-        self, frames: list[int], ghost_prob: list[np.ndarray]
-    ) -> None:
-        """Batched :meth:`write_point_quality` (same layout)."""
-        jobs = [
-            (_frame_key(f), np.asarray(g, dtype=np.float32).reshape(-1))
-            for f, g in zip(frames, ghost_prob)
-        ]
-        try:
-            from zarr.core.sync import sync
-
-            async def run() -> None:
-                import asyncio
-
-                grp = await self.root._async_group.require_group("quality")
-                sem = asyncio.Semaphore(32)
-
-                async def one(key: str, arr: np.ndarray) -> None:
-                    async with sem:
-                        await grp.create_array(key, data=arr, overwrite=True)
-
-                await asyncio.gather(*(one(k, a) for k, a in jobs))
-
-            sync(run())
-        except Exception as exc:
-            raise RunStoreError(
-                f"Failed to write point quality for {len(jobs)} frames: {exc}"
+                f"Failed to write linkage '{name}' for {len(frames)} frames: {exc}"
             ) from exc
         self._mark_unsealed()
 
     def read_linkage(
         self, frame: int, name: str = "ptv_is"
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        bs = self._blocks(f"linkage/{name}")
+        if bs is not None:
+            cols = bs.read(frame)
+            if cols is not None:
+                return cols["prev"], cols["next"], cols["pos"]
         key = f"linkage/{name}/{_frame_key(frame)}"
         try:
             fg = self.root[key]
@@ -562,6 +586,11 @@ class RunStore:
             ) from None
 
     def read_prio(self, frame: int, name: str = "ptv_is") -> Optional[np.ndarray]:
+        bs = self._blocks(f"linkage/{name}")
+        if bs is not None:
+            cols = bs.read(frame)
+            if cols is not None:
+                return cols.get("prio")
         key = f"linkage/{name}/{_frame_key(frame)}"
         try:
             return np.asarray(self.root[key]["prio"])
@@ -569,17 +598,45 @@ class RunStore:
             return None
 
     def has_linkage(self, frame: int, name: str = "ptv_is") -> bool:
+        bs = self._blocks(f"linkage/{name}")
+        if bs is not None and frame in bs:
+            return True
         return f"linkage/{name}/{_frame_key(frame)}" in self.root
+
+    def linkage_frames(self, name: str = "ptv_is") -> list[int]:
+        """Sorted frame numbers of one linkage stream (blocks and per-frame)."""
+        key = f"linkage/{name}"
+        if key not in self.root:
+            return []
+        found = {
+            _frame_num(k) for k in self.root[key].keys() if k.startswith("frame_")
+        }
+        bs = self._blocks(key)
+        if bs is not None:
+            found.update(bs.frames())
+        return sorted(found)
 
     def set_trajid(self, frame: int, name: str, trajid: np.ndarray) -> None:
         """Write the trajid labelling back into a linkage frame group.
         Called only by :func:`openptv2.storage.seal.seal`."""
-        key = f"linkage/{name}/{_frame_key(frame)}"
-        if key not in self.root:
-            raise RunStoreError(f"No linkage '{name}' stored for frame {frame}")
-        self.root[key].create_array(
-            "trajid", data=np.asarray(trajid, dtype=np.int32), overwrite=True
-        )
+        self.set_trajid_many(name, {frame: trajid})
+
+    def set_trajid_many(self, name: str, trajids: dict[int, np.ndarray]) -> None:
+        """Batched :meth:`set_trajid`: one array write per block, not per frame."""
+        missing = list(trajids)
+        bs = self._blocks(f"linkage/{name}")
+        if bs is not None:
+            missing = bs.set_column(
+                "trajid",
+                {f: np.asarray(t, dtype=np.int32) for f, t in trajids.items()},
+            )
+        for frame in missing:
+            key = f"linkage/{name}/{_frame_key(frame)}"
+            if key not in self.root:
+                raise RunStoreError(f"No linkage '{name}' stored for frame {frame}")
+            self.root[key].create_array(
+                "trajid", data=np.asarray(trajids[frame], dtype=np.int32), overwrite=True
+            )
 
     def linkage_names(self) -> list[str]:
         return sorted(self.root["linkage"].keys())
@@ -596,6 +653,7 @@ class RunStore:
         instead of freshly computed links. No-op if the group is absent.
         """
         key = f"linkage/{name}"
+        self._bs.pop(key, None)
         if key in self.root:
             del self.root[key]
             self._mark_unsealed()
@@ -611,9 +669,13 @@ class RunStore:
         for grp_path in [source] if source else ["correspondences", "linkage/ptv_is"]:
             if grp_path not in self.root:
                 continue
-            keys = [k for k in self.root[grp_path].keys() if k.startswith("frame_")]
-            if keys:
-                return sorted(_frame_num(k) for k in keys)
+            found = {
+                _frame_num(k) for k in self.root[grp_path].keys() if k.startswith("frame_")
+            }
+            if grp_path.startswith("linkage/"):
+                found.update(self.linkage_frames(grp_path.split("/", 1)[1]))
+            if found:
+                return sorted(found)
         cams = self.target_cameras()
         if cams:
             keys = [
