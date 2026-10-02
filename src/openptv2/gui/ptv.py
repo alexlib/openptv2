@@ -848,12 +848,17 @@ def _frame_image_name(base_name, frame: int) -> Path:
     # e.g. "img\\frame_%06d.tif" resolves to a single-component filename that
     # never exists instead of img/frame_NNNNNN.tif. '/' works on both OSes.
     base_name = base_name.replace("\\", "/")
-    try:
-        p = Path(base_name % frame)
-    except (TypeError, ValueError):
-        # No usable % placeholder: append the frame number (legacy naming).
-        base_path = Path(base_name)
-        p = base_path.parent / f"{base_path.stem}_{frame:04d}{base_path.suffix}"
+    base_path = Path(base_name)
+    if base_path.exists():
+        return base_path
+
+    if "%" in base_name:
+        try:
+            p = Path(base_name % frame)
+        except (TypeError, ValueError):
+            p = base_path
+    else:
+        p = base_path
 
     if p.exists():
         return p
@@ -866,15 +871,15 @@ def _frame_image_name(base_name, frame: int) -> Path:
     if ci_match is not None:
         return Path(ci_match)
 
-    # If the exact path does not exist, look for matching prefix files (e.g. 00001901_000000007383A010.tiff)
+    # If the exact path does not exist, look for matching prefix files (e.g. 00010001_000000007383A010.tiff)
     # glob ordering is filesystem-dependent — sort deterministically
     if p.parent.exists():
         candidates = sorted(p.parent.glob(f"{p.name}*"))
         if not candidates and p.suffix:
             candidates = sorted(p.parent.glob(f"{p.stem}*"))
-        if not candidates:
+        if not candidates and frame > 0:
             candidates = sorted(p.parent.glob(f"{frame:08d}*"))
-        if not candidates:
+        if not candidates and frame > 0:
             candidates = sorted(p.parent.glob(f"{frame:04d}*"))
         if candidates:
             img_cands = sorted(
@@ -884,6 +889,12 @@ def _frame_image_name(base_name, frame: int) -> Path:
                 in (".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp")
             )
             return img_cands[0] if img_cands else sorted(candidates)[0]
+
+    # Legacy fallback: append _{frame:04d}
+    if "%" not in base_name and frame > 0:
+        legacy_p = base_path.parent / f"{base_path.stem}_{frame:04d}{base_path.suffix}"
+        if legacy_p.exists():
+            return legacy_p
 
     return p
 

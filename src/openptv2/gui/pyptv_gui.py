@@ -656,6 +656,14 @@ class TreeMenuHandler(Handler):
     def saveas_action(self, info):
         print("not implemented")
 
+    def init(self, info):
+        """Called automatically when the GUI window opens to load and display the active images."""
+        try:
+            self.init_action(info)
+        except Exception as e:
+            print(f"Warning: Auto-init on startup failed: {e}")
+        return True
+
     def init_action(self, info):
         """init_action - initializes the system using ParameterManager"""
         mainGui = info.object
@@ -682,9 +690,10 @@ class TreeMenuHandler(Handler):
                     mainGui.orig_images[i] = img_as_ubyte(split_img)
         else:
             for i, imname in enumerate(ptv_params["img_name"]):
-                if Path(imname).exists():
-                    print(f"Reading image {imname}")
-                    im = imread(imname)
+                resolved_name = ptv._frame_image_name(imname, 0)
+                if resolved_name.exists():
+                    print(f"Reading image {resolved_name}")
+                    im = imread(resolved_name)
                     if im.ndim > 2:
                         im = rgb2gray(im)
                 else:
@@ -2124,10 +2133,13 @@ class MainGUI(HasTraits):
                         temp_img = np.max([temp_img, _], axis=0)
                 self.camera_list[cam_id].update_image(temp_img)  # type: ignore
 
-    def load_disp_image(self, img_name: str, j: int, display_only: bool = False):
+    def load_disp_image(
+        self, img_name: str, j: int, display_only: bool = False, frame_num: int = 0
+    ):
         """Load and display single image"""
         try:
-            temp_img = imread(img_name)
+            resolved_name = ptv._frame_image_name(img_name, frame_num)
+            temp_img = imread(resolved_name if resolved_name.exists() else img_name)
             if temp_img.ndim > 2:
                 temp_img = rgb2gray(temp_img[:, :, :3])
             temp_img = img_as_ubyte(temp_img)
@@ -2153,9 +2165,9 @@ class MainGUI(HasTraits):
 
         if ptv_params.get("splitter", False):
             # Splitter mode - load one image and split it
-            imname = base_names[0] % seq_num
-            if Path(imname).exists():
-                temp_img = imread(imname)
+            resolved_name = ptv._frame_image_name(base_names[0], seq_num)
+            if resolved_name.exists():
+                temp_img = imread(resolved_name)
                 if temp_img.ndim > 2:
                     temp_img = rgb2gray(temp_img[:, :, :3])
                 splitted_images = ptv.image_split(
@@ -2164,12 +2176,12 @@ class MainGUI(HasTraits):
                 for i in range(self.num_cams):
                     self.camera_list[i].update_image(img_as_ubyte(splitted_images[i]))
             else:
-                print(f"Image {imname} does not exist")
+                print(f"Image {base_names[0]} (frame {seq_num}) does not exist")
         else:
             # Normal mode - load separate images for each camera
             for i in range(self.num_cams):
                 imname = base_names[i] % seq_num
-                self.load_disp_image(imname, i, display_only)
+                self.load_disp_image(imname, i, display_only, frame_num=seq_num)
 
     def save_parameters(self):
         """Save current parameters to YAML"""
