@@ -396,9 +396,6 @@ def _match_two_phase_frame(
         ]
 
     # Build edge list with 2D costs
-    rows: list[int] = []
-    cols: list[int] = []
-    costs: list[float] = []
     use_leaves = cost_mode == "projected" and leaf_weight > 0 and xy0.shape[1] > 0
     C = xy0.shape[1] // 2 if use_leaves else 0
 
@@ -418,41 +415,33 @@ def _match_two_phase_frame(
 
     seen0 = _resolve_seen(seen0, xy0, n_pred, "seen0")
     seen1 = _resolve_seen(seen1, xy1, n_cand, "seen1")
-    for pi in range(n_pred):
-        cands = neighbours[pi]
-        if len(cands) == 0:
-            continue
-        if use_leaves:
-            # 2D cost: mean Euclidean distance per camera, weighted by overlap count
-            xy0_cam = xy0[pi].reshape(C, 2)
-            d2d = np.zeros(len(cands))
-            for ci_idx, ci in enumerate(cands):
-                xy1_cam = xy1[ci].reshape(C, 2)
-                valid = np.asarray(seen0[pi]) & np.asarray(seen1[ci])
-                n_valid = valid.sum()
-                if n_valid > 0:
-                    cam_dists = np.linalg.norm(xy0_cam[valid] - xy1_cam[valid], axis=1)
-                    # Weight: more shared cameras = more reliable distance
-                    d2d[ci_idx] = cam_dists.mean() * (C / n_valid)
-                else:
-                    d2d[ci_idx] = 1e6
-            for ci_idx, ci in enumerate(cands):
-                rows.append(pi)
-                cols.append(ci)
-                costs.append(d2d[ci_idx] * leaf_weight)
-        else:
-            # Fallback: 3D distance
-            for ci in cands:
-                rows.append(pi)
-                cols.append(ci)
-                costs.append(np.linalg.norm(pts0[pi] - pts1[ci]))
-
-    if len(rows) == 0:
+    lens = np.fromiter((len(c) for c in neighbours), dtype=np.intp, count=n_pred)
+    n_edges = int(lens.sum())
+    if n_edges == 0:
         return set(), set()
-
-    row_arr = np.array(rows)
-    col_arr = np.array(cols)
-    cost_arr = np.array(costs)
+    row_arr = np.repeat(np.arange(n_pred), lens)
+    col_arr = np.fromiter(
+        (c for lst in neighbours for c in lst), dtype=np.intp, count=n_edges
+    )
+    if use_leaves:
+        # 2D cost: mean Euclidean distance per camera, weighted by overlap count
+        valid = seen0[row_arr] & seen1[col_arr]
+        n_valid = valid.sum(axis=1)
+        with np.errstate(invalid="ignore"):
+            cam_dists = np.linalg.norm(
+                xy1[col_arr].reshape(n_edges, C, 2)
+                - xy0[row_arr].reshape(n_edges, C, 2),
+                axis=2,
+            )
+        # Unseen cameras may hold NaN: mask them out, never multiply by 0
+        sum_dists = np.where(valid, cam_dists, 0.0).sum(axis=1)
+        nv = np.maximum(n_valid, 1)
+        # Weight: more shared cameras = more reliable distance
+        d2d = np.where(n_valid > 0, sum_dists / nv * (C / nv), 1e6)
+        cost_arr = d2d * leaf_weight
+    else:
+        # Fallback: 3D distance
+        cost_arr = np.linalg.norm(pts0[row_arr] - pts1[col_arr], axis=1)
     if logb0 is not None and logb1 is not None and blob_gate:
         with np.errstate(all="ignore"):
             delta = np.nanmean(np.abs(logb1[col_arr] - logb0[row_arr]), axis=1)
