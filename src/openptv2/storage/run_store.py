@@ -462,6 +462,93 @@ class RunStore:
             ) from exc
         self._mark_unsealed()
 
+    def _write_many(self, group_path: str, jobs: list[tuple[str, dict]]) -> None:
+        """Create many per-frame arrays concurrently on zarr's event loop.
+
+        ``jobs``: ``(array path relative to group_path, data-by-name)`` pairs.
+        Layout and per-array atomicity are identical to the one-at-a-time
+        writers; only the 3 blocking round trips per frame are overlapped.
+        """
+        from zarr.core.sync import sync
+
+        async def run() -> None:
+            import asyncio
+
+            grp = await self.root._async_group.require_group(group_path)
+            sem = asyncio.Semaphore(32)
+
+            async def one(frame_key: str, arrays: dict) -> None:
+                async with sem:
+                    fg = await grp.require_group(frame_key)
+                    await asyncio.gather(
+                        *(
+                            fg.create_array(k, data=v, overwrite=True)
+                            for k, v in arrays.items()
+                        )
+                    )
+
+            await asyncio.gather(*(one(k, a) for k, a in jobs))
+
+        sync(run())
+
+    def write_linkage_many(
+        self,
+        frames: list[int],
+        linkage: list[tuple[np.ndarray, np.ndarray]],
+        pos_3d: list[np.ndarray],
+        name: str = "ptv_is",
+    ) -> None:
+        """Batched :meth:`write_linkage` for one tracker output (same layout)."""
+        jobs = []
+        for f, (prv, nxt), pos in zip(frames, linkage, pos_3d):
+            prv = np.asarray(prv, dtype=np.int32)
+            nxt = np.asarray(nxt, dtype=np.int32)
+            pos = np.asarray(pos, dtype=np.float64)
+            if prv.shape[0] != pos.shape[0] or nxt.shape[0] != pos.shape[0]:
+                raise RunStoreError(
+                    f"linkage row-count mismatch for frame {f} ({name}): "
+                    f"prev={prv.shape[0]} next={nxt.shape[0]} pos={pos.shape[0]}"
+                )
+            jobs.append((_frame_key(f), {"prev": prv, "next": nxt, "pos": pos}))
+        try:
+            _require_group(self.root["linkage"], name)
+            self._write_many(f"linkage/{name}", jobs)
+        except Exception as exc:
+            raise RunStoreError(
+                f"Failed to write linkage '{name}' for {len(jobs)} frames: {exc}"
+            ) from exc
+        self._mark_unsealed()
+
+    def write_point_quality_many(
+        self, frames: list[int], ghost_prob: list[np.ndarray]
+    ) -> None:
+        """Batched :meth:`write_point_quality` (same layout)."""
+        jobs = [
+            (_frame_key(f), np.asarray(g, dtype=np.float32).reshape(-1))
+            for f, g in zip(frames, ghost_prob)
+        ]
+        try:
+            from zarr.core.sync import sync
+
+            async def run() -> None:
+                import asyncio
+
+                grp = await self.root._async_group.require_group("quality")
+                sem = asyncio.Semaphore(32)
+
+                async def one(key: str, arr: np.ndarray) -> None:
+                    async with sem:
+                        await grp.create_array(key, data=arr, overwrite=True)
+
+                await asyncio.gather(*(one(k, a) for k, a in jobs))
+
+            sync(run())
+        except Exception as exc:
+            raise RunStoreError(
+                f"Failed to write point quality for {len(jobs)} frames: {exc}"
+            ) from exc
+        self._mark_unsealed()
+
     def read_linkage(
         self, frame: int, name: str = "ptv_is"
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:

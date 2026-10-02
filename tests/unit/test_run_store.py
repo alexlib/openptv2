@@ -371,3 +371,27 @@ def test_point_quality_roundtrip_and_missing(tmp_path):
     assert got.shape == (3,) and np.allclose(got, [0.1, 0.9, 0.5], atol=1e-6)
     s.write_point_quality(3, np.array([0.2]))  # overwrite
     assert s.read_point_quality(3).shape == (1,)
+
+
+def test_batched_writes_match_single_frame_writes(tmp_path):
+    rng = np.random.default_rng(0)
+    frames = [3, 4, 7]
+    link = [
+        (rng.integers(-1, 9, n), rng.integers(-1, 9, n)) for n in (9, 5, 12)
+    ]
+    pos = [rng.normal(size=(n, 3)) for n in (9, 5, 12)]
+    ghost = [rng.random(n) for n in (9, 5, 12)]
+    one = RunStore(tmp_path / "one.zarr", mode="w")
+    many = RunStore(tmp_path / "many.zarr", mode="w")
+    for f, (p, n), x, g in zip(frames, link, pos, ghost):
+        one.write_linkage(f, p, n, x)
+        one.write_point_quality(f, g)
+    many.write_linkage_many(frames, link, pos)
+    many.write_point_quality_many(frames, ghost)
+    assert many.frames("linkage/ptv_is") == one.frames("linkage/ptv_is") == frames
+    for f in frames:
+        for a, b in zip(one.read_linkage(f), many.read_linkage(f)):
+            assert a.dtype == b.dtype and np.array_equal(a, b)
+        assert np.array_equal(one.read_point_quality(f), many.read_point_quality(f))
+    with pytest.raises(RunStoreError):
+        many.write_linkage_many([9], [(np.zeros(2), np.zeros(2))], [np.zeros((3, 3))])

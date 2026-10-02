@@ -1206,8 +1206,7 @@ class Tracking:
             frame_ghost = self._ghost_probabilities(
                 frame_particles, rcm_list, nseen_list, logb_list or None
             )
-            for f, g in zip(frames, frame_ghost):
-                store.write_point_quality(f, g)
+            store.write_point_quality_many(frames, frame_ghost)
         links = cast(
             list[tuple[int, int, int, int]],
             tracker.track_frames(
@@ -1239,9 +1238,7 @@ class Tracking:
             )
 
         linkage = _links_to_linkage(links, frames, [len(p) for p in frame_particles])
-        for i, f in enumerate(frames):
-            prv, nxt = linkage[i]
-            store.write_linkage(f, prv, nxt, frame_particles[i], name="ptv_is")
+        store.write_linkage_many(frames, linkage, frame_particles, name="ptv_is")
 
         print(
             f"TwoPhaseTracker: {len(links)} links across {len(frames)} frames "
