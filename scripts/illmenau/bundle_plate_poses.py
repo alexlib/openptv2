@@ -293,6 +293,9 @@ if WRITE:
         plate_rvec=res.plate_rvec,
         plate_tvec=res.plate_tvec,
         cc=CC,
+        # views that passed every gate; consumers that triangulate the raw
+        # labels must skip the rest (partly visible plates with wrong ids)
+        used_views=np.array([f"{ci}_{fr}" for ci, fr in sorted(good)], dtype=str),
     )
     print("\nwrote .ori + zeroed .addpar (first run kept the old ones as *.prebundle)")
     print(
