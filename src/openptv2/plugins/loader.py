@@ -35,6 +35,9 @@ BUILTIN_SEQUENCE_PLUGINS = {
     "contour_sequence": "openptv2.plugins.contour_sequence",
     "rembg_sequence": "openptv2.plugins.rembg_sequence",
     "rembg_contour_sequence": "openptv2.plugins.rembg_contour_sequence",
+    "bubble_sequence": "openptv2.plugins.bubble_sequence",
+    "bubble": "openptv2.plugins.bubble_sequence",
+    "bubble_detection": "openptv2.plugins.bubble_sequence",
 }
 
 BUILTIN_TRACKING_PLUGINS = {
@@ -72,6 +75,7 @@ LEGACY_ALIASES = {
     "ext_sequence_contour": "contour_sequence",
     "ext_sequence_rembg": "rembg_sequence",
     "ext_sequence_rembg_contour": "rembg_contour_sequence",
+    "ext_sequence_bubble": "bubble_sequence",
     "fast": "priority_segment_3d",
     "fast_3d": "priority_segment_3d",
     "cython_3d": "cython_3d_tracking",
