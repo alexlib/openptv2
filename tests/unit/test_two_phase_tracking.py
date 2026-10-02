@@ -444,3 +444,19 @@ def test_confirm_auto_is_guarded_by_density_and_noise_dominated_kink():
     tr2 = TwoPhaseTracker(cfg)
     tr2.track_frames(dense, None)
     assert tr2.last_confirm_info["auto"] is False and tr2.last_confirm_tol == 0.3
+
+
+def test_parallel_directions_matches_serial():
+    rng = np.random.default_rng(1)
+    base = rng.uniform(0, 50, (60, 3))
+    vel = rng.normal(0, 0.3, (60, 3))
+    frames = [base + t * vel + rng.normal(0, 0.02, (60, 3)) for t in range(8)]
+    leaves = [ident(f) for f in frames]
+    serial = TwoPhaseTracker(cfg(bidirectional=True)).track_frames(
+        frames, leaves, ident
+    )
+    par = TwoPhaseTracker(
+        cfg(bidirectional=True, parallel_directions=True)
+    ).track_frames(frames, leaves, ident)
+    assert sorted(serial) == sorted(par)
+    assert len(serial) > 0

@@ -205,6 +205,7 @@ class TwoPhaseTrackerConfig:
     confirm_auto_min_ratio: float = 0.5
     confirm_auto_radius: float = 5.0
     bidirectional: bool = False
+    parallel_directions: bool = False
     bwd_v_max: float | None = None
 
 
@@ -630,41 +631,68 @@ class TwoPhaseTracker:
                 frame_logb=frame_logb,
             )
 
-        # Bidirectional tracking: forward + backward on reversed frames
-        fwd_links = cast(
-            list[tuple[int, int, int, int]],
-            self._track_unidirectional(
-                frame_particles,
-                frame_leaves,
-                project_fn,
-                return_chains=False,
-                frame_seen=frame_seen,
-                frame_ghost=frame_ghost,
-                frame_logb=frame_logb,
-            ),
-        )
-
-        rev_particles = frame_particles[::-1]
-        rev_leaves = frame_leaves[::-1] if frame_leaves is not None else None
-        rev_seen = frame_seen[::-1] if frame_seen is not None else None
-        rev_ghost = frame_ghost[::-1] if frame_ghost is not None else None
-        rev_logb = frame_logb[::-1] if frame_logb is not None else None
+        # Bidirectional tracking: forward + backward on reversed frames.
+        # The two passes share no state, so they can run concurrently.
         bwd_vmax = (
             self.cfg.bwd_v_max if self.cfg.bwd_v_max is not None else self.cfg.v_max
         )
-        bwd_links_raw = cast(
-            list[tuple[int, int, int, int]],
-            self._track_unidirectional(
-                rev_particles,
-                rev_leaves,
-                project_fn,
-                return_chains=False,
-                v_max_override=bwd_vmax,
-                frame_seen=rev_seen,
-                frame_ghost=rev_ghost,
-                frame_logb=rev_logb,
-            ),
+
+        def _rev(x):
+            return x[::-1] if x is not None else None
+
+        fwd_kw = dict(
+            return_chains=False,
+            frame_seen=frame_seen,
+            frame_ghost=frame_ghost,
+            frame_logb=frame_logb,
         )
+        bwd_kw = dict(
+            return_chains=False,
+            v_max_override=bwd_vmax,
+            frame_seen=_rev(frame_seen),
+            frame_ghost=_rev(frame_ghost),
+            frame_logb=_rev(frame_logb),
+        )
+
+        def run_fwd():
+            return self._track_unidirectional(
+                frame_particles, frame_leaves, project_fn, **fwd_kw
+            )
+
+        def run_bwd():
+            return self._track_unidirectional(
+                frame_particles[::-1], _rev(frame_leaves), project_fn, **bwd_kw
+            )
+
+        if self.cfg.parallel_directions:
+            # Threads do not help (the matching loop is GIL-bound); fork a
+            # child for the backward pass. It inherits the frame arrays and
+            # closures copy-on-write; only the link list is sent back.
+            import multiprocessing as mp
+
+            ctx = mp.get_context("fork")
+            recv, send = ctx.Pipe(duplex=False)
+
+            def _child():
+                try:
+                    send.send(("ok", run_bwd()))
+                except BaseException as exc:  # report, never hang the parent
+                    send.send(("err", repr(exc)))
+                finally:
+                    send.close()
+
+            proc = ctx.Process(target=_child, daemon=True)
+            proc.start()
+            send.close()
+            fwd_links = cast(list[tuple[int, int, int, int]], run_fwd())
+            status, payload = recv.recv()
+            proc.join()
+            if status != "ok":
+                raise RuntimeError(f"backward tracking process failed: {payload}")
+            bwd_links_raw = cast(list[tuple[int, int, int, int]], payload)
+        else:
+            fwd_links = cast(list[tuple[int, int, int, int]], run_fwd())
+            bwd_links_raw = cast(list[tuple[int, int, int, int]], run_bwd())
         bwd_links = [
             (num_frames - 1 - rt1, rr1, num_frames - 1 - rt0, rr0)
             for (rt0, rr0, rt1, rr1) in bwd_links_raw
@@ -1167,6 +1195,7 @@ class Tracking:
             confirm_auto=confirm_auto,
             **confirm_guard,
             bidirectional=bidirectional,
+            parallel_directions=bool(track_cfg.get("parallel_directions", False)),
             bwd_v_max=bwd_v_max,
         )
         tracker = TwoPhaseTracker(cfg)
