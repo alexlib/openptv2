@@ -23,7 +23,7 @@
     
     
       
-        <title>Two-Phase Tracking: usage and parameters - OpenPTV2 Documentation</title>
+        <title>The two_phase tracker - OpenPTV2 Documentation</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#two-phase-tracking-usage-and-parameters" class="md-skip">
+        <a href="#the-two_phase-tracker" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Two-Phase Tracking: usage and parameters
+              The two_phase tracker
             
           </span>
         </div>
@@ -2158,10 +2158,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-how-to-use-it" class="md-nav__link">
+  <a href="#1-purpose" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. How to use it
+        1. Purpose
       
     </span>
   </a>
@@ -2169,10 +2169,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-parameters" class="md-nav__link">
+  <a href="#2-terms" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Parameters
+        2. Terms
       
     </span>
   </a>
@@ -2180,10 +2180,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-how-it-behaves-caveats" class="md-nav__link">
+  <a href="#3-overview-of-one-step" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. How it behaves (caveats)
+        3. Overview of one step
       
     </span>
   </a>
@@ -2191,10 +2191,137 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-tuning-recipe" class="md-nav__link">
+  <a href="#4-prediction" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Tuning recipe
+        4. Prediction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-phase-1-the-3d-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Phase 1: the 3D search
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-phase-2-the-2d-cost-and-the-assignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Phase 2: the 2D cost and the assignment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Phase 2: the 2D cost and the assignment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-track-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Track update
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-confirmation-the-main-accuracy-gain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Confirmation (the main accuracy gain)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-optional-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Optional modes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Use
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-tuning-procedure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Tuning procedure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-known-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Known limits
       
     </span>
   </a>
@@ -2221,186 +2348,251 @@
   
 
 
-<h1 id="two-phase-tracking-usage-and-parameters">Two-Phase Tracking: usage and parameters<a class="headerlink" href="#two-phase-tracking-usage-and-parameters" title="Permanent link">&para;</a></h1>
-<p>Two-Phase (<code>selected_tracking: two_phase</code>,
-<code>src/openptv2/plugins/two_phase_tracking.py</code>) links particles in two steps:
-<strong>Phase 1</strong> finds candidates with a 3D KD-tree around each track's predicted
-position; <strong>Phase 2</strong> ranks them by per-camera 2D image distance and solves a
-Hungarian assignment per connected group. 3D proposes, the images dispose.</p>
-<h2 id="1-how-to-use-it">1. How to use it<a class="headerlink" href="#1-how-to-use-it" title="Permanent link">&para;</a></h2>
-<p><strong>GUI:</strong> Plugins page → tracking plugin → <code>two_phase</code>. Parameters live in
-the <code>track</code> section (same names as below).</p>
-<p><strong>Batch/YAML:</strong> minimal setup —
+<h1 id="the-two_phase-tracker">The two_phase tracker<a class="headerlink" href="#the-two_phase-tracker" title="Permanent link">&para;</a></h1>
+<p>Source: <code>src/openptv2/plugins/two_phase_tracking.py</code>.
+Select it with <code>selected_tracking: two_phase</code> (GUI: Plugins page, tracking plugin).
+All parameters are in the <code>track</code> section of the YAML file.
+This document uses the ASD-STE100 style (Simplified Technical English).</p>
+<h2 id="1-purpose">1. Purpose<a class="headerlink" href="#1-purpose" title="Permanent link">&para;</a></h2>
+<p>The tracker links 3D particle positions from frame to frame. The result is a set of trajectories.</p>
+<p>The tracker uses two phases to find each link:</p>
+<ul>
+<li><strong>Phase 1</strong> uses the 3D positions to find candidates.</li>
+<li><strong>Phase 2</strong> uses the camera images to choose the best candidate.</li>
+</ul>
+<p>In short, the 3D data proposes and the images decide.</p>
+<h2 id="2-terms">2. Terms<a class="headerlink" href="#2-terms" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Track</td>
+<td>A chain of particle points that the tracker follows in time.</td>
+</tr>
+<tr>
+<td>Detection</td>
+<td>A 3D point in a new frame.</td>
+</tr>
+<tr>
+<td>Prediction</td>
+<td>The expected position of a track in the new frame.</td>
+</tr>
+<tr>
+<td>Candidate</td>
+<td>A detection that is inside the search radius of a prediction.</td>
+</tr>
+<tr>
+<td>Leaf</td>
+<td>The 2D pixel position of a point in one camera.</td>
+</tr>
+<tr>
+<td>Gap</td>
+<td>A frame in which a track has no matching detection.</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>A number. A low cost means a good match.</td>
+</tr>
+<tr>
+<td>Ghost</td>
+<td>A false 3D point. Camera rays cross there, but no real particle exists.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-overview-of-one-step">3. Overview of one step<a class="headerlink" href="#3-overview-of-one-step" title="Permanent link">&para;</a></h2>
+<p>For each pair of frames (t and t+1), the tracker does these steps:</p>
+<ol>
+<li>Predict where each active track will be.</li>
+<li><strong>Phase 1:</strong> find the candidates around each prediction in 3D.</li>
+<li><strong>Phase 2:</strong> calculate the cost of each prediction–candidate pair from the 2D images.</li>
+<li>Solve the assignment so that each detection is used once.</li>
+<li>Update the tracks. Start new tracks from unused detections.</li>
+</ol>
+<p>After the last frame, the tracker removes doubtful links (the confirmation step, section 8).</p>
+<h2 id="4-prediction">4. Prediction<a class="headerlink" href="#4-prediction" title="Permanent link">&para;</a></h2>
+<p>The tracker keeps a position and a velocity for each track.</p>
+<p>The prediction is: <code>position + velocity × steps × dt</code>. The <code>steps</code> value is the number of frames since the track was last seen.</p>
+<ul>
+<li>A new track has zero velocity (a "cold start").</li>
+<li>The tracker updates the velocity after each match: <code>(new position − old position) / (steps × dt)</code>.</li>
+<li>If <code>use_velocity</code> is off, the prediction equals the last position. Then every crossing of two tracks becomes a bounce. Keep this option on.</li>
+</ul>
+<h2 id="5-phase-1-the-3d-search">5. Phase 1: the 3D search<a class="headerlink" href="#5-phase-1-the-3d-search" title="Permanent link">&para;</a></h2>
+<p>The tracker builds a KD-tree (<code>cKDTree</code>) of the detections in frame t+1. It then finds all detections within <code>v_max</code> mm of each prediction.</p>
+<ul>
+<li>A true link must be a candidate. If <code>v_max</code> is too small, the true link never becomes a candidate.</li>
+<li>If <code>v_max</code> is too big, many particles connect to each other. The groups become large and the tracker becomes slow.</li>
+<li>Tip: set <code>v_max</code> to about 3 times the typical step per frame.</li>
+</ul>
+<p>Optional filters remove candidates at this stage:</p>
+<ul>
+<li><strong>Ghost block (<code>q_young</code>, <code>q_seed</code>).</strong> A young track (fewer than <code>q_young</code> points) cannot continue onto a point with a ghost probability above <code>q_seed</code>.</li>
+<li><strong>Blob gate (<code>blob_gate</code>).</strong> A real particle keeps its brightness from frame to frame. The tracker removes a candidate when the brightness change is too large.</li>
+</ul>
+<h2 id="6-phase-2-the-2d-cost-and-the-assignment">6. Phase 2: the 2D cost and the assignment<a class="headerlink" href="#6-phase-2-the-2d-cost-and-the-assignment" title="Permanent link">&para;</a></h2>
+<h3 id="61-cost">6.1 Cost<a class="headerlink" href="#61-cost" title="Permanent link">&para;</a></h3>
+<p>With <code>cost_mode: projected</code>, the tracker projects each prediction into the cameras. It compares each projected position with the leaf of the candidate in each camera.</p>
+<p>The cost is the mean pixel distance over the cameras that see both points. The tracker scales it by <code>C / n_valid</code>. If fewer cameras see the point, the cost increases. This is because fewer cameras give less reliable data.</p>
+<p>The tracker uses 3D distance instead in these cases:</p>
+<ul>
+<li><code>cost_mode</code> is <code>3d</code>.</li>
+<li><code>leaf_weight</code> is 0.</li>
+<li>No projection function exists.</li>
+</ul>
+<p>The tracker multiplies the cost by <code>leaf_weight</code>. If calibration is poor, lower this value.</p>
+<h3 id="62-groups">6.2 Groups<a class="headerlink" href="#62-groups" title="Permanent link">&para;</a></h3>
+<p>The tracker builds a graph. Predictions and candidates are the nodes. Each candidate pair is an edge. It then finds the connected groups.</p>
+<ul>
+<li><strong>One edge in a group:</strong> the tracker accepts the link directly.</li>
+<li><strong>Larger group:</strong> the tracker uses the Hungarian algorithm (<code>linear_sum_assignment</code>). This gives the lowest total cost with each detection used once.</li>
+<li><strong>Group larger than <code>max_group_size</code> (default 128):</strong> the tracker uses a greedy method. It takes the lowest-cost edge first. This prevents a stall in dense data.</li>
+</ul>
+<h2 id="7-track-update">7. Track update<a class="headerlink" href="#7-track-update" title="Permanent link">&para;</a></h2>
+<p>After the assignment:</p>
+<ul>
+<li><strong>Matched tracks:</strong> the tracker updates position and velocity.</li>
+<li><strong>Unmatched tracks:</strong> the tracker increases their miss count. A track that misses more than <code>max_gap</code> frames ends. A track can cross a gap because it continues on its prediction.</li>
+<li><strong>Unused detections:</strong> each one starts a new track. The exception is a doubtful ghost point (<code>q_seed</code>).</li>
+</ul>
+<p>Note: <code>max_gap</code> counts steps. <code>max_gap=1</code> means no bridging. <code>max_gap=0</code> finds no links.</p>
+<h2 id="8-confirmation-the-main-accuracy-gain">8. Confirmation (the main accuracy gain)<a class="headerlink" href="#8-confirmation-the-main-accuracy-gain" title="Permanent link">&para;</a></h2>
+<p>Benchmark results show that the two-hop confirmation is the reason two_phase works well. The 2D leaf cost is not.</p>
+<p>The rule: a link stays only if the next link continues smoothly. A false link rarely has a smooth continuation.</p>
+<ul>
+<li>The velocity change ("kink") between two links must be below <code>confirm_tol</code> (mm/frame).</li>
+<li>With <code>confirm_ends</code> on, a track cannot end by stepping onto a stranger.</li>
+<li>With <code>confirm_auto</code> (default 8), the tolerance is <code>8 × median kink</code>. It follows the position noise.</li>
+<li>The tracker uses the automatic value only for sparse data. The data must have at most 7 neighbours within 5 mm, and the median kink must be at least 0.5 × the median step. Otherwise the tracker uses the fixed value of 0.3.</li>
+<li>An explicit <code>confirm_tol</code> number switches the automatic mode off. <code>confirm_tol: null</code> switches confirmation off. Do not do this.</li>
+</ul>
+<p>The trade-off: a tighter tolerance gives lower velocity error but shorter tracks.</p>
+<h2 id="9-optional-modes">9. Optional modes<a class="headerlink" href="#9-optional-modes" title="Permanent link">&para;</a></h2>
+<p><strong>Bidirectional (<code>bidirectional: true</code>).</strong> The tracker runs forward and backward on reversed frames. It then merges the results with a "Forward-First" rule:</p>
+<ul>
+<li>All forward links stay.</li>
+<li>A backward link is added only if both of its ends are free.</li>
+<li>The tracker adds backward links in order of 3D distance.</li>
+</ul>
+<p><code>bwd_v_max</code> can give the backward pass a wider radius. <code>parallel_directions</code> runs the two passes in two processes.</p>
+<p><strong>Shared observation (<code>allow_shared</code>).</strong> This is for occlusion. In a group with more tracks than detections, a losing track can share the winner's detection.</p>
+<ul>
+<li><code>max_shared</code> limits the consecutive shared frames (default 2).</li>
+<li><code>share_tol</code> limits the cost of a shared claim (default 1.0). This stops a stranded track from taking a foreign detection.</li>
+<li>A shared point moves the position but never the velocity.</li>
+</ul>
+<h2 id="10-parameters">10. Parameters<a class="headerlink" href="#10-parameters" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v_max</code> (or <code>dvxmax</code>)</td>
+<td>5.0 mm/frame</td>
+<td>3D search radius</td>
+</tr>
+<tr>
+<td><code>max_gap</code></td>
+<td>2</td>
+<td>Frames that a track can miss</td>
+</tr>
+<tr>
+<td><code>leaf_weight</code></td>
+<td>1.0</td>
+<td>Weight of the 2D cost. 0 = pure 3D.</td>
+</tr>
+<tr>
+<td><code>use_velocity</code></td>
+<td>true</td>
+<td>Use the prediction</td>
+</tr>
+<tr>
+<td><code>cost_mode</code></td>
+<td><code>projected</code></td>
+<td><code>projected</code> = 2D cost. <code>3d</code> = 3D distance.</td>
+</tr>
+<tr>
+<td><code>dt</code></td>
+<td>1.0</td>
+<td>Time step for the velocity</td>
+</tr>
+<tr>
+<td><code>max_group_size</code></td>
+<td>128</td>
+<td>Largest group that gets the Hungarian algorithm</td>
+</tr>
+<tr>
+<td><code>allow_shared</code>, <code>max_shared</code>, <code>share_tol</code></td>
+<td>false, 2, 1.0</td>
+<td>Occlusion handling</td>
+</tr>
+<tr>
+<td><code>q_seed</code>, <code>q_young</code>, <code>q_weight</code></td>
+<td>0.2, 3, 0</td>
+<td>Ghost rules</td>
+</tr>
+<tr>
+<td><code>confirm_tol</code>, <code>confirm_auto</code>, <code>confirm_ends</code></td>
+<td>auto, 8, true</td>
+<td>Link confirmation</td>
+</tr>
+<tr>
+<td><code>bidirectional</code>, <code>bwd_v_max</code>, <code>parallel_directions</code></td>
+<td>false, <code>v_max</code>, false</td>
+<td>Forward plus backward pass</td>
+</tr>
+</tbody>
+</table>
+<p>The plugin sets the ghost and confirmation defaults when it loads. The dataclass <code>TwoPhaseTrackerConfig</code> has these rules off.</p>
+<p>For values that suit your data, see <a href="../tracking_parameters_guide/">Tracking parameters</a>. Run <code>scripts/tracking_advice.py PATH_TO_RUN_FOLDER</code> to measure your data.</p>
+<h2 id="11-use">11. Use<a class="headerlink" href="#11-use" title="Permanent link">&para;</a></h2>
+<p><strong>Batch or YAML:</strong></p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">plugins</span><span class="p">:</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">selected_tracking</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">two_phase</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nt">track</span><span class="p">:</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">v_max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span><span class="w">        </span><span class="c1"># mm/frame; or dvxmax, same meaning here</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">v_max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">leaf_weight</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="nt">max_gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-</span></code></pre></div></p>
-<p><strong>Plain Python</strong> (no experiment needed):
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.plugins.two_phase_tracking</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">TwoPhaseTracker</span><span class="p">,</span> <span class="n">TwoPhaseTrackerConfig</span><span class="p">)</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">cfg</span> <span class="o">=</span> <span class="n">TwoPhaseTrackerConfig</span><span class="p">(</span><span class="n">v_max</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">leaf_weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">max_gap</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">links</span> <span class="o">=</span> <span class="n">TwoPhaseTracker</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span><span class="o">.</span><span class="n">track_frames</span><span class="p">(</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">frame_particles</span><span class="p">,</span>   <span class="c1"># list of (N_i, 3) arrays, mm</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">frame_leaves</span><span class="p">,</span>      <span class="c1"># list of (N_i, 2*C) arrays, px (optional)</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">project_fn</span><span class="p">,</span>        <span class="c1"># (N,3) -&gt; (N,2*C) re-projection (optional)</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">)</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c1"># links: list of (t0, row0, t1, row1); use return_chains=True to also get</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="c1"># per-track histories: links, chains = ...track_frames(..., return_chains=True)</span>
-</span></code></pre></div></p>
-<p>Without leaves/<code>project_fn</code> it falls back to pure 3D distance costs
-(<code>cost_mode="3d"</code>); pass <code>leaf_weight=0</code> to force that explicitly.</p>
-<h2 id="2-parameters">2. Parameters<a class="headerlink" href="#2-parameters" title="Permanent link">&para;</a></h2>
-<blockquote>
-<p>Which values suit <strong>your</strong> data, how to measure that, and what each one changes: see
-<a href="../tracking_parameters_guide/">Tracking parameters</a> and run
-<code>scripts/tracking_advice.py PATH_TO_RUN_FOLDER</code>.</p>
-</blockquote>
-<p>All live in the <code>track</code> YAML section (batch/GUI) or on
-<code>TwoPhaseTrackerConfig</code> (Python). Units in brackets.</p>
-<table>
-<thead>
-<tr>
-<th>parameter</th>
-<th>default</th>
-<th>what it does</th>
-<th>how to set it</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>v_max</code> (or <code>dvxmax</code>) [mm/frame]</td>
-<td>15.5</td>
-<td>3D search radius around each prediction</td>
-<td>~3× your typical per-frame step. Too small: true links never become candidates. Too big: everything connects into giant groups (slow, sloppy)</td>
-</tr>
-<tr>
-<td><code>leaf_weight</code> [–]</td>
-<td>1.0</td>
-<td>weight of 2D image distance in the cost</td>
-<td>1.0 normally; 0 = pure 3D (no leaves needed). Lower it when calibration is poor — bad projection poisons the ranking</td>
-</tr>
-<tr>
-<td><code>use_velocity</code> [bool]</td>
-<td>true</td>
-<td>match predictions (<code>pos + vel·dt</code>), not positions</td>
-<td>Keep on. Off = every crossing resolves as a bounce</td>
-</tr>
-<tr>
-<td><code>cost_mode</code> [str]</td>
-<td><code>projected</code></td>
-<td><code>projected</code>: rank by re-projected 2D distance (needs <code>project_fn</code>/cals); <code>3d</code>: rank by 3D distance</td>
-<td><code>projected</code> with good calibration, <code>3d</code> otherwise</td>
-</tr>
-<tr>
-<td><code>max_gap</code> [frames]</td>
-<td>2</td>
-<td>a track survives this many unmatched frames</td>
-<td>2 covers single-frame dropouts (the biggest measured failure source). Higher = longer bridges, more impostors</td>
-</tr>
-<tr>
-<td><code>dt</code> [–]</td>
-<td>1.0</td>
-<td>time step for velocity</td>
-<td>1.0 for consecutive frames</td>
-</tr>
-<tr>
-<td><code>max_group_size</code> [nodes]</td>
-<td>128</td>
-<td>groups bigger than this skip the cubic Hungarian, greedy inside</td>
-<td>Raise only if you can afford it; at production density frames percolate and this cap is what keeps a run from stalling</td>
-</tr>
-<tr>
-<td><code>allow_shared</code> [bool]</td>
-<td>false</td>
-<td><strong>prototype:</strong> in groups with more tracks than detections (occlusion), losers share the winner's detection instead of dying</td>
-<td>Enable where occlusions matter; validated on synthetic crossings (0 switches). Shared points move position but never velocity</td>
-</tr>
-<tr>
-<td><code>max_shared</code> [frames]</td>
-<td>2</td>
-<td>max consecutive shared frames per track</td>
-<td>2 covers brief overlaps; higher risks twin tracks that never separate</td>
-</tr>
-<tr>
-<td><code>share_tol</code> [cost]</td>
-<td>1.0</td>
-<td>a shared claim needs an edge cost below this (mutual-prediction gate)</td>
-<td>Without it, a stranded track hijacks strangers' detections (observed live). ~5–10× your position noise; <code>null</code> disables the gate (not advised)</td>
-</tr>
-</tbody>
-</table>
-<p>Point-quality rules (ghost marks from ray convergence, <strong>on by default</strong>; details,
-when to change them and how to test them: <a href="../tracking_quality/">Point quality</a>):</p>
-<table>
-<thead>
-<tr>
-<th>parameter</th>
-<th>default</th>
-<th>what it does</th>
-<th>how to set it</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>q_seed</code> [–]</td>
-<td>0.2</td>
-<td>a point with ghost probability above this may not start a trajectory</td>
-<td>lower (0.15) for more ghost removal, higher (0.3) or <code>null</code> for clean data</td>
-</tr>
-<tr>
-<td><code>q_young</code> [points]</td>
-<td>3</td>
-<td>a trajectory with fewer points may not continue onto such a point</td>
-<td>3–6; 0 switches the rules off</td>
-</tr>
-<tr>
-<td><code>q_weight</code> [–]</td>
-<td>0</td>
-<td>scales link cost by the ghost probability</td>
-<td>measured to have no effect; leave 0</td>
-</tr>
-<tr>
-<td><code>confirm_tol</code> [mm/frame], <code>confirm_ends</code>, <code>confirm_auto</code></td>
-<td><strong>auto</strong> / <strong>true</strong></td>
-<td>two-hop link confirmation: a link survives only if the next step continues within this velocity kink, and a track may not end by stepping onto a stranger (<code>confirm_ends</code>)</td>
-<td>By default the tolerance is <code>confirm_auto</code> (8) × the <strong>median kink</strong> of the data, which follows the position jitter (real level ≈ 0.5–0.6 mm/frame, 2× jitter ≈ 1.1), <strong>but only when the data are sparse and noise-dominated</strong> (≤ 7 neighbours within 5 mm and median kink ≥ 0.5 × median step); otherwise the fixed 0.3 is used. An explicit <code>confirm_tol: 0.3</code> (a number) switches the automatic mode off; <code>confirm_tol: null</code> switches confirmation off (not advised: the dead-end rule alone is worth 0.02–0.1 velocity error); <code>confirm_auto: null</code> keeps the fixed value</td>
-</tr>
-</tbody>
-</table>
-<h2 id="3-how-it-behaves-caveats">3. How it behaves (caveats)<a class="headerlink" href="#3-how-it-behaves-caveats" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>No motion model to be wrong</strong> — but also none to help: if particles move
-  farther per frame than the typical spacing, every tracker fails, this one
-  first. Check step-vs-spacing before blaming parameters.</li>
-<li><strong>Gap survival is prediction-based:</strong> a track coasts on <code>pos + vel</code>
-  through gaps up to <code>max_gap</code>; a maneuver inside the gap is lost. That is
-  by design — see <code>max_gap</code> above.</li>
-<li><strong>Occlusions:</strong> with <code>allow_shared</code>, one detection may serve two tracks
-  for up to <code>max_shared</code> frames (marked in chains when
-  <code>return_chains=True</code>). Owners of the other engines: this is the reference
-  implementation of the shared-observation rule — same idea ports to
-  <code>track3d_loop_fast</code> (recorded, not claimed) and to linkage postprocess
-  (mark, then bridge).</li>
-<li><strong>Speed:</strong> ~linear in particles (KD-tree search, small per-group
-  Hungarians); the <code>max_group_size</code> cap bounds the worst case.</li>
-</ul>
-<h2 id="4-tuning-recipe">4. Tuning recipe<a class="headerlink" href="#4-tuning-recipe" title="Permanent link">&para;</a></h2>
+</span></code></pre></div>
+<p><strong>Python:</strong></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.plugins.two_phase_tracking</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">TwoPhaseTracker</span><span class="p">,</span> <span class="n">TwoPhaseTrackerConfig</span><span class="p">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">cfg</span> <span class="o">=</span> <span class="n">TwoPhaseTrackerConfig</span><span class="p">(</span><span class="n">v_max</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">leaf_weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">max_gap</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">links</span> <span class="o">=</span> <span class="n">TwoPhaseTracker</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span><span class="o">.</span><span class="n">track_frames</span><span class="p">(</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">frame_particles</span><span class="p">,</span>   <span class="c1"># list of (N_i, 3) arrays, mm</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">frame_leaves</span><span class="p">,</span>      <span class="c1"># list of (N_i, 2*C) arrays, px (optional)</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">project_fn</span><span class="p">,</span>        <span class="c1"># (N,3) -&gt; (N,2*C) re-projection (optional)</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">)</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># links: list of (t0, row0, t1, row1)</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c1"># return_chains=True also gives the per-track histories.</span>
+</span></code></pre></div>
+<h2 id="12-tuning-procedure">12. Tuning procedure<a class="headerlink" href="#12-tuning-procedure" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Measure your typical step <code>s</code> (median linked displacement) and 3D noise
-   <code>n</code> (second-difference statistics — see <code>docs/algorithms/tracking.md</code>).</li>
-<li><code>v_max</code> ≈ 3·s. <code>leaf_weight</code> = 1 with decent calibration, 0 without.</li>
-<li>Run; count short tracks (cold starts) vs gaps. More gaps than tracks →
-   raise <code>max_gap</code> to 3. More fragments at crossings → enable
-   <code>allow_shared</code>.</li>
-<li>Validate on synthetic ground truth with the same spacing/noise before
-   trusting a production run (<code>tests/helpers/synthetic_scene.py</code> generates
-   scenes; <code>scripts/proto_shared_validate.py</code> shows the scoring pattern).</li>
+<li>Measure the typical step <code>s</code> (median linked displacement).</li>
+<li>Set <code>v_max</code> to about 3 × <code>s</code>.</li>
+<li>Set <code>leaf_weight</code> to 1 with good calibration. Set it to 0 without calibration.</li>
+<li>Run the tracker. Count the short tracks and the gaps.</li>
+<li>If gaps are more frequent than short tracks, set <code>max_gap</code> to 3.</li>
+<li>If tracks break at crossings, set <code>allow_shared</code> to true.</li>
+<li>Validate on synthetic data with the same spacing and noise (<code>tests/helpers/synthetic_scene.py</code>).</li>
 </ol>
+<h2 id="13-known-limits">13. Known limits<a class="headerlink" href="#13-known-limits" title="Permanent link">&para;</a></h2>
+<ul>
+<li>If particles move farther per frame than the typical spacing, every tracker fails. Check this before you change parameters.</li>
+<li>A maneuver inside a gap is lost, because the tracker continues on the prediction.</li>
+<li>Ghost points cause most of the wrong links that remain. In one benchmark, removal of ghosts from the input lowered the velocity error from 0.198 to 0.147.</li>
+<li>Speed is about linear in the number of particles. <code>max_group_size</code> limits the worst case.</li>
+</ul>
 
 
 
