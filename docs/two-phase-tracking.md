@@ -1,29 +1,169 @@
-# Two-Phase Tracking: usage and parameters
+# The two_phase tracker
 
-Two-Phase (`selected_tracking: two_phase`,
-`src/openptv2/plugins/two_phase_tracking.py`) links particles in two steps:
-**Phase 1** finds candidates with a 3D KD-tree around each track's predicted
-position; **Phase 2** ranks them by per-camera 2D image distance and solves a
-Hungarian assignment per connected group. 3D proposes, the images dispose.
+Source: `src/openptv2/plugins/two_phase_tracking.py`.
+Select it with `selected_tracking: two_phase` (GUI: Plugins page, tracking plugin).
+All parameters are in the `track` section of the YAML file.
+This document uses the ASD-STE100 style (Simplified Technical English).
 
-## 1. How to use it
+## 1. Purpose
 
-**GUI:** Plugins page → tracking plugin → `two_phase`. Parameters live in
-the `track` section (same names as below).
+The tracker links 3D particle positions from frame to frame. The result is a set of trajectories.
 
-**Batch/YAML:** minimal setup —
+The tracker uses two phases to find each link:
+
+- **Phase 1** uses the 3D positions to find candidates.
+- **Phase 2** uses the camera images to choose the best candidate.
+
+In short, the 3D data proposes and the images decide.
+
+## 2. Terms
+
+| Term | Meaning |
+|---|---|
+| Track | A chain of particle points that the tracker follows in time. |
+| Detection | A 3D point in a new frame. |
+| Prediction | The expected position of a track in the new frame. |
+| Candidate | A detection that is inside the search radius of a prediction. |
+| Leaf | The 2D pixel position of a point in one camera. |
+| Gap | A frame in which a track has no matching detection. |
+| Cost | A number. A low cost means a good match. |
+| Ghost | A false 3D point. Camera rays cross there, but no real particle exists. |
+
+## 3. Overview of one step
+
+For each pair of frames (t and t+1), the tracker does these steps:
+
+1. Predict where each active track will be.
+2. **Phase 1:** find the candidates around each prediction in 3D.
+3. **Phase 2:** calculate the cost of each prediction–candidate pair from the 2D images.
+4. Solve the assignment so that each detection is used once.
+5. Update the tracks. Start new tracks from unused detections.
+
+After the last frame, the tracker removes doubtful links (the confirmation step, section 8).
+
+## 4. Prediction
+
+The tracker keeps a position and a velocity for each track.
+
+The prediction is: `position + velocity × steps × dt`. The `steps` value is the number of frames since the track was last seen.
+
+- A new track has zero velocity (a "cold start").
+- The tracker updates the velocity after each match: `(new position − old position) / (steps × dt)`.
+- If `use_velocity` is off, the prediction equals the last position. Then every crossing of two tracks becomes a bounce. Keep this option on.
+
+## 5. Phase 1: the 3D search
+
+The tracker builds a KD-tree (`cKDTree`) of the detections in frame t+1. It then finds all detections within `v_max` mm of each prediction.
+
+- A true link must be a candidate. If `v_max` is too small, the true link never becomes a candidate.
+- If `v_max` is too big, many particles connect to each other. The groups become large and the tracker becomes slow.
+- Tip: set `v_max` to about 3 times the typical step per frame.
+
+Optional filters remove candidates at this stage:
+
+- **Ghost block (`q_young`, `q_seed`).** A young track (fewer than `q_young` points) cannot continue onto a point with a ghost probability above `q_seed`.
+- **Blob gate (`blob_gate`).** A real particle keeps its brightness from frame to frame. The tracker removes a candidate when the brightness change is too large.
+
+## 6. Phase 2: the 2D cost and the assignment
+
+### 6.1 Cost
+
+With `cost_mode: projected`, the tracker projects each prediction into the cameras. It compares each projected position with the leaf of the candidate in each camera.
+
+The cost is the mean pixel distance over the cameras that see both points. The tracker scales it by `C / n_valid`. If fewer cameras see the point, the cost increases. This is because fewer cameras give less reliable data.
+
+The tracker uses 3D distance instead in these cases:
+
+- `cost_mode` is `3d`.
+- `leaf_weight` is 0.
+- No projection function exists.
+
+The tracker multiplies the cost by `leaf_weight`. If calibration is poor, lower this value.
+
+### 6.2 Groups
+
+The tracker builds a graph. Predictions and candidates are the nodes. Each candidate pair is an edge. It then finds the connected groups.
+
+- **One edge in a group:** the tracker accepts the link directly.
+- **Larger group:** the tracker uses the Hungarian algorithm (`linear_sum_assignment`). This gives the lowest total cost with each detection used once.
+- **Group larger than `max_group_size` (default 128):** the tracker uses a greedy method. It takes the lowest-cost edge first. This prevents a stall in dense data.
+
+## 7. Track update
+
+After the assignment:
+
+- **Matched tracks:** the tracker updates position and velocity.
+- **Unmatched tracks:** the tracker increases their miss count. A track that misses more than `max_gap` frames ends. A track can cross a gap because it continues on its prediction.
+- **Unused detections:** each one starts a new track. The exception is a doubtful ghost point (`q_seed`).
+
+Note: `max_gap` counts steps. `max_gap=1` means no bridging. `max_gap=0` finds no links.
+
+## 8. Confirmation (the main accuracy gain)
+
+Benchmark results show that the two-hop confirmation is the reason two_phase works well. The 2D leaf cost is not.
+
+The rule: a link stays only if the next link continues smoothly. A false link rarely has a smooth continuation.
+
+- The velocity change ("kink") between two links must be below `confirm_tol` (mm/frame).
+- With `confirm_ends` on, a track cannot end by stepping onto a stranger.
+- With `confirm_auto` (default 8), the tolerance is `8 × median kink`. It follows the position noise.
+- The tracker uses the automatic value only for sparse data. The data must have at most 7 neighbours within 5 mm, and the median kink must be at least 0.5 × the median step. Otherwise the tracker uses the fixed value of 0.3.
+- An explicit `confirm_tol` number switches the automatic mode off. `confirm_tol: null` switches confirmation off. Do not do this.
+
+The trade-off: a tighter tolerance gives lower velocity error but shorter tracks.
+
+## 9. Optional modes
+
+**Bidirectional (`bidirectional: true`).** The tracker runs forward and backward on reversed frames. It then merges the results with a "Forward-First" rule:
+
+- All forward links stay.
+- A backward link is added only if both of its ends are free.
+- The tracker adds backward links in order of 3D distance.
+
+`bwd_v_max` can give the backward pass a wider radius. `parallel_directions` runs the two passes in two processes.
+
+**Shared observation (`allow_shared`).** This is for occlusion. In a group with more tracks than detections, a losing track can share the winner's detection.
+
+- `max_shared` limits the consecutive shared frames (default 2).
+- `share_tol` limits the cost of a shared claim (default 1.0). This stops a stranded track from taking a foreign detection.
+- A shared point moves the position but never the velocity.
+
+## 10. Parameters
+
+| Parameter | Default | Effect |
+|---|---|---|
+| `v_max` (or `dvxmax`) | 5.0 mm/frame | 3D search radius |
+| `max_gap` | 2 | Frames that a track can miss |
+| `leaf_weight` | 1.0 | Weight of the 2D cost. 0 = pure 3D. |
+| `use_velocity` | true | Use the prediction |
+| `cost_mode` | `projected` | `projected` = 2D cost. `3d` = 3D distance. |
+| `dt` | 1.0 | Time step for the velocity |
+| `max_group_size` | 128 | Largest group that gets the Hungarian algorithm |
+| `allow_shared`, `max_shared`, `share_tol` | false, 2, 1.0 | Occlusion handling |
+| `q_seed`, `q_young`, `q_weight` | 0.2, 3, 0 | Ghost rules |
+| `confirm_tol`, `confirm_auto`, `confirm_ends` | auto, 8, true | Link confirmation |
+| `bidirectional`, `bwd_v_max`, `parallel_directions` | false, `v_max`, false | Forward plus backward pass |
+
+The plugin sets the ghost and confirmation defaults when it loads. The dataclass `TwoPhaseTrackerConfig` has these rules off.
+
+For values that suit your data, see [Tracking parameters](tracking_parameters_guide.md). Run `scripts/tracking_advice.py PATH_TO_RUN_FOLDER` to measure your data.
+
+## 11. Use
+
+**Batch or YAML:**
+
 ```yaml
 plugins:
   selected_tracking: two_phase
 track:
-  v_max: 5.0        # mm/frame; or dvxmax, same meaning here
+  v_max: 5.0
   leaf_weight: 1.0
   max_gap: 2
 ```
 
-**Plain Python** (no experiment needed):
+**Python:**
+
 ```python
-import numpy as np
 from openptv2.plugins.two_phase_tracking import (
     TwoPhaseTracker, TwoPhaseTrackerConfig)
 
@@ -33,70 +173,23 @@ links = TwoPhaseTracker(cfg).track_frames(
     frame_leaves,      # list of (N_i, 2*C) arrays, px (optional)
     project_fn,        # (N,3) -> (N,2*C) re-projection (optional)
 )
-# links: list of (t0, row0, t1, row1); use return_chains=True to also get
-# per-track histories: links, chains = ...track_frames(..., return_chains=True)
+# links: list of (t0, row0, t1, row1)
+# return_chains=True also gives the per-track histories.
 ```
 
-Without leaves/`project_fn` it falls back to pure 3D distance costs
-(`cost_mode="3d"`); pass `leaf_weight=0` to force that explicitly.
+## 12. Tuning procedure
 
-## 2. Parameters
+1. Measure the typical step `s` (median linked displacement).
+2. Set `v_max` to about 3 × `s`.
+3. Set `leaf_weight` to 1 with good calibration. Set it to 0 without calibration.
+4. Run the tracker. Count the short tracks and the gaps.
+5. If gaps are more frequent than short tracks, set `max_gap` to 3.
+6. If tracks break at crossings, set `allow_shared` to true.
+7. Validate on synthetic data with the same spacing and noise (`tests/helpers/synthetic_scene.py`).
 
-> Which values suit **your** data, how to measure that, and what each one changes: see
-> [Tracking parameters](tracking_parameters_guide.md) and run
-> `scripts/tracking_advice.py PATH_TO_RUN_FOLDER`.
+## 13. Known limits
 
-All live in the `track` YAML section (batch/GUI) or on
-`TwoPhaseTrackerConfig` (Python). Units in brackets.
-
-| parameter | default | what it does | how to set it |
-|---|---|---|---|
-| `v_max` (or `dvxmax`) [mm/frame] | 15.5 | 3D search radius around each prediction | ~3× your typical per-frame step. Too small: true links never become candidates. Too big: everything connects into giant groups (slow, sloppy) |
-| `leaf_weight` [–] | 1.0 | weight of 2D image distance in the cost | 1.0 normally; 0 = pure 3D (no leaves needed). Lower it when calibration is poor — bad projection poisons the ranking |
-| `use_velocity` [bool] | true | match predictions (`pos + vel·dt`), not positions | Keep on. Off = every crossing resolves as a bounce |
-| `cost_mode` [str] | `projected` | `projected`: rank by re-projected 2D distance (needs `project_fn`/cals); `3d`: rank by 3D distance | `projected` with good calibration, `3d` otherwise |
-| `max_gap` [frames] | 2 | a track survives this many unmatched frames | 2 covers single-frame dropouts (the biggest measured failure source). Higher = longer bridges, more impostors |
-| `dt` [–] | 1.0 | time step for velocity | 1.0 for consecutive frames |
-| `max_group_size` [nodes] | 128 | groups bigger than this skip the cubic Hungarian, greedy inside | Raise only if you can afford it; at production density frames percolate and this cap is what keeps a run from stalling |
-| `allow_shared` [bool] | false | **prototype:** in groups with more tracks than detections (occlusion), losers share the winner's detection instead of dying | Enable where occlusions matter; validated on synthetic crossings (0 switches). Shared points move position but never velocity |
-| `max_shared` [frames] | 2 | max consecutive shared frames per track | 2 covers brief overlaps; higher risks twin tracks that never separate |
-| `share_tol` [cost] | 1.0 | a shared claim needs an edge cost below this (mutual-prediction gate) | Without it, a stranded track hijacks strangers' detections (observed live). ~5–10× your position noise; `null` disables the gate (not advised) |
-
-Point-quality rules (ghost marks from ray convergence, **on by default**; details,
-when to change them and how to test them: [Point quality](tracking_quality.md)):
-
-| parameter | default | what it does | how to set it |
-|---|---|---|---|
-| `q_seed` [–] | 0.2 | a point with ghost probability above this may not start a trajectory | lower (0.15) for more ghost removal, higher (0.3) or `null` for clean data |
-| `q_young` [points] | 3 | a trajectory with fewer points may not continue onto such a point | 3–6; 0 switches the rules off |
-| `q_weight` [–] | 0 | scales link cost by the ghost probability | measured to have no effect; leave 0 |
-| `confirm_tol` [mm/frame], `confirm_ends`, `confirm_auto` | **auto** / **true** | two-hop link confirmation: a link survives only if the next step continues within this velocity kink, and a track may not end by stepping onto a stranger (`confirm_ends`) | By default the tolerance is `confirm_auto` (8) × the **median kink** of the data, which follows the position jitter (real level ≈ 0.5–0.6 mm/frame, 2× jitter ≈ 1.1), **but only when the data are sparse and noise-dominated** (≤ 7 neighbours within 5 mm and median kink ≥ 0.5 × median step); otherwise the fixed 0.3 is used. An explicit `confirm_tol: 0.3` (a number) switches the automatic mode off; `confirm_tol: null` switches confirmation off (not advised: the dead-end rule alone is worth 0.02–0.1 velocity error); `confirm_auto: null` keeps the fixed value |
-
-## 3. How it behaves (caveats)
-
-- **No motion model to be wrong** — but also none to help: if particles move
-  farther per frame than the typical spacing, every tracker fails, this one
-  first. Check step-vs-spacing before blaming parameters.
-- **Gap survival is prediction-based:** a track coasts on `pos + vel`
-  through gaps up to `max_gap`; a maneuver inside the gap is lost. That is
-  by design — see `max_gap` above.
-- **Occlusions:** with `allow_shared`, one detection may serve two tracks
-  for up to `max_shared` frames (marked in chains when
-  `return_chains=True`). Owners of the other engines: this is the reference
-  implementation of the shared-observation rule — same idea ports to
-  `track3d_loop_fast` (recorded, not claimed) and to linkage postprocess
-  (mark, then bridge).
-- **Speed:** ~linear in particles (KD-tree search, small per-group
-  Hungarians); the `max_group_size` cap bounds the worst case.
-
-## 4. Tuning recipe
-
-1. Measure your typical step `s` (median linked displacement) and 3D noise
-   `n` (second-difference statistics — see `docs/algorithms/tracking.md`).
-2. `v_max` ≈ 3·s. `leaf_weight` = 1 with decent calibration, 0 without.
-3. Run; count short tracks (cold starts) vs gaps. More gaps than tracks →
-   raise `max_gap` to 3. More fragments at crossings → enable
-   `allow_shared`.
-4. Validate on synthetic ground truth with the same spacing/noise before
-   trusting a production run (`tests/helpers/synthetic_scene.py` generates
-   scenes; `scripts/proto_shared_validate.py` shows the scoring pattern).
+- If particles move farther per frame than the typical spacing, every tracker fails. Check this before you change parameters.
+- A maneuver inside a gap is lost, because the tracker continues on the prediction.
+- Ghost points cause most of the wrong links that remain. In one benchmark, removal of ghosts from the input lowered the velocity error from 0.198 to 0.147.
+- Speed is about linear in the number of particles. `max_group_size` limits the worst case.
