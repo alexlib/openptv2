@@ -339,7 +339,9 @@ def ray_tracing_batch(xy, cal, mm):
 
         # Transform direction inside glass using Snell's law
         p = c_sqrt(1.0 - n_dot * n_dot) * mm_n1 / mm_n2_0  # glass parallel
-        n_glass = -c_sqrt(1.0 - p * p)  # glass normal
+        # Same sign rule as _ray_tracing_core: refraction never reverses
+        # which side of the interface the ray heads toward.
+        n_glass = c_sqrt(1.0 - p * p) if n_dot >= 0 else -c_sqrt(1.0 - p * p)
 
         # Propagation length in glass
         a2_x = bp_x * p + glass_dir_x * n_glass
@@ -367,7 +369,7 @@ def ray_tracing_batch(xy, cal, mm):
 
         p = c_sqrt(1.0 - n_a2 * n_a2)
         p = p * mm_n2_0 / mm_n3
-        n_final = -c_sqrt(1.0 - p * p)
+        n_final = c_sqrt(1.0 - p * p) if n_a2 >= 0 else -c_sqrt(1.0 - p * p)
 
         out_x = bp_x * p + glass_dir_x * n_final
         out_y = bp_y * p + glass_dir_y * n_final

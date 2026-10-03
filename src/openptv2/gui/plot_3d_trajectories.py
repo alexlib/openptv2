@@ -43,10 +43,17 @@ def build_3d_trajectories_figure(
     last_frame: int | None = None,
     total_frames_requested: int | None = None,
     max_step: float = 50.0,
+    cmap: str = "coolwarm",
+    vmax: float | None = None,
 ) -> Figure:
     """Build a 3D line plot Figure for particle trajectories.
 
     Pure function (no window): safe to call under the Agg backend in tests.
+
+    Segments are colored by VERTICAL velocity with a diverging map:
+    +v (up, against gravity) is hot/red, -v (down, with gravity) is
+    cold/blue, zero is the neutral center. PTV +Y is up, so the vertical
+    velocity is d(pos_y)/dt in mm/frame (frame-rate independent).
 
     Args:
         trajectories: Sequence of flowtracks Trajectory objects or (N, 3) position arrays.
@@ -54,6 +61,10 @@ def build_3d_trajectories_figure(
         first_frame: first frame number displayed.
         last_frame: last frame number displayed.
         total_frames_requested: total frames requested by user before clamping to 50.
+        max_step: max single-link step in mm; longer/farther links start a new segment.
+        cmap: diverging colormap name (default "coolwarm").
+        vmax: symmetric color-limit magnitude in mm/frame; None = 95th
+            percentile of |v| over all segments (0 maps to the center).
 
     Returns:
         A matplotlib Figure containing a 3D axes with plotted trajectories.
@@ -64,9 +75,9 @@ def build_3d_trajectories_figure(
     num_trajs = len(trajectories) if trajectories is not None else 0
 
     try:
-        cmap = matplotlib.colormaps.get_cmap("tab20")
+        cmap_obj = matplotlib.colormaps.get_cmap(cmap)
     except AttributeError:
-        cmap = plt.cm.get_cmap("tab20")
+        cmap_obj = plt.cm.get_cmap(cmap)
 
     valid_trajs = []
     all_pos = []
@@ -80,58 +91,82 @@ def build_3d_trajectories_figure(
         if tid > 0:
             valid_trajs.append(traj)
 
+    # Collect (segment, vertical-velocity) pairs first so the diverging
+    # norm can be fit symmetrically over the whole figure.
+    seg_vs: list[tuple[np.ndarray, float]] = []
     if len(valid_trajs) > 0:
-        for idx, traj in enumerate(valid_trajs):
+        for traj in valid_trajs:
             pos = _extract_xyz_mm(traj)
-            if pos.shape[0] > 0:
-                all_pos.append(pos)
-                t = None
-                if hasattr(traj, "time"):
-                    try:
-                        t = traj.time()
-                        if callable(t):
-                            t = t()
-                        t = np.asarray(t)
-                        if len(t) == pos.shape[0]:
-                            order = np.argsort(t)
-                            pos = pos[order]
-                            t = t[order]
-                    except Exception:
+            if pos.shape[0] == 0:
+                continue
+            all_pos.append(pos)
+            t = None
+            if hasattr(traj, "time"):
+                try:
+                    t = traj.time()
+                    if callable(t):
+                        t = t()
+                    t = np.asarray(t, dtype=float)
+                    if len(t) == pos.shape[0]:
+                        order = np.argsort(t)
+                        pos = pos[order]
+                        t = t[order]
+                    else:
                         t = None
+                except Exception:
+                    t = None
 
-                # Break into continuous physical segments (dt == 1, step <= 10.0 mm)
-                segments = []
-                if pos.shape[0] == 1 or t is None or len(t) != pos.shape[0]:
-                    segments = [pos]
-                else:
-                    curr_seg = [pos[0]]
-                    for i in range(len(t) - 1):
-                        dt = t[i + 1] - t[i]
-                        dp = np.linalg.norm(pos[i + 1] - pos[i])
-                        if dt == 1 and dp <= max_step:
-                            curr_seg.append(pos[i + 1])
-                        else:
-                            if len(curr_seg) > 0:
-                                segments.append(np.array(curr_seg))
-                            curr_seg = [pos[i + 1]]
-                    if len(curr_seg) > 0:
-                        segments.append(np.array(curr_seg))
+            # Break into continuous physical segments (dt == 1, step <= max_step)
+            bounds_idx = [0]
+            if pos.shape[0] > 1 and t is not None and len(t) == pos.shape[0]:
+                for i in range(len(t) - 1):
+                    dt = t[i + 1] - t[i]
+                    dp = np.linalg.norm(pos[i + 1] - pos[i])
+                    if not (dt == 1 and dp <= max_step):
+                        bounds_idx.append(i + 1)
+                bounds_idx.append(pos.shape[0])
+            else:
+                bounds_idx.append(pos.shape[0])
 
-                color = cmap(idx % 20)
-                for seg in segments:
-                    if seg.shape[0] > 0:
-                        # Default view (see ax.view_init below) puts mpl's
-                        # y-axis on our z (depth, near-camera = positive) and
-                        # mpl's z-axis on our y (vertical) -- feed the plot
-                        # accordingly: (x, z, y) not (x, y, z).
-                        ax.plot(
-                            seg[:, 0],
-                            seg[:, 2],
-                            seg[:, 1],
-                            linewidth=1.5,
-                            color=color,
-                            alpha=0.8,
-                        )
+            for a, b in zip(bounds_idx[:-1], bounds_idx[1:]):
+                seg = pos[a:b]
+                if seg.shape[0] == 0:
+                    continue
+                vseg = 0.0
+                if seg.shape[0] > 1 and t is not None and len(t) == pos.shape[0]:
+                    ts = t[a:b]
+                    dt = np.diff(ts)
+                    ok = dt == 1
+                    if np.any(ok):
+                        # PTV +Y is up: +v moves against gravity (hot/red).
+                        vseg = float(np.mean((seg[1:, 1] - seg[:-1, 1])[ok] / dt[ok]))
+                seg_vs.append((seg, vseg))
+
+    if vmax is None:
+        vmax = float(np.percentile(np.abs([v for _, v in seg_vs]), 95)) \
+            if seg_vs else 1.0
+        vmax = max(vmax, 1e-9)
+    norm = matplotlib.colors.Normalize(vmin=-vmax, vmax=vmax)
+
+    for seg, vseg in seg_vs:
+        # Default view (see ax.view_init below) puts mpl's
+        # y-axis on our z (depth, near-camera = positive) and
+        # mpl's z-axis on our y (vertical) -- feed the plot
+        # accordingly: (x, z, y) not (x, y, z).
+        ax.plot(
+            seg[:, 0],
+            seg[:, 2],
+            seg[:, 1],
+            linewidth=1.5,
+            color=cmap_obj(norm(vseg)),
+            alpha=0.8,
+        )
+
+    if seg_vs:
+        sm = matplotlib.cm.ScalarMappable(cmap=cmap_obj, norm=norm)
+        sm.set_array([])
+        cb = fig.colorbar(sm, ax=ax, fraction=0.035, pad=0.04)
+        cb.set_label("vertical velocity v (mm/frame), + up")
 
     if bounds is not None:
         (xlo, xhi), (ylo, yhi), (zlo, zhi) = bounds

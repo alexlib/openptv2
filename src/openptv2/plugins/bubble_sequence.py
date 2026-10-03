@@ -17,6 +17,18 @@ Configured via the optional `bubble_detection:` block in parameters_*.yaml:
       merge_radius: 4   # max pixel gap bridged between glare spots (default 4)
       nnmin: 1          # min pixel count per blob (default 1)
       nnmax: 5000       # max pixel count per blob (default 5000)
+
+    Static-background removal (walls, seams, sensor pattern) lives in its
+    own `background:` section (legacy `bg_*` keys inside `bubble_detection:`
+    still work as fallback):
+    background:
+      subtract: false   # subtract the static background image (default false)
+      frames: 21        # frames sampled across the sequence for the estimate
+      stride: 1         # thin the sample grid (keeps first/last anchored)
+      method: median    # median (robust) or mean
+      std_factor: 3.0   # constant-pixel cutoff in units of median(std)
+      polarity: bright  # bright bubbles (min fallback) or dark (max)
+      recompute: false  # ignore res/bubble_bg_cam{i}.npy caches
 """
 
 from __future__ import annotations
@@ -25,6 +37,10 @@ from typing import Any
 
 import numpy as np
 
+from openptv2.algorithms.bubble_background import (
+    estimate_background,
+    subtract_background,
+)
 from openptv2.algorithms.bubble_detection import detect_bubbles_fast
 from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
 from openptv2.correspondences import MatchedCoords, correspondences
@@ -69,6 +85,33 @@ class Sequence:
         nnmax = int(bubble_cfg.get("nnmax", 5000))
         filter_hp = int(bubble_cfg.get("filter_hp", 0))
         lowpass_dim = int(bubble_cfg.get("lowpass_dim", 1))
+        # Static-background removal (walls, seams, sensor pattern): estimate
+        # one background frame per camera as the temporal median over sampled
+        # frames (moving bubbles are outliers to the median); pixels whose
+        # temporal std exceeds median(std)*std_factor use the temporal
+        # minimum (bright polarity) or maximum (dark) instead. Off by default.
+        # Config lives in the `background:` section; the legacy `bg_*` keys
+        # inside `bubble_detection:` keep working as fallback.
+        bg_section = (
+            pm.parameters.get("background", {})
+            if hasattr(pm, "parameters") and isinstance(pm.parameters, dict)
+            else {}
+        )
+        if not isinstance(bg_section, dict):
+            bg_section = {}
+
+        def _bg(key, legacy, default):
+            if key in bg_section:
+                return bg_section[key]
+            return bubble_cfg.get(legacy, default)
+
+        bg_subtract = bool(_bg("subtract", "bg_subtract", False))
+        bg_frames = int(_bg("frames", "bg_frames", 21))
+        bg_stride = int(_bg("stride", "bg_stride", 1))
+        bg_method = str(_bg("method", "bg_method", "median"))
+        bg_std_factor = float(_bg("std_factor", "bg_std_factor", 3.0))
+        bg_polarity = str(_bg("polarity", "bg_polarity", "bright"))
+        bg_recompute = bool(_bg("recompute", "bg_recompute", False))
 
         first_frame = spar.get_first()
         last_frame = spar.get_last()
@@ -82,10 +125,24 @@ class Sequence:
             f"(win={win}, z_thresh={z_thresh:g}, merge_radius={merge_radius})"
         )
 
+        backgrounds = self._background_images(
+            pm, img_base_names, num_cams, first_frame, last_frame,
+            bg_subtract, bg_frames, bg_stride, bg_method,
+            bg_std_factor, bg_polarity, bg_recompute,
+        )
+
         for frame in range(first_frame, last_frame + 1):
             frame_images = self.ptv.read_frame_images(
                 pm, img_base_names, num_cams, frame
             )
+            if backgrounds is not None:
+                frame_images = [
+                    np.clip(
+                        subtract_background(img, backgrounds[i_cam], bg_polarity),
+                        0.0, 255.0,
+                    ).astype(np.uint8)
+                    for i_cam, img in enumerate(frame_images)
+                ]
             detections = []
             corrected = []
             for i_cam in range(num_cams):
@@ -163,3 +220,62 @@ class Sequence:
                 store.write_correspondences(
                     frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
                 )
+
+    def _background_images(
+        self, pm, img_base_names, num_cams, first_frame, last_frame,
+        enabled, bg_frames, bg_stride, method, std_factor, polarity,
+        recompute,
+    ):
+        """Estimate (or load cached) one static background frame per camera.
+
+        Returns a list of float32 (H, W) backgrounds, or None when disabled
+        or when the sequence is too short for a temporal estimate. Results
+        are cached as ``res/bubble_bg_cam{i}.npy`` (cwd is the experiment
+        directory during batch runs) and reused unless ``recompute`` is set.
+        """
+        from pathlib import Path
+
+        if not enabled:
+            return None
+        span = last_frame - first_frame
+        if span < 2:
+            print("BubbleSequence: bg_subtract needs >=3 frames, disabled")
+            return None
+        n_take = max(3, min(int(bg_frames), span + 1))
+        step = max(1, int(bg_stride))
+        frames = sorted(
+            {min(first_frame + round(i * span / (n_take - 1)), last_frame)
+             for i in range(n_take)}
+        )
+        # honor stride by thinning from the end (keeps first/last anchored)
+        if step > 1 and len(frames) > 3:
+            frames = [frames[0]] + frames[1::step]
+            if frames[-1] != last_frame:
+                frames.append(last_frame)
+
+        backgrounds = []
+        res_dir = Path("res")
+        res_dir.mkdir(exist_ok=True)
+        for i_cam in range(num_cams):
+            cache = res_dir / f"bubble_bg_cam{i_cam}.npy"
+            if cache.exists() and not recompute:
+                try:
+                    backgrounds.append(np.asarray(
+                        np.load(cache), dtype=np.float32))
+                    continue
+                except (OSError, ValueError) as exc:
+                    print(f"BubbleSequence: unreadable bg cache {cache} ({exc}), recomputing")
+            stack = []
+            for frame in frames:
+                imgs = self.ptv.read_frame_images(
+                    pm, img_base_names, num_cams, frame)
+                stack.append(np.asarray(imgs[i_cam], dtype=np.uint8))
+            bg, info = estimate_background(
+                np.stack(stack), method=method,
+                std_factor=std_factor, polarity=polarity)
+            np.save(cache, bg)
+            print(f"BubbleSequence: cam{i_cam + 1} background from "
+                  f"{info['K']} frames ({method}), "
+                  f"unstable {100 * info['frac_unstable']:.2f}% -> {cache}")
+            backgrounds.append(bg)
+        return backgrounds

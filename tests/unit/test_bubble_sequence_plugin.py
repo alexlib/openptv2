@@ -6,7 +6,71 @@ import numpy as np
 import pytest
 
 from openptv2.algorithms.bubble_detection import detect_bubbles_fast
+from openptv2.algorithms.bubble_background import (
+    estimate_background,
+    subtract_background,
+)
 from openptv2.plugins.loader import BUILTIN_SEQUENCE_PLUGINS, resolve_plugin_module
+
+
+def test_estimate_background_recovers_constant_pixels():
+    """Temporal median must recover the static background under moving bubbles."""
+    rng = np.random.RandomState(7)
+    imy, imx, K = 60, 60, 12
+    yy, xx = np.mgrid[:imy, :imx]
+    true_bg = 40.0 + 0.3 * xx + 0.1 * yy  # static wall shading gradient
+    stack = np.empty((K, imy, imx), dtype=np.uint8)
+    for k in range(K):
+        img = true_bg + rng.normal(0, 1.0, (imy, imx))
+        # one bright bubble at a different spot each frame (minority occupant)
+        img[10 + 3 * k, 30] += 60.0
+        stack[k] = np.clip(img, 0, 255).astype(np.uint8)
+
+    bg, info = estimate_background(stack)
+    assert info["K"] == K
+    assert info["frac_unstable"] < 0.05
+    # Pixels that saw a bubble use the temporal-minimum fallback, which
+    # carries noise-extreme error; the static majority must match closely.
+    err = np.abs(bg - true_bg)
+    assert np.median(err) < 1.0
+    assert np.percentile(err, 99) < 5.0
+
+
+def test_estimate_background_dark_polarity_uses_maximum():
+    """Dark-on-bright bubbles: unstable pixels fall back to temporal max."""
+    rng = np.random.RandomState(3)
+    imy, imx, K = 40, 40, 10
+    stack = np.full((K, imy, imx), 200, dtype=np.uint8)
+    for k in range(K):
+        img = stack[k].astype(float) + rng.normal(0, 1.0, (imy, imx))
+        img[5 + 3 * k, 20] -= 120.0  # dark bubble, moving
+        stack[k] = np.clip(img, 0, 255).astype(np.uint8)
+
+    bg, _ = estimate_background(stack, polarity="dark")
+    np.testing.assert_allclose(bg, 200.0, atol=3.0)
+
+
+def test_subtract_background_keeps_bubbles_positive():
+    """Bright: img-bg clipped at 0; dark: bg-img so bubbles stay positive."""
+    bg = np.full((8, 8), 50.0)
+    img = bg.copy()
+    img[3, 3] = 120.0
+    sub = subtract_background(img, bg, polarity="bright")
+    assert sub[3, 3] == 70.0
+    assert sub.min() >= 0.0
+    assert np.count_nonzero(sub) == 1  # only the bubble survives
+
+    dark_bg = np.full((8, 8), 200.0)
+    dark_img = dark_bg.copy()
+    dark_img[5, 5] = 80.0  # dark bubble on bright background
+    dark = subtract_background(dark_img, dark_bg, polarity="dark")
+    assert dark[5, 5] == 120.0
+    assert dark.min() >= 0.0
+    assert np.count_nonzero(dark) == 1  # only the bubble survives
+    with pytest.raises(ValueError):
+        subtract_background(img, bg, polarity="sideways")
+    with pytest.raises(ValueError):
+        estimate_background(np.ones((4, 4)))  # not a stack
 
 
 def test_detect_bubbles_fast_synthetic_glare_merge():

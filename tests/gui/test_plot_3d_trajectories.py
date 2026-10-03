@@ -77,6 +77,25 @@ def test_bounds_and_fov_box():
     assert len(ax.lines) == 13
 
 
+def test_vertical_velocity_coolwarm_sign():
+    """Up (+Y, against gravity) must be hot/red, down cold/blue (coolwarm)."""
+    up = _make_dummy_trajectory(
+        np.array([[0.0, 0.0, 0.0], [0.0, 10.0, 0.0], [0.0, 20.0, 0.0]]), trajid=1
+    )
+    down = _make_dummy_trajectory(
+        np.array([[5.0, 20.0, 0.0], [5.0, 10.0, 0.0], [5.0, 0.0, 0.0]]), trajid=2
+    )
+    fig = build_3d_trajectories_figure(
+        [up, down], first_frame=10000, last_frame=10002
+    )
+    ax = fig.axes[0]
+    assert len(ax.lines) == 2
+    c_up = np.asarray(ax.lines[0].get_color())
+    c_dn = np.asarray(ax.lines[1].get_color())
+    assert c_up[0] > c_up[2], f"up should be red-dominated, got {c_up}"
+    assert c_dn[2] > c_dn[0], f"down should be blue-dominated, got {c_dn}"
+
+
 def test_create_3d_trajectories_panel_clamping(tmp_path):
     res_dir = tmp_path / "res"
     res_dir.mkdir()
