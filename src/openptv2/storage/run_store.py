@@ -69,6 +69,21 @@ def _frame_num(key: str) -> int:
     return int(key.split("_", 1)[1])
 
 
+#: Length/time units per group. Calibration space is millimetres (ori files
+#: and the sensor pixel size are typed in mm); time is integer frames.
+#: Targets are raw sensor pixels; everything reconstructed is mm until
+#: seal() rescales the flat trajectory cache to metres (×0.001).
+_GROUP_UNITS = {
+    "targets": {"x_units": "pixel", "y_units": "pixel"},
+    "correspondences": {"pos_units": "mm"},
+    "linkage": {"pos_units": "mm", "time_units": "frame"},
+    "traj": {"first_units": "frame", "last_units": "frame"},
+    "quality": {"ghost_units": "1"},
+    "calibrations": {"units": "mm"},
+    "particle_table": {"xyz_units": "mm", "time_units": "frame"},
+}
+
+
 def resolve_store_path(experiment_root: Union[str, Path]) -> Path:
     """Compute the ``run.zarr`` path for an experiment, the one place this
     project should do so.
@@ -205,6 +220,13 @@ class RunStore:
                             "mm"  # matches legacy ASCII (rt_is/ptv_is)
                         )
                         meta.attrs["trajectories_units"] = "m"  # matches flowtracks
+                        # Calibration space anchor: ori files and the sensor
+                        # pixel size are typed in millimetres, time in frames.
+                        meta.attrs["length_unit"] = "mm"
+                        meta.attrs["time_unit"] = "frame"
+                        for _gname, _u in _GROUP_UNITS.items():
+                            if _gname in self.root:
+                                self.root[_gname].attrs.update(_u)
                         break
                     except Exception:
                         if attempt == 9:
@@ -737,6 +759,9 @@ class RunStore:
         d = table.to_dict()
         for key, val in d.items():
             grp.create_array(key, data=np.asarray(val), overwrite=True)
+        grp.attrs.update(
+            {"xyz_units": "mm", "time_units": "frame"}
+        )
 
     def read_unified_table(self):
         """Read a UnifiedParticleTable from zarr ``particle_table/`` group."""
@@ -776,6 +801,20 @@ class RunStore:
         grp.create_array("time", data=np.asarray(time, dtype=np.int64), overwrite=True)
         grp.create_array(
             "trajid", data=np.asarray(trajid, dtype=np.int64), overwrite=True
+        )
+        # seal() rescales mm linkage positions ×0.001 to m, and writes ZEROS
+        # for vel/accel (openptv2 never differentiates them -- dt is 1 frame
+        # throughout; velocities live downstream in m/frame or m/s once a
+        # frame rate is known). Zeros carry no physics: mark them unfilled so
+        # no reader mistakes them for measured stillness.
+        grp.attrs.update(
+            {
+                "pos_units": "m",
+                "length_scale": "mm x 0.001 -> m",
+                "vel_units": "unfilled at seal (zeros)",
+                "accel_units": "unfilled at seal (zeros)",
+                "time_units": "frame",
+            }
         )
 
     def trajectory(self, trajid: int) -> dict[str, np.ndarray]:

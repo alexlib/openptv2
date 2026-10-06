@@ -237,3 +237,12 @@ def test_read_zarr_trajectories(tmp_path):
     p0 = trajs[0].pos()
     np.testing.assert_allclose(p0[0], [0.010, 0.020, 0.030])
     np.testing.assert_allclose(p0[1], [0.012, 0.022, 0.032])
+
+
+def test_legacy_store_groups_state_their_units(tmp_path):
+    """Legacy writer: pixels in, millimetres out -- stated on the groups."""
+    store = ZarrFrameStore(tmp_path / "test_run.zarr", mode="w")
+    assert store.root["targets"].attrs["x_units"] == "pixel"
+    assert store.root["correspondences"].attrs["pos_units"] == "mm"
+    assert store.root["trajectories"].attrs["pos_units"] == "mm"
+    assert store.root["trajectories"].attrs["time_units"] == "frame"

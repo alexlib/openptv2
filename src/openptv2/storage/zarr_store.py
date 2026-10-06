@@ -57,6 +57,19 @@ class ZarrFrameStore:
             _get_or_create_group(self.root, "correspondences")
             _get_or_create_group(self.root, "trajectories")
             _get_or_create_group(self.root, "metadata")
+            # Units: sensor pixels in, millimetres out. (RunStore's sealed
+            # trajectories/ cache instead uses metres -- read that group's
+            # own attrs; the two writers never share a store.)
+            self.root["targets"].attrs.update({"x_units": "pixel", "y_units": "pixel"})
+            self.root["correspondences"].attrs.update({"pos_units": "mm"})
+            self.root["trajectories"].attrs.update(
+                {
+                    "pos_units": "mm",
+                    "vel_units": "mm s-1",
+                    "accel_units": "mm s-2",
+                    "time_units": "frame",
+                }
+            )
 
     # -------------------------------------------------------------------------
     # Target Operations (img/camX.YYYY_targets replacement)

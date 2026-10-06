@@ -395,3 +395,33 @@ def test_batched_writes_match_single_frame_writes(tmp_path):
         assert np.array_equal(one.read_point_quality(f), many.read_point_quality(f))
     with pytest.raises(RunStoreError):
         many.write_linkage_many([9], [(np.zeros(2), np.zeros(2))], [np.zeros((3, 3))])
+
+
+def test_store_records_length_and_time_units(tmp_path):
+    """Every group states its units: pixels in, mm out, frames for time."""
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    meta = dict(store.root["meta"].attrs)
+    assert meta["length_unit"] == "mm"
+    assert meta["time_unit"] == "frame"
+    assert meta["raw_units"] == "mm"
+    assert store.root["targets"].attrs["x_units"] == "pixel"
+    assert store.root["correspondences"].attrs["pos_units"] == "mm"
+    assert store.root["linkage"].attrs["time_units"] == "frame"
+
+
+def test_sealed_trajectories_mark_vel_unfilled(tmp_path):
+    """Seal rescales mm->m but never differentiates: vel/accel are zeros,
+    marked unfilled so no reader mistakes them for measured stillness."""
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    n = 3
+    store.write_trajectories(
+        pos=np.zeros((n, 3)),
+        vel=np.zeros((n, 3)),
+        accel=np.zeros((n, 3)),
+        time=np.arange(1, n + 1),
+        trajid=np.zeros(n, dtype=np.int64),
+    )
+    attrs = dict(store.root["trajectories"].attrs)
+    assert attrs["pos_units"] == "m"
+    assert "unfilled" in attrs["vel_units"]
+    assert attrs["time_units"] == "frame"
