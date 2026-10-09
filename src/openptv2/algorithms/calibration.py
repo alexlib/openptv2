@@ -605,9 +605,12 @@ class Calibration:
         if add_file is not None:
             add_path = Path(add_file)
             ap = self.added_par
+            # Exponent notation: the C format "%.8f" kept 8 decimals, which
+            # zeroed k3 ~ 1e-9 and cut k2 ~ 1e-6 to three digits. fscanf("%lf")
+            # in liboptv / 3DPTV reads this unchanged.
             add_lines = [
-                f"{ap.k1:.8f} {ap.k2:.8f} {ap.k3:.8f} "
-                f"{ap.p1:.8f} {ap.p2:.8f} {ap.scx:.8f} {ap.she:.8f}"
+                f"{ap.k1:.10e} {ap.k2:.10e} {ap.k3:.10e} "
+                f"{ap.p1:.10e} {ap.p2:.10e} {ap.scx:.10e} {ap.she:.10e}"
             ]
             add_path.write_text("\n".join(add_lines) + "\n")
 

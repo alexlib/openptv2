@@ -91,6 +91,27 @@ def test_write_ori():
     os.remove(add_file)
 
 
+def test_addpar_round_trip_keeps_small_coefficients(tmp_path):
+    """Distortion coefficients survive a write/read at full precision.
+
+    The C format %.8f kept only 8 decimals: k3 ~ 1e-9 was written as zero and
+    k2 ~ 1e-6 kept three digits. On an 8 mm half-diagonal sensor k3 = 1e-9
+    alone moves the corners by ~0.002 mm.
+    """
+    cal = make_test_cal()
+    ap = cal.added_par
+    ap.k1, ap.k2, ap.k3 = -1.5432109876e-4, 1.2345678901e-6, 1.2345678901e-9
+    ap.p1, ap.p2 = 3.2109876543e-5, -7.6543210987e-6
+    ap.scx, ap.she = 1.0001234567, -1.2345678901e-4
+    ori, add = tmp_path / "c.ori", tmp_path / "c.addpar"
+    cal.to_file(str(ori), str(add))
+
+    back = Calibration.from_file(str(ori), str(add)).added_par
+    for name in ("k1", "k2", "k3", "p1", "p2", "scx", "she"):
+        want, got = getattr(ap, name), getattr(back, name)
+        assert abs(got - want) <= 1e-9 * abs(want), f"{name}: {want!r} -> {got!r}"
+
+
 def test_rotation_angles():
     # omega
     ex = Exterior()

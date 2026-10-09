@@ -470,8 +470,9 @@ class TestCalibrationToFile:
         add = tmp_path / "out.addpar"
         cal.to_file(str(ori), str(add))
         assert add.exists()
-        content = add.read_text()
-        assert "0.00010000" in content
+        # all seven values, k3 = 3e-12 included (the old "%.8f" wrote 0)
+        values = [float(v) for v in add.read_text().split()]
+        assert values == [1e-4, 2e-8, 3e-12, 0.0, 0.0, 1.0, 0.0]
 
     def test_round_trip(self, tmp_path):
         cal = Calibration()

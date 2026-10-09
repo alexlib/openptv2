@@ -833,10 +833,13 @@ class TestCalibrationReadWrite:
                     orig_cal.get_glass_vec(), copied_cal.get_glass_vec(), decimal=10
                 )
 
-                # For addpar files, they should be exactly identical (no floating point calculations)
-                assert (
-                    Path(input_add_file.decode("utf-8")).read_text().strip()
-                    == Path(output_add_file.decode("utf-8")).read_text().strip()
+                # addpar values must survive exactly; the text differs because
+                # the writer uses exponent notation instead of C's "%.8f"
+                def addpar_values(path):
+                    return [float(v) for v in Path(path).read_text().split()]
+
+                assert addpar_values(input_add_file.decode("utf-8")) == addpar_values(
+                    output_add_file.decode("utf-8")
                 ), f"ADDPAR round-trip failed for {cam_file}.addpar"
 
                 print(f"✓ Round-trip test passed for {cam_file}")
