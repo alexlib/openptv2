@@ -488,10 +488,13 @@ def _point_to_pixel_out(
         sr = R / mmlut_rw
         ir = int(sr)
         sr -= ir
-        if ir <= mmlut_nr and iz >= 0 and iz <= mmlut_nz:
+        # All four bilinear corners (ir..ir+1, iz..iz+1) must be inside the
+        # table, else fall back to the iterative solve; same test as
+        # imgcoord._get_mmf_from_mmlut_core / multimed.get_mmf_from_mmlut.
+        if 0 <= ir and ir + 1 <= mmlut_nr - 1 and 0 <= iz and iz + 1 <= mmlut_nz - 1:
             v0 = ir * mmlut_nz + iz
             v3 = v0 + mmlut_nz + 1
-            if v0 >= 0 and v3 <= mmlut_nr * mmlut_nz:
+            if v0 >= 0 and v3 < mmlut_nr * mmlut_nz:
                 mmf = (
                     mmlut_data[v0] * (1.0 - sr) * (1.0 - sz)
                     + mmlut_data[v0 + 1] * (1.0 - sr) * sz

@@ -1,0 +1,108 @@
+"""The tracking kernels' multimedia LUT lookup must agree with img_coord.
+
+imgcoord._get_mmf_from_mmlut_core and multimed.get_mmf_from_mmlut reject a
+point unless all four bilinear corners (ir..ir+1, iz..iz+1) are inside the
+table, and fall back to the iterative solver otherwise.  The three inlined
+copies in the tracking kernels kept liboptv's older test (ir <= nr,
+iz <= nz, last index <= nr*nz), which accepts the table's top row and the row
+above it: the "z+1" corners then wrap into the next radial row (and at one
+corner read one element past the end).  Points in that band were projected
+16-35 px off.
+"""
+
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from openptv2.algorithms.calibration import Calibration
+from openptv2.algorithms.imgcoord import img_coord
+from openptv2.algorithms.multimed import init_mmlut
+from openptv2.algorithms.parameters import ControlPar, MmNp, VolumePar
+from openptv2.algorithms.trafo import metric_to_pixel
+
+CAL_DIR = Path(__file__).resolve().parents[2] / "test_data" / "track" / "cal"
+PIX = 0.012
+
+
+@pytest.fixture(scope="module")
+def water_rig():
+    cal = Calibration()
+    cal.from_file(str(CAL_DIR / "cam1.tif.ori"), str(CAL_DIR / "cam1.tif.addpar"))
+    mm = MmNp(n1=1.0, n2=[1.49], d=[5.0], n3=1.33)
+    cpar = ControlPar(
+        num_cams=1,
+        imx=1280,
+        imy=1024,
+        pix_x=PIX,
+        pix_y=PIX,
+        mm=mm,
+        chfield=0,
+        tiff_flag=1,
+        hp_flag=1,
+        allCam_flag=0,
+        img_base_name=[""],
+        cal_img_base_name=[""],
+    )
+    vpar = VolumePar(X_lay=[-100, 100], Zmin_lay=[-100, -100], Zmax_lay=[30, 30])
+    init_mmlut(vpar, cpar, cal)
+    assert cal.mmlut.data is not None and len(cal.mmlut.data) > 0
+    # Points throughout the volume and past both Z ends of the table; the
+    # table's top rows are where the old bounds test went wrong.
+    rng = np.random.default_rng(0)
+    pts = np.column_stack(
+        [
+            rng.uniform(-150, 150, 1500),
+            rng.uniform(-150, 150, 1500),
+            rng.uniform(-120, 60, 1500),
+        ]
+    )
+    exact = np.array([metric_to_pixel(*img_coord(p, cal, mm), cpar) for p in pts])
+    return cal, mm, cpar, pts, exact
+
+
+def _max_error(project, pts, exact):
+    got = np.array([project(p) for p in pts])
+    return np.hypot(*(got - exact).T).max()
+
+
+def test_track_point_to_pixel_matches_img_coord(water_rig):
+    from openptv2.algorithms.track import _point_to_pixel_fast
+
+    cal, mm, cpar, pts, exact = water_rig
+    err = _max_error(
+        lambda p: _point_to_pixel_fast(p, cal, cpar.imx, cpar.imy, PIX, PIX, 0, mm),
+        pts,
+        exact,
+    )
+    assert err < 1e-3, f"track._point_to_pixel_fast off by {err:.3f} px"
+
+
+def test_kernel_geom_point_to_pixel_matches_img_coord(water_rig):
+    from openptv2.algorithms.track_kernels import pack_cal_array, pack_mmlut
+    from openptv2.algorithms.track_kernels_geom import point_to_pixel_fast
+
+    cal, mm, cpar, pts, exact = water_rig
+    pc, lut = pack_cal_array(cal, mm), pack_mmlut(cal)
+    err = _max_error(
+        lambda p: point_to_pixel_fast(p, pc, *lut, 1, 640, 512, 1 / PIX, 1 / PIX, 0),
+        pts,
+        exact,
+    )
+    assert err < 1e-3, f"track_kernels_geom.point_to_pixel_fast off by {err:.3f} px"
+
+
+def test_kernel_pixel_point_to_pixel_out_matches_img_coord(water_rig):
+    from openptv2.algorithms.track_kernels import pack_cal_array, pack_mmlut
+    from openptv2.algorithms.track_kernels_pixel import _point_to_pixel_out
+
+    cal, mm, cpar, pts, exact = water_rig
+    pc, lut = pack_cal_array(cal, mm), pack_mmlut(cal)
+    out = np.zeros(2)
+
+    def project(p):
+        _point_to_pixel_out(p, pc, *lut, 1, 640, 512, 1 / PIX, 1 / PIX, 0, out)
+        return out.copy()
+
+    err = _max_error(project, pts, exact)
+    assert err < 1e-3, f"track_kernels_pixel._point_to_pixel_out off by {err:.3f} px"

@@ -73,8 +73,9 @@ def pack_mmlut(cal):
     """Pack mmlut into kernel-friendly arrays.
 
     When no real mmlut data exists, creates a synthetic 2×2 table of 1.0
-    values so the kernel always takes the fast mmlut-lookup path and never
-    falls back to the slow iterative _multimed_r_nlay_1layer solver.
+    values. The kernels treat a lookup result of exactly 1.0 (or a point
+    outside the table) as "no LUT" and fall back to the iterative
+    _multimed_r_nlay_1layer solver, so refraction is still applied.
 
     Returns (data, origin, nr, nz, rw).
     """
