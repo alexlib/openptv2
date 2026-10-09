@@ -2236,17 +2236,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#myptv-2d-myptv_2d_tracking-the-per-camera-voter" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        MyPTV 2D (myptv_2d_tracking) — the per-camera voter
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#proptv-predictive_gmm_3d-the-smoother" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2379,11 +2368,6 @@ page). The <code>name</code> column is the exact preset string.</p>
 <td>3D only</td>
 </tr>
 <tr>
-<td><code>myptv_2d_tracking</code> (MyPTV 2D)</td>
-<td>Each camera tracks its own images, then cameras vote</td>
-<td>2D per camera</td>
-</tr>
-<tr>
 <td><code>predictive_gmm_3d</code> (proPTV)</td>
 <td>Fit a smooth curve through history, predict from it</td>
 <td>3D only</td>
@@ -2429,12 +2413,7 @@ reliable detection; not turbulence.</p>
 <em>total</em> distance, so nobody is paired badly. Tracks survive short gaps
 (<code>max_gap</code>), code is plain readable Python. <strong>Caveat:</strong> one frame pair at a
 time — it cannot use what happens next. <strong>Tip:</strong> good first alternative to
-the default; easiest engine to modify (<code>src/openptv2/plugins/myptv_3d_tracking.py</code>).</p>
-<h3 id="myptv-2d-myptv_2d_tracking-the-per-camera-voter">MyPTV 2D (<code>myptv_2d_tracking</code>) — the per-camera voter<a class="headerlink" href="#myptv-2d-myptv_2d_tracking-the-per-camera-voter" title="Permanent link">&para;</a></h3>
-<p>Each camera tracks its own movie; links with the most camera votes win.
-<strong>Caveat:</strong> a link needs only one vote, so a single confused camera can
-still create a bad link. <strong>Tip:</strong> reaches for it when 3D triangulation is
-unreliable but the raw images are clean.</p>
+the default; easiest engine to modify (<code>src/openptv2/plugins/nearest_hungarian_3d.py</code>).</p>
 <h3 id="proptv-predictive_gmm_3d-the-smoother">proPTV (<code>predictive_gmm_3d</code>) — the smoother<a class="headerlink" href="#proptv-predictive_gmm_3d-the-smoother" title="Permanent link">&para;</a></h3>
 <p>Fits smooth curves through each path, so speeds and accelerations stay
 sensible under noise. <strong>Caveat (read first):</strong> this port predicts from the
@@ -2475,9 +2454,8 @@ permissively MIT-licensed.</p>
   Paper: Shnapp, R. (2022). <em>MyPTV: A Python Package for 3D Particle
   Tracking.</em> Journal of Open Source Software, 7(75), 4398.
   <a href="https://doi.org/10.21105/joss.04398">https://doi.org/10.21105/joss.04398</a> ·
-  What we adapted: per-camera 2D image-space tracking with multi-camera
-  consensus (<code>myptv_2d_tracking</code>), and kinematic prediction + assignment
-  matching in 3D (<code>nearest_hungarian_3d</code>).</li>
+  What we adapted: kinematic prediction + assignment matching in 3D
+  (<code>nearest_hungarian_3d</code>).</li>
 <li><strong>proPTV</strong> by Robin Barta and colleagues (DLR) — probabilistic PTV
   framework, Python.
   Repository: <a href="https://github.com/RobinBarta/proPTV">https://github.com/RobinBarta/proPTV</a> ·
@@ -2486,7 +2464,7 @@ permissively MIT-licensed.</p>
 <li><a href="https://doi.org/10.1016/j.jcp.2024.113212">https://doi.org/10.1016/j.jcp.2024.113212</a> ·
   What we adapted: the small pure-numpy core (Gaussian-mixture / basis
   approximation and Savitzky–Golay smoothing, vendored under
-  <code>src/openptv2/plugins/proptv/</code>), wired into the <code>predictive_gmm_3d</code>
+  <code>src/openptv2/plugins/predictive_gmm/</code>), wired into the <code>predictive_gmm_3d</code>
   plugin. The original's triangulation, probability model, backtracking
   and repair are <em>not</em> ported.</li>
 <li>The classic engines descend from the OpenPTV/liboptv lineage

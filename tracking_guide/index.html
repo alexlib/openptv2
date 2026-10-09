@@ -2686,7 +2686,7 @@
 </span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="nt">min_trajectory_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w">  </span><span class="c1"># seal filter: drop &lt;5-frame traj</span>
 </span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
 </span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="nt">plugins</span><span class="p">:</span>
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">  </span><span class="nt">selected_tracking</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w">  </span><span class="c1"># default, two_phase, myptv_3d_tracking, ...</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">  </span><span class="nt">selected_tracking</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w">  </span><span class="c1"># default, two_phase, nearest_hungarian_3d, ...</span>
 </span></code></pre></div>
 <h3 id="presets">Presets<a class="headerlink" href="#presets" title="Permanent link">&para;</a></h3>
 <table>
@@ -2776,7 +2776,7 @@
 <td style="text-align: left;"><code>selected_tracking</code></td>
 <td style="text-align: left;">str</td>
 <td style="text-align: left;"><code>default</code></td>
-<td style="text-align: left;"><code>default</code> (trackcorr), <code>two_phase</code> (3D→2D Hungarian), <code>myptv_3d_tracking</code>, …</td>
+<td style="text-align: left;"><code>default</code> (trackcorr), <code>two_phase</code> (3D→2D Hungarian), <code>nearest_hungarian_3d</code>, …</td>
 </tr>
 </tbody>
 </table>
@@ -2822,7 +2822,7 @@
 <td style="text-align: left;"><strong>New</strong> — Phase 1: 3D KD-tree candidates within <code>v_max</code>; Phase 2: per-camera 2D leaf mean distance → Hungarian assignment (<code>src/openptv2/plugins/two_phase_tracking.py</code>). <code>leaf_weight=0</code> ≡ 3D-only. <strong>74% more multi-frame traj</strong> on aorta phantom (poorly-conditioned).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>myptv_3d_tracking</code></td>
+<td style="text-align: left;"><code>nearest_hungarian_3d</code></td>
 <td style="text-align: left;">MyPTV kinematic predictor</td>
 </tr>
 <tr>

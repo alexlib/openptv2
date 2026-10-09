@@ -2661,7 +2661,7 @@
 <h2 id="1-overview-plugin-architecture">1. Overview &amp; Plugin Architecture<a class="headerlink" href="#1-overview-plugin-architecture" title="Permanent link">&para;</a></h2>
 <p>OpenPTV2 features a plugin architecture (<code>openptv2.plugins.loader</code>) that resolves custom algorithms at runtime. You can deliver custom tracking plugins in three ways:</p>
 <ol>
-<li><strong>Built-in Plugins</strong>: Shipped inside <code>src/openptv2/plugins/</code> (e.g. <code>nearest_hungarian_3d</code>, <code>myptv_2d_tracking</code>, <code>splitter_tracking</code>).</li>
+<li><strong>Built-in Plugins</strong>: Shipped inside <code>src/openptv2/plugins/</code> (e.g. <code>nearest_hungarian_3d</code>, <code>predictive_gmm_3d</code>, <code>two_phase</code>).</li>
 <li><strong>Experiment-Local Plugins</strong>: Dropped directly into <code>&lt;experiment&gt;/plugins/my_tracker.py</code> for dataset-specific algorithms.</li>
 <li><strong>Third-Party Packages</strong>: Distributed via <code>pyproject.toml</code> entry points (<code>openptv2.plugins</code>).</li>
 </ol>

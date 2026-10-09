@@ -2507,7 +2507,7 @@
 <li><code>sequence</code>: Detection + correspondence only → <code>correspondences/</code> + <code>targets/</code></li>
 <li><code>tracking</code>: Tracking only → reads existing <code>correspondences/</code>/<code>targets/</code> → writes <code>linkage/</code> + <code>trajectories/</code>/<code>traj</code> via <code>seal</code></li>
 <li><code>--track3d</code>: 3D segment tracking.</li>
-<li><code>--sequence-plugin &lt;name&gt;</code> / <code>--tracking-plugin &lt;name&gt;</code>: Alternate strategy (<code>default</code>, <code>two_phase</code>, <code>myptv_3d_tracking</code>, …). Example for splitter:
+<li><code>--sequence-plugin &lt;name&gt;</code> / <code>--tracking-plugin &lt;name&gt;</code>: Alternate strategy (<code>default</code>, <code>two_phase</code>, <code>nearest_hungarian_3d</code>, …). Example for splitter:
   <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv2-batch<span class="w"> </span>test_data/test_splitter<span class="w"> </span><span class="m">1000001</span><span class="w"> </span><span class="m">1000002</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>--sequence-plugin<span class="w"> </span>splitter_sequence<span class="w"> </span>--tracking-plugin<span class="w"> </span>splitter_tracking
 </span></code></pre></div>

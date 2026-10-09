@@ -1145,10 +1145,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#44-myptv_3d_tracking" class="md-nav__link">
+  <a href="#44-nearest_hungarian_3d" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.4 myptv_3d_tracking
+        4.4 nearest_hungarian_3d
       
     </span>
   </a>
@@ -1156,10 +1156,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#45-proptv_tracking" class="md-nav__link">
+  <a href="#45-predictive_gmm_3d" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.5 proptv_tracking
+        4.5 predictive_gmm_3d
       
     </span>
   </a>
@@ -2441,10 +2441,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#44-myptv_3d_tracking" class="md-nav__link">
+  <a href="#44-nearest_hungarian_3d" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.4 myptv_3d_tracking
+        4.4 nearest_hungarian_3d
       
     </span>
   </a>
@@ -2452,10 +2452,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#45-proptv_tracking" class="md-nav__link">
+  <a href="#45-predictive_gmm_3d" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.5 proptv_tracking
+        4.5 predictive_gmm_3d
       
     </span>
   </a>
@@ -2539,11 +2539,11 @@ happens if you get it wrong.</p>
 <td>Pure 3D, scores a candidate by whether a real particle exists two frames ahead</td>
 </tr>
 <tr>
-<td><code>myptv_3d_tracking</code></td>
+<td><code>nearest_hungarian_3d</code></td>
 <td>Pure 3D, polynomial velocity prediction + Hungarian assignment (Python)</td>
 </tr>
 <tr>
-<td><code>proptv_tracking</code></td>
+<td><code>predictive_gmm_3d</code></td>
 <td>Pure 3D, Gaussian-Mixture-smoothed track history + Hungarian assignment</td>
 </tr>
 </tbody>
@@ -2578,7 +2578,7 @@ always see exactly what ran, not just what the defaults nominally are.</p>
 <h2 id="2-the-parameter-surface-every-tracker-actually-shares">2. The parameter surface every tracker actually shares<a class="headerlink" href="#2-the-parameter-surface-every-tracker-actually-shares" title="Permanent link">&para;</a></h2>
 <p>This is the single most important thing to understand before touching any
 tracker's own parameter names: <strong><code>priority_segment_3d</code>, <code>trackcorr</code>,
-<code>4be</code>, <code>myptv_3d_tracking</code>, and <code>proptv_tracking</code> are all driven by the
+<code>4be</code>, <code>nearest_hungarian_3d</code>, and <code>predictive_gmm_3d</code> are all driven by the
 same eight <code>track.par</code> / YAML <code>track:</code> fields</strong> — <code>dvxmin</code>, <code>dvxmax</code>,
 <code>dvymin</code>, <code>dvymax</code>, <code>dvzmin</code>, <code>dvzmax</code>, <code>dacc</code>, <code>angle</code>. Every tracker's own
 parameter names (<code>v_max</code>, <code>a_max</code>, <code>maxvel</code>, ...) are derived FROM these
@@ -2602,19 +2602,19 @@ asked for.</p>
 <td><code>dvxmin</code>/<code>dvxmax</code>, <code>dvymin</code>/<code>dvymax</code>, <code>dvzmin</code>/<code>dvzmax</code></td>
 <td>per-axis velocity search box: how far (mm) a particle may move between consecutive frames on each axis</td>
 <td>mm/frame</td>
-<td>every tracker (directly for <code>priority_segment_3d</code>/<code>trackcorr</code>/<code>4be</code>; converted to an isotropic radius <code>v_max</code> = largest of the three for <code>myptv_3d_tracking</code>/<code>proptv_tracking</code>'s <code>maxvel</code>)</td>
+<td>every tracker (directly for <code>priority_segment_3d</code>/<code>trackcorr</code>/<code>4be</code>; converted to an isotropic radius <code>v_max</code> = largest of the three for <code>nearest_hungarian_3d</code>/<code>predictive_gmm_3d</code>'s <code>maxvel</code>)</td>
 </tr>
 <tr>
 <td><code>dacc</code></td>
-<td>for <code>priority_segment_3d</code>/<code>trackcorr</code>: the SEEDED-step search radius (mm) around a velocity-extrapolated prediction, for a particle that already has an established velocity — despite the name, a position tolerance, not an acceleration bound. For <code>myptv_3d_tracking</code>: becomes <code>a_max</code>, the seeded-track search radius. For <code>4be</code>: read for API parity only — <strong>4BE's own cost function never uses it</strong> (§ 4be below).</td>
+<td>for <code>priority_segment_3d</code>/<code>trackcorr</code>: the SEEDED-step search radius (mm) around a velocity-extrapolated prediction, for a particle that already has an established velocity — despite the name, a position tolerance, not an acceleration bound. For <code>nearest_hungarian_3d</code>: becomes <code>a_max</code>, the seeded-track search radius. For <code>4be</code>: read for API parity only — <strong>4BE's own cost function never uses it</strong> (§ 4be below).</td>
 <td>mm</td>
-<td><code>priority_segment_3d</code>, <code>trackcorr</code>, <code>myptv_3d_tracking</code>; ignored by <code>4be</code>'s actual linking</td>
+<td><code>priority_segment_3d</code>, <code>trackcorr</code>, <code>nearest_hungarian_3d</code>; ignored by <code>4be</code>'s actual linking</td>
 </tr>
 <tr>
 <td><code>angle</code></td>
 <td>maximum angular deviation allowed between successive velocity vectors, in <strong>gon</strong> (400 gon = 360°, not degrees)</td>
 <td>gon</td>
-<td><code>priority_segment_3d</code>, <code>trackcorr</code> directly; converted to degrees (<code>unified_angle_deg</code>) for <code>myptv_3d_tracking</code>'s cone-of-continuity filter and <code>proptv_tracking</code>'s own angle check</td>
+<td><code>priority_segment_3d</code>, <code>trackcorr</code> directly; converted to degrees (<code>unified_angle_deg</code>) for <code>nearest_hungarian_3d</code>'s cone-of-continuity filter and <code>predictive_gmm_3d</code>'s own angle check</td>
 </tr>
 </tbody>
 </table>
@@ -2703,7 +2703,7 @@ correspondences injected directly):</p>
 <td>30.00</td>
 </tr>
 <tr>
-<td><code>myptv_3d_tracking</code></td>
+<td><code>nearest_hungarian_3d</code></td>
 <td>0.0%</td>
 <td>19.80</td>
 <td>1.0000</td>
@@ -2711,7 +2711,7 @@ correspondences injected directly):</p>
 <td>30.00</td>
 </tr>
 <tr>
-<td><code>proptv_tracking</code></td>
+<td><code>predictive_gmm_3d</code></td>
 <td>0.0%</td>
 <td>19.80</td>
 <td>1.0000</td>
@@ -2751,7 +2751,7 @@ and why calibration residual specifically is the dominant damage term):</p>
 <td>24.28</td>
 </tr>
 <tr>
-<td><code>myptv_3d_tracking</code></td>
+<td><code>nearest_hungarian_3d</code></td>
 <td>+441.8%</td>
 <td><strong>29.04</strong></td>
 <td>0.9999</td>
@@ -2775,7 +2775,7 @@ and why calibration residual specifically is the dominant damage term):</p>
 <td>26.90</td>
 </tr>
 <tr>
-<td><code>proptv_tracking</code></td>
+<td><code>predictive_gmm_3d</code></td>
 <td>+471.7%</td>
 <td><strong>73.31</strong></td>
 <td>0.9999</td>
@@ -2820,7 +2820,7 @@ sees the 3D correspondence positions already handed to it.</p>
 </span></code></pre></div></p>
 <p><strong>Strength</strong>: fastest of the five (9.5s clean / 13.1s realistic on this
 30-frame/500-particle case — comparable to <code>4be</code>, ~30% faster than
-<code>trackcorr</code>, and an order of magnitude faster than <code>proptv_tracking</code>).
+<code>trackcorr</code>, and an order of magnitude faster than <code>predictive_gmm_3d</code>).
 Simple, predictable, no image-space dependency (so immune to any
 calibration-model choice entirely).</p>
 <p><strong>Weakness, proven not assumed</strong>: never checks 2D image-space consistency
@@ -2928,7 +2928,7 @@ must edit source.</p>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="p">)</span>
 </span></code></pre></div></p>
 <p><strong>Strength</strong>: fastest alongside <code>priority_segment_3d</code> (7.7-8.9s); after the
-fixes above, competitive K_a (39.46, better than <code>proptv_tracking</code>'s 73.31).</p>
+fixes above, competitive K_a (39.46, better than <code>predictive_gmm_3d</code>'s 73.31).</p>
 <p><strong>Weakness</strong>: still worst of the four pure-3D-or-image-checked trackers
 under realistic noise even after both fixes — an open question this
 session left unresolved (<code>docs/holistic-3d-ptv-systems-research-program.md</code>
@@ -2936,7 +2936,7 @@ session left unresolved (<code>docs/holistic-3d-ptv-systems-research-program.md<
 <code>GREEDY_CONFLICTS=0</code>'s give-up-on-conflict rule may be discarding more
 correct links under noise than the other trackers' conflict resolution
 does — untested.</p>
-<h3 id="44-myptv_3d_tracking">4.4 <code>myptv_3d_tracking</code><a class="headerlink" href="#44-myptv_3d_tracking" title="Permanent link">&para;</a></h3>
+<h3 id="44-nearest_hungarian_3d">4.4 <code>nearest_hungarian_3d</code><a class="headerlink" href="#44-nearest_hungarian_3d" title="Permanent link">&para;</a></h3>
 <p><strong>Mechanism</strong>: pure 3D, pure Python (not Cython — slower but fully
 readable/customizable). Predicts the next position via polynomial velocity
 extrapolation from track history, then solves frame-to-frame assignment
@@ -2965,13 +2965,13 @@ intensity — <code>openptv2.tracking_cost</code>).</p>
 </tr>
 <tr>
 <td><code>angle</code></td>
-<td><code>_suggest_params</code> sets this tracker's <code>angle</code> override to a fixed <strong>200 gon</strong> deliberately, NOT derived from <code>track.angle</code>'s own 120 gon (see <code>src/openptv2/tracking_recommender.py</code>'s <code>_suggest_params</code>, the <code>nearest_hungarian_3d</code> branch) — this tracker's angle filter is a hard binary reject, so an overly tight bound throws away good matches instead of de-weighting them; a grid sweep found effectively-unrestricted (200 gon = half the full 400-gon circle) best. <code>myptv_3d_tracking</code>'s own code then converts that 200 gon to degrees via <code>unified_angle_deg</code> (×0.9) before comparing</td>
+<td><code>_suggest_params</code> sets this tracker's <code>angle</code> override to a fixed <strong>200 gon</strong> deliberately, NOT derived from <code>track.angle</code>'s own 120 gon (see <code>src/openptv2/tracking_recommender.py</code>'s <code>_suggest_params</code>, the <code>nearest_hungarian_3d</code> branch) — this tracker's angle filter is a hard binary reject, so an overly tight bound throws away good matches instead of de-weighting them; a grid sweep found effectively-unrestricted (200 gon = half the full 400-gon circle) best. <code>nearest_hungarian_3d</code>'s own code then converts that 200 gon to degrees via <code>unified_angle_deg</code> (×0.9) before comparing</td>
 <td><strong>180°</strong> (200 gon × 0.9) — i.e. myptv's cone-of-continuity filter is set intentionally wide open by the auto-tuner, not tight; if you want it tight for laminar flow, override <code>angle</code> explicitly in your own <code>track_overrides</code> dict rather than trusting the auto-tuned value for this specific tracker</td>
 </tr>
 <tr>
 <td><code>max_gap</code></td>
 <td>hardcoded at the plugin's own call site, NOT the constructor default and NOT threaded through <code>per_tracker_overrides</code></td>
-<td><strong>1 frame</strong> — verified in <code>src/openptv2/plugins/myptv_3d_tracking.py</code>'s <code>do_tracking()</code>: <code>MyPTV3DTracker(..., max_gap=1, ...)</code> is hardcoded, even though <code>MyPTV3DTracker.__init__</code>'s own signature default is <code>max_gap: int = 2</code>. The constructor default is NOT what runs. To change it you must edit the <code>do_tracking()</code> call site itself.</td>
+<td><strong>1 frame</strong> — verified in <code>src/openptv2/plugins/nearest_hungarian_3d.py</code>'s <code>do_tracking()</code>: <code>NearestHungarian3DTracker(..., max_gap=1, ...)</code> is hardcoded, even though <code>NearestHungarian3DTracker.__init__</code>'s own signature default is <code>max_gap: int = 2</code>. The constructor default is NOT what runs. To change it you must edit the <code>do_tracking()</code> call site itself.</td>
 </tr>
 <tr>
 <td><code>cost_weights</code></td>
@@ -2982,11 +2982,11 @@ intensity — <code>openptv2.tracking_cost</code>).</p>
 </table>
 <p><strong>Example</strong>:
 <div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">overrides</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">per_tracker_overrides</span><span class="p">(</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="p">[</span><span class="s2">"myptv_3d_tracking"</span><span class="p">],</span> <span class="n">src</span><span class="o">=...</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span> <span class="n">n_frames</span><span class="o">=</span><span class="mi">30</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="p">[</span><span class="s2">"nearest_hungarian_3d"</span><span class="p">],</span> <span class="n">src</span><span class="o">=...</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span> <span class="n">n_frames</span><span class="o">=</span><span class="mi">30</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="p">)</span>
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">tracks</span><span class="p">,</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">run_single_tracker</span><span class="p">(</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="s2">"myptv_3d_tracking"</span><span class="p">,</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="n">track_overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">[</span><span class="s2">"myptv_3d_tracking"</span><span class="p">],</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="s2">"nearest_hungarian_3d"</span><span class="p">,</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="n">track_overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">[</span><span class="s2">"nearest_hungarian_3d"</span><span class="p">],</span>
 </span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="n">src</span><span class="o">=...</span><span class="p">,</span>
 </span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span>
 </span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="p">)</span>
@@ -3000,7 +3000,7 @@ well as any tracker here except <code>trackcorr</code>.</p>
 the Cython trackers on this small case, but pure Python does not scale the
 same way to larger datasets — <code>max_gap</code>/<code>cost_weights</code> require editing the
 call site, not just <code>track.par</code>, to change).</p>
-<h3 id="45-proptv_tracking">4.5 <code>proptv_tracking</code><a class="headerlink" href="#45-proptv_tracking" title="Permanent link">&para;</a></h3>
+<h3 id="45-predictive_gmm_3d">4.5 <code>predictive_gmm_3d</code><a class="headerlink" href="#45-predictive_gmm_3d" title="Permanent link">&para;</a></h3>
 <p><strong>Mechanism</strong>: pure 3D. Fits Gaussian basis functions to each track's
 time-position history (a GMM-style smoothing of the trajectory), analytically
 differentiates the fit to get a smoothed velocity/acceleration estimate,
@@ -3054,11 +3054,11 @@ question, not settled by this benchmark.</p>
 </table>
 <p><strong>Example</strong>:
 <div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">overrides</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">per_tracker_overrides</span><span class="p">(</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="p">[</span><span class="s2">"proptv_tracking"</span><span class="p">],</span> <span class="n">src</span><span class="o">=...</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span> <span class="n">n_frames</span><span class="o">=</span><span class="mi">30</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="p">[</span><span class="s2">"predictive_gmm_3d"</span><span class="p">],</span> <span class="n">src</span><span class="o">=...</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span> <span class="n">n_frames</span><span class="o">=</span><span class="mi">30</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="p">)</span>
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="n">tracks</span><span class="p">,</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="n">bu</span><span class="o">.</span><span class="n">run_single_tracker</span><span class="p">(</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="s2">"proptv_tracking"</span><span class="p">,</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">track_overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">[</span><span class="s2">"proptv_tracking"</span><span class="p">],</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="s2">"predictive_gmm_3d"</span><span class="p">,</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">track_overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">[</span><span class="s2">"predictive_gmm_3d"</span><span class="p">],</span>
 </span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="n">src</span><span class="o">=...</span><span class="p">,</span>
 </span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="n">first</span><span class="o">=</span><span class="mi">10001</span><span class="p">,</span>
 </span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="p">)</span>
@@ -3088,13 +3088,13 @@ earn back the cost.</p>
 <li><strong>Want a fast pure-3D tracker with <code>4be</code>'s future-support disambiguation
   and don't need the last word in accuracy</strong>: <code>4be</code>, now that both bugs
   found this session are fixed — still not competitive with <code>trackcorr</code>/
-  <code>myptv_3d_tracking</code>/<code>priority_segment_3d</code> under noise (§4.3), an open
+  <code>nearest_hungarian_3d</code>/<code>priority_segment_3d</code> under noise (§4.3), an open
   research question rather than a recommendation.</li>
 <li><strong>Need Python-level customizability of the cost function (add an
-  intensity term, experiment with new weighting)</strong>: <code>myptv_3d_tracking</code> —
+  intensity term, experiment with new weighting)</strong>: <code>nearest_hungarian_3d</code> —
   competitive accuracy, pure Python so it's the one to fork/extend.</li>
 <li><strong>Have genuine multi-frame occlusion and can afford an order of magnitude
-  more runtime</strong>: <code>proptv_tracking</code> is the only one with both backward
+  more runtime</strong>: <code>predictive_gmm_3d</code> is the only one with both backward
   tracking and gap-relinking declared — but re-verify its accuracy on your
   actual occlusion pattern; this benchmark's noise model doesn't have heavy
   occlusion gaps, so this recommendation is about its <em>declared</em>
@@ -3103,14 +3103,14 @@ earn back the cost.</p>
 <h2 id="6-whats-still-open-not-swept-under-the-rug">6. What's still open, not swept under the rug<a class="headerlink" href="#6-whats-still-open-not-swept-under-the-rug" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong><code>4be</code>'s residual gap</strong> (§4.3): still worst of the four
-  non-<code>proptv_tracking</code> trackers after two real fixes. Untested hypothesis:
+  non-<code>predictive_gmm_3d</code> trackers after two real fixes. Untested hypothesis:
   its <code>GREEDY_CONFLICTS=0</code> give-up-on-conflict rule.</li>
-<li><strong><code>proptv_tracking</code>'s smoothness-bias hypothesis</strong>: not confirmed by this
+<li><strong><code>predictive_gmm_3d</code>'s smoothness-bias hypothesis</strong>: not confirmed by this
   specific "mild" measurement (§4.5) — needs a noise level with more
   genuine multi-candidate ambiguity to test properly, and/or a direct
   identity-swap audit (the same technique that found <code>4be</code>'s bug) rather
   than only the aggregate K_a.</li>
-<li><strong><code>myptv_3d_tracking</code>'s <code>max_gap</code>/<code>cost_weights</code></strong> are not threaded
+<li><strong><code>nearest_hungarian_3d</code>'s <code>max_gap</code>/<code>cost_weights</code></strong> are not threaded
   through the same <code>track_overrides</code> dict as everything else — a real,
   documented (not hidden) gap in the "everything through one shared
   surface" story of §2.</li>
