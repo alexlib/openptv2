@@ -319,8 +319,8 @@ def point_to_pixel_fast(
         yd = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
         sin_she = c_sin(she)
         cos_she = c_cos(she)
-        x_dist = scx * (xd - sin_she * yd)
-        y_dist = scx * cos_she * yd
+        x_dist = scx * xd - sin_she * yd
+        y_dist = cos_she * yd
 
     # metric_to_pixel
     x_pixel = x_dist * inv_pix_x + imx_half

@@ -175,7 +175,7 @@ def test_flat_to_dist_core_she_rotation():
     """Non-zero shear (she) rotates x/y."""
     she = 0.1
     x1, y1 = _flat_to_dist_core(0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, she)
-    # x1 = scx*(x_dist - sin(she)*y_dist), y1 = scx*cos(she)*y_dist
+    # x1 = scx*x_dist - sin(she)*y_dist, y1 = cos(she)*y_dist
     # With flat_x=0, flat_y=1 → x=0, y=1, radial_factor≈1 (r2=1 but k1=0)
     # x_dist=0, y_dist=1 → x1=-sin(she), y1=cos(she)
     assert abs(x1 - (-math.sin(she))) < EPS
@@ -193,9 +193,10 @@ def test_flat_to_dist_core_tangential():
 
 @_needs_pure_python
 def test_flat_to_dist_core_scx():
-    """scx != 1.0 scales the output."""
-    x1, y1 = _flat_to_dist_core(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0)
+    """scx != 1.0 scales x only (affine x-scale, Tcl/Tk trafo.c)."""
+    x1, y1 = _flat_to_dist_core(1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0)
     assert abs(x1 - 2.0) < EPS
+    assert abs(y1 - 1.0) < EPS
 
 
 # ---------------------------------------------------------------------------

@@ -549,8 +549,8 @@ def _point_to_pixel_out(
         yd = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
         sin_she = c_sin(she)
         cos_she = c_cos(she)
-        x_dist = scx * (xd - sin_she * yd)
-        y_dist = scx * cos_she * yd
+        x_dist = scx * xd - sin_she * yd
+        y_dist = cos_she * yd
 
     # metric_to_pixel
     x_pixel = x_dist * inv_pix_x + imx_half
@@ -1124,8 +1124,12 @@ def _dist_to_flat_out(
     sin_she: cython.double = c_sin(she)
     cos_she: cython.double = c_cos(she)
     inv_scx: cython.double = 1.0 / scx
-    xq: cython.double = (dist_x + dist_y * sin_she) * inv_scx
-    yq: cython.double = dist_y / cos_she
+    # Exact inverse of the affine step (x' = scx*x - sin*y, y' = cos*y),
+    # matching trafo._correct_brown_affine_exact_out.
+    ya: cython.double = dist_y / cos_she
+    xa: cython.double = (dist_x + ya * sin_she) * inv_scx
+    xq: cython.double = xa
+    yq: cython.double = ya
     _: cython.int
     r2: cython.double
     r4: cython.double
@@ -1144,8 +1148,8 @@ def _dist_to_flat_out(
         radial_factor = k1 * r2 + k2 * r4 + k3 * r6
         dx = xq * radial_factor + p1 * (r2 + 2.0 * xq * xq) + 2.0 * p2 * xq * yq
         dy = yq * radial_factor + p2 * (r2 + 2.0 * yq * yq) + 2.0 * p1 * xq * yq
-        xq_new = (dist_x + dist_y * sin_she) * inv_scx - dx
-        yq_new = dist_y / cos_she - dy
+        xq_new = xa - dx
+        yq_new = ya - dy
         dx_change = xq_new - xq
         dy_change = yq_new - yq
         xq += 0.5 * dx_change

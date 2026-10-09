@@ -331,8 +331,8 @@ def _distort_brown_affin_core_out(
         y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
     )
 
-    out[0] = scx * (x_dist - sin_she * y_dist)
-    out[1] = scx * cos_she * y_dist
+    out[0] = scx * x_dist - sin_she * y_dist
+    out[1] = cos_she * y_dist
 
 
 @cython.cfunc
@@ -457,8 +457,8 @@ def distort_brown_affine_batch(
             radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
             x_dist = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
             y_dist = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
-            result_view[i, 0] = scx * (x_dist - sin_she * y_dist)
-            result_view[i, 1] = scx * cos_she * y_dist
+            result_view[i, 0] = scx * x_dist - sin_she * y_dist
+            result_view[i, 1] = cos_she * y_dist
 
     return result
 
@@ -491,10 +491,9 @@ def _correct_brown_affin_out(
     cos_she: cython.double = c_cos(she)
     inv_scx: cython.double = 1.0 / scx
 
-    # Initial guess: inverse affine transformation
-    xq: cython.double = x * inv_scx
-    yq: cython.double = y * inv_scx / cos_she
-    xq += yq * sin_she
+    # Initial guess: inverse of the affine step (x' = scx*x - sin*y, y' = cos*y)
+    yq: cython.double = y / cos_she
+    xq: cython.double = (x + yq * sin_she) * inv_scx
 
     max_iter: cython.int = 20
     damping: cython.double = 0.7
@@ -518,9 +517,9 @@ def _correct_brown_affin_out(
             xq, yq, k1, k2, k3, p1, p2, scx, sin_she, cos_she, _scratch
         )
 
-        # Error
-        dx = (x - _scratch[0]) * inv_scx
-        dy = (y - _scratch[1]) * inv_scx
+        # Error, mapped back through the inverse affine step
+        dy = (y - _scratch[1]) / cos_she
+        dx = (x - _scratch[0] + dy * sin_she) * inv_scx
 
         # Update with damping
         xq += dx * damping
@@ -604,9 +603,12 @@ def _correct_brown_affine_exact_out(
     cos_she: cython.double = c_cos(she)
     inv_scx: cython.double = 1.0 / scx
 
-    # Initial guess: inverse affine transformation
-    xq: cython.double = (x + y * sin_she) * inv_scx
-    yq: cython.double = y / cos_she
+    # Exact inverse of the affine step in _distort_brown_affin_core_out
+    # (x' = scx*x - sin*y, y' = cos*y): scx scales x only.
+    ya: cython.double = y / cos_she
+    xa: cython.double = (x + ya * sin_she) * inv_scx
+    xq: cython.double = xa
+    yq: cython.double = ya
 
     max_iter: cython.int = 50
     damping: cython.double = 0.5
@@ -633,8 +635,8 @@ def _correct_brown_affine_exact_out(
         dx = xq * radial_factor + p1 * (r2 + 2.0 * xq * xq) + 2.0 * p2 * xq * yq
         dy = yq * radial_factor + p2 * (r2 + 2.0 * yq * yq) + 2.0 * p1 * xq * yq
 
-        xq_new = (x + y * sin_she) * inv_scx - dx
-        yq_new = y / cos_she - dy
+        xq_new = xa - dx
+        yq_new = ya - dy
 
         dx_change = xq_new - xq
         dy_change = yq_new - yq
@@ -889,10 +891,9 @@ def correct_brown_affine_batch(
         x = xy[i, 0]
         y = xy[i, 1]
 
-        # Initial guess: inverse affine transformation
-        xq = x * inv_scx
-        yq = y * inv_scx / cos_she
-        xq += yq * sin_she
+        # Initial guess: inverse of the affine step (x' = scx*x - sin*y, y' = cos*y)
+        yq = y / cos_she
+        xq = (x + yq * sin_she) * inv_scx
 
         for _ in range(max_iter):
             xq_old = xq
@@ -914,11 +915,11 @@ def correct_brown_affine_batch(
                 y_dist = (
                     yq * radial_factor + p2 * (r2 + 2.0 * yq * yq) + 2.0 * p1 * xq * yq
                 )
-                xt = scx * (x_dist - sin_she * y_dist)
-                yt = scx * cos_she * y_dist
+                xt = scx * x_dist - sin_she * y_dist
+                yt = cos_she * y_dist
 
-            dx = (x - xt) * inv_scx
-            dy = (y - yt) * inv_scx
+            dy = (y - yt) / cos_she
+            dx = (x - xt + dy * sin_she) * inv_scx
 
             xq += dx * damping
             yq += dy * damping

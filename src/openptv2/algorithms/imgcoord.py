@@ -93,8 +93,8 @@ def _flat_to_dist_core(
     sin_she: cython.double = c_sin(she)
     cos_she: cython.double = c_cos(she)
 
-    x1: cython.double = scx * (x_dist - sin_she * y_dist)
-    y1: cython.double = scx * cos_she * y_dist
+    x1: cython.double = scx * x_dist - sin_she * y_dist
+    y1: cython.double = cos_she * y_dist
 
     return x1, y1
 
@@ -860,8 +860,8 @@ def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> object:
                 + 2.0 * p1 * x_pt * y_pt
             )
 
-            res_mv[i, 0] = scx * (x_dist - sin_she * y_dist)
-            res_mv[i, 1] = scx * cos_she * y_dist
+            res_mv[i, 0] = scx * x_dist - sin_she * y_dist
+            res_mv[i, 1] = cos_she * y_dist
 
     return result
 

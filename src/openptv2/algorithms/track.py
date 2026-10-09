@@ -345,8 +345,8 @@ def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, ch
         yd = y * radial_factor + p2 * (r2 + 2 * y * y) + 2 * p1 * x * y
         sin_she = c_sin(she)
         cos_she = c_cos(she)
-        x_dist = scx * (xd - sin_she * yd)
-        y_dist = scx * cos_she * yd
+        x_dist = scx * xd - sin_she * yd
+        y_dist = cos_she * yd
 
     # === metric_to_pixel (inlined) ===
     x_pixel = x_dist * inv_pix_x + imx_half
