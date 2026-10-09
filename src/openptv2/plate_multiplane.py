@@ -508,9 +508,13 @@ def prepare_bundle(
 
     1. per-camera PnP residual < ``view_gate_px`` -- uses no cross-camera
        information, so it is a pure labelling test for one view;
-    2. plate within ``tilt_gate_deg`` of vertical (world +Y) -- for a plate held
-       vertical, a pose tens of degrees off is a mislabelling however well it
-       fits its own points;
+    2. plate upright and within ``tilt_gate_deg`` of vertical (its +Y along
+       world +Y) -- for a plate held vertical, a pose tens of degrees off is a
+       mislabelling however well it fits its own points.  A plate is never
+       upside down either, so a pose with its +Y pointing down counts as
+       ``180 - lean`` degrees off: that is a grid numbered from the wrong
+       corner (a 180 deg relabelling), which is still exactly vertical and
+       would otherwise pass;
     3. per-dot cross-camera agreement < ``agree_mm`` (:func:`agreeing_views`).
 
     The reference frame must survive gate 1 in every camera; its plate pose is
@@ -544,7 +548,10 @@ def prepare_bundle(
         ci, fr = key
         if fr == ref:
             continue
-        t = tilt_off_vertical_deg(ref_R[ci].T @ rodrigues(good[key][0]))
+        R = ref_R[ci].T @ rodrigues(good[key][0])
+        t = tilt_off_vertical_deg(R)
+        if R[1, 1] < 0:  # plate +Y points down: upside down
+            t = 180.0 - t
         if t > tilt_gate_deg:
             tilt_rejects.append((fr, ci, t))
             del good[key]

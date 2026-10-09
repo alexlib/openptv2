@@ -282,19 +282,23 @@ def test_prepare_bundle_gates_and_the_bundle_recovers_the_rig():
     ix, iy = (ids - 1) % GRID.nx, (ids - 1) // GRID.nx
     block = iy < 6
     views[(1, "05")] = (GRID.ids_from_index(5 - iy[block], ix[block]), px[block])
-    # Gate 3: a 180 deg relabelling turns the plate upside down -- still exactly
-    # vertical, so only the per-dot comparison sees it -- and a one-pitch shift
-    # along X puts the plate in the wrong place.  Both fit perfectly too.
+    # Gate 2 too: a 180 deg relabelling (numbered from the wrong corner) implies
+    # an upside-down plate.  Still exactly vertical, but a plate is never upside
+    # down.  Fits perfectly.
     ids, px = views[(2, "03")]
     views[(2, "03")] = (GRID.n_points + 1 - ids, px)
+    # Gate 3: a one-pitch shift along X puts an upright plate in the wrong
+    # place.  Fits perfectly too.
     ids, px = views[(3, "04")]
     inner = (ids - 1) % GRID.nx < GRID.nx - 1
     views[(3, "04")] = (ids[inner] + 1, px[inner])
 
     setup = prepare_bundle(views, GRID, K, 4, "00")
     assert setup.n_pnp == 4 * len(POSES)  # gate 1 sees nothing wrong
-    assert [(fr, ci) for fr, ci, _ in setup.tilt_rejects] == [("05", 1)]
-    assert [(fr, cams) for fr, cams, _ in setup.dropped] == [("03", [2]), ("04", [3])]
+    rejects = {(fr, ci): t for fr, ci, t in setup.tilt_rejects}
+    assert set(rejects) == {("03", 2), ("05", 1)}
+    assert abs(rejects[("03", 2)] - 180.0) < 1e-6
+    assert [(fr, cams) for fr, cams, _ in setup.dropped] == [("04", [3])]
     assert all(k not in setup.poses for k in [(1, "05"), (2, "03"), (3, "04")])
     assert setup.free == ["01", "02", "03", "04", "05"]
 

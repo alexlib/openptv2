@@ -228,12 +228,14 @@ naive attempts. Three gates, each seeing what the previous cannot:
    labelling test for one view;
 2. a known plate orientation, if you have one — a grossly mislabelled view
    yields a plate pose tens of degrees off while still fitting its own points.
-   It measures *leaning*, so it catches a grid turned 90° in its plane but not
-   one turned 180°: an upside-down plate is still exactly vertical;
+   A plate held vertical is also never upside down, so the gate rejects a pose
+   whose plate +Y points down. That is how it catches a grid numbered from the
+   wrong corner (a 180° relabelling), which fits perfectly and is still exactly
+   vertical;
 3. per-dot cross-camera agreement (`plate_bundle.agreeing_views`) — **per dot,
    not per plate centre**: a scramble can leave the centroid roughly in place
-   while the pattern around it is wrong. This is what catches the 180°
-   relabelling and the one-pitch shift, both of which fit perfectly per view.
+   while the pattern around it is wrong. This is what catches a one-pitch
+   shift, which fits perfectly per view and leaves the plate upright.
 
 `plate_multiplane.prepare_bundle` runs the three gates and builds the
 observations and the initial poses.
