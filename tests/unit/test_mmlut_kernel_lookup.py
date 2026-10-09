@@ -106,3 +106,51 @@ def test_kernel_pixel_point_to_pixel_out_matches_img_coord(water_rig):
 
     err = _max_error(project, pts, exact)
     assert err < 1e-3, f"track_kernels_pixel._point_to_pixel_out off by {err:.3f} px"
+
+
+def test_kernels_without_lut_match_img_coord():
+    """No LUT built: the kernels must still apply refraction.
+
+    pack_mmlut used to hand the kernels a 2x2 table of ones and rely on an
+    exact 1.0 result to trigger the iterative solve; bilinear interpolation
+    of ones is not always exactly 1.0, and then refraction was skipped (up to
+    186 px off on the cavity cameras).
+    """
+    from openptv2.algorithms.track import _pack_cams_fast, _pack_cams_fast_tuples
+    from openptv2.algorithms.track_kernels_geom import point_to_pixel_fast
+
+    data = Path(__file__).resolve().parents[2] / "test_data" / "test_cavity"
+    cpar = ControlPar.from_yaml(str(data / "parameters.yaml"))
+    cals = [
+        Calibration.from_file(
+            str(data / "cal" / f"cam{i + 1}.tif.ori"),
+            str(data / "cal" / f"cam{i + 1}.tif.addpar"),
+        )
+        for i in range(cpar.num_cams)
+    ]
+    assert all(c.mmlut.data is None or len(c.mmlut.data) == 0 for c in cals)
+    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _pack_cams_fast_tuples(
+        *_pack_cams_fast(cals, cpar.mm)
+    )
+    half = (cpar.imx / 2, cpar.imy / 2, 1 / cpar.pix_x, 1 / cpar.pix_y)
+    rng = np.random.default_rng(1)
+    worst = 0.0
+    for p in rng.uniform(-30, 30, (100, 3)):
+        for ci, cal in enumerate(cals):
+            exact = np.array(metric_to_pixel(*img_coord(p, cal, cpar.mm), cpar))
+            got = np.array(
+                point_to_pixel_fast(
+                    p,
+                    np.asarray(cal_t[ci]),
+                    md_t[ci],
+                    np.asarray(mo_t[ci]),
+                    mnr_t[ci],
+                    mnz_t[ci],
+                    mrw_t[ci],
+                    int(mnr_t[ci] > 0),
+                    *half,
+                    0,
+                )
+            )
+            worst = max(worst, np.hypot(*(got - exact)))
+    assert worst < 1e-3, f"kernel without LUT off by {worst:.2f} px"

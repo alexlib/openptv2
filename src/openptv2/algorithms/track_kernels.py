@@ -72,10 +72,12 @@ def pack_cal_array(cal, mm):
 def pack_mmlut(cal):
     """Pack mmlut into kernel-friendly arrays.
 
-    When no real mmlut data exists, creates a synthetic 2×2 table of 1.0
-    values. The kernels treat a lookup result of exactly 1.0 (or a point
-    outside the table) as "no LUT" and fall back to the iterative
-    _multimed_r_nlay_1layer solver, so refraction is still applied.
+    When no real mmlut data exists, returns an empty table with nr = nz = 0,
+    so every kernel sees has_mmlut = 0 and uses the iterative
+    _multimed_r_nlay_1layer solve. (A stand-in 2x2 table of ones used to be
+    returned instead, relying on an exact 1.0 lookup result to trigger that
+    solve; bilinear interpolation of ones is not always exactly 1.0, and
+    refraction was then silently skipped.)
 
     Returns (data, origin, nr, nz, rw).
     """
@@ -88,13 +90,12 @@ def pack_mmlut(cal):
             mmlut.nz,
             float(mmlut.rw),
         )
-    # No real mmlut → synthetic 2×2 table of 1.0 (no multimedia correction).
-    # nr=2, nz=2, rw=1000 ensures the lookup is always in-bounds.
+    # No real mmlut: empty table, nr = nz = 0 -> has_mmlut = 0 in the kernels.
     return (
-        np.ones(4, dtype=np.float64),
+        np.zeros(0, dtype=np.float64),
         np.zeros(3, dtype=np.float64),
-        2,
-        2,
+        0,
+        0,
         1000.0,
     )
 

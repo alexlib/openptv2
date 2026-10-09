@@ -220,29 +220,27 @@ def test_pack_cal_array_nontrivial_dm():
 # ---------------------------------------------------------------------------
 
 
-def test_pack_mmlut_no_data_returns_synthetic():
+def test_pack_mmlut_no_data_returns_empty_table():
     cal = _make_cal()
-    # mmlut.data is None → synthetic table
+    # mmlut.data is None -> empty table, nr = nz = 0, so the kernels see
+    # has_mmlut = 0 and use the iterative solve
     data, origin, nr, nz, rw = pack_mmlut(cal)
     assert isinstance(data, np.ndarray)
     assert data.dtype == np.float64
-    assert len(data) == 4
-    assert np.all(data == 1.0)
+    assert len(data) == 0
     assert isinstance(origin, np.ndarray)
     assert len(origin) == 3
     assert np.all(origin == 0.0)
-    assert nr == 2
-    assert nz == 2
-    assert rw == 1000.0
+    assert nr == 0
+    assert nz == 0
 
 
-def test_pack_mmlut_empty_data_returns_synthetic():
+def test_pack_mmlut_empty_data_returns_empty_table():
     cal = _make_cal()
-    # mmlut.data is empty array → still synthetic (len == 0)
     cal.mmlut.data = np.array([], dtype=np.float64)
     data, origin, nr, nz, rw = pack_mmlut(cal)
-    assert len(data) == 4
-    assert np.all(data == 1.0)
+    assert len(data) == 0
+    assert nr == 0 and nz == 0
 
 
 # ---------------------------------------------------------------------------
