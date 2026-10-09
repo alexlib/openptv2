@@ -1926,15 +1926,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-step-by-step-code-walkthrough-myptv-case-study" class="md-nav__link">
+  <a href="#4-step-by-step-code-walkthrough-nearest-neighbour-hungarian-case-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Step-by-Step Code Walkthrough (MyPTV Case Study)
+        4. Step-by-Step Code Walkthrough (Nearest-Neighbour Hungarian Case Study)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4. Step-by-Step Code Walkthrough (MyPTV Case Study)">
+    <nav class="md-nav" aria-label="4. Step-by-Step Code Walkthrough (Nearest-Neighbour Hungarian Case Study)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2497,15 +2497,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-step-by-step-code-walkthrough-myptv-case-study" class="md-nav__link">
+  <a href="#4-step-by-step-code-walkthrough-nearest-neighbour-hungarian-case-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Step-by-Step Code Walkthrough (MyPTV Case Study)
+        4. Step-by-Step Code Walkthrough (Nearest-Neighbour Hungarian Case Study)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4. Step-by-Step Code Walkthrough (MyPTV Case Study)">
+    <nav class="md-nav" aria-label="4. Step-by-Step Code Walkthrough (Nearest-Neighbour Hungarian Case Study)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2661,7 +2661,7 @@
 <h2 id="1-overview-plugin-architecture">1. Overview &amp; Plugin Architecture<a class="headerlink" href="#1-overview-plugin-architecture" title="Permanent link">&para;</a></h2>
 <p>OpenPTV2 features a plugin architecture (<code>openptv2.plugins.loader</code>) that resolves custom algorithms at runtime. You can deliver custom tracking plugins in three ways:</p>
 <ol>
-<li><strong>Built-in Plugins</strong>: Shipped inside <code>src/openptv2/plugins/</code> (e.g. <code>nearest_hungarian_3d</code>, <code>predictive_gmm_3d</code>, <code>two_phase</code>).</li>
+<li><strong>Built-in Plugins</strong>: Shipped inside <code>src/openptv2/plugins/</code> (e.g. <code>two_phase</code>, <code>hybrid_deltat_3d</code>, <code>4be</code>).</li>
 <li><strong>Experiment-Local Plugins</strong>: Dropped directly into <code>&lt;experiment&gt;/plugins/my_tracker.py</code> for dataset-specific algorithms.</li>
 <li><strong>Third-Party Packages</strong>: Distributed via <code>pyproject.toml</code> entry points (<code>openptv2.plugins</code>).</li>
 </ol>
@@ -2710,8 +2710,8 @@
 <h3 id="c-isolating-core-mathematics-pure-numpyscipy">C. Isolating Core Mathematics (Pure NumPy/SciPy)<a class="headerlink" href="#c-isolating-core-mathematics-pure-numpyscipy" title="Permanent link">&para;</a></h3>
 <p>Instead of requiring heavy external dependencies (GUIs, pandas, custom file formats), isolate the core mathematical logic (distance matrix calculation, kinematic prediction, bipartite matching) into pure NumPy/SciPy functions (<code>scipy.optimize.linear_sum_assignment</code>).</p>
 <hr />
-<h2 id="4-step-by-step-code-walkthrough-myptv-case-study">4. Step-by-Step Code Walkthrough (MyPTV Case Study)<a class="headerlink" href="#4-step-by-step-code-walkthrough-myptv-case-study" title="Permanent link">&para;</a></h2>
-<p>Below is a complete, annotated example based on our MyPTV 3D tracking plugin implementation (<a href="file:///C:/Users/alex/projects/openptv2/src/openptv2/plugins/nearest_hungarian_3d.py"><code>nearest_hungarian_3d.py</code></a>):</p>
+<h2 id="4-step-by-step-code-walkthrough-nearest-neighbour-hungarian-case-study">4. Step-by-Step Code Walkthrough (Nearest-Neighbour Hungarian Case Study)<a class="headerlink" href="#4-step-by-step-code-walkthrough-nearest-neighbour-hungarian-case-study" title="Permanent link">&para;</a></h2>
+<p>Below is a complete, annotated example of a 3D tracking plugin built around a nearest-neighbour Hungarian engine. The engine itself lives in <code>src/openptv2/plugins/_nearest_hungarian.py</code> (the coarse pass of <code>hybrid_deltat_3d</code>); <code>src/openptv2/plugins/hybrid_deltat_3d.py</code> is a live plugin with the same structure:</p>
 <h3 id="step-1-implement-the-mathematical-core-engine">Step 1: Implement the Mathematical Core Engine<a class="headerlink" href="#step-1-implement-the-mathematical-core-engine" title="Permanent link">&para;</a></h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_sum_assignment</span>

@@ -2225,28 +2225,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#myptv-3d-nearest_hungarian_3d-the-fair-one" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        MyPTV 3D (nearest_hungarian_3d) — the fair one
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#proptv-predictive_gmm_3d-the-smoother" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        proPTV (predictive_gmm_3d) — the smoother
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#two-phase-two_phase-the-hybrid" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2274,10 +2252,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-upstream-credit-myptv-and-proptv-are-plugins-not-forks" class="md-nav__link">
+  <a href="#4-upstream-credit-myptv-and-proptv" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Upstream credit: MyPTV and proPTV are plugins, not forks
+        4. Upstream credit: MyPTV and proPTV
       
     </span>
   </a>
@@ -2363,16 +2341,6 @@ page). The <code>name</code> column is the exact preset string.</p>
 <td>3D only</td>
 </tr>
 <tr>
-<td><code>nearest_hungarian_3d</code> (MyPTV 3D)</td>
-<td>Best total pairing per frame pair (Hungarian), survives gaps</td>
-<td>3D only</td>
-</tr>
-<tr>
-<td><code>predictive_gmm_3d</code> (proPTV)</td>
-<td>Fit a smooth curve through history, predict from it</td>
-<td>3D only</td>
-</tr>
-<tr>
 <td><code>two_phase</code> (Two-Phase)</td>
 <td>3D search for candidates, per-camera images for ranking</td>
 <td>3D + 2D</td>
@@ -2408,21 +2376,6 @@ it produces the worst accelerations of all engines and leaves gaps
 deliberately (gap bridging is off for its preset on purpose — it would
 rebuild exactly the links 4BE declined). <strong>Tip:</strong> sparse lab data with
 reliable detection; not turbulence.</p>
-<h3 id="myptv-3d-nearest_hungarian_3d-the-fair-one">MyPTV 3D (<code>nearest_hungarian_3d</code>) — the fair one<a class="headerlink" href="#myptv-3d-nearest_hungarian_3d-the-fair-one" title="Permanent link">&para;</a></h3>
-<p>Nobody grabs the nearest dot first: it finds the pairing with the lowest
-<em>total</em> distance, so nobody is paired badly. Tracks survive short gaps
-(<code>max_gap</code>), code is plain readable Python. <strong>Caveat:</strong> one frame pair at a
-time — it cannot use what happens next. <strong>Tip:</strong> good first alternative to
-the default; easiest engine to modify (<code>src/openptv2/plugins/nearest_hungarian_3d.py</code>).</p>
-<h3 id="proptv-predictive_gmm_3d-the-smoother">proPTV (<code>predictive_gmm_3d</code>) — the smoother<a class="headerlink" href="#proptv-predictive_gmm_3d-the-smoother" title="Permanent link">&para;</a></h3>
-<p>Fits smooth curves through each path, so speeds and accelerations stay
-sensible under noise. <strong>Caveat (read first):</strong> this port predicts from the
-<em>smoothed current position</em>, not from an extrapolated one, and its search
-radius is the same with or without history — so it currently behaves closer
-to smoothed nearest-neighbour than to the predictive scheme of the paper.
-Also dense data gets expensive. <strong>Tip:</strong> check the plugin README before
-trusting its "predictive" label; fix the extrapolation first if you build
-on it.</p>
 <h3 id="two-phase-two_phase-the-hybrid">Two-Phase (<code>two_phase</code>) — the hybrid<a class="headerlink" href="#two-phase-two_phase-the-hybrid" title="Permanent link">&para;</a></h3>
 <p>3D search lists candidates, per-camera image distances rank them, Hungarian
 per connected group decides. No motion model — immune to bad guesses, but
@@ -2441,32 +2394,27 @@ a smooth curve. <strong>Caveat:</strong> the only engine that changes the signal
 ratio instead of fighting it, but the smooth fill is wrong for fast or
 curved motion. <strong>Tip:</strong> high frame rate + slow flow; set <code>stride</code> so the
 coarse step clearly exceeds your 3D noise floor.</p>
-<h2 id="4-upstream-credit-myptv-and-proptv-are-plugins-not-forks">4. Upstream credit: MyPTV and proPTV are plugins, not forks<a class="headerlink" href="#4-upstream-credit-myptv-and-proptv-are-plugins-not-forks" title="Permanent link">&para;</a></h2>
-<p>Two engines borrow ideas from outside projects. <strong>We use them as plugins —
-adapted concepts on openptv2's own data structures, not modified copies of
-their code.</strong> The full frameworks (triangulation pipelines, calibration,
-backtracking/repair, smoothing toolboxes) live only in their own
-repositories — use those projects directly if you need them. Both are
-permissively MIT-licensed.</p>
+<h2 id="4-upstream-credit-myptv-and-proptv">4. Upstream credit: MyPTV and proPTV<a class="headerlink" href="#4-upstream-credit-myptv-and-proptv" title="Permanent link">&para;</a></h2>
+<p>openptv2 borrows ideas from two outside projects — adapted concepts on
+openptv2's own data structures, not modified copies of their code. The full
+frameworks (triangulation pipelines, calibration, backtracking/repair,
+smoothing toolboxes) live only in their own repositories — use those projects
+directly if you need them. Both are permissively MIT-licensed.</p>
 <ul>
 <li><strong>MyPTV</strong> by Ron Shnapp — open-source Python 3D-PTV library.
   Repository: <a href="https://github.com/ronshnapp/MyPTV">https://github.com/ronshnapp/MyPTV</a> ·
   Paper: Shnapp, R. (2022). <em>MyPTV: A Python Package for 3D Particle
   Tracking.</em> Journal of Open Source Software, 7(75), 4398.
   <a href="https://doi.org/10.21105/joss.04398">https://doi.org/10.21105/joss.04398</a> ·
-  What we adapted: kinematic prediction + assignment matching in 3D
-  (<code>nearest_hungarian_3d</code>).</li>
+  What we adapted: kinematic prediction + assignment matching in 3D, the
+  coarse pass of <code>hybrid_deltat_3d</code>.</li>
 <li><strong>proPTV</strong> by Robin Barta and colleagues (DLR) — probabilistic PTV
   framework, Python.
   Repository: <a href="https://github.com/RobinBarta/proPTV">https://github.com/RobinBarta/proPTV</a> ·
   Paper: Barta, R. et al. (2024). <em>proPTV: A probabilistic particle
   tracking velocimetry framework.</em> Journal of Computational Physics, 514,</li>
 <li><a href="https://doi.org/10.1016/j.jcp.2024.113212">https://doi.org/10.1016/j.jcp.2024.113212</a> ·
-  What we adapted: the small pure-numpy core (Gaussian-mixture / basis
-  approximation and Savitzky–Golay smoothing, vendored under
-  <code>src/openptv2/plugins/predictive_gmm/</code>), wired into the <code>predictive_gmm_3d</code>
-  plugin. The original's triangulation, probability model, backtracking
-  and repair are <em>not</em> ported.</li>
+  What we use: its benchmark ground-truth format and identity metrics.</li>
 <li>The classic engines descend from the OpenPTV/liboptv lineage
   (<a href="http://www.openptv.net">http://www.openptv.net</a>).</li>
 </ul>
