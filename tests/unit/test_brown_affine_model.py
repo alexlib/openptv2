@@ -64,13 +64,16 @@ def test_forward_matches_tcltk_model(scx, she):
     batch = np.asarray(distort_brown_affine_batch(np.array(POINTS), *DIST, scx, she))
     for (x, y), b in zip(POINTS, batch):
         ref = ref_distort(x, y, *DIST, scx, she)
-        assert np.allclose(distort_brown_affin(x, y, *DIST, scx, she), ref, atol=1e-12)
-        assert np.allclose(b, ref, atol=1e-12)
+        assert np.allclose(
+            distort_brown_affin(x, y, *DIST, scx, she), ref, atol=1e-12, rtol=0
+        )
+        assert np.allclose(b, ref, atol=1e-12, rtol=0)
         # flat_to_dist adds the principal point first
         assert np.allclose(
             flat_to_dist(x - 0.1, y + 0.05, 0.1, -0.05, *DIST, scx, she),
             ref,
             atol=1e-12,
+            rtol=0,
         )
 
 
@@ -91,15 +94,16 @@ def test_inverses_round_trip(scx, she):
     dist = np.array([ref_distort(x, y, *DIST, scx, she) for x, y in POINTS])
     batch = np.asarray(correct_brown_affine_batch(dist, *DIST, scx, she))
     for (x, y), (xd, yd), b in zip(POINTS, dist, batch):
+        # correct_brown_affin and its batch stop at a relative change of 1e-8
         assert np.allclose(
-            correct_brown_affin(xd, yd, *DIST, scx, she), (x, y), atol=1e-9
+            correct_brown_affin(xd, yd, *DIST, scx, she), (x, y), atol=1e-7, rtol=0
         )
-        assert np.allclose(b, (x, y), atol=1e-9)
+        assert np.allclose(b, (x, y), atol=1e-7, rtol=0)
         # dist_to_flat / the tracking kernel also remove the principal point
         flat = dist_to_flat(xd, yd, xh, yh, *DIST, scx, she, 1e-12)
-        assert np.allclose(flat, (x - xh, y - yh), atol=1e-9)
+        assert np.allclose(flat, (x - xh, y - yh), atol=1e-9, rtol=0)
         _dist_to_flat_out(xd, yd, xh, yh, *DIST, scx, she, 1e-12, out)
-        assert np.allclose(out, (x - xh, y - yh), atol=1e-9)
+        assert np.allclose(out, (x - xh, y - yh), atol=1e-9, rtol=0)
 
 
 @pytest.mark.parametrize("scx,she", [(1.0, 0.0), (1.02, 0.01), (0.97, -0.02)])
@@ -139,8 +143,8 @@ def test_projection_paths_agree(scx, she):
     flat = np.asarray(flat_image_coord_batch(pos, cal, mm))
     for p, b, (fx, fy) in zip(pos, batch, flat):
         ref = ref_distort(fx + cal.int_par.xh, fy + cal.int_par.yh, *DIST, scx, she)
-        assert np.allclose(img_coord(p, cal, mm), ref, atol=1e-9)
-        assert np.allclose(b, ref, atol=1e-9)
+        assert np.allclose(img_coord(p, cal, mm), ref, atol=1e-9, rtol=0)
+        assert np.allclose(b, ref, atol=1e-9, rtol=0)
         ref_px = metric_to_pixel(*ref, cpar)
         assert np.allclose(
             _point_to_pixel_fast(
@@ -148,12 +152,13 @@ def test_projection_paths_agree(scx, she):
             ),
             ref_px,
             atol=1e-6,
+            rtol=0,
         )
         assert np.allclose(
-            point_to_pixel_fast(p, pc, *lut, 1, *half, 0), ref_px, atol=1e-6
+            point_to_pixel_fast(p, pc, *lut, 1, *half, 0), ref_px, atol=1e-6, rtol=0
         )
         _point_to_pixel_out(p, pc, *lut, 1, *half, 0, out)
-        assert np.allclose(out, ref_px, atol=1e-6)
+        assert np.allclose(out, ref_px, atol=1e-6, rtol=0)
 
 
 @pytest.mark.parametrize("she", [0.0, 0.01, -0.02])
@@ -170,7 +175,9 @@ def test_matches_liboptv_where_models_agree(she):
     for p, rd, rf in zip(
         pts, T.distort_arr_brown_affine(pts, oc), T.correct_arr_brown_affine(pts, oc)
     ):
-        assert np.allclose(distort_brown_affin(*p, *DIST, 1.0, she), rd, atol=1e-9)
         assert np.allclose(
-            dist_to_flat(*p, 0.0, 0.0, *DIST, 1.0, she, 1e-12), rf, atol=1e-7
+            distort_brown_affin(*p, *DIST, 1.0, she), rd, atol=1e-9, rtol=0
+        )
+        assert np.allclose(
+            dist_to_flat(*p, 0.0, 0.0, *DIST, 1.0, she, 1e-12), rf, atol=1e-7, rtol=0
         )
