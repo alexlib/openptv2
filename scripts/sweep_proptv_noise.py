@@ -33,8 +33,6 @@ TRACKERS = [
     "priority_segment_3d",
     "trackcorr",
     "4be",
-    "nearest_hungarian_3d",
-    "predictive_gmm_3d",
 ]
 
 BASELINE = dict(apd.SEVERITY_PRESETS["mild"])

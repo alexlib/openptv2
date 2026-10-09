@@ -1,14 +1,15 @@
-"""Unit tests for the nearest-neighbour Hungarian 3D tracking plugin."""
+"""Unit tests for the nearest-neighbour Hungarian tracker (hybrid_deltat_3d's
+coarse pass) and the radius-limited assignment it uses."""
 
 import numpy as np
 import pytest
 
+from openptv2.plugins._nearest_hungarian import NearestHungarian3DTracker
 from openptv2.plugins.loader import (
     BUILTIN_TRACKING_PLUGINS,
     PluginError,
     resolve_plugin_module,
 )
-from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker
 
 
 def test_tracker_synthetic_linear_motion():
@@ -189,13 +190,16 @@ def test_tracker_degenerate_frames(frames):
     NearestHungarian3DTracker(v_max=2.0, a_max=2.0, max_gap=2, dt=0.1).track_frames(frames)
 
 
-def test_plugin_loader_resolution():
-    mod = resolve_plugin_module("nearest_hungarian_3d", BUILTIN_TRACKING_PLUGINS)
-    assert hasattr(mod, "Tracking")
-
-
 @pytest.mark.parametrize(
-    "name", ["myptv_3d_tracking", "myptv_2d_tracking", "proptv_tracking", "proptv"]
+    "name",
+    [
+        "myptv_3d_tracking",
+        "myptv_2d_tracking",
+        "proptv_tracking",
+        "proptv",
+        "nearest_hungarian_3d",
+        "predictive_gmm_3d",
+    ],
 )
 def test_removed_plugin_names_do_not_resolve(name):
     assert name not in BUILTIN_TRACKING_PLUGINS

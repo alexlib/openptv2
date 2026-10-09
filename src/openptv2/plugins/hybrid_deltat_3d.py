@@ -40,7 +40,7 @@ from pathlib import Path
 import numpy as np
 
 from openptv2.algorithms.tracking_frame_buf import Frame
-from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker
+from openptv2.plugins._nearest_hungarian import NearestHungarian3DTracker
 
 
 def hybrid_track(

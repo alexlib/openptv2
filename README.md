@@ -22,7 +22,7 @@ selector.
 <p align="center"><em>Data of a synthetic Burgers vortex created for the manuscript: Ruiz, Liberzon, Bhattacharya (2023), <a href="https://doi.org/10.1016/j.flowmeasinst.2023.102310">doi:10.1016/j.flowmeasinst.2023.102310</a></em></p>
 
 - **Algorithms** (`src/openptv2/algorithms/`) - Cython 3 pure-Python particle tracking, correspondence, and calibration code
-- **Plugins** (`src/openptv2/plugins/`) - pluggable tracker implementations (fast, MyPTV/ProPTV-informed trackers)
+- **Plugins** (`src/openptv2/plugins/`) - pluggable tracker implementations (fast, two_phase, hybrid_deltat_3d, ...)
 - **GUI** (`src/openptv2/gui/`) - TraitsUI/Chaco desktop application
 - **Batch pipeline** (`openptv2-batch`) - headless sequence/tracking runner for scripting and cloud use
 - **Tutorials & Case Studies** - [Lid-Driven Cavity Flow Tutorial](docs/tutorials/cavity_flow_tutorial.md) | [Aortic Pulsatile Flow Tutorial](docs/aorta_tutorial.md)
@@ -33,23 +33,20 @@ openptv2 is a self-contained PTV engine: detection, camera calibration,
 correspondence/stereo-matching, and the classic forward tracking loop are all
 implemented from scratch here in `src/openptv2/algorithms/`.
 
-On top of that native engine, openptv2 ships **plugins** that bring in tracking
-concepts from two external open-source projects:
+On top of that native engine, openptv2 borrows ideas from two external
+open-source projects:
 
 - **[MyPTV](https://github.com/ronshnapp/MyPTV)** — MIT licensed
-  (© 2022 Ron Shnapp). openptv2's `nearest_hungarian_3d`
-  plugin adapts MyPTV's algorithm *ideas* (3D kinematic prediction +
+  (© 2022 Ron Shnapp). The coarse pass of the `hybrid_deltat_3d` plugin
+  adapts MyPTV's algorithm *ideas* (3D kinematic prediction +
   linear-assignment matching) onto openptv2's own data structures and assignment machinery.
 
 - **[proPTV](https://github.com/RobinBarta/proPTV)** — MIT licensed
-  (© 2023 DLR, Robin Barta). openptv2 **vendors** the small pure-numpy core of
-  proPTV (`src/openptv2/plugins/predictive_gmm/`): the Gaussian-Mixture-Model / basis
-  approximation and Savitzky-Golay smoothing routines used in proPTV's track
-  prediction. The `predictive_gmm_3d` plugin wires those routines into openptv2's
-  tracker.
+  (© 2023 DLR, Robin Barta). openptv2's benchmarking reads proPTV's
+  ground-truth format and reports proPTV-style identity metrics.
 
-> **Important:** openptv2 incorporates and adapts *parts* of these projects as
-> plugins — not their full frameworks. The complete tracking capabilities of
+> **Important:** openptv2 adapts *parts* of these projects — not their full
+> frameworks. The complete tracking capabilities of
 > each project — e.g. proPTV's 2D-image triangulation pipeline, Soloff
 > calibration, backtracking/repair and Eulerian field estimation, or MyPTV's
 > full photogrammetry, trajectory smoothing and anisotropic-particle tools —
@@ -491,25 +488,18 @@ architecture.
 
 ### Third-party tracking code
 
-openptv2 includes and adapts tracking code from two MIT-licensed projects, in
-accordance with their licenses:
+openptv2 adapts tracking code from an MIT-licensed project, in accordance
+with its license:
 
 - **MyPTV** (MIT, © 2022 Ron Shnapp) — algorithm concepts adapted into the
-  `nearest_hungarian_3d` plugin. Their MIT notice is
+  coarse pass of the `hybrid_deltat_3d` plugin
+  (`src/openptv2/plugins/_nearest_hungarian.py`). Their MIT notice is
   incorporated; see <https://github.com/ronshnapp/MyPTV>.
-- **proPTV** (MIT, © 2023 DLR / Robin Barta) — the GMM / Savitzky-Golay
-  routines in `src/openptv2/plugins/predictive_gmm/` are **vendored** from proPTV.
-  proPTV's license requires that its copyright/permission notice be included
-  in copies and that its underlying publication be cited. Accordingly:
 
-  > MIT License, Copyright (c) 2023 DLR (Project owner: Robin Barta).
-  > GMM / Savitzky-Golay routines adapted from
-  > **Barta, Robin, et al. "proPTV – A probabilistic particle tracking
-  > velocimetry framework." *Journal of Computational Physics* (2024),
-  > <https://doi.org/10.1016/j.jcp.2024.113212>.**
-
-  The vendored modules at `src/openptv2/plugins/predictive_gmm/` carry the MIT
-  copyright/permission notice in their headers.
+proPTV's benchmark format and identity metrics follow Barta, Robin, et al.
+"proPTV – A probabilistic particle tracking velocimetry framework."
+*Journal of Computational Physics* (2024),
+<https://doi.org/10.1016/j.jcp.2024.113212>; no proPTV code is included.
 
 Using either project's advanced, project-specific features is out of scope
 here — refer to and use those projects directly.
@@ -522,8 +512,8 @@ openptv2 combines work from:
 - [openptv](https://github.com/openptv/openptv) - C library and bindings
 - [pyptv](https://github.com/alexlib/pyptv) - Python GUI
 - [openptv-python](https://github.com/openptv/openptv-python) - Python/Numba engine
-- [MyPTV](https://github.com/ronshnapp/MyPTV) - 2D/3D tracking algorithm concepts adapted into the `nearest_hungarian_3d` plugin (MIT)
-- [proPTV](https://github.com/RobinBarta/proPTV) - GMM / Savitzky-Golay track-prediction routines vendored into `src/openptv2/plugins/predictive_gmm/` (MIT, © 2023 DLR / Robin Barta)
+- [MyPTV](https://github.com/ronshnapp/MyPTV) - 3D tracking algorithm concepts adapted into the coarse pass of `hybrid_deltat_3d` (MIT)
+- [proPTV](https://github.com/RobinBarta/proPTV) - benchmark ground-truth format and identity metrics
 
 See [License](#license) for the licensing and citation details.
 

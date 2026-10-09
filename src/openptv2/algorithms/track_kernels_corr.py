@@ -332,7 +332,7 @@ def _trackcorr_particle_fast(
         # bottleneck on real-turbulence data (see docs/plans/
         # 2026-08-17-lagrangian-accuracy-program.md, next-steps item 2) --
         # every other engine already does something like this (4BE: nearest
-        # neighbour; predictive_gmm_3d: an explicit NN init phase), trackcorr
+        # neighbour; two_phase: velocity state), trackcorr
         # was the outlier assuming stationarity instead.
         nb_vx = 0.0
         nb_vy = 0.0

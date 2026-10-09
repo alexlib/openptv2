@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker
+from openptv2.plugins._nearest_hungarian import NearestHungarian3DTracker
 
 wp1_res = Path(r"C:\Users\alex\Downloads\ptv_data\aorta\wp1\res")
 

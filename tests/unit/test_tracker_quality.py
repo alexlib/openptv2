@@ -146,16 +146,6 @@ _STAGE0B_FLOORS = {
         "ghost_capture_rate": 0.06,
     },
     "trackcorr": {"precision": 0.88, "yield_recall": 0.80, "ghost_capture_rate": 0.06},
-    "nearest_hungarian_3d": {
-        "precision": 0.67,
-        "yield_recall": 0.62,
-        "ghost_capture_rate": 0.06,
-    },
-    "predictive_gmm_3d": {
-        "precision": 0.69,
-        "yield_recall": 0.67,
-        "ghost_capture_rate": 0.055,
-    },
 }
 
 

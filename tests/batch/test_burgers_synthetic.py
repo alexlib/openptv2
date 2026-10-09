@@ -59,7 +59,7 @@ NCAMS = 4
 DET_MAX_ERROR_PX = 0.1
 
 # Trackers to exercise.
-TRACKERS = ["default", "predictive_gmm_3d"]
+TRACKERS = ["default"]
 
 # Per-frame 3D position match radius (mm) for the trajectory comparison.
 TRAJ_MATCH_RADIUS_MM = 0.1
@@ -349,8 +349,7 @@ def test_burgers_image_space_add_particle(burgers_workdir, tracker):
 # 5th tracer in 2D. A future feature should re-add that particle *through image
 # space* (2D targets -> re-triangulation) so a single continuous 5-frame
 # trajectory spans the gap. None of the current trackers do this yet: default
-# tracks 3D only, and predictive_gmm_3d runs but loses the last
-# step. Add a test here once bridging is implemented: feed res_orig/rt_is as
+# tracks 3D only. Add a test here once bridging is implemented: feed res_orig/rt_is as
 # correspondence input + img/*_targets (2D) and assert the fast (pnr=2) tracer
 # yields a 5-frame trajectory (i.e. rt_is.10003 recovers 5, the fast particle
 # bridges the gap).

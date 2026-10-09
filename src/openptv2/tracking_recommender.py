@@ -443,18 +443,6 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
             params["dacc"] = min(params["dacc"], extreme_cap)
 
     # Tracker-specific params
-    if info.name == "nearest_hungarian_3d":
-        if p95_displacement > 0:
-            params["v_max"] = params["dvxmax"]
-            params["a_max"] = params["dacc"]
-        # This tracker's angle filter is a hard binary reject, so an overly
-        # tight bound throws away good matches rather than just de-weighting
-        # them -- swept best at effectively unrestricted (200 gon = 180 deg).
-        params["angle"] = 200.0
-    elif info.name == "predictive_gmm_3d":
-        if p95_displacement > 0:
-            params["maxvel"] = params["dvxmax"]
-
     return params
 
 

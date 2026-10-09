@@ -16,9 +16,7 @@ Two independent questions, both scored per-tracker:
      metrics, but with liboptv's own forward-mode output as the reference
      trajectory set instead of ground truth. priority_segment_3d and
      trackcorr are direct translations of liboptv algorithms, so this is a
-     near-parity check for them; nearest_hungarian_3d/
-     predictive_gmm_3d are intentionally different algorithms, so disagreement
-     there is expected and diagnostic, not a bug.
+     near-parity check for them.
 
 Forward mode only (no backward pass / postprocessing on either side), per
 the redesigned Tracking Parameters GUI's Tracker x Direction split.
@@ -90,8 +88,6 @@ def _run_via_subprocess(
 LIBOPTV_REFERENCE = {
     "priority_segment_3d": "fast3d",
     "trackcorr": "trackcorr",
-    "nearest_hungarian_3d": "fast3d",
-    "predictive_gmm_3d": "fast3d",
 }
 
 TRACKERS = list(LIBOPTV_REFERENCE)

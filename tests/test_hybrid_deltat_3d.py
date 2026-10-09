@@ -10,8 +10,8 @@ re-attach intermediate detections.
 import numpy as np
 import pytest
 
+from openptv2.plugins._nearest_hungarian import NearestHungarian3DTracker
 from openptv2.plugins.hybrid_deltat_3d import hybrid_track
-from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker
 
 N_PARTICLES = 25
 N_FRAMES = 30

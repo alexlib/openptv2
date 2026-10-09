@@ -23,7 +23,7 @@ flowchart TD
     end
 
     subgraph Stage3 ["Stage 3: Parameter Selection via MyPTV"]
-        C1 --> C2["nearest_hungarian_3d -> Extract 3D (v, a) Kinematic Envelopes"]
+        C1 --> C2["Nearest-neighbour Hungarian -> Extract 3D (v, a) Kinematic Envelopes"]
         C2 --> C3["Deduce Optimal Bounds for priority_segment_3d: dvx=[-22,30], dvy=[-28,33], dvz=[-38,37], dacc=30"]
     end
 
@@ -80,10 +80,10 @@ uv run --project C:\Users\alex\projects\openptv2 python run_batch_experiment.py 
 
 ## 3. Stage 3: Scientific Parameter Selection & Deduction via MyPTV
 
-To determine the exact physical velocity and acceleration bounds for high-speed tracking (`priority_segment_3d`), we execute the **MyPTV 3D Kinematic Prediction Tracker (`nearest_hungarian_3d`)** on a sample sequence to extract the empirical velocity and acceleration distributions $(\vec{v}, \vec{a})$:
+To determine the exact physical velocity and acceleration bounds for high-speed tracking (`priority_segment_3d`), we execute the nearest-neighbour Hungarian tracker (the coarse pass of `hybrid_deltat_3d`) on a sample sequence to extract the empirical velocity and acceleration distributions $(\vec{v}, \vec{a})$:
 
 ```python
-from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker, Frame
+from openptv2.plugins._nearest_hungarian import NearestHungarian3DTracker
 import numpy as np
 
 # Track 3D particles using MyPTV linear assignment predictor

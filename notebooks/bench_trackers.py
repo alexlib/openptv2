@@ -58,10 +58,7 @@ def _(mo):
     sparse/dense default and is meant to be dialed in with **Auto-tune** below.
 
     `proptv_500_25`/`_30` are **not** in this list: they have no calibration in
-    this repo and aren't run through `run_tracker` at all — they're consumed
-    directly by `openptv2.plugins.predictive_gmm_3d.PredictiveGMM3DTracker` from
-    pre-triangulated 3D positions (`origin_*.txt`), a different tracker with a
-    different parameter surface (`Vmin`/`Vmax`/`maxvel`/... not dv/dacc/angle).
+    this repo and aren't run through `run_tracker` at all.
     """)
     return
 
@@ -98,7 +95,7 @@ def _(DATASET_REGISTRY, mo):
 @app.cell
 def _():
     from openptv2.tracking_registry import TRACKER_REGISTRY
-    ALL_TRACKERS = [t for t in ["priority_segment_3d","4be","full_multipass","standard_forward","two_directional","nearest_hungarian_3d","predictive_gmm_3d","hybrid_deltat_3d","two_phase"] if t in TRACKER_REGISTRY]
+    ALL_TRACKERS = [t for t in ["priority_segment_3d","4be","full_multipass","standard_forward","two_directional","hybrid_deltat_3d","two_phase"] if t in TRACKER_REGISTRY]
 
     # Hand-tuned starting points for a few datasets (from prior sweeps). Every
     # other dataset falls back to FALLBACK_SPARSE / FALLBACK_DENSE by density
@@ -110,8 +107,6 @@ def _():
         "full_multipass": ("1.5","0.5","40"),
         "standard_forward": ("1.5","0.5","40"),
         "two_directional": ("1.5","0.5","40"),
-        "nearest_hungarian_3d": ("2.0","0.5","40"),
-        "predictive_gmm_3d": ("2.0","0.5","40"),
         "hybrid_deltat_3d": ("2.0","0.5","60"),
         "two_phase": ("2.0","0.5","60"),
     }
@@ -121,8 +116,6 @@ def _():
         "full_multipass": ("1.5","0.8","60"),
         "standard_forward": ("1.5","0.8","60"),
         "two_directional": ("1.5","0.8","60"),
-        "nearest_hungarian_3d": ("2.0","0.8","40"),
-        "predictive_gmm_3d": ("2.0","0.8","40"),
         "hybrid_deltat_3d": ("2.0","0.8","60"),
         "two_phase": ("2.0","0.8","60"),
     }
@@ -132,8 +125,6 @@ def _():
         "full_multipass": ("8.0","3.0","60"),
         "standard_forward": ("8.0","3.0","60"),
         "two_directional": ("8.0","3.0","60"),
-        "nearest_hungarian_3d": ("8.0","5.0","45"),
-        "predictive_gmm_3d": ("8.0","5.0","30"),
         "hybrid_deltat_3d": ("8.0","0.8","60"),
         "two_phase": ("8.0","5.0","60"),
     }

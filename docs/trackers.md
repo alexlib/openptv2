@@ -44,8 +44,6 @@ page). The `name` column is the exact preset string.
 | `default`, `standard_forward`, `full_multipass`, `two_directional` (trackcorr) | Guess forward, confirm in every camera, accept smooth links | 2D targets + 3D |
 | `priority_segment_3d` (Fast 3D / 3MA) | Cheapest (smoothest) links first, globally | 3D only |
 | `4be` | Peek at frame n+2 before accepting; conflicts link to nobody | 3D only |
-| `nearest_hungarian_3d` (MyPTV 3D) | Best total pairing per frame pair (Hungarian), survives gaps | 3D only |
-| `predictive_gmm_3d` (proPTV) | Fit a smooth curve through history, predict from it | 3D only |
 | `two_phase` (Two-Phase) | 3D search for candidates, per-camera images for ranking | 3D + 2D |
 | `hybrid_deltat_3d` (Hybrid) | Match every N-th frame where motion beats noise, fill between | 3D only |
 
@@ -78,23 +76,6 @@ deliberately (gap bridging is off for its preset on purpose — it would
 rebuild exactly the links 4BE declined). **Tip:** sparse lab data with
 reliable detection; not turbulence.
 
-### MyPTV 3D (`nearest_hungarian_3d`) — the fair one
-Nobody grabs the nearest dot first: it finds the pairing with the lowest
-*total* distance, so nobody is paired badly. Tracks survive short gaps
-(`max_gap`), code is plain readable Python. **Caveat:** one frame pair at a
-time — it cannot use what happens next. **Tip:** good first alternative to
-the default; easiest engine to modify (`src/openptv2/plugins/nearest_hungarian_3d.py`).
-
-### proPTV (`predictive_gmm_3d`) — the smoother
-Fits smooth curves through each path, so speeds and accelerations stay
-sensible under noise. **Caveat (read first):** this port predicts from the
-*smoothed current position*, not from an extrapolated one, and its search
-radius is the same with or without history — so it currently behaves closer
-to smoothed nearest-neighbour than to the predictive scheme of the paper.
-Also dense data gets expensive. **Tip:** check the plugin README before
-trusting its "predictive" label; fix the extrapolation first if you build
-on it.
-
 ### Two-Phase (`two_phase`) — the hybrid
 3D search lists candidates, per-camera image distances rank them, Hungarian
 per connected group decides. No motion model — immune to bad guesses, but
@@ -115,33 +96,28 @@ ratio instead of fighting it, but the smooth fill is wrong for fast or
 curved motion. **Tip:** high frame rate + slow flow; set `stride` so the
 coarse step clearly exceeds your 3D noise floor.
 
-## 4. Upstream credit: MyPTV and proPTV are plugins, not forks
+## 4. Upstream credit: MyPTV and proPTV
 
-Two engines borrow ideas from outside projects. **We use them as plugins —
-adapted concepts on openptv2's own data structures, not modified copies of
-their code.** The full frameworks (triangulation pipelines, calibration,
-backtracking/repair, smoothing toolboxes) live only in their own
-repositories — use those projects directly if you need them. Both are
-permissively MIT-licensed.
+openptv2 borrows ideas from two outside projects — adapted concepts on
+openptv2's own data structures, not modified copies of their code. The full
+frameworks (triangulation pipelines, calibration, backtracking/repair,
+smoothing toolboxes) live only in their own repositories — use those projects
+directly if you need them. Both are permissively MIT-licensed.
 
 - **MyPTV** by Ron Shnapp — open-source Python 3D-PTV library.
   Repository: <https://github.com/ronshnapp/MyPTV> ·
   Paper: Shnapp, R. (2022). *MyPTV: A Python Package for 3D Particle
   Tracking.* Journal of Open Source Software, 7(75), 4398.
   <https://doi.org/10.21105/joss.04398> ·
-  What we adapted: kinematic prediction + assignment matching in 3D
-  (`nearest_hungarian_3d`).
+  What we adapted: kinematic prediction + assignment matching in 3D, the
+  coarse pass of `hybrid_deltat_3d`.
 - **proPTV** by Robin Barta and colleagues (DLR) — probabilistic PTV
   framework, Python.
   Repository: <https://github.com/RobinBarta/proPTV> ·
   Paper: Barta, R. et al. (2024). *proPTV: A probabilistic particle
   tracking velocimetry framework.* Journal of Computational Physics, 514,
   113212. <https://doi.org/10.1016/j.jcp.2024.113212> ·
-  What we adapted: the small pure-numpy core (Gaussian-mixture / basis
-  approximation and Savitzky–Golay smoothing, vendored under
-  `src/openptv2/plugins/predictive_gmm/`), wired into the `predictive_gmm_3d`
-  plugin. The original's triangulation, probability model, backtracking
-  and repair are *not* ported.
+  What we use: its benchmark ground-truth format and identity metrics.
 - The classic engines descend from the OpenPTV/liboptv lineage
   (<http://www.openptv.net>).
 

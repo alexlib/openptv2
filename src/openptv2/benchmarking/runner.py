@@ -184,8 +184,7 @@ def run_tracker(
     yaml_path : str | Path
         The ``parameters_Run1.yaml`` written by :func:`write_experiment`.
     tracker : str
-        Tracker plugin name / preset (e.g. ``"priority_segment_3d"``, ``"full_multipass"``,
-        ``"nearest_hungarian_3d"``, ``"predictive_gmm_3d"``).
+        Tracker plugin name / preset (e.g. ``"priority_segment_3d"``, ``"full_multipass"``).
     track_overrides : dict, optional
         ``dvxmin``..``dvzmax``, ``dacc``, ``angle``/``dangle``,
         ``flagNewParticles``/``add`` overrides applied before running.

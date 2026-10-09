@@ -26,8 +26,6 @@ BENCHMARK_TRACKERS = [
     "full_multipass",
     "standard_forward",
     "two_directional",
-    "nearest_hungarian_3d",
-    "predictive_gmm_3d",
 ]
 
 

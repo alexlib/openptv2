@@ -67,7 +67,7 @@ To automate the discovery of optimal tracking strategies combining **execution s
                                      ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │              3. OpenPTV2 Tracking Engine & Strategy Execution           │
-│   • Single-Pass Engine (priority_segment_3d, nearest_hungarian_3d, etc.)│
+│   • Single-Pass Engine (priority_segment_3d, two_phase, etc.)           │
 │   • Hybrid Cascading Strategy 1 (Forward-Fast / Backward-Kalman)        │
 │   • Hybrid Cascading Strategy 2 (Two-Scale Velocity Cascading)          │
 └────────────────────────────────────┬────────────────────────────────────┘

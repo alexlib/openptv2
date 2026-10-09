@@ -407,103 +407,6 @@ TWO_DIRECTIONAL_INFO = TrackerInfo(
     typical_datasets="Parameter-tuning runs to compare forward-only vs forward+backward.",
 )
 
-NEAREST_HUNGARIAN_3D_INFO = TrackerInfo(
-    name="nearest_hungarian_3d",
-    display_name="Nearest-Neighbour Hungarian 3D (Python)",
-    short_description="3D kinematic prediction + radius-limited Hungarian assignment, frame by frame",
-    algorithm_summary=(
-        "Predicts particle positions using polynomial velocity extrapolation from track history, "
-        "then solves the frame-to-frame assignment with a radius-limited Hungarian algorithm. "
-        "Supports configurable multi-term cost weights (distance, velocity, acceleration, intensity). "
-        "Runs in pure Python, not Cython, so it is slower but fully customisable."
-    ),
-    algorithm_detail=(
-        "Uses the openptv2.tracking_cost module for multi-term cost matrices and "
-        "openptv2.plugins._assignment.match_within_radius for the sparse Hungarian solver. "
-        "Tracks can persist through gaps (configurable max_gap frames) by extrapolating velocity. "
-        "Reads input from rt_is.# files and writes ptv_is.# files in the canonical format."
-    ),
-    supports_backward=False,
-    supports_new_particles=True,
-    supports_2d=False,
-    supports_postprocessing=False,
-    supports_gap_relinking=True,
-    supports_multimedia=False,
-    supports_splitter=False,
-    supports_cost_weights=True,
-    speed_ranking="slow",
-    density_ranking="moderate",
-    accuracy_ranking="standard",
-    parameters=(
-        ParameterGuide(
-            name="v_max",
-            type="float",
-            default="10.0",
-            description="Maximum search radius for unseeded (new) tracks (mm).",
-            how_to_choose=(
-                "Not a separate field -- derived from the same "
-                "track.dvxmax/dvymax/dvzmax as every other tracker via "
-                "tracking_presets.unified_velocity_bound() (largest of the "
-                "three; this tracker searches an isotropic radius, not "
-                "trackcorr's per-axis box). Set to max expected inter-frame "
-                "displacement + margin."
-            ),
-            typical_range="1 – 100",
-            unit="mm",
-        ),
-        ParameterGuide(
-            name="a_max",
-            type="float",
-            default="50.0",
-            description="Maximum search radius for seeded tracks with velocity history (mm).",
-            how_to_choose="Same track.dacc field trackcorr/priority_segment_3d use. Set to a_max = v_max + expected acceleration × dt.",
-            typical_range="1 – 100",
-            unit="mm",
-        ),
-        ParameterGuide(
-            name="angle",
-            type="float",
-            default="45",
-            description=(
-                "Cone-of-continuity filter for seeded tracks: rejects a candidate "
-                "whose implied velocity direction breaks continuity by more than "
-                "this angle from the track's established direction."
-            ),
-            how_to_choose=(
-                "track.angle, same field trackcorr/priority_segment_3d use, but "
-                "in GON there (400 gon = 360 deg) -- converted to degrees for "
-                "this tracker's own angle comparison via "
-                "tracking_presets.unified_angle_deg(). Lower for smooth/laminar "
-                "flow, higher for turbulent."
-            ),
-            typical_range="20 – 90",
-            unit="deg (source field is gon)",
-        ),
-        ParameterGuide(
-            name="max_gap",
-            type="int",
-            default="2",
-            description="Number of frames a track can be invisible before it is terminated.",
-            how_to_choose="Match the expected occlusion length in your experiment.",
-            typical_range="1 – 5",
-            unit="frames",
-        ),
-        ParameterGuide(
-            name="cost_weights",
-            type="choice",
-            default="distance only",
-            description="Multi-term cost weights {w_distance, w_velocity, w_acceleration, w_intensity}.",
-            how_to_choose="Distance-only for sparse data; add velocity/acceleration for dense or high-speed flows.",
-            typical_range="(1,0,0,0) to (0.4,0.3,0.2,0.1)",
-            unit="",
-        ),
-    ),
-    default_preset="",
-    best_for="When you need to customise the cost function (e.g., add intensity similarity) .",
-    avoid_when="Large datasets where Python-speed tracking is too slow — use the Cython trackers instead.",
-    typical_datasets="Benchmark comparisons, developing new cost terms, datasets with particle intensity data.",
-)
-
 SPLITTER_INFO = TrackerInfo(
     name="splitter_tracking",
     display_name="Splitter Quad-View Tracker",
@@ -533,103 +436,6 @@ SPLITTER_INFO = TrackerInfo(
     avoid_when="Standard multi-camera setups — use priority_segment_3d or full_multipass instead.",
     typical_datasets="Splitter-based tomo-PTV experiments.",
 )
-
-PREDICTIVE_GMM_3D_INFO = TrackerInfo(
-    name="predictive_gmm_3d",
-    display_name="Predictive GMM 3D (Python)",
-    short_description="Probabilistic PTV using Gaussian Mixture Model for smooth track approximation",
-    algorithm_summary=(
-        "Fits Gaussian basis functions to each track's time-position history and differentiates "
-        "them analytically to obtain smooth velocity and acceleration estimates.  "
-        "Predicts the next 3D position from that smooth GMM extrapolation and links it to a "
-        "candidate by minimising a distance + velocity + acceleration continuity cost.  "
-        "Runs entirely in 3D from the already-triangulated particles."
-    ),
-    algorithm_detail=(
-        "Tracks in 3D directly from rt_is.# particles (no 2D re-triangulation).  Each track's "
-        "history is smoothed with the proPTV GMM basis approximation to get a robust current "
-        "velocity/acceleration; the next position is predicted and matched with a radius-limited "
-        "Hungarian assignment using openptv2's multi-term cost function.  This adapts proPTV's "
-        "probabilistic-smoothing concept to openptv2's own machinery rather than porting it."
-    ),
-    citation="Barta et al., Meas. Sci. Technol. (2024) — https://doi.org/10.1088/1361-6501/ad6e04",
-    supports_backward=True,
-    supports_new_particles=True,
-    supports_2d=False,
-    supports_postprocessing=False,
-    supports_gap_relinking=True,
-    supports_multimedia=False,
-    supports_splitter=False,
-    supports_cost_weights=False,
-    speed_ranking="moderate",
-    density_ranking="low_to_moderate",
-    accuracy_ranking="highest",
-    parameters=(
-        ParameterGuide(
-            name="maxvel",
-            type="float",
-            default="20.0",
-            description="Maximum absolute velocity for a track (mm/frame).",
-            how_to_choose=(
-                "Defaults from the same track.dvxmax/dvymax/dvzmax as every "
-                "other tracker (tracking_presets.unified_velocity_bound()); "
-                "set proptv.maxvel explicitly only to override that default "
-                "for this tracker specifically. Set based on max expected "
-                "particle speed from a probe run."
-            ),
-            typical_range="5 – 200",
-            unit="mm/frame",
-        ),
-        ParameterGuide(
-            name="angle",
-            type="float",
-            default="30",
-            description="Maximum angle between successive velocity vectors (degrees).",
-            how_to_choose=(
-                "Defaults from track.angle converted from GON to degrees "
-                "(tracking_presets.unified_angle_deg() -- trackcorr/"
-                "priority_segment_3d's angle field is in gon, 400 gon = 360 "
-                "deg; this tracker's own angle comparison is in degrees). Set "
-                "proptv.angle explicitly to override. Lower for laminar flow, "
-                "higher for turbulent."
-            ),
-            typical_range="10 – 60",
-            unit="deg (source field is gon)",
-        ),
-        ParameterGuide(
-            name="t_init",
-            type="int",
-            default="4",
-            description="Number of frames used for track initialisation before main tracking begins.",
-            how_to_choose="More frames = better initial velocity estimates but later start of tracking.",
-            typical_range="3 – 6",
-            unit="frames",
-        ),
-        ParameterGuide(
-            name="backtracking",
-            type="bool",
-            default="false",
-            description="Enable backward tracking pass to recover broken tracks.",
-            how_to_choose="Enable for higher trajectory completeness; adds ~2× runtime.",
-            typical_range="",
-            unit="",
-        ),
-        ParameterGuide(
-            name="gaptracking",
-            type="bool",
-            default="false",
-            description="Allow tracks to skip one missing frame and continue.",
-            how_to_choose="Enable if particles occasionally disappear for one frame.",
-            typical_range="",
-            unit="",
-        ),
-    ),
-    default_preset="",
-    best_for="Datasets requiring smooth velocity/acceleration fields, irregular time steps, or where track smoothness is critical.",
-    avoid_when="Very high particle density (>1000 particles/frame) — the GMM fitting overhead scales with track count.",
-    typical_datasets="Biological flows, Lagrangian turbulence analysis, experiments with uneven frame spacing.",
-)
-
 
 HYBRID_DELTAT_3D_INFO = TrackerInfo(
     name="hybrid_deltat_3d",
@@ -795,9 +601,7 @@ def _build_registry() -> None:
         FULL_MULTIPASS_INFO,
         STANDARD_FORWARD_INFO,
         TWO_DIRECTIONAL_INFO,
-        NEAREST_HUNGARIAN_3D_INFO,
         SPLITTER_INFO,
-        PREDICTIVE_GMM_3D_INFO,
         HYBRID_DELTAT_3D_INFO,
         TWO_PHASE_INFO,
     ]

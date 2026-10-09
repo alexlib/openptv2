@@ -283,17 +283,12 @@ def run_multi_tracker_benchmark(
     """
     Run multi-engine comparative benchmark on synthetic dataset.
 
-    Compares:
-      1. Nearest-Hungarian Distance Baseline
-      2. Nearest-Hungarian Multi-Term (Distance + Velocity + Acceleration)
+    Runs the compiled track3d kernel (track3d_loop_fast).
 
     Returns:
         Dict mapping tracker_name -> TrackingMetrics
     """
     import time
-
-    from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker
-    from openptv2.tracking_cost import CostWeights
 
     frame_particle_arrays = [
         np.array(frame_blobs[f], dtype=np.float64) for f in sorted(frame_blobs.keys())
@@ -303,48 +298,7 @@ def run_multi_tracker_benchmark(
 
     results = {}
 
-    # 1. Nearest-Hungarian Distance Baseline
-    t0 = time.perf_counter()
-    tracker_base = NearestHungarian3DTracker(v_max=3.0, a_max=1.5, max_gap=1, dt=1.0)
-    raw_base = tracker_base.track_frames(frame_particle_arrays)
-    t_base = max(time.perf_counter() - t0, 1e-6)
-
-    pred_base = {}
-    for tr in raw_base:
-        pred_base[int(tr["id"])] = [
-            (int(f), float(p[0]), float(p[1]), float(p[2]))
-            for f, p in zip(tr["time"], tr["pos"])
-        ]
-    m_base = calculate_tracking_metrics(
-        true_tracks, pred_base, distance_tolerance=distance_tolerance
-    )
-    m_base.fps = num_frames / t_base
-    m_base.particles_per_sec = total_particles / t_base
-    results["Nearest-Hungarian Distance Baseline"] = m_base
-
-    # 2. Nearest-Hungarian Multi-Term Cost
-    weights = CostWeights(w_distance=1.0, w_velocity=0.5, w_acceleration=0.2)
-    t0 = time.perf_counter()
-    tracker_hybrid = NearestHungarian3DTracker(
-        v_max=3.0, a_max=1.5, max_gap=1, dt=1.0, cost_weights=weights
-    )
-    raw_hybrid = tracker_hybrid.track_frames(frame_particle_arrays)
-    t_hybrid = max(time.perf_counter() - t0, 1e-6)
-
-    pred_hybrid = {}
-    for tr in raw_hybrid:
-        pred_hybrid[int(tr["id"])] = [
-            (int(f), float(p[0]), float(p[1]), float(p[2]))
-            for f, p in zip(tr["time"], tr["pos"])
-        ]
-    m_hybrid = calculate_tracking_metrics(
-        true_tracks, pred_hybrid, distance_tolerance=distance_tolerance
-    )
-    m_hybrid.fps = num_frames / t_hybrid
-    m_hybrid.particles_per_sec = total_particles / t_hybrid
-    results["Nearest-Hungarian Multi-Term"] = m_hybrid
-
-    # 3. OpenPTV2 Cython Hybrid3D / track3d_loop_fast (Compiled C Kernel)
+    # OpenPTV2 Cython Hybrid3D / track3d_loop_fast (Compiled C Kernel)
     try:
         from openptv2.algorithms.track_kernels_track3d import track3d_loop_fast
 

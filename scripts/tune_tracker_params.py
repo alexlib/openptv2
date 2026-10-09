@@ -231,8 +231,6 @@ def main() -> None:
         choices=[
             "priority_segment_3d",
             "trackcorr",
-            "nearest_hungarian_3d",
-            "predictive_gmm_3d",
         ],
     )
     ap.add_argument(

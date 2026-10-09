@@ -62,7 +62,7 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md("**Trackers** (registry `openptv2.tracking_registry.TRACKER_REGISTRY`): `priority_segment_3d` (fast_3d default), `4be`, `full_multipass`, `standard_forward`, `two_directional`, `nearest_hungarian_3d` (MyPTV 3D), `predictive_gmm_3d` (proPTV), `hybrid_deltat_3d`, `two_phase` (3D+2D). `splitter_tracking` excluded – splitter data only.")
+    mo.md("**Trackers** (registry `openptv2.tracking_registry.TRACKER_REGISTRY`): `priority_segment_3d` (fast_3d default), `4be`, `full_multipass`, `standard_forward`, `two_directional`, `hybrid_deltat_3d`, `two_phase` (3D+2D). `splitter_tracking` excluded – splitter data only.")
     return
 
 
@@ -75,8 +75,6 @@ def _():
         "full_multipass",
         "standard_forward",
         "two_directional",
-        "nearest_hungarian_3d",
-        "predictive_gmm_3d",
         "hybrid_deltat_3d",
         "two_phase",
     ]
@@ -285,7 +283,6 @@ def _(mo):
     | `priority_segment_3d` (default) | 2 / 0.5 / 60 → ~4.2 / ~12 | 10 / 5 / 120 → ~6–8 / ~25 |
     | `4be` | 2 / 0.5 / 60 → ~3.8 / ~10 | 10 / 5 / 120 → ~5 / ~20 |
     | `full_multipass` / `standard_forward` | 1.5 / 0.5 / 40 → ~4.8 / ~9 | 8 / 3 / 60 → ~7–9 / ~18 |
-    | `nearest_hungarian_3d` / `predictive_gmm_3d` | 2 / 0.5 / 40 → ~4.5 / ~11 | 8 / 5 / 45deg → ~6 / ~22 |
     | `two_phase` | 2 / 0.5 / 60 + leaf_weight 1 → ~4.5 | 8 / 5 / 60 → ~7 |
 
     Run `uv run marimo run notebooks/benchmark_all_trackers_burgers.py` to reproduce the full 18-combo sweep and inspect the per-tracker `best` rows above. For publication, extend to 30–40 frames and add ground-truth `compute_identity_metrics(..., eps=0.5mm)` when using generated `benchmarking/scenario.py` data (not the committed `res_orig` which has no `frame_gt`).

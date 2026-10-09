@@ -10,7 +10,7 @@ one run (see benchmark_utils.combined_metrics).
 Usage:
     uv run python scripts/bench_trackers.py
     uv run python scripts/bench_trackers.py --density 1000,5000,20000
-    uv run python scripts/bench_trackers.py --trackers priority_segment_3d,predictive_gmm_3d
+    uv run python scripts/bench_trackers.py --trackers priority_segment_3d,two_phase
     uv run python scripts/bench_trackers.py --density 1000 --dacc-sweep
 
 The default (no --density) uses the checked-in test_data/synthetic_turbulent
@@ -120,13 +120,11 @@ def print_table(rows: list[dict]) -> None:
 def dacc_sweep(
     trackers: tuple[str, ...] = (
         "priority_segment_3d",
-        "nearest_hungarian_3d",
-        "predictive_gmm_3d",
     ),
 ) -> None:
     """Hypothesis check: does priority_segment_3d only lose because dacc is a tight
-    search window (not an acceleration bound), vs. myptv/proptv's generous
-    radius + cost-based assignment? (folded in from benchmark_head_to_head.py)
+    search window (not an acceleration bound)? (folded in from
+    benchmark_head_to_head.py)
     """
     rows = []
     for tr in trackers:
@@ -157,44 +155,6 @@ def dacc_sweep(
                 * results["priority_segment_3d"]["time_s"]
                 / max(1, bu.N_FRAMES - 1),
                 **results["priority_segment_3d"]["row"],
-            }
-        )
-
-    for tr, ov in (
-        (
-            "nearest_hungarian_3d",
-            dict(
-                dvxmax=10,
-                dvxmin=-10,
-                dvymax=10,
-                dvymin=-10,
-                dvzmax=10,
-                dvzmin=-10,
-                dacc=50,
-            ),
-        ),
-        (
-            "predictive_gmm_3d",
-            dict(
-                dvxmax=15.5,
-                dvxmin=-15.5,
-                dvymax=15.5,
-                dvymin=-15.5,
-                dvzmax=15.5,
-                dvzmin=-15.5,
-                dacc=50,
-            ),
-        ),
-    ):
-        results = bu.run_all_trackers([tr], track_overrides=ov, silent=True)
-        rows.append(
-            {
-                "tracker": f"{tr} generous",
-                "density": "default",
-                "ms_per_frame": 1000.0
-                * results[tr]["time_s"]
-                / max(1, bu.N_FRAMES - 1),
-                **results[tr]["row"],
             }
         )
 

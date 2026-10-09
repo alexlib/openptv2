@@ -177,8 +177,6 @@ TRACKER_CHOICES = [
     ("priority_segment_3d", "OpenPTV Fast 3D (Default - Cython)"),
     ("4be", "OpenPTV 4BE (Four-Frame Best Estimate)"),
     ("trackcorr", "OpenPTV Epipolar (Multi-Camera 2D+3D)"),
-    ("nearest_hungarian_3d", "Nearest-Neighbour Hungarian 3D"),
-    ("predictive_gmm_3d", "Predictive GMM 3D"),
     ("two_phase", "Two-Phase 3D+2D Leaf Ranking"),
 ]
 
@@ -192,8 +190,6 @@ TRACKER_SUPPORTS_BACKWARD: Dict[str, bool] = {
     "priority_segment_3d": True,
     "4be": True,
     "trackcorr": True,
-    "nearest_hungarian_3d": True,
-    "predictive_gmm_3d": True,
     "two_phase": False,
 }
 
@@ -202,8 +198,6 @@ TRACKER_SUPPORTS_POSTPROCESS = {
     "priority_segment_3d",
     "4be",
     "trackcorr",
-    "nearest_hungarian_3d",
-    "predictive_gmm_3d",
 }
 
 _LEGACY_TRACKER_ALIASES = {
@@ -257,13 +251,11 @@ def apply_tracker(
     postprocess: bool,
     track_params: Dict[str, Any],
     plugins_params: Dict[str, Any] | None = None,
-    proptv_params: Dict[str, Any] | None = None,
-) -> tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any]]:
+) -> tuple[Dict[str, Any], Dict[str, Any]]:
     """Apply the (tracker, direction, postprocess) choice to the track /
-    plugins / proptv parameter dicts, preserving kinematic search bounds."""
+    plugins parameter dicts, preserving kinematic search bounds."""
     track_params = dict(track_params)
     plugins_params = dict(plugins_params) if plugins_params else {}
-    proptv_params = dict(proptv_params) if proptv_params else {}
 
     run_backward = direction == "forward_backward"
 
@@ -279,12 +271,7 @@ def apply_tracker(
         track_params["track_mode"] = 0
         track_params["flagNewParticles"] = True
         track_params["direction"] = direction
-    elif tracker == "predictive_gmm_3d":
-        track_params["track_mode"] = 1
-        track_params["flagNewParticles"] = True
-        track_params["direction"] = direction
-        proptv_params["backtracking"] = run_backward
-    else:  # nearest_hungarian_3d, etc.
+    else:
         track_params["track_mode"] = 1
         track_params["flagNewParticles"] = True
         track_params["direction"] = direction
@@ -294,7 +281,7 @@ def apply_tracker(
     plugins_params["selected_tracking"] = tracker
     track_params["preset"] = tracker
 
-    return track_params, plugins_params, proptv_params
+    return track_params, plugins_params
 
 
 # ---------------------------------------------------------------------------
@@ -303,9 +290,9 @@ def apply_tracker(
 # (dv*), mm/frame^2 (dacc), gon (angle) -- trackcorr/priority_segment_3d's
 # native units (dt is always 1 frame throughout openptv2, so mm/frame and
 # mm/frame^2 are numerically what the isotropic trackers below also expect
-# for their own v_max/a_max). nearest_hungarian_3d searches an isotropic
+# for their own v_max/a_max). hybrid_deltat_3d searches an isotropic
 # sphere/radius rather than trackcorr's per-axis box, so it needs a single
-# scalar bound; predictive_gmm_3d's own angle concept is in degrees, not gon.
+# scalar bound, and its angle limit is in degrees, not gon.
 # These two helpers are the ONE place that derives those isotropic/degree
 # values from the shared per-axis/gon inputs, so every tracker reads the same
 # parameter types with the same meaning.

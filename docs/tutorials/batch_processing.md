@@ -20,7 +20,7 @@ uv run openptv2-batch <experiment_directory_or_yaml> <first_frame> <last_frame> 
   * `sequence`: Detection + correspondence only → `correspondences/` + `targets/`
   * `tracking`: Tracking only → reads existing `correspondences/`/`targets/` → writes `linkage/` + `trajectories/`/`traj` via `seal`
 * `--track3d`: 3D segment tracking.
-* `--sequence-plugin <name>` / `--tracking-plugin <name>`: Alternate strategy (`default`, `two_phase`, `nearest_hungarian_3d`, …). Example for splitter:
+* `--sequence-plugin <name>` / `--tracking-plugin <name>`: Alternate strategy (`default`, `two_phase`, `hybrid_deltat_3d`, …). Example for splitter:
   ```bash
   uv run openptv2-batch test_data/test_splitter 1000001 1000002 \
     --sequence-plugin splitter_sequence --tracking-plugin splitter_tracking

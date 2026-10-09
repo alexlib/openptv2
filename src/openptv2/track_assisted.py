@@ -18,7 +18,7 @@ Scope cuts from the original Stage 2 spec (deliberate, each because the
 primitive it needs doesn't exist as reusable plain-Python code -- see
 docs/plans/2026-08-15-tracking-quality-overhaul.md's Stage 2 section for the
 verification trail):
-  - No GMM long-history predictor (plugins/predictive_gmm/prediction.py) or STB
+  - No GMM long-history predictor or STB
     shake refinement (plugins/stb_4d_refinement.py, needs real per-camera
     image arrays this pass doesn't have) -- linear 2-point backward
     extrapolation only.

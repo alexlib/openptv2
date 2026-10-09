@@ -32,13 +32,11 @@ SRC = Path("test_data/proptv_500_30")
 FIRST, N = 10001, 30
 
 # The 5-engine survivor set (see docs/plans/2026-08-17-lagrangian-accuracy-
-# program.md): 3MA, 4BE, trackcorr, nearest_hungarian_3d, predictive_gmm_3d.
+# program.md), minus the removed nearest_hungarian_3d and predictive_gmm_3d.
 TRACKERS = [
     "priority_segment_3d",
     "trackcorr",
     "4be",
-    "nearest_hungarian_3d",
-    "predictive_gmm_3d",
 ]
 
 

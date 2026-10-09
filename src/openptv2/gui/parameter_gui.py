@@ -377,15 +377,13 @@ class TrackHandler(Handler):
                 experiment.pm.parameters["track"] = {}
             if "plugins" not in experiment.pm.parameters:
                 experiment.pm.parameters["plugins"] = {}
-            if "proptv" not in experiment.pm.parameters:
-                experiment.pm.parameters["proptv"] = {}
 
             direction = (
                 "forward_backward"
                 if getattr(track_params, "run_backward", False)
                 else "forward"
             )
-            t_dict, p_dict, proptv_dict = apply_tracker(
+            t_dict, p_dict = apply_tracker(
                 track_params.tracker,
                 direction,
                 bool(track_params.postprocess),
@@ -400,12 +398,10 @@ class TrackHandler(Handler):
                     "dacc": track_params.dacc,
                 },
                 experiment.pm.parameters.get("plugins", {}),
-                experiment.pm.parameters.get("proptv", {}),
             )
 
             experiment.pm.parameters["track"].update(t_dict)
             experiment.pm.parameters["plugins"].update(p_dict)
-            experiment.pm.parameters["proptv"].update(proptv_dict)
 
             # Keep the live GUI plugin selector in sync immediately, so the
             # next "Track" run picks up this choice without a detour

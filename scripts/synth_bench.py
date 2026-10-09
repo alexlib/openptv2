@@ -66,8 +66,6 @@ TRACKERS = [
     "trackcorr",
     "full_multipass",
     "two_directional",
-    "nearest_hungarian_3d",
-    "predictive_gmm_3d",
     "hybrid_deltat_3d",
     "two_phase",
 ]

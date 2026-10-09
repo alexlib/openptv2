@@ -17,7 +17,7 @@ import pytest
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import ControlPar, SequencePar
 from openptv2.gui.parameter_manager import ParameterManager
-from openptv2.plugins.nearest_hungarian_3d import Tracking as MyPTV3DTracking
+from openptv2.plugins.hybrid_deltat_3d import Tracking as HybridTracking
 from openptv2.storage import RunStore
 
 pytestmark = pytest.mark.ci
@@ -99,7 +99,7 @@ def _run_plugin(work: Path, *, ascii_fed: bool) -> RunStore:
     try:
         # the plugin resolves its relative res/ bases against the process
         # cwd, exactly like the GUI/batch entry points do
-        MyPTV3DTracking(exp=exp).do_tracking()
+        HybridTracking(exp=exp).do_tracking()
     finally:
         os.chdir(old)
     return RunStore(find_store(work), mode="r")
@@ -111,7 +111,7 @@ def find_store(root: Path) -> Path:
     return find_existing_store(root)
 
 
-def test_myptv_3d_plugin_ascii_and_store_runs_agree(tmp_path):
+def test_hybrid_plugin_ascii_and_store_runs_agree(tmp_path):
     ref = _run_plugin(tmp_path / "ascii_run", ascii_fed=True)
     store_fed = _run_plugin(tmp_path / "store_run", ascii_fed=False)
 

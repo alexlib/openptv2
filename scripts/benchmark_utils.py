@@ -34,8 +34,6 @@ LAST = FIRST + N_FRAMES - 1
 TRACKERS = [
     "priority_segment_3d",
     "trackcorr",
-    "nearest_hungarian_3d",
-    "predictive_gmm_3d",
 ]
 
 BASE_OVERRIDES = dict(
@@ -263,8 +261,7 @@ def run_liboptv_tracker(
 
     ``mode``:
       "fast3d"    -- Tracker.full_forward_3d(), liboptv's counterpart of our
-                     priority_segment_3d/nearest_hungarian_3d/
-                     predictive_gmm_3d (3D-only linking
+                     priority_segment_3d (3D-only linking
                      over already-triangulated rt_is.# points).
       "trackcorr" -- Tracker.full_forward(), liboptv's counterpart of our
                      trackcorr engine (multi-camera 2D+3D epipolar search).

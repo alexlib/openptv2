@@ -94,54 +94,6 @@ def _score_trackcorr_or_track3d(
     return _count_links(naming["linkage"], first, last)
 
 
-def _score_nearest_hungarian(tmp_path, scene_dir, first, last, v_max, a_max):
-    from openptv2.algorithms.parameters import ControlPar as _CP
-    from openptv2.algorithms.tracking_frame_buf import Frame
-    from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker
-
-    cpar = _CP.from_yaml(str(scene_dir / "parameters_Run1.yaml"))
-    frames = list(range(first, last + 1))
-    frame_particles = []
-    for fn in frames:
-        frm = Frame(cpar.num_cams, 10000)
-        frm.read(str(scene_dir / "res_orig" / "rt_is"), "", "", "", fn)
-        frame_particles.append(frm.positions())
-
-    tracker = NearestHungarian3DTracker(
-        v_max=v_max, a_max=a_max, max_gap=1, dt=1.0, max_angle_deg=90.0
-    )
-    trajectories = tracker.track_frames(frame_particles)
-
-    # next[frame_idx][row] -> row it links to in frame_idx+1, or -1.
-    # NearestHungarian3DTracker's track dict stores positions/times, not source row
-    # indices, so recover the row by exact-position match -- safe here since
-    # positions are copied verbatim from frame_particles with no jitter.
-    n_steps = len(frames) - 1
-    nxt = [np.full(len(frame_particles[i]), -1, dtype=int) for i in range(n_steps)]
-    for tr in trajectories:
-        times = tr["time"]
-        for i in range(len(times) - 1):
-            f0, f1 = times[i], times[i + 1]
-            if f1 != f0 + 1:
-                continue
-            p0, p1 = tr["pos"][i], tr["pos"][i + 1]
-            r0 = int(np.argmin(np.linalg.norm(frame_particles[f0] - p0, axis=1)))
-            r1 = int(np.argmin(np.linalg.norm(frame_particles[f1] - p1, axis=1)))
-            nxt[f0][r0] = r1
-
-    correct = wrong = 0
-    lost = set()
-    for step in nxt:
-        for p, n in enumerate(step):
-            if n < 0:
-                lost.add(p)
-            elif n == p:
-                correct += 1
-            else:
-                wrong += 1
-    return correct, wrong, lost
-
-
 def _count_links(linkage_base, first, last):
     correct = wrong = 0
     lost = set()
@@ -208,11 +160,6 @@ def test_easy_regime_is_recovered_near_perfectly_by_all_trackers(tmp_path, regim
             dangle=90.0,
         )
         results[mode] = (c, w, lost)
-
-    c, w, lost = _score_nearest_hungarian(
-        tmp_path, scene_dir, first, last, v_max=gate, a_max=dacc
-    )
-    results["nearest_hungarian_3d"] = (c, w, lost)
 
     max_links = params["n_particles"] * (n_frames - 1)
     print(
