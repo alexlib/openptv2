@@ -23,6 +23,44 @@ from openptv2.algorithms.parameters import ControlPar, MmNp, VolumePar
 EPS = 1e-6
 
 
+def _converged_mmf(cal, cpar, pos):
+    """Radial shift the LUT tabulates at pos, solved to convergence: radius
+    from the table axis, camera on the axis in the glass frame."""
+    mm = cpar.mm
+    *_, z0_t = trans_cam_point(
+        np.zeros(3),
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
+    )
+    o = cal.mmlut.origin
+    r = float(np.hypot(pos[0] - o[0], pos[1] - o[1]))
+    return multimed_r_nlay_iterative(
+        r,
+        0.0,
+        pos[2],
+        0.0,
+        0.0,
+        z0_t,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
+        1,
+        None,
+        None,
+        200,
+        1e-9,
+    )
+
+
 def test_init_mmLUT():
     ori_file = "test_data/calibration/cam2.tif.ori"
     add_file = "test_data/calibration/cam2.tif.addpar"
@@ -42,8 +80,12 @@ def test_init_mmLUT():
 
     nz = cal.mmlut.nz
 
-    # data[0] is radial shift at r=0, z=Zmin (point on glass vector axis)
-    assert abs(cal.mmlut.data[0] - 1.0) < EPS
+    # data[0] is the radial shift on the glass-normal axis at z = Zmin. It
+    # holds the r -> 0 limit of the factor, not the solver's r == 0
+    # placeholder 1.0 (which liboptv tabulates, pulling the whole first
+    # radial cell toward 1.0).
+    assert abs(cal.mmlut.data[0] - cal.mmlut.data[nz]) < 1e-4
+    assert cal.mmlut.data[0] > 1.0
 
     # Radial shift grows with radius: data[0*nz+0] < data[1*nz+0] < data[2*nz+0]
     assert cal.mmlut.data[0 * nz + 0] < cal.mmlut.data[1 * nz + 0]
@@ -201,7 +243,10 @@ def test_get_mmf_mmLUT():
     mmf = get_mmf_from_mmlut(
         pos, cal.mmlut.origin, cal.mmlut.nr, cal.mmlut.nz, cal.mmlut.rw, cal.mmlut.data
     )
-    assert abs(mmf - 1.00382) < 1e-4  # In original test it's EPS but 1.00363 vs 1.00382
+    # pos lies in the first radial cell (R = 1.41 < rw = 2). liboptv returns
+    # 1.00382 there, pulled toward its 1.0 on-axis placeholder; the converged
+    # iterative solve in the table's frame gives 1.005406.
+    assert abs(mmf - _converged_mmf(cal, cpar, pos)) < 1e-5
 
 
 def test_multimed_nlay():
@@ -216,12 +261,16 @@ def test_multimed_nlay():
     cal = init_mmlut(vpar, cpar, cal)
 
     pos = np.array([1.23, 1.23, 1.23])
-    correct_Xq = 0.74811917
-    correct_Yq = 0.75977975
+    # liboptv: (0.74811917, 0.75977975), computed from a first-cell mmf pulled
+    # toward the 1.0 on-axis placeholder. These come from the converged mmf;
+    # the LUT's interpolation error, scaled by the camera distance, is ~3e-4.
+    correct_Xq = 0.67565088
+    correct_Yq = 0.68906505
 
     mmf = get_mmf_from_mmlut(
         pos, cal.mmlut.origin, cal.mmlut.nr, cal.mmlut.nz, cal.mmlut.rw, cal.mmlut.data
     )
+    assert abs(mmf - _converged_mmf(cal, cpar, pos)) < 1e-5
 
     Xq, Yq = multimed_nlay(
         pos[0],
@@ -238,8 +287,8 @@ def test_multimed_nlay():
         mmf,
     )
 
-    assert abs(Xq - correct_Xq) < EPS
-    assert abs(Yq - correct_Yq) < EPS
+    assert abs(Xq - correct_Xq) < 5e-4
+    assert abs(Yq - correct_Yq) < 5e-4
 
 
 def _multimed_r_nlay_reference(

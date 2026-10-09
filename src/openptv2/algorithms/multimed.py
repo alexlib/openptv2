@@ -712,6 +712,22 @@ def volumedimension(vpar, cpar, cal):
     return xmax, xmin, ymax, ymin, Zmax, Zmin
 
 
+def _set_axis_row(data, nr, nz):
+    """Replace the LUT's R = 0 row by the r -> 0 limit of the radial factor.
+
+    The iterative solve returns its placeholder 1.0 at r == 0 (the factor
+    multiplies r there, so any value is exact for that point), but the table
+    interpolates across the first radial cell and was pulled toward 1.0. The
+    factor is even in r, f = a + b r^2 + O(r^4), so f(0) = (4 f(rw) - f(2 rw))/3.
+    Idempotent, so it is also safe on tables read back from a store.
+    """
+    if nr >= 3:
+        data[0:nz] = (4.0 * data[nz : 2 * nz] - data[2 * nz : 3 * nz]) / 3.0
+    elif nr == 2:
+        data[0:nz] = data[nz : 2 * nz]
+    return data
+
+
 def init_mmlut(vpar, cpar, cal):
     """Initialize multimedia look-up table for a single camera.
 
@@ -892,7 +908,7 @@ def init_mmlut(vpar, cpar, cal):
                 cpar.mm.nlay,
             )
 
-        cal.mmlut.data = data
+        cal.mmlut.data = _set_axis_row(data, nr, nz)
 
     return cal
 
@@ -932,7 +948,8 @@ def prepare_mmluts(
                     cal.mmlut.nz = nz
                     cal.mmlut.rw = rw
                     cal.mmlut.origin = origin
-                    cal.mmlut.data = data
+                    # tables cached before the axis-row fix still hold 1.0
+                    cal.mmlut.data = _set_axis_row(data, nr, nz)
 
     uninit_cals = [(i, cal) for i, cal in enumerate(cals) if not cal.mmlut.is_initialized]
     if not uninit_cals:

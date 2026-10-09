@@ -154,3 +154,80 @@ def test_kernels_without_lut_match_img_coord():
             )
             worst = max(worst, np.hypot(*(got - exact)))
     assert worst < 1e-3, f"kernel without LUT off by {worst:.2f} px"
+
+
+def _lut_vs_iterative(r_start_cells):
+    """Worst |LUT - iterative| radial factor over the table, from radius
+    r_start_cells * rw outwards, for a test_cavity camera in water."""
+    from openptv2.algorithms.multimed import (
+        get_mmf_from_mmlut,
+        multimed_r_nlay_iterative,
+        trans_cam_point,
+    )
+    from openptv2.algorithms.parameters import VolumePar
+
+    data_dir = Path(__file__).resolve().parents[2] / "test_data" / "test_cavity"
+    cpar = ControlPar.from_yaml(str(data_dir / "parameters.yaml"))
+    vpar = VolumePar.from_yaml(str(data_dir / "parameters.yaml"))
+    cal = Calibration.from_file(
+        str(data_dir / "cal" / "cam1.tif.ori"),
+        str(data_dir / "cal" / "cam1.tif.addpar"),
+    )
+    mm = cpar.mm
+    init_mmlut(vpar, cpar, cal)
+    lut = cal.mmlut
+    # the glass frame the table is built in: camera on the axis at z0_t
+    *_, z0_t = trans_cam_point(
+        np.zeros(3),
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
+    )
+    worst = 0.0
+    # r = 0 itself is skipped: there the solver returns a placeholder 1.0,
+    # and any factor is exact because it multiplies r = 0.
+    r0 = max(r_start_cells * lut.rw, lut.rw / 6)
+    for R in np.arange(r0, (lut.nr - 1) * lut.rw, lut.rw / 3):
+        for Z in np.arange(0.0, (lut.nz - 1) * lut.rw, lut.rw / 3):
+            pos = np.array([lut.origin[0] + R, lut.origin[1], lut.origin[2] + Z])
+            got = get_mmf_from_mmlut(pos, lut.origin, lut.nr, lut.nz, lut.rw, lut.data)
+            if got <= 0:
+                continue
+            # converged reference: the default stop (|rdiff| < 0.001 mm) is a
+            # relative error of ~1e-4 close to the axis
+            exact = multimed_r_nlay_iterative(
+                pos[0],
+                pos[1],
+                pos[2],
+                0.0,
+                0.0,
+                z0_t,
+                mm.n1,
+                mm.n2[0],
+                mm.n3,
+                mm.d[0],
+                1,
+                None,
+                None,
+                200,
+                1e-9,
+            )
+            worst = max(worst, abs(got - exact))
+    return worst
+
+
+def test_lut_matches_iterative_away_from_axis():
+    assert _lut_vs_iterative(1) < 1e-4
+
+
+def test_lut_matches_iterative_near_axis():
+    """The R = 0 row used to hold the solver's r == 0 placeholder 1.0 instead
+    of the r -> 0 limit, so the first radial cell interpolated toward 1.0."""
+    assert _lut_vs_iterative(0) < 1e-4
