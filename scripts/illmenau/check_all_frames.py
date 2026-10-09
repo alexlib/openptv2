@@ -23,14 +23,14 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _config as CFG  # noqa: E402
-import numpy as np
+import numpy as np  # noqa: E402
 
-from openptv2.algorithms.orientation import COORD_UNUSED
-from openptv2.algorithms.trafo import dist_to_flat, pixel_to_metric
-from openptv2.orientation import multi_cam_point_positions
+from openptv2.plate_multiplane import (  # noqa: E402
+    plate_frame_metrics,
+    triangulate_plate,
+)
 
-out = CFG.DIR
-PITCH, NX, REF = CFG.PITCH, CFG.NX, CFG.REF
+PITCH = CFG.PITCH
 RCM_TOL = 1.0  # [mm] a dot whose sight lines miss by more than this is not one dot
 
 cpar = CFG.control_par()
@@ -41,65 +41,27 @@ views = CFG.load_views()
 
 def triangulate(fr):
     """-> positions, point ids, per-dot ray-convergence miss [mm], n cameras."""
-    per = {
-        ci: dict(zip(views[(ci, fr)][0].tolist(), views[(ci, fr)][1].tolist()))
-        for ci in range(CFG.NCAM)
-        if (ci, fr) in views
-    }
-    ids = [
-        i
-        for i in sorted({i for m in per.values() for i in m})
-        if sum(i in m for m in per.values()) >= 2
-    ]
-    if len(ids) < 12:
+    per = {ci: views[(ci, fr)] for ci in range(CFG.NCAM) if (ci, fr) in views}
+    tri = triangulate_plate(per, cals, cpar, min_dots=12)
+    if tri is None:
         return None, None, None, 0
-    t = np.full((len(ids), CFG.NCAM, 2), COORD_UNUSED)
-    for k, pid in enumerate(ids):
-        for ci, m in per.items():
-            if pid in m:
-                mx, my = pixel_to_metric(m[pid][0], m[pid][1], cpar)
-                a = cals[ci].added_par
-                t[k, ci] = dist_to_flat(
-                    mx,
-                    my,
-                    cals[ci].int_par.xh,
-                    cals[ci].int_par.yh,
-                    a.k1,
-                    a.k2,
-                    a.k3,
-                    a.p1,
-                    a.p2,
-                    a.scx,
-                    a.she,
-                )
-    pos, rcm = multi_cam_point_positions(t, cpar, cals)
-    ok = np.isfinite(pos).all(1) & (np.abs(pos) < 1e5).all(1) & np.isfinite(rcm)
-    return pos[ok], [p for p, k in zip(ids, ok) if k], np.asarray(rcm)[ok], len(per)
+    return tri.pos, tri.ids, tri.rcm, len(per)
 
 
 def plane_and_pitch(pos, ids):
     """Planarity RMS about the best-fit plane, plus median X and Y pitch."""
-    c = pos.mean(0)
     try:
-        n = np.linalg.svd(pos - c)[2][2]
+        m = plate_frame_metrics(pos, ids, CFG.GRID)
     except np.linalg.LinAlgError:
         return None
-    resid = (pos - c) @ n
-    idx = {p: k for k, p in enumerate(ids)}
-    dx = [
-        np.linalg.norm(pos[idx[p]] - pos[idx[p + 1]])
-        for p in ids
-        if p + 1 in idx and ((p - 1) % NX) < NX - 1
-    ]
-    dy = [np.linalg.norm(pos[idx[p]] - pos[idx[p + NX]]) for p in ids if p + NX in idx]
-    if not dx or not dy:
+    if not len(m.pitch_x) or not len(m.pitch_y):
         return None
     return (
-        float(np.sqrt(np.mean(resid**2))),
-        float(np.abs(resid).max()),
-        float(np.median(dx)),
-        float(np.median(dy)),
-        float(np.linalg.norm(c)),
+        m.planarity_rms,
+        m.planarity_max,
+        float(np.median(m.pitch_x)),
+        float(np.median(m.pitch_y)),
+        float(np.linalg.norm(m.centre)),
     )
 
 

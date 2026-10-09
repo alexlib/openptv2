@@ -32,14 +32,12 @@ import numpy as np
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from openptv2.algorithms.orientation import COORD_UNUSED
-from openptv2.algorithms.trafo import dist_to_flat, pixel_to_metric
-from openptv2.orientation import multi_cam_point_positions
+from openptv2.plate_multiplane import plate_frame_metrics, triangulate_plate
 
 out = CFG.DIR
 dst = out / "triangulation"
 dst.mkdir(exist_ok=True)
-PITCH, NX, NY, REF = CFG.PITCH, CFG.NX, CFG.NY, CFG.REF
+PITCH, REF = CFG.PITCH, CFG.REF
 # Above this, a frame's triangulated pattern is not the plate: the labeller
 # assigned dots wrongly.  Below it, what is left is the calibration model.
 GRID_DEV_MISLABELLED_MM = 30.0
@@ -53,56 +51,9 @@ views = CFG.load_views()
 
 
 def triangulate(fr):
-    per = {
-        ci: dict(zip(views[(ci, fr)][0].tolist(), views[(ci, fr)][1].tolist()))
-        for ci in range(CFG.NCAM)
-        if (ci, fr) in views
-    }
-    ids = [
-        i
-        for i in sorted({i for m in per.values() for i in m})
-        if sum(i in m for m in per.values()) >= 2
-    ]
-    if len(ids) < 8:
-        return None
-    t = np.full((len(ids), CFG.NCAM, 2), COORD_UNUSED)
-    for k, pid in enumerate(ids):
-        for ci, m in per.items():
-            if pid in m:
-                mx, my = pixel_to_metric(m[pid][0], m[pid][1], cpar)
-                a = cals[ci].added_par
-                t[k, ci] = dist_to_flat(
-                    mx,
-                    my,
-                    cals[ci].int_par.xh,
-                    cals[ci].int_par.yh,
-                    a.k1,
-                    a.k2,
-                    a.k3,
-                    a.p1,
-                    a.p2,
-                    a.scx,
-                    a.she,
-                )
-    pos, rcm = multi_cam_point_positions(t, cpar, cals)
-    rcm = np.asarray(rcm, float)
-    ok = np.isfinite(pos).all(1) & (np.abs(pos) < 1e5).all(1) & np.isfinite(rcm)
-    if ok.sum() < 8:
-        return None
-    return pos[ok], np.array(ids)[ok], rcm[ok]
-
-
-def ideal_grid(ids):
-    """Nominal plate coordinates of those ids, with the datum dot at the origin."""
-    return CFG.obj_of(ids)
-
-
-def kabsch(A, B):
-    """Rigidly map A onto B (both (n,3)) -- no scaling, so pitch error stays visible."""
-    ca, cb = A.mean(0), B.mean(0)
-    U, _, Vt = np.linalg.svd((A - ca).T @ (B - cb))
-    R = U @ np.diag([1.0, 1.0, np.sign(np.linalg.det(U @ Vt))]) @ Vt
-    return (A - ca) @ R + cb
+    per = {ci: views[(ci, fr)] for ci in range(CFG.NCAM) if (ci, fr) in views}
+    tri = triangulate_plate(per, cals, cpar, min_dots=8)
+    return None if tri is None else (tri.pos, tri.ids, tri.rcm)
 
 
 def mpl(P):
@@ -118,25 +69,17 @@ for fr in sorted({f for _, f in views}):
         print(f"{fr}: too few dots, skipped")
         continue
     pos, ids, rcm = r
-    ctr = pos.mean(0)
-    _, _, Vt = np.linalg.svd(pos - ctr)
-    e1, e2, nrm = Vt[0], Vt[1], Vt[2]
-    resid = (pos - ctr) @ nrm
-    rms = float(np.sqrt(np.mean(resid**2)))
-
-    idx = {p: k for k, p in enumerate(ids)}
-    dx = [
-        np.linalg.norm(pos[idx[p]] - pos[idx[p + 1]])
-        for p in ids
-        if p + 1 in idx and ((p - 1) % NX) < NX - 1
-    ]
-    dy = [np.linalg.norm(pos[idx[p]] - pos[idx[p + NX]]) for p in ids if p + NX in idx]
-    px_ = float(np.median(dx)) if dx else float("nan")
-    py_ = float(np.median(dy)) if dy else float("nan")
+    m = plate_frame_metrics(pos, ids, CFG.GRID)
+    ctr = m.centre
+    e1, e2, nrm = m.axes
+    resid = m.residual
+    rms = m.planarity_rms
+    px_ = float(np.median(m.pitch_x)) if len(m.pitch_x) else float("nan")
+    py_ = float(np.median(m.pitch_y)) if len(m.pitch_y) else float("nan")
 
     # ideal rigid plate fitted onto the triangulated dots -> per-dot label error
-    fit = kabsch(ideal_grid(ids), pos)
-    lab_err = np.linalg.norm(pos - fit, axis=1)
+    fit = m.grid_fit
+    lab_err = m.grid_dev
     rows.append(
         (
             fr,

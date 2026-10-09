@@ -537,14 +537,15 @@ there is **no** frame in which all eight cameras see the plate.
 
 ### Running it
 
-Every driver is camera-group agnostic via `scripts/illmenau/_config.py`:
+Every driver is camera-group agnostic via `scripts/illmenau/_config.py`; the
+steps themselves are library functions in `openptv2.plate_multiplane`:
 
 ```bash
 export ILLMENAU_DIR="$ILLMENAU_RAW/openptv_illmenau_5678"
 export ILLMENAU_CAMS=5,6,7,8
 # then §5's recipe verbatim, plus these two first:
 python $OPTV/scripts/illmenau/find_datum.py             # read the datum off the data
-python $OPTV/scripts/illmenau/make_calibration_block.py # block from the same obj_of
+python $OPTV/scripts/illmenau/make_calibration_block.py # block from the same PlateGrid
 ```
 
 The first detection pass has no `.ori` to take an up-hint from, so run

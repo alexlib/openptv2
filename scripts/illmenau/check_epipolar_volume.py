@@ -38,52 +38,25 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _config as CFG  # noqa: E402
-import numpy as np
+import numpy as np  # noqa: E402
 
-from openptv2.algorithms.epi import epi_mm
-from openptv2.algorithms.imgcoord import img_coord
-from openptv2.algorithms.parameters import VolumePar
-from openptv2.algorithms.ray_tracing import ray_tracing
-from openptv2.algorithms.trafo import dist_to_flat, metric_to_pixel, pixel_to_metric
-
-out = CFG.DIR
-IMX, IMY, REF = 2560, 2048, "00000000"
+from openptv2.algorithms.epi import epi_mm  # noqa: E402
+from openptv2.algorithms.imgcoord import img_coord  # noqa: E402
+from openptv2.algorithms.parameters import VolumePar  # noqa: E402
+from openptv2.algorithms.trafo import metric_to_pixel  # noqa: E402
+from openptv2.plate_multiplane import (  # noqa: E402
+    epipolar_horizon_z,
+    pixel_to_flat,
+    sight_ray,
+)
 
 cpar = CFG.control_par()
 cals = CFG.load_calibrations()
-
-d = np.load(out / "cal" / "labelled_all_frames.npz")
+views = CFG.load_views()
 det = [
-    dict(zip(d[f"c{ci}_{REF}_ids"].tolist(), d[f"c{ci}_{REF}_px"].tolist()))
+    dict(zip(views[(ci, CFG.REF)][0].tolist(), views[(ci, CFG.REF)][1].tolist()))
     for ci in range(CFG.NCAM)
 ]
-
-
-def sight_ray(ci, pix):
-    """Pixel in camera ci -> (vertex, direction) of the sight ray in world coords."""
-    ca = cals[ci]
-    a = ca.added_par
-    mx, my = pixel_to_metric(pix[0], pix[1], cpar)
-    xf, yf = dist_to_flat(
-        mx, my, ca.int_par.xh, ca.int_par.yh, a.k1, a.k2, a.k3, a.p1, a.p2, a.scx, a.she
-    )
-    pos, v = ray_tracing(
-        xf,
-        yf,
-        ca.ext_par.dm,
-        ca.ext_par.x0,
-        ca.ext_par.y0,
-        ca.ext_par.z0,
-        ca.int_par.cc,
-        ca.glass_par.vec_x,
-        ca.glass_par.vec_y,
-        ca.glass_par.vec_z,
-        1.0,
-        1.0,
-        1.0,
-        0.0,
-    )
-    return np.asarray(pos, float), np.asarray(v, float)
 
 
 # ---------------------------------------------------------------- 1) the horizon
@@ -96,16 +69,11 @@ for a in range(CFG.NCAM):
     for b in range(CFG.NCAM):
         if a == b:
             continue
-        cb = cals[b]
-        Cb = np.array([cb.ext_par.x0, cb.ext_par.y0, cb.ext_par.z0])
-        axis = -np.asarray(cb.ext_par.dm)[:, 2]  # camera views along -dm[:,2]
         zs = []
         for pid, pix in det[a].items():
-            pos, v = sight_ray(a, pix)
-            k = (v @ axis) / v[2]
-            if abs(k) < 1e-12:
-                continue
-            zs.append(pos[2] - ((pos - Cb) @ axis) / k)
+            z = epipolar_horizon_z(*sight_ray(pix, cals[a], cpar), cals[b])
+            if z is not None:
+                zs.append(z)
         horizons[(a, b)] = float(np.min(zs))
         print(
             f"   {a + 1}->{b + 1}          {np.min(zs):8.0f}   (median {np.median(zs):8.0f})"
@@ -147,23 +115,8 @@ for zb in (500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0):
             for pid, pix in det[a].items():
                 if pid not in det[b]:
                     continue
-                mx, my = pixel_to_metric(pix[0], pix[1], cpar)
-                ca = cals[a]
-                aa = ca.added_par
-                xf, yf = dist_to_flat(
-                    mx,
-                    my,
-                    ca.int_par.xh,
-                    ca.int_par.yh,
-                    aa.k1,
-                    aa.k2,
-                    aa.k3,
-                    aa.p1,
-                    aa.p2,
-                    aa.scx,
-                    aa.she,
-                )
-                x1, y1, x2, y2 = epi_mm(xf, yf, ca, cals[b], cpar.mm, vpar)
+                xf, yf = pixel_to_flat(pix, cals[a], cpar)
+                x1, y1, x2, y2 = epi_mm(xf, yf, cals[a], cals[b], cpar.mm, vpar)
                 p1 = np.array(metric_to_pixel(x1, y1, cpar))
                 p2 = np.array(metric_to_pixel(x2, y2, cpar))
                 seg.append(float(np.linalg.norm(p2 - p1)))
@@ -173,7 +126,7 @@ for zb in (500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0):
                 t = np.clip((q - p1) @ e / (e @ e), 0.0, 1.0)
                 miss.append(float(np.linalg.norm(p1 + t * e - q)))
                 # how far the true curve departs from that chord in the middle
-                pos, v = sight_ray(a, pix)
+                pos, v = sight_ray(pix, cals[a], cpar)
                 Zs = np.linspace(-zb, zb, 41)
                 P = pos + ((Zs - pos[2]) / v[2])[:, None] * v
                 cur = np.array(

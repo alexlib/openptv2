@@ -23,6 +23,13 @@ Worked reference implementation: `docs/illmenau-4cam-calibration.md` and
 coded plate, 48 hand-held frames) calibrated to 0.11–0.30 px median epipolar
 error. Read it for the numbers; this file is the procedure.
 
+The dataset-independent steps are library functions in
+`openptv2.plate_multiplane` (plate model, detection + labelling, the shared-`cc`
+fit, the pinhole refit, the bundle's view gates, and every check), with the
+solver in `openptv2.plate_bundle`. The `scripts/illmenau/` files are thin drivers
+around them: copy one and change its configuration for a new rig rather than
+re-deriving the steps.
+
 ## When this applies
 
 - One image folder per camera, frames synchronised by filename prefix.
@@ -104,7 +111,8 @@ of the three coded dots and overlay them on the image. Point id convention:
 
 Detect + label once, store `(ids, pixels)` per camera per frame. Everything
 downstream is then seconds instead of minutes, which matters because you will
-sweep `cc`. → `detect_plate_frames.py`
+sweep `cc`. → `detect_coded_plate` + `label_plate_view`, cached with
+`save_plate_views` (driver: `detect_plate_frames.py`)
 
 ### 3. Fit ONE shared focal length from multi-plane consistency
 
@@ -119,7 +127,7 @@ frame, then for every other frame ask each camera **separately** where the plate
 is. Right `cc` → the four answers coincide. Wrong `cc` → each camera's world
 frame sits at the wrong distance and the answers spread apart, worse the further
 the plate is from the reference plane. Minimise the median spread.
-→ `fit_plate_cc.py`
+→ `fit_shared_cc` (driver: `fit_plate_cc.py`)
 
 Use **one shared `cc`** when the cameras have the same lens — it is far better
 conditioned than four independent ones. Expect a clean single minimum; a flat
@@ -129,7 +137,8 @@ curve means the frames do not span enough depth.
 
 Zero distortion, principal point at the sensor centre, the fitted `cc`, pose
 from the reference frame via `solvePnP` + `solvePnPRefineLM`, converted with
-`calibration_import.calibration_from_opencv`. → `refit_plate_pinhole.py`
+`calibration_import.calibration_from_opencv`. → `pnp_pose` + `pinhole_calibration`
+(driver: `refit_plate_pinhole.py`)
 
 **Do not fit distortion from a single plane.** `k1,k2,k3` trade against pose
 there, and the solver returns a polynomial that fits those points and diverges
@@ -156,14 +165,16 @@ Before adding any distortion term, prove it is needed:
 Per-camera reprojection RMS is **blind** to the errors that matter here. It
 stayed at 0.5 px through every wrong intermediate result.
 
-**Gate A — triangulate the plate** (`check_plate_triangulation.py`). Expect:
+**Gate A — triangulate the plate** (`triangulate_plate` + `plate_frame_metrics`;
+driver `check_plate_triangulation.py`). Expect:
 plane normal along the plate normal, planarity residual RMS well under 1 mm,
 recovered pitch within a few tenths of a percent, and — the strong one —
 **absolute** positions against the known block coordinates with **no alignment
 applied**. Illmenau: normal `(0,0,1)`, planarity 0.31 mm, pitch +0.68 % X /
 +0.10 % Y, absolute error 1.09 mm median.
 
-**Gate B — epipolar geometry** (`check_epipolar.py`). For every *ordered* pair,
+**Gate B — epipolar geometry** (`epipolar_curve_misses`; driver `check_epipolar.py`).
+For every *ordered* pair,
 trace each dot's ray from A, project it densely into B, and measure the closest
 approach to the same dot as B detected it. Sample densely and keep only samples
 landing on the sensor — do **not** approximate the curve by the chord between
@@ -173,7 +184,8 @@ sensor. Illmenau final: 0.11–0.30 px median, 0.93 px worst, straight for all
 points of all 12 pairs.
 
 **Gate C — the whole dataset, and the thing planarity hides**
-(`plot_frame_triangulation.py`). Apply the finished model to every frame,
+(`plate_frame_metrics` per frame; driver `plot_frame_triangulation.py`). Apply the
+finished model to every frame,
 fitting nothing, and read three numbers per frame:
 
 | number | measures | a bad value means |
@@ -215,10 +227,16 @@ naive attempts. Three gates, each seeing what the previous cannot:
 1. per-camera PnP residual — uses no cross-camera information, so it is a pure
    labelling test for one view;
 2. a known plate orientation, if you have one — a grossly mislabelled view
-   yields a plate pose tens of degrees off while still fitting its own points;
+   yields a plate pose tens of degrees off while still fitting its own points.
+   It measures *leaning*, so it catches a grid turned 90° in its plane but not
+   one turned 180°: an upside-down plate is still exactly vertical;
 3. per-dot cross-camera agreement (`plate_bundle.agreeing_views`) — **per dot,
    not per plate centre**: a scramble can leave the centroid roughly in place
-   while the pattern around it is wrong.
+   while the pattern around it is wrong. This is what catches the 180°
+   relabelling and the one-pitch shift, both of which fit perfectly per view.
+
+`plate_multiplane.prepare_bundle` runs the three gates and builds the
+observations and the initial poses.
 
 Then trim on the bundle's own residuals. Resist tightening the gates to chase
 reprojection RMS: on Illmenau every tightening improved RMS while making
@@ -277,7 +295,7 @@ one is a bug:
    (depth along the ray is affine in Z) rather than guessing: Illmenau's binding
    pair horizons at Z = 3479 mm, so Zmax ≤ ~2780 mm with a 20 % margin, and the
    ±4000 box that started the whole investigation was past it for six of twelve
-   pairs. → `check_epipolar_volume.py`
+   pairs. → `epipolar_horizon_z` (driver: `check_epipolar_volume.py`)
 
 Note this is a *configuration* limit, not a library bug: `epi_mm` reproduces the
 C original, whose parity tests deliberately place cameras inside the volume.

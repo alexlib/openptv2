@@ -90,11 +90,17 @@ viz = [
     "matplotlib>=3.7.0",
     "wigglystuff>=0.5.22",
 ]
+# Multi-plane plate calibration: the PnP steps of openptv2.plate_multiplane
+# and the scripts/illmenau drivers. Only those steps need OpenCV.
+calibration = [
+    "opencv-python-headless>=4.8",
+]
 # Everything a contributor needs: the full GUI, test/lint/type tooling, the
 # marimo notebooks, and the docs toolchain.
 dev = [
     "openptv2[gui]",
     "openptv2[viz]",
+    "openptv2[calibration]",
     "pytest>=8.0.0",
     "pytest-cov>=5.0.0",
     "mypy>=1.10.0",

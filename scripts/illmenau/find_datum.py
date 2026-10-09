@@ -28,11 +28,11 @@ import _config as CFG  # noqa: E402
 import numpy as np  # noqa: E402
 from PIL import Image  # noqa: E402
 
-from openptv2.detect_plate import (  # noqa: E402
-    detect_plate_targets,
-    plate_tpar_from_yaml,
+from openptv2.detect_plate import plate_tpar_from_yaml  # noqa: E402
+from openptv2.plate_multiplane import (  # noqa: E402
+    datum_index_from_complete_view,
+    detect_coded_plate,
 )
-from openptv2.plate_labeler import label_plate  # noqa: E402
 
 MAX_FRAMES = 8  # complete views to collect per camera
 MAX_SCAN = 12  # images to open per camera before giving up
@@ -66,38 +66,19 @@ for ci in range(CFG.NCAM):
         fr = f.name.split("_")[0]
         try:
             img = np.array(Image.open(f))
-            res = None
-            for thr in CODED_THR:
-                r = detect_plate_targets(img, tpar, cpar, cam=ci, coded_thr=float(thr))
-                if int(r.coded_mask.sum()) == 3:
-                    res = r
-                    break
-            if res is None or len(res.centroids) < full:
-                continue
+            res = detect_coded_plate(img, tpar, cpar, ci, coded_thresholds=CODED_THR)
             # deliberately NO corner_index here: that is the whole point
-            ip, _, idx = label_plate(
-                res.centroids,
-                res.coded_mask,
-                pitch_x=CFG.PITCH,
-                pitch_y=CFG.PITCH,
-                nx=CFG.NX,
-                ny=CFG.NY,
-                y_sign=1,
+            ixiy = (
+                None if res is None else datum_index_from_complete_view(res, CFG.GRID)
             )
         except Exception as e:  # noqa: BLE001 - report and move on
             print(f"  {CFG.cam_number(ci)}    {fr}   {type(e).__name__}: {e}")
             continue
-        if len(ip) < full:
+        if ixiy is None:
             continue
-        # the corner is the coded dot whose two partners sit at 1 and 2 pitch
-        coded = res.centroids[res.coded_mask]
-        d = np.linalg.norm(coded[:, None, :] - coded[None, :, :], axis=2)
-        corner_xy = coded[int(np.argmin(np.sort(d, axis=1)[:, 1:].sum(1)))]
-        k = int(np.argmin(np.linalg.norm(ip - corner_xy, axis=1)))
-        ixiy = (int(idx[k, 0]), int(idx[k, 1]))
         votes[ixiy] += 1
         seen += 1
-        print(f"  {CFG.cam_number(ci)}    {fr}   {len(ip):4d}   {ixiy}", flush=True)
+        print(f"  {CFG.cam_number(ci)}    {fr}   {full:4d}   {ixiy}", flush=True)
 
 print()
 if not votes:

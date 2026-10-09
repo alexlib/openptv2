@@ -23,17 +23,20 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _config as CFG  # noqa: E402
-import cv2  # noqa: E402
 import numpy as np  # noqa: E402
 
 from openptv2.algorithms.imgcoord import img_coord  # noqa: E402
 from openptv2.algorithms.trafo import metric_to_pixel  # noqa: E402
-from openptv2.calibration_import import calibration_from_opencv  # noqa: E402
+from openptv2.plate_multiplane import (  # noqa: E402
+    pinhole_calibration,
+    pinhole_K,
+    pnp_pose,
+)
 
 PIX, IMX, IMY = CFG.PIX, CFG.IMX, CFG.IMY
 CC = float(sys.argv[1]) if len(sys.argv) > 1 else 9.44
 cpar = CFG.control_par()
-K = np.array([[CC / PIX, 0, IMX / 2], [0, CC / PIX, IMY / 2], [0, 0, 1.0]])
+K = pinhole_K(CC, PIX, IMX, IMY)
 
 views = CFG.load_views()
 print(f"pure pinhole refit on frame {CFG.REF}, cc = {CC} mm shared, zero distortion")
@@ -49,13 +52,10 @@ for ci in range(CFG.NCAM):
     ids, ip = views[(ci, CFG.REF)]
     ip = ip.astype(np.float64)
     obj = CFG.obj_of(ids)
-    ok, rvec, tvec = cv2.solvePnP(obj, ip, K, np.zeros(5))
-    if not ok:
+    pose = pnp_pose(obj, ip, K)
+    if pose is None:
         raise SystemExit(f"cam{cam}: solvePnP failed on {len(obj)} points")
-    rvec, tvec = cv2.solvePnPRefineLM(obj, ip, K, np.zeros(5), rvec, tvec)
-    cal, _ = calibration_from_opencv(
-        K, np.zeros(5), rvec, tvec, imx=IMX, imy=IMY, pix_x=PIX, pixel_origin="corner"
-    )
+    cal = pinhole_calibration(K, pose[0], pose[1], imx=IMX, imy=IMY, pix_mm=PIX)
     rep = np.array([metric_to_pixel(*img_coord(p, cal, cpar.mm), cpar) for p in obj])
     err = np.linalg.norm(rep - ip, axis=1)
     e = cal.ext_par

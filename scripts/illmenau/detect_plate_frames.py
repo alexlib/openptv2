@@ -39,8 +39,13 @@ import numpy as np
 from PIL import Image
 
 from openptv2.algorithms.parameters import ControlPar, MmNp
-from openptv2.detect_plate import detect_plate_targets, plate_tpar_from_yaml
-from openptv2.plate_labeler import label_plate
+from openptv2.detect_plate import plate_tpar_from_yaml
+from openptv2.plate_multiplane import (
+    PlateGrid,
+    detect_coded_plate,
+    label_plate_view,
+    save_plate_views,
+)
 
 # Dataset location; override with ILLMENAU_RAW / ILLMENAU_DIR.
 ILLMENAU_RAW = os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau")
@@ -60,7 +65,7 @@ for _i, _a in enumerate(sys.argv):
 
 base = Path(ILLMENAU_RAW)
 out = Path(ILLMENAU_DIR)
-PITCH, NX, NY = 120.0, 6, 7
+GRID = PlateGrid(nx=6, ny=7, pitch_x=120.0, pitch_y=120.0, datum_ix=2, datum_iy=3)
 tpar = plate_tpar_from_yaml(out / "parameters_Run1.yaml")
 cpar = ControlPar(
     num_cams=len(CAMS),
@@ -77,13 +82,11 @@ cpar = ControlPar(
     cal_img_base_name=[""] * len(CAMS),
 )
 
-DATUM_IX, DATUM_IY = 2, 3
 CODED_THR = (30, 25, 20, 15, 10)
 USE_HINT = os.environ.get("ILLMENAU_NO_HINT", "") == ""
 cals = {}
 if USE_HINT:
     from openptv2.algorithms.calibration import Calibration
-    from openptv2.plate_labeler import image_up_direction
 
     for ci, cam in enumerate(CAMS):
         ori = out / f"cal/cam{cam}.tif.ori"
@@ -95,7 +98,7 @@ if USE_HINT:
         cals[ci] = c
 
 print(f"cameras {CAMS} -> cal/{NPZ}")
-store = {}
+views = {}
 for ci, cam in enumerate(CAMS):
     for f in sorted((base / f"Kalibrierung_{cam}").glob("*.tif*")):
         fr = f.name.split("_")[0]
@@ -105,41 +108,18 @@ for ci, cam in enumerate(CAMS):
             # threshold that finds three rather than fixing one.  A single fixed
             # coded_thr=30 missed them entirely on two views, and label_plate
             # then had nothing to anchor on.
-            res = None
-            for thr in CODED_THR:
-                r = detect_plate_targets(img, tpar, cpar, cam=ci, coded_thr=float(thr))
-                if int(r.coded_mask.sum()) == 3:
-                    res = r
-                    break
+            res = detect_coded_plate(img, tpar, cpar, ci, coded_thresholds=CODED_THR)
             if res is None:
                 print(
                     f"cam{cam} {fr}: no coded triple at any threshold, skipped",
                     flush=True,
                 )
                 continue
-            hint = None
-            if ci in cals and len(res.centroids):
-                hint = image_up_direction(
-                    cals[ci], cpar, np.mean(res.centroids, axis=0)
-                )
-            ip, rp, _ = label_plate(
-                res.centroids,
-                res.coded_mask,
-                pitch_x=PITCH,
-                pitch_y=PITCH,
-                nx=NX,
-                ny=NY,
-                y_sign=1,
-                corner_index=(DATUM_IX, DATUM_IY),
-                up_hint=hint,
-            )
+            ids, ip = label_plate_view(res, GRID, cal=cals.get(ci), cpar=cpar)
         except Exception as e:
             print(f"cam{cam} {fr}: {type(e).__name__}", flush=True)
             continue
-        ix = np.round(rp[:, 0] / PITCH).astype(int)
-        iy = np.round(rp[:, 1] / PITCH).astype(int)
-        store[f"c{ci}_{fr}_ids"] = iy * NX + ix + 1
-        store[f"c{ci}_{fr}_px"] = ip
+        views[(ci, fr)] = (ids, ip)
         print(f"cam{cam} {fr}: {len(ip)} dots", flush=True)
-np.savez_compressed(out / "cal" / NPZ, **store)
-print("wrote", out / "cal" / NPZ, len(store) // 2, "views")
+save_plate_views(out / "cal" / NPZ, views)
+print("wrote", out / "cal" / NPZ, len(views), "views")

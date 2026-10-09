@@ -1,8 +1,8 @@
 """Illmenau driver for the joint plate bundle.
 
-The solver, the gates and the vertical prior all live in
-``openptv2.plate_bundle``; this file only supplies the dataset's numbers, builds
-the initial poses with ``cv2.solvePnP``, and writes the ``.ori``.
+The solver and the vertical prior live in ``openptv2.plate_bundle``, the gates
+and the initial poses in ``openptv2.plate_multiplane.prepare_bundle``; this file
+only supplies the dataset's numbers, reports, and writes the ``.ori``.
 
 Held fixed on purpose: ``cc`` (the value verified by hand in the GUI on frame
 00000000), zero distortion, the principal point at the sensor centre, and the
@@ -33,24 +33,22 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _config as CFG  # noqa: E402
-import cv2
-import numpy as np
+import numpy as np  # noqa: E402
 
-from openptv2.calibration_import import calibration_from_opencv
-from openptv2.plate_bundle import (
-    PlateObservations,
-    agreeing_views,
+from openptv2.plate_bundle import (  # noqa: E402
     bundle_plate_poses,
     project,
     rodrigues,
-    rotvec,
     tilt_off_vertical_deg,
+)
+from openptv2.plate_multiplane import (  # noqa: E402
+    pinhole_calibration,
+    pinhole_K,
+    prepare_bundle,
 )
 
 out = CFG.DIR
-PITCH, NX, PIX = CFG.PITCH, CFG.NX, CFG.PIX
-IMX, IMY, REF = CFG.IMX, CFG.IMY, CFG.REF
-DATUM_IX, DATUM_IY = CFG.DATUM_IX, CFG.DATUM_IY
+PIX, IMX, IMY, REF = CFG.PIX, CFG.IMX, CFG.IMY, CFG.REF
 NCAM, MIN_DOTS = CFG.NCAM, 12
 VIEW_GATE_PX = float(os.environ.get("BUNDLE_VIEW_GATE_PX", 1.0))
 AGREE_MM = float(os.environ.get("BUNDLE_AGREE_MM", 100.0))
@@ -66,90 +64,30 @@ CC = (
     else 8.5858
 )
 WRITE = "--write" in sys.argv
-K = np.array([[CC / PIX, 0, IMX / 2], [0, CC / PIX, IMY / 2], [0, 0, 1.0]])
-D0 = np.zeros(5)
+K = pinhole_K(CC, PIX, IMX, IMY)
 
 views = CFG.load_views()
 frames_all = sorted({f for _, f in views})
-
-
-obj_of = CFG.obj_of
-GRID = obj_of(np.arange(1, CFG.NX * CFG.NY + 1))
-
-
-def pnp(ids, px):
-    o = obj_of(ids)
-    if len(o) < 6:
-        return None
-    ok, rv, tv = cv2.solvePnP(o, px.astype(float), K, D0)
-    if not ok:
-        return None
-    rv, tv = cv2.solvePnPRefineLM(o, px.astype(float), K, D0, rv, tv)
-    rep, _ = cv2.projectPoints(o, rv, tv, K, D0)
-    return (
-        rv.ravel(),
-        tv.ravel(),
-        float(np.sqrt(np.mean(np.sum((rep.reshape(-1, 2) - px) ** 2, 1)))),
+try:
+    setup = prepare_bundle(
+        views,
+        CFG.GRID,
+        K,
+        NCAM,
+        REF,
+        min_dots=MIN_DOTS,
+        view_gate_px=VIEW_GATE_PX,
+        tilt_gate_deg=TILT_GATE_DEG,
+        agree_mm=AGREE_MM,
     )
-
-
-# ------------------------------------------------- gate 1: per-camera labelling
-good = {}
-for fr in frames_all:
-    for ci in range(NCAM):
-        if (ci, fr) not in views or len(views[(ci, fr)][0]) < MIN_DOTS:
-            continue
-        p = pnp(*views[(ci, fr)])
-        if p is not None and p[2] < VIEW_GATE_PX:
-            good[(ci, fr)] = p
-if any((ci, REF) not in good for ci in range(NCAM)):
-    raise SystemExit(f"reference frame {REF} is not clean in all {NCAM} cameras")
-n_pnp = len(good)
-
-ref_R = {ci: rodrigues(good[(ci, REF)][0]) for ci in range(NCAM)}
-ref_t = {ci: good[(ci, REF)][1] for ci in range(NCAM)}
-
-
-def dots_in_world(ci, fr):
-    rv, tv, _ = good[(ci, fr)]
-    return (GRID @ rodrigues(rv).T + tv - ref_t[ci]) @ ref_R[ci]
-
-
-# ----------------------------------------------------- gate 2: plate is vertical
-tilt_rejects = []
-for key in list(good):
-    ci, fr = key
-    if fr == REF:
-        continue
-    t = tilt_off_vertical_deg(ref_R[ci].T @ rodrigues(good[key][0]))
-    if t > TILT_GATE_DEG:
-        tilt_rejects.append((fr, ci, t))
-        del good[key]
-
-# --------------------------------------------- gate 3: per-dot cross-camera check
-kept, dropped = {}, []
-for fr in frames_all:
-    vs = [ci for ci in range(NCAM) if (ci, fr) in good]
-    if len(vs) < 2:
-        continue
-    per = {ci: dots_in_world(ci, fr) for ci in vs}
-    best = agreeing_views(per, AGREE_MM)
-    worst = max(
-        np.linalg.norm(per[a] - per[b], axis=1).max() for a in vs for b in vs if a < b
-    )
-    if not best:
-        dropped.append((fr, vs, worst))
-        continue
-    if len(best) < len(vs):
-        dropped.append((fr, [c for c in vs if c not in best], worst))
-    kept[fr] = best
-good = {(ci, fr): good[(ci, fr)] for fr, cs in kept.items() for ci in cs}
-frames = sorted(kept)
-free = [fr for fr in frames if fr != REF]
+except ValueError as e:
+    raise SystemExit(str(e)) from None
+good, frames, free = setup.poses, setup.frames, setup.free
+tilt_rejects, dropped, obs = setup.tilt_rejects, setup.dropped, setup.obs
 
 print(f"cc fixed at {CC} mm, zero distortion, gauge = plate pose of frame {REF}")
 print(
-    f"gate 1  per-camera PnP < {VIEW_GATE_PX} px:            {n_pnp}/{NCAM * len(frames_all)} views"
+    f"gate 1  per-camera PnP < {VIEW_GATE_PX} px:            {setup.n_pnp}/{NCAM * len(frames_all)} views"
 )
 print(
     f"gate 2  plate vertical within {TILT_GATE_DEG:.0f} deg:         "
@@ -174,36 +112,10 @@ print(
     f"unknowns: {NCAM} camera poses + {len(free)} plate poses = {6 * (NCAM + len(free))}"
 )
 
-# ------------------------------------------------------------------ observations
-fidx = {fr: k for k, fr in enumerate(free)}
-cam_i, frm_i, objp, pixp = [], [], [], []
-for fr in frames:
-    for ci in range(NCAM):
-        if (ci, fr) not in good:
-            continue
-        ids, px = views[(ci, fr)]
-        o = obj_of(ids)
-        cam_i.append(np.full(len(o), ci))
-        frm_i.append(np.full(len(o), fidx.get(fr, -1)))
-        objp.append(o)
-        pixp.append(px.astype(float))
-obs = PlateObservations(
-    np.concatenate(cam_i),
-    np.concatenate(frm_i),
-    np.concatenate(objp),
-    np.concatenate(pixp),
-)
 print(f"{len(obs.cam)} observations, {2 * len(obs.cam)} residuals\n")
 
-cam_rvec0 = np.array([good[(ci, REF)][0] for ci in range(NCAM)])
-cam_tvec0 = np.array([good[(ci, REF)][1] for ci in range(NCAM)])
-prv0, ptv0 = [], []
-for fr in free:
-    ci = next(c for c in range(NCAM) if (c, fr) in good)
-    rv, tv, _ = good[(ci, fr)]
-    prv0.append(rotvec(ref_R[ci].T @ rodrigues(rv)))
-    ptv0.append(ref_R[ci].T @ (tv - ref_t[ci]))
-prv0, ptv0 = np.array(prv0), np.array(ptv0)
+cam_rvec0, cam_tvec0 = setup.cam_rvec0, setup.cam_tvec0
+prv0, ptv0 = setup.plate_rvec0, setup.plate_tvec0
 
 x0 = np.concatenate(
     [cam_rvec0.ravel(), cam_tvec0.ravel(), np.column_stack([prv0, ptv0]).ravel()]
@@ -276,15 +188,8 @@ if WRITE:
             src = Path(CFG.cam_ori(ci)[0 if ext == "ori" else 1])
             if src.exists() and not src.with_suffix(f".{ext}.prebundle").exists():
                 shutil.copy2(src, src.with_suffix(f".{ext}.prebundle"))
-        cal, _ = calibration_from_opencv(
-            K,
-            D0,
-            res.cam_rvec[ci],
-            res.cam_tvec[ci],
-            imx=IMX,
-            imy=IMY,
-            pix_x=PIX,
-            pixel_origin="corner",
+        cal = pinhole_calibration(
+            K, res.cam_rvec[ci], res.cam_tvec[ci], imx=IMX, imy=IMY, pix_mm=PIX
         )
         cal.to_file(*CFG.cam_ori(ci))
     np.savez(

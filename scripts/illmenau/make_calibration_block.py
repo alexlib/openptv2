@@ -4,7 +4,8 @@ The block is openptv2's table of known 3D points: one line `id X Y Z` per plate
 dot, in the same world the `.ori` use.  It has to agree exactly with the object
 points every other step uses, or the GUI and the batch pipeline will be
 measuring against a different plate than the one that was calibrated -- so it is
-generated from the same `_config.obj_of` rather than written by hand.
+generated from the same `PlateGrid` (`_config.GRID`) rather than written by
+hand.
 
 Point id convention is row-major and 1-based from the bottom-left corner of the
 lattice, `id = iy*nx + ix + 1`, and the datum dot (the coded L corner, whose
@@ -23,10 +24,10 @@ import numpy as np  # noqa: E402
 dst = CFG.CAL / "calibration_block.txt"
 CFG.CAL.mkdir(parents=True, exist_ok=True)
 
-ids = np.arange(1, CFG.NX * CFG.NY + 1)
+ids = np.arange(1, CFG.GRID.n_points + 1)
 xyz = CFG.obj_of(ids)
 
-lines = [f"{i} {p[0]:.1f} {p[1]:.1f} {p[2]:.1f}" for i, p in zip(ids, xyz)]
+lines = CFG.GRID.calibration_block_lines()
 if dst.exists() and dst.read_text(encoding="utf-8").strip() == "\n".join(lines):
     print(f"{dst} already matches the configured plate; unchanged")
 else:
@@ -36,7 +37,7 @@ else:
     dst.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"wrote {dst}")
 
-datum_id = CFG.DATUM_IY * CFG.NX + CFG.DATUM_IX + 1
+datum_id = CFG.GRID.datum_id
 print(f"{len(ids)} points, {CFG.NX}x{CFG.NY} at {CFG.PITCH} mm pitch")
 print(
     f"datum grid ({CFG.DATUM_IX},{CFG.DATUM_IY}) -> point id {datum_id}: "

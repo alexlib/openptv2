@@ -29,6 +29,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from openptv2.plate_multiplane import PlateGrid, load_plate_views
+
 ILLMENAU_RAW = os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau")
 ILLMENAU_DIR = os.environ.get(
     "ILLMENAU_DIR", os.path.join(ILLMENAU_RAW, "openptv_illmenau_4cam")
@@ -63,6 +65,10 @@ if _pl.exists():
     _d = _p.get("datum") or {}
     if _d.get("ix") is not None:
         DATUM_IX, DATUM_IY = int(_d["ix"]), int(_d["iy"])
+
+GRID = PlateGrid(
+    nx=NX, ny=NY, pitch_x=PITCH, pitch_y=PITCH, datum_ix=DATUM_IX, datum_iy=DATUM_IY
+)
 
 
 def _check_group_matches_folder() -> None:
@@ -148,26 +154,12 @@ def load_calibrations():
 
 def load_views(npz: str | None = None) -> dict:
     """{(group_index, frame): (ids, pixels)} from the cached detections."""
-    import numpy as np
-
-    d = np.load(CAL / (npz or NPZ))
-    views = {}
-    for k in d.files:
-        if k.endswith("_ids"):
-            c, fr, _ = k.split("_")
-            views[(int(c[1:]), fr)] = (d[k], d[f"{c}_{fr}_px"])
-    return views
+    return load_plate_views(CAL / (npz or NPZ))
 
 
 def obj_of(ids):
     """Plate coordinates of point ids, datum dot at the origin, plate in z=0."""
-    import numpy as np
-
-    ids = np.asarray(ids)
-    ix, iy = (ids - 1) % NX, (ids - 1) // NX
-    return np.stack(
-        [(ix - DATUM_IX) * PITCH, (iy - DATUM_IY) * PITCH, np.zeros(len(ix))], 1
-    ).astype(float)
+    return GRID.object_points(ids)
 
 
 def banner() -> str:

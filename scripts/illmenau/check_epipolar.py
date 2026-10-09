@@ -21,11 +21,9 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _config as CFG  # noqa: E402
-import numpy as np
+import numpy as np  # noqa: E402
 
-from openptv2.algorithms.imgcoord import img_coord
-from openptv2.algorithms.ray_tracing import ray_tracing
-from openptv2.algorithms.trafo import metric_to_pixel, pixel_to_metric
+from openptv2.plate_multiplane import epipolar_curve_misses  # noqa: E402
 
 cpar = CFG.control_par()
 cals = CFG.load_calibrations()
@@ -50,43 +48,7 @@ for a in range(CFG.NCAM):
     for b in range(CFG.NCAM):
         if a == b:
             continue
-        ds, mono = [], 0
-        ca, cb = cals[a], cals[b]
-        for pid, pa in det[a].items():
-            if pid not in det[b]:
-                continue
-            mx, my = pixel_to_metric(pa[0], pa[1], cpar)
-            pos, v = ray_tracing(
-                mx,
-                my,
-                ca.ext_par.dm,
-                ca.ext_par.x0,
-                ca.ext_par.y0,
-                ca.ext_par.z0,
-                ca.int_par.cc,
-                ca.glass_par.vec_x,
-                ca.glass_par.vec_y,
-                ca.glass_par.vec_z,
-                1.0,
-                1.0,
-                1.0,
-                0.0,
-            )
-            pos, v = np.asarray(pos), np.asarray(v)
-            P = pos + ((Zs - pos[2]) / v[2])[:, None] * v
-            q = np.array([metric_to_pixel(*img_coord(p, cb, cpar.mm), cpar) for p in P])
-            inside = (
-                (q[:, 0] > -200)
-                & (q[:, 0] < 2760)
-                & (q[:, 1] > -200)
-                & (q[:, 1] < 2248)
-            )
-            if inside.sum() < 3:
-                continue
-            qi = q[inside]
-            ds.append(float(np.min(np.linalg.norm(qi - np.array(det[b][pid]), axis=1))))
-            step = np.diff(qi, axis=0)
-            mono += int(np.all(step @ step[0] > 0))  # curve does not double back
+        ds, mono = epipolar_curve_misses(det[a], det[b], cals[a], cals[b], cpar, Zs)
         if ds:
             print(
                 f"{CFG.cam_number(a)}->{CFG.cam_number(b)}  {len(ds):3d}  {np.median(ds):8.2f} {np.percentile(ds, 90):8.2f} "
