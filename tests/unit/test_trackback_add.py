@@ -46,26 +46,34 @@ def _frame(num_cams):
     )
 
 
-def _run(cams_with_blob):
+def _cams():
+    """The test_cavity cameras packed for the kernels (no LUT)."""
     cpar = ControlPar.from_yaml(str(DATA / "parameters.yaml"))
-    nc = cpar.num_cams
     cals = [
         Calibration.from_file(
             str(DATA / "cal" / f"cam{i + 1}.tif.ori"),
             str(DATA / "cal" / f"cam{i + 1}.tif.addpar"),
         )
-        for i in range(nc)
+        for i in range(cpar.num_cams)
     ]
     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _pack_cams_fast_tuples(
         *_pack_cams_fast(cals, cpar.mm)
     )
-    cal_arr = np.asarray(list(cal_t), dtype=np.float64)
-    md_arr = list(md_t)
-    mo_arr = np.asarray(list(mo_t), dtype=np.float64)
-    mnr_arr = np.array(list(mnr_t), dtype=np.int32)
-    mnz_arr = np.array(list(mnz_t), dtype=np.int32)
-    mrw_arr = np.array(list(mrw_t), dtype=np.float64)
-    half = (cpar.imx / 2, cpar.imy / 2, 1 / cpar.pix_x, 1 / cpar.pix_y)
+    return (
+        cpar,
+        np.asarray(list(cal_t), dtype=np.float64),
+        list(md_t),
+        np.asarray(list(mo_t), dtype=np.float64),
+        np.array(list(mnr_t), dtype=np.int32),
+        np.array(list(mnz_t), dtype=np.int32),
+        np.array(list(mrw_t), dtype=np.float64),
+        (cpar.imx / 2, cpar.imy / 2, 1 / cpar.pix_x, 1 / cpar.pix_y),
+    )
+
+
+def _run(cams_with_blob):
+    cpar, cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr, half = _cams()
+    nc = cpar.num_cams
 
     f0, f1, f2, f3 = (_frame(nc) for _ in range(4))
     x1 = np.array([0.0, 0.0, 0.0])

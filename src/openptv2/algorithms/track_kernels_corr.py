@@ -47,6 +47,7 @@ cython.declare(
     NEXT_NONE_K=cython.int,
     COORD_UNUSED_K=cython.double,
     ADD_PART_K=cython.double,
+    PRIO_ADDED_K=cython.int,
 )
 PT_UNUSED = -999
 # NOTE: assess_new_position_fast_nogil marks a camera without a candidate with TR_UNUSED_K
@@ -60,6 +61,8 @@ PREV_NONE_K = -1
 NEXT_NONE_K = -2
 COORD_UNUSED_K = -1e10
 ADD_PART_K = 3.0
+# prio of a particle the tracker creates (3DPTV/liboptv); read ones carry 4
+PRIO_ADDED_K = 2
 
 
 @cython.cfunc
@@ -1410,7 +1413,7 @@ def trackcorr_loop_fast(
             path_prev_3[np3] = PREV_NONE_K
             path_next_3[np3] = NEXT_NONE_K
             path_inlist_3[np3] = 0
-            path_prio_3[np3] = 4
+            path_prio_3[np3] = PRIO_ADDED_K
             path_finaldecis_3[np3] = 1000000.0
             for ki in range(POSI_K):
                 path_decis_3[np3, ki] = 0.0
@@ -1443,7 +1446,7 @@ def trackcorr_loop_fast(
             path_prev_2[np2] = PREV_NONE_K
             path_next_2[np2] = NEXT_NONE_K
             path_inlist_2[np2] = 0
-            path_prio_2[np2] = 4
+            path_prio_2[np2] = PRIO_ADDED_K
             path_finaldecis_2[np2] = 1000000.0
             for ki in range(POSI_K):
                 path_decis_2[np2, ki] = 0.0
@@ -1907,7 +1910,7 @@ def trackback_loop_fast(
                             path_prev_2[np2] = PREV_NONE_K
                             path_next_2[np2] = NEXT_NONE_K
                             path_inlist_2[np2] = 0
-                            path_prio_2[np2] = 4
+                            path_prio_2[np2] = PRIO_ADDED_K
                             path_finaldecis_2[np2] = 1000000.0
                             for ki in range(POSI_K):
                                 path_decis_2[np2, ki] = 0.0
