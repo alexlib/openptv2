@@ -1295,8 +1295,11 @@ def trackback_c(run_info):
     mnz_arr = np.array(list(mnz_t), dtype=np.int32)
     mrw_arr = np.array(list(mrw_t), dtype=np.float64)
 
-    Ymin = 0.0
-    Ymax = 0.0
+    # Y limits of the observed volume, as in the forward loop. liboptv's
+    # trackback_c left them at 0 (3DPTV filled them with volumedimension()),
+    # so its volume check 0 < y < 0 never passed and trackback never added.
+    Ymin = run_info.ymin
+    Ymax = run_info.ymax
     npart = 0.0
     nlinks = 0.0
 
