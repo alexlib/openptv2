@@ -425,13 +425,13 @@ def _sorted_candidates_fast_out(
         quader_buf[pt * 3 + 1] = py + (dvymax if pt & 2 else dvymin)
         quader_buf[pt * 3 + 2] = pz + (dvzmax if pt & 4 else dvzmin)
 
-    _xr_buf = np.zeros(4, dtype=np.float64)
+    _xr_buf = np.zeros(num_cams, dtype=np.float64)
     xr: cython.double[:] = _xr_buf
-    _xl_buf = np.zeros(4, dtype=np.float64)
+    _xl_buf = np.zeros(num_cams, dtype=np.float64)
     xl: cython.double[:] = _xl_buf
-    _yd_buf = np.zeros(4, dtype=np.float64)
+    _yd_buf = np.zeros(num_cams, dtype=np.float64)
     yd: cython.double[:] = _yd_buf
-    _yu_buf = np.zeros(4, dtype=np.float64)
+    _yu_buf = np.zeros(num_cams, dtype=np.float64)
     yu: cython.double[:] = _yu_buf
 
     for i in range(num_cams):

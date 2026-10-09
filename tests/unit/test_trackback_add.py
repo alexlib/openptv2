@@ -46,16 +46,24 @@ def _frame(num_cams):
     )
 
 
-def _cams():
-    """The test_cavity cameras packed for the kernels (no LUT)."""
+def _cams(extra_cam=False):
+    """The test_cavity cameras packed for the kernels (no LUT).
+
+    extra_cam adds a fifth camera, camera 1 moved 40 mm sideways (an exact
+    copy would give identical rays, which cannot be intersected), to exercise
+    more than four cameras.
+    """
     cpar = ControlPar.from_yaml(str(DATA / "parameters.yaml"))
+    files = [i + 1 for i in range(cpar.num_cams)] + ([1] if extra_cam else [])
     cals = [
         Calibration.from_file(
-            str(DATA / "cal" / f"cam{i + 1}.tif.ori"),
-            str(DATA / "cal" / f"cam{i + 1}.tif.addpar"),
+            str(DATA / "cal" / f"cam{i}.tif.ori"),
+            str(DATA / "cal" / f"cam{i}.tif.addpar"),
         )
-        for i in range(cpar.num_cams)
+        for i in files
     ]
+    if extra_cam:
+        cals[-1].ext_par.x0 += 40.0
     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _pack_cams_fast_tuples(
         *_pack_cams_fast(cals, cpar.mm)
     )
@@ -71,11 +79,16 @@ def _cams():
     )
 
 
-def _run(cams_with_blob):
-    cpar, cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr, half = _cams()
-    nc = cpar.num_cams
+def _run(cams_with_blob, extra_cam=False, frame2_full=False):
+    cams = _cams(extra_cam)
+    cpar, cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr, half = cams
+    nc = cal_arr.shape[0]
 
     f0, f1, f2, f3 = (_frame(nc) for _ in range(4))
+    if frame2_full:
+        # every particle slot of frame 2 in use, all far from the search
+        f2["num_parts"][0] = CAP
+        f2["path_x"][:, 0] = 60.0 + np.arange(CAP)
     x1 = np.array([0.0, 0.0, 0.0])
     f1["path_x"][0] = x1
     f0["path_x"][0] = x1 + [1.0, 0.0, 0.0]
@@ -227,3 +240,17 @@ def test_trackback_c_passes_the_volume_y_limits(monkeypatch, tmp_path):
     assert seen, "trackback kernel was not called"
     assert run.ymin < run.ymax
     assert all(lim == (run.ymin, run.ymax) for lim in seen)
+
+
+def test_trackback_add_respects_frame_capacity():
+    """With every particle slot of frame 2 used, trackback must not add (it
+    wrote past the end of the path arrays; the forward add checks this)."""
+    f2 = _run((0, 1, 2, 3), frame2_full=True)
+    assert f2["num_parts"][0] == CAP
+
+
+def test_trackback_with_five_cameras():
+    """The candidate-search buffers must hold every camera (they held 4)."""
+    f2 = _run((0, 1, 2, 3, 4), extra_cam=True)
+    assert f2["num_parts"][0] == 1
+    assert (f2["corres_p"][0, :5] >= 0).all()

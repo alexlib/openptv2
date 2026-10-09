@@ -766,13 +766,13 @@ def _sorted_candidates_fast_out_nogil(
     with cython.gil:
         _quader_buf = np.zeros(24, dtype=np.float64)
         quader_buf = _quader_buf
-        _xr_buf = np.zeros(8, dtype=np.float64)
+        _xr_buf = np.zeros(num_cams, dtype=np.float64)
         xr = _xr_buf
-        _xl_buf = np.zeros(8, dtype=np.float64)
+        _xl_buf = np.zeros(num_cams, dtype=np.float64)
         xl = _xl_buf
-        _yd_buf = np.zeros(8, dtype=np.float64)
+        _yd_buf = np.zeros(num_cams, dtype=np.float64)
         yd = _yd_buf
-        _yu_buf = np.zeros(8, dtype=np.float64)
+        _yu_buf = np.zeros(num_cams, dtype=np.float64)
         yu = _yu_buf
 
     n = num_cams * max_cands

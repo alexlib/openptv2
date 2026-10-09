@@ -1842,7 +1842,13 @@ def trackback_loop_fast(
                 # A new particle needs a free blob in every camera, the same rule
                 # as the forward kernel (assess counts free blobs only, so this is
                 # quali == num_cams). liboptv/3DPTV took any two cameras.
-                if quali >= 2 and quali == num_cams:
+                # A full frame (no free particle slot) cannot take a new one;
+                # the forward add checks the same.
+                if (
+                    quali >= 2
+                    and quali == num_cams
+                    and num_parts_2[0] < path_x_2.shape[0]
+                ):
                     in_volume = 0
                     _point_position_out(
                         targ_pos, num_cams, cal_arr, _pos_mv, scratch_ray
