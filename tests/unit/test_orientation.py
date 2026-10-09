@@ -881,3 +881,78 @@ def test_dumbbell_parity():
 
     # Python and C agree
     np.testing.assert_allclose(py_tf_wrong, c_tf_wrong, atol=1e-4)
+
+
+def test_glass_basis_perpendicular_to_tilted_glass():
+    """e1, e2 must span the plane perpendicular to the glass normal.
+
+    The C original mistyped both cross products; for a tilted glass its e1, e2
+    had components along the normal, so a glass tilt step in orient() also
+    moved the glass plane.  For g along Z the result must stay unchanged.
+    """
+    from openptv2.algorithms.orientation import glass_basis
+
+    for g in [(0.3, 0.2, 1.0), (0.0, 17.0, 98.5), (50.0, 0.0, 86.6)]:
+        e1, e2 = glass_basis(*g)
+        gu = np.asarray(g) / np.linalg.norm(g)
+        for v in (e1, e2):
+            assert abs(np.linalg.norm(v) - 1.0) < 1e-12
+            assert abs(v @ gu) < 1e-12
+        assert abs(e1 @ e2) < 1e-12
+
+    e1, e2 = glass_basis(0.0, 0.0, 100.0)
+    assert np.allclose(e1, np.array([2.0, -1.0, 0.0]) / np.sqrt(5), atol=1e-15)
+    assert np.allclose(e2, np.array([-1.0, -2.0, 0.0]) / np.sqrt(5), atol=1e-15)
+
+
+def test_orient_recovers_tilted_glass():
+    """interfflag must recover a tilt of an already tilted glass.
+
+    Glass tilted 20 deg about Y, start 1 deg further about Y (inside the tilt
+    plane).  With the C basis that direction was not representable and the fit
+    stopped about 0.02 deg short; with a basis perpendicular to g it recovers.
+    """
+    fix = np.array(
+        [
+            [(ix * 10) - 60, iy * 5, iz * 5]
+            for ix in range(4)
+            for iy in range(4)
+            for iz in range(4)
+        ],
+        dtype=float,
+    )
+    cal = Calibration.from_file(
+        "test_data/calibration/sym_cam1.tif.ori",
+        "test_data/calibration/cam1.tif.addpar",
+    )
+    cpar = ControlPar.from_yaml("test_data/parameters.yaml")
+
+    def rot_y(v, deg):
+        a = np.radians(deg)
+        R = np.array([[np.cos(a), 0, np.sin(a)], [0, 1, 0], [-np.sin(a), 0, np.cos(a)]])
+        return R @ v
+
+    g0 = np.array([cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z])
+    true_g = rot_y(g0, 20.0)
+    cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z = true_g
+    # the camera stays on the far side of the tilted glass from the points
+    cam = np.array([cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0])
+    gu = true_g / np.linalg.norm(true_g)
+    assert cam @ gu > np.linalg.norm(true_g) > fix.max(0) @ gu
+
+    pix = [Target() for _ in range(64)]
+    for i in range(64):
+        pix[i].x, pix[i].y = metric_to_pixel(*img_coord(fix[i], cal, cpar.mm), cpar)
+        pix[i].pnr = i
+
+    start = rot_y(true_g, 1.0)
+    cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z = start
+    opar = OrientPar.from_file("test_data/parameters/orient.par")
+    opar.interfflag = 1
+    resi = orient(cal, cpar, 64, fix, pix, opar, np.zeros(20))
+    assert resi is not None
+
+    end = np.array([cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z])
+    cos_err = end @ true_g / np.linalg.norm(end) / np.linalg.norm(true_g)
+    err_deg = np.degrees(np.arccos(min(1.0, cos_err)))
+    assert err_deg < 0.005, f"glass direction still {err_deg:.4f} deg off"

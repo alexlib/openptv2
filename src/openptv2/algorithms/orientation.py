@@ -602,6 +602,31 @@ def raw_orient(cal, cpar, nfix, fix, pix):
     return bool(stopflag)
 
 
+def glass_basis(gx, gy, gz):
+    """Unit vectors e1, e2 spanning the plane perpendicular to the glass normal.
+
+    orient() tilts the glass along these two directions (interfflag), so both
+    must be perpendicular to g; otherwise a tilt step also moves the glass
+    plane.  e1 = (1, 2, 3) x g, e2 = e1 x g.  The C original (3DPTV and
+    liboptv orient) mistyped both cross products - x for y in e1[0], y for x
+    in e1[2], e2[0] and e2[2] - which is harmless only for g along Z, where
+    this gives the same e1, e2 as before.
+    """
+    from .vec_utils import unit_vector
+
+    e1 = unit_vector(np.array([2 * gz - 3 * gy, 3 * gx - gz, gy - 2 * gx]))
+    e2 = unit_vector(
+        np.array(
+            [
+                e1[1] * gz - e1[2] * gy,
+                e1[2] * gx - e1[0] * gz,
+                e1[0] * gy - e1[1] * gx,
+            ]
+        )
+    )
+    return e1, e2
+
+
 @cython.ccall
 def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
     """Bundle adjustment using Gauss-Markov model.
@@ -621,7 +646,7 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
     from .imgcoord import img_coord_typed
     from .lsqadj import ata, atl, matinv, matmul
     from .trafo import pixel_to_metric
-    from .vec_utils import unit_vector, vec_norm
+    from .vec_utils import vec_norm
 
     dm: cython.double = 0.00001
     drad: cython.double = 0.0000001
@@ -644,15 +669,9 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
     )
     nGl = vec_norm(glass_dir)
 
-    e1_x = 2 * cal.glass_par.vec_z - 3 * cal.glass_par.vec_x
-    e1_y = 3 * cal.glass_par.vec_x - 1 * cal.glass_par.vec_z
-    e1_z = 1 * cal.glass_par.vec_y - 2 * cal.glass_par.vec_y
-    e1 = unit_vector(np.array([e1_x, e1_y, e1_z]))
-
-    e2_x = e1[1] * cal.glass_par.vec_z - e1[2] * cal.glass_par.vec_x
-    e2_y = e1[2] * cal.glass_par.vec_x - e1[0] * cal.glass_par.vec_z
-    e2_z = e1[0] * cal.glass_par.vec_y - e1[1] * cal.glass_par.vec_y
-    e2 = unit_vector(np.array([e2_x, e2_y, e2_z]))
+    e1, e2 = glass_basis(
+        cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z
+    )
 
     al = 0.0
     be = 0.0
