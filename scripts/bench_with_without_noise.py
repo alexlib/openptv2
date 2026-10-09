@@ -33,8 +33,8 @@ TRACKERS = [
     "priority_segment_3d",
     "trackcorr",
     "4be",
-    "myptv_3d_tracking",
-    "proptv_tracking",
+    "nearest_hungarian_3d",
+    "predictive_gmm_3d",
 ]
 
 

@@ -177,9 +177,8 @@ TRACKER_CHOICES = [
     ("priority_segment_3d", "OpenPTV Fast 3D (Default - Cython)"),
     ("4be", "OpenPTV 4BE (Four-Frame Best Estimate)"),
     ("trackcorr", "OpenPTV Epipolar (Multi-Camera 2D+3D)"),
-    ("nearest_hungarian_3d", "MyPTV 3D (Nearest-Neighbor Hungarian)"),
-    ("myptv_2d_tracking", "MyPTV 2D (Image-Space Assignment)"),
-    ("predictive_gmm_3d", "proPTV (Predictive GMM - Optional)"),
+    ("nearest_hungarian_3d", "Nearest-Neighbour Hungarian 3D"),
+    ("predictive_gmm_3d", "Predictive GMM 3D"),
     ("two_phase", "Two-Phase 3D+2D Leaf Ranking"),
 ]
 
@@ -194,7 +193,6 @@ TRACKER_SUPPORTS_BACKWARD: Dict[str, bool] = {
     "4be": True,
     "trackcorr": True,
     "nearest_hungarian_3d": True,
-    "myptv_2d_tracking": True,
     "predictive_gmm_3d": True,
     "two_phase": False,
 }
@@ -205,7 +203,6 @@ TRACKER_SUPPORTS_POSTPROCESS = {
     "4be",
     "trackcorr",
     "nearest_hungarian_3d",
-    "myptv_2d_tracking",
     "predictive_gmm_3d",
 }
 
@@ -222,9 +219,6 @@ _LEGACY_TRACKER_ALIASES = {
     "standard_forward": "trackcorr",
     "two_directional": "trackcorr",
     "splitter_tracking": "trackcorr",
-    "myptv_3d_tracking": "nearest_hungarian_3d",
-    "proptv_tracking": "predictive_gmm_3d",
-    "proptv": "predictive_gmm_3d",
 }
 
 # Legacy preset names that ran forward+backward (used only when a saved
@@ -290,7 +284,7 @@ def apply_tracker(
         track_params["flagNewParticles"] = True
         track_params["direction"] = direction
         proptv_params["backtracking"] = run_backward
-    else:  # nearest_hungarian_3d, myptv_2d_tracking, etc.
+    else:  # nearest_hungarian_3d, etc.
         track_params["track_mode"] = 1
         track_params["flagNewParticles"] = True
         track_params["direction"] = direction

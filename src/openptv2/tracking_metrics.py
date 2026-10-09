@@ -284,15 +284,15 @@ def run_multi_tracker_benchmark(
     Run multi-engine comparative benchmark on synthetic dataset.
 
     Compares:
-      1. MyPTV Distance Baseline
-      2. MyPTV Hybrid Multi-Term (Distance + Velocity + Acceleration)
+      1. Nearest-Hungarian Distance Baseline
+      2. Nearest-Hungarian Multi-Term (Distance + Velocity + Acceleration)
 
     Returns:
         Dict mapping tracker_name -> TrackingMetrics
     """
     import time
 
-    from openptv2.plugins.nearest_hungarian_3d import MyPTV3DTracker
+    from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker
     from openptv2.tracking_cost import CostWeights
 
     frame_particle_arrays = [
@@ -303,9 +303,9 @@ def run_multi_tracker_benchmark(
 
     results = {}
 
-    # 1. MyPTV Distance Baseline
+    # 1. Nearest-Hungarian Distance Baseline
     t0 = time.perf_counter()
-    tracker_base = MyPTV3DTracker(v_max=3.0, a_max=1.5, max_gap=1, dt=1.0)
+    tracker_base = NearestHungarian3DTracker(v_max=3.0, a_max=1.5, max_gap=1, dt=1.0)
     raw_base = tracker_base.track_frames(frame_particle_arrays)
     t_base = max(time.perf_counter() - t0, 1e-6)
 
@@ -320,12 +320,12 @@ def run_multi_tracker_benchmark(
     )
     m_base.fps = num_frames / t_base
     m_base.particles_per_sec = total_particles / t_base
-    results["MyPTV Distance Baseline"] = m_base
+    results["Nearest-Hungarian Distance Baseline"] = m_base
 
-    # 2. MyPTV Hybrid Multi-Term Cost
+    # 2. Nearest-Hungarian Multi-Term Cost
     weights = CostWeights(w_distance=1.0, w_velocity=0.5, w_acceleration=0.2)
     t0 = time.perf_counter()
-    tracker_hybrid = MyPTV3DTracker(
+    tracker_hybrid = NearestHungarian3DTracker(
         v_max=3.0, a_max=1.5, max_gap=1, dt=1.0, cost_weights=weights
     )
     raw_hybrid = tracker_hybrid.track_frames(frame_particle_arrays)
@@ -342,7 +342,7 @@ def run_multi_tracker_benchmark(
     )
     m_hybrid.fps = num_frames / t_hybrid
     m_hybrid.particles_per_sec = total_particles / t_hybrid
-    results["MyPTV Hybrid Multi-Term"] = m_hybrid
+    results["Nearest-Hungarian Multi-Term"] = m_hybrid
 
     # 3. OpenPTV2 Cython Hybrid3D / track3d_loop_fast (Compiled C Kernel)
     try:

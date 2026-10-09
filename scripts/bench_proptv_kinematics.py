@@ -32,15 +32,13 @@ SRC = Path("test_data/proptv_500_30")
 FIRST, N = 10001, 30
 
 # The 5-engine survivor set (see docs/plans/2026-08-17-lagrangian-accuracy-
-# program.md): 3MA, 4BE, trackcorr, MyPTV, proPTV. nearest_hungarian_3d/
-# predictive_gmm_3d are literal aliases of myptv_3d_tracking/proptv_tracking
-# (see plugins/loader.py) -- not separate engines, not listed here.
+# program.md): 3MA, 4BE, trackcorr, nearest_hungarian_3d, predictive_gmm_3d.
 TRACKERS = [
     "priority_segment_3d",
     "trackcorr",
     "4be",
-    "myptv_3d_tracking",
-    "proptv_tracking",
+    "nearest_hungarian_3d",
+    "predictive_gmm_3d",
 ]
 
 

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from openptv2.plugins.nearest_hungarian_3d import MyPTV3DTracker
+from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker
 
 wp1_res = Path(r"C:\Users\alex\Downloads\ptv_data\aorta\wp1\res")
 
@@ -29,14 +29,14 @@ total_pts = sum(len(f) for f in frames)
 print(f"Total frame particles across 10 frames: {total_pts}")
 
 # 1. MyPTV with max_gap = 0 (No gap recovery - strictly frame-to-frame)
-tracker_gap0 = MyPTV3DTracker(v_max=20.0, a_max=30.0, max_gap=0, dt=1.0)
+tracker_gap0 = NearestHungarian3DTracker(v_max=20.0, a_max=30.0, max_gap=0, dt=1.0)
 trajs_gap0 = tracker_gap0.track_frames(frames)
 pts_gap0 = sum(len(t["pos"]) for t in trajs_gap0)
 links_gap0 = sum(len(t["pos"]) - 1 for t in trajs_gap0)
 avg_links_gap0 = links_gap0 / 9.0
 
 # 2. MyPTV with max_gap = 1 (With 1-frame gap recovery)
-tracker_gap1 = MyPTV3DTracker(v_max=20.0, a_max=30.0, max_gap=1, dt=1.0)
+tracker_gap1 = NearestHungarian3DTracker(v_max=20.0, a_max=30.0, max_gap=1, dt=1.0)
 trajs_gap1 = tracker_gap1.track_frames(frames)
 pts_gap1 = sum(len(t["pos"]) for t in trajs_gap1)
 links_gap1 = sum(len(t["pos"]) - 1 for t in trajs_gap1)

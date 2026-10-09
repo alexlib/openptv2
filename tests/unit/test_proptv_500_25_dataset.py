@@ -1,12 +1,12 @@
-"""Integration unit test for running openptv2 ProPTVTracker on proPTV 500_25 synthetic dataset."""
+"""Integration unit test for running openptv2 PredictiveGMM3DTracker on proPTV 500_25 synthetic dataset."""
 
 import os
 
 import numpy as np
 import pytest
 
-from openptv2.plugins.proptv import ProPTVConfig
-from openptv2.plugins.proptv_tracking import ProPTVTracker
+from openptv2.plugins.predictive_gmm import PredictiveGMMConfig
+from openptv2.plugins.predictive_gmm_3d import PredictiveGMM3DTracker
 
 PROPTV_DATA_DIR = r"C:\Users\alex\Github\proPTV\data\500_25"
 
@@ -25,7 +25,7 @@ def test_openptv2_proptv_500_25_accuracy():
         data = np.loadtxt(filepath)
         frame_particles.append(data[:, 1:4])
 
-    config = ProPTVConfig(
+    config = PredictiveGMMConfig(
         t_init=3,
         maxvel=0.015,
         angle=60.0,
@@ -33,7 +33,7 @@ def test_openptv2_proptv_500_25_accuracy():
         Vmin=[0.0, 0.0, 0.0],
         Vmax=[1.0, 1.0, 1.0],
     )
-    tracker = ProPTVTracker(config)
+    tracker = PredictiveGMM3DTracker(config)
     tracks = tracker.track_frames(frame_particles)
 
     # Reconstructed track count should match ground truth particles (500)

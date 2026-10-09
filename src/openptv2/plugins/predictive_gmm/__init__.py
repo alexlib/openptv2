@@ -1,5 +1,5 @@
 """
-proPTV — Probabilistic Particle Tracking Velocimetry (adapted core ideas).
+Predictive GMM core routines, adapted from proPTV.
 
 This package adapts the core *concepts* of proPTV (Barta et al., Meas. Sci.
 Technol. 2024) into openptv2's own tracking machinery.  We reuse only the
@@ -15,10 +15,10 @@ openptv2 (see ``openptv2.plugins.predictive_gmm_3d``).
 """
 
 from . import initialisation, prediction
-from ._config import ProPTVConfig
+from ._config import PredictiveGMMConfig
 
 __all__ = [
     "prediction",
     "initialisation",
-    "ProPTVConfig",
+    "PredictiveGMMConfig",
 ]

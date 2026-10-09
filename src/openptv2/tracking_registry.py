@@ -407,10 +407,10 @@ TWO_DIRECTIONAL_INFO = TrackerInfo(
     typical_datasets="Parameter-tuning runs to compare forward-only vs forward+backward.",
 )
 
-MYPTV_3D_INFO = TrackerInfo(
+NEAREST_HUNGARIAN_3D_INFO = TrackerInfo(
     name="nearest_hungarian_3d",
-    display_name="MyPTV 3D Kinematic (Python)",
-    short_description="Python implementation of MyPTV's 3D kinematic prediction + Hungarian assignment",
+    display_name="Nearest-Neighbour Hungarian 3D (Python)",
+    short_description="3D kinematic prediction + radius-limited Hungarian assignment, frame by frame",
     algorithm_summary=(
         "Predicts particle positions using polynomial velocity extrapolation from track history, "
         "then solves the frame-to-frame assignment with a radius-limited Hungarian algorithm. "
@@ -499,40 +499,9 @@ MYPTV_3D_INFO = TrackerInfo(
         ),
     ),
     default_preset="",
-    best_for="When you need to customise the cost function (e.g., add intensity similarity) or compare against MyPTV reference results.",
+    best_for="When you need to customise the cost function (e.g., add intensity similarity) .",
     avoid_when="Large datasets where Python-speed tracking is too slow — use the Cython trackers instead.",
     typical_datasets="Benchmark comparisons, developing new cost terms, datasets with particle intensity data.",
-)
-
-MYPTV_2D_INFO = TrackerInfo(
-    name="myptv_2d_tracking",
-    display_name="MyPTV 2D Image-Space (Python)",
-    short_description="Tracks particles independently per camera in 2D image space, then fuses across cameras",
-    algorithm_summary=(
-        "For each camera independently, links 2D blob detections across frames using velocity "
-        "prediction + Hungarian assignment.  Then projects 2D tracks to 3D by multi-camera "
-        "triangulation and resolves conflicts by consensus voting."
-    ),
-    algorithm_detail=(
-        "Pure Python implementation.  Unlike all other openptv2 trackers which work in 3D space "
-        "first, this tracker operates in 2D image coordinates per camera and fuses later."
-    ),
-    supports_backward=False,
-    supports_new_particles=True,
-    supports_2d=True,
-    supports_postprocessing=False,
-    supports_gap_relinking=True,
-    supports_multimedia=False,
-    supports_splitter=False,
-    supports_cost_weights=True,
-    speed_ranking="slow",
-    density_ranking="low_to_moderate",
-    accuracy_ranking="standard",
-    parameters=(),
-    default_preset="",
-    best_for="Datasets where 3D particles are unreliable (e.g., poor calibration) but 2D detections are clean.",
-    avoid_when="Good calibration is available — 3D-space tracking is simpler and faster.",
-    typical_datasets="Legacy MyPTV datasets, debugging 2D detection quality.",
 )
 
 SPLITTER_INFO = TrackerInfo(
@@ -565,9 +534,9 @@ SPLITTER_INFO = TrackerInfo(
     typical_datasets="Splitter-based tomo-PTV experiments.",
 )
 
-PROPTV_INFO = TrackerInfo(
+PREDICTIVE_GMM_3D_INFO = TrackerInfo(
     name="predictive_gmm_3d",
-    display_name="proPTV Probabilistic (GMM)",
+    display_name="Predictive GMM 3D (Python)",
     short_description="Probabilistic PTV using Gaussian Mixture Model for smooth track approximation",
     algorithm_summary=(
         "Fits Gaussian basis functions to each track's time-position history and differentiates "
@@ -678,7 +647,7 @@ HYBRID_DELTAT_3D_INFO = TrackerInfo(
         "prediction built from the coarse segment's endpoints."
     ),
     algorithm_detail=(
-        "Coarse pass uses the predictive Hungarian tracker (MyPTV3DTracker) on "
+        "Coarse pass uses the predictive Hungarian tracker (NearestHungarian3DTracker) on "
         "the strided clouds with stride-scaled search radii; the refine pass "
         "chains consecutive-frame detections along each segment. Chains break "
         "where no intermediate detection fits the prediction; postptv "
@@ -826,10 +795,9 @@ def _build_registry() -> None:
         FULL_MULTIPASS_INFO,
         STANDARD_FORWARD_INFO,
         TWO_DIRECTIONAL_INFO,
-        MYPTV_3D_INFO,
-        MYPTV_2D_INFO,
+        NEAREST_HUNGARIAN_3D_INFO,
         SPLITTER_INFO,
-        PROPTV_INFO,
+        PREDICTIVE_GMM_3D_INFO,
         HYBRID_DELTAT_3D_INFO,
         TWO_PHASE_INFO,
     ]
@@ -839,8 +807,6 @@ def _build_registry() -> None:
     # Register legacy aliases
     TRACKER_REGISTRY["fast_3d"] = PRIORITY_SEGMENT_3D_INFO
     TRACKER_REGISTRY["fast"] = PRIORITY_SEGMENT_3D_INFO
-    TRACKER_REGISTRY["myptv_3d_tracking"] = MYPTV_3D_INFO
-    TRACKER_REGISTRY["proptv_tracking"] = PROPTV_INFO
     TRACKER_REGISTRY["trackcorr"] = FULL_MULTIPASS_INFO
     TRACKER_REGISTRY["multi_deltat_3d"] = HYBRID_DELTAT_3D_INFO
 
@@ -853,8 +819,6 @@ def get_tracker_info(name: str) -> TrackerInfo | None:
     alias_map = {
         "fast_3d": "priority_segment_3d",
         "fast": "priority_segment_3d",
-        "myptv_3d_tracking": "nearest_hungarian_3d",
-        "proptv_tracking": "predictive_gmm_3d",
         "multi_deltat_3d": "hybrid_deltat_3d",
     }
     key = alias_map.get(name, name)

@@ -59,7 +59,7 @@ def _(mo):
 
     `proptv_500_25`/`_30` are **not** in this list: they have no calibration in
     this repo and aren't run through `run_tracker` at all — they're consumed
-    directly by `openptv2.plugins.proptv_tracking.ProPTVTracker` from
+    directly by `openptv2.plugins.predictive_gmm_3d.PredictiveGMM3DTracker` from
     pre-triangulated 3D positions (`origin_*.txt`), a different tracker with a
     different parameter surface (`Vmin`/`Vmax`/`maxvel`/... not dv/dacc/angle).
     """)

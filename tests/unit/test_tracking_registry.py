@@ -20,10 +20,9 @@ def test_registry_contains_all_trackers():
         "fast_3d",
         "standard_forward",
         "two_directional",
-        "myptv_3d_tracking",
-        "myptv_2d_tracking",
+        "nearest_hungarian_3d",
         "splitter_tracking",
-        "proptv_tracking",
+        "predictive_gmm_3d",
     }
     registered = set(TRACKER_REGISTRY)
     for name in expected:
@@ -119,19 +118,27 @@ def test_full_multipass_capabilities():
     assert info.accuracy_ranking == "highest"
 
 
-def test_myptv_3d_supports_cost_weights():
-    """Verify myptv_3d_tracking advertises cost weight support."""
-    info = get_tracker_info("myptv_3d_tracking")
+def test_nearest_hungarian_3d_supports_cost_weights():
+    """Verify nearest_hungarian_3d advertises cost weight support."""
+    info = get_tracker_info("nearest_hungarian_3d")
     assert info.supports_cost_weights is True
     assert info.speed_ranking == "slow"
 
 
-def test_proptv_fields():
-    """Verify proPTV tracker info is present and has citation."""
-    info = get_tracker_info("proptv_tracking")
+def test_predictive_gmm_3d_fields():
+    """Verify the predictive GMM tracker info is present and cites proPTV."""
+    info = get_tracker_info("predictive_gmm_3d")
     assert info is not None
     assert info.citation
     assert "Barta" in info.citation
     assert info.supports_backward is True
     assert info.supports_gap_relinking is True
     assert info.accuracy_ranking == "highest"
+
+
+@pytest.mark.parametrize(
+    "name", ["myptv_3d_tracking", "myptv_2d_tracking", "proptv_tracking", "proptv"]
+)
+def test_removed_tracker_names_are_gone(name):
+    assert name not in TRACKER_REGISTRY
+    assert get_tracker_info(name) is None

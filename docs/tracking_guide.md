@@ -72,7 +72,7 @@ track:
   min_trajectory_length: 5  # seal filter: drop <5-frame traj
 
 plugins:
-  selected_tracking: default  # default, two_phase, myptv_3d_tracking, ...
+  selected_tracking: default  # default, two_phase, nearest_hungarian_3d, ...
 ```
 
 ### Presets
@@ -96,7 +96,7 @@ plugins:
 | `postprocess` | bool | true | Pass 3 reciprocity |
 | `leaf_weight` | float | 1.0 | `two_phase` 2D ranking weight (0=3D-only) |
 | `min_trajectory_length` | int | 5 | `seal` discards shorter traj (`src/openptv2/storage/seal.py:73`) |
-| `selected_tracking` | str | `default` | `default` (trackcorr), `two_phase` (3D→2D Hungarian), `myptv_3d_tracking`, … |
+| `selected_tracking` | str | `default` | `default` (trackcorr), `two_phase` (3D→2D Hungarian), `nearest_hungarian_3d`, … |
 
 ---
 
@@ -135,7 +135,7 @@ store.write_traj_index(trajid, first, last, length, first_row)  # run_store.py:4
 | :--- | :--- |
 | `default` (trackcorr) | Cython 3 `track3d_loop_fast` — 3D box search, angle+acc |
 | `two_phase` | **New** — Phase 1: 3D KD-tree candidates within `v_max`; Phase 2: per-camera 2D leaf mean distance → Hungarian assignment (`src/openptv2/plugins/two_phase_tracking.py`). `leaf_weight=0` ≡ 3D-only. **74% more multi-frame traj** on aorta phantom (poorly-conditioned). |
-| `myptv_3d_tracking` | MyPTV kinematic predictor |
+| `nearest_hungarian_3d` | MyPTV kinematic predictor |
 | `cython_epipolar` etc. | Epipolar variants |
 
 Select via GUI **Plugins** or `plugins.selected_tracking`. Custom plugins implement `BaseTrackingPlugin` (`docs/developer_guide/custom_tracking_plugins.md`).

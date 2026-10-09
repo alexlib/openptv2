@@ -77,7 +77,6 @@ guide, section 5) and the registry `src/openptv2/tracking_registry.py`.
 | very clean, dense data and speed matters most, ghosts unlikely | `priority_segment_3d` (Fast 3D / 3MA) |
 | sparse, clean, reliable detection, not turbulence | `4be` |
 | frames skipped / low frame rate | `two_phase` with `blob_gate`; or `hybrid_deltat_3d` |
-| cameras unreliable, strong per-camera dropouts | `myptv_2d_tracking` |
 
 State the reason in terms of the data (density, noise, frame rate), and say what the
 alternative would cost. If unsure, run the candidates on a short stretch of frames

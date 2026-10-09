@@ -97,7 +97,7 @@ def _score_trackcorr_or_track3d(
 def _score_nearest_hungarian(tmp_path, scene_dir, first, last, v_max, a_max):
     from openptv2.algorithms.parameters import ControlPar as _CP
     from openptv2.algorithms.tracking_frame_buf import Frame
-    from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
+    from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker
 
     cpar = _CP.from_yaml(str(scene_dir / "parameters_Run1.yaml"))
     frames = list(range(first, last + 1))
@@ -107,13 +107,13 @@ def _score_nearest_hungarian(tmp_path, scene_dir, first, last, v_max, a_max):
         frm.read(str(scene_dir / "res_orig" / "rt_is"), "", "", "", fn)
         frame_particles.append(frm.positions())
 
-    tracker = MyPTV3DTracker(
+    tracker = NearestHungarian3DTracker(
         v_max=v_max, a_max=a_max, max_gap=1, dt=1.0, max_angle_deg=90.0
     )
     trajectories = tracker.track_frames(frame_particles)
 
     # next[frame_idx][row] -> row it links to in frame_idx+1, or -1.
-    # MyPTV3DTracker's track dict stores positions/times, not source row
+    # NearestHungarian3DTracker's track dict stores positions/times, not source row
     # indices, so recover the row by exact-position match -- safe here since
     # positions are copied verbatim from frame_particles with no jitter.
     n_steps = len(frames) - 1

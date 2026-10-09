@@ -54,13 +54,9 @@ BUILTIN_TRACKING_PLUGINS = {
     "4be": "openptv2.plugins.four_be_tracking",
     "four_be": "openptv2.plugins.four_be_tracking",
     "nearest_hungarian_3d": "openptv2.plugins.nearest_hungarian_3d",
-    "myptv_3d_tracking": "openptv2.plugins.myptv_3d_tracking",
     "hybrid_deltat_3d": "openptv2.plugins.hybrid_deltat_3d",
     "multi_deltat_3d": "openptv2.plugins.hybrid_deltat_3d",
-    "myptv_2d_tracking": "openptv2.plugins.myptv_2d_tracking",
     "predictive_gmm_3d": "openptv2.plugins.predictive_gmm_3d",
-    "proptv_tracking": "openptv2.plugins.proptv_tracking",
-    "proptv": "openptv2.plugins.proptv_tracking",
     "trackcorr": "openptv2.plugins.cython_epipolar_tracking",
     "full_multipass": "openptv2.plugins.cython_epipolar_tracking",
     "standard_forward": "openptv2.plugins.cython_epipolar_tracking",
@@ -80,9 +76,6 @@ LEGACY_ALIASES = {
     "fast_3d": "priority_segment_3d",
     "cython_3d": "cython_3d_tracking",
     "cython_epipolar": "cython_epipolar_tracking",
-    "myptv_3d_tracking": "nearest_hungarian_3d",
-    "proptv_tracking": "predictive_gmm_3d",
-    "proptv": "predictive_gmm_3d",
 }
 
 ENTRY_POINT_GROUP = "openptv2.plugins"

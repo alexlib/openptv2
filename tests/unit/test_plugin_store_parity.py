@@ -17,7 +17,7 @@ import pytest
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import ControlPar, SequencePar
 from openptv2.gui.parameter_manager import ParameterManager
-from openptv2.plugins.myptv_3d_tracking import Tracking as MyPTV3DTracking
+from openptv2.plugins.nearest_hungarian_3d import Tracking as MyPTV3DTracking
 from openptv2.storage import RunStore
 
 pytestmark = pytest.mark.ci

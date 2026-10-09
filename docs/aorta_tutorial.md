@@ -83,11 +83,11 @@ uv run --project C:\Users\alex\projects\openptv2 python run_batch_experiment.py 
 To determine the exact physical velocity and acceleration bounds for high-speed tracking (`priority_segment_3d`), we execute the **MyPTV 3D Kinematic Prediction Tracker (`nearest_hungarian_3d`)** on a sample sequence to extract the empirical velocity and acceleration distributions $(\vec{v}, \vec{a})$:
 
 ```python
-from openptv2.plugins.nearest_hungarian_3d import MyPTV3DTracker, Frame
+from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker, Frame
 import numpy as np
 
 # Track 3D particles using MyPTV linear assignment predictor
-tracker = MyPTV3DTracker(v_max=20.0, a_max=30.0, max_gap=1, dt=1.0)
+tracker = NearestHungarian3DTracker(v_max=20.0, a_max=30.0, max_gap=1, dt=1.0)
 trajs = tracker.track_frames(frame_particles)
 
 # Compute velocity (diff) and acceleration (diff2)

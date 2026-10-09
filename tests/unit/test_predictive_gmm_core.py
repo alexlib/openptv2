@@ -1,23 +1,23 @@
 """Unit tests for the vendored proPTV core routines.
 
-Covers the self-contained numpy functions in openptv2.plugins.proptv
-(initialisation and prediction) that power the proPTV tracker. These are the
+Covers the self-contained numpy functions in openptv2.plugins.predictive_gmm
+(initialisation and prediction) that power predictive_gmm_3d. These are the
 integers-only pieces that are deterministic and don't need camera geometry, so
-they get their own focused tests; the full ProPTVTracker plugin is exercised
+they get their own focused tests; the full PredictiveGMM3DTracker plugin is exercised
 end-to-end by the batch burger tests.
 """
 
 import numpy as np
 import pytest
 
-from openptv2.plugins.proptv._config import ProPTVConfig
-from openptv2.plugins.proptv.initialisation import (
+from openptv2.plugins.predictive_gmm._config import PredictiveGMMConfig
+from openptv2.plugins.predictive_gmm.initialisation import (
     find_nn_points,
     init_acceleration_3d,
     init_position_3d,
     init_velocity_3d,
 )
-from openptv2.plugins.proptv.prediction import (
+from openptv2.plugins.predictive_gmm.prediction import (
     GMM,
     Approximate,
     Predict,
@@ -117,7 +117,7 @@ def test_predict_advances_linear_state():
 
 
 def test_proptv_config_defaults_are_sane():
-    cfg = ProPTVConfig()
+    cfg = PredictiveGMMConfig()
     assert cfg.t_init == 4
     assert cfg.maxvel == 20.0
     assert cfg.angle == 30.0
@@ -137,7 +137,7 @@ if __name__ == "__main__":
 def test_backtrack_extends_finalized_tracks():
     """track_frames() returns _finalize()d tracks (numpy arrays); the
     forward_backward pass must extend them, not crash on list.insert."""
-    from openptv2.plugins.proptv_tracking import ProPTVTracker, Tracking
+    from openptv2.plugins.predictive_gmm_3d import PredictiveGMM3DTracker, Tracking
 
     frame_particles = [
         np.array([[0.0, 0.0, 0.0]]),
@@ -152,7 +152,7 @@ def test_backtrack_extends_finalized_tracks():
         "vel": [np.ones(3)] * 3,
         "acc": [np.zeros(3)] * 3,
     }
-    finalized = ProPTVTracker._finalize([track])
+    finalized = PredictiveGMM3DTracker._finalize([track])
     out = Tracking._backtrack(finalized, frame_particles, maxvel=1.5)
     np.testing.assert_array_equal(out[0]["time"], [0, 1, 2, 3])
     np.testing.assert_allclose(out[0]["pos"][0], [0.0, 0.0, 0.0])

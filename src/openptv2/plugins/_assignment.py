@@ -1,4 +1,4 @@
-"""Radius-limited min-cost assignment shared by the MyPTV tracking plugins.
+"""Radius-limited min-cost assignment shared by the 3D tracking plugins.
 
 Tracking links predictions to candidates by minimising total displacement,
 subject to a per-prediction search radius. The direct formulation is a dense

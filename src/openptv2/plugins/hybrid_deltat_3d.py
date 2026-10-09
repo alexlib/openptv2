@@ -9,7 +9,7 @@ the displacement grows N-fold while the noise floor stays put.
 This plugin exploits that in two passes:
 
 1. **Coarse pass** — link only every N-th frame's particle cloud with the
-   predictive Hungarian tracker (MyPTV3DTracker, which is already
+   predictive Hungarian tracker (NearestHungarian3DTracker, which is already
    dt-correct via per-point timestamps). Search radii are scaled to the
    stride: an unseeded track searches a v_max*N ball; a seeded track
    allows for velocity underprediction plus acceleration curvature,
@@ -40,7 +40,7 @@ from pathlib import Path
 import numpy as np
 
 from openptv2.algorithms.tracking_frame_buf import Frame
-from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
+from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker
 
 
 def hybrid_track(
@@ -85,11 +85,11 @@ def hybrid_track(
     # Always include the LAST frame so the sequence tail is covered too.
     coarse_idx = sorted(set(range(0, n_frames, stride)) | {n_frames - 1})
     coarse_frames = [frame_particles[i] for i in coarse_idx]
-    # Radius budget for seeded tracks: MyPTV3DTracker predicts p + v_native
+    # Radius budget for seeded tracks: NearestHungarian3DTracker predicts p + v_native
     # one COARSE step ahead, so the radius must absorb the remaining
     # (N-1)*v of constant-velocity travel plus a*N^2/2 of curvature.
     seed_radius = (stride - 1) * v_max + 0.5 * a_max * stride**2
-    coarse_tracker = MyPTV3DTracker(
+    coarse_tracker = NearestHungarian3DTracker(
         v_max=v_max * stride,
         a_max=max(seed_radius, a_max),
         max_gap=0,

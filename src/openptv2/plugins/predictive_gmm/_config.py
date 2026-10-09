@@ -1,4 +1,4 @@
-"""proPTV configuration dataclass mirroring the original Parameter class."""
+"""Predictive GMM configuration dataclass mirroring proPTV's Parameter class."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ from dataclasses import dataclass, field
 
 
 @dataclass
-class ProPTVConfig:
-    """Configuration for the proPTV tracker, mirroring the original Parameter class.
+class PredictiveGMMConfig:
+    """Configuration for the predictive GMM tracker, mirroring proPTV's Parameter class.
 
     Parameters
     ----------

@@ -5,11 +5,11 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from openptv2.algorithms.bubble_detection import detect_bubbles_fast
 from openptv2.algorithms.bubble_background import (
     estimate_background,
     subtract_background,
 )
+from openptv2.algorithms.bubble_detection import detect_bubbles_fast
 from openptv2.plugins.loader import BUILTIN_SEQUENCE_PLUGINS, resolve_plugin_module
 
 

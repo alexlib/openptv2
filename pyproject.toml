@@ -142,7 +142,7 @@ packages = [
     "openptv2.plugins",
     "openptv2.storage",
     "openptv2.benchmarking",
-    "openptv2.plugins.proptv",
+    "openptv2.plugins.predictive_gmm",
 ]
 include-package-data = true
 zip-safe = false
@@ -318,23 +318,19 @@ module = "openptv2.plugins.hybrid_deltat_3d"
 disallow_untyped_defs = false
 
 [[tool.mypy.overrides]]
-module = "openptv2.plugins.myptv_2d_tracking"
+module = "openptv2.plugins.nearest_hungarian_3d"
 disallow_untyped_defs = false
 
 [[tool.mypy.overrides]]
-module = "openptv2.plugins.myptv_3d_tracking"
+module = "openptv2.plugins.predictive_gmm.initialisation"
 disallow_untyped_defs = false
 
 [[tool.mypy.overrides]]
-module = "openptv2.plugins.proptv.initialisation"
+module = "openptv2.plugins.predictive_gmm.prediction"
 disallow_untyped_defs = false
 
 [[tool.mypy.overrides]]
-module = "openptv2.plugins.proptv.prediction"
-disallow_untyped_defs = false
-
-[[tool.mypy.overrides]]
-module = "openptv2.plugins.proptv_tracking"
+module = "openptv2.plugins.predictive_gmm_3d"
 disallow_untyped_defs = false
 
 [[tool.mypy.overrides]]

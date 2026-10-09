@@ -15,8 +15,8 @@ happens if you get it wrong.
 | `priority_segment_3d` (a.k.a. "3MA") | Pure 3D, single forward pass, 4-level acceleration-priority cascade |
 | `trackcorr` | Multi-camera 2D+3D epipolar search, compound two-hop acceptance |
 | `4be` | Pure 3D, scores a candidate by whether a real particle exists two frames ahead |
-| `myptv_3d_tracking` | Pure 3D, polynomial velocity prediction + Hungarian assignment (Python) |
-| `proptv_tracking` | Pure 3D, Gaussian-Mixture-smoothed track history + Hungarian assignment |
+| `nearest_hungarian_3d` | Pure 3D, polynomial velocity prediction + Hungarian assignment (Python) |
+| `predictive_gmm_3d` | Pure 3D, Gaussian-Mixture-smoothed track history + Hungarian assignment |
 
 All five are registered in `src/openptv2/tracking_registry.py`
 (`TRACKER_REGISTRY`) — that file is the machine-readable version of most of
@@ -58,7 +58,7 @@ always see exactly what ran, not just what the defaults nominally are.
 
 This is the single most important thing to understand before touching any
 tracker's own parameter names: **`priority_segment_3d`, `trackcorr`,
-`4be`, `myptv_3d_tracking`, and `proptv_tracking` are all driven by the
+`4be`, `nearest_hungarian_3d`, and `predictive_gmm_3d` are all driven by the
 same eight `track.par` / YAML `track:` fields** — `dvxmin`, `dvxmax`,
 `dvymin`, `dvymax`, `dvzmin`, `dvzmax`, `dacc`, `angle`. Every tracker's own
 parameter names (`v_max`, `a_max`, `maxvel`, ...) are derived FROM these
@@ -71,9 +71,9 @@ asked for.
 
 | field | meaning | unit | who reads it |
 |---|---|---|---|
-| `dvxmin`/`dvxmax`, `dvymin`/`dvymax`, `dvzmin`/`dvzmax` | per-axis velocity search box: how far (mm) a particle may move between consecutive frames on each axis | mm/frame | every tracker (directly for `priority_segment_3d`/`trackcorr`/`4be`; converted to an isotropic radius `v_max` = largest of the three for `myptv_3d_tracking`/`proptv_tracking`'s `maxvel`) |
-| `dacc` | for `priority_segment_3d`/`trackcorr`: the SEEDED-step search radius (mm) around a velocity-extrapolated prediction, for a particle that already has an established velocity — despite the name, a position tolerance, not an acceleration bound. For `myptv_3d_tracking`: becomes `a_max`, the seeded-track search radius. For `4be`: read for API parity only — **4BE's own cost function never uses it** (§ 4be below). | mm | `priority_segment_3d`, `trackcorr`, `myptv_3d_tracking`; ignored by `4be`'s actual linking |
-| `angle` | maximum angular deviation allowed between successive velocity vectors, in **gon** (400 gon = 360°, not degrees) | gon | `priority_segment_3d`, `trackcorr` directly; converted to degrees (`unified_angle_deg`) for `myptv_3d_tracking`'s cone-of-continuity filter and `proptv_tracking`'s own angle check |
+| `dvxmin`/`dvxmax`, `dvymin`/`dvymax`, `dvzmin`/`dvzmax` | per-axis velocity search box: how far (mm) a particle may move between consecutive frames on each axis | mm/frame | every tracker (directly for `priority_segment_3d`/`trackcorr`/`4be`; converted to an isotropic radius `v_max` = largest of the three for `nearest_hungarian_3d`/`predictive_gmm_3d`'s `maxvel`) |
+| `dacc` | for `priority_segment_3d`/`trackcorr`: the SEEDED-step search radius (mm) around a velocity-extrapolated prediction, for a particle that already has an established velocity — despite the name, a position tolerance, not an acceleration bound. For `nearest_hungarian_3d`: becomes `a_max`, the seeded-track search radius. For `4be`: read for API parity only — **4BE's own cost function never uses it** (§ 4be below). | mm | `priority_segment_3d`, `trackcorr`, `nearest_hungarian_3d`; ignored by `4be`'s actual linking |
+| `angle` | maximum angular deviation allowed between successive velocity vectors, in **gon** (400 gon = 360°, not degrees) | gon | `priority_segment_3d`, `trackcorr` directly; converted to degrees (`unified_angle_deg`) for `nearest_hungarian_3d`'s cone-of-continuity filter and `predictive_gmm_3d`'s own angle check |
 
 **Verified reference values** (this dataset, 500 particles/40mm³ cube,
 `scripts/bench_with_without_noise.py`'s printed overrides): on both the
@@ -136,8 +136,8 @@ correspondences injected directly):
 | `priority_segment_3d` | 0.0% | 19.80 | 1.0000 | 1.0000 | 30.00 |
 | `trackcorr` | 0.0% | 19.80 | 1.0000 | 1.0000 | 30.00 |
 | `4be` | 0.0% | 19.80 | 1.0000 | 1.0000 | 30.00 |
-| `myptv_3d_tracking` | 0.0% | 19.80 | 1.0000 | 1.0000 | 30.00 |
-| `proptv_tracking` | 0.0% | 19.80 | 1.0000 | 1.0000 | 30.00 |
+| `nearest_hungarian_3d` | 0.0% | 19.80 | 1.0000 | 1.0000 | 30.00 |
+| `predictive_gmm_3d` | 0.0% | 19.80 | 1.0000 | 1.0000 | 30.00 |
 
 Every tracker recovers ground truth exactly here — expected, not
 impressive: with zero ambiguity in the correspondence data, any correct
@@ -154,10 +154,10 @@ and why calibration residual specifically is the dominant damage term):
 | tracker | a_rms error | K_a | precision | yield | meanlen |
 |---|---|---|---|---|---|
 | `trackcorr` | +414.9% | **25.36** | 0.9999 | 0.9888 | 24.28 |
-| `myptv_3d_tracking` | +441.8% | **29.04** | 0.9999 | 0.9928 | 26.75 |
+| `nearest_hungarian_3d` | +441.8% | **29.04** | 0.9999 | 0.9928 | 26.75 |
 | `priority_segment_3d` | +442.4% | **29.15** | 0.9966 | 0.9923 | 28.82 |
 | `4be` | +457.3% | **39.46** | 0.9999 | 0.9929 | 26.90 |
-| `proptv_tracking` | +471.7% | **73.31** | 0.9999 | 0.9892 | 24.48 |
+| `predictive_gmm_3d` | +471.7% | **73.31** | 0.9999 | 0.9892 | 24.48 |
 
 Ranked by K_a (closer to truth's 19.80 = better recovered physics), sorted
 ascending. **Read precision/yield and K_a together, never K_a alone**: every
@@ -202,7 +202,7 @@ tracks, elapsed = bu.run_single_tracker(
 
 **Strength**: fastest of the five (9.5s clean / 13.1s realistic on this
 30-frame/500-particle case — comparable to `4be`, ~30% faster than
-`trackcorr`, and an order of magnitude faster than `proptv_tracking`).
+`trackcorr`, and an order of magnitude faster than `predictive_gmm_3d`).
 Simple, predictable, no image-space dependency (so immune to any
 calibration-model choice entirely).
 
@@ -329,7 +329,7 @@ tracks, elapsed = bu.run_single_tracker(
 ```
 
 **Strength**: fastest alongside `priority_segment_3d` (7.7-8.9s); after the
-fixes above, competitive K_a (39.46, better than `proptv_tracking`'s 73.31).
+fixes above, competitive K_a (39.46, better than `predictive_gmm_3d`'s 73.31).
 
 **Weakness**: still worst of the four pure-3D-or-image-checked trackers
 under realistic noise even after both fixes — an open question this
@@ -339,7 +339,7 @@ session left unresolved (`docs/holistic-3d-ptv-systems-research-program.md`
 correct links under noise than the other trackers' conflict resolution
 does — untested.
 
-### 4.4 `myptv_3d_tracking`
+### 4.4 `nearest_hungarian_3d`
 
 **Mechanism**: pure 3D, pure Python (not Cython — slower but fully
 readable/customizable). Predicts the next position via polynomial velocity
@@ -354,18 +354,18 @@ intensity — `openptv2.tracking_cost`).
 |---|---|---|
 | `v_max` | `unified_velocity_bound(track_cfg)` — largest of `dvxmax`/`dvymax`/`dvzmax` | 1.1292mm (realistic-mild) |
 | `a_max` | same `track.dacc` field as `priority_segment_3d`/`trackcorr` | 0.8516mm |
-| `angle` | `_suggest_params` sets this tracker's `angle` override to a fixed **200 gon** deliberately, NOT derived from `track.angle`'s own 120 gon (see `src/openptv2/tracking_recommender.py`'s `_suggest_params`, the `nearest_hungarian_3d` branch) — this tracker's angle filter is a hard binary reject, so an overly tight bound throws away good matches instead of de-weighting them; a grid sweep found effectively-unrestricted (200 gon = half the full 400-gon circle) best. `myptv_3d_tracking`'s own code then converts that 200 gon to degrees via `unified_angle_deg` (×0.9) before comparing | **180°** (200 gon × 0.9) — i.e. myptv's cone-of-continuity filter is set intentionally wide open by the auto-tuner, not tight; if you want it tight for laminar flow, override `angle` explicitly in your own `track_overrides` dict rather than trusting the auto-tuned value for this specific tracker |
-| `max_gap` | hardcoded at the plugin's own call site, NOT the constructor default and NOT threaded through `per_tracker_overrides` | **1 frame** — verified in `src/openptv2/plugins/myptv_3d_tracking.py`'s `do_tracking()`: `MyPTV3DTracker(..., max_gap=1, ...)` is hardcoded, even though `MyPTV3DTracker.__init__`'s own signature default is `max_gap: int = 2`. The constructor default is NOT what runs. To change it you must edit the `do_tracking()` call site itself. |
+| `angle` | `_suggest_params` sets this tracker's `angle` override to a fixed **200 gon** deliberately, NOT derived from `track.angle`'s own 120 gon (see `src/openptv2/tracking_recommender.py`'s `_suggest_params`, the `nearest_hungarian_3d` branch) — this tracker's angle filter is a hard binary reject, so an overly tight bound throws away good matches instead of de-weighting them; a grid sweep found effectively-unrestricted (200 gon = half the full 400-gon circle) best. `nearest_hungarian_3d`'s own code then converts that 200 gon to degrees via `unified_angle_deg` (×0.9) before comparing | **180°** (200 gon × 0.9) — i.e. myptv's cone-of-continuity filter is set intentionally wide open by the auto-tuner, not tight; if you want it tight for laminar flow, override `angle` explicitly in your own `track_overrides` dict rather than trusting the auto-tuned value for this specific tracker |
+| `max_gap` | hardcoded at the plugin's own call site, NOT the constructor default and NOT threaded through `per_tracker_overrides` | **1 frame** — verified in `src/openptv2/plugins/nearest_hungarian_3d.py`'s `do_tracking()`: `NearestHungarian3DTracker(..., max_gap=1, ...)` is hardcoded, even though `NearestHungarian3DTracker.__init__`'s own signature default is `max_gap: int = 2`. The constructor default is NOT what runs. To change it you must edit the `do_tracking()` call site itself. |
 | `cost_weights` | plugin constructor default | distance-only unless you construct `CostWeights` yourself and pass it in |
 
 **Example**:
 ```python
 overrides = bu.per_tracker_overrides(
-    ["myptv_3d_tracking"], src=..., first=10001, n_frames=30
+    ["nearest_hungarian_3d"], src=..., first=10001, n_frames=30
 )
 tracks, elapsed = bu.run_single_tracker(
-    "myptv_3d_tracking",
-    track_overrides=overrides["myptv_3d_tracking"],
+    "nearest_hungarian_3d",
+    track_overrides=overrides["nearest_hungarian_3d"],
     src=...,
     first=10001,
 )
@@ -382,7 +382,7 @@ the Cython trackers on this small case, but pure Python does not scale the
 same way to larger datasets — `max_gap`/`cost_weights` require editing the
 call site, not just `track.par`, to change).
 
-### 4.5 `proptv_tracking`
+### 4.5 `predictive_gmm_3d`
 
 **Mechanism**: pure 3D. Fits Gaussian basis functions to each track's
 time-position history (a GMM-style smoothing of the trajectory), analytically
@@ -412,11 +412,11 @@ question, not settled by this benchmark.
 **Example**:
 ```python
 overrides = bu.per_tracker_overrides(
-    ["proptv_tracking"], src=..., first=10001, n_frames=30
+    ["predictive_gmm_3d"], src=..., first=10001, n_frames=30
 )
 tracks, elapsed = bu.run_single_tracker(
-    "proptv_tracking",
-    track_overrides=overrides["proptv_tracking"],
+    "predictive_gmm_3d",
+    track_overrides=overrides["predictive_gmm_3d"],
     src=...,
     first=10001,
 )
@@ -449,13 +449,13 @@ earn back the cost.
 - **Want a fast pure-3D tracker with `4be`'s future-support disambiguation
   and don't need the last word in accuracy**: `4be`, now that both bugs
   found this session are fixed — still not competitive with `trackcorr`/
-  `myptv_3d_tracking`/`priority_segment_3d` under noise (§4.3), an open
+  `nearest_hungarian_3d`/`priority_segment_3d` under noise (§4.3), an open
   research question rather than a recommendation.
 - **Need Python-level customizability of the cost function (add an
-  intensity term, experiment with new weighting)**: `myptv_3d_tracking` —
+  intensity term, experiment with new weighting)**: `nearest_hungarian_3d` —
   competitive accuracy, pure Python so it's the one to fork/extend.
 - **Have genuine multi-frame occlusion and can afford an order of magnitude
-  more runtime**: `proptv_tracking` is the only one with both backward
+  more runtime**: `predictive_gmm_3d` is the only one with both backward
   tracking and gap-relinking declared — but re-verify its accuracy on your
   actual occlusion pattern; this benchmark's noise model doesn't have heavy
   occlusion gaps, so this recommendation is about its *declared*
@@ -464,14 +464,14 @@ earn back the cost.
 ## 6. What's still open, not swept under the rug
 
 - **`4be`'s residual gap** (§4.3): still worst of the four
-  non-`proptv_tracking` trackers after two real fixes. Untested hypothesis:
+  non-`predictive_gmm_3d` trackers after two real fixes. Untested hypothesis:
   its `GREEDY_CONFLICTS=0` give-up-on-conflict rule.
-- **`proptv_tracking`'s smoothness-bias hypothesis**: not confirmed by this
+- **`predictive_gmm_3d`'s smoothness-bias hypothesis**: not confirmed by this
   specific "mild" measurement (§4.5) — needs a noise level with more
   genuine multi-candidate ambiguity to test properly, and/or a direct
   identity-swap audit (the same technique that found `4be`'s bug) rather
   than only the aggregate K_a.
-- **`myptv_3d_tracking`'s `max_gap`/`cost_weights`** are not threaded
+- **`nearest_hungarian_3d`'s `max_gap`/`cost_weights`** are not threaded
   through the same `track_overrides` dict as everything else — a real,
   documented (not hidden) gap in the "everything through one shared
   surface" story of §2.

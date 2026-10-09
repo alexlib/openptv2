@@ -147,7 +147,7 @@ def _(mo):
 
 @app.cell
 def _(TRACKER_REGISTRY, mo):
-    TRACKERS = ["priority_segment_3d", "trackcorr", "4be", "myptv_3d_tracking", "proptv_tracking"]
+    TRACKERS = ["priority_segment_3d", "trackcorr", "4be", "nearest_hungarian_3d", "predictive_gmm_3d"]
     tracker_sel = mo.ui.dropdown(
         options={f"{t} — {TRACKER_REGISTRY[t].short_description}": t for t in TRACKERS},
         value=f"priority_segment_3d — {TRACKER_REGISTRY['priority_segment_3d'].short_description}",

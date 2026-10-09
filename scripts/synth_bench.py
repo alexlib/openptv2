@@ -69,7 +69,6 @@ TRACKERS = [
     "nearest_hungarian_3d",
     "predictive_gmm_3d",
     "hybrid_deltat_3d",
-    "myptv_2d_tracking",
     "two_phase",
 ]
 

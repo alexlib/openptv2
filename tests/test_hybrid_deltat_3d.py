@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 
 from openptv2.plugins.hybrid_deltat_3d import hybrid_track
-from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
+from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker
 
 N_PARTICLES = 25
 N_FRAMES = 30
@@ -43,7 +43,7 @@ def test_fine_tracker_fragments_but_hybrid_recovers():
     """In the noisy-slow-flow regime hybrid chains are far longer."""
     _, clouds = _synthetic()
 
-    fine = MyPTV3DTracker(v_max=V_MAX, a_max=A_MAX, max_gap=0, dt=1.0)
+    fine = NearestHungarian3DTracker(v_max=V_MAX, a_max=A_MAX, max_gap=0, dt=1.0)
     fine_tracks = fine.track_frames(clouds)
 
     chains = hybrid_track(
@@ -102,7 +102,7 @@ def test_stride_one_matches_plain_hungarian_scale():
     _, clouds = _synthetic(seed=5)
     # hybrid's effective seeded radius at stride 1: (N-1)*v + a*N^2/2 -> a/2,
     # floored at a_max -> exactly the plain tracker's a_max.
-    plain = MyPTV3DTracker(v_max=V_MAX, a_max=A_MAX, max_gap=0, dt=1.0)
+    plain = NearestHungarian3DTracker(v_max=V_MAX, a_max=A_MAX, max_gap=0, dt=1.0)
     ref = plain.track_frames(clouds)
     out = hybrid_track(clouds, stride=1, v_max=V_MAX, a_max=A_MAX, refine_gate=1e9)
     # same seeding/matching dynamics -> identical track count scale

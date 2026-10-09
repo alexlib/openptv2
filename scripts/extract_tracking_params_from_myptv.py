@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from openptv2.plugins.nearest_hungarian_3d import MyPTV3DTracker
+from openptv2.plugins.nearest_hungarian_3d import NearestHungarian3DTracker
 
 wp1_dir = Path(r"C:\Users\alex\Downloads\ptv_data\aorta\wp1")
 wp1_res = wp1_dir / "res"
@@ -29,7 +29,7 @@ frames = [load_rt_is(Path(f)) for f in frame_files]
 print(f"Loaded {len(frames)} frames for empirical parameter extraction.")
 
 # Run MyPTV 3D tracking with wide bounds to capture full motion range
-tracker = MyPTV3DTracker(v_max=10.0, a_max=50.0, max_gap=1, dt=1.0)
+tracker = NearestHungarian3DTracker(v_max=10.0, a_max=50.0, max_gap=1, dt=1.0)
 trajectories = tracker.track_frames(frames)
 
 print(f"MyPTV 3D produced {len(trajectories)} trajectories.")

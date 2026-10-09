@@ -45,7 +45,6 @@ page). The `name` column is the exact preset string.
 | `priority_segment_3d` (Fast 3D / 3MA) | Cheapest (smoothest) links first, globally | 3D only |
 | `4be` | Peek at frame n+2 before accepting; conflicts link to nobody | 3D only |
 | `nearest_hungarian_3d` (MyPTV 3D) | Best total pairing per frame pair (Hungarian), survives gaps | 3D only |
-| `myptv_2d_tracking` (MyPTV 2D) | Each camera tracks its own images, then cameras vote | 2D per camera |
 | `predictive_gmm_3d` (proPTV) | Fit a smooth curve through history, predict from it | 3D only |
 | `two_phase` (Two-Phase) | 3D search for candidates, per-camera images for ranking | 3D + 2D |
 | `hybrid_deltat_3d` (Hybrid) | Match every N-th frame where motion beats noise, fill between | 3D only |
@@ -84,13 +83,7 @@ Nobody grabs the nearest dot first: it finds the pairing with the lowest
 *total* distance, so nobody is paired badly. Tracks survive short gaps
 (`max_gap`), code is plain readable Python. **Caveat:** one frame pair at a
 time — it cannot use what happens next. **Tip:** good first alternative to
-the default; easiest engine to modify (`src/openptv2/plugins/myptv_3d_tracking.py`).
-
-### MyPTV 2D (`myptv_2d_tracking`) — the per-camera voter
-Each camera tracks its own movie; links with the most camera votes win.
-**Caveat:** a link needs only one vote, so a single confused camera can
-still create a bad link. **Tip:** reaches for it when 3D triangulation is
-unreliable but the raw images are clean.
+the default; easiest engine to modify (`src/openptv2/plugins/nearest_hungarian_3d.py`).
 
 ### proPTV (`predictive_gmm_3d`) — the smoother
 Fits smooth curves through each path, so speeds and accelerations stay
@@ -136,9 +129,8 @@ permissively MIT-licensed.
   Paper: Shnapp, R. (2022). *MyPTV: A Python Package for 3D Particle
   Tracking.* Journal of Open Source Software, 7(75), 4398.
   <https://doi.org/10.21105/joss.04398> ·
-  What we adapted: per-camera 2D image-space tracking with multi-camera
-  consensus (`myptv_2d_tracking`), and kinematic prediction + assignment
-  matching in 3D (`nearest_hungarian_3d`).
+  What we adapted: kinematic prediction + assignment matching in 3D
+  (`nearest_hungarian_3d`).
 - **proPTV** by Robin Barta and colleagues (DLR) — probabilistic PTV
   framework, Python.
   Repository: <https://github.com/RobinBarta/proPTV> ·
@@ -147,7 +139,7 @@ permissively MIT-licensed.
   113212. <https://doi.org/10.1016/j.jcp.2024.113212> ·
   What we adapted: the small pure-numpy core (Gaussian-mixture / basis
   approximation and Savitzky–Golay smoothing, vendored under
-  `src/openptv2/plugins/proptv/`), wired into the `predictive_gmm_3d`
+  `src/openptv2/plugins/predictive_gmm/`), wired into the `predictive_gmm_3d`
   plugin. The original's triangulation, probability model, backtracking
   and repair are *not* ported.
 - The classic engines descend from the OpenPTV/liboptv lineage
