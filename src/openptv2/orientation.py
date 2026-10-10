@@ -133,7 +133,7 @@ def match_detection_to_ref(cal, ref_pts, img_pts, cpar, eps=25):
     return TargetArray(matched)
 
 
-def multi_cam_point_positions(targets, cpar, cals):
+def multi_cam_point_positions(targets, cpar, cals, method="pairs"):
     """
     Calculate 3D positions from multi-camera targets.
 
@@ -141,6 +141,9 @@ def multi_cam_point_positions(targets, cpar, cals):
         targets: List of target arrays per camera
         cpar: ControlParams instance
         cals: List of Calibration instances
+        method: "pairs" (default, average of pairwise skew-line midpoints),
+            "weighted" (sin^2 pair-angle weights) or "lsq" (least squares over all
+            rays). See openptv2.algorithms.orientation.point_position_batch.
 
     Returns:
         tuple: (positions ndarray[n,3], distances ndarray[n])
@@ -161,10 +164,10 @@ def multi_cam_point_positions(targets, cpar, cals):
     # Unwrap calibrations
     unwrapped_cals = list(cals)
 
-    return _multi_cam_point_positions(unwrapped_targets, cpar, unwrapped_cals)
+    return _multi_cam_point_positions(unwrapped_targets, cpar, unwrapped_cals, method)
 
 
-def point_positions(targets, cpar, cals, vpar=None):
+def point_positions(targets, cpar, cals, vpar=None, method="pairs"):
     """
     Calculate 3D positions (dispatcher for single/multi cam).
 
@@ -173,6 +176,9 @@ def point_positions(targets, cpar, cals, vpar=None):
         cpar: ControlParams instance
         cals: List of Calibration instances
         vpar: VolumeParams instance, optional
+        method: multi-camera triangulation, "pairs" (default), "weighted" or "lsq";
+            ignored for a single camera. See
+            openptv2.algorithms.orientation.point_position_batch.
 
     Returns:
         tuple: (positions ndarray[n,3], distances ndarray[n])
@@ -196,7 +202,7 @@ def point_positions(targets, cpar, cals, vpar=None):
     # Unwrap volume params
     unwrapped_vpar = vpar if vpar is not None else None
 
-    return _point_positions(unwrapped_targets, cpar, unwrapped_cals, unwrapped_vpar)
+    return _point_positions(unwrapped_targets, cpar, unwrapped_cals, unwrapped_vpar, method)
 
 
 def single_cam_point_positions(targets, cpar, cals, vpar):
