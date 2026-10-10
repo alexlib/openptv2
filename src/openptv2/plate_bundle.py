@@ -8,14 +8,20 @@ anchor plane in ray-convergence miss -- sub-millimetre at the plane, ~18 mm at
 This module removes the anchoring: the unknowns become every camera pose *and*
 one rigid plate pose per frame, solved together.
 
-What is deliberately NOT fitted here:
+The camera interior, by default fixed:
 
-``cc`` and the distortion
-    Focal length is exactly degenerate on a single plane and only weakly
-    determined even over many, so it is an input -- fit it separately (see
-    ``docs/illmenau-4cam-calibration.md``) and pass the value you verified.
-    Distortion fitted from few planes trades against pose and produces a
-    polynomial that diverges outside the fitted points.
+``cc``, the principal point and the distortion
+    By default the bundle is a pure pinhole with the camera matrix ``K`` held
+    fixed: focal length is exactly degenerate on a single plane, and distortion
+    fitted from few planes trades against pose and produces a polynomial that
+    diverges outside the fitted points.  Over MANY plate poses spanning depth and
+    yaw they are determined, and ``free_intrinsics`` fits them per camera in
+    openptv's own interior model (``cc``, ``xh``, ``yh``, Brown ``k1..k3``,
+    ``p1``, ``p2``), so the result writes to ``.ori``/``.addpar`` exactly.  On
+    Illmenau that took the ray-convergence miss on held-out plates from 3.8 to
+    0.3 mm.  Judge it on plates the fit did not see -- in-sample RMS always
+    improves with more parameters.  Air only: the projection has no
+    refraction, like the pinhole path.
 
 the reference frame's plate pose
     Held at identity.  This is the gauge: the world stays pinned to the physical
@@ -30,9 +36,71 @@ uses only numpy and scipy.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
+from typing import Any
 
 import numpy as np
+
+#: openptv interior parameters, in the column order of an ``intrinsics`` array:
+#: ``cc``/``xh``/``yh`` (mm) from ``.ori``, ``k1..p2`` from ``.addpar``.
+INTRINSICS = ("cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2")
+
+
+@dataclass(frozen=True)
+class Sensor:
+    """Image size [px] and pixel pitch [mm]: openptv metric <-> pixels."""
+
+    imx: int
+    imy: int
+    pix_x: float
+    pix_y: float | None = None
+
+    @property
+    def pitch_y(self) -> float:
+        return self.pix_x if self.pix_y is None else self.pix_y
+
+
+def pinhole_intrinsics(K: np.ndarray, sensor: Sensor) -> np.ndarray:
+    """openptv interior (:data:`INTRINSICS`) of an OpenCV pinhole ``K``."""
+    K = np.asarray(K, float)
+    return np.array(
+        [
+            K[0, 0] * sensor.pix_x,
+            (K[0, 2] - sensor.imx / 2) * sensor.pix_x,
+            (sensor.imy / 2 - K[1, 2]) * sensor.pitch_y,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+        ]
+    )
+
+
+def openptv_pixels(
+    xn: np.ndarray, yn: np.ndarray, intr: np.ndarray, sensor: Sensor
+) -> np.ndarray:
+    """Pixels of normalised camera coordinates through openptv's interior.
+
+    ``xn = Xc/Zc``, ``yn = Yc/Zc`` in the OpenCV camera frame (y down, z
+    forward).  openptv's flat image coordinates are ``(cc*xn + xh, -cc*yn +
+    yh)``; the Brown distortion is then applied about the sensor centre exactly
+    as ``trafo.flat_to_dist`` does (``scx = 1``, ``she = 0``), and metric goes
+    to pixels as ``trafo.metric_to_pixel`` (no interlace).  ``intr`` holds
+    :data:`INTRINSICS` rows, one per point.
+    """
+    cc, xh, yh, k1, k2, k3, p1, p2 = np.moveaxis(np.asarray(intr, float), -1, 0)
+    x = cc * xn + xh
+    y = -cc * yn + yh
+    r2 = x * x + y * y
+    rad = 1.0 + k1 * r2 + k2 * r2 * r2 + k3 * r2 * r2 * r2
+    xd = x * rad + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
+    yd = y * rad + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
+    return np.stack(
+        [xd / sensor.pix_x + sensor.imx * 0.5, sensor.imy * 0.5 - yd / sensor.pitch_y],
+        -1,
+    )
 
 
 def rodrigues(rvec: np.ndarray) -> np.ndarray:
@@ -125,6 +193,7 @@ class BundleResult:
     keep: np.ndarray  # (n,) bool, dots surviving the trim
     residual_px: np.ndarray  # (n,) reprojection error of every dot
     trim_history: list = field(default_factory=list)
+    intrinsics: np.ndarray | None = None  # (ncam, 8) INTRINSICS, if fitted
 
     def camera_centre(self, ci: int) -> np.ndarray:
         """Projection centre of camera ``ci`` in world coordinates."""
@@ -151,10 +220,10 @@ def _unpack(p, ncam, nframe):
     return cam_rvec, cam_tvec, rest[:, :3], rest[:, 3:]
 
 
-def project(
-    p: np.ndarray, obs: PlateObservations, K: np.ndarray, ncam: int, nframe: int
+def _camera_coords(
+    p: np.ndarray, obs: PlateObservations, ncam: int, nframe: int
 ) -> np.ndarray:
-    """Project every observation's plate point into its camera, in pixels."""
+    """Every observation's plate point in its camera's (OpenCV) frame."""
     cam_rvec, cam_tvec, plate_rvec, plate_tvec = _unpack(p, ncam, nframe)
     Rc = np.array([rodrigues(r) for r in cam_rvec])
     # row 0 is the reference frame's fixed identity gauge; frame -1 maps to it
@@ -169,10 +238,73 @@ def project(
     tf = np.concatenate([np.zeros((1, 3)), plate_tvec])
     fi = obs.frame + 1
     Xw = np.einsum("nij,nj->ni", Rf[fi], obs.obj) + tf[fi]
-    Xc = np.einsum("nij,nj->ni", Rc[obs.cam], Xw) + cam_tvec[obs.cam]
+    Xc: np.ndarray = np.einsum("nij,nj->ni", Rc[obs.cam], Xw) + cam_tvec[obs.cam]
+    return Xc
+
+
+def project(
+    p: np.ndarray, obs: PlateObservations, K: np.ndarray, ncam: int, nframe: int
+) -> np.ndarray:
+    """Project every observation's plate point into its camera, in pixels."""
+    Xc = _camera_coords(p, obs, ncam, nframe)
     z = Xc[:, 2]
     return np.stack(
         [K[0, 0] * Xc[:, 0] / z + K[0, 2], K[1, 1] * Xc[:, 1] / z + K[1, 2]], 1
+    )
+
+
+def project_intrinsics(
+    p: np.ndarray,
+    obs: PlateObservations,
+    ncam: int,
+    nframe: int,
+    intrinsics: np.ndarray,
+    sensor: Sensor,
+) -> np.ndarray:
+    """:func:`project` with a per-camera openptv interior (``(ncam, 8)``)."""
+    Xc = _camera_coords(p, obs, ncam, nframe)
+    return openptv_pixels(
+        Xc[:, 0] / Xc[:, 2], Xc[:, 1] / Xc[:, 2], intrinsics[obs.cam], sensor
+    )
+
+
+def _jac_sparsity(
+    obs: PlateObservations,
+    sel: np.ndarray,
+    ncam: int,
+    nframe: int,
+    nfree: int,
+    n_vertical_rows: int,
+) -> Any:  # scipy.sparse.coo_matrix
+    """Which parameters each residual depends on: its camera, its frame."""
+    from scipy.sparse import coo_matrix
+
+    cam, frame = obs.cam[sel], obs.frame[sel]
+    n, nb = len(cam), 6 * (ncam + nframe)
+    blocks = [
+        cam[:, None] * 3 + np.arange(3),
+        3 * ncam + cam[:, None] * 3 + np.arange(3),
+    ]
+    if nfree:
+        blocks.append(nb + cam[:, None] * nfree + np.arange(nfree))
+    cols = np.concatenate(blocks, 1)
+    rows = np.repeat(np.arange(n), cols.shape[1])
+    cols = cols.ravel()
+    has = frame >= 0
+    fcols = (6 * ncam + 6 * frame[has])[:, None] + np.arange(6)
+    rows = np.concatenate([rows, np.repeat(np.flatnonzero(has), 6)])
+    cols = np.concatenate([cols, fcols.ravel()])
+    rows = np.concatenate([2 * rows, 2 * rows + 1])
+    cols = np.concatenate([cols, cols])
+    if n_vertical_rows:
+        j = np.arange(nframe)
+        vr = 2 * n + np.repeat(np.stack([2 * j, 2 * j + 1], 1).ravel(), 3)
+        vc = np.repeat(6 * ncam + 6 * j, 2)[:, None] + np.arange(3)
+        rows = np.concatenate([rows, vr])
+        cols = np.concatenate([cols, vc.ravel()])
+    return coo_matrix(
+        (np.ones(len(rows), int), (rows, cols)),
+        shape=(2 * n + n_vertical_rows, nb + ncam * nfree),
     )
 
 
@@ -191,6 +323,9 @@ def bundle_plate_poses(
     trim_mad: float = 3.0,
     trim_floor_px: float = 1.0,
     max_nfev: int = 300,
+    sensor: Sensor | None = None,
+    intrinsics0: np.ndarray | None = None,
+    free_intrinsics: Sequence[str] = (),
 ) -> BundleResult:
     """Solve camera poses and per-frame plate poses together.
 
@@ -206,6 +341,12 @@ def bundle_plate_poses(
     reference frame is never trimmed: it is the gauge.  Gate obviously-bad views
     out *before* calling this -- a robust loss still lets them drag the early
     iterations.
+
+    With a ``sensor`` the cameras use openptv's interior model instead of ``K``:
+    ``intrinsics0`` (``(ncam, 8)``, columns :data:`INTRINSICS`; default: ``K``
+    as a pinhole for every camera) is the start, and the names in
+    ``free_intrinsics`` are fitted per camera.  The result then carries the
+    fitted ``intrinsics``.
     """
     from scipy.optimize import least_squares
 
@@ -217,12 +358,37 @@ def bundle_plate_poses(
             "vertical_sigma_deg must be >0 when vertical_px>0 (got 0 or negative, would divide by sin(0))"
         )
     x = _pack(cam_rvec0, cam_tvec0, plate_rvec0, plate_tvec0)
+    nb = len(x)
+    if sensor is None and (intrinsics0 is not None or free_intrinsics):
+        raise ValueError("intrinsics0 / free_intrinsics need a sensor")
+    unknown = [n for n in free_intrinsics if n not in INTRINSICS]
+    if unknown:
+        raise ValueError(f"unknown intrinsics {unknown}; choose from {INTRINSICS}")
+    free_idx = [INTRINSICS.index(n) for n in free_intrinsics]
+    intr0 = np.zeros((ncam, len(INTRINSICS)))
+    if sensor is not None:
+        intr0 = (
+            np.tile(pinhole_intrinsics(K, sensor), (ncam, 1))
+            if intrinsics0 is None
+            else np.array(intrinsics0, float).reshape(ncam, len(INTRINSICS))
+        )
+        x = np.concatenate([x, intr0[:, free_idx].ravel()])
+
+    def intrinsics_of(p: np.ndarray) -> np.ndarray:
+        intr = intr0.copy()
+        intr[:, free_idx] = p[nb:].reshape(ncam, len(free_idx))
+        return intr
+
+    def proj(p: np.ndarray) -> np.ndarray:
+        if sensor is None:
+            return project(p, obs, K, ncam, nframe)
+        return project_intrinsics(p[:nb], obs, ncam, nframe, intrinsics_of(p), sensor)
 
     def vertical_residual(p):
         if nframe == 0 or vertical_px <= 0.0:
             return np.zeros(0)
         w = vertical_px / np.sin(np.radians(vertical_sigma_deg))
-        _, _, prv, _ = _unpack(p, ncam, nframe)
+        _, _, prv, _ = _unpack(p[:nb], ncam, nframe)
         others = [c for c in range(3) if c != up_axis]
         R = np.array([rodrigues(r) for r in prv])
         return (
@@ -237,12 +403,16 @@ def bundle_plate_poses(
 
         def fun(p, sel=sel):
             return np.concatenate(
-                [
-                    (project(p, obs, K, ncam, nframe) - obs.pix)[sel].ravel(),
-                    vertical_residual(p),
-                ]
+                [(proj(p) - obs.pix)[sel].ravel(), vertical_residual(p)]
             )
 
+        extra: dict = {}
+        if sensor is not None:
+            nv = 2 * nframe if (nframe and vertical_px > 0.0) else 0
+            extra = dict(
+                jac_sparsity=_jac_sparsity(obs, sel, ncam, nframe, len(free_idx), nv),
+                x_scale="jac",
+            )
         x = least_squares(
             fun,
             x,
@@ -252,8 +422,9 @@ def bundle_plate_poses(
             xtol=1e-12,
             ftol=1e-12,
             max_nfev=max_nfev,
+            **extra,
         ).x
-        err = np.linalg.norm(project(x, obs, K, ncam, nframe) - obs.pix, axis=1)
+        err = np.linalg.norm(proj(x) - obs.pix, axis=1)
         thr = max(trim_floor_px, trim_mad * float(np.median(err[keep])))
         nxt = (err < thr) | (obs.frame < 0)
         history.append((int(keep.sum()), float(np.sqrt(np.mean(err[keep] ** 2))), thr))
@@ -262,9 +433,18 @@ def bundle_plate_poses(
             break
         keep = nxt
 
-    cam_rvec, cam_tvec, plate_rvec, plate_tvec = _unpack(x, ncam, nframe)
-    err = np.linalg.norm(project(x, obs, K, ncam, nframe) - obs.pix, axis=1)
-    return BundleResult(cam_rvec, cam_tvec, plate_rvec, plate_tvec, keep, err, history)
+    cam_rvec, cam_tvec, plate_rvec, plate_tvec = _unpack(x[:nb], ncam, nframe)
+    err = np.linalg.norm(proj(x) - obs.pix, axis=1)
+    return BundleResult(
+        cam_rvec,
+        cam_tvec,
+        plate_rvec,
+        plate_tvec,
+        keep,
+        err,
+        history,
+        intrinsics_of(x) if sensor is not None else None,
+    )
 
 
 def agreeing_views(dots_per_view: dict, tol_mm: float) -> list:

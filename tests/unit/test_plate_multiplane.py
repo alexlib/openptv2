@@ -391,3 +391,111 @@ def test_epipolar_horizon_is_on_the_principal_plane():
     C = np.array(CENTRES[2], float)
     axis = -np.asarray(cals[2].ext_par.dm)[:, 2]
     assert abs((P - C) @ axis) < 1e-6
+
+
+# ------------------------------------------------- fitted camera interior
+
+
+def test_bundle_projection_is_openptvs_own():
+    """The bundle's interior model must be openptv's projection, to the bit
+    that matters: a camera written from it reprojects identically."""
+    pytest.importorskip("cv2")
+    import cv2
+
+    from openptv2.algorithms.imgcoord import img_coord
+    from openptv2.algorithms.trafo import metric_to_pixel
+    from openptv2.plate_bundle import Sensor, openptv_pixels
+    from openptv2.plate_multiplane import calibration_from_intrinsics
+
+    cpar, sensor = control_par(), Sensor(IMX, IMY, PIX)
+    rng = np.random.default_rng(3)
+    X = world_points("01", np.arange(1, 43))
+    for ci, (R, t) in enumerate(CAMS):
+        intr = np.array(
+            [
+                CC + rng.normal(0, 0.2),
+                rng.normal(0, 0.1),
+                rng.normal(0, 0.1),
+                rng.normal(0, 3e-4),
+                rng.normal(0, 5e-6),
+                rng.normal(0, 1e-7),
+                rng.normal(0, 1e-4),
+                rng.normal(0, 1e-4),
+            ]
+        )
+        cal = calibration_from_intrinsics(
+            cv2.Rodrigues(R)[0], t, intr, imx=IMX, imy=IMY, pix_mm=PIX
+        )
+        want = np.array([metric_to_pixel(*img_coord(p, cal, cpar.mm), cpar) for p in X])
+        Xc = X @ R.T + t
+        got = openptv_pixels(
+            Xc[:, 0] / Xc[:, 2], Xc[:, 1] / Xc[:, 2], np.tile(intr, (len(X), 1)), sensor
+        )
+        assert np.abs(got - want).max() < 1e-8
+
+
+def test_bundle_recovers_the_camera_interior():
+    """A rig with real focal-length errors, off-centre principal points and
+    barrel distortion: the pinhole bundle cannot fit it, the interior fit
+    recovers it and the cameras."""
+    pytest.importorskip("cv2")
+    from openptv2.plate_bundle import INTRINSICS, Sensor, openptv_pixels
+    from openptv2.plate_multiplane import prepare_bundle
+
+    sensor = Sensor(IMX, IMY, PIX)
+    truth = np.array(
+        [
+            [CC * 1.02, 0.06, -0.03, -2.0e-4, 1.0e-6, 0.0, 2e-5, -1e-5],
+            [CC * 1.01, -0.05, -0.10, -2.5e-4, 2.0e-6, 0.0, -3e-5, 1e-5],
+            [CC * 1.025, -0.09, 0.02, -1.8e-4, 0.5e-6, 0.0, 1e-5, 3e-5],
+            [CC * 1.015, 0.03, 0.05, -2.2e-4, 1.5e-6, 0.0, -2e-5, -2e-5],
+        ]
+    )
+    ids = np.arange(1, GRID.n_points + 1)
+    views = {}
+    for ci, (R, t) in enumerate(CAMS):
+        for fr in POSES:
+            Xc = world_points(fr, ids) @ R.T + t
+            px = openptv_pixels(
+                Xc[:, 0] / Xc[:, 2],
+                Xc[:, 1] / Xc[:, 2],
+                np.tile(truth[ci], (len(ids), 1)),
+                sensor,
+            )
+            views[(ci, fr)] = (ids, px)
+    setup = prepare_bundle(views, GRID, K, 4, "00", view_gate_px=50.0)
+    free = ("cc", "xh", "yh", "k1", "k2", "p1", "p2")
+    args = (
+        setup.obs,
+        setup.cam_rvec0,
+        setup.cam_tvec0,
+        setup.plate_rvec0,
+        setup.plate_tvec0,
+        K,
+    )
+    pinhole = bundle_plate_poses(*args, trim_rounds=1)
+    res = bundle_plate_poses(*args, trim_rounds=1, sensor=sensor, free_intrinsics=free)
+    assert pinhole.residual_px.max() > 1.0  # a pinhole cannot fit this rig
+    assert res.residual_px.max() < 1e-4
+    cols = [INTRINSICS.index(n) for n in ("cc", "xh", "yh", "k1")]
+    assert np.allclose(res.intrinsics[:, cols], truth[:, cols], rtol=1e-4, atol=1e-6)
+    for ci, C in enumerate(CENTRES):
+        assert np.linalg.norm(res.camera_centre(ci) - C) < 0.05
+
+
+def test_bundle_without_a_sensor_rejects_intrinsics():
+    from openptv2.plate_bundle import PlateObservations
+
+    obs = PlateObservations(
+        np.zeros(1, int), np.zeros(1, int), np.zeros((1, 3)), np.zeros((1, 2))
+    )
+    with pytest.raises(ValueError, match="need a sensor"):
+        bundle_plate_poses(
+            obs,
+            np.zeros((1, 3)),
+            np.ones((1, 3)),
+            np.zeros((0, 3)),
+            np.zeros((0, 3)),
+            K,
+            free_intrinsics=("cc",),
+        )

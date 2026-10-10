@@ -205,10 +205,11 @@ measured **RCM ≈ 0.58 % of the distance from the anchor plane**, consistent
 across 19 clean frames. Expect the same shape on any rig calibrated this way,
 and quote it as the accuracy floor of the volume.
 
-If that floor is too high, the fix is **not** distortion and **not** `cc` (both
-were swept against RCM on Illmenau and neither collapses it; refitting
-per-camera intrinsics over all planes even improves reprojection RMS while
-making RCM worse). The fix is to stop anchoring to one plane.
+If that floor is too high, the first fix is **not** distortion and **not** `cc`
+(both were swept against RCM on the *anchored* fit and neither collapses it;
+refitting per-camera intrinsics there even improved reprojection RMS while
+making RCM worse). The first fix is to stop anchoring to one plane — then, inside
+the joint bundle, the interior is worth fitting (next section).
 
 ### The joint bundle — `openptv2.plate_bundle`
 
@@ -249,6 +250,40 @@ under 5 mm at 3-5 m — planarity at 3-5 m from 3.19 to 1.50 mm, recovered pitch
 from +0.75 % to +0.13 %. The price is the reference frame, whose epipolar error
 rises from 0.11-0.30 px to 0.7-1.9 px. **That trade is the point:** the anchored
 fit was not more accurate, it was concentrating all of its accuracy on one plane.
+
+### Fitting the camera interior inside the bundle
+
+Once the bundle couples all plate poses, the interior is determined:
+`bundle_plate_poses(..., sensor=Sensor(imx, imy, pix), free_intrinsics=(...))`
+fits per-camera `cc`, principal point and Brown distortion **in openptv's own
+model**, so the result writes to `.ori`/`.addpar` exactly
+(`plate_multiplane.calibration_from_intrinsics`; driver flag
+`bundle_plate_poses.py --intrinsics cc,xh,yh,k1,k2,p1,p2`).
+
+The signal that it is needed: single plate views fit their own PnP pose far
+better than the rig fits all of them (Illmenau 0.40 px vs 1.0 px with 12-19 % of
+dots trimmed), and the bundle residual has a radial pattern with image radius.
+
+Judge it **only on plates the fit never saw** (k-fold by frame, plus the most
+outlying plates held out). Illmenau, ray miss on held-out plates, rig 1-4 / 5-8:
+
+| interior | CV | outlying plates |
+|---|---|---|
+| pinhole, shared `cc` fixed | 4.3 / 3.0 mm | 7.5 / 5.0 mm |
+| + `cc, xh, yh, k1, k2` | 0.50 / 0.27 | 1.35 / 0.30 |
+| + `p1, p2` | **0.33 / 0.29** | **0.47 / 0.45** |
+
+The bundle residual then reaches the single-view noise floor (0.43-0.45 px), 99 %
+of dots are kept, every plate comes back at nominal size within 0.07 % (the
+pinhole let it wander by ~0.9 %), and all 48-49 frames pass the RCM < 1 mm gate
+instead of 1-3. The shared `cc` from the multi-plane spread fit was ~2 % low
+(8.59 vs 8.71-8.80 mm per camera): that fit could only move `cc`.
+
+Bubble tracers are a weak judge here: their ray miss (5-7 mm) is dominated by
+bubble size and wrong matches. Re-matched with each calibration, V4 found 2-4 %
+more 4-camera bubbles than the delivered (bubble-self-calibrated) one with a
+similar median miss. Never compare calibrations on matches found with one of
+them — that test always favours the one that found the matches.
 
 ### Using a known plate orientation
 

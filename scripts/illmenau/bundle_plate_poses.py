@@ -21,9 +21,14 @@ still drags the early iterations.
   3. per-dot cross-camera agreement -- per DOT, not per plate centre: a scramble
      can leave the centroid roughly in place while the pattern around it is wrong
 
-Usage:  bundle_plate_poses.py [cc_mm] [--write]
+Usage:  bundle_plate_poses.py [cc_mm] [--intrinsics cc,xh,yh,k1,k2,p1,p2] [--write]
 Without --write nothing is changed.  With it, the old files are kept as
 cal/camN.tif.ori.prebundle.
+
+--intrinsics fits those interior parameters per camera in openptv's own model
+(see openptv2.plate_bundle); cc_mm is then only the starting value.  On this rig
+cc,xh,yh,k1,k2,p1,p2 took the ray-convergence miss on held-out plates from about
+3 mm to 0.3 mm.  Without it the cameras are pinholes with cc_mm fixed.
 """
 
 import os
@@ -36,12 +41,15 @@ import _config as CFG  # noqa: E402
 import numpy as np  # noqa: E402
 
 from openptv2.plate_bundle import (  # noqa: E402
+    INTRINSICS,
+    Sensor,
     bundle_plate_poses,
     project,
     rodrigues,
     tilt_off_vertical_deg,
 )
 from openptv2.plate_multiplane import (  # noqa: E402
+    calibration_from_intrinsics,
     pinhole_calibration,
     pinhole_K,
     prepare_bundle,
@@ -64,6 +72,10 @@ CC = (
     else 8.5858
 )
 WRITE = "--write" in sys.argv
+FREE = ()
+if "--intrinsics" in sys.argv:
+    FREE = tuple(sys.argv[sys.argv.index("--intrinsics") + 1].split(","))
+SENSOR = Sensor(IMX, IMY, PIX)
 K = pinhole_K(CC, PIX, IMX, IMY)
 
 views = CFG.load_views()
@@ -85,7 +97,13 @@ except ValueError as e:
 good, frames, free = setup.poses, setup.frames, setup.free
 tilt_rejects, dropped, obs = setup.tilt_rejects, setup.dropped, setup.obs
 
-print(f"cc fixed at {CC} mm, zero distortion, gauge = plate pose of frame {REF}")
+if FREE:
+    print(
+        f"interior fitted per camera ({', '.join(FREE)}) from cc {CC} mm, "
+        f"gauge = plate pose of frame {REF}"
+    )
+else:
+    print(f"cc fixed at {CC} mm, zero distortion, gauge = plate pose of frame {REF}")
 print(
     f"gate 1  per-camera PnP < {VIEW_GATE_PX} px:            {setup.n_pnp}/{NCAM * len(frames_all)} views"
 )
@@ -137,6 +155,7 @@ res = bundle_plate_poses(
     vertical_sigma_deg=VERT_SIGMA_DEG,
     trim_rounds=TRIM_ROUNDS,
     trim_mad=TRIM_MAD,
+    **(dict(sensor=SENSOR, free_intrinsics=FREE) if FREE else {}),
 )
 for i, (n, rms, thr) in enumerate(res.trim_history):
     print(
@@ -167,6 +186,15 @@ for ci in range(NCAM):
         f" {CFG.cam_number(ci)}   ({a[0]:8.1f},{a[1]:7.1f},{a[2]:8.1f})   "
         f"({b[0]:8.1f},{b[1]:7.1f},{b[2]:8.1f})   {np.linalg.norm(b - a):7.1f} mm"
     )
+if FREE:
+    print(f"\nfitted interior ({', '.join(FREE)}); cc/xh/yh in mm, xh/yh also in px")
+    for ci in range(NCAM):
+        v = dict(zip(INTRINSICS, res.intrinsics[ci]))
+        print(
+            f"  cam{CFG.cam_number(ci)}: cc {v['cc']:.4f}  xh {v['xh']:+.4f} "
+            f"({v['xh'] / PIX:+.1f} px)  yh {v['yh']:+.4f} ({v['yh'] / PIX:+.1f} px)  "
+            + "  ".join(f"{n} {v[n]:+.3e}" for n in ("k1", "k2", "k3", "p1", "p2"))
+        )
 print("\npairwise camera distances (frame-invariant)   anchored / bundled [mm]")
 for a, b in [(x, y) for x in range(NCAM) for y in range(x + 1, NCAM)]:
 
@@ -188,9 +216,19 @@ if WRITE:
             src = Path(CFG.cam_ori(ci)[0 if ext == "ori" else 1])
             if src.exists() and not src.with_suffix(f".{ext}.prebundle").exists():
                 shutil.copy2(src, src.with_suffix(f".{ext}.prebundle"))
-        cal = pinhole_calibration(
-            K, res.cam_rvec[ci], res.cam_tvec[ci], imx=IMX, imy=IMY, pix_mm=PIX
-        )
+        if FREE:
+            cal = calibration_from_intrinsics(
+                res.cam_rvec[ci],
+                res.cam_tvec[ci],
+                res.intrinsics[ci],
+                imx=IMX,
+                imy=IMY,
+                pix_mm=PIX,
+            )
+        else:
+            cal = pinhole_calibration(
+                K, res.cam_rvec[ci], res.cam_tvec[ci], imx=IMX, imy=IMY, pix_mm=PIX
+            )
         cal.to_file(*CFG.cam_ori(ci))
     np.savez(
         out / "cal" / "bundle_plate_poses.npz",
@@ -198,11 +236,17 @@ if WRITE:
         plate_rvec=res.plate_rvec,
         plate_tvec=res.plate_tvec,
         cc=CC,
+        **(
+            dict(free_intrinsics=np.array(FREE, dtype=str), intrinsics=res.intrinsics)
+            if FREE
+            else {}
+        ),
         # views that passed every gate; consumers that triangulate the raw
         # labels must skip the rest (partly visible plates with wrong ids)
         used_views=np.array([f"{ci}_{fr}" for ci, fr in sorted(good)], dtype=str),
     )
-    print("\nwrote .ori + zeroed .addpar (first run kept the old ones as *.prebundle)")
+    what = "fitted .addpar" if FREE else "zeroed .addpar"
+    print(f"\nwrote .ori + {what} (first run kept the old ones as *.prebundle)")
     print(
         "now re-run check_plate_triangulation.py, check_epipolar.py and "
         "plot_frame_triangulation.py"

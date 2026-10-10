@@ -333,6 +333,41 @@ def pinhole_calibration(
     return cal
 
 
+def calibration_from_intrinsics(
+    rvec: np.ndarray,
+    tvec: np.ndarray,
+    intrinsics: np.ndarray,
+    *,
+    imx: int,
+    imy: int,
+    pix_mm: float,
+) -> Calibration:
+    """openptv :class:`Calibration` of a bundle camera with a fitted interior.
+
+    ``rvec``/``tvec`` are the OpenCV world -> camera pose and ``intrinsics`` one
+    row of :data:`openptv2.plate_bundle.INTRINSICS`, i.e. what
+    ``bundle_plate_poses(..., free_intrinsics=...)`` returns.  The pose maps
+    exactly as for a pinhole; ``cc``, ``xh``, ``yh`` and ``k1..p2`` are then the
+    fitted values, so openptv projects the camera as the bundle did.
+    """
+    from openptv2.plate_bundle import INTRINSICS
+
+    v = dict(zip(INTRINSICS, np.asarray(intrinsics, float)))
+    cal = pinhole_calibration(
+        pinhole_K(v["cc"], pix_mm, imx, imy),
+        rvec,
+        tvec,
+        imx=imx,
+        imy=imy,
+        pix_mm=pix_mm,
+    )
+    cal.int_par.cc, cal.int_par.xh, cal.int_par.yh = v["cc"], v["xh"], v["yh"]
+    a = cal.added_par
+    a.k1, a.k2, a.k3, a.p1, a.p2 = v["k1"], v["k2"], v["k3"], v["p1"], v["p2"]
+    a.scx, a.she = 1.0, 0.0
+    return cal
+
+
 @dataclass
 class SharedCCFit:
     cc: float  # best shared focal length [mm]
