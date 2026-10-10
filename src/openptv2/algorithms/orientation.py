@@ -238,12 +238,6 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals, method="pairs"
     b0: cython.double
     b1: cython.double
     b2: cython.double
-    m00: cython.double
-    m01: cython.double
-    m02: cython.double
-    m11: cython.double
-    m12: cython.double
-    m22: cython.double
     det: cython.double
     vdot: cython.double
 
@@ -358,11 +352,12 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals, method="pairs"
     g_dy: cython.double
     g_dz: cython.double
 
+    coord_unused: cython.double = COORD_UNUSED
     for i in range(num_pts):
         for cam in range(num_cams):
             x = targets_mv[i, cam, 0]
             y = targets_mv[i, cam, 1]
-            if x == COORD_UNUSED:
+            if x == coord_unused:
                 used_mv[cam] = 0
                 continue
             used_mv[cam] = 1
@@ -532,7 +527,9 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals, method="pairs"
                 pos_mv[i, 1] = wy / wsum
                 pos_mv[i, 2] = wz / wsum
             elif mode == 2:
-                # least squares: sum_i (I - u_i u_i^T) X = sum_i (I - u_i u_i^T) v_i
+                # least squares: sum_i (I - u_i u_i^T) X = sum_i (I - u_i u_i^T) v_i,
+                # i.e. A = n I - sum u u^T, b = sum (v - u (u . v)); the ray
+                # tracing above returns unit directions, so u needs no normalising
                 a00 = 0.0
                 a01 = 0.0
                 a02 = 0.0
@@ -545,29 +542,23 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals, method="pairs"
                 for cam in range(num_cams):
                     if used_mv[cam] == 0:
                         continue
-                    dn = c_sqrt(
-                        directs_mv[cam, 0] ** 2
-                        + directs_mv[cam, 1] ** 2
-                        + directs_mv[cam, 2] ** 2
+                    ux = directs_mv[cam, 0]
+                    uy = directs_mv[cam, 1]
+                    uz = directs_mv[cam, 2]
+                    vdot = (
+                        ux * vertices_mv[cam, 0]
+                        + uy * vertices_mv[cam, 1]
+                        + uz * vertices_mv[cam, 2]
                     )
-                    ux = directs_mv[cam, 0] / dn
-                    uy = directs_mv[cam, 1] / dn
-                    uz = directs_mv[cam, 2] / dn
-                    m00 = 1.0 - ux * ux
-                    m01 = -ux * uy
-                    m02 = -ux * uz
-                    m11 = 1.0 - uy * uy
-                    m12 = -uy * uz
-                    m22 = 1.0 - uz * uz
-                    a00 += m00
-                    a01 += m01
-                    a02 += m02
-                    a11 += m11
-                    a12 += m12
-                    a22 += m22
-                    b0 += m00 * vertices_mv[cam, 0] + m01 * vertices_mv[cam, 1] + m02 * vertices_mv[cam, 2]
-                    b1 += m01 * vertices_mv[cam, 0] + m11 * vertices_mv[cam, 1] + m12 * vertices_mv[cam, 2]
-                    b2 += m02 * vertices_mv[cam, 0] + m12 * vertices_mv[cam, 1] + m22 * vertices_mv[cam, 2]
+                    a00 += 1.0 - ux * ux
+                    a01 -= ux * uy
+                    a02 -= ux * uz
+                    a11 += 1.0 - uy * uy
+                    a12 -= uy * uz
+                    a22 += 1.0 - uz * uz
+                    b0 += vertices_mv[cam, 0] - ux * vdot
+                    b1 += vertices_mv[cam, 1] - uy * vdot
+                    b2 += vertices_mv[cam, 2] - uz * vdot
                 det = (
                     a00 * (a11 * a22 - a12 * a12)
                     - a01 * (a01 * a22 - a12 * a02)

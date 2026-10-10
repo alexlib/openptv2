@@ -4,8 +4,6 @@ The default averages the skew-line midpoints of all camera pairs. In a ring of f
 look along nearly the same line, and their midpoints are poorly determined along it, so the average amplifies image
 noise. "weighted" (sin^2 pair-angle weights) and "lsq" (least squares over all rays) remove that.
 """
-import itertools
-
 import numpy as np
 import pytest
 
@@ -161,5 +159,3 @@ def test_batch_entry_point_accepts_method():
     pos, d = point_position_batch(t, len(cals), cpar.mm, cals, "lsq")
     assert pos.shape == (10, 3) and d.shape == (10,)
     assert _rms(pos, x) < 1e-3  # forward projection of the library is iterative, accurate to about 3e-5 mm
-    # itertools is used to document the pair count of a four-camera ring
-    assert len(list(itertools.combinations(range(4), 2))) == 6
