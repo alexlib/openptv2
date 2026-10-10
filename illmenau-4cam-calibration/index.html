@@ -3565,12 +3565,13 @@ over-determined, and it needs no Kabsch fit.</p>
 length, which are properties of the plate, not of the side you view it from), and
 there is <strong>no</strong> frame in which all eight cameras see the plate.</p>
 <h3 id="running-it">Running it<a class="headerlink" href="#running-it" title="Permanent link">&para;</a></h3>
-<p>Every driver is camera-group agnostic via <code>scripts/illmenau/_config.py</code>:</p>
+<p>Every driver is camera-group agnostic via <code>scripts/illmenau/_config.py</code>; the
+steps themselves are library functions in <code>openptv2.plate_multiplane</code>:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ILLMENAU_DIR</span><span class="o">=</span><span class="s2">"</span><span class="nv">$ILLMENAU_RAW</span><span class="s2">/openptv_illmenau_5678"</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ILLMENAU_CAMS</span><span class="o">=</span><span class="m">5</span>,6,7,8
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># then §5's recipe verbatim, plus these two first:</span>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/find_datum.py<span class="w">             </span><span class="c1"># read the datum off the data</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/make_calibration_block.py<span class="w"> </span><span class="c1"># block from the same obj_of</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/make_calibration_block.py<span class="w"> </span><span class="c1"># block from the same PlateGrid</span>
 </span></code></pre></div>
 <p>The first detection pass has no <code>.ori</code> to take an up-hint from, so run
 <code>ILLMENAU_NO_HINT=1 detect_plate_frames.py --cams 5,6,7,8</code> once, then re-run it
