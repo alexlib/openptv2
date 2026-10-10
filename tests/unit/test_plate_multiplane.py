@@ -499,3 +499,56 @@ def test_bundle_without_a_sensor_rejects_intrinsics():
             K,
             free_intrinsics=("cc",),
         )
+
+
+# ------------------------------------------------- centroid refinement
+
+
+def _render_plate(
+    centres, coded, rad=12.0, ss=4, shape=(260, 330), border=(25, 308, 20, 205)
+):
+    """Anti-aliased plate: dark dots (one coded ring) on a bright plate inside
+    ``border`` (x0, x1, y0, y1), dark scene outside -- the case that biased
+    the high-pass detector."""
+    h, w = shape
+    yy, xx = (np.mgrid[0 : h * ss, 0 : w * ss] + 0.5) / ss - 0.5
+    x0, x1, y0, y1 = border
+    img = np.where((xx >= x0) & (xx <= x1) & (yy >= y0) & (yy <= y1), 4000.0, 1500.0)
+    for k, (cx, cy) in enumerate(centres):
+        r = np.hypot(xx - cx, yy - cy)
+        img[r <= rad] = 800.0
+        if k in coded:
+            img[r <= 0.4 * rad] = 4000.0
+    return img.reshape(h, ss, w, ss).mean(axis=(1, 3))
+
+
+def test_refine_dot_centroids_is_unbiased_at_the_plate_border():
+    from openptv2.plate_multiplane import refine_dot_centroids
+
+    rng = np.random.default_rng(5)
+    gx, gy = np.meshgrid(48.0 * np.arange(6) + 50.3, 48.0 * np.arange(4) + 44.7)
+    true = np.column_stack([gx.ravel(), gy.ravel()]) + rng.uniform(-0.4, 0.4, (24, 2))
+    coded = {9}
+    img = _render_plate(true, coded)
+    start = true + rng.uniform(-1.5, 1.5, true.shape)
+    got, ok = refine_dot_centroids(img, start)
+    assert ok.all()
+    err = np.linalg.norm(got - true, axis=1)
+    # right column and bottom row: 4-6 px between dot and plate border (0.35-0.5
+    # dot radii), like the closest Illmenau views
+    gap = np.minimum(308 - (true[:, 0] + 12), 205 - (true[:, 1] + 12))
+    assert (gap < 7).sum() >= 9
+    assert err.max() < 0.05, f"worst {err.max():.3f} px (dot {int(err.argmax())})"
+    assert err[sorted(coded)].max() < 0.05  # the ring dot too
+
+
+def test_refine_dot_centroids_keeps_dots_it_cannot_measure():
+    from openptv2.plate_multiplane import refine_dot_centroids
+
+    centres = np.array(
+        [[60.0, 60.0], [108.0, 60.0], [5.0, 5.0]]
+    )  # last one off the edge
+    img = _render_plate(centres[:2], set())
+    got, ok = refine_dot_centroids(img, centres)
+    assert ok.tolist() == [True, True, False]
+    assert np.allclose(got[2], centres[2])

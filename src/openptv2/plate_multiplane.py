@@ -9,6 +9,8 @@ depend on a particular dataset:
 * :func:`detect_coded_plate` / :func:`label_plate_view` -- detection with a
   search for the coded-dot threshold, then coded-L labelling anchored on the
   datum; :func:`datum_index_from_complete_view` reads the datum off the data.
+* :func:`refine_dot_centroids` -- unbiased centroids of labelled dots from the
+  raw image (the detector's high-pass pulls edge dots inward).
 * :func:`save_plate_views` / :func:`load_plate_views` -- the detection cache
   that every later step reads, so all of them use one labelling.
 * :func:`fit_shared_cc` -- the one shared focal length from multi-plane
@@ -252,6 +254,102 @@ def datum_index_from_complete_view(
     corner_xy = coded[int(np.argmin(np.sort(d, axis=1)[:, 1:].sum(1)))]
     k = int(np.argmin(np.linalg.norm(ip - corner_xy, axis=1)))
     return int(idx[k, 0]), int(idx[k, 1])
+
+
+def _otsu(values: np.ndarray) -> float:
+    hist, edges = np.histogram(values, bins=256)
+    c = (edges[:-1] + edges[1:]) / 2
+    w0 = np.cumsum(hist)
+    w1 = w0[-1] - w0
+    m0 = np.cumsum(hist * c) / np.maximum(w0, 1)
+    m1 = (np.sum(hist * c) - np.cumsum(hist * c)) / np.maximum(w1, 1)
+    return float(c[np.argmax(w0 * w1 * (m0 - m1) ** 2)])
+
+
+def refine_dot_centroids(
+    image: np.ndarray,
+    pixels: np.ndarray,
+    *,
+    dot_to_pitch: float = 0.5,
+    dark_dots: bool = True,
+    disc: float = 1.25,
+    iterations: int = 2,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Re-centroid labelled plate dots from the raw image, without high-pass.
+
+    The plate detector high-passes the inverted image with a kernel about the
+    size of a dot.  For a dot near the plate border the dark scene beyond the
+    border is bright in that inverted image, so the local mean is raised on
+    the outer side and the centroid is pulled toward the plate centre -- on
+    Illmenau by ~2.6 mm (X) / 1.85 mm (Y) at the edges, up to 8 px in close
+    views.  The bundle then stretches the interior to absorb it: the world
+    came out ~0.45 % too large.
+
+    Each dot is re-measured in the raw ``image``: a local Otsu threshold, the
+    dark blob confined to a disc of ``disc`` dot radii round the current
+    estimate (so the dark scene beyond the border cannot join it), its
+    centroid weighted by darkness below the threshold, re-centred
+    ``iterations`` times.  A coded dot (dark ring round a bright centre) is
+    taken as the filled ring.  The dot radius is ``dot_to_pitch / 2`` of the
+    nearest-neighbour spacing in this view (60 mm dots at 120 mm pitch: 0.5).
+
+    Returns ``(refined, ok)``; where ``ok`` is False the input is kept.
+    """
+    from scipy.ndimage import binary_fill_holes, label
+
+    img = np.asarray(image, float)
+    if not dark_dots:
+        img = -img
+    px = np.asarray(pixels, float)
+    out, ok = px.copy(), np.zeros(len(px), bool)
+    if len(px) < 2:
+        return out, ok
+    d = np.linalg.norm(px[:, None] - px[None], axis=2)
+    d[d == 0] = np.inf
+    rad = 0.5 * dot_to_pitch * float(np.median(d.min(1)))
+    w = int(np.ceil(1.7 * rad))
+    yy, xx = np.mgrid[0 : 2 * w + 1, 0 : 2 * w + 1]
+    for k, (x, y) in enumerate(px):
+        good = True
+        for _ in range(iterations):
+            x0, y0 = int(round(x)) - w, int(round(y)) - w
+            if (
+                x0 < 0
+                or y0 < 0
+                or x0 + 2 * w + 1 > img.shape[1]
+                or y0 + 2 * w + 1 > img.shape[0]
+            ):
+                good = False
+                break
+            win = img[y0 : y0 + 2 * w + 1, x0 : x0 + 2 * w + 1]
+            r = np.hypot(xx - (x - x0), yy - (y - y0))
+            thr = _otsu(win[r <= 1.6 * rad])
+            lab, nl = label((win < thr) & (r <= disc * rad))
+            cy, cx = int(round(y)) - y0, int(round(x)) - x0
+            if lab[cy, cx]:
+                blob = lab == lab[cy, cx]
+                wgt = np.where(blob, thr - win, 0.0)
+            else:
+                blob = next(
+                    (
+                        f
+                        for j in range(1, nl + 1)
+                        if (f := binary_fill_holes(lab == j))[cy, cx]
+                    ),
+                    None,
+                )
+                if blob is None:
+                    good = False
+                    break
+                wgt = blob.astype(float)
+            if blob.sum() < 5 or wgt.sum() <= 0:
+                good = False
+                break
+            x = x0 + float((wgt * xx).sum() / wgt.sum())
+            y = y0 + float((wgt * yy).sum() / wgt.sum())
+        if good:
+            out[k], ok[k] = (x, y), True
+    return out, ok
 
 
 def save_plate_views(path: str | Path, views: dict) -> None:

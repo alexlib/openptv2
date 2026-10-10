@@ -1,6 +1,14 @@
 """Detect + L-code label every calibration frame of a camera group, cache to npz.
 
     detect_plate_frames.py [--cams 1,2,3,4] [--npz cal/labelled_all_frames.npz]
+                           [--refine-centroids]
+
+--refine-centroids re-measures every labelled dot in the raw image
+(openptv2.plate_multiplane.refine_dot_centroids).  The detector's high-pass
+pulls dots near the plate border toward the plate centre -- on this rig by
+~2.6 mm (X) / 1.85 mm (Y), which the bundle absorbed by making the world ~0.45 %
+too large.  With it the plate comes back as a 120 mm grid within 0.2 mm and the
+bundle residual drops from ~0.44 to ~0.12 px.
 
 Cache layout: for each cam INDEX WITHIN THE GROUP (0-based), a dict
 frame -> (ids[n], pixels[n,2]) with id = iy*6 + ix + 1 on the datum-shifted grid
@@ -44,6 +52,7 @@ from openptv2.plate_multiplane import (
     PlateGrid,
     detect_coded_plate,
     label_plate_view,
+    refine_dot_centroids,
     save_plate_views,
 )
 
@@ -62,6 +71,7 @@ for _i, _a in enumerate(sys.argv):
         CAMS = [int(c) for c in sys.argv[_i + 1].split(",")]
     elif _a == "--npz":
         NPZ = sys.argv[_i + 1]
+REFINE = "--refine-centroids" in sys.argv
 
 base = Path(ILLMENAU_RAW)
 out = Path(ILLMENAU_DIR)
@@ -116,6 +126,8 @@ for ci, cam in enumerate(CAMS):
                 )
                 continue
             ids, ip = label_plate_view(res, GRID, cal=cals.get(ci), cpar=cpar)
+            if REFINE:
+                ip, _ = refine_dot_centroids(img, ip)
         except Exception as e:
             print(f"cam{cam} {fr}: {type(e).__name__}", flush=True)
             continue
