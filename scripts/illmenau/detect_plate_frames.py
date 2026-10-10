@@ -1,10 +1,11 @@
 """Detect + L-code label every calibration frame of a camera group, cache to npz.
 
     detect_plate_frames.py [--cams 1,2,3,4] [--npz cal/labelled_all_frames.npz]
-                           [--refine-centroids]
+                           [--no-refine-centroids]
 
---refine-centroids re-measures every labelled dot in the raw image
-(openptv2.plate_multiplane.refine_dot_centroids).  The detector's high-pass
+By default every labelled dot is re-measured in the raw image
+(openptv2.plate_multiplane.refine_dot_centroids); --no-refine-centroids keeps
+the detector's own centroids.  The detector's high-pass
 pulls dots near the plate border toward the plate centre -- on this rig by
 ~2.6 mm (X) / 1.85 mm (Y), which the bundle absorbed by making the world ~0.45 %
 too large.  With it the plate comes back as a 120 mm grid within 0.2 mm and the
@@ -71,7 +72,7 @@ for _i, _a in enumerate(sys.argv):
         CAMS = [int(c) for c in sys.argv[_i + 1].split(",")]
     elif _a == "--npz":
         NPZ = sys.argv[_i + 1]
-REFINE = "--refine-centroids" in sys.argv
+REFINE = "--no-refine-centroids" not in sys.argv
 
 base = Path(ILLMENAU_RAW)
 out = Path(ILLMENAU_DIR)

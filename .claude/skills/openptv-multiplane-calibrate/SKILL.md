@@ -114,6 +114,21 @@ downstream is then seconds instead of minutes, which matters because you will
 sweep `cc`. → `detect_coded_plate` + `label_plate_view`, cached with
 `save_plate_views` (driver: `detect_plate_frames.py`)
 
+**Refine the centroids before anything else uses them.** The plate detector
+high-passes the inverted image with a kernel about one dot wide; next to the
+plate border the dark scene beyond it is bright in that image, so edge dots are
+pulled toward the plate centre (Illmenau: 2.6 mm / 1.85 mm on the plate, up to
+8 px in close views — identical in every camera, independent of image position).
+The bundle cannot absorb that except by stretching the plate interior, so the
+calibrated world comes out ~0.45 % too large.
+`plate_multiplane.refine_dot_centroids` re-measures each labelled dot in the raw
+image (local threshold, blob confined to 1.25 dot radii, darkness-weighted,
+coded dots as filled rings); `detect_plate_frames.py` does it by default. On
+Illmenau: every dot within 0.2 mm of the 120 mm grid, bundle RMS 0.44 → 0.14 px,
+held-out ray miss 0.30 → 0.15 mm. The check that exposes the bias: express the
+bundle residuals on the plate (mm) and average per dot id — a plate-fixed
+pattern is detection, an image-fixed one is the camera model.
+
 ### 3. Fit ONE shared focal length from multi-plane consistency
 
 **This is the step that makes or breaks the calibration.**
