@@ -17,6 +17,11 @@ Configured via the optional `bubble_detection:` block in parameters_*.yaml:
       merge_radius: 4   # max pixel gap bridged between glare spots (default 4)
       nnmin: 1          # min pixel count per blob (default 1)
       nnmax: 5000       # max pixel count per blob (default 5000)
+      lowpass_dim: 1    # box low-pass (pixels) before detection; 1 = off.
+                        # 3 suppresses single-pixel sensor noise and steadies
+                        # the centroids of 1-5 px bubbles (Ilmenau: fewer
+                        # ghosts, ~25 % smoother links)
+      filter_hp: 0      # high-pass mode of preprocess_image (0 = default)
 
     Static-background removal (walls, seams, sensor pattern) lives in its
     own `background:` section (legacy `bg_*` keys inside `bubble_detection:`

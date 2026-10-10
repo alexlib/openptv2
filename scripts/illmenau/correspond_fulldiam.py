@@ -45,6 +45,9 @@ def main():
     ap.add_argument("--nshards", type=int, required=True)
     ap.add_argument("--first", type=int, default=10001)
     ap.add_argument("--last", type=int, default=10500)
+    ap.add_argument("--min-cams", type=int, default=0,
+                    help="keep only 3D points seen by at least this many cameras "
+                         "(default: keep all the matcher returns)")
     a = ap.parse_args()
     want = [1, 2, 3, 4] if a.rig == "14" else [5, 6, 7, 8]
     if CFG.CAMS != want:
@@ -82,8 +85,12 @@ def main():
         try:
             det = [store.read_targets(c, f) for c in range(4)]
             pos, ids = match_frame_correspondences(det, cpar, cals, vp)
-            out[f"{f}/pos"] = np.asarray(pos, float)
-            out[f"{f}/ids"] = np.asarray(ids, np.int32)
+            pos, ids = np.asarray(pos, float), np.asarray(ids, np.int32)
+            if a.min_cams and len(ids):
+                keep = (ids >= 0).sum(1) >= a.min_cams
+                pos, ids = pos[keep], ids[keep]
+            out[f"{f}/pos"] = pos
+            out[f"{f}/ids"] = ids
         except Exception as exc:
             print(f"[{a.rig}/{a.shard}] frame {f} FAILED: {exc!r}", flush=True)
             out[f"{f}/pos"] = np.empty((0, 3))
