@@ -12,8 +12,8 @@ track_info gives each trajectory its rig, its partner in the other rig (the
 track it shares most same-frame points with, closer than dup_mm), and whether it
 is a duplicate.
 
-Speeds are shown in mm per frame -- independent of the frame rate, which is
-still to be settled (readme: 100 ms between images; post-processing used 50 fps).
+Speeds are shown in mm per frame; x 10 gives mm/s (readme: 100 ms between
+images; the stores' vel/accel are computed at that 10 fps).
 
 Display: plotly's 3D axes are right-handed, so world (X, Z, Y) is drawn with the
 Z axis reversed; the view is true and hover values are world coordinates.
