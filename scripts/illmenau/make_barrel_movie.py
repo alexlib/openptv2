@@ -1,6 +1,7 @@
 """Movie of the merged Ilmenau trajectories in the look of the delivered
 TimeStep_10000_to_12000.mp4: same viewing direction, same colour bar
-(vertical velocity v, -0.5..0.5 m/s), trailing beads, grey back walls, 500 mm grid.
+(vertical velocity v, -0.5..0.5 m/s), trailing beads, grey back walls, 500 mm grid,
+plus the barrel's bottom (heating) and top (cooling) rims as circles.
 
 Coordinates are OURS, not the movie's: the barrel frame of merged_fulldiam.zarr
 (mm, origin on the barrel axis at mid-height, +Y up); v is the Y velocity.
@@ -14,6 +15,7 @@ import argparse
 from pathlib import Path
 
 import numpy as np
+import yaml
 from flowtracks.graphics import animate_trajectories_3d
 from matplotlib.colors import LinearSegmentedColormap
 
@@ -35,6 +37,17 @@ VIEW_UP = (0.343, 0.857, -0.383)
 FONT = "/System/Library/Fonts/Supplemental/Arial.ttf"  # VTK's own font has no [ ]
 
 
+def barrel_rims(n=360):
+    """Bottom and top rim of the barrel in the barrel frame [mm]: radius and
+    height from plate.yaml's test_section, origin at mid-height."""
+    ts = yaml.safe_load((R / "openptv_illmenau_4cam" / "plate.yaml").read_text())
+    ts = ts["plate"]["test_section"] if "plate" in ts else ts["test_section"]
+    r, h = float(ts["radius"]), float(ts["height"])
+    a = np.linspace(0, 2 * np.pi, n, endpoint=False)
+    ring = np.column_stack([r * np.cos(a), np.zeros(n), r * np.sin(a)])
+    return [ring + [0, -h / 2, 0], ring + [0, h / 2, 0]]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--store", default=str(R / "merged_fulldiam.zarr"))
@@ -50,7 +63,7 @@ def main():
     movie = out.with_suffix(".mp4") if len(frames) > 1 else None
     paths = animate_trajectories_3d(
         a.store, out, frames, component=1, tail=a.tail, pos_scale=1000.0,
-        bounds=(-3500, 3500, -2000, 2000, -3500, 3500),
+        bounds=(-4000, 4000, -2000, 2000, -4000, 4000), outlines=barrel_rims(),
         cmap=REF_CMAP, clim=(-0.5, 0.5), bar_title="Velocity v [m/s]",
         view_direction=VIEW_DIRECTION, view_up=VIEW_UP, zoom=1.1,
         window_center=(0.09, 0.0), window_size=(2920, 1840), point_size=5.0,
