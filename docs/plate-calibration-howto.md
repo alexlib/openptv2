@@ -6,6 +6,13 @@ for. Worked on the Illmenau barrel (two groups of four cameras, 6×7 coded
 plate, ~48 hand-held plate positions each); the numbers quoted throughout are
 from that rig.
 
+This is **free-pose** calibration: a planar plate at unknown positions and
+orientations, each pose solved together with the cameras (the OpenCV / Zhang
+approach). It is not the regular openptv2 multi-plane calibration, where the
+plate is moved by known translations, every plane's points have known x, y, z,
+and the GUI (`multi_planes`, `Combine_Flag`) stacks them into one virtual 3D
+target body. If the plate positions are known, use that simpler GUI path.
+
 Companion documents: `docs/illmenau-4cam-calibration.md` records what happened
 on that dataset, including the failures; `.claude/skills/openptv-multiplane-calibrate/SKILL.md`
 is the condensed procedure.

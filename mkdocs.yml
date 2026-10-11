@@ -78,6 +78,7 @@ nav:
   - Calibration:
     - Plate Calibration How-To: plate-calibration-howto.md
     - Illmenau 4-Camera Case Study: illmenau-4cam-calibration.md
+    - Illmenau Processing Pipeline: illmenau-pipeline.md
     - Best Practices: calibration_best_practices.md
     - Camera Calibration: tutorials/calibration.md
     - Particle-Based Refinement: tutorials/particle_calibration.md

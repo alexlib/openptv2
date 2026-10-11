@@ -933,12 +933,272 @@ class TwoPhaseTracker:
         return all_links, chains
 
 
+def build_project_fn(cals, cpar):
+    """Re-project predicted 3D positions to leaf pixels through the camera models.
+
+    Returns None when calibrations are unavailable; the tracker then
+    falls back to 3D-distance costs (see ``cost_mode``).
+    """
+    try:
+        cals = list(cals or [])
+        if not cals or cpar is None:
+            return None
+        mm = cpar.mm
+        imx, imy = float(cpar.imx), float(cpar.imy)
+        pix_x, pix_y = float(cpar.pix_x), float(cpar.pix_y)
+
+        from openptv2.algorithms.imgcoord import img_coord_batch
+
+        def project_fn(pred):
+            # Batched: one img_coord_batch call per camera for all points
+            # (was a Python loop over points x cameras).
+            pred = np.asarray(pred, dtype=np.float64)
+            n = len(pred)
+            nc = len(cals)
+            xy = np.full((n, nc * 2), np.nan)
+            if n == 0:
+                return xy
+            for ci, cal in enumerate(cals):
+                m = np.asarray(img_coord_batch(pred, cal, mm))
+                xy[:, 2 * ci] = m[:, 0] / pix_x + imx / 2
+                xy[:, 2 * ci + 1] = imy / 2 - m[:, 1] / pix_y
+            return np.nan_to_num(xy)
+
+        # Smoke-test on one point so a broken model fails here, not
+        # mid-run.
+        project_fn(np.zeros((1, 3)))
+        return project_fn
+    except Exception as exc:
+        print(f"TwoPhaseTracker: no projection ({exc}); falling back to 3D costs.")
+        return None
+
+
+def ghost_probabilities(frame_particles, rcm, n_seen, logb, q_model=DEFAULT_Q_MODEL):
+    """Per-point ghost probability (A10) from per-frame ray miss distances, camera
+    counts and (for the ``rcm_blob`` model) log blob brightness."""
+    from openptv2.point_quality import (
+        brightness_spread,
+        fit_scale,
+        ghost_probability,
+    )
+
+    scale = fit_scale(
+        np.vstack(frame_particles), np.concatenate(rcm), np.concatenate(n_seen)
+    )
+    spreads = [None] * len(frame_particles)
+    if q_model == "rcm_blob" and logb is not None:
+        allb = np.vstack(logb)
+        with np.errstate(all="ignore"):
+            offsets = np.nanmedian(allb, axis=0)  # per-camera gain
+            varies = float(np.nanstd(allb)) > 1e-6
+        if varies:
+            spreads = [brightness_spread(lb, offsets) for lb in logb]
+        else:
+            print(
+                "TwoPhaseTracker: blob brightness is constant in this store; "
+                "ghost marks use ray convergence only."
+            )
+    return [
+        ghost_probability(p, r, n, scale, sp)
+        for p, r, n, sp in zip(frame_particles, rcm, n_seen, spreads)
+    ]
+
+
+def q_model_of(track_cfg: dict) -> str:
+    """The ghost model named by the ``track:`` section (validated)."""
+    q_model = str(track_cfg.get("q_model", DEFAULT_Q_MODEL))
+    if q_model not in ("rcm", "rcm_blob"):
+        raise ValueError(f"q_model must be rcm or rcm_blob, got {q_model!r}")
+    return q_model
+
+
+def track_store(
+    store: Any,
+    frames: list[int],
+    track_cfg: dict,
+    cals: Any = None,
+    cpar: Any = None,
+    *,
+    linkage_name: str = "ptv_is",
+) -> list[tuple[int, int, int, int]]:
+    """Two-phase tracking of the correspondences of ``store`` over ``frames``.
+
+    Everything is read from the store (3D points, camera target ids, target
+    rows) and every setting from ``track_cfg`` (the ``track:`` section of the
+    parameter file). Writes the ghost probabilities (when the point-quality
+    rules are on) and the linkage ``linkage_name`` back into the store, and
+    returns the links. The two_phase plugin calls this; so can a script that
+    re-tracks a store it built itself.
+    """
+    leaf_weight = float(track_cfg.get("leaf_weight", 1.0))
+    v_max = float(track_cfg.get("v_max", track_cfg.get("dvxmax", 15.5)))
+    use_velocity = bool(track_cfg.get("use_velocity", True))
+    cost_mode = str(track_cfg.get("cost_mode", "projected"))
+    max_gap = int(track_cfg.get("max_gap", 2))
+    allow_shared = bool(track_cfg.get("allow_shared", False))
+    max_shared = int(track_cfg.get("max_shared", 2))
+    share_tol_raw = track_cfg.get("share_tol", 1.0)
+    share_tol = None if share_tol_raw is None else float(share_tol_raw)
+    max_group_size = int(track_cfg.get("max_group_size", 128))
+    confirm_tol, confirm_ends, confirm_note = resolve_confirm(track_cfg, v_max)
+    confirm_auto = resolve_confirm_auto(track_cfg)
+    confirm_guard = {
+        "confirm_auto_max_neighbours": float(
+            track_cfg.get("confirm_auto_max_neighbours", AUTO_MAX_NEIGHBOURS)
+        ),
+        "confirm_auto_min_ratio": float(
+            track_cfg.get("confirm_auto_min_ratio", AUTO_MIN_KINK_RATIO)
+        ),
+        "confirm_auto_radius": float(track_cfg.get("confirm_auto_radius", 5.0)),
+    }
+    if confirm_note:
+        print(f"TwoPhaseTracker: {confirm_note}")
+    bidirectional = bool(track_cfg.get("bidirectional", False))
+    # Point-quality rules (A10, ray convergence). ON by default: a point whose
+    # camera rays meet badly may not start a trajectory (q_seed) and a young
+    # trajectory may not continue onto it (q_young). Switch off with
+    # ``q_seed: null`` and ``q_young: 0``. See docs/tracking_quality.md.
+    bg_raw = track_cfg.get("blob_gate", None)
+    blob_gate = None if bg_raw is None else float(bg_raw)
+    q_weight = float(track_cfg.get("q_weight", 0.0))
+    q_seed_raw = track_cfg.get("q_seed", DEFAULT_Q_SEED)
+    q_seed = None if q_seed_raw is None else float(q_seed_raw)
+    q_young = int(track_cfg.get("q_young", DEFAULT_Q_YOUNG))
+    q_model = q_model_of(track_cfg)
+    bwd_v_max_raw = track_cfg.get("bwd_v_max", None)
+    bwd_v_max = None if bwd_v_max_raw is None else float(bwd_v_max_raw)
+
+    # Infer num_cams from correspondences shape: (N, 3+C) where C = num_cams
+    corr_shape = store.root[f"correspondences/frame_{frames[0]:06d}"].shape
+    num_cams = corr_shape[1] - 3
+
+    # Point-quality rules need the camera models; without them they are off.
+    want_q = q_weight > 0 or q_seed is not None or q_young > 0
+    cals = list(cals or [])
+    if want_q and not (cals and cpar):
+        print(
+            "TwoPhaseTracker: no calibrations on the experiment; "
+            "point-quality rules (q_seed/q_young) are off."
+        )
+        q_weight, q_seed, q_young, want_q = 0.0, None, 0, False
+    need_logb = bool(blob_gate) or (want_q and q_model == "rcm_blob")
+
+    from openptv2.point_quality import (
+        log_brightness_from_arrays,
+        rcm_from_arrays,
+        read_frame_arrays,
+    )
+    from openptv2.storage.run_store import seen_mask
+
+    frame_particles = []
+    frame_leaves = []
+    frame_seen = []
+    rcm_list, nseen_list, logb_list = [], [], []
+    for f in frames:
+        # every array of the frame is read ONCE (zarr reads were half the run time)
+        pos_3d, cam_ids, rows = read_frame_arrays(store, f, num_cams)
+        pos_3d = np.asarray(pos_3d)
+        frame_particles.append(pos_3d)
+
+        n = len(pos_3d)
+        xy = np.full((n, num_cams, 2), np.nan)
+        for c in range(num_cams):
+            if rows[c] is not None:
+                valid = cam_ids[:, c] >= 0
+                xy[valid, c] = rows[c][cam_ids[valid, c], 1:3]
+        frame_leaves.append(np.nan_to_num(xy.reshape(n, -1)))
+        # Bug 2 fix: the seen-mask is authoritative; NaN no longer marks
+        # "missing" (any nan_to_num would silently un-mark it). Single
+        # definition: run_store.seen_mask -- do not re-derive per reader.
+        seen = seen_mask(cam_ids)
+        frame_seen.append(seen)
+        if want_q:
+            rcm_list.append(rcm_from_arrays(pos_3d, cam_ids, rows, cals, cpar))
+            nseen_list.append(seen.sum(axis=1))
+        if need_logb:
+            logb_list.append(log_brightness_from_arrays(cam_ids, rows))
+
+    cfg = TwoPhaseTrackerConfig(
+        v_max=v_max,
+        blob_gate=blob_gate,
+        q_weight=q_weight,
+        q_seed=q_seed,
+        q_young=q_young,
+        leaf_weight=leaf_weight,
+        use_velocity=use_velocity,
+        cost_mode=cost_mode,
+        max_gap=max_gap,
+        allow_shared=allow_shared,
+        max_shared=max_shared,
+        share_tol=share_tol,
+        max_group_size=max_group_size,
+        confirm_tol=confirm_tol,
+        confirm_ends=confirm_ends,
+        confirm_auto=confirm_auto,
+        **confirm_guard,
+        bidirectional=bidirectional,
+        parallel_directions=bool(track_cfg.get("parallel_directions", False)),
+        bwd_v_max=bwd_v_max,
+    )
+    tracker = TwoPhaseTracker(cfg)
+    project_fn = build_project_fn(cals, cpar)
+    frame_logb = logb_list if blob_gate else None
+    frame_ghost = None
+    if want_q:
+        frame_ghost = ghost_probabilities(
+            frame_particles, rcm_list, nseen_list, logb_list or None, q_model
+        )
+        store.write_point_quality_many(frames, frame_ghost)
+    links = cast(
+        list[tuple[int, int, int, int]],
+        tracker.track_frames(
+            frame_particles,
+            frame_leaves,
+            project_fn=project_fn,
+            frame_seen=frame_seen,
+            frame_ghost=frame_ghost,
+            frame_logb=frame_logb,
+        ),
+    )
+
+    # Per-step progress like trackcorr (track3d step: curr/next/links)
+    from collections import Counter
+
+    _cnt = Counter(t0 for t0, _, _, _ in links)
+    for _i in range(len(frames) - 1):
+        _curr = len(frame_particles[_i])
+        _nxt = len(frame_particles[_i + 1])
+        _links = _cnt.get(_i, 0)
+        print(
+            f"two_phase step: {frames[_i]}, curr: {_curr}, next: {_nxt}, links: {_links}"
+        )
+    if frames:
+        _avg_parts = sum(len(p) for p in frame_particles) / len(frame_particles)
+        _avg_links = len(links) / max(len(frames) - 1, 1)
+        print(
+            f"Average over sequence, particles: {_avg_parts:.1f}, links: {_avg_links:.1f}, lost: {_avg_parts - _avg_links:.1f}"
+        )
+
+    linkage = _links_to_linkage(links, frames, [len(p) for p in frame_particles])
+    store.write_linkage_many(frames, linkage, frame_particles, name=linkage_name)
+
+    print(
+        f"TwoPhaseTracker: {len(links)} links across {len(frames)} frames "
+        f"(leaf_weight={leaf_weight}, v_max={v_max}, "
+        f"use_velocity={use_velocity}, cost_mode={cost_mode}, "
+        f"max_gap={max_gap}, "
+        f"project_fn={'yes' if project_fn is not None else 'no'})"
+    )
+    return links
+
+
 class Tracking:
     """Plugin interface for the GUI/batch pipeline.
 
     Reads ``leaf_weight`` and ``dvxmax`` (as v_max) from the experiment's
     ``track`` parameter section, loads 3D positions + 2D leaves from the
-    RunStore, runs two-phase matching, and writes links back.
+    RunStore, runs two-phase matching, and writes links back
+    (:func:`track_store`).
     """
 
     q_model = DEFAULT_Q_MODEL
@@ -948,74 +1208,12 @@ class Tracking:
         self.exp = exp
 
     def _ghost_probabilities(self, frame_particles, rcm, n_seen, logb):
-        """Per-point ghost probability (A10) from per-frame ray miss distances, camera
-        counts and (for the ``rcm_blob`` model) log blob brightness."""
-        from openptv2.point_quality import (
-            brightness_spread,
-            fit_scale,
-            ghost_probability,
-        )
-
-        scale = fit_scale(
-            np.vstack(frame_particles), np.concatenate(rcm), np.concatenate(n_seen)
-        )
-        spreads = [None] * len(frame_particles)
-        if self.q_model == "rcm_blob" and logb is not None:
-            allb = np.vstack(logb)
-            with np.errstate(all="ignore"):
-                offsets = np.nanmedian(allb, axis=0)  # per-camera gain
-                varies = float(np.nanstd(allb)) > 1e-6
-            if varies:
-                spreads = [brightness_spread(lb, offsets) for lb in logb]
-            else:
-                print(
-                    "TwoPhaseTracker: blob brightness is constant in this store; "
-                    "ghost marks use ray convergence only."
-                )
-        return [
-            ghost_probability(p, r, n, scale, sp)
-            for p, r, n, sp in zip(frame_particles, rcm, n_seen, spreads)
-        ]
+        return ghost_probabilities(frame_particles, rcm, n_seen, logb, self.q_model)
 
     def _build_project_fn(self):
-        """Re-project predicted 3D positions to leaf pixels via exp cals.
-
-        Returns None when calibrations are unavailable; the tracker then
-        falls back to 3D-distance costs (see ``cost_mode``).
-        """
-        try:
-            cals = list(getattr(self.exp, "cals", None) or [])
-            cpar = getattr(self.exp, "cpar", None)
-            if not cals or cpar is None:
-                return None
-            mm = cpar.mm
-            imx, imy = float(cpar.imx), float(cpar.imy)
-            pix_x, pix_y = float(cpar.pix_x), float(cpar.pix_y)
-
-            from openptv2.algorithms.imgcoord import img_coord_batch
-
-            def project_fn(pred):
-                # Batched: one img_coord_batch call per camera for all points
-                # (was a Python loop over points x cameras).
-                pred = np.asarray(pred, dtype=np.float64)
-                n = len(pred)
-                nc = len(cals)
-                xy = np.full((n, nc * 2), np.nan)
-                if n == 0:
-                    return xy
-                for ci, cal in enumerate(cals):
-                    m = np.asarray(img_coord_batch(pred, cal, mm))
-                    xy[:, 2 * ci] = m[:, 0] / pix_x + imx / 2
-                    xy[:, 2 * ci + 1] = imy / 2 - m[:, 1] / pix_y
-                return np.nan_to_num(xy)
-
-            # Smoke-test on one point so a broken model fails here, not
-            # mid-run.
-            project_fn(np.zeros((1, 3)))
-            return project_fn
-        except Exception as exc:
-            print(f"TwoPhaseTracker: no projection ({exc}); falling back to 3D costs.")
-            return None
+        return build_project_fn(
+            getattr(self.exp, "cals", None), getattr(self.exp, "cpar", None)
+        )
 
     def do_tracking(self) -> None:
         if self.exp is None:
@@ -1026,45 +1224,7 @@ class Tracking:
             pm = getattr(self.exp.exp1, "pm", None)
 
         track_cfg = pm.parameters.get("track", {}) if pm else {}
-        leaf_weight = float(track_cfg.get("leaf_weight", 1.0))
-        v_max = float(track_cfg.get("v_max", track_cfg.get("dvxmax", 15.5)))
-        use_velocity = bool(track_cfg.get("use_velocity", True))
-        cost_mode = str(track_cfg.get("cost_mode", "projected"))
-        max_gap = int(track_cfg.get("max_gap", 2))
-        allow_shared = bool(track_cfg.get("allow_shared", False))
-        max_shared = int(track_cfg.get("max_shared", 2))
-        share_tol_raw = track_cfg.get("share_tol", 1.0)
-        share_tol = None if share_tol_raw is None else float(share_tol_raw)
-        max_group_size = int(track_cfg.get("max_group_size", 128))
-        confirm_tol, confirm_ends, confirm_note = resolve_confirm(track_cfg, v_max)
-        confirm_auto = resolve_confirm_auto(track_cfg)
-        confirm_guard = {
-            "confirm_auto_max_neighbours": float(
-                track_cfg.get("confirm_auto_max_neighbours", AUTO_MAX_NEIGHBOURS)
-            ),
-            "confirm_auto_min_ratio": float(
-                track_cfg.get("confirm_auto_min_ratio", AUTO_MIN_KINK_RATIO)
-            ),
-            "confirm_auto_radius": float(track_cfg.get("confirm_auto_radius", 5.0)),
-        }
-        if confirm_note:
-            print(f"TwoPhaseTracker: {confirm_note}")
-        bidirectional = bool(track_cfg.get("bidirectional", False))
-        # Point-quality rules (A10, ray convergence). ON by default: a point whose
-        # camera rays meet badly may not start a trajectory (q_seed) and a young
-        # trajectory may not continue onto it (q_young). Switch off with
-        # ``q_seed: null`` and ``q_young: 0``. See docs/tracking_quality.md.
-        bg_raw = track_cfg.get("blob_gate", None)
-        blob_gate = None if bg_raw is None else float(bg_raw)
-        q_weight = float(track_cfg.get("q_weight", 0.0))
-        q_seed_raw = track_cfg.get("q_seed", DEFAULT_Q_SEED)
-        q_seed = None if q_seed_raw is None else float(q_seed_raw)
-        q_young = int(track_cfg.get("q_young", DEFAULT_Q_YOUNG))
-        self.q_model = str(track_cfg.get("q_model", DEFAULT_Q_MODEL))
-        if self.q_model not in ("rcm", "rcm_blob"):
-            raise ValueError(f"q_model must be rcm or rcm_blob, got {self.q_model!r}")
-        bwd_v_max_raw = track_cfg.get("bwd_v_max", None)
-        bwd_v_max = None if bwd_v_max_raw is None else float(bwd_v_max_raw)
+        self.q_model = q_model_of(track_cfg)
 
         store = getattr(self.exp, "_store", None)
         if store is None:
@@ -1124,126 +1284,11 @@ class Tracking:
             self.exp.tracker = tracker
             tracker.full_forward()
             return
-        # Infer num_cams from correspondences shape: (N, 3+C) where C = num_cams
-        first_frame = frames[0]
-        corr_shape = store.root[f"correspondences/frame_{first_frame:06d}"].shape
-        num_cams = corr_shape[1] - 3
 
-        # Point-quality rules need the camera models; without them they are off.
-        want_q = q_weight > 0 or q_seed is not None or q_young > 0
-        cals = list(getattr(self.exp, "cals", None) or [])
-        cpar = getattr(self.exp, "cpar", None)
-        if want_q and not (cals and cpar):
-            print(
-                "TwoPhaseTracker: no calibrations on the experiment; "
-                "point-quality rules (q_seed/q_young) are off."
-            )
-            q_weight, q_seed, q_young, want_q = 0.0, None, 0, False
-        need_logb = bool(blob_gate) or (want_q and self.q_model == "rcm_blob")
-
-        from openptv2.point_quality import (
-            log_brightness_from_arrays,
-            rcm_from_arrays,
-            read_frame_arrays,
-        )
-        from openptv2.storage.run_store import seen_mask
-
-        frame_particles = []
-        frame_leaves = []
-        frame_seen = []
-        rcm_list, nseen_list, logb_list = [], [], []
-        for f in frames:
-            # every array of the frame is read ONCE (zarr reads were half the run time)
-            pos_3d, cam_ids, rows = read_frame_arrays(store, f, num_cams)
-            pos_3d = np.asarray(pos_3d)
-            frame_particles.append(pos_3d)
-
-            n = len(pos_3d)
-            xy = np.full((n, num_cams, 2), np.nan)
-            for c in range(num_cams):
-                if rows[c] is not None:
-                    valid = cam_ids[:, c] >= 0
-                    xy[valid, c] = rows[c][cam_ids[valid, c], 1:3]
-            frame_leaves.append(np.nan_to_num(xy.reshape(n, -1)))
-            # Bug 2 fix: the seen-mask is authoritative; NaN no longer marks
-            # "missing" (any nan_to_num would silently un-mark it). Single
-            # definition: run_store.seen_mask -- do not re-derive per reader.
-            seen = seen_mask(cam_ids)
-            frame_seen.append(seen)
-            if want_q:
-                rcm_list.append(rcm_from_arrays(pos_3d, cam_ids, rows, cals, cpar))
-                nseen_list.append(seen.sum(axis=1))
-            if need_logb:
-                logb_list.append(log_brightness_from_arrays(cam_ids, rows))
-
-        cfg = TwoPhaseTrackerConfig(
-            v_max=v_max,
-            blob_gate=blob_gate,
-            q_weight=q_weight,
-            q_seed=q_seed,
-            q_young=q_young,
-            leaf_weight=leaf_weight,
-            use_velocity=use_velocity,
-            cost_mode=cost_mode,
-            max_gap=max_gap,
-            allow_shared=allow_shared,
-            max_shared=max_shared,
-            share_tol=share_tol,
-            max_group_size=max_group_size,
-            confirm_tol=confirm_tol,
-            confirm_ends=confirm_ends,
-            confirm_auto=confirm_auto,
-            **confirm_guard,
-            bidirectional=bidirectional,
-            parallel_directions=bool(track_cfg.get("parallel_directions", False)),
-            bwd_v_max=bwd_v_max,
-        )
-        tracker = TwoPhaseTracker(cfg)
-        project_fn = self._build_project_fn()
-        frame_logb = logb_list if blob_gate else None
-        frame_ghost = None
-        if want_q:
-            frame_ghost = self._ghost_probabilities(
-                frame_particles, rcm_list, nseen_list, logb_list or None
-            )
-            store.write_point_quality_many(frames, frame_ghost)
-        links = cast(
-            list[tuple[int, int, int, int]],
-            tracker.track_frames(
-                frame_particles,
-                frame_leaves,
-                project_fn=project_fn,
-                frame_seen=frame_seen,
-                frame_ghost=frame_ghost,
-                frame_logb=frame_logb,
-            ),
-        )
-
-        # Per-step progress like trackcorr (track3d step: curr/next/links)
-        from collections import Counter
-
-        _cnt = Counter(t0 for t0, _, _, _ in links)
-        for _i in range(len(frames) - 1):
-            _curr = len(frame_particles[_i])
-            _nxt = len(frame_particles[_i + 1])
-            _links = _cnt.get(_i, 0)
-            print(
-                f"two_phase step: {frames[_i]}, curr: {_curr}, next: {_nxt}, links: {_links}"
-            )
-        if frames:
-            _avg_parts = sum(len(p) for p in frame_particles) / len(frame_particles)
-            _avg_links = len(links) / max(len(frames) - 1, 1)
-            print(
-                f"Average over sequence, particles: {_avg_parts:.1f}, links: {_avg_links:.1f}, lost: {_avg_parts - _avg_links:.1f}"
-            )
-
-        linkage = _links_to_linkage(links, frames, [len(p) for p in frame_particles])
-        store.write_linkage_many(frames, linkage, frame_particles, name="ptv_is")
-
-        print(
-            f"TwoPhaseTracker: {len(links)} links across {len(frames)} frames "
-            f"(leaf_weight={leaf_weight}, v_max={v_max}, "
-            f"use_velocity={use_velocity}, cost_mode={cost_mode}, "
-            f"max_gap={max_gap}, "
-            f"project_fn={'yes' if project_fn is not None else 'no'})"
+        track_store(
+            store,
+            frames,
+            track_cfg,
+            getattr(self.exp, "cals", None),
+            getattr(self.exp, "cpar", None),
         )

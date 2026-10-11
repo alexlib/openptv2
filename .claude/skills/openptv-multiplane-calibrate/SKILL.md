@@ -1,11 +1,17 @@
 ---
 name: openptv-multiplane-calibrate
 description: >-
-  Calibrate an openptv2 multi-camera rig from a coded dots plate held at many
-  unknown depths (the OpenCV multi-plane style), producing .ori files that pass
-  a real epipolar test — no GUI, no manual orientation clicking, no sortgrid.
-  Use when a user has folders of calibration images of a dot plate (one folder
-  per camera, synchronised frame numbers), wants new .ori files, or has a
+  Calibrate an openptv2 multi-camera rig from a PLANAR plate (coded dots, black
+  on white or white on black; a chessboard needs its own detector) held at many
+  UNKNOWN positions and orientations — the OpenCV / Zhang free-pose style, as on
+  the Illmenau barrel — producing .ori files that pass a real epipolar test, with
+  no GUI, no manual orientation clicking, no sortgrid. NOT the regular openptv2
+  multi-plane calibration (GUI multi_planes / Combine_Flag), where the plate is
+  moved by KNOWN translations so every plane's points have known x,y,z and the
+  planes are stacked into one virtual 3D target body; use the GUI for that.
+  Use when a user has folders of calibration images of a hand-held or otherwise
+  freely placed plate (one folder per camera, synchronised frame numbers), wants
+  new .ori files, or has a
   calibration whose per-camera reprojection RMS looks fine but whose epipolar
   lines miss the corresponding points. Covers the parameters the user must
   supply, how the world origin is pinned to one physical dot, why focal length
@@ -16,7 +22,24 @@ description: >-
   triangulation is wrong".
 ---
 
-# Multi-plane plate calibration for openptv2
+# Free-pose planar-plate calibration for openptv2
+
+## Which "multi-plane" calibration this is
+
+"Multi-plane" means two different things in openptv2. Settle which one the user
+has before doing anything:
+
+| | regular openptv2 multi-plane | **this skill: free-pose planar plate** |
+|---|---|---|
+| plate positions | moved by **known** translations (typically in z, on a traverse) | hand-held or placed freely: **unknown** position and orientation per frame |
+| known 3D coordinates | every point of every plane: x, y from the plate, z from the traverse | only the in-plane grid (x, y on the plate); the plate pose is solved |
+| how the planes are used | stacked into one virtual 3D target body, one `full_calibration` per camera | each frame is a separate plate pose, solved jointly with the cameras (OpenCV / Zhang style) |
+| where in openptv2 | GUI calibration with `multi_planes` (`n_planes`, `plane_name`) and `examine.Combine_Flag`: per plane `<plane><cam>.tif.fix` (known) + `.tif.crd` (detected), combined in `gui/optimize_calibration.py` | `openptv2.plate_multiplane`, `openptv2.plate_bundle`, `scripts/illmenau/` |
+| target | any target with known 3D points | planar: coded dot plate (black on white or white on black, `dark_dots`); a chessboard works in the solver but needs its own corner detector (e.g. OpenCV `findChessboardCorners`) feeding `(id, pixel)` per view — not in openptv2 |
+
+If the plate positions are known (a traverse, a micrometer stage, spacers), use
+the regular GUI multi-plane path: it is simpler and needs none of the depth
+reasoning below. Use this skill only when the positions are unknown.
 
 Worked reference implementation: `docs/illmenau-4cam-calibration.md` and
 `scripts/illmenau/`. That is a real dataset (Illmenau barrel, 4 cameras, 6×7

@@ -1,22 +1,27 @@
-"""Post-PTV clean chain for Ilmenau rigs (reconnect -> repair -> kink-split -> SG -> stitch -> SG).
+"""Post-PTV clean chain for one Illmenau rig.
 
-Reads raw linkage from a run.zarr, applies the cloud-post reconnect+repair,
-splits violent fast kinks into FRESH trajectories (never reuse parent ids),
-then Savitzky-Golay smooth -> conservative stitch -> smooth, and saves a
- standalone store. Replaces the cloud stitch step (which does not scale to
-dense 1-4 linkage: 45+ min stuck) with flowtracks' reference stitcher, and
-adds the kink-split that cloud post lacks.
+reconnect (openptv2.reconnect) -> the flowtracks cleaning chain
+(flowtracks.clean: repair -> smooth -> kink split -> smooth -> stitch ->
+smooth -> kink split -> smooth -> tight stitch -> smooth), on the tracker
+linkage of RIGDIR/res/<store>, saved as a flowtracks trajectory store.
 
 Every setting comes from the `postptv_clean:` section of the rig's parameter
 file (RIGDIR/parameters_Run1.yaml, or --params); a command-line flag overrides
-that, and a setting missing from both falls back to the built-in default below.
-The effective values and their source are printed at the start.
+it; a setting missing from both takes the default (reconnect: below; the
+rest: flowtracks.clean.CLEAN_DEFAULTS). fps has no default. The effective
+values and their source are printed at the start.
 
     postptv_clean:
-      fps: 10.0                 # frame rate [Hz]: velocities/accelerations and
-                                # the stitch velocity limits are in m/s
+      fps: 10.0                 # frame rate [Hz]; velocities in m/s
       reconnect_max_gap: 10     # reconnect: max frame gap
       reconnect_tol_sigmas: 4.0 # reconnect: tolerance in sigmas
+      repair_max_gap: 1         # repair: attach / join across this many frames,
+      repair_max_distance_mm: 0.3  #   within this distance
+      repair_link_percentile: 99.9
+      repair_cut_factor: 2.0
+      repair_cut: true
+      repair_attach: true
+      repair_join: true
       sg_window: 7              # Savitzky-Golay window / order
       sg_order: 2
       kink_deg: 90.0            # kink split: turn angle ...
@@ -31,109 +36,24 @@ The effective values and their source are printed at the start.
       order_long: 3             #   for tracks with >= len_long points
       len_long: 25
 
-Usage:
-    uv run --project /Users/alex/Documents/Github/openptv-cloud python \
+Usage (flowtracks.clean is in postptv; until it is released, run with it):
+    uv run --with-editable /Users/alex/Documents/Github/postptv python \
         scripts/illmenau/build_postptv_clean.py RIGDIR [--first F] [--last L] \
         [--store run_fulldiam.zarr] [--out run_fulldiam_clean.zarr] [--fps 10 ...]
 """
+
 import argparse
-import sys
 import time
+from pathlib import Path
 
-import numpy as np
-
-sys.path.insert(0, "/Users/alex/Documents/Github/postptv")
-
+import yaml
+from flowtracks.clean import CLEAN_DEFAULTS, clean_trajectories, resolve_settings
 from flowtracks.io import save_zarr_trajectories
-from flowtracks.repair import repair_arrays
-from flowtracks.smoothing import savitzky_golay
-from flowtracks.stitching import stitch_trajectories
-from flowtracks.trajectory import Trajectory
-from openptv_cloud import experiment as E
-from openptv_cloud import post as P
 
 from openptv2.reconnect import reconnect_pieces
+from openptv2.storage.linkage_arrays import read_linkage_arrays
 
-
-def build_trajs(trajid_all, time_all, pos_all):
-    order = np.argsort(trajid_all, kind="stable")
-    tj, tm, pp = trajid_all[order], time_all[order], pos_all[order]
-    bounds = np.flatnonzero(np.diff(tj)) + 1
-    starts = np.r_[0, bounds]
-    out = []
-    for i, s in enumerate(starts):
-        e = int(bounds[i]) if i < len(bounds) else len(tj)
-        if e - s >= 2:
-            o = np.argsort(tm[s:e], kind="stable")
-            out.append(Trajectory(pp[s:e][o], np.zeros_like(pp[s:e][o]),
-                                  tm[s:e][o], int(tj[s])))
-    return out
-
-
-def kink_split(trajs, max_deg, step_min, fresh_start=10_000_000):
-    """Split fast violent reversals; every cut piece gets a FRESH trajid so
-    trajid-grouped readers (plots, Scene) cannot recombine the chimera."""
-    out, ncuts, nxt = [], 0, fresh_start
-    for tr in trajs:
-        v = tr.velocity()
-        n = np.linalg.norm(v, axis=1)
-        t, p = np.asarray(tr.time()), tr.pos()
-        st = np.linalg.norm(np.diff(p, axis=0), axis=1)
-        ok = (n[:-1] > 1e-12) & (n[1:] > 1e-12)
-        cosang = np.ones(len(v) - 1)
-        cosang[ok] = np.clip((v[:-1][ok] * v[1:][ok]).sum(1) / (n[:-1][ok] * n[1:][ok]), -1, 1)
-        ang = np.degrees(np.arccos(cosang))
-        instep = np.concatenate([st[:1], st[:-1]])
-        bad = np.flatnonzero((ang > max_deg) & (instep > step_min) & (st > step_min)) + 1
-        ncuts += len(bad)
-        segs = np.split(np.arange(len(t)), bad)
-        if len(segs) == 1:
-            out.append(tr)
-            continue
-        for seg in segs:
-            if len(seg) >= 2:
-                out.append(Trajectory(p[seg], v[seg], t[seg], nxt))
-                nxt += 1
-    return out, ncuts
-
-
-# built-in defaults: the values this script used before they moved into the
-# parameter file (fps 50 is NOT the Ilmenau frame rate -- set it in the file)
-DEFAULTS = dict(
-    fps=50.0, reconnect_max_gap=10, reconnect_tol_sigmas=4.0, sg_window=7,
-    sg_order=2, kink_deg=90.0, kink_step_mm=25.0, gap1=12, dist1=0.05, vd1=0.5,
-    gap2=8, dist2=0.025, vd2=0.35, win_long=0, order_long=3, len_long=25,
-)
-
-
-def resolve_settings(rigdir, params, cli):
-    """DEFAULTS <- parameter file `postptv_clean:` <- command line."""
-    from pathlib import Path
-
-    import yaml
-
-    path = Path(params) if params else Path(rigdir) / "parameters_Run1.yaml"
-    section = {}
-    if path.exists():
-        section = (yaml.safe_load(path.read_text()) or {}).get("postptv_clean") or {}
-    unknown = sorted(set(section) - set(DEFAULTS))
-    if unknown:
-        raise SystemExit(f"unknown postptv_clean keys in {path}: {unknown}")
-    cfg, source = {}, {}
-    for k, v in DEFAULTS.items():
-        if cli.get(k) is not None:
-            cfg[k], source[k] = cli[k], "command line"
-        elif k in section:
-            cfg[k], source[k] = type(v)(section[k]), path.name
-        else:
-            cfg[k], source[k] = v, "built-in default"
-    if not section:
-        print(f"WARNING: no postptv_clean section in {path}; built-in defaults "
-              f"(fps {DEFAULTS['fps']:g}) unless given on the command line", flush=True)
-    print("postptv_clean settings:", flush=True)
-    for k in DEFAULTS:
-        print(f"  {k:22s} {cfg[k]!s:>8s}   ({source[k]})", flush=True)
-    return cfg
+RECONNECT_DEFAULTS = dict(reconnect_max_gap=10, reconnect_tol_sigmas=4.0)
 
 
 def main():
@@ -143,54 +63,49 @@ def main():
                     help="parameter file (default RIGDIR/parameters_Run1.yaml)")
     ap.add_argument("--first", type=int, default=10001)
     ap.add_argument("--last", type=int, default=10500)
-    ap.add_argument("--store", default="run.zarr",
+    ap.add_argument("--store", default="run_fulldiam.zarr",
                     help="run store filename inside rigdir/res")
-    ap.add_argument("--out", default="run_postptv_clean.zarr")
-    for k, v in DEFAULTS.items():
-        ap.add_argument("--" + k.replace("_", "-"), dest=k, type=type(v), default=None,
-                        help=f"override the parameter file (built-in default {v})")
+    ap.add_argument("--out", default="run_fulldiam_clean.zarr")
+    keys = {**RECONNECT_DEFAULTS, **CLEAN_DEFAULTS}
+    for k, v in keys.items():
+        ap.add_argument("--" + k.replace("_", "-"), dest=k,
+                        type=float if v is None else type(v), default=None,
+                        help=f"override the parameter file (default {v})")
     args = ap.parse_args()
-    c = resolve_settings(args.rigdir, args.params, vars(args))
-    sgw, sgo = c["sg_window"], c["sg_order"]
+    cli = vars(args)
+
+    path = Path(args.params) if args.params else Path(args.rigdir) / "parameters_Run1.yaml"
+    section = dict((yaml.safe_load(path.read_text()) or {}).get("postptv_clean") or {})
+    rec = {}
+    rec_src = {}
+    for k, v in RECONNECT_DEFAULTS.items():
+        if cli.get(k) is not None:
+            rec[k], rec_src[k] = cli[k], "override"
+        elif k in section:
+            rec[k], rec_src[k] = type(v)(section.pop(k)), path.name
+        else:
+            rec[k], rec_src[k] = v, "default"
+    try:
+        c, src = resolve_settings(section, {k: cli.get(k) for k in CLEAN_DEFAULTS},
+                                  source_name=path.name)
+    except ValueError as exc:
+        raise SystemExit(f"{path}: postptv_clean: {exc}") from None
+    print("postptv_clean settings:", flush=True)
+    for k in keys:
+        v, s = (rec[k], rec_src[k]) if k in rec else (c[k], src[k])
+        print(f"  {k:24s} {v!s:>8s}   ({s})", flush=True)
 
     t0 = time.perf_counter()
-    store = args.rigdir.rstrip("/") + "/res/" + args.store
-    trajid0, time0, pos0 = P.read_zarr_linkage_arrays(store, first=args.first, last=args.last)
+    res = Path(args.rigdir) / "res"
+    trajid0, time0, pos0 = read_linkage_arrays(res / args.store, first=args.first,
+                                               last=args.last)
     print(f"linkage rows: {len(trajid0)}", flush=True)
-    tj = reconnect_pieces(trajid0, time0, pos0, max_gap=c["reconnect_max_gap"],
-                          tol_sigmas=c["reconnect_tol_sigmas"])
-    tj, rep = repair_arrays(tj, time0, pos0, **P.repair_kwargs(E.trajectory_repair(args.rigdir)))
-    print(f"reconnect+repair: cut={rep.get('links_cut')} joins={rep.get('joins')}", flush=True)
-    s1 = savitzky_golay(build_trajs(tj, time0, pos0), c["fps"], sgw, sgo, min_window=5)
-    split, ncuts = kink_split(s1, c["kink_deg"], c["kink_step_mm"] / 1000.0)
-    print(f"kinksplit(>{c['kink_deg']}deg, steps>{c['kink_step_mm']}mm): "
-          f"{len(s1)} -> {len(split)} objs, {ncuts} cuts", flush=True)
-    s2 = savitzky_golay(split, c["fps"], sgw, sgo, min_window=5)
-    st = stitch_trajectories(s2, fps=c["fps"], max_gap=c["gap1"],
-                             max_distance=c["dist1"], max_vel_diff=c["vd1"])
-    s2b = savitzky_golay(st, c["fps"], sgw, sgo, min_window=5)
-    split2, ncuts2 = kink_split(s2b, c["kink_deg"], c["kink_step_mm"] / 1000.0,
-                                fresh_start=20_000_000)
-    s2c = savitzky_golay(split2, c["fps"], sgw, sgo, min_window=5)
-    st2 = stitch_trajectories(s2c, fps=c["fps"], max_gap=c["gap2"],
-                              max_distance=c["dist2"], max_vel_diff=c["vd2"])
-    if c["win_long"] > 0:
-        short = [t for t in st2 if len(t) < c["len_long"]]
-        long = [t for t in st2 if len(t) >= c["len_long"]]
-        s_short = savitzky_golay(short, c["fps"], sgw, sgo, min_window=5)
-        s_long = savitzky_golay(long, c["fps"], c["win_long"], c["order_long"],
-                                min_window=7)
-        s3 = s_short + s_long
-        print(f"two-tier final smooth: {len(s_short)}x(7,2) + {len(s_long)}x"
-              f"({c['win_long']},{c['order_long']})", flush=True)
-    else:
-        s3 = savitzky_golay(st2, c["fps"], sgw, sgo, min_window=5)
-    lens = np.array([len(t) for t in s3])
-    print(f"final: n={len(s3)} joined1={len(s2) - len(st)} joined2={len(s2c) - len(st2)} "
-          f"med={np.median(lens):.0f} max={lens.max()} rows={lens.sum()} "
-          f"({time.perf_counter() - t0:.0f}s)", flush=True)
-    save_zarr_trajectories(s3, args.rigdir.rstrip("/") + "/res/" + args.out, overwrite=True)
-    print(f"saved {args.out}")
+    tj = reconnect_pieces(trajid0, time0, pos0, max_gap=rec["reconnect_max_gap"],
+                          tol_sigmas=rec["reconnect_tol_sigmas"])
+    trajs = clean_trajectories(tj, time0, pos0, c,
+                               log=lambda s: print(s, flush=True))
+    save_zarr_trajectories(trajs, str(res / args.out), overwrite=True)
+    print(f"saved {args.out} ({time.perf_counter() - t0:.0f}s)")
 
 
 if __name__ == "__main__":
