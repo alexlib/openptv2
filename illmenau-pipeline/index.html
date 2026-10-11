@@ -2366,11 +2366,11 @@ every cleaning value come from the rig's <code>parameters_Run1.yaml</code>.</p>
 overwrite existing results), then the merge:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>bash<span class="w"> </span>claude_work_2026-10-10/pipeline/full_pipeline_tuned.sh<span class="w"> </span><span class="m">14</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>bash<span class="w"> </span>claude_work_2026-10-10/pipeline/full_pipeline_tuned.sh<span class="w"> </span><span class="m">58</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>uv<span class="w"> </span>run<span class="w"> </span>--with-editable<span class="w"> </span>/path/to/postptv<span class="w"> </span>python<span class="w"> </span>scripts/illmenau/merge_dual_rig.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/illmenau/merge_dual_rig.py<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span>--clean<span class="w"> </span>run_fulldiam_clean.zarr<span class="w"> </span>--out<span class="w"> </span>merged_fulldiam.zarr
 </span></code></pre></div>
-<p><code>--with-editable</code> supplies <code>flowtracks.clean</code> and <code>flowtracks.merge</code> until a
-postptv release carries them.</p>
+<p><code>flowtracks.clean</code> and <code>flowtracks.merge</code> come with flowtracks &gt;= 1.7.0 (postptv),
+which openptv2's environment installs.</p>
 <h2 id="the-two-rigs">The two rigs<a class="headerlink" href="#the-two-rigs" title="Permanent link">&para;</a></h2>
 <p>Each rig is calibrated in its own frame (the front and back faces of the
 plate). The merge measures the map from rig 5-8 to rig 1-4 from bubbles both
