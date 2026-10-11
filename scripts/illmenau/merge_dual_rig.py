@@ -25,8 +25,8 @@ frame and walls, and the output layout.
      duplicate}.  Rig 1-4 trajectories come first (trajid < 1000 + n_rig14);
      the measured rig transform is stored in the attributes.
 
-Usage (flowtracks.merge is in postptv; until it is released, run with it):
-    uv run --with-editable /Users/alex/Documents/Github/postptv python \
+Usage (flowtracks >= 1.7.0, postptv):
+    uv run python \
         scripts/illmenau/merge_dual_rig.py [--dup-mm 20] [--keep-duplicates]
 """
 

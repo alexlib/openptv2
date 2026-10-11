@@ -36,8 +36,8 @@ values and their source are printed at the start.
       order_long: 3             #   for tracks with >= len_long points
       len_long: 25
 
-Usage (flowtracks.clean is in postptv; until it is released, run with it):
-    uv run --with-editable /Users/alex/Documents/Github/postptv python \
+Usage (flowtracks >= 1.7.0, postptv):
+    uv run python \
         scripts/illmenau/build_postptv_clean.py RIGDIR [--first F] [--last L] \
         [--store run_fulldiam.zarr] [--out run_fulldiam_clean.zarr] [--fps 10 ...]
 """

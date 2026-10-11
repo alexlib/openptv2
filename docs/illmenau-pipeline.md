@@ -26,12 +26,12 @@ overwrite existing results), then the merge:
 ```bash
 bash claude_work_2026-10-10/pipeline/full_pipeline_tuned.sh 14
 bash claude_work_2026-10-10/pipeline/full_pipeline_tuned.sh 58
-uv run --with-editable /path/to/postptv python scripts/illmenau/merge_dual_rig.py \
+uv run python scripts/illmenau/merge_dual_rig.py \
     --clean run_fulldiam_clean.zarr --out merged_fulldiam.zarr
 ```
 
-`--with-editable` supplies `flowtracks.clean` and `flowtracks.merge` until a
-postptv release carries them.
+`flowtracks.clean` and `flowtracks.merge` come with flowtracks >= 1.7.0 (postptv),
+which openptv2's environment installs.
 
 ## The two rigs
 
