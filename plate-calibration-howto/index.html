@@ -1560,6 +1560,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../illmenau-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illmenau Processing Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../calibration_best_practices/" class="md-nav__link">
         
   
@@ -2647,6 +2675,12 @@ of coded-dot-plate images, naming every piece of code involved and what it is
 for. Worked on the Illmenau barrel (two groups of four cameras, 6×7 coded
 plate, ~48 hand-held plate positions each); the numbers quoted throughout are
 from that rig.</p>
+<p>This is <strong>free-pose</strong> calibration: a planar plate at unknown positions and
+orientations, each pose solved together with the cameras (the OpenCV / Zhang
+approach). It is not the regular openptv2 multi-plane calibration, where the
+plate is moved by known translations, every plane's points have known x, y, z,
+and the GUI (<code>multi_planes</code>, <code>Combine_Flag</code>) stacks them into one virtual 3D
+target body. If the plate positions are known, use that simpler GUI path.</p>
 <p>Companion documents: <code>docs/illmenau-4cam-calibration.md</code> records what happened
 on that dataset, including the failures; <code>.claude/skills/openptv-multiplane-calibrate/SKILL.md</code>
 is the condensed procedure.</p>
