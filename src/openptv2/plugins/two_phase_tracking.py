@@ -182,6 +182,31 @@ class TwoPhaseTrackerConfig:
         None defaults to v_max. Setting a slightly wider bwd_v_max (e.g. 2.5
         when v_max=2.0) allows backward tracking to reach fast particles that
         forward missed, safely protected by the Forward-First lock.
+    vfc_mode : str
+        Spatial Neighborhood Consensus (VFC) mode: "off" (default), "pre"
+        (Option A: pre-Hungarian gate and/or soft cost penalty), "post"
+        (Option B: post-assignment Fast-VFC outlier rejection), or "both".
+    vfc_radius : float
+        Spatial neighborhood radius in mm for consensus evaluation.
+        Default 10.0.
+    vfc_min_neighbors : int
+        Minimum neighbors required to establish a valid consensus. Default 3.
+    vfc_gate : float | None
+        Option A: maximum allowed velocity deviation (mm/frame) from local
+        median neighbor consensus. Edges exceeding this are pruned before
+        Hungarian assignment. None = disabled.
+    vfc_weight : float
+        Option A: soft cost penalty multiplier for deviation from consensus.
+        0.0 = disabled.
+    vfc_post_k : float
+        Option B: multiplier over local median absolute deviation (MAD) for
+        post-assignment outlier rejection. Default 3.0.
+    vfc_post_min_tol : float
+        Option B: absolute floor tolerance in mm/frame for post-assignment
+        rejection. Default 0.5.
+    vfc_post_reject_cold_start : bool
+        Option B: whether detections rejected by post-VFC are prevented from
+        spawning new cold-start tracks. Default True.
     """
 
     v_max: float = 5.0
@@ -207,6 +232,14 @@ class TwoPhaseTrackerConfig:
     bidirectional: bool = False
     parallel_directions: bool = False
     bwd_v_max: float | None = None
+    vfc_mode: str = "off"
+    vfc_radius: float = 10.0
+    vfc_min_neighbors: int = 3
+    vfc_gate: float | None = None
+    vfc_weight: float = 0.0
+    vfc_post_k: float = 3.0
+    vfc_post_min_tol: float = 0.5
+    vfc_post_reject_cold_start: bool = True
 
 
 def _split_hist(
@@ -326,6 +359,139 @@ def _chains_from_links(
     return chains
 
 
+def compute_local_consensus_field(
+    positions: np.ndarray,
+    velocities: np.ndarray,
+    query_positions: np.ndarray,
+    radius: float,
+    min_neighbors: int = 3,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Compute local median consensus velocity for a set of query positions.
+
+    Parameters
+    ----------
+    positions : (N, 3) float array
+        Established reference positions (e.g. tracks with length >= 2).
+    velocities : (N, 3) float array
+        Established velocities corresponding to `positions`.
+    query_positions : (M, 3) float array
+        Query positions where local consensus should be evaluated.
+    radius : float
+        Spatial neighborhood radius in mm.
+    min_neighbors : int
+        Minimum neighbors required to establish a valid consensus.
+
+    Returns
+    -------
+    consensus_v : (M, 3) float array
+        Local median consensus velocity (NaN where invalid).
+    consensus_disp : (M,) float array
+        Local median absolute deviation (MAD) dispersion.
+    consensus_valid : (M,) bool array
+        True where consensus could be formed (>= min_neighbors).
+    """
+    m = len(query_positions)
+    consensus_v = np.full((m, 3), np.nan, dtype=np.float64)
+    consensus_disp = np.zeros(m, dtype=np.float64)
+    consensus_valid = np.zeros(m, dtype=bool)
+
+    if len(positions) < min_neighbors or m == 0:
+        return consensus_v, consensus_disp, consensus_valid
+
+    tree = cKDTree(positions)
+    nbrs_list = tree.query_ball_point(query_positions, r=radius)
+
+    for ki, nbrs in enumerate(nbrs_list):
+        if len(nbrs) >= min_neighbors:
+            v_nbrs = velocities[nbrs]
+            med_v = np.median(v_nbrs, axis=0)
+            mad = np.median(np.linalg.norm(v_nbrs - med_v, axis=1))
+            consensus_v[ki] = med_v
+            consensus_disp[ki] = mad
+            consensus_valid[ki] = True
+
+    return consensus_v, consensus_disp, consensus_valid
+
+
+def filter_links_by_spatial_consensus(
+    links: set[tuple[int, int]],
+    tids: list[int],
+    tracks: dict[int, dict],
+    pts1: np.ndarray,
+    dt: float,
+    current_t: int,
+    radius: float,
+    min_neighbors: int = 3,
+    post_k: float = 3.0,
+    min_tol: float = 0.5,
+) -> tuple[set[tuple[int, int]], set[int]]:
+    """Filter tentative frame matches by spatial neighborhood consensus (Option B / Fast-VFC).
+
+    Parameters
+    ----------
+    links : set of (ai, det) tuples
+        Tentative matches from Hungarian assignment.
+    tids : list of int
+        Active track IDs corresponding to predictor indices `ai`.
+    tracks : dict of int -> dict
+        Active track dictionary containing 'pos' and 'last_t'.
+    pts1 : (M, 3) float array
+        Candidate positions at frame t+1.
+    dt : float
+        Time step.
+    current_t : int
+        Current time index (step t+1).
+    radius : float
+        Neighborhood radius in mm.
+    min_neighbors : int
+        Minimum neighbors required to enforce consensus.
+    post_k : float
+        Multiplier over local MAD dispersion.
+    min_tol : float
+        Absolute residual floor in mm/frame.
+
+    Returns
+    -------
+    kept_links : set of (ai, det) tuples
+    rejected_dets : set of int
+        Detection indices rejected as spatial outliers.
+    """
+    if len(links) < min_neighbors:
+        return links, set()
+
+    link_list = list(links)
+    pos0 = np.array(
+        [tracks[tids[int(ai)]]["pos"] for ai, _ in link_list], dtype=np.float64
+    )
+    dt_steps = np.array(
+        [(current_t - tracks[tids[int(ai)]]["last_t"]) * dt for ai, _ in link_list],
+        dtype=np.float64,
+    )
+    dt_steps = np.maximum(dt_steps, 1e-6)
+    cands = np.array([pts1[int(det)] for _, det in link_list], dtype=np.float64)
+    disps = (cands - pos0) / dt_steps[:, None]
+
+    tree = cKDTree(pos0)
+    nbrs_list = tree.query_ball_point(pos0, r=radius)
+
+    rejected_pairs = set()
+    rejected_dets = set()
+    for ki, (ai, det) in enumerate(link_list):
+        nbrs = nbrs_list[ki]
+        if len(nbrs) >= min_neighbors:
+            nbr_disps = disps[nbrs]
+            med_disp = np.median(nbr_disps, axis=0)
+            mad = np.median(np.linalg.norm(nbr_disps - med_disp, axis=1))
+            res = np.linalg.norm(disps[ki] - med_disp)
+            tol = max(post_k * mad, min_tol)
+            if res > tol:
+                rejected_pairs.add((ai, det))
+                rejected_dets.add(int(det))
+
+    kept_links = {pair for pair in links if pair not in rejected_pairs}
+    return kept_links, rejected_dets
+
+
 def _match_two_phase_frame(
     pts0: np.ndarray,
     pts1: np.ndarray,
@@ -348,6 +514,13 @@ def _match_two_phase_frame(
     blob_gate: float | None = None,
     young0: np.ndarray | None = None,
     q_block: float = 1.0,
+    consensus_v: np.ndarray | None = None,
+    consensus_disp: np.ndarray | None = None,
+    consensus_valid: np.ndarray | None = None,
+    vfc_gate: float | None = None,
+    vfc_weight: float = 0.0,
+    pts0_orig: np.ndarray | None = None,
+    dt_steps: np.ndarray | None = None,
 ) -> tuple[set[tuple[int, int]], set[tuple[int, int]]]:
     """Two-phase frame-to-frame matching: 3D search + 2D ranking.
 
@@ -453,6 +626,57 @@ def _match_two_phase_frame(
                 return set(), set()
     if ghost1 is not None and q_weight > 0:
         cost_arr = cost_arr * (1.0 + q_weight * np.asarray(ghost1)[col_arr])
+
+    # Spatial Neighborhood Consensus (Option A: Pre-Hungarian Gate / Cost Penalty)
+    if consensus_valid is not None and (vfc_gate is not None or vfc_weight > 0):
+        c_mask = consensus_valid[row_arr]
+        if c_mask.any():
+            r_idx = row_arr[c_mask]
+            c_idx = col_arr[c_mask]
+            p_orig = pts0[r_idx] if pts0_orig is None else pts0_orig[r_idx]
+            dt_s = (
+                np.ones((len(r_idx), 1), dtype=np.float64)
+                if dt_steps is None
+                else np.asarray(dt_steps[r_idx, None], dtype=np.float64)
+            )
+            dt_s = np.maximum(dt_s, 1e-6)
+            disp = (pts1[c_idx] - p_orig) / dt_s
+            delta_v = np.linalg.norm(disp - consensus_v[r_idx], axis=1)
+
+            if vfc_gate is not None and vfc_gate > 0:
+                bad_edges = delta_v > vfc_gate
+                if bad_edges.any():
+                    keep = np.ones(len(row_arr), dtype=bool)
+                    idx_in_row = np.flatnonzero(c_mask)
+                    keep[idx_in_row[bad_edges]] = False
+                    row_arr = row_arr[keep]
+                    col_arr = col_arr[keep]
+                    cost_arr = cost_arr[keep]
+                    if len(row_arr) == 0:
+                        return set(), set()
+                    c_mask = consensus_valid[row_arr]
+                    if c_mask.any() and vfc_weight > 0:
+                        r_idx = row_arr[c_mask]
+                        c_idx = col_arr[c_mask]
+                        p_orig = pts0[r_idx] if pts0_orig is None else pts0_orig[r_idx]
+                        dt_s = (
+                            np.ones((len(r_idx), 1), dtype=np.float64)
+                            if dt_steps is None
+                            else np.asarray(dt_steps[r_idx, None], dtype=np.float64)
+                        )
+                        dt_s = np.maximum(dt_s, 1e-6)
+                        disp = (pts1[c_idx] - p_orig) / dt_s
+                        delta_v = np.linalg.norm(disp - consensus_v[r_idx], axis=1)
+
+            if vfc_weight > 0 and c_mask.any():
+                idx_in_row = np.flatnonzero(c_mask)
+                disp_scale = (
+                    np.ones(len(r_idx))
+                    if consensus_disp is None
+                    else np.maximum(consensus_disp[r_idx], 1e-4)
+                )
+                penalty = 1.0 + vfc_weight * (delta_v / disp_scale)
+                cost_arr[idx_in_row] *= penalty
 
     # Phase 2: Hungarian via connected components
     n_nodes = n_pred + n_cand
@@ -799,6 +1023,39 @@ class TwoPhaseTracker:
             det_seen = None
             if frame_seen is not None and frame_seen[t + 1] is not None:
                 det_seen = np.asarray(frame_seen[t + 1], dtype=bool)
+
+            # Option A: Compute spatial consensus velocity field if enabled
+            consensus_v = None
+            consensus_disp = None
+            consensus_valid = None
+            orig_pts = None
+            dt_steps_arr = None
+            if self.cfg.vfc_mode in ("pre", "both") and tids:
+                orig_pts = np.array(
+                    [tracks[tid]["pos"] for tid in tids], dtype=np.float64
+                )
+                dt_steps_arr = np.array(
+                    [(t + 1 - tracks[tid]["last_t"]) * self.cfg.dt for tid in tids],
+                    dtype=np.float64,
+                )
+                est_tids = [tid for tid in active if len(hist[tid]) >= 2]
+                if len(est_tids) >= self.cfg.vfc_min_neighbors:
+                    est_pos = np.array(
+                        [tracks[tid]["pos"] for tid in est_tids], dtype=np.float64
+                    )
+                    est_vel = np.array(
+                        [tracks[tid]["vel"] for tid in est_tids], dtype=np.float64
+                    )
+                    consensus_v, consensus_disp, consensus_valid = (
+                        compute_local_consensus_field(
+                            est_pos,
+                            est_vel,
+                            orig_pts,
+                            radius=self.cfg.vfc_radius,
+                            min_neighbors=self.cfg.vfc_min_neighbors,
+                        )
+                    )
+
             got, got_shared = _match_two_phase_frame(
                 np.asarray(pred_pts, dtype=np.float64),
                 np.asarray(pts1, dtype=np.float64),
@@ -833,7 +1090,36 @@ class TwoPhaseTracker:
                 ),
                 logb1=frame_logb[t + 1] if frame_logb is not None else None,
                 blob_gate=self.cfg.blob_gate,
+                consensus_v=consensus_v,
+                consensus_disp=consensus_disp,
+                consensus_valid=consensus_valid,
+                vfc_gate=self.cfg.vfc_gate,
+                vfc_weight=self.cfg.vfc_weight,
+                pts0_orig=orig_pts,
+                dt_steps=dt_steps_arr,
             )
+
+            # Option B (Post-Assignment Fast-VFC outlier rejection)
+            rejected_dets: set[int] = set()
+            if (
+                self.cfg.vfc_mode in ("post", "both")
+                and len(got) >= self.cfg.vfc_min_neighbors
+            ):
+                got, rejected_dets = filter_links_by_spatial_consensus(
+                    got,
+                    tids,
+                    tracks,
+                    pts1,
+                    self.cfg.dt,
+                    t + 1,
+                    radius=self.cfg.vfc_radius,
+                    min_neighbors=self.cfg.vfc_min_neighbors,
+                    post_k=self.cfg.vfc_post_k,
+                    min_tol=self.cfg.vfc_post_min_tol,
+                )
+                if got_shared:
+                    got_shared = {pair for pair in got_shared if pair in got}
+
             matched_det = set()
             for ai, det in got:
                 tid = tids[int(ai)]
@@ -871,6 +1157,12 @@ class TwoPhaseTracker:
             # Cold start: unmatched detections become zero-velocity tracks.
             for det in range(n1):
                 if det not in matched_det:
+                    if (
+                        self.cfg.vfc_mode in ("post", "both")
+                        and self.cfg.vfc_post_reject_cold_start
+                        and det in rejected_dets
+                    ):
+                        continue
                     if (
                         frame_ghost is not None
                         and self.cfg.q_seed is not None
@@ -1067,6 +1359,15 @@ def track_store(
     q_model = q_model_of(track_cfg)
     bwd_v_max_raw = track_cfg.get("bwd_v_max", None)
     bwd_v_max = None if bwd_v_max_raw is None else float(bwd_v_max_raw)
+    vfc_mode = str(track_cfg.get("vfc_mode", "off"))
+    vfc_radius = float(track_cfg.get("vfc_radius", 10.0))
+    vfc_min_neighbors = int(track_cfg.get("vfc_min_neighbors", 3))
+    vfc_gate_raw = track_cfg.get("vfc_gate", None)
+    vfc_gate = None if vfc_gate_raw is None else float(vfc_gate_raw)
+    vfc_weight = float(track_cfg.get("vfc_weight", 0.0))
+    vfc_post_k = float(track_cfg.get("vfc_post_k", 3.0))
+    vfc_post_min_tol = float(track_cfg.get("vfc_post_min_tol", 0.5))
+    vfc_post_reject_cold_start = bool(track_cfg.get("vfc_post_reject_cold_start", True))
 
     # Infer num_cams from correspondences shape: (N, 3+C) where C = num_cams
     corr_shape = store.root[f"correspondences/frame_{frames[0]:06d}"].shape
@@ -1139,6 +1440,14 @@ def track_store(
         bidirectional=bidirectional,
         parallel_directions=bool(track_cfg.get("parallel_directions", False)),
         bwd_v_max=bwd_v_max,
+        vfc_mode=vfc_mode,
+        vfc_radius=vfc_radius,
+        vfc_min_neighbors=vfc_min_neighbors,
+        vfc_gate=vfc_gate,
+        vfc_weight=vfc_weight,
+        vfc_post_k=vfc_post_k,
+        vfc_post_min_tol=vfc_post_min_tol,
+        vfc_post_reject_cold_start=vfc_post_reject_cold_start,
     )
     tracker = TwoPhaseTracker(cfg)
     project_fn = build_project_fn(cals, cpar)
