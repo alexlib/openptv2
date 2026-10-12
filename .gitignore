@@ -170,3 +170,4 @@ __marimo__/
 
 # mkdocs build output
 site/
+*.pem
