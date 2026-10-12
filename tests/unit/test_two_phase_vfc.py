@@ -264,3 +264,153 @@ def test_vfc_mode_both_and_sparse_fallback():
     tracker = TwoPhaseTracker(cfg)
     links = tracker.track_frames(frames, leaves, project_fn=ident)
     assert len(links) == 2
+
+
+def test_fit_local_affine_divergence_free_exact():
+    """Affine fit exactly recovers solid-body rotation and linear shear with zero divergence."""
+    from openptv2.plugins.two_phase_tracking import fit_local_affine_divergence_free
+
+    rng = np.random.default_rng(123)
+    k = 12
+    rel_pos = rng.uniform(-4, 4, size=(k, 3))
+    x, y, z = rel_pos[:, 0], rel_pos[:, 1], rel_pos[:, 2]
+
+    # Incompressible flow field:
+    # vx = 1.5 + 0.4*y - 0.2*z
+    # vy = 2.0 - 0.4*x + 0.1*z
+    # vz = -1.0 + 0.2*x - 0.1*y
+    # div = 0 + 0 + 0 = 0
+    v0_true = np.array([1.5, 2.0, -1.0])
+    vx = v0_true[0] + 0.4 * y - 0.2 * z
+    vy = v0_true[1] - 0.4 * x + 0.1 * z
+    vz = v0_true[2] + 0.2 * x - 0.1 * y
+    vel = np.column_stack([vx, vy, vz])
+
+    v0_est, res = fit_local_affine_divergence_free(rel_pos, vel)
+    np.testing.assert_allclose(v0_est, v0_true, atol=1e-5)
+    np.testing.assert_allclose(res, 0.0, atol=1e-5)
+
+
+def test_compute_bootstrap_velocity_field_mode_recovery():
+    """Bootstrap velocity field extracts coherent displacement mode despite random ghosts."""
+    from openptv2.plugins.two_phase_tracking import compute_bootstrap_velocity_field
+
+    rng = np.random.default_rng(42)
+    n_real = 80
+    pts0_real = rng.uniform(-20, 20, size=(n_real, 3))
+    flow_v = np.array([1.5, -0.8, 0.3])
+    pts1_real = pts0_real + flow_v
+
+    # Add 40 random ghost particles
+    n_ghost = 40
+    pts0_ghosts = rng.uniform(-20, 20, size=(n_ghost, 3))
+    pts1_ghosts = rng.uniform(-20, 20, size=(n_ghost, 3))
+
+    pts0 = np.vstack([pts0_real, pts0_ghosts])
+    pts1 = np.vstack([pts1_real, pts1_ghosts])
+
+    boot_v = compute_bootstrap_velocity_field(
+        pts0, pts1, v_max=4.0, dt=1.0, grid_size=30.0, min_pairs=4
+    )
+
+    # For real particles, estimated initial velocity should closely match flow_v
+    real_errors = np.linalg.norm(boot_v[:n_real] - flow_v, axis=1)
+    # The vast majority of particles should have error < 0.5 mm
+    assert np.median(real_errors) < 0.5
+
+
+def test_tracker_vfc_bootstrap_protects_frame_0():
+    """vfc_bootstrap initializes velocity so spatial consensus can gate out ghosts at frame 0."""
+    # 4 real particles moving at (1.0, 0.0, 0.0) from frame 0 to frame 1
+    # Frame 0:
+    pts0 = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 2.0, 0.0],
+            [0.0, 3.0, 0.0],
+        ]
+    )
+    # Frame 1 has true particles at x=1.0, plus a ghost near particle 0 at (0.2, 0.8, 0.0)
+    pts1 = np.array(
+        [
+            [1.0, 0.0, 0.0],  # true 0
+            [1.0, 1.0, 0.0],  # true 1
+            [1.0, 2.0, 0.0],  # true 2
+            [1.0, 3.0, 0.0],  # true 3
+            [0.1, 0.1, 0.0],  # ghost very close to particle 0's start position!
+        ]
+    )
+    frames = [pts0, pts1]
+
+    # Without bootstrap: at frame 0 tracks have vel=0, so the ghost at (0.1, 0.1, 0)
+    # is much closer to (0,0,0) than the true match at (1,0,0) (dist 0.14 vs 1.0)
+    cfg_no_boot = TwoPhaseTrackerConfig(
+        v_max=4.0,
+        cost_mode="3d",
+        use_velocity=True,
+        vfc_mode="pre",
+        vfc_gate=0.5,
+        vfc_bootstrap=False,
+    )
+    links_no_boot = TwoPhaseTracker(cfg_no_boot).track_frames(frames)
+    p0_link_no_boot = [l for l in links_no_boot if l[1] == 0]
+    # Without bootstrap, particle 0 is hijacked by the ghost (index 4)
+    assert p0_link_no_boot[0][3] == 4
+
+    # With bootstrap: tracks initialize with flow velocity ~(1, 0, 0),
+    # predicting candidate at (1, 0, 0) and consensus gates out ghost at (0.1, 0.1, 0)!
+    cfg_boot = TwoPhaseTrackerConfig(
+        v_max=4.0,
+        cost_mode="3d",
+        use_velocity=True,
+        vfc_mode="pre",
+        vfc_gate=0.5,
+        vfc_bootstrap=True,
+        vfc_bootstrap_grid_size=20.0,
+    )
+    links_boot = TwoPhaseTracker(cfg_boot).track_frames(frames)
+    p0_link_boot = [l for l in links_boot if l[1] == 0]
+    # With bootstrap, particle 0 correctly links to true detection (index 0)
+    assert p0_link_boot[0][3] == 0
+
+
+def test_tracker_vfc_affine_in_shear_flow():
+    """vfc_affine accommodates physical shear gradients, enabling tighter gating without false rejections."""
+    # 8 particles in linear shear flow vx = 0.5 * y
+    y = np.linspace(0, 4, 8)
+    p0 = np.column_stack([np.zeros_like(y), y, np.zeros_like(y)])
+    vx = 0.5 * y
+    p1 = p0 + np.column_stack([vx, np.zeros_like(y), np.zeros_like(y)])
+    p2 = p1 + np.column_stack([vx, np.zeros_like(y), np.zeros_like(y)])
+    frames = [p0, p1, p2]
+
+    # Constant VFC with tight gate 0.35 mm drops particles at extreme y because
+    # they deviate from the local median by more than 0.35 mm
+    cfg_const = TwoPhaseTrackerConfig(
+        v_max=4.0,
+        cost_mode="3d",
+        use_velocity=True,
+        vfc_mode="pre",
+        vfc_radius=6.0,
+        vfc_min_neighbors=4,
+        vfc_gate=0.35,
+        vfc_affine=False,
+    )
+    links_const = TwoPhaseTracker(cfg_const).track_frames(frames)
+    assert len(links_const) < 16
+
+    # Affine VFC fits the gradient dvx/dy = 0.5, so all 16 true links are preserved
+    cfg_affine = TwoPhaseTrackerConfig(
+        v_max=4.0,
+        cost_mode="3d",
+        use_velocity=True,
+        vfc_mode="pre",
+        vfc_radius=6.0,
+        vfc_min_neighbors=4,
+        vfc_gate=0.35,
+        vfc_affine=True,
+        vfc_affine_min_neighbors=4,
+    )
+    links_affine = TwoPhaseTracker(cfg_affine).track_frames(frames)
+    assert len(links_affine) == 16

@@ -201,6 +201,34 @@ def run_benchmark(n_particles: int = 1000, n_frames: int = 5, reps: int = 3):
             vfc_post_k=3.0,
             vfc_post_min_tol=0.6,
         ),
+        "Phase 2 (Bootstrap + Both)": TwoPhaseTrackerConfig(
+            v_max=4.0,
+            cost_mode="3d",
+            use_velocity=True,
+            vfc_mode="both",
+            vfc_radius=12.0,
+            vfc_min_neighbors=3,
+            vfc_gate=1.5,
+            vfc_post_k=3.0,
+            vfc_post_min_tol=0.6,
+            vfc_bootstrap=True,
+            vfc_bootstrap_grid_size=20.0,
+        ),
+        "Phase 2 (Bootstrap + Affine)": TwoPhaseTrackerConfig(
+            v_max=4.0,
+            cost_mode="3d",
+            use_velocity=True,
+            vfc_mode="both",
+            vfc_radius=12.0,
+            vfc_min_neighbors=4,
+            vfc_gate=1.0,
+            vfc_post_k=3.0,
+            vfc_post_min_tol=0.5,
+            vfc_bootstrap=True,
+            vfc_bootstrap_grid_size=20.0,
+            vfc_affine=True,
+            vfc_affine_min_neighbors=5,
+        ),
     }
 
     for ghost_ratio in ghost_levels:
@@ -210,9 +238,9 @@ def run_benchmark(n_particles: int = 1000, n_frames: int = 5, reps: int = 3):
             f"\n--- Seeding Density: {n_particles} real + {int(n_particles * ghost_ratio)} ghosts ({ghost_pct}% ghost ratio, {n_total} pts/frame) ---"
         )
         print(
-            f"{'Method':<28} | {'Time (ms/f)':<11} | {'Precision':<10} | {'Recall':<8} | {'F1 Score':<8} | {'False Links':<11}"
+            f"{'Method':<30} | {'Time (ms/f)':<11} | {'Precision':<10} | {'Recall':<8} | {'F1 Score':<8} | {'False Links':<11}"
         )
-        print("-" * 86)
+        print("-" * 88)
 
         obs_frames, true_links = inject_ghost_particles(
             frames_gt, ghost_ratio=ghost_ratio
@@ -233,7 +261,7 @@ def run_benchmark(n_particles: int = 1000, n_frames: int = 5, reps: int = 3):
             metrics = evaluate_tracking(links, true_links)
 
             print(
-                f"{name:<28} | {avg_time:9.2f} ms | "
+                f"{name:<30} | {avg_time:9.2f} ms | "
                 f"{metrics['precision']:9.1f}% | "
                 f"{metrics['recall']:7.1f}% | "
                 f"{metrics['f1']:7.1f}% | "

@@ -207,6 +207,21 @@ class TwoPhaseTrackerConfig:
     vfc_post_reject_cold_start : bool
         Option B: whether detections rejected by post-VFC are prevented from
         spawning new cold-start tracks. Default True.
+    vfc_bootstrap : bool
+        Whether to bootstrap initial velocity for cold starts (including
+        frame 0 -> 1) using local displacement mode extraction. Default False.
+    vfc_bootstrap_radius : float
+        Search radius in mm for bootstrapping displacement mode. Default 15.0.
+    vfc_bootstrap_grid_size : float
+        Spatial binning cell size in mm for coarse velocity field bootstrapping.
+        Default 20.0.
+    vfc_affine : bool
+        Whether to fit a local divergence-free affine velocity field
+        v(x) = v0 + A(x - x0) (tr(A) = 0) to account for shear and rotation.
+        Default False.
+    vfc_affine_min_neighbors : int
+        Minimum neighbors required to fit the 8-DOF divergence-free affine tensor.
+        Default 6.
     """
 
     v_max: float = 5.0
@@ -240,6 +255,11 @@ class TwoPhaseTrackerConfig:
     vfc_post_k: float = 3.0
     vfc_post_min_tol: float = 0.5
     vfc_post_reject_cold_start: bool = True
+    vfc_bootstrap: bool = False
+    vfc_bootstrap_radius: float = 15.0
+    vfc_bootstrap_grid_size: float = 20.0
+    vfc_affine: bool = False
+    vfc_affine_min_neighbors: int = 6
 
 
 def _split_hist(
@@ -359,14 +379,181 @@ def _chains_from_links(
     return chains
 
 
+def fit_local_affine_divergence_free(
+    rel_pos: np.ndarray,
+    velocities: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Fit local affine velocity field v(r) = v0 + A @ r with tr(A) = 0.
+
+    Parameters
+    ----------
+    rel_pos : (K, 3) float array
+        Neighbor positions relative to the query point (x_k - x_q).
+    velocities : (K, 3) float array
+        Neighbor velocities.
+
+    Returns
+    -------
+    v0 : (3,) float array
+        Velocity evaluated at query point r = 0.
+    residuals : (K,) float array
+        Norm of residual vector for each neighbor.
+    """
+    k = len(rel_pos)
+    m_mat = np.zeros((3 * k, 11), dtype=np.float64)
+    b_vec = velocities.ravel()
+
+    idx = np.arange(k)
+    m_mat[3 * idx, 0] = 1.0
+    m_mat[3 * idx, 3:6] = rel_pos
+    m_mat[3 * idx + 1, 1] = 1.0
+    m_mat[3 * idx + 1, 6:9] = rel_pos
+    m_mat[3 * idx + 2, 2] = 1.0
+    m_mat[3 * idx + 2, 3] = -rel_pos[:, 2]
+    m_mat[3 * idx + 2, 7] = -rel_pos[:, 2]
+    m_mat[3 * idx + 2, 9:11] = rel_pos[:, :2]
+
+    try:
+        p, _, _, _ = np.linalg.lstsq(m_mat, b_vec, rcond=None)
+        v0 = p[:3]
+        a_mat = np.array(
+            [
+                [p[3], p[4], p[5]],
+                [p[6], p[7], p[8]],
+                [p[9], p[10], -p[3] - p[7]],
+            ]
+        )
+        v_pred = v0 + rel_pos @ a_mat.T
+        res = np.linalg.norm(velocities - v_pred, axis=1)
+        return v0, res
+    except Exception:
+        med_v = np.median(velocities, axis=0)
+        res = np.linalg.norm(velocities - med_v, axis=1)
+        return med_v, res
+
+
+def compute_bootstrap_velocity_field(
+    pts0: np.ndarray,
+    pts1: np.ndarray,
+    v_max: float,
+    dt: float = 1.0,
+    grid_size: float = 20.0,
+    min_pairs: int = 4,
+) -> np.ndarray:
+    """Compute coarse initial velocity field for frame 0 / cold start particles.
+
+    Partitions the domain into spatial cells of size `grid_size`. For each cell,
+    computes candidate displacement vectors to particles within `v_max` in frame 1,
+    and extracts the dominant displacement mode.
+
+    Parameters
+    ----------
+    pts0 : (N, 3) float array
+        Particles at frame t.
+    pts1 : (M, 3) float array
+        Particles at frame t+1.
+    v_max : float
+        Maximum velocity search radius.
+    dt : float
+        Time step between frames.
+    grid_size : float
+        Spatial binning size in mm.
+    min_pairs : int
+        Minimum candidate pairs required in a cell to form a mode.
+
+    Returns
+    -------
+    boot_v : (N, 3) float array
+        Estimated initial velocity for each particle in `pts0`.
+    """
+    n0 = len(pts0)
+    boot_v = np.zeros((n0, 3), dtype=np.float64)
+    if n0 == 0 or len(pts1) == 0:
+        return boot_v
+
+    tree0 = cKDTree(pts0)
+    tree1 = cKDTree(pts1)
+    cand_pairs = tree0.query_ball_tree(tree1, r=v_max)
+
+    min_b = np.min(pts0, axis=0) - 1.0
+    max_b = np.max(pts0, axis=0) + 1.0
+    bins = [np.arange(min_b[i], max_b[i] + grid_size, grid_size) for i in range(3)]
+    for i in range(3):
+        if len(bins[i]) < 2:
+            bins[i] = np.array([min_b[i], min_b[i] + grid_size])
+
+    ix = np.clip(np.digitize(pts0[:, 0], bins[0]) - 1, 0, len(bins[0]) - 2)
+    iy = np.clip(np.digitize(pts0[:, 1], bins[1]) - 1, 0, len(bins[1]) - 2)
+    iz = np.clip(np.digitize(pts0[:, 2], bins[2]) - 1, 0, len(bins[2]) - 2)
+    cell_ids = ix * 10000 + iy * 100 + iz
+
+    from collections import defaultdict
+
+    cell_disps = defaultdict(list)
+    for i, cands in enumerate(cand_pairs):
+        cid = cell_ids[i]
+        p0 = pts0[i]
+        for j in cands:
+            cell_disps[cid].append((pts1[j] - p0) / dt)
+
+    cell_vel = {}
+    h_range = [(-v_max / dt, v_max / dt)] * 3
+    for cid, disps in cell_disps.items():
+        if len(disps) >= min_pairs:
+            d = np.array(disps, dtype=np.float64)
+            h, edges = np.histogramdd(d, bins=8, range=h_range)
+            if h.sum() > 0:
+                idx = np.unravel_index(np.argmax(h), h.shape)
+                in_bin = (
+                    (d[:, 0] >= edges[0][idx[0]])
+                    & (d[:, 0] <= edges[0][idx[0] + 1])
+                    & (d[:, 1] >= edges[1][idx[1]])
+                    & (d[:, 1] <= edges[1][idx[1] + 1])
+                    & (d[:, 2] >= edges[2][idx[2]])
+                    & (d[:, 2] <= edges[2][idx[2] + 1])
+                )
+                if in_bin.sum() > 0:
+                    cell_vel[cid] = np.median(d[in_bin], axis=0)
+                else:
+                    cell_vel[cid] = np.array(
+                        [
+                            0.5 * (edges[dim][idx[dim]] + edges[dim][idx[dim] + 1])
+                            for dim in range(3)
+                        ]
+                    )
+
+    if not cell_vel:
+        return boot_v
+
+    unassigned = []
+    for i in range(n0):
+        cid = cell_ids[i]
+        if cid in cell_vel:
+            boot_v[i] = cell_vel[cid]
+        else:
+            unassigned.append(i)
+
+    if unassigned and len(cell_vel) > 0:
+        assigned_mask = np.ones(n0, dtype=bool)
+        assigned_mask[unassigned] = False
+        if assigned_mask.any():
+            nn_tree = cKDTree(pts0[assigned_mask])
+            _, nn_idx = nn_tree.query(pts0[unassigned], k=1)
+            boot_v[unassigned] = boot_v[assigned_mask][nn_idx]
+
+    return boot_v
+
+
 def compute_local_consensus_field(
     positions: np.ndarray,
     velocities: np.ndarray,
     query_positions: np.ndarray,
     radius: float,
     min_neighbors: int = 3,
+    use_affine: bool = False,
+    affine_min_neighbors: int = 6,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Compute local median consensus velocity for a set of query positions.
+    """Compute local consensus velocity for a set of query positions.
 
     Parameters
     ----------
@@ -380,13 +567,17 @@ def compute_local_consensus_field(
         Spatial neighborhood radius in mm.
     min_neighbors : int
         Minimum neighbors required to establish a valid consensus.
+    use_affine : bool
+        Whether to fit a divergence-free local affine velocity field tr(A)=0.
+    affine_min_neighbors : int
+        Minimum neighbors required for the affine fit (default 6).
 
     Returns
     -------
     consensus_v : (M, 3) float array
-        Local median consensus velocity (NaN where invalid).
+        Local consensus velocity (NaN where invalid).
     consensus_disp : (M,) float array
-        Local median absolute deviation (MAD) dispersion.
+        Local dispersion (MAD or affine residual).
     consensus_valid : (M,) bool array
         True where consensus could be formed (>= min_neighbors).
     """
@@ -404,11 +595,18 @@ def compute_local_consensus_field(
     for ki, nbrs in enumerate(nbrs_list):
         if len(nbrs) >= min_neighbors:
             v_nbrs = velocities[nbrs]
-            med_v = np.median(v_nbrs, axis=0)
-            mad = np.median(np.linalg.norm(v_nbrs - med_v, axis=1))
-            consensus_v[ki] = med_v
-            consensus_disp[ki] = mad
-            consensus_valid[ki] = True
+            if use_affine and len(nbrs) >= affine_min_neighbors:
+                rel_pos = positions[nbrs] - query_positions[ki]
+                v0, res = fit_local_affine_divergence_free(rel_pos, v_nbrs)
+                consensus_v[ki] = v0
+                consensus_disp[ki] = np.median(res)
+                consensus_valid[ki] = True
+            else:
+                med_v = np.median(v_nbrs, axis=0)
+                mad = np.median(np.linalg.norm(v_nbrs - med_v, axis=1))
+                consensus_v[ki] = med_v
+                consensus_disp[ki] = mad
+                consensus_valid[ki] = True
 
     return consensus_v, consensus_disp, consensus_valid
 
@@ -967,10 +1165,22 @@ class TwoPhaseTracker:
         hist: dict[int, list[tuple[int, int, bool]]] = {}
         # (frame_idx, row) -> tid, for emitting row-based links
         loc2tid: dict[tuple[int, int], int] = {}
-        for i, p in enumerate(frame_particles[0]):
+        pts0_init = np.asarray(frame_particles[0], dtype=np.float64)
+        init_vels = np.zeros((len(pts0_init), 3), dtype=np.float64)
+        if self.cfg.vfc_bootstrap and num_frames > 1:
+            pts1_init = np.asarray(frame_particles[1], dtype=np.float64)
+            init_vels = compute_bootstrap_velocity_field(
+                pts0_init,
+                pts1_init,
+                v_max=eff_vmax,
+                dt=self.cfg.dt,
+                grid_size=self.cfg.vfc_bootstrap_grid_size,
+            )
+
+        for i, p in enumerate(pts0_init):
             tracks[next_tid] = {
-                "pos": np.asarray(p, dtype=np.float64),
-                "vel": np.zeros(3),
+                "pos": p.copy(),
+                "vel": init_vels[i].copy(),
                 "last_t": 0,
                 "last_row": i,
                 "misses": 0,
@@ -1038,7 +1248,8 @@ class TwoPhaseTracker:
                     [(t + 1 - tracks[tid]["last_t"]) * self.cfg.dt for tid in tids],
                     dtype=np.float64,
                 )
-                est_tids = [tid for tid in active if len(hist[tid]) >= 2]
+                min_len = 1 if self.cfg.vfc_bootstrap else 2
+                est_tids = [tid for tid in active if len(hist[tid]) >= min_len]
                 if len(est_tids) >= self.cfg.vfc_min_neighbors:
                     est_pos = np.array(
                         [tracks[tid]["pos"] for tid in est_tids], dtype=np.float64
@@ -1053,6 +1264,8 @@ class TwoPhaseTracker:
                             orig_pts,
                             radius=self.cfg.vfc_radius,
                             min_neighbors=self.cfg.vfc_min_neighbors,
+                            use_affine=self.cfg.vfc_affine,
+                            affine_min_neighbors=self.cfg.vfc_affine_min_neighbors,
                         )
                     )
 
@@ -1368,6 +1581,11 @@ def track_store(
     vfc_post_k = float(track_cfg.get("vfc_post_k", 3.0))
     vfc_post_min_tol = float(track_cfg.get("vfc_post_min_tol", 0.5))
     vfc_post_reject_cold_start = bool(track_cfg.get("vfc_post_reject_cold_start", True))
+    vfc_bootstrap = bool(track_cfg.get("vfc_bootstrap", False))
+    vfc_bootstrap_radius = float(track_cfg.get("vfc_bootstrap_radius", 15.0))
+    vfc_bootstrap_grid_size = float(track_cfg.get("vfc_bootstrap_grid_size", 20.0))
+    vfc_affine = bool(track_cfg.get("vfc_affine", False))
+    vfc_affine_min_neighbors = int(track_cfg.get("vfc_affine_min_neighbors", 6))
 
     # Infer num_cams from correspondences shape: (N, 3+C) where C = num_cams
     corr_shape = store.root[f"correspondences/frame_{frames[0]:06d}"].shape
@@ -1448,6 +1666,11 @@ def track_store(
         vfc_post_k=vfc_post_k,
         vfc_post_min_tol=vfc_post_min_tol,
         vfc_post_reject_cold_start=vfc_post_reject_cold_start,
+        vfc_bootstrap=vfc_bootstrap,
+        vfc_bootstrap_radius=vfc_bootstrap_radius,
+        vfc_bootstrap_grid_size=vfc_bootstrap_grid_size,
+        vfc_affine=vfc_affine,
+        vfc_affine_min_neighbors=vfc_affine_min_neighbors,
     )
     tracker = TwoPhaseTracker(cfg)
     project_fn = build_project_fn(cals, cpar)
