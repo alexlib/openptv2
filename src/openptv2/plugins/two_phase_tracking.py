@@ -210,11 +210,25 @@ class TwoPhaseTrackerConfig:
     vfc_bootstrap : bool
         Whether to bootstrap initial velocity for cold starts (including
         frame 0 -> 1) using local displacement mode extraction. Default False.
-    vfc_bootstrap_radius : float
-        Search radius in mm for bootstrapping displacement mode. Default 15.0.
     vfc_bootstrap_grid_size : float
         Spatial binning cell size in mm for coarse velocity field bootstrapping.
         Default 20.0.
+    vfc_bootstrap_passes : int
+        How the initial velocity field is obtained.
+        ``1``: one pass, the field is the displacement mode of the frame
+        0 -> 1 candidate pairs (exact for a locally uniform flow, biased in a
+        shear).
+        ``2`` (default): two passes.  The first pass tracks the sequence with
+        zero initial velocity; the field for the second pass is then built
+        from the *established* tracks of that pass (local consensus, affine
+        when ``vfc_affine`` is on), which is free of the candidate clutter
+        and reproduces a shear exactly.  Twice the tracking time.
+    vfc_bootstrap_shift_ratio : float
+        The two-pass field is only trusted when the flow displacement per
+        frame stays below this fraction of the local particle spacing
+        (0.5 by default).  Above it the first link of a track is itself
+        unreliable, the field of the first pass is scrambled, and the
+        single-pass displacement mode is used instead.
     vfc_affine : bool
         Whether to fit a local divergence-free affine velocity field
         v(x) = v0 + A(x - x0) (tr(A) = 0) to account for shear and rotation.
@@ -256,8 +270,9 @@ class TwoPhaseTrackerConfig:
     vfc_post_min_tol: float = 0.5
     vfc_post_reject_cold_start: bool = True
     vfc_bootstrap: bool = False
-    vfc_bootstrap_radius: float = 15.0
     vfc_bootstrap_grid_size: float = 20.0
+    vfc_bootstrap_passes: int = 2
+    vfc_bootstrap_shift_ratio: float = 0.5
     vfc_affine: bool = False
     vfc_affine_min_neighbors: int = 6
 
@@ -1147,6 +1162,183 @@ class TwoPhaseTracker:
 
         eff_vmax = v_max_override if v_max_override is not None else self.cfg.v_max
 
+        init_vels = None
+        if self.cfg.vfc_bootstrap:
+            if self.cfg.vfc_bootstrap_passes >= 2:
+                # Two passes: the field for the second pass is built from the
+                # established tracks of the first one.
+                first = self._run_pass(
+                    frame_particles,
+                    frame_leaves,
+                    project_fn,
+                    return_chains,
+                    eff_vmax,
+                    frame_seen,
+                    frame_ghost,
+                    frame_logb,
+                    init_vels=None,
+                )
+                links = first[0] if isinstance(first, tuple) else first
+                field = self._bootstrap_field_from_links(links, frame_particles)
+                if field is not None and self._bootstrap_field_is_trustworthy(
+                    field, frame_particles, links
+                ):
+                    return self._run_pass(
+                        frame_particles,
+                        frame_leaves,
+                        project_fn,
+                        return_chains,
+                        eff_vmax,
+                        frame_seen,
+                        frame_ghost,
+                        frame_logb,
+                        init_vels=field,
+                    )
+                # The first pass is not reliable enough -> single pass with
+                # the displacement-mode field.
+                init_vels = self._mode_bootstrap_field(frame_particles, eff_vmax)
+            else:
+                init_vels = self._mode_bootstrap_field(frame_particles, eff_vmax)
+
+        return self._run_pass(
+            frame_particles,
+            frame_leaves,
+            project_fn,
+            return_chains,
+            eff_vmax,
+            frame_seen,
+            frame_ghost,
+            frame_logb,
+            init_vels=init_vels,
+        )
+
+    def _mode_bootstrap_field(
+        self, frame_particles: list[np.ndarray], eff_vmax: float
+    ) -> np.ndarray:
+        """Coarse initial velocity field from the displacement mode (one pass)."""
+        pts0 = np.asarray(frame_particles[0], dtype=np.float64)
+        pts1 = np.asarray(frame_particles[1], dtype=np.float64)
+        return compute_bootstrap_velocity_field(
+            pts0,
+            pts1,
+            v_max=eff_vmax,
+            dt=self.cfg.dt,
+            grid_size=self.cfg.vfc_bootstrap_grid_size,
+        )
+
+    def _bootstrap_field_from_links(
+        self,
+        links: list[tuple[int, int, int, int]],
+        frame_particles: list[np.ndarray],
+    ) -> np.ndarray | None:
+        """Frame-0 velocity field built from the tracks of a first pass.
+
+        The links of a completed pass carry the velocity of every tracked
+        step.  Their local consensus (median, or the divergence-free affine
+        fit of Phase 2B) is a *clean* field: it is free of the candidate
+        clutter that makes the displacement-mode extraction unreliable in a
+        shear, and it reproduces a linear shear exactly.
+
+        The cold-start step (t0 = 0) is left out: it is the one link made
+        without a velocity and therefore the least trustworthy.
+        """
+        if not links:
+            return None
+        pos: list[np.ndarray] = []
+        vel: list[np.ndarray] = []
+        for t0, r0, t1, r1 in links:
+            if t0 == 0:
+                continue
+            step = t1 - t0
+            if step <= 0:
+                continue
+            p0 = np.asarray(frame_particles[t0][r0], dtype=np.float64)
+            p1 = np.asarray(frame_particles[t1][r1], dtype=np.float64)
+            pos.append(0.5 * (p0 + p1))
+            vel.append((p1 - p0) / (step * self.cfg.dt))
+        if len(pos) < self.cfg.vfc_min_neighbors:
+            return None
+
+        query = np.asarray(frame_particles[0], dtype=np.float64)
+        cons_v, _disp, cons_valid = compute_local_consensus_field(
+            np.asarray(pos, dtype=np.float64),
+            np.asarray(vel, dtype=np.float64),
+            query,
+            radius=self.cfg.vfc_radius,
+            min_neighbors=self.cfg.vfc_min_neighbors,
+            use_affine=self.cfg.vfc_affine,
+            affine_min_neighbors=self.cfg.vfc_affine_min_neighbors,
+        )
+        if not cons_valid.any():
+            return None
+        if not cons_valid.all():
+            # Too few neighbours here: inherit the nearest valid value.
+            valid_idx = np.flatnonzero(cons_valid)
+            _, nn = cKDTree(query[valid_idx]).query(query[~cons_valid], k=1)
+            cons_v[~cons_valid] = cons_v[valid_idx][nn]
+        return cons_v
+
+    def _bootstrap_field_is_trustworthy(
+        self,
+        field: np.ndarray,
+        frame_particles: list[np.ndarray],
+        links: list[tuple[int, int, int, int]],
+    ) -> bool:
+        """Is the first-pass field worth using as the initial velocity?
+
+        The field is built from the tracks of the first pass, and the first
+        link of a track is made without a velocity.  It is only trustworthy
+        when the flow moves the particles by clearly less than their spacing
+        -- otherwise the first link is essentially a random neighbour and the
+        field is scrambled.  The test is the displacement of the first-step
+        links against the local particle spacing.
+        """
+        ratio = self.cfg.vfc_bootstrap_shift_ratio
+        if ratio <= 0:
+            return True
+        pts = np.asarray(frame_particles[0], dtype=np.float64)
+        if len(pts) < 2:
+            return False
+        tree = cKDTree(pts)
+        dist, _ = tree.query(pts, k=2)
+        spacing = float(np.median(dist[:, 1]))
+        if not np.isfinite(spacing) or spacing <= 0:
+            return False
+
+        shifts = []
+        for t0, r0, t1, r1 in links:
+            if t0 != 0:
+                continue
+            p0 = np.asarray(frame_particles[t0][r0], dtype=np.float64)
+            p1 = np.asarray(frame_particles[t1][r1], dtype=np.float64)
+            shifts.append(float(np.linalg.norm(p1 - p0)))
+        if not shifts:
+            return False
+        shift = float(np.median(shifts))
+        return shift <= ratio * spacing
+
+    def _run_pass(
+        self,
+        frame_particles: list[np.ndarray],
+        frame_leaves: list[np.ndarray] | None = None,
+        project_fn: Any = None,
+        return_chains: bool = False,
+        eff_vmax: float | None = None,
+        frame_seen: list[np.ndarray] | None = None,
+        frame_ghost: list[np.ndarray] | None = None,
+        frame_logb: list[np.ndarray] | None = None,
+        init_vels: np.ndarray | None = None,
+    ) -> (
+        list[tuple[int, int, int, int]]
+        | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
+    ):
+        num_frames = len(frame_particles)
+        if num_frames < 2:
+            return ([], []) if return_chains else []
+
+        if eff_vmax is None:
+            eff_vmax = self.cfg.v_max
+
         if frame_leaves is None:
             frame_leaves = [np.zeros((len(p), 0)) for p in frame_particles]
 
@@ -1166,16 +1358,14 @@ class TwoPhaseTracker:
         # (frame_idx, row) -> tid, for emitting row-based links
         loc2tid: dict[tuple[int, int], int] = {}
         pts0_init = np.asarray(frame_particles[0], dtype=np.float64)
-        init_vels = np.zeros((len(pts0_init), 3), dtype=np.float64)
-        if self.cfg.vfc_bootstrap and num_frames > 1:
-            pts1_init = np.asarray(frame_particles[1], dtype=np.float64)
-            init_vels = compute_bootstrap_velocity_field(
-                pts0_init,
-                pts1_init,
-                v_max=eff_vmax,
-                dt=self.cfg.dt,
-                grid_size=self.cfg.vfc_bootstrap_grid_size,
-            )
+        has_init_vel = init_vels is not None
+        if init_vels is None:
+            init_vels = np.zeros((len(pts0_init), 3), dtype=np.float64)
+        else:
+            init_vels = np.asarray(init_vels, dtype=np.float64)
+            if init_vels.shape != (len(pts0_init), 3):
+                init_vels = np.zeros((len(pts0_init), 3), dtype=np.float64)
+            has_init_vel = bool(np.any(init_vels != 0.0))
 
         for i, p in enumerate(pts0_init):
             tracks[next_tid] = {
@@ -1248,7 +1438,10 @@ class TwoPhaseTracker:
                     [(t + 1 - tracks[tid]["last_t"]) * self.cfg.dt for tid in tids],
                     dtype=np.float64,
                 )
-                min_len = 1 if self.cfg.vfc_bootstrap else 2
+                # A frame-0 track can serve as a consensus reference only
+                # when it really carries a velocity (bootstrapped), not when
+                # it still sits at rest.
+                min_len = 1 if has_init_vel else 2
                 est_tids = [tid for tid in active if len(hist[tid]) >= min_len]
                 if len(est_tids) >= self.cfg.vfc_min_neighbors:
                     est_pos = np.array(
@@ -1582,8 +1775,9 @@ def track_store(
     vfc_post_min_tol = float(track_cfg.get("vfc_post_min_tol", 0.5))
     vfc_post_reject_cold_start = bool(track_cfg.get("vfc_post_reject_cold_start", True))
     vfc_bootstrap = bool(track_cfg.get("vfc_bootstrap", False))
-    vfc_bootstrap_radius = float(track_cfg.get("vfc_bootstrap_radius", 15.0))
     vfc_bootstrap_grid_size = float(track_cfg.get("vfc_bootstrap_grid_size", 20.0))
+    vfc_bootstrap_passes = int(track_cfg.get("vfc_bootstrap_passes", 2))
+    vfc_bootstrap_shift_ratio = float(track_cfg.get("vfc_bootstrap_shift_ratio", 0.5))
     vfc_affine = bool(track_cfg.get("vfc_affine", False))
     vfc_affine_min_neighbors = int(track_cfg.get("vfc_affine_min_neighbors", 6))
 
@@ -1667,8 +1861,9 @@ def track_store(
         vfc_post_min_tol=vfc_post_min_tol,
         vfc_post_reject_cold_start=vfc_post_reject_cold_start,
         vfc_bootstrap=vfc_bootstrap,
-        vfc_bootstrap_radius=vfc_bootstrap_radius,
         vfc_bootstrap_grid_size=vfc_bootstrap_grid_size,
+        vfc_bootstrap_passes=vfc_bootstrap_passes,
+        vfc_bootstrap_shift_ratio=vfc_bootstrap_shift_ratio,
         vfc_affine=vfc_affine,
         vfc_affine_min_neighbors=vfc_affine_min_neighbors,
     )
