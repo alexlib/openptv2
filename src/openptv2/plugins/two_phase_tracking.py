@@ -234,7 +234,8 @@ class TwoPhaseTrackerConfig:
         v(x) = v0 + A(x - x0) (tr(A) = 0) to account for shear and rotation.
         Default False.
     vfc_affine_min_neighbors : int
-        Minimum neighbors required to fit the 8-DOF divergence-free affine tensor.
+        Minimum neighbors required to fit the 11-DOF divergence-free affine
+        field (3 for v0 and 9 for the gradient, minus 1 for tr(A) = 0).
         Default 6.
     """
 
