@@ -50,6 +50,7 @@ The prediction is: `position + velocity × steps × dt`. The `steps` value is th
 - A new track has zero velocity (a "cold start").
 - The tracker updates the velocity after each match: `(new position − old position) / (steps × dt)`.
 - If `use_velocity` is off, the prediction equals the last position. Then every crossing of two tracks becomes a bounce. Keep this option on.
+- The cold start is weak in the first frame of a sequence, because all tracks are new there. The tracker can give them a velocity. See [Spatial Consensus and the Cold-Start Bootstrap](two-phase-spatial-consensus.md).
 
 ## 5. Phase 1: the 3D search
 
@@ -143,8 +144,15 @@ The trade-off: a tighter tolerance gives lower velocity error but shorter tracks
 | `q_seed`, `q_young`, `q_weight` | 0.2, 3, 0 | Ghost rules |
 | `confirm_tol`, `confirm_auto`, `confirm_ends` | auto, 8, true | Link confirmation |
 | `bidirectional`, `bwd_v_max`, `parallel_directions` | false, `v_max`, false | Forward plus backward pass |
+| `vfc_mode`, `vfc_radius`, `vfc_min_neighbors` | off, 10.0, 3 | Spatial consensus |
+| `vfc_gate`, `vfc_weight` | `None`, 0.0 | Spatial consensus before the assignment |
+| `vfc_post_k`, `vfc_post_min_tol` | 3.0, 0.5 | Spatial consensus after the assignment |
+| `vfc_bootstrap`, `vfc_bootstrap_passes` | false, 2 | Velocity of the new tracks of the first frame |
+| `vfc_affine`, `vfc_affine_min_neighbors` | false, 6 | Local velocity gradient for the consensus |
 
 The plugin sets the ghost and confirmation defaults when it loads. The dataclass `TwoPhaseTrackerConfig` has these rules off.
+
+The spatial consensus (`vfc_*`) has its own page: [Spatial Consensus and the Cold-Start Bootstrap](two-phase-spatial-consensus.md).
 
 For values that suit your data, see [Tracking parameters](tracking_parameters_guide.md). Run `scripts/tracking_advice.py PATH_TO_RUN_FOLDER` to measure your data.
 
