@@ -89,6 +89,16 @@ The gate is the stronger tool. It removes the ghost before the assignment, so
 the assignment cannot choose it. It also makes the groups smaller. This can
 make the tracker faster in dense data.
 
+The gate has one side effect that the user must know. The gate removes the
+*candidates* before the assignment, not the links. When the gate removes the
+true candidate, the solver picks another candidate, and that one is often
+worse than the one it removed. A gate that is close to the noise therefore
+removes the good candidates too, and the trajectories get shorter and worse.
+
+The gate must be well above the noise. Use 6 to 8 times the noise of the 3D
+positions. Then the gate removes the wild candidates only, and the good
+candidates stay.
+
 The soft weight is the weaker tool. It only changes the order of the
 candidates. In one test it had almost no effect on the result.
 
@@ -308,19 +318,25 @@ links = TwoPhaseTracker(cfg).track_frames(frame_particles, frame_leaves, project
 1. Measure the typical step of the particles. This is the median length of the
    links of a good run.
 2. Measure the distance between the particles. This is the median distance
-   from a particle to its nearest neighbour.
+   from a particle to its nearest neighbour. Use the distance of the *tracked*
+   particles. The detected points are much further apart, because they hold the
+   ghost points.
 3. Set `vfc_radius` to about 3 times this distance. The neighbourhood must
    contain enough particles, but it must be small enough to describe one local
    flow.
 4. Set `vfc_min_neighbors` to 3 or 4. A larger value gives no consensus in
    sparse data.
-5. Set `vfc_gate` to 2 to 3 times the noise of the 3D positions. Start with
-   the Option B filter (`vfc_mode: post`) because it is safer. Lower the
-   tolerance only if the tracks are too short.
+5. Set `vfc_gate` to 6 to 8 times the noise of the 3D positions. The gate
+   removes candidates *before* the assignment, so a gate that is too close to
+   the noise removes the good candidates too. The solver then picks another
+   candidate, which is often worse. The gate must be high enough to remove
+   the wild candidates only. Start with the Option B filter (`vfc_mode: post`)
+   because it is safer: it removes the links after the assignment and does not
+   change it.
 6. Switch on `vfc_bootstrap` and `vfc_affine` together. The affine fit is
    what makes the field of the first pass correct in a shear.
-7. Check the result. The number of links and the length of the tracks must not
-   go down.
+7. Check the result. The number of points must not go down, and the number of
+   tracks over 30, 100 and 300 frames must not go down.
 
 Run `scripts/tracking_advice.py PATH_TO_RUN_FOLDER` to measure the data
 first. Run `scripts/bench_two_phase_vfc.py` to compare the settings on

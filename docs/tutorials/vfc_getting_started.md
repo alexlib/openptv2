@@ -67,18 +67,19 @@ plugins:
 track:
   # --- spatial consensus ---
   vfc_mode: both                # off | pre | post | both
-  vfc_radius: 10.0              # mm
+  vfc_radius: 10.0              # mm, about 3x the distance between the tracked particles
   vfc_min_neighbors: 3
-  vfc_gate: 0.5                 # mm/frame
+  vfc_gate: 0.5                 # mm/frame, 6 to 8x the noise (see 3.1)
   vfc_weight: 0.0
   vfc_post_k: 3.0
-  vfc_post_min_tol: 0.5         # mm/frame
+  vfc_post_min_tol: 0.5         # mm/frame, the same scale as the gate
   vfc_post_reject_cold_start: true
   # --- cold-start bootstrap ---
   vfc_bootstrap: true
   vfc_bootstrap_passes: 2
   vfc_bootstrap_shift_ratio: 0.5
   vfc_bootstrap_grid_size: 20.0 # mm
+  vfc_bootstrap_max_neighbors: 32
   # --- affine consensus ---
   vfc_affine: true
   vfc_affine_min_neighbors: 6
@@ -89,19 +90,39 @@ track:
 | Key | Default | How to choose it |
 |---|---|---|
 | `vfc_mode` | `off` | `post` at the start. It is the safe option. Then try `both`. |
-| `vfc_radius` | 10.0 mm | About 3 times the spacing. Large enough for neighbours, small enough for one local flow. |
+| `vfc_radius` | 10.0 mm | About 3 times the distance between the **tracked** particles. The correspondences are much further apart (they hold the ghost points), so use the tracked particles here. |
 | `vfc_min_neighbors` | 3 | 3 or 4. More in sparse data. |
-| `vfc_gate` | `None` | 2 to 3 times the noise. `None` switches the gate off. |
+| `vfc_gate` | `None` | **6 to 8 times** the noise (see the warning below). `None` switches the gate off. |
 | `vfc_weight` | 0.0 | Leave at 0. The soft penalty had almost no effect in the tests. |
 | `vfc_post_k` | 3.0 | Leave at 3. |
-| `vfc_post_min_tol` | 0.5 mm/frame | 2 to 3 times the noise. |
+| `vfc_post_min_tol` | 0.5 mm/frame | The same scale as the gate. |
 | `vfc_post_reject_cold_start` | true | Leave on. It stops a removed ghost from starting a track. |
 | `vfc_bootstrap` | false | On, if the data has ghosts. The tracker then runs twice. |
 | `vfc_bootstrap_passes` | 2 | Leave at 2. The value 1 uses the old, weaker estimate. |
 | `vfc_bootstrap_shift_ratio` | 0.5 | Leave at 0.5. The tracker uses this to switch the bootstrap off by itself. |
 | `vfc_bootstrap_grid_size` | 20.0 mm | Only for `vfc_bootstrap_passes: 1`. Leave at 20. |
+| `vfc_bootstrap_max_neighbors` | 32 | Leave at 32. |
 | `vfc_affine` | false | On, if the flow has a shear or a rotation. Use it with `vfc_bootstrap`. |
 | `vfc_affine_min_neighbors` | 6 | 6, or 4 in sparse data. |
+
+> **Warning: the gate prunes candidates before the assignment.** When the gate
+> removes the true candidate, the solver picks another one, and that one is
+> often worse than the one it removed. A tight gate therefore does not only
+> remove the bad links, it also replaces the good ones by worse ones, and the
+> trajectories get shorter. Set the gate **well above the noise** (6 to 8
+> times), so that it prunes the wild candidates only.
+>
+> Measured on a real recording (5005 frames, the noise 0.063 mm/frame):
+>
+> | Gate | Points | Mean track length | Tracks over 100 frames | Wrong links removed |
+> |---|---|---|---|---|
+> | off (no VFC) | 4 859 718 | 32.7 | 9 659 | - |
+> | 0.2 mm/frame (3 x the noise) | 4 782 355 | 31.3 | 9 151 | 23 % of the marginal links |
+> | **0.4 mm/frame (6 x the noise)** | 4 856 759 | **32.8** | **9 656** | the wild links |
+>
+> With the gate at 3 times the noise the mean track length falls by 4 % and the
+> long tracks by 5 %. With the gate at 6 times the noise nothing is lost and the
+> wrong links are still removed.
 
 ### 3.2 A safe first run
 
@@ -182,9 +203,13 @@ off -> on:
 | Result | Meaning |
 |---|---|
 | More long tracks, same number of points | Good. The tracker removed the wrong links and kept the true ones. |
-| Fewer points and fewer tracks | Bad. The tolerance is too tight. Increase `vfc_gate` and `vfc_post_min_tol`, or set `vfc_mode: post`. |
+| Fewer points **and** fewer tracks | Bad. The tolerance is too tight, and the gate has replaced the good links by worse ones. Increase `vfc_gate` and `vfc_post_min_tol`, or set `vfc_mode: post`. |
 | The same number of tracks and the same points | The consensus did nothing. Check `vfc_min_neighbors` and `vfc_radius`. The data is too sparse. |
 | The run is much slower | The bootstrap runs the tracker twice. Check the time before you keep it. |
+
+The mean track length alone is not a quality measure: a wrong link makes a
+track *longer*. Look at the number of tracks over 30, 100 and 300 frames, and at
+the acceleration kurtosis, together with the number of points.
 
 ### 4.5 Compare on synthetic data first
 
@@ -269,7 +294,7 @@ Keep the panel simple. The most useful fields are `vfc_mode`, `vfc_radius`,
 
 | Problem | Cause | What to do |
 |---|---|---|
-| The tracker finds fewer tracks than before | The tolerance is too tight | Increase `vfc_post_min_tol` and `vfc_gate`. Use `vfc_mode: post` only. |
+| The tracker finds fewer tracks than before | The tolerance is too tight, and the gate has replaced the good links by worse ones | Increase `vfc_post_min_tol` and `vfc_gate`. Use `vfc_mode: post` only. |
 | The consensus does nothing | Too few neighbours | Increase `vfc_radius` or decrease `vfc_min_neighbors`. Check the seeding density. |
 | The bootstrap switches itself off | The particles move too far per frame | The data is too sparse or too fast. The tracker cannot work on this data. |
 | The affine fit fails | Too few neighbours for the fit | Decrease `vfc_affine_min_neighbors` to 4, or increase `vfc_radius`. |
