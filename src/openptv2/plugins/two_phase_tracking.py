@@ -11,6 +11,7 @@ This exploits the tree-forest architecture: 3D positions are the "trunk"
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
@@ -229,6 +230,12 @@ class TwoPhaseTrackerConfig:
         (0.5 by default).  Above it the first link of a track is itself
         unreliable, the field of the first pass is scrambled, and the
         single-pass displacement mode is used instead.
+    vfc_bootstrap_max_neighbors : int
+        Number of samples of the first pass that are used for the field of
+        one point (32 by default).  The whole sequence gives one sample per
+        link, and the particles pass the same region again and again, so
+        the number of samples inside the radius grows with the length of the
+        recording.  The nearest ones are the relevant ones.
     vfc_affine : bool
         Whether to fit a local divergence-free affine velocity field
         v(x) = v0 + A(x - x0) (tr(A) = 0) to account for shear and rotation.
@@ -274,6 +281,7 @@ class TwoPhaseTrackerConfig:
     vfc_bootstrap_grid_size: float = 20.0
     vfc_bootstrap_passes: int = 2
     vfc_bootstrap_shift_ratio: float = 0.5
+    vfc_bootstrap_max_neighbors: int = 32
     vfc_affine: bool = False
     vfc_affine_min_neighbors: int = 6
 
@@ -430,7 +438,16 @@ def fit_local_affine_divergence_free(
     m_mat[3 * idx + 2, 9:11] = rel_pos[:, :2]
 
     try:
-        p, _, _, _ = np.linalg.lstsq(m_mat, b_vec, rcond=None)
+        # The normal equations are used instead of np.linalg.lstsq: the
+        # system has 11 unknowns and only a few dozen rows, and the LAPACK
+        # workspace query of lstsq costs ~240 us per call, which dominates
+        # the tracker when the fit runs for every point of every frame.
+        ata = m_mat.T @ m_mat
+        atb = m_mat.T @ b_vec
+        try:
+            p = np.linalg.solve(ata, atb)
+        except np.linalg.LinAlgError:
+            p, _, _, _ = np.linalg.lstsq(m_mat, b_vec, rcond=None)
         v0 = p[:3]
         a_mat = np.array(
             [
@@ -560,6 +577,137 @@ def compute_bootstrap_velocity_field(
     return boot_v
 
 
+def fit_local_affine_divergence_free_batch(
+    rel_list: list[np.ndarray],
+    vel_list: list[np.ndarray],
+) -> tuple[np.ndarray, np.ndarray]:
+    """Batched version of `fit_local_affine_divergence_free`.
+
+    The scalar fit costs ~100 us per point, which dominates the tracker when
+    it runs for every point of every frame.  This version builds the design
+    matrices of all points at once and solves all the normal equations with
+    one batched call.
+
+    Parameters
+    ----------
+    rel_list : list of (K_i, 3) float arrays
+        Neighbour positions relative to each query point.
+    vel_list : list of (K_i, 3) float arrays
+        Neighbour velocities.
+
+    Returns
+    -------
+    v0 : (N, 3) float array
+        Velocity at each query point.
+    disp : (N,) float array
+        Median residual of the fit at each query point.
+    """
+    n = len(rel_list)
+    v0 = np.zeros((n, 3), dtype=np.float64)
+    disp = np.zeros(n, dtype=np.float64)
+    if n == 0:
+        return v0, disp
+
+    counts = np.array([len(r) for r in rel_list], dtype=np.int64)
+    if counts.max(initial=0) == 0:
+        return v0, disp
+
+    # The points are fitted in groups of a similar neighbour count.  A point
+    # where many tracks pile up has far more neighbours than the rest, and
+    # padding every point to the largest count would need tens of gigabytes.
+    for group in _groups_by_count(counts):
+        idx = list(group)
+        sub_rel = [rel_list[i] for i in idx]
+        sub_vel = [vel_list[i] for i in idx]
+        g_v0, g_disp = _affine_fit_group(sub_rel, sub_vel)
+        v0[group] = g_v0
+        disp[group] = g_disp
+    return v0, disp
+
+
+def _affine_fit_group(
+    rel_list: list[np.ndarray],
+    vel_list: list[np.ndarray],
+) -> tuple[np.ndarray, np.ndarray]:
+    """The divergence-free affine fit of one group of points (see above)."""
+    n = len(rel_list)
+    v0 = np.zeros((n, 3), dtype=np.float64)
+    disp = np.zeros(n, dtype=np.float64)
+    k_max = max((len(r) for r in rel_list), default=0)
+    if k_max == 0:
+        return v0, disp
+
+    rel = np.zeros((n, k_max, 3), dtype=np.float64)
+    vel = np.zeros((n, k_max, 3), dtype=np.float64)
+    counts = np.zeros(n, dtype=np.int64)
+    for i, (r, v) in enumerate(zip(rel_list, vel_list)):
+        k = len(r)
+        counts[i] = k
+        if k:
+            rel[i, :k] = r
+            vel[i, :k] = v
+
+    # Design matrices: one row per neighbour and per component.
+    des_x = np.zeros((n, k_max, 11), dtype=np.float64)
+    des_x[:, :, 0] = 1.0
+    des_x[:, :, 3:6] = rel
+    des_y = np.zeros((n, k_max, 11), dtype=np.float64)
+    des_y[:, :, 1] = 1.0
+    des_y[:, :, 6:9] = rel
+    des_z = np.zeros((n, k_max, 11), dtype=np.float64)
+    des_z[:, :, 2] = 1.0
+    des_z[:, :, 3] = -rel[:, :, 2]
+    des_z[:, :, 7] = -rel[:, :, 2]
+    des_z[:, :, 9:11] = rel[:, :, :2]
+
+    # Row order: neighbour 0 (x, y, z), neighbour 1 (x, y, z), ...
+    des = np.stack([des_x, des_y, des_z], axis=2).reshape(n, 3 * k_max, 11)
+    b_vec = vel.reshape(n, 3 * k_max)
+
+    # The padded neighbours must not enter the fit: zero their rows.
+    padded = np.arange(k_max)[None, :] >= counts[:, None]
+    if padded.any():
+        des[padded.repeat(3, axis=1)] = 0.0
+
+    des_t = des.transpose(0, 2, 1)
+    ata = np.matmul(des_t, des)
+    atb = np.matmul(des_t, b_vec[:, :, None])[:, :, 0]
+
+    # A tiny ridge keeps the system solvable when the neighbours do not span
+    # three dimensions.  It is far below the noise of the data.
+    scale = np.maximum(np.einsum("naa->n", ata) / 11.0, 1e-30)
+    ata = ata + (1e-12 * scale)[:, None, None] * np.eye(11)
+    try:
+        sol = np.linalg.solve(ata, atb[..., None])[..., 0]
+    except np.linalg.LinAlgError:
+        sol = np.zeros((n, 11), dtype=np.float64)
+        for i in range(n):
+            try:
+                sol[i] = np.linalg.solve(ata[i], atb[i])
+            except np.linalg.LinAlgError:
+                sol[i] = np.linalg.lstsq(des[i], b_vec[i], rcond=None)[0]
+
+    v0 = sol[:, :3]
+    a_mat = np.empty((n, 3, 3), dtype=np.float64)
+    a_mat[:, 0, 0] = sol[:, 3]
+    a_mat[:, 0, 1] = sol[:, 4]
+    a_mat[:, 0, 2] = sol[:, 5]
+    a_mat[:, 1, 0] = sol[:, 6]
+    a_mat[:, 1, 1] = sol[:, 7]
+    a_mat[:, 1, 2] = sol[:, 8]
+    a_mat[:, 2, 0] = sol[:, 9]
+    a_mat[:, 2, 1] = sol[:, 10]
+    a_mat[:, 2, 2] = -sol[:, 3] - sol[:, 7]
+
+    pred = np.matmul(rel, a_mat.transpose(0, 2, 1)) + v0[:, None, :]
+    res = np.linalg.norm(vel - pred, axis=2)
+    mask = np.arange(k_max)[None, :] < counts[:, None]
+    for i in range(n):
+        vals = res[i][mask[i]]
+        disp[i] = float(np.median(vals)) if len(vals) else 0.0
+    return v0, disp
+
+
 def compute_local_consensus_field(
     positions: np.ndarray,
     velocities: np.ndarray,
@@ -608,23 +756,112 @@ def compute_local_consensus_field(
     tree = cKDTree(positions)
     nbrs_list = tree.query_ball_point(query_positions, r=radius)
 
-    for ki, nbrs in enumerate(nbrs_list):
-        if len(nbrs) >= min_neighbors:
-            v_nbrs = velocities[nbrs]
-            if use_affine and len(nbrs) >= affine_min_neighbors:
-                rel_pos = positions[nbrs] - query_positions[ki]
-                v0, res = fit_local_affine_divergence_free(rel_pos, v_nbrs)
-                consensus_v[ki] = v0
-                consensus_disp[ki] = np.median(res)
+    if use_affine:
+        # The affine fits are done in one batch.
+        fit_idx = [
+            ki for ki, nbrs in enumerate(nbrs_list) if len(nbrs) >= affine_min_neighbors
+        ]
+        if fit_idx:
+            rel_list = [
+                positions[nbrs_list[ki]] - query_positions[ki] for ki in fit_idx
+            ]
+            vel_list = [velocities[nbrs_list[ki]] for ki in fit_idx]
+            v0, disp = fit_local_affine_divergence_free_batch(rel_list, vel_list)
+            for pos, ki in enumerate(fit_idx):
+                consensus_v[ki] = v0[pos]
+                consensus_disp[ki] = disp[pos]
                 consensus_valid[ki] = True
-            else:
-                med_v = np.median(v_nbrs, axis=0)
-                mad = np.median(np.linalg.norm(v_nbrs - med_v, axis=1))
-                consensus_v[ki] = med_v
-                consensus_disp[ki] = mad
+        # The points with too few neighbours for the fit use the median.
+        med_idx = [
+            ki
+            for ki, nbrs in enumerate(nbrs_list)
+            if not consensus_valid[ki] and len(nbrs) >= min_neighbors
+        ]
+        if med_idx:
+            sub = [nbrs_list[ki] for ki in med_idx]
+            med_v, mad = _neighbourhood_median_and_mad(sub, velocities)
+            for pos, ki in enumerate(med_idx):
+                consensus_v[ki] = med_v[pos]
+                consensus_disp[ki] = mad[pos]
                 consensus_valid[ki] = True
+        return consensus_v, consensus_disp, consensus_valid
+
+    med_idx = [ki for ki, nbrs in enumerate(nbrs_list) if len(nbrs) >= min_neighbors]
+    if med_idx:
+        sub = [nbrs_list[ki] for ki in med_idx]
+        med_v, mad = _neighbourhood_median_and_mad(sub, velocities)
+        for pos, ki in enumerate(med_idx):
+            consensus_v[ki] = med_v[pos]
+            consensus_disp[ki] = mad[pos]
+            consensus_valid[ki] = True
 
     return consensus_v, consensus_disp, consensus_valid
+
+
+def _groups_by_count(counts: np.ndarray) -> list[np.ndarray]:
+    """Indices grouped by the number of neighbours.
+
+    The neighbour counts of a frame can differ by orders of magnitude (a
+    point where many tracks pile up has far more neighbours than the rest).
+    Padding every point to the largest count would then need tens of
+    gigabytes.  The groups keep the count inside a factor of two, so the
+    padded arrays stay small and the work stays close to the useful work.
+    """
+    order = np.argsort(counts, kind="stable")
+    groups: list[np.ndarray] = []
+    start = 0
+    n = len(order)
+    for i in range(1, n + 1):
+        if i == n or counts[order[i]] > 2 * max(int(counts[order[start]]), 1):
+            groups.append(order[start:i])
+            start = i
+    return groups
+
+
+def _padded_neighbour_values(
+    nbrs_list: list[list[int]],
+    values: np.ndarray,
+) -> np.ndarray:
+    """Gather the values of the neighbours into a padded array (NaN in the padding).
+
+    The neighbour lists have different lengths.  Padding them lets the median
+    and the MAD of every neighbourhood be computed in one vectorised call
+    instead of one call per link (that was the slowest part of the tracker
+    on dense data).
+    """
+    n = len(nbrs_list)
+    k_max = max((len(x) for x in nbrs_list), default=0)
+    out = np.full((n, k_max) + values.shape[1:], np.nan, dtype=np.float64)
+    for i, nbrs in enumerate(nbrs_list):
+        if len(nbrs):
+            out[i, : len(nbrs)] = values[nbrs]
+    return out
+
+
+def _nan_median(values: np.ndarray, axis: int) -> np.ndarray:
+    """Median along an axis, ignoring the NaN padding."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        return np.nanmedian(values, axis=axis)
+
+
+def _neighbourhood_median_and_mad(
+    nbrs_list: list[list[int]],
+    values: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Median and MAD of the neighbourhood of every point (vectorised)."""
+    n = len(nbrs_list)
+    counts = np.array([len(x) for x in nbrs_list], dtype=np.int64)
+    med = np.zeros((n, values.shape[1]), dtype=np.float64)
+    mad = np.zeros(n, dtype=np.float64)
+    for group in _groups_by_count(counts):
+        sub = [nbrs_list[i] for i in group]
+        padded = _padded_neighbour_values(sub, values)
+        med_g = _nan_median(padded, axis=1)
+        dev = np.linalg.norm(padded - med_g[:, None, :], axis=2)
+        med[group] = med_g
+        mad[group] = _nan_median(dev, axis=1)
+    return med, mad
 
 
 def filter_links_by_spatial_consensus(
@@ -688,19 +925,18 @@ def filter_links_by_spatial_consensus(
     tree = cKDTree(pos0)
     nbrs_list = tree.query_ball_point(pos0, r=radius)
 
+    # One vectorised median per neighbourhood instead of one call per link.
+    med_disp, mad = _neighbourhood_median_and_mad(nbrs_list, disps)
+    counts = np.array([len(x) for x in nbrs_list])
+
     rejected_pairs = set()
     rejected_dets = set()
+    res = np.linalg.norm(disps - med_disp, axis=1)
+    tol = np.maximum(post_k * mad, min_tol)
     for ki, (ai, det) in enumerate(link_list):
-        nbrs = nbrs_list[ki]
-        if len(nbrs) >= min_neighbors:
-            nbr_disps = disps[nbrs]
-            med_disp = np.median(nbr_disps, axis=0)
-            mad = np.median(np.linalg.norm(nbr_disps - med_disp, axis=1))
-            res = np.linalg.norm(disps[ki] - med_disp)
-            tol = max(post_k * mad, min_tol)
-            if res > tol:
-                rejected_pairs.add((ai, det))
-                rejected_dets.add(int(det))
+        if counts[ki] >= min_neighbors and res[ki] > tol[ki]:
+            rejected_pairs.add((ai, det))
+            rejected_dets.add(int(det))
 
     kept_links = {pair for pair in links if pair not in rejected_pairs}
     return kept_links, rejected_dets
@@ -1242,11 +1478,19 @@ class TwoPhaseTracker:
 
         The cold-start step (t0 = 0) is left out: it is the one link made
         without a velocity and therefore the least trustworthy.
+
+        Only the nearest samples are used for every point.  The whole
+        sequence gives one sample per link, and the particles pass the same
+        region again and again, so the number of samples inside the radius
+        grows with the length of the sequence (a hundred thousand on a long
+        recording).  The nearest ones are the relevant ones.
         """
         if not links:
             return None
-        pos: list[np.ndarray] = []
-        vel: list[np.ndarray] = []
+        n_links = len(links)
+        pos = np.empty((n_links, 3), dtype=np.float64)
+        vel = np.empty((n_links, 3), dtype=np.float64)
+        m = 0
         for t0, r0, t1, r1 in links:
             if t0 == 0:
                 continue
@@ -1255,29 +1499,76 @@ class TwoPhaseTracker:
                 continue
             p0 = np.asarray(frame_particles[t0][r0], dtype=np.float64)
             p1 = np.asarray(frame_particles[t1][r1], dtype=np.float64)
-            pos.append(0.5 * (p0 + p1))
-            vel.append((p1 - p0) / (step * self.cfg.dt))
-        if len(pos) < self.cfg.vfc_min_neighbors:
+            pos[m] = 0.5 * (p0 + p1)
+            vel[m] = (p1 - p0) / (step * self.cfg.dt)
+            m += 1
+        if m < self.cfg.vfc_min_neighbors:
             return None
+        pos = pos[:m]
+        vel = vel[:m]
 
         query = np.asarray(frame_particles[0], dtype=np.float64)
-        cons_v, _disp, cons_valid = compute_local_consensus_field(
-            np.asarray(pos, dtype=np.float64),
-            np.asarray(vel, dtype=np.float64),
-            query,
-            radius=self.cfg.vfc_radius,
-            min_neighbors=self.cfg.vfc_min_neighbors,
-            use_affine=self.cfg.vfc_affine,
-            affine_min_neighbors=self.cfg.vfc_affine_min_neighbors,
-        )
-        if not cons_valid.any():
+        k = int(min(m, self.cfg.vfc_bootstrap_max_neighbors))
+        tree = cKDTree(pos)
+        dist, idx = tree.query(query, k=k)
+        idx = np.atleast_2d(idx)
+        dist = np.atleast_2d(dist)
+        valid_nbrs = np.isfinite(dist)
+
+        # The points with enough neighbours, and their neighbours.
+        q_idx: list[int] = []
+        nbr_idx: list[np.ndarray] = []
+        rel_list: list[np.ndarray] = []
+        vel_list: list[np.ndarray] = []
+        for i in range(len(query)):
+            n_ok = int(valid_nbrs[i].sum())
+            if n_ok < self.cfg.vfc_min_neighbors:
+                continue
+            nb = idx[i, :n_ok]
+            q_idx.append(i)
+            nbr_idx.append(nb)
+            rel_list.append(pos[nb] - query[i])
+            vel_list.append(vel[nb])
+        if len(rel_list) < self.cfg.vfc_min_neighbors:
             return None
-        if not cons_valid.all():
+
+        field = np.full((len(query), 3), np.nan, dtype=np.float64)
+        if self.cfg.vfc_affine:
+            fit_pos = [
+                j
+                for j, r in enumerate(rel_list)
+                if len(r) >= self.cfg.vfc_affine_min_neighbors
+            ]
+            if fit_pos:
+                v0, _disp = fit_local_affine_divergence_free_batch(
+                    [rel_list[j] for j in fit_pos], [vel_list[j] for j in fit_pos]
+                )
+                for j, point in enumerate(fit_pos):
+                    field[q_idx[point]] = v0[j]
+
+        # The points with too few neighbours for the fit use the median.
+        med_pos = [
+            j
+            for j, r in enumerate(rel_list)
+            if len(r) >= self.cfg.vfc_min_neighbors
+            and not np.isfinite(field[q_idx[j]]).all()
+        ]
+        if med_pos:
+            med_v, _mad = _neighbourhood_median_and_mad(
+                [nbr_idx[j] for j in med_pos], vel
+            )
+            for j, point in enumerate(med_pos):
+                field[q_idx[point]] = med_v[j]
+
+        valid = np.isfinite(field).all(axis=1)
+        if not valid.any():
+            return None
+        if not valid.all():
             # Too few neighbours here: inherit the nearest valid value.
-            valid_idx = np.flatnonzero(cons_valid)
-            _, nn = cKDTree(query[valid_idx]).query(query[~cons_valid], k=1)
-            cons_v[~cons_valid] = cons_v[valid_idx][nn]
-        return cons_v
+            valid_idx = np.flatnonzero(valid)
+            _, nn = cKDTree(query[valid_idx]).query(query[~valid], k=1)
+            field[~valid] = field[valid_idx][nn]
+        return field
 
     def _bootstrap_field_is_trustworthy(
         self,
@@ -1779,6 +2070,7 @@ def track_store(
     vfc_bootstrap_grid_size = float(track_cfg.get("vfc_bootstrap_grid_size", 20.0))
     vfc_bootstrap_passes = int(track_cfg.get("vfc_bootstrap_passes", 2))
     vfc_bootstrap_shift_ratio = float(track_cfg.get("vfc_bootstrap_shift_ratio", 0.5))
+    vfc_bootstrap_max_neighbors = int(track_cfg.get("vfc_bootstrap_max_neighbors", 32))
     vfc_affine = bool(track_cfg.get("vfc_affine", False))
     vfc_affine_min_neighbors = int(track_cfg.get("vfc_affine_min_neighbors", 6))
 
@@ -1865,6 +2157,7 @@ def track_store(
         vfc_bootstrap_grid_size=vfc_bootstrap_grid_size,
         vfc_bootstrap_passes=vfc_bootstrap_passes,
         vfc_bootstrap_shift_ratio=vfc_bootstrap_shift_ratio,
+        vfc_bootstrap_max_neighbors=vfc_bootstrap_max_neighbors,
         vfc_affine=vfc_affine,
         vfc_affine_min_neighbors=vfc_affine_min_neighbors,
     )
