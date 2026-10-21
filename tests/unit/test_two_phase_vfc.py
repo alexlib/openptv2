@@ -291,6 +291,31 @@ def test_fit_local_affine_divergence_free_exact():
     np.testing.assert_allclose(res, 0.0, atol=1e-5)
 
 
+def test_batched_affine_fit_matches_the_scalar_fit():
+    """The batched fit (used for the consensus of every frame) gives the same answer."""
+    from openptv2.plugins.two_phase_tracking import (
+        fit_local_affine_divergence_free,
+        fit_local_affine_divergence_free_batch,
+    )
+
+    rng = np.random.default_rng(5)
+    rel_list, vel_list = [], []
+    for _ in range(40):
+        k = int(rng.integers(6, 20))
+        rel = rng.uniform(-30, 30, size=(k, 3))
+        v0 = rng.normal(size=3)
+        a_mat = rng.normal(scale=0.002, size=(3, 3))
+        a_mat[2, 2] = -a_mat[0, 0] - a_mat[1, 1]
+        rel_list.append(rel)
+        vel_list.append(v0[None, :] + rel @ a_mat.T)
+
+    v0_batch, disp_batch = fit_local_affine_divergence_free_batch(rel_list, vel_list)
+    for i, (rel, vel) in enumerate(zip(rel_list, vel_list)):
+        v0_scalar, res = fit_local_affine_divergence_free(rel, vel)
+        np.testing.assert_allclose(v0_batch[i], v0_scalar, atol=1e-6)
+        np.testing.assert_allclose(disp_batch[i], np.median(res), atol=1e-6)
+
+
 def test_compute_bootstrap_velocity_field_mode_recovery():
     """Bootstrap velocity field extracts coherent displacement mode despite random ghosts."""
     from openptv2.plugins.two_phase_tracking import compute_bootstrap_velocity_field
