@@ -396,6 +396,18 @@ class TrackHandler(Handler):
                     "dvzmax": track_params.dvzmax,
                     "angle": track_params.angle,
                     "dacc": track_params.dacc,
+                    "leaf_weight": track_params.leaf_weight,
+                    "vfc_mode": track_params.vfc_mode,
+                    "vfc_radius": track_params.vfc_radius,
+                    "vfc_min_neighbors": int(track_params.vfc_min_neighbors),
+                    "vfc_gate": (
+                        None
+                        if track_params.vfc_gate <= 0
+                        else float(track_params.vfc_gate)
+                    ),
+                    "vfc_post_min_tol": track_params.vfc_post_min_tol,
+                    "vfc_bootstrap": bool(track_params.vfc_bootstrap),
+                    "vfc_affine": bool(track_params.vfc_affine),
                 },
                 experiment.pm.parameters.get("plugins", {}),
             )
@@ -432,6 +444,13 @@ class Tracking_Params(HasTraits):
     angle = Float()
     dacc = Float()
     leaf_weight = Float()
+    vfc_mode = Enum("off", "pre", "post", "both")
+    vfc_radius = Float(10.0)
+    vfc_min_neighbors = Int(3)
+    vfc_gate = Float(0.0)
+    vfc_post_min_tol = Float(0.5)
+    vfc_bootstrap = Bool(False)
+    vfc_affine = Bool(False)
 
     def __init__(self, experiment: Experiment):
         super(Tracking_Params, self).__init__()
@@ -449,6 +468,19 @@ class Tracking_Params(HasTraits):
         self.dacc = float(tracking_params.get("dacc", 5.0))
         self.postprocess = bool(tracking_params.get("postprocess", True))
         self.leaf_weight = float(tracking_params.get("leaf_weight", 1.0))
+        raw_vfc_mode = str(tracking_params.get("vfc_mode", "off"))
+        self.vfc_mode = (
+            raw_vfc_mode
+            if raw_vfc_mode in ("off", "pre", "post", "both")
+            else "off"
+        )
+        self.vfc_radius = float(tracking_params.get("vfc_radius", 10.0))
+        self.vfc_min_neighbors = int(tracking_params.get("vfc_min_neighbors", 3))
+        raw_gate = tracking_params.get("vfc_gate", None)
+        self.vfc_gate = 0.0 if raw_gate is None else float(raw_gate)
+        self.vfc_post_min_tol = float(tracking_params.get("vfc_post_min_tol", 0.5))
+        self.vfc_bootstrap = bool(tracking_params.get("vfc_bootstrap", False))
+        self.vfc_affine = bool(tracking_params.get("vfc_affine", False))
 
         self.tracker = infer_tracker(plugins_params)
         dir_val = infer_direction(tracking_params, plugins_params)
@@ -496,6 +528,23 @@ class Tracking_Params(HasTraits):
             ),
             show_border=True,
             label="Search Box & Kinematic Limits",
+        ),
+        VGroup(
+            HGroup(
+                Item(name="vfc_mode", label="VFC mode (off/pre/post/both):"),
+                Item(name="vfc_radius", label="Radius (mm):"),
+                Item(name="vfc_min_neighbors", label="Min neighbors:"),
+            ),
+            HGroup(
+                Item(name="vfc_gate", label="Pre-gate (mm/f, 0=off):"),
+                Item(name="vfc_post_min_tol", label="Post min tol (mm/f):"),
+            ),
+            HGroup(
+                Item(name="vfc_bootstrap", label="Cold-start bootstrap:"),
+                Item(name="vfc_affine", label="Affine consensus (tr(A)=0):"),
+            ),
+            show_border=True,
+            label="Spatial Consensus (VFC — Two-Phase Tracker)",
         ),
         buttons=["Undo", "OK", "Cancel"],
         handler=TrackHandler(),

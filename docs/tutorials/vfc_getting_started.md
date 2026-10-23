@@ -226,69 +226,32 @@ fit your noise level.
 
 ## 5. Step 4: use the consensus from the GUI
 
-### 5.1 What works today
+### 5.1 Through the Tracking Parameters dialog
 
-The GUI has no fields for the `vfc_*` keys. The GUI still uses them.
+The **Tracking Parameters** dialog (`src/openptv2/gui/parameter_gui.py`) has a
+**Spatial Consensus (VFC — Two-Phase Tracker)** group:
 
-- The GUI reads the `track:` section of the experiment YAML.
-- The tracking panel of the GUI only writes its own keys. It does not remove
-  the other keys (`src/openptv2/gui/parameter_gui.py:403`).
-- The `two_phase` plugin reads the `track:` section when it starts
-  (`src/openptv2/plugins/two_phase_tracking.py:1954`).
+1. Launch the GUI (`uv run openptv2-gui`) and open your experiment folder.
+2. Open **Parameters** → **Tracking Parameters**.
+3. Under **Pipeline**, set **Tracker** to **Two-Phase (3D search + 2D rank)**.
+4. Under **Spatial Consensus (VFC — Two-Phase Tracker)**, set:
+   - **VFC mode**: `off`, `pre`, `post`, or `both`
+   - **Radius (mm)**: neighbourhood size (e.g. `10.0` or `12.0`)
+   - **Min neighbors**: minimum neighbours for a consensus (default `3`)
+   - **Pre-gate (mm/f, 0=off)**: Option A hard gate (`0.0` saves `None` = off;
+     set to `6–8x` the position noise, e.g. `0.4`)
+   - **Post min tol (mm/f)**: Option B minimum tolerance (e.g. `0.4`)
+   - **Cold-start bootstrap**: switch on the two-pass frame-0 velocity field
+   - **Affine consensus (tr(A)=0)**: fit the local incompressible velocity gradient
+5. Click **OK** (saves to the active YAML) and press **Track**.
 
-So this works:
+### 5.2 Advanced keys in the YAML
 
-1. Add the block of section 3 to the `track:` section of the experiment YAML.
-2. Open the folder in the GUI.
-3. On the Plugins page, select the `two_phase` tracker.
-4. Press Track.
-
-The GUI uses the values of the YAML. The Tracking Parameters panel does not
-show them.
-
-### 5.2 How to add the fields to the GUI
-
-This is a task for a developer. Four places must change.
-
-1. **The model.** Add the keys with their defaults to the `TrackParams` class
-   in `src/openptv2/gui/parameter_models.py`.
-
-   ```python
-   class TrackParams(SectionModel):
-       ...
-       vfc_mode: str = "off"
-       vfc_radius: float = 10.0
-       vfc_min_neighbors: int = 3
-       vfc_gate: float | None = None
-       vfc_post_k: float = 3.0
-       vfc_post_min_tol: float = 0.5
-       vfc_bootstrap: bool = False
-       vfc_affine: bool = False
-   ```
-
-2. **The panel.** Add the traits to the `Tracking_Params` class in
-   `src/openptv2/gui/parameter_gui.py`. Read the values from the section in
-   `__init__`, in the same way as `leaf_weight`.
-
-   ```python
-   self.vfc_mode = str(tracking_params.get("vfc_mode", "off"))
-   self.vfc_radius = float(tracking_params.get("vfc_radius", 10.0))
-   ```
-
-3. **The layout.** Add the items to `Tracking_Params_View` in the same file.
-   Use an `EnumEditor` for `vfc_mode` with the values `off`, `pre`, `post`
-   and `both`.
-
-4. **The save.** Add the new keys to the dictionary that
-   `TrackHandler.closed` passes to `apply_tracker`
-   (`src/openptv2/gui/parameter_gui.py:386`). The handler merges this
-   dictionary into the `track:` section, so the new keys reach the YAML.
-
-5. **The test.** Add a test in `tests/gui/`. The tests of the tracking panel
-   are in `tests/gui/test_tracking_parameters.py`.
-
-Keep the panel simple. The most useful fields are `vfc_mode`, `vfc_radius`,
-`vfc_gate` and `vfc_bootstrap`. The other keys can stay in the YAML.
+Advanced keys (`vfc_weight`, `vfc_post_k`, `vfc_post_reject_cold_start`,
+`vfc_bootstrap_passes`, `vfc_bootstrap_shift_ratio`,
+`vfc_bootstrap_max_neighbors`, `vfc_affine_min_neighbors`) can be set in the
+`track:` section of the experiment YAML. The GUI dialog preserves any extra
+keys in `track:` when you click **OK**.
 
 ## 6. Problems and what to do
 

@@ -99,6 +99,65 @@ def test_tracking_params_gui_postprocess(tmp_path):
     exp = Experiment(pm=pm)
     tp = Tracking_Params(experiment=exp)
     assert tp.postprocess is True
+    assert tp.vfc_mode == "off"
+    assert tp.vfc_radius == 10.0
+    assert tp.vfc_gate == 0.0
+
+
+def test_tracking_params_gui_vfc_roundtrip(tmp_path):
+    from types import SimpleNamespace
+
+    from openptv2.gui.experiment import Experiment
+    from openptv2.gui.parameter_gui import TrackHandler, Tracking_Params
+    from openptv2.gui.parameter_manager import ParameterManager
+
+    pm = ParameterManager()
+    pm.parameters = {
+        "num_cams": 4,
+        "track": {
+            "dvxmin": -5.0,
+            "dvxmax": 5.0,
+            "dvymin": -5.0,
+            "dvymax": 5.0,
+            "dvzmin": -5.0,
+            "dvzmax": 5.0,
+            "angle": 120.0,
+            "dacc": 2.0,
+            "flagNewParticles": True,
+            "track_mode": 0,
+            "postprocess": True,
+            "vfc_mode": "both",
+            "vfc_radius": 12.0,
+            "vfc_min_neighbors": 4,
+            "vfc_gate": 0.4,
+            "vfc_post_min_tol": 0.4,
+            "vfc_bootstrap": True,
+            "vfc_affine": True,
+        },
+        "plugins": {"selected_tracking": "two_phase"},
+    }
+    exp = Experiment(pm=pm)
+    exp.save_active = lambda: None
+    tp = Tracking_Params(experiment=exp)
+    assert tp.vfc_mode == "both"
+    assert tp.vfc_radius == 12.0
+    assert tp.vfc_min_neighbors == 4
+    assert tp.vfc_gate == 0.4
+    assert tp.vfc_post_min_tol == 0.4
+    assert tp.vfc_bootstrap is True
+    assert tp.vfc_affine is True
+
+    # Modify in dialog and click OK (TrackHandler.closed)
+    tp.vfc_mode = "post"
+    tp.vfc_gate = 0.0  # 0.0 -> None in YAML
+    tp.vfc_radius = 15.0
+    TrackHandler().closed(SimpleNamespace(object=tp), is_ok=True)
+    saved = exp.pm.parameters["track"]
+    assert saved["vfc_mode"] == "post"
+    assert saved["vfc_gate"] is None
+    assert saved["vfc_radius"] == 15.0
+    assert saved["vfc_bootstrap"] is True
+    assert saved["vfc_affine"] is True
 
 
 if __name__ == "__main__":
