@@ -1155,7 +1155,7 @@ class Calib_Params(HasTraits):
     shaking_max_num_points = Int(label="shaking max num points")
     shaking_max_num_frames = Int(label="shaking max num frames")
     shaking_tol_px = Float(2.0, label="match tolerance (px)")
-    shaking_hold_cam = Int(1, label="held camera (1..N, fixes gauge)")
+    shaking_hold_cam = Int(0, label="held camera (0=auto, 1..N=cam)")
 
     Group6 = HGroup(
         VGroup(
@@ -1261,7 +1261,7 @@ class Calib_Params(HasTraits):
         self.shaking_max_num_points = int(shaking_params["shaking_max_num_points"])
         self.shaking_max_num_frames = int(shaking_params["shaking_max_num_frames"])
         self.shaking_tol_px = float(shaking_params.get("shaking_tol_px", 2.0))
-        self.shaking_hold_cam = int(shaking_params.get("shaking_hold_cam", 1))
+        self.shaking_hold_cam = int(shaking_params.get("shaking_hold_cam", 0))
 
     def __init__(self, experiment: Experiment):
         HasTraits.__init__(self)
