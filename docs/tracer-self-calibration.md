@@ -92,48 +92,60 @@ equally. That has two failure modes:
 
 ## Using it from the GUI
 
-1. **Launch calibration**: from the main `pyptv2-gui`, open your experiment
-   and use the menu action that starts the calibration dialog. Standalone
-   alternative: `python -m openptv2.gui.calibration_gui path/to/parameters_Run1.yaml`.
-2. **Load images/parameters** (first left-panel button) — required before
-   any other button, including "Tracer self-cal", becomes active.
-3. **Edit calibration parameters** → the **"Shaking calibration
-   parameters"** group holds the settings for this step (see table below).
-4. Click **Tracer self-cal** (left panel, below "Suggest eps0"). Console
-   output now prints progress as it runs:
+### 1. Prerequisite: have a Zarr `RunStore` (`res/run.zarr`)
+Run **Sequence** and **Tracking** at least once on your flow images (either from
+the main `openptv2-gui` window or via `uv run openptv2-batch`) so `res/run.zarr`
+contains `targets/`, `correspondences/`, and `linkage/ptv_is`.
 
+### 2. Open the Calibration GUI & load parameters
+1. From the main `openptv2-gui` window, open **Calibration** → **Create
+   calibration**, or launch the calibration dialog directly from the terminal:
+   ```bash
+   uv run python -m openptv2.gui.calibration_gui path/to/parameters_Run1.yaml
    ```
-   Tracer self-cal: button clicked, starting...
-   [tracer self-cal] starting: base=..., frames=10000-10004 (5), tol_px=2.0, hold_cam=1, max_particles=400, iters=3
-   [tracer self-cal] loaded 5 frames of tracked data
-   [tracer self-cal] initial match: 214 particles (>=2 cams), RCM before = 84.3 um
-   [tracer self-cal] iter 1/3: fitting 214 particles (this may take a moment)...
-   [tracer self-cal] iter 1/3: RCM = 61.7 um (accepted, improved)
-   [tracer self-cal] iter 2/3: fitting 226 particles (this may take a moment)...
-   [tracer self-cal] iter 2/3: RCM = 58.9 um (accepted, improved)
-   [tracer self-cal] iter 3/3: fitting 229 particles (this may take a moment)...
-   [tracer self-cal] iter 3/3: RCM = 58.9 um (not improved, stopping)
-   [tracer self-cal] done
-   ```
+2. Click **Load/Show Images** (top button on the left panel) — required before
+   any other button, including **Tracer self-cal**, becomes active.
 
-5. **Read the status line / console summary**: `Tracer self-cal:
-   cross-camera RCM <before> -> <after> um (N particles, camK held)`.
-6. **Automatic accept/reject**: the refined calibration is kept only if
-   `after < before`. If it improved, the GUI backs up your current
-   `.ori`/`.addpar` and applies the new calibration in memory to every
-   camera except the held one — **save** the result the same way you would
-   after any other orientation step to persist it to disk. If it did not
-   improve, nothing is written.
+### 3. Configure the Shaking Parameters
+Click **Edit calibration parameters** → open the **"Shaking calibration
+parameters"** tab (`Group6`):
 
-## Parameters ("Shaking calibration parameters")
-
-| Field | Meaning | Notes |
+| Field | Recommended Value | Meaning & Notes |
 |---|---|---|
-| `shaking_first_frame` / `shaking_last_frame` | Tracked frame range to pull particles from | Use a range with good particle coverage across the volume, not just a couple of frames |
-| `shaking_max_num_frames` | Subsample down to this many frames (evenly spaced) if the range is larger | Keeps the fit fast on long sequences |
-| `shaking_max_num_points` | Cap on total particles used in the joint fit | 200–400 is a reasonable range; more particles cost more solver time for diminishing returns |
-| `shaking_tol_px` | Pixel tolerance for matching a tracked 3D point's reprojection to a real detection in each camera | The first thing to tune if you get too few/no matches (loosen) or suspiciously large post-fit RCM (tighten — you're pulling in wrong matches) |
-| `shaking_hold_cam` | 1-indexed camera held fixed as the gauge reference (`"auto"` in Python selects the cleanest camera) | Pick your most trusted/best-calibrated camera, or pass `hold_cam="auto"` in Python |
+| `shaking_first_frame` / `shaking_last_frame` | e.g. `1` to `200` | Tracked frame range in `res/run.zarr` to pull particles from |
+| `shaking_max_num_frames` | `20` – `50` | Subsample down to this many frames (evenly spaced) so the fit stays fast on long sequences |
+| `shaking_max_num_points` | `400` | Cap on high-confidence real particles used in the joint fit |
+| `shaking_tol_px` | `2.0` | Pixel tolerance for matching a tracked 3D point's reprojection to a 2D detection in each camera |
+| `shaking_hold_cam` (`0=auto, 1..N=cam`) | **`0` (auto)** | **`0` (default)** runs `camera_ghost_diagnostics`, holds the cleanest camera (`best_cam`) fixed as the gauge reference, and focuses the shake on the camera causing the most ghosts (`worst_cam`). Set `1..N` to manually hold a specific camera |
+
+Click **OK** to save the dialog settings.
+
+### 4. Click "Tracer self-cal"
+Click **Tracer self-cal** (left panel, below "Suggest eps0"). It runs 3
+progressive iterations (`ghost_prob_schedule = (0.25, 0.15, 0.08)`), printing
+progress to the terminal and updating the GUI status bar:
+
+```text
+Tracer self-cal: button clicked, starting...
+[tracer self-cal] starting: base=..., frames=25, tol_px=2.0, hold_cam=2, worst_cam=3, max_particles=400, iters=3
+[tracer self-cal] initial match: 400 real particles (>=2 cams), RCM before = 37.4 um, ghost/real sep = 1.76x
+[tracer self-cal] iter 1/3: fitting 400 real particles (p_ghost <= 0.25)...
+[tracer self-cal] iter 1/3: RCM = 18.0 um, ghost/real sep = 3.75x (accepted, improved)
+[tracer self-cal] iter 2/3: fitting 400 real particles (p_ghost <= 0.15)...
+[tracer self-cal] iter 2/3: RCM = 17.8 um, ghost/real sep = 3.77x (accepted, improved)
+[tracer self-cal] done
+Tracer self-cal: RCM 37.4 -> 17.8 um, ghost/real sep 1.76x -> 3.77x (400 real particles, cam2 held, worst=cam3)
+[tracer self-cal] updated Zarr RunStore correspondences: 29084 points across 25 frames
+```
+
+### 5. Automatic `.ori` backup, write, and Zarr store re-triangulation
+The refined calibration is accepted only if `RCM_after < RCM_before`. When it
+improves, the GUI automatically:
+1. Backs up your current `.ori` and `.addpar` files (`*.bck`),
+2. Writes the refined `.ori` and `.addpar` files to disk for every free camera, and
+3. Runs `retriangulate_store(...)` on `res/run.zarr` so the stored 3D
+   correspondences are immediately updated with the shaken calibration (ready to
+   re-run **Track** right away).
 
 By default (`filter_ghosts=True`), `tracer_self_calibrate` prioritizes linked
 4-camera (all-camera) real particles with low ghost probability (`p_ghost`) and
