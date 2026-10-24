@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -27,10 +27,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -2557,8 +2557,8 @@
 <h4 id="memory-leaks">Memory Leaks<a class="headerlink" href="#memory-leaks" title="Permanent link">&para;</a></h4>
 <p><strong>#2 - malloc'd memory immediately overwritten</strong>
 - <strong>File</strong>: correspondences.pyx:259
-- <strong>Impact</strong>: Leaked sizeof(coord_2d<em>) bytes per call to single_cam_correspondence
-- </em><em>Fix</em>*: Removed dead malloc line (pointer was immediately overwritten)</p>
+- <strong>Impact</strong>: Leaked sizeof(coord_2d*) bytes per call to single_cam_correspondence
+- <strong>Fix</strong>: Removed dead malloc line (pointer was immediately overwritten)</p>
 <p><strong>#3 - calib never freed (single_cam_point_positions)</strong>
 - <strong>File</strong>: orientation.pyx:152
 - <strong>Impact</strong>: Leaked calibration array on every call
@@ -2573,8 +2573,8 @@
 - <strong>Fix</strong>: Added <code>free(ctargets)</code> and <code>free(calib)</code> before return</p>
 <p><strong>#6 - targ_fb never freed</strong>
 - <strong>File</strong>: tracking_framebuf.pyx:291
-- <strong>Impact</strong>: Leaked char<strong> array on every call to Frame.read()
-- </strong>Fix**: Added <code>free(targ_fb)</code> before return</p>
+- <strong>Impact</strong>: Leaked char** array on every call to Frame.read()
+- <strong>Fix</strong>: Added <code>free(targ_fb)</code> before return</p>
 <h4 id="silent-data-corruption">Silent Data Corruption<a class="headerlink" href="#silent-data-corruption" title="Permanent link">&para;</a></h4>
 <p><strong>#9 - ascontiguousarray result discarded</strong>
 - <strong>File</strong>: image_processing.pyx:52
@@ -2738,10 +2738,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>
