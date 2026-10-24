@@ -41,6 +41,9 @@ DEFAULT_PTV_OPTIONAL = {
     "chfield": 0,
     "allcam_flag": False,
     "pair_flag": False,
+    # 3D from matched targets: "lsq" (point nearest all rays), "pairs" (mean of
+    # pairwise ray midpoints, liboptv) or "weighted"
+    "triangulation": "lsq",
     "splitter": False,
     "splitter_order": [0, 1, 3, 2],
     # Multimedia parameters
