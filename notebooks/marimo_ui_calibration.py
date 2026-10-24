@@ -51,15 +51,16 @@ def _(mo):
 
 
 @app.cell
-def _(test_yaml):
+def _():
     from pathlib import Path
 
     from openptv2.gui.pyptv.parameter_manager import ParameterManager
 
-    # Path to the YAML file - check LV calibration first, then fallback
+    # Path to the YAML file - check LV calibration first, then fallback to test_cavity
     lv_yaml = Path(
         r"C:\Users\alex\Downloads\ptv_data\LV\calibration\parameters_Run_Cal.yaml"
     )
+    test_yaml = Path("test_data/test_cavity/parameters_Run1.yaml")
 
     yaml_path = lv_yaml if lv_yaml.exists() else test_yaml
 
