@@ -100,7 +100,9 @@ def test_match_frame_correspondences_parity(cavity_params, sample_targets):
                 for corr, corresp in zip(corrected, sorted_corresp)
             ]
         )
-        ref_pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
+        ref_pos, _ = point_positions(
+            flat.transpose(1, 0, 2), cpar, cals, vpar, method="lsq"
+        )
         ref_cam_ids = sorted_corresp.astype(np.int32).T
 
         # 2. match_frame_correspondences calculation
