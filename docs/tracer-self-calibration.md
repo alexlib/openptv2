@@ -35,113 +35,159 @@ RMS can look fine even when cameras subtly disagree with each other (see
    need a completed **sequence + tracking** run on actual flow data (not the
    calibration plate) before running this step.
 
-### Store-backed runs
+### Zarr RunStore input
 
-Tracer self-calibration reads tracked 3D points and detections from
-`res/ptv_is.*`/`img/*_targets` ASCII when present, or from `res/run.zarr`
-(the `RunStore`) directly when they aren't — which is the normal case since
-the zarr-only storage migration, since batch/GUI sequence+tracking runs
-write only to the store now. No manual export step is needed.
+Tracer self-calibration reads tracked 3D points, correspondences, and per-camera
+2D detections directly from the Zarr `RunStore` (`res/run.zarr` or `run.zarr`).
+Legacy ASCII `ptv_is.*` files are no longer used.
+
+## Why real-particle filtering and camera focus matter
+
+Naive shaking feeds *all* matched particles (including ghosts and 2- or 3-camera
+partial points) into an unweighted bundle adjustment and shakes all free cameras
+equally. That has two failure modes:
+
+1. **Improving ghosts alongside real particles**: when ghost quadruplets enter
+   the fit, the solver pulls the camera orientations toward making the ghost
+   rays meet, legitimizing the ghosts instead of separating them from real
+   particles.
+2. **Ignoring which camera causes the ghosts**: 72 % of ghosts are 3-camera
+   points where one camera's epipolar search missed the true target because of a
+   sub-pixel calibration offset. Holding the wrong camera fixed — or weighting
+   all cameras equally — fails to focus the correction on the camera causing the
+   mismatch.
+
+`tracer_self_calibrate` solves both:
+
+- **Per-camera ghost diagnostics (`camera_ghost_diagnostics`)**: measures each
+  camera's 3-camera missing share and its 4-camera reprojection residual on
+  high-confidence real particles, identifying `best_cam` and `worst_cam`.
+  Passing `hold_cam="auto"` automatically holds `best_cam` as the gauge
+  reference and focuses residual weights (`focus_cameras=True`) on the cameras
+  with higher badness scores.
+- **Real-particle selection & progressive tightening (`filter_ghosts=True`)**:
+  prioritizes linked all-camera (`n_cams`) particles whose ray-convergence ghost
+  probability `p_ghost` is below a threshold that tightens across iterations
+  (`ghost_prob_schedule=(0.25, 0.15, 0.08)`), weighting each particle by
+  `1 - p_ghost` with a robust `soft_l1` loss.
+- **Increasing real-vs-ghost separation**: as the cameras align on real
+  particles, real particles' RCM drops by ~2× (`37.4 -> 17.8 um` on
+  `L1_d1_c0_k1_n200_s0.08`) while true ghosts stay at ~`67 um`, doubling the
+  ghost-to-real separation ratio (`1.76x -> 3.77x`, AUC `0.827 -> 0.932`).
+- **Immediate store update (`retriangulate_store`)**: re-triangulating the
+  stored correspondences in `res/run.zarr` with the shaken calibration cuts
+  trajectory ghost fraction by 34–73 % and lowers velocity error by 5–14 %
+  across the benchmark suite with zero tracking runtime penalty:
+
+| Case | Mode | `lnkP` | `vErr` | `aErr` | `ghost` | `longC` | `frag` |
+|---|---|---|---|---|---|---|---|
+| `L1_d1_c0_k1_n200` | Unshaken | 0.9645 | 0.1601 | 8.709 | 0.0353 | 0.532 | 2.16 |
+| | **Shaken** | **0.9906** | **0.1378 (−13.9 %)** | **7.306 (−16.1 %)** | **0.0095 (−73.1 %)** | 0.526 | **2.08** |
+| `L1_d1_c0_k1_n200_s0.08` | Unshaken | 0.9627 | 0.1839 | 11.310 | 0.0365 | 0.520 | 2.27 |
+| | **Shaken** | **0.9799** | **0.1676 (−8.9 %)** | **10.072 (−10.9 %)** | **0.0197 (−46.0 %)** | **0.523** | **2.17** |
+| `L1_d2_c0.3_k4_n150` | Unshaken | 0.9488 | 0.1593 | 2.754 | 0.0481 | 0.344 | 2.32 |
+| | **Shaken** | **0.9685** | **0.1507 (−5.4 %)** | **2.708 (−1.7 %)** | **0.0297 (−38.3 %)** | **0.345** | **2.24** |
+| `L1_d4_c0_k1_n150` | Unshaken | 0.9353 | 0.3828 | 24.422 | 0.0645 | 0.172 | 1.56 |
+| | **Shaken** | **0.9590** | **0.3470 (−9.4 %)** | **21.251 (−13.0 %)** | **0.0429 (−33.5 %)** | 0.170 | **1.47** |
 
 ## Using it from the GUI
 
-1. **Launch calibration**: from the main `pyptv2-gui`, open your experiment
-   and use the menu action that starts the calibration dialog. Standalone
-   alternative: `python -m openptv2.gui.calibration_gui path/to/parameters_Run1.yaml`.
-2. **Load images/parameters** (first left-panel button) — required before
-   any other button, including "Tracer self-cal", becomes active.
-3. **Edit calibration parameters** → the **"Shaking calibration
-   parameters"** group holds the settings for this step (see table below).
-4. Click **Tracer self-cal** (left panel, below "Suggest eps0"). Console
-   output now prints progress as it runs:
+### 1. Prerequisite: have a Zarr `RunStore` (`res/run.zarr`)
+Run **Sequence** and **Tracking** at least once on your flow images (either from
+the main `openptv2-gui` window or via `uv run openptv2-batch`) so `res/run.zarr`
+contains `targets/`, `correspondences/`, and `linkage/ptv_is`.
 
+### 2. Open the Calibration GUI & load parameters
+1. From the main `openptv2-gui` window, open **Calibration** → **Create
+   calibration**, or launch the calibration dialog directly from the terminal:
+   ```bash
+   uv run python -m openptv2.gui.calibration_gui path/to/parameters_Run1.yaml
    ```
-   Tracer self-cal: button clicked, starting...
-   [tracer self-cal] starting: base=..., frames=10000-10004 (5), tol_px=2.0, hold_cam=1, max_particles=400, iters=3
-   [tracer self-cal] loaded 5 frames of tracked data
-   [tracer self-cal] initial match: 214 particles (>=2 cams), RCM before = 84.3 um
-   [tracer self-cal] iter 1/3: fitting 214 particles (this may take a moment)...
-   [tracer self-cal] iter 1/3: RCM = 61.7 um (accepted, improved)
-   [tracer self-cal] iter 2/3: fitting 226 particles (this may take a moment)...
-   [tracer self-cal] iter 2/3: RCM = 58.9 um (accepted, improved)
-   [tracer self-cal] iter 3/3: fitting 229 particles (this may take a moment)...
-   [tracer self-cal] iter 3/3: RCM = 58.9 um (not improved, stopping)
-   [tracer self-cal] done
-   ```
+2. Click **Load/Show Images** (top button on the left panel) — required before
+   any other button, including **Tracer self-cal**, becomes active.
 
-5. **Read the status line / console summary**: `Tracer self-cal:
-   cross-camera RCM <before> -> <after> um (N particles, camK held)`.
-6. **Automatic accept/reject**: the refined calibration is kept only if
-   `after < before`. If it improved, the GUI backs up your current
-   `.ori`/`.addpar` and applies the new calibration in memory to every
-   camera except the held one — **save** the result the same way you would
-   after any other orientation step to persist it to disk. If it did not
-   improve, nothing is written.
+### 3. Configure the Shaking Parameters
+Click **Edit calibration parameters** → open the **"Shaking calibration
+parameters"** tab (`Group6`):
 
-## Parameters ("Shaking calibration parameters")
-
-| Field | Meaning | Notes |
+| Field | Recommended Value | Meaning & Notes |
 |---|---|---|
-| `shaking_first_frame` / `shaking_last_frame` | Tracked frame range to pull particles from | Use a range with good particle coverage across the volume, not just a couple of frames |
-| `shaking_max_num_frames` | Subsample down to this many frames (evenly spaced) if the range is larger | Keeps the fit fast on long sequences |
-| `shaking_max_num_points` | Cap on total particles used in the joint fit | 200–400 is a reasonable range; more particles cost more solver time for diminishing returns |
-| `shaking_tol_px` | Pixel tolerance for matching a tracked 3D point's reprojection to a real detection in each camera | The first thing to tune if you get too few/no matches (loosen) or suspiciously large post-fit RCM (tighten — you're pulling in wrong matches) |
-| `shaking_hold_cam` | 1-indexed camera held fixed as the gauge reference; every other camera's exterior is free | Pick your most trusted/best-calibrated camera |
+| `shaking_first_frame` / `shaking_last_frame` | e.g. `1` to `200` | Tracked frame range in `res/run.zarr` to pull particles from |
+| `shaking_max_num_frames` | `20` – `50` | Subsample down to this many frames (evenly spaced) so the fit stays fast on long sequences |
+| `shaking_max_num_points` | `400` | Cap on high-confidence real particles used in the joint fit |
+| `shaking_tol_px` | `2.0` | Pixel tolerance for matching a tracked 3D point's reprojection to a 2D detection in each camera |
+| `shaking_hold_cam` (`0=auto, 1..N=cam`) | **`0` (auto)** | **`0` (default)** runs `camera_ghost_diagnostics`, holds the cleanest camera (`best_cam`) fixed as the gauge reference, and focuses the shake on the camera causing the most ghosts (`worst_cam`). Set `1..N` to manually hold a specific camera |
 
-Internally, a tracked particle only enters the fit if it is matched in at
-least 2 cameras (`min_cams=2`); it is **not** restricted to 4-camera
-quadruplets today — see [Future work](#future-work).
+Click **OK** to save the dialog settings.
+
+### 4. Click "Tracer self-cal"
+Click **Tracer self-cal** (left panel, below "Suggest eps0"). It runs 3
+progressive iterations (`ghost_prob_schedule = (0.25, 0.15, 0.08)`), printing
+progress to the terminal and updating the GUI status bar:
+
+```text
+Tracer self-cal: button clicked, starting...
+[tracer self-cal] starting: base=..., frames=25, tol_px=2.0, hold_cam=2, worst_cam=3, max_particles=400, iters=3
+[tracer self-cal] initial match: 400 real particles (>=2 cams), RCM before = 37.4 um, ghost/real sep = 1.76x
+[tracer self-cal] iter 1/3: fitting 400 real particles (p_ghost <= 0.25)...
+[tracer self-cal] iter 1/3: RCM = 18.0 um, ghost/real sep = 3.75x (accepted, improved)
+[tracer self-cal] iter 2/3: fitting 400 real particles (p_ghost <= 0.15)...
+[tracer self-cal] iter 2/3: RCM = 17.8 um, ghost/real sep = 3.77x (accepted, improved)
+[tracer self-cal] done
+Tracer self-cal: RCM 37.4 -> 17.8 um, ghost/real sep 1.76x -> 3.77x (400 real particles, cam2 held, worst=cam3)
+[tracer self-cal] updated Zarr RunStore correspondences: 29084 points across 25 frames
+```
+
+### 5. Automatic `.ori` backup, write, and Zarr store re-triangulation
+The refined calibration is accepted only if `RCM_after < RCM_before`. When it
+improves, the GUI automatically:
+1. Backs up your current `.ori` and `.addpar` files (`*.bck`),
+2. Writes the refined `.ori` and `.addpar` files to disk for every free camera, and
+3. Runs `retriangulate_store(...)` on `res/run.zarr` so the stored 3D
+   correspondences are immediately updated with the shaken calibration (ready to
+   re-run **Track** right away).
+
+By default (`filter_ghosts=True`), `tracer_self_calibrate` prioritizes linked
+4-camera (all-camera) real particles with low ghost probability (`p_ghost`) and
+progressively tightens the `p_ghost` threshold across iterations.
 
 ## What actually happens (algorithm)
 
-1. Load tracked 3D positions (`res/ptv_is.*`) and per-camera detections
-   (`img/*_targets`) for the configured frames.
-2. **Match**: for each tracked 3D point, reproject it into every camera with
-   the *current* calibration and find the nearest real detection within
-   `shaking_tol_px`. Keep points matched in at least 2 cameras.
-3. **Fit**: one joint least-squares bundle adjustment (`scipy.optimize.
-   least_squares`, sparse Jacobian) refines every free camera's exterior
-   orientation (position + angles) *and* the matched particles' free 3D
-   positions together, minimizing total reprojection error. Distortion
-   parameters are held fixed. The held camera's exterior fixes the 7-DOF
-   gauge freedom (translation/rotation/scale) that an unconstrained joint
-   fit would otherwise leave undetermined.
-4. **Accept or reject**: compute the median RCM on the refit. If it beats
-   the previous best, keep the new calibration and continue; otherwise stop.
-5. **Iterate** (`iters`, default 3 from the GUI): re-run match → fit with
-   the improved calibration, since a better calibration recovers different
-   (better) matches. Stops early once RCM plateaus or a pass doesn't
-   improve.
+1. Load tracked 3D positions, correspondences, linkage, and per-camera 2D
+   detections from the Zarr `RunStore` (`res/run.zarr`).
+2. **Diagnose cameras** (`camera_ghost_diagnostics`): measure each camera's
+   3-camera missing share and 4-camera reprojection residual on high-confidence
+   real particles to identify `best_cam` and `worst_cam`.
+3. **Select real particles**: filter out ghost candidates using ray-convergence
+   ghost probability (`p_ghost <= q_thresh`), prioritizing linked all-camera
+   particles and weighting each particle by `1 - p_ghost`.
+4. **Fit**: one coupled least-squares bundle adjustment (`scipy.optimize.
+   least_squares`, sparse Jacobian, `soft_l1` loss) refines every free camera's
+   exterior orientation (position + scaled mrad angles) *and* the real
+   particles' 3D positions together, including the held reference camera's 2D
+   observations in the residual and focusing camera weights on higher-badness
+   cameras.
+5. **Accept or reject & tighten**: evaluate the median RCM on the reference real
+   particle set and record the ghost-to-real RCM separation ratio. Tighten
+   `q_thresh` (`ghost_prob_schedule`) on the next iteration and stop when RCM
+   plateaus.
 
 ## After running it
 
-- Re-run sequence + tracking with the refined calibration, then run tracer
-  self-cal again if useful — since it's inherently iterative across
-  match/fit/re-track cycles, a second pass on fresh tracking output can
-  keep improving RCM further.
+- Call `retriangulate_store(base, new_cals, cpar)` to update the 3D
+  correspondence positions in `res/run.zarr` immediately, or re-run sequence +
+  tracking (`recorrespond` + `track_store`) with the refined calibration.
 - Cross-check the improvement with the `visualize-calibration` skill or
   `openptv2.calibration_diagnostics` (sight-line angle, cross-camera
-  symmetry, cross-camera RCM) — the single before/after number the button
-  prints is a summary, not the full picture.
+  symmetry, cross-camera RCM).
 
 ## Troubleshooting
 
 | Symptom | Likely cause | Try |
 |---|---|---|
-| "n/a: no res/ptv_is.\* frames. Run the sequence + tracking first." | Sequence+tracking never actually completed for the configured frame range (neither ASCII nor `res/run.zarr` has linkage data) | Confirm the sequence+tracking step succeeded and produced tracking output for those exact frames; widen/adjust `shaking_first_frame`/`shaking_last_frame` |
-| "only N multi-cam tracer particles" (skipped, N < 10) | Too few particles matched in ≥2 cameras for the configured frames | Widen the frame range, loosen `shaking_tol_px`, or check that detection/tracking actually found particles in those frames |
-| RCM doesn't improve on iteration 1 | Starting calibration is already good for this data, or `tol_px` is too tight/loose | Try a different `hold_cam`, adjust `tol_px`, or accept that this dataset doesn't need further refinement |
-| Console shows nothing after clicking the button | Fixed — progress is now printed at start, per match, and per iteration (see the example output above) | Update if you're on an older build without this |
-
-## Future work
-
-The current fit accepts any tracked particle seen by 2 or more cameras
-(`min_cams=2`). A quadruplet-gated variant — requiring all 4 cameras to see
-a particle before it enters the fit — would trade point count for
-per-point confidence, since a 4-camera correspondence is far less likely to
-be a spurious match than a 2-camera one. This isn't implemented yet; see
-`four_camera_matching()` in `src/openptv2/algorithms/correspondences.py`
-for the existing quadruplet-matching machinery this would build on.
+| "no Zarr RunStore found (run sequence + tracking first)" | Sequence+tracking has not been run yet (no `res/run.zarr`) | Run sequence + tracking first so `res/run.zarr` holds correspondences and linkage |
+| "only N multi-cam tracer particles" (skipped, N < 10) | Too few particles matched in ≥2 cameras for the configured frames | Widen the frame range, loosen `shaking_tol_px`, or check that detection/tracking found particles in those frames |
+| RCM doesn't improve on iteration 1 | Starting calibration is already good for this data, or `tol_px` is too tight/loose | Try `hold_cam="auto"`, adjust `tol_px`, or accept that this dataset doesn't need further refinement |
 
 ## Related
 
@@ -154,6 +200,6 @@ for the existing quadruplet-matching machinery this would build on.
 - [`calibration_best_practices.md`](calibration_best_practices.md) — the
   broader plate-calibration workflow this step follows on from.
 - `src/openptv2/autocalibration.py` — `tracer_self_calibrate()`,
-  `cross_camera_rcm()`.
+  `camera_ghost_diagnostics()`, `retriangulate_store()`, `cross_camera_rcm()`.
 - `src/openptv2/gui/calibration_gui.py` — the "Tracer self-cal" button and
   "Shaking calibration parameters" dialog group.

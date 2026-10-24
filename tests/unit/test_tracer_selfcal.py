@@ -1,9 +1,11 @@
-"""tracer_self_calibrate runs end-to-end on a tracking fixture and never
-diverges (the coupled joint fit over free tracer particles, gauge-fixed by
-holding one camera). Real improvement is demonstrated on flow data with depth
-coverage the plate lacks; here we guard the plumbing + the no-worsen contract."""
+"""tracer_self_calibrate runs end-to-end on a Zarr RunStore tracking fixture,
+diagnoses which camera causes the most ghosts, filters out ghost particles, and
+progressively increases the RCM separation between real (shaken) and ghost
+particles."""
 
+import copy
 import os
+import shutil
 from pathlib import Path
 
 import numpy as np
@@ -14,8 +16,10 @@ from openptv2.autocalibration import (
     _cpar_from_ptv,
     _find_yaml,
     cam_files,
+    retriangulate_store,
     tracer_self_calibrate,
 )
+from openptv2.storage import RunStore, find_existing_store
 
 SYNTH = Path("test_data/synthetic")
 
@@ -35,8 +39,8 @@ def _load():
 
 @pytest.mark.unit
 def test_tracer_selfcal_runs_and_does_not_diverge():
-    if not (SYNTH / "res").exists() or not list((SYNTH / "res").glob("ptv_is.*")):
-        pytest.skip("synthetic tracking results not present")
+    if find_existing_store(SYNTH) is None:
+        pytest.skip("synthetic Zarr RunStore not present")
     cwd = os.getcwd()
     try:
         base, cpar, cals = _load()
@@ -53,6 +57,7 @@ def test_tracer_selfcal_runs_and_does_not_diverge():
     # Core contract: a gauge-fixed joint fit must never worsen convergence.
     assert info["rcm_after"] <= info["rcm_before"] * 1.02
     assert len(new_cals) == cpar.num_cams
+    assert "camera_diagnostics_before" in info and "camera_diagnostics_after" in info
 
 
 @pytest.mark.unit
@@ -60,8 +65,8 @@ def test_tracer_selfcal_iterated_never_worsens():
     """Iterated shaking (refine -> re-match -> repeat) accepts a pass only if RCM
     improves, so the result never worsens and reports its accepted-iteration
     count + trace."""
-    if not (SYNTH / "res").exists() or not list((SYNTH / "res").glob("ptv_is.*")):
-        pytest.skip("synthetic tracking results not present")
+    if find_existing_store(SYNTH) is None:
+        pytest.skip("synthetic Zarr RunStore not present")
     cwd = os.getcwd()
     try:
         base, cpar, cals = _load()
@@ -84,66 +89,104 @@ def test_tracer_selfcal_iterated_never_worsens():
 @pytest.mark.unit
 def test_tracer_selfcal_reads_store_backed_run(tmp_path):
     """A normal sequence+tracking run through the GUI/batch pipeline is
-    store-backed (writes only to res/run.zarr, no ASCII ptv_is.*/targets --
-    see tracking_frame_buf.write_path_frame/write_targets). Reproduce that
-    here: same known-consistent geometry as the ASCII fixture above (copied
-    from its checked-in ptv_is.*/targets files into a fresh RunStore, no
-    ASCII alongside), and confirm tracer_self_calibrate actually reads it
-    instead of reporting "no res/ptv_is.* frames"."""
-    if not (SYNTH / "res").exists() or not list((SYNTH / "res").glob("ptv_is.*")):
-        pytest.skip("synthetic tracking results not present")
-    import shutil
-
-    from openptv2.storage import RunStore
+    store-backed (writes only to res/run.zarr, no legacy ASCII files). Confirm
+    tracer_self_calibrate reads directly from RunStore."""
+    src_store_path = find_existing_store(SYNTH)
+    if src_store_path is None:
+        pytest.skip("synthetic Zarr RunStore not present")
 
     base = tmp_path / "synth_store"
     shutil.copytree(
-        SYNTH, base, ignore=shutil.ignore_patterns("res", "img", "*_targets")
+        SYNTH,
+        base,
+        ignore=shutil.ignore_patterns("res", "res_orig", "img", "*_targets", "*.zarr"),
     )
-    (base / "img").mkdir()
-    for f in (SYNTH / "img").glob("*.tif"):
-        shutil.copy2(f, base / "img" / f.name)
+    shutil.copytree(src_store_path, base / "res" / "run.zarr")
 
     cpar_src, cals_src = _load()[1:]
-    n_cams = cpar_src.num_cams
-
-    store = RunStore.open(base, mode="a")
-    for pf in sorted(
-        SYNTH.glob("res/ptv_is.*"), key=lambda p: int(p.suffix.lstrip("."))
-    ):
-        frame = int(pf.suffix.lstrip("."))
-        lines = pf.read_text().splitlines()
-        nn = int(lines[0])
-        prev, nxt, pos = [], [], []
-        for line in lines[1 : nn + 1]:
-            p = line.split()
-            prev.append(int(p[0]))
-            nxt.append(int(p[1]))
-            pos.append([float(p[2]), float(p[3]), float(p[4])])
-        store.write_linkage(frame, prev, nxt, pos, name="ptv_is")
-
-        for cam in range(n_cams):
-            tf = SYNTH / "img" / f"cam{cam + 1}.{frame}_targets"
-            if not tf.exists():
-                continue
-            tlines = tf.read_text().splitlines()
-            tn = int(tlines[0])
-            rows = [[float(x) for x in tlines[i + 1].split()] for i in range(tn)]
-            store.write_targets(
-                cam, frame, np.asarray(rows, float) if rows else np.empty((0, 8))
-            )
-
-    cwd = os.getcwd()
-    try:
-        os.chdir(base)
-        new_cals, info = tracer_self_calibrate(
-            base, cpar_src, cals_src, tol_px=3.0, max_particles=150
-        )
-    finally:
-        os.chdir(cwd)
+    new_cals, info = tracer_self_calibrate(
+        base, cpar_src, cals_src, tol_px=3.0, max_particles=150
+    )
     assert "skipped" not in info, info
     assert info["n_particles"] > 0 and info["n_obs"] > 0
     assert len(new_cals) == cpar_src.num_cams
+
+
+@pytest.mark.unit
+def test_tracer_selfcal_focuses_on_perturbed_camera_and_separates_ghosts(tmp_path):
+    """When one camera has a calibration offset and ghost particles are present
+    in the Zarr store, tracer_self_calibrate identifies the worst camera, avoids
+    holding it fixed when hold_cam='auto', lowers real-particle RCM, and
+    increases the ghost-to-real RCM separation ratio."""
+    src_store_path = find_existing_store(SYNTH)
+    if src_store_path is None:
+        pytest.skip("synthetic Zarr RunStore not present")
+
+    base = tmp_path / "synth_ghost_shake"
+    shutil.copytree(
+        SYNTH,
+        base,
+        ignore=shutil.ignore_patterns("res", "res_orig", "img", "*_targets", "*.zarr"),
+    )
+    shutil.copytree(src_store_path, base / "res" / "run.zarr")
+
+    _, cpar, cals = _load()
+    # Inject synthetic ghost correspondences into the Zarr store (mismatched target IDs)
+    store = RunStore(base / "res" / "run.zarr", mode="a")
+    rng = np.random.default_rng(42)
+    for f in store.frames():
+        if not store.has_correspondences(f):
+            continue
+        pos, cid = store.read_correspondences(f)
+        if len(pos) < 6:
+            continue
+        n_g = max(2, len(pos) // 4)
+        g_pos = pos[:n_g] + rng.uniform(-1.5, 1.5, size=(n_g, 3))
+        g_cid = cid[:n_g].copy()
+        # Swap target indices in camera 2 and drop camera 3 on half of them (3-cam ghosts)
+        g_cid[:, 2] = np.roll(g_cid[:, 2], 1)
+        g_cid[::2, 3] = -1
+        new_pos = np.vstack([pos, g_pos])
+        new_cid = np.vstack([cid, g_cid])
+        store.write_correspondences(f, new_pos, new_cid)
+        if store.has_linkage(f, "ptv_is"):
+            prv, nxt, lpos = store.read_linkage(f, "ptv_is")
+            store.write_linkage(
+                f,
+                np.concatenate([prv, np.full(n_g, -1, dtype=np.int32)]),
+                np.concatenate([nxt, np.full(n_g, -1, dtype=np.int32)]),
+                np.vstack([lpos, g_pos]),
+                name="ptv_is",
+            )
+
+    # Perturb camera 2's exterior position so it is the dominant source of mismatch
+    bad_cals = [copy.deepcopy(c) for c in cals]
+    p2 = np.asarray(bad_cals[2].get_pos(), dtype=float)
+    bad_cals[2].set_pos(p2 + np.array([0.25, -0.20, 0.15]))
+
+    shaken_cals, info = tracer_self_calibrate(
+        base,
+        cpar,
+        bad_cals,
+        tol_px=4.0,
+        hold_cam="auto",
+        max_particles=200,
+        iters=3,
+    )
+    assert "skipped" not in info, info
+    assert info["worst_cam"] == 2
+    assert info["hold_cam"] != 2
+    assert info["rcm_after"] < info["rcm_before"]
+    assert info["real_rcm_after"] < info["real_rcm_before"]
+    if (
+        info["separation_ratio_before"] is not None
+        and info["separation_ratio_after"] is not None
+    ):
+        assert info["separation_ratio_after"] > info["separation_ratio_before"]
+
+    # Also verify retriangulate_store updates the store's 3D correspondences cleanly
+    retri = retriangulate_store(base, shaken_cals, cpar)
+    assert retri["n_frames"] > 0 and retri["n_points"] > 0
 
 
 @pytest.mark.unit

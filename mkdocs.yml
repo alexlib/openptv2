@@ -62,6 +62,7 @@ nav:
     - 4-View Image Splitter: tutorials/four_view_splitter/README.md
     - Sequence & Tracking Plugins: tutorials/plugins.md
     - Parameter Management: tutorials/parameters.md
+    - Getting Started with the Spatial Consensus (VFC): tutorials/vfc_getting_started.md
   - User Guides:
     - Zarr & HDF5 Storage: zarr-hdf5-storage.md
     - Tracking Pipeline & Results: tracking_guide.md
@@ -69,6 +70,9 @@ nav:
     - tracking_advice (measure your data, get the values): tracking_advice.md
     - Point Quality and Ghost Marks: tracking_quality.md
     - Tracker Engines & Parameters: tracker-tutorials.md
+    - Which Tracker to Use: trackers.md
+    - The two_phase Tracker: two-phase-tracking.md
+    - Spatial Consensus & Cold-Start Bootstrap: two-phase-spatial-consensus.md
     - Lagrangian Turbulence Quality: lagrangian_turbulence_quality_guide.md
     - Command-Line Batch Processing: tutorials/batch_processing.md
     - Cloud-like Batch Deployment: cloud-batch.md

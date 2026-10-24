@@ -275,7 +275,7 @@ def single_cam_correspondence(img_pts, flat_coords, cals):
     return sorted_pos, sorted_corresp, num_targs
 
 
-def match_frame_correspondences(detections, cpar, cals, vpar):
+def match_frame_correspondences(detections, cpar, cals, vpar, method="lsq"):
     """Compute multi-camera stereo correspondences and triangulated 3D positions
     for a single frame.
 
@@ -284,6 +284,8 @@ def match_frame_correspondences(detections, cpar, cals, vpar):
         cpar: ControlParams / ControlPar instance.
         cals: List of Calibration instances.
         vpar: VolumeParams / VolumePar instance.
+        method: triangulation method, "lsq" (default), "pairs" or "weighted"
+            (see openptv2.algorithms.orientation.point_position_batch).
 
     Returns:
         tuple: (pos_3d, cam_target_ids)
@@ -322,7 +324,7 @@ def match_frame_correspondences(detections, cpar, cals, vpar):
         [corr.get_by_pnrs(corresp) for corr, corresp in zip(corrected, sorted_corresp)]
     )
 
-    pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
+    pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar, method=method)
 
     if num_cams < 4:
         print_corresp = -1 * np.ones((4, sorted_corresp.shape[1]), dtype=np.int32)
@@ -334,7 +336,7 @@ def match_frame_correspondences(detections, cpar, cals, vpar):
 
 
 def _correspondence_worker_chunk(
-    frames, targets_data, cpar, cals, vpar, zarr_store_path=None
+    frames, targets_data, cpar, cals, vpar, zarr_store_path=None, method="lsq"
 ):
     """Worker function to process a chunk of frames in parallel."""
     results = []
@@ -355,7 +357,7 @@ def _correspondence_worker_chunk(
             raise ValueError("Either targets_data or zarr_store_path must be provided")
 
         pos_3d, cam_target_ids = match_frame_correspondences(
-            detections, cpar, cals, vpar
+            detections, cpar, cals, vpar, method=method
         )
         results.append((frame, pos_3d, cam_target_ids))
 
@@ -371,6 +373,7 @@ def match_correspondences_batch_parallel(
     zarr_store_path=None,
     n_workers=None,
     write_to_store=True,
+    method="lsq",
 ):
     """Process stereo correspondences and 3D point positions for a batch/sequence of frames
     in parallel using multi-processing.
@@ -385,6 +388,7 @@ def match_correspondences_batch_parallel(
             and/or write correspondences to.
         n_workers: Number of parallel worker processes. If None, auto-selects based on CPU count.
         write_to_store: If True and zarr_store_path is given, writes all correspondences into the Zarr store.
+        method: triangulation method, "lsq" (default), "pairs" or "weighted".
 
     Returns:
         dict: Mapping frame -> (pos_3d, cam_target_ids)
@@ -408,7 +412,7 @@ def match_correspondences_batch_parallel(
     # If single worker or single frame, run directly without multiprocessing overhead
     if n_workers <= 1:
         chunk_results = _correspondence_worker_chunk(
-            frames_list, targets, cpar, cals, vpar, zarr_store_path
+            frames_list, targets, cpar, cals, vpar, zarr_store_path, method
         )
         for frame, pos_3d, cam_target_ids in chunk_results:
             results[frame] = (pos_3d, cam_target_ids)
@@ -436,6 +440,7 @@ def match_correspondences_batch_parallel(
                     cals,
                     vpar,
                     zarr_store_path,
+                    method,
                 )
                 futures.append(fut)
 

@@ -181,8 +181,10 @@ def test_main_params_binding(temp_experiment):
     assert main_params.Refr_Water == 1.33
     assert main_params.Xmin == -100
     assert main_params.Xmax == 100
+    assert main_params.Triangulation == "lsq"  # default when the YAML has none
 
     # Modify values on Main_Params
+    main_params.Triangulation = "pairs"
     main_params.Num_Cam = 2
     main_params.imx = 1000
     main_params.HighPass = False
@@ -197,6 +199,7 @@ def test_main_params_binding(temp_experiment):
     assert exp.pm.parameters["num_cams"] == 2
     assert exp.pm.parameters["ptv"]["imx"] == 1000
     assert exp.pm.parameters["ptv"]["hp_flag"] is False
+    assert exp.pm.parameters["ptv"]["triangulation"] == "pairs"
     assert exp.pm.parameters["criteria"]["X_lay"][0] == -200
 
 

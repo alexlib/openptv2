@@ -1126,93 +1126,291 @@ def _flat_targets_from_obs(obs_list, cals, cpar):
     return targets
 
 
-def _tracer_rcm_median(obs_list, cals, cpar):
-    """Median ray-convergence miss distance (mm) over tracer observations."""
+def _tracer_rcm_array(obs_list, cals, cpar):
+    """Per-particle ray-convergence miss distance (mm) over tracer observations."""
     from openptv2.orientation import multi_cam_point_positions
 
-    if len(obs_list) < 3:
-        return None
+    if len(obs_list) == 0:
+        return np.empty(0, dtype=np.float64)
     targets = _flat_targets_from_obs(obs_list, cals, cpar)
     _pos, rcm = multi_cam_point_positions(targets, cpar, cals)
+    return np.asarray(rcm, dtype=np.float64)
+
+
+def _tracer_rcm_median(obs_list, cals, cpar):
+    """Median ray-convergence miss distance (mm) over tracer observations."""
+    if len(obs_list) < 3:
+        return None
+    rcm = _tracer_rcm_array(obs_list, cals, cpar)
     return float(np.median(rcm))
 
 
-def _load_tracer_frame_data(base: Path, cpar: Any, frames: Any) -> Any:
-    """Load the sequence YAML, list tracked-linkage frames, and read each
-    frame's tracked 3D points + per-camera detections for
-    tracer_self_calibrate.
+def _tracer_ghost_probabilities(obs_list, seed_xyz, cals, cpar):
+    """Compute per-particle (rcm, n_seen, p_ghost) for candidate observations."""
+    from openptv2.point_quality import fit_scale, ghost_probability
 
-    Reads ``res/ptv_is.*`` ASCII when present, or -- for a store-backed run
-    (linkage/targets are written only to ``res/run.zarr`` now, see
-    ``tracking_frame_buf.write_path_frame``/``write_targets``) -- the
-    RunStore directly. A normal sequence+tracking run through the GUI or
-    batch pipeline is store-backed, so this is the common case, not a
-    fallback.
+    n = len(obs_list)
+    if n == 0:
+        empty = np.empty(0, dtype=np.float64)
+        return empty, np.empty(0, dtype=np.int32), empty
+    rcm = _tracer_rcm_array(obs_list, cals, cpar)
+    n_seen = np.array([len(pix) for pix in obs_list], dtype=np.int32)
+    pos = np.asarray(seed_xyz, dtype=np.float64).reshape(n, 3)
+    scale = fit_scale(pos, rcm, n_seen)
+    p_ghost = ghost_probability(pos, rcm, n_seen, scale)
+    return rcm, n_seen, np.asarray(p_ghost, dtype=np.float64)
 
-    Returns (frame_data, skip_reason): frame_data is a list of (pts, det)
-    tuples on success; skip_reason is None on success, else the reason
-    tracer_self_calibrate should skip.
+
+def camera_ghost_diagnostics(obs_list, seed_xyz, cals, cpar, *, max_ghost_prob=0.20):
+    """Per-camera ghost and reprojection diagnostics on tracer observations.
+
+    Identifies which camera contributes most to 3-camera partial correspondences
+    (the dominant source of ghosts) and which camera has the largest reprojection
+    mismatch on high-confidence 4-camera real particles.
     """
-    yaml_path = _find_yaml(base)
-    if yaml_path is None:
-        return None, "no parameters YAML"
-    y = yaml.safe_load(yaml_path.read_text())
-    seq = (y.get("sequence") or {}).get("base_name")
-    if not seq:
-        return None, "no sequence.base_name in YAML"
-    seq_bases = [str(base / s.replace("%d", "")) for s in seq]
-
     n_cams = cpar.num_cams
+    rcm, n_seen, p_ghost = _tracer_ghost_probabilities(obs_list, seed_xyz, cals, cpar)
+    seed = np.asarray(seed_xyz, dtype=np.float64).reshape(-1, 3)
 
-    # Zarr is the database of record: prefer a run store that actually holds
-    # tracked linkage (a bare res/run.zarr created by an unrelated writer does
-    # not count); ASCII ptv_is.* remains the fallback for legacy runs.
-    store = None
+    missing_3cam = np.zeros(n_cams, dtype=int)
+    n_3cam = int((n_seen == max(2, n_cams - 1)).sum())
+    for i, pix in enumerate(obs_list):
+        if len(pix) == max(2, n_cams - 1):
+            for c in range(n_cams):
+                if c not in pix:
+                    missing_3cam[c] += 1
+
+    real_4cam = (n_seen == n_cams) & (p_ghost <= max_ghost_prob)
+    if real_4cam.sum() < 5:
+        real_4cam = n_seen >= min(n_cams, 3)
+    if real_4cam.sum() < 5:
+        real_4cam = np.ones(len(obs_list), dtype=bool)
+
+    per_cam = []
+    rms_arr = np.zeros(n_cams, dtype=np.float64)
+    med_arr = np.zeros(n_cams, dtype=np.float64)
+    miss_share_arr = np.zeros(n_cams, dtype=np.float64)
+    for cam in range(n_cams):
+        res_px = []
+        for i in np.flatnonzero(real_4cam):
+            if cam not in obs_list[i]:
+                continue
+            proj = _reproject_px(cals[cam], cpar.mm, seed[i], cpar)
+            dx = obs_list[i][cam][0] - proj[0]
+            dy = obs_list[i][cam][1] - proj[1]
+            res_px.append(float(np.hypot(dx, dy)))
+        arr = np.asarray(res_px, dtype=np.float64)
+        rms = float(np.sqrt(np.mean(arr * arr))) if len(arr) else 0.0
+        med = float(np.median(arr)) if len(arr) else 0.0
+        m_share = float(missing_3cam[cam]) / max(n_3cam, 1)
+        rms_arr[cam] = rms
+        med_arr[cam] = med
+        miss_share_arr[cam] = m_share
+        per_cam.append(
+            {
+                "cam": cam,
+                "missing_3cam_count": int(missing_3cam[cam]),
+                "missing_3cam_share": round(m_share, 4),
+                "reproj_rms_px": round(rms, 4),
+                "reproj_median_px": round(med, 4),
+            }
+        )
+
+    med_norm = med_arr / max(float(np.median(med_arr)), 1e-6)
+    miss_norm = miss_share_arr / max(float(np.mean(miss_share_arr)), 1e-6)
+    badness = 0.7 * med_norm + 0.3 * miss_norm
+    for c in range(n_cams):
+        per_cam[c]["badness_score"] = round(float(badness[c]), 4)
+
+    best_cam = int(np.argmin(badness))
+    worst_cam = int(np.argmax(badness))
+    real_mask = p_ghost <= max_ghost_prob
+    ghost_mask = p_ghost > max_ghost_prob
+    real_rcm = (
+        float(np.median(rcm[real_mask])) if real_mask.any() else float(np.median(rcm))
+    )
+    ghost_rcm = float(np.median(rcm[ghost_mask])) if ghost_mask.any() else None
+    sep_ratio = (
+        float(ghost_rcm / max(real_rcm, 1e-9))
+        if ghost_rcm is not None and real_rcm > 0
+        else None
+    )
+    return {
+        "per_camera": per_cam,
+        "best_cam": best_cam,
+        "worst_cam": worst_cam,
+        "real_rcm_median": real_rcm,
+        "ghost_rcm_median": ghost_rcm,
+        "separation_ratio": sep_ratio,
+        "n_real": int(real_mask.sum()),
+        "n_ghost": int(ghost_mask.sum()),
+    }
+
+
+def _load_tracer_frame_data(base: Path, cpar: Any, frames: Any) -> Any:
+    """Read tracked 3D points, correspondences, and per-camera 2D targets from
+    the dataset's Zarr ``RunStore`` (`res/run.zarr` or `run.zarr`).
+
+    Returns (frame_data, skip_reason): frame_data is a list of dicts
+    ``{"pts": (N,3), "det": list[(M_c,2)], "stored_obs": list[dict] | None,
+    "linked": (N,) bool}`` on success; skip_reason is None on success, else
+    the reason ``tracer_self_calibrate`` should skip.
+    """
     from openptv2.storage import RunStore, find_existing_store
 
+    n_cams = cpar.num_cams
     store_path = find_existing_store(base)
-    if store_path is not None and store_path.exists():
-        candidate = RunStore(store_path, mode="r")
-        if any(candidate.has_linkage(f, "ptv_is") for f in candidate.frames()):
-            store = candidate
+    if store_path is None or not store_path.exists():
+        return None, "no Zarr RunStore found (run sequence + tracking first)"
 
-    if store is not None:
-        frame_nums = [f for f in store.frames() if store.has_linkage(f, "ptv_is")]
-    else:
-        ascii_ptv_files = sorted(
-            (base / "res").glob("ptv_is.*"), key=lambda p: int(p.suffix.lstrip("."))
-        )
-        frame_nums = [int(p.suffix.lstrip(".")) for p in ascii_ptv_files]
+    store = RunStore(store_path, mode="r")
+    all_store_frames = store.frames()
+    has_lnk = [f for f in all_store_frames if store.has_linkage(f, "ptv_is")]
+    has_corr = [f for f in all_store_frames if store.has_correspondences(f)]
+    frame_nums = has_lnk if has_lnk else has_corr
     if frames is not None:
         wanted = set(frames)
         frame_nums = [f for f in frame_nums if f in wanted]
     if not frame_nums:
-        return None, "no tracked-linkage frames (store or res/ptv_is.*)"
+        return None, "no tracked-linkage or correspondence frames in RunStore"
 
     frame_data = []
     for frame in frame_nums:
-        if store is not None:
-            _prev, _next, pos = store.read_linkage(frame, "ptv_is")
-            pts = [list(row) for row in pos]
-        else:
-            lines = (base / "res" / f"ptv_is.{frame}").read_text().splitlines()
-            nn = int(lines[0])
-            pts = []
-            for line in lines[1 : nn + 1]:
-                parts = line.split()
-                if len(parts) >= 5:
-                    pts.append([float(parts[2]), float(parts[3]), float(parts[4])])
-        if not pts:
-            continue
         det = []
+        rows_per_cam = []
         for cam in range(n_cams):
-            tg = read_targets(seq_bases[cam], frame, cam_idx=cam, store=store)
-            det.append(np.array([[t.x, t.y] for t in tg]) if tg else np.empty((0, 2)))
-        frame_data.append((np.asarray(pts, float), det))
+            key = f"targets/cam_{cam}/frame_{frame:06d}"
+            if key in store.root:
+                r = np.asarray(store.root[key], dtype=np.float64)
+                rows_per_cam.append(r)
+                det.append(r[:, 1:3] if len(r) else np.empty((0, 2)))
+            else:
+                rows_per_cam.append(None)
+                det.append(np.empty((0, 2)))
+
+        stored_obs = None
+        linked = None
+        if store.has_correspondences(frame):
+            pos, cam_ids = store.read_correspondences(frame)
+            pts = np.asarray(pos, dtype=np.float64)
+            if len(pts) == 0:
+                continue
+            stored_obs = []
+            for i in range(len(pts)):
+                pix = {}
+                for cam in range(n_cams):
+                    r = rows_per_cam[cam]
+                    cid = int(cam_ids[i, cam])
+                    if r is not None and 0 <= cid < len(r):
+                        pix[cam] = (float(r[cid, 1]), float(r[cid, 2]))
+                stored_obs.append(pix)
+            if store.has_linkage(frame, "ptv_is"):
+                prev_ids, next_ids, _pos_lnk = store.read_linkage(frame, "ptv_is")
+                if len(prev_ids) == len(pts):
+                    linked = (prev_ids >= 0) | (next_ids >= 0)
+        elif store.has_linkage(frame, "ptv_is"):
+            prev_ids, next_ids, pos = store.read_linkage(frame, "ptv_is")
+            pts = np.asarray(pos, dtype=np.float64)
+            if len(pts) == 0:
+                continue
+            linked = (prev_ids >= 0) | (next_ids >= 0)
+        else:
+            continue
+
+        if linked is None:
+            linked = np.ones(len(pts), dtype=bool)
+        frame_data.append(
+            {
+                "pts": pts,
+                "det": det,
+                "stored_obs": stored_obs,
+                "linked": np.asarray(linked, dtype=bool),
+            }
+        )
     if not frame_data:
         return None, "no tracked points in the selected frames"
 
     return frame_data, None
+
+
+def retriangulate_store(
+    store_or_base: Any,
+    cals: list[Calibration],
+    cpar: Any,
+    *,
+    frames: list[int] | None = None,
+) -> dict:
+    """Re-triangulate 3D correspondences in a Zarr ``RunStore`` using ``cals``.
+
+    After ``tracer_self_calibrate`` refines the camera exteriors, updating the
+    stored 3D correspondence positions (and point-quality marks if present)
+    sharpens real-vs-ghost separation immediately for subsequent tracking runs
+    without needing to re-run 2D target detection.
+    """
+    from openptv2.algorithms.orientation import COORD_UNUSED, multi_cam_point_positions
+    from openptv2.algorithms.trafo import (
+        correct_brown_affine_batch,
+        pixel_to_metric_batch,
+    )
+    from openptv2.point_quality import read_frame_arrays
+    from openptv2.storage import RunStore, find_existing_store
+
+    if isinstance(store_or_base, (str, Path)):
+        base = Path(store_or_base)
+        store_path = base if base.suffix == ".zarr" else find_existing_store(base)
+        if store_path is None or not store_path.exists():
+            raise FileNotFoundError(f"No RunStore found at {base}")
+        store = RunStore(store_path, mode="a")
+    else:
+        store = store_or_base
+
+    n_cams = len(cals)
+    target_frames = [
+        f
+        for f in store.frames()
+        if store.has_correspondences(f) and (frames is None or f in set(frames))
+    ]
+    rcm_after_list = []
+    for f in target_frames:
+        pos, cam_ids, rows = read_frame_arrays(store, f, n_cams)
+        if len(pos) == 0:
+            continue
+        targets = np.full((len(pos), n_cams, 2), COORD_UNUSED, dtype=np.float64)
+        for cam in range(n_cams):
+            if rows[cam] is None:
+                continue
+            sel = np.flatnonzero(cam_ids[:, cam] >= 0)
+            if not len(sel):
+                continue
+            cal = cals[cam]
+            a = cal.added_par
+            xy = np.ascontiguousarray(
+                rows[cam][cam_ids[sel, cam]][:, 1:3], dtype=np.float64
+            )
+            met = np.ascontiguousarray(
+                pixel_to_metric_batch(xy, cpar), dtype=np.float64
+            )
+            flat = np.asarray(
+                correct_brown_affine_batch(
+                    met, a.k1, a.k2, a.k3, a.p1, a.p2, a.scx, a.she
+                )
+            )
+            targets[sel, cam, 0] = flat[:, 0] - cal.int_par.xh
+            targets[sel, cam, 1] = flat[:, 1] - cal.int_par.yh
+        new_pos, rcm_after = multi_cam_point_positions(targets, cpar, cals)
+        rcm_after_list.append(np.asarray(rcm_after, dtype=np.float64))
+        store.write_correspondences(f, np.asarray(new_pos, dtype=np.float64), cam_ids)
+
+    rcm_all = (
+        np.concatenate(rcm_after_list)
+        if rcm_after_list
+        else np.empty(0, dtype=np.float64)
+    )
+    return {
+        "n_frames": len(target_frames),
+        "n_points": int(len(rcm_all)),
+        "rcm_median": float(np.median(rcm_all)) if len(rcm_all) else None,
+    }
 
 
 def tracer_self_calibrate(
@@ -1222,33 +1420,35 @@ def tracer_self_calibrate(
     *,
     frames=None,
     tol_px=2.0,
-    hold_cam=0,
+    hold_cam: int | str = 0,
     min_cams=2,
     max_particles=400,
     iters=1,
     max_nfev=100,
+    filter_ghosts: bool = True,
+    ghost_prob_schedule: tuple[float, ...] = (0.25, 0.15, 0.08),
+    focus_cameras: bool = True,
+    reg_weight: float = 0.05,
+    cam_reg_weight: float = 0.01,
     verbose=False,
 ):
-    """Refine camera exteriors on TRACER particles that span the real volume.
+    """Refine camera exteriors on REAL tracked tracer particles from the Zarr RunStore.
 
-    The modern "shaking": the calibration plate is shallow and planar-ish, so a
-    plate fit can't constrain the along-ray (depth) direction shallow parallax
-    leaves loose. Tracer particles from the flow reach that depth. They are FREE
-    shared 3D points (seeded from the tracked positions); the 7-DOF gauge is fixed
-    by HOLDING one camera's exterior (`hold_cam`), not a nominal anchor. Minimizing
-    joint reprojection couples the cameras, lowering the cross-camera RCM the plate
-    leaves behind. Distortion held fixed.
-
-    ITERATED (`iters` > 1): after a fit improves the cameras, re-match particles to
-    detections with the refined calibration (recovering better correspondences) and
-    fit again -- accepting a pass only if the median tracer RCM improves, stopping
-    when it plateaus (refine -> re-match -> repeat).
-
-    Reads tracked 3D from res/ptv_is.* and matches each to the nearest detected
-    target per camera (within tol_px). Returns (new_cals, info) with rcm_before/
-    after (mm, median over particles seen in >=min_cams cams), n_particles, n_obs,
-    iterations, rcm_trace, success. Returns (cals, {skipped}) when there isn't
-    enough multi-camera tracer data.
+    Unlike naive shaking that feeds all quadruplets/pairs (including ghosts)
+    into an unweighted fit, this routine:
+      1. Diagnoses per-camera ghost involvement and reprojection residuals
+         (:func:`camera_ghost_diagnostics`), auto-selecting the cleanest camera
+         as ``hold_cam`` when ``hold_cam="auto"``.
+      2. Filters out ghost candidates using ray-convergence ghost probability
+         (``p_ghost``) and trajectory linkage, preferring linked all-camera
+         real particles and weighting residuals by ``1 - p_ghost``.
+      3. Includes the held reference camera's 2D observations in the bundle
+         adjustment residual (fixing its 6 exterior DOFs while coupling all
+         free cameras and 3D particle positions to it), with scaled angle
+         increments (mrad) and robust ``soft_l1`` loss.
+      4. Progressively tightens ``p_ghost`` across iterations
+         (``ghost_prob_schedule``), increasing the RCM separation between real
+         (shaken) particles and ghosts on each pass.
     """
     import copy
 
@@ -1259,84 +1459,174 @@ def tracer_self_calibrate(
     from openptv2.imgcoord import image_coordinates
 
     base = Path(base)
-    print(
-        f"[tracer self-cal] starting: base={base}, "
-        f"frames={'all' if frames is None else f'{frames[0]}-{frames[-1]} ({len(frames)})'}, "
-        f"tol_px={tol_px}, hold_cam={hold_cam + 1}, max_particles={max_particles}, "
-        f"iters={iters}",
-        flush=True,
-    )
-    # Load raw per-frame data ONCE (tracked 3D + per-camera detections), so the
-    # match->fit iterations re-associate without re-reading the files.
     frame_data, skip_reason = _load_tracer_frame_data(base, cpar, frames)
     if skip_reason is not None:
         print(f"[tracer self-cal] skipped: {skip_reason}", flush=True)
         return cals, {"skipped": skip_reason}
-    print(
-        f"[tracer self-cal] loaded {len(frame_data)} frames of tracked data", flush=True
-    )
 
     n_cams = cpar.num_cams
-    free_cams = [c for c in range(n_cams) if c != hold_cam]
-    n_cam_params = 6 * len(free_cams)
 
-    def _match(cur_cals):
-        """Associate tracked particles to detections with the CURRENT cals."""
-        obs, seed = [], []
-        for pts, det in frame_data:
-            for p in pts:
+    def _gather_candidates(cur_cals):
+        """Build candidate (obs, seed, linked) lists under ``cur_cals``."""
+        obs, seed, lnk = [], [], []
+        for fd in frame_data:
+            pts = fd["pts"]
+            det = fd["det"]
+            stored_obs = fd["stored_obs"]
+            linked = fd["linked"]
+            for i, p in enumerate(pts):
                 pix = {}
-                for cam in range(n_cams):
-                    d = det[cam]
-                    if len(d) == 0:
-                        continue
-                    proj = _reproject_px(cur_cals[cam], cpar.mm, p, cpar)
-                    j = int(np.argmin(np.hypot(d[:, 0] - proj[0], d[:, 1] - proj[1])))
-                    if np.hypot(d[j, 0] - proj[0], d[j, 1] - proj[1]) <= tol_px:
-                        pix[cam] = (float(d[j, 0]), float(d[j, 1]))
+                if stored_obs is not None and len(stored_obs[i]) >= min_cams:
+                    for cam, (px, py) in stored_obs[i].items():
+                        proj = _reproject_px(cur_cals[cam], cpar.mm, p, cpar)
+                        if np.hypot(px - proj[0], py - proj[1]) <= max(
+                            tol_px * 2.0, 4.0
+                        ):
+                            pix[cam] = (px, py)
+                if len(pix) < min_cams:
+                    pix = {}
+                    for cam in range(n_cams):
+                        d = det[cam]
+                        if len(d) == 0:
+                            continue
+                        proj = _reproject_px(cur_cals[cam], cpar.mm, p, cpar)
+                        dist = np.hypot(d[:, 0] - proj[0], d[:, 1] - proj[1])
+                        j = int(np.argmin(dist))
+                        if dist[j] <= tol_px:
+                            pix[cam] = (float(d[j, 0]), float(d[j, 1]))
                 if len(pix) >= min_cams:
                     obs.append(pix)
                     seed.append(p)
-        if len(obs) > max_particles:
-            idx = np.linspace(0, len(obs) - 1, max_particles).astype(int)
-            obs = [obs[i] for i in idx]
-            seed = [seed[i] for i in idx]
-        return obs, seed
+                    lnk.append(bool(linked[i]))
+        return (
+            obs,
+            np.asarray(seed, dtype=np.float64).reshape(-1, 3),
+            np.asarray(lnk, dtype=bool),
+        )
 
-    def _fit(obs_list, seed_xyz, cur_cals):
-        """One joint fit: refine free-cam exteriors + free particle 3D. Returns
-        (fitted_cals, success) or None on solver error (cur_cals deep-copied)."""
+    def _select_real_particles(obs_all, seed_all, lnk_all, cur_cals, q_thresh):
+        """Select up to ``max_particles`` high-confidence real particles."""
+        if len(obs_all) == 0:
+            return [], np.empty((0, 3), dtype=np.float64), np.empty(0, dtype=np.float64)
+        rcm, n_seen, p_ghost = _tracer_ghost_probabilities(
+            obs_all, seed_all, cur_cals, cpar
+        )
+        if not filter_ghosts:
+            idx = (
+                np.linspace(0, len(obs_all) - 1, max_particles).astype(int)
+                if len(obs_all) > max_particles
+                else np.arange(len(obs_all))
+            )
+            return (
+                [obs_all[i] for i in idx],
+                seed_all[idx],
+                np.ones(len(idx), dtype=np.float64),
+            )
+
+        # Tier 1: linked all-camera real particles with p_ghost <= q_thresh
+        tier1 = np.flatnonzero((n_seen == n_cams) & lnk_all & (p_ghost <= q_thresh))
+        # Tier 2: all-camera particles with p_ghost <= q_thresh
+        tier2 = np.flatnonzero((n_seen == n_cams) & (p_ghost <= q_thresh))
+        # Tier 3: linked >=min_cams particles with p_ghost <= max(q_thresh, 0.35)
+        tier3 = np.flatnonzero(
+            (n_seen >= min_cams) & lnk_all & (p_ghost <= max(q_thresh, 0.35))
+        )
+        # Tier 4: fallback to all >=min_cams particles (for tiny synthetic test fixtures)
+        tier4 = np.arange(len(obs_all))
+
+        cand = tier1
+        for fallback in (tier2, tier3, tier4):
+            if len(cand) >= min(25, len(obs_all)):
+                break
+            cand = fallback
+
+        if len(cand) > max_particles:
+            idx = cand[np.linspace(0, len(cand) - 1, max_particles).astype(int)]
+        else:
+            idx = cand
+        weights = np.clip(1.0 - p_ghost[idx], 0.1, 1.0)
+        return [obs_all[i] for i in idx], seed_all[idx], weights
+
+    best_cals = [copy.deepcopy(c) for c in cals]
+    obs_all0, seed_all0, lnk_all0 = _gather_candidates(best_cals)
+    if len(obs_all0) < 10:
+        print(
+            f"[tracer self-cal] skipped: only {len(obs_all0)} multi-cam tracer "
+            "particles (need >= 10)",
+            flush=True,
+        )
+        return cals, {"skipped": f"only {len(obs_all0)} multi-cam tracer particles"}
+
+    diag_before = camera_ghost_diagnostics(obs_all0, seed_all0, best_cals, cpar)
+    if hold_cam == "auto":
+        hold_cam_idx = int(diag_before["best_cam"])
+    else:
+        hold_cam_idx = int(hold_cam)
+
+    free_cams = [c for c in range(n_cams) if c != hold_cam_idx]
+    n_cam_params = 6 * len(free_cams)
+
+    print(
+        f"[tracer self-cal] starting: base={base}, "
+        f"frames={len(frame_data)}, tol_px={tol_px}, hold_cam={hold_cam_idx + 1}, "
+        f"worst_cam={diag_before['worst_cam'] + 1}, max_particles={max_particles}, "
+        f"iters={iters}",
+        flush=True,
+    )
+
+    def _fit(obs_list, seed_xyz, pt_weights, cur_cals, cam_badness):
+        """One coupled joint fit over free-camera exteriors and real 3D points."""
         cur = [copy.deepcopy(c) for c in cur_cals]
-        seed = np.asarray(seed_xyz, float)
+        seed = np.asarray(seed_xyz, dtype=np.float64).reshape(-1, 3)
         n_pts = len(obs_list)
-        cam_rows, cam_mets = {}, {}
-        for cam in free_cams:
-            rows, mets = [], []
+
+        # Camera focus weights: emphasize cameras with higher badness so the shared
+        # 3D points and camera adjustments pull the worst cameras into alignment.
+        cam_focus = np.ones(n_cams, dtype=np.float64)
+        if focus_cameras and cam_badness is not None:
+            b = np.asarray(cam_badness, dtype=np.float64)
+            cam_focus = np.clip(b / max(float(np.mean(b)), 1e-6), 0.75, 1.5)
+
+        cam_rows, cam_mets, cam_w = {}, {}, {}
+        for cam in range(n_cams):
+            rows, mets, ws = [], [], []
+            cf = float(cam_focus[cam])
             for i, pix in enumerate(obs_list):
                 if cam in pix:
                     rows.append(i)
                     mets.append(pixel_to_metric(pix[cam][0], pix[cam][1], cpar))
-            cam_rows[cam] = np.asarray(rows, int)
-            cam_mets[cam] = np.asarray(mets, float).reshape(-1, 2)
+                    pw = 1.0 if pt_weights is None else float(pt_weights[i])
+                    ws.append(cf * pw)
+            cam_rows[cam] = np.asarray(rows, dtype=int)
+            cam_mets[cam] = np.asarray(mets, dtype=np.float64).reshape(-1, 2)
+            cam_w[cam] = np.asarray(ws, dtype=np.float64)[:, None]
 
-        x0: Any = []
-        for cam in free_cams:
-            x0.extend(cur[cam].get_pos())
-            x0.extend(cur[cam].get_angles())
-        x0.extend(seed.ravel())
-        x0 = np.asarray(x0, float)
+        base_pos = {
+            c: np.asarray(cur[c].get_pos(), dtype=np.float64) for c in free_cams
+        }
+        base_ang = {
+            c: np.asarray(cur[c].get_angles(), dtype=np.float64) for c in free_cams
+        }
+        x0 = np.zeros(n_cam_params + 3 * n_pts, dtype=np.float64)
 
         def _resid(x):
-            pts = x[n_cam_params:].reshape(n_pts, 3)
-            res = []
+            pts = seed + x[n_cam_params:].reshape(n_pts, 3)
             for ci, cam in enumerate(free_cams):
-                cur[cam].set_pos(x[ci * 6 : ci * 6 + 3])
-                cur[cam].set_angles(x[ci * 6 + 3 : ci * 6 + 6])
+                cur[cam].set_pos(base_pos[cam] + x[ci * 6 : ci * 6 + 3])
+                cur[cam].set_angles(base_ang[cam] + x[ci * 6 + 3 : ci * 6 + 6] * 1e-3)
+            res = []
+            # Include ALL cameras (including hold_cam_idx) in the residual so the
+            # free cameras and 3D points are anchored to hold_cam_idx!
+            for cam in range(n_cams):
                 rows = cam_rows[cam]
                 if len(rows) == 0:
                     continue
                 proj = image_coordinates(pts[rows], cur[cam], cpar.mm)
-                res.append((proj - cam_mets[cam]).ravel())
+                res.append(((proj - cam_mets[cam]) * cam_w[cam]).ravel())
+            if reg_weight > 0:
+                res.append((reg_weight * x[n_cam_params:]).ravel())
+            if cam_reg_weight > 0 and n_cam_params > 0:
+                res.append((cam_reg_weight * x[:n_cam_params]).ravel())
             return np.nan_to_num(
                 np.concatenate(res) if res else np.zeros(1),
                 nan=1e6,
@@ -1344,95 +1634,177 @@ def tracer_self_calibrate(
                 neginf=-1e6,
             )
 
-        n_res = 2 * sum(len(cam_rows[c]) for c in free_cams)
-        jac = sparse.lil_matrix((n_res, x0.size), dtype=np.int8)
+        n_obs_res = 2 * sum(len(cam_rows[c]) for c in range(n_cams))
+        n_reg_res = (3 * n_pts if reg_weight > 0 else 0) + (
+            n_cam_params if cam_reg_weight > 0 else 0
+        )
+        jac = sparse.lil_matrix((n_obs_res + n_reg_res, x0.size), dtype=np.int8)
         r = 0
-        for ci, cam in enumerate(free_cams):
+        for cam in range(n_cams):
+            ci = free_cams.index(cam) if cam in free_cams else -1
             for row in cam_rows[cam]:
                 for k in range(2):
-                    jac[r + k, ci * 6 : ci * 6 + 6] = 1
+                    if ci >= 0:
+                        jac[r + k, ci * 6 : ci * 6 + 6] = 1
                     jac[r + k, n_cam_params + 3 * row : n_cam_params + 3 * row + 3] = 1
                 r += 2
+        off_r = n_obs_res
+        if reg_weight > 0:
+            for k in range(3 * n_pts):
+                jac[off_r + k, n_cam_params + k] = 1
+            off_r += 3 * n_pts
+        if cam_reg_weight > 0:
+            for k in range(n_cam_params):
+                jac[off_r + k, k] = 1
         try:
             sol = least_squares(
                 _resid,
                 x0,
                 max_nfev=max_nfev,
                 method="trf",
+                loss="soft_l1",
+                f_scale=0.002,
                 jac_sparsity=jac.tocsr(),
                 verbose=2 if verbose else 0,
             )
         except (ValueError, RuntimeError, np.linalg.LinAlgError):
             return None
-        _resid(sol.x)  # leave `cur` set to the solution
+        _resid(sol.x)
         return cur, bool(sol.success)
 
-    best_cals = [copy.deepcopy(c) for c in cals]
-    obs0, _ = _match(best_cals)
+    q0 = ghost_prob_schedule[0] if ghost_prob_schedule else 0.25
+    obs0, _seed0, _w0 = _select_real_particles(
+        obs_all0, seed_all0, lnk_all0, best_cals, q0
+    )
     if len(obs0) < 10:
         print(
-            f"[tracer self-cal] skipped: only {len(obs0)} multi-cam tracer "
+            f"[tracer self-cal] skipped: only {len(obs0)} real multi-cam tracer "
             "particles (need >= 10)",
             flush=True,
         )
         return cals, {"skipped": f"only {len(obs0)} multi-cam tracer particles"}
+
     rcm_before = _tracer_rcm_median(obs0, best_cals, cpar)
     best_rcm = rcm_before
     trace = []
     success = False
     rcm_before_str = "n/a" if rcm_before is None else f"{rcm_before * 1000:.1f} um"
+    sep_before_str = (
+        "n/a"
+        if diag_before["separation_ratio"] is None
+        else f"{diag_before['separation_ratio']:.2f}x"
+    )
     print(
-        f"[tracer self-cal] initial match: {len(obs0)} particles "
-        f"(>={min_cams} cams), RCM before = {rcm_before_str}",
+        f"[tracer self-cal] initial match: {len(obs0)} real particles "
+        f"(>={min_cams} cams), RCM before = {rcm_before_str}, "
+        f"ghost/real sep = {sep_before_str}",
         flush=True,
     )
 
-    # Iterate: match -> fit, accepting a pass only if median tracer RCM improves.
-    for it in range(max(1, iters)):
-        obs, seed = _match(best_cals)
+    n_iters = max(1, iters)
+    for it in range(n_iters):
+        q_thresh = (
+            ghost_prob_schedule[min(it, len(ghost_prob_schedule) - 1)]
+            if ghost_prob_schedule
+            else 0.20
+        )
+        obs_all_it, seed_all_it, lnk_all_it = (
+            (obs_all0, seed_all0, lnk_all0)
+            if it == 0
+            else _gather_candidates(best_cals)
+        )
+        obs, seed, pt_w = _select_real_particles(
+            obs_all_it, seed_all_it, lnk_all_it, best_cals, q_thresh
+        )
         if len(obs) < 10:
             print(
-                f"[tracer self-cal] iter {it + 1}/{iters}: only {len(obs)} "
+                f"[tracer self-cal] iter {it + 1}/{n_iters}: only {len(obs)} "
                 "particles matched, stopping",
                 flush=True,
             )
             break
+        cur_diag = camera_ghost_diagnostics(obs_all_it, seed_all_it, best_cals, cpar)
+        cam_bad = [c["badness_score"] for c in cur_diag["per_camera"]]
         print(
-            f"[tracer self-cal] iter {it + 1}/{iters}: fitting {len(obs)} "
-            "particles (this may take a moment)...",
+            f"[tracer self-cal] iter {it + 1}/{n_iters}: fitting {len(obs)} "
+            f"real particles (p_ghost <= {q_thresh:.2f})...",
             flush=True,
         )
-        fit = _fit(obs, seed, best_cals)
+        fit = _fit(obs, seed, pt_w, best_cals, cam_bad)
         if fit is None:
             print(
-                f"[tracer self-cal] iter {it + 1}/{iters}: solver failed, stopping",
+                f"[tracer self-cal] iter {it + 1}/{n_iters}: solver failed, stopping",
                 flush=True,
             )
             break
         cand_cals, cand_success = fit
+        # Evaluate candidate cals on the initial clean reference set `obs0` (and
+        # on the current iteration's `obs`) so tightening `q_thresh` across passes
+        # is compared apples-to-apples.
+        cand_rcm_ref = _tracer_rcm_median(obs0, cand_cals, cpar)
         cand_rcm = _tracer_rcm_median(obs, cand_cals, cpar)
-        improved = cand_rcm is not None and (
-            best_rcm is None or cand_rcm < best_rcm - 1e-9
+        improved = cand_rcm_ref is not None and (
+            best_rcm is None or cand_rcm_ref < best_rcm - 1e-9
         )
-        trace.append({"rcm": cand_rcm, "n_particles": len(obs), "accepted": improved})
-        cand_rcm_str = "n/a" if cand_rcm is None else f"{cand_rcm * 1000:.1f} um"
+        cand_diag = camera_ghost_diagnostics(obs_all_it, seed_all_it, cand_cals, cpar)
+        trace.append(
+            {
+                "rcm": cand_rcm_ref,
+                "rcm_subset": cand_rcm,
+                "n_particles": len(obs),
+                "q_thresh": q_thresh,
+                "real_rcm": cand_diag["real_rcm_median"],
+                "ghost_rcm": cand_diag["ghost_rcm_median"],
+                "separation_ratio": cand_diag["separation_ratio"],
+                "accepted": improved,
+            }
+        )
+        cand_rcm_str = (
+            "n/a" if cand_rcm_ref is None else f"{cand_rcm_ref * 1000:.1f} um"
+        )
+        sep_str = (
+            "n/a"
+            if cand_diag["separation_ratio"] is None
+            else f"{cand_diag['separation_ratio']:.2f}x"
+        )
         print(
-            f"[tracer self-cal] iter {it + 1}/{iters}: RCM = {cand_rcm_str} "
+            f"[tracer self-cal] iter {it + 1}/{n_iters}: RCM = {cand_rcm_str}, "
+            f"ghost/real sep = {sep_str} "
             f"({'accepted, improved' if improved else 'not improved, stopping'})",
             flush=True,
         )
         if not improved:
             break
-        best_cals, best_rcm, success = cand_cals, cand_rcm, cand_success
+        best_cals, best_rcm, success = cand_cals, cand_rcm_ref, cand_success
 
-    obs_final, _ = _match(best_cals)
+    obs_all_final, seed_all_final, lnk_all_final = _gather_candidates(best_cals)
+    obs_final, _, _ = _select_real_particles(
+        obs_all_final,
+        seed_all_final,
+        lnk_all_final,
+        best_cals,
+        ghost_prob_schedule[-1] if ghost_prob_schedule else 0.15,
+    )
+    diag_after = camera_ghost_diagnostics(
+        obs_all_final, seed_all_final, best_cals, cpar
+    )
     print("[tracer self-cal] done", flush=True)
     return best_cals, {
         "rcm_before": rcm_before,
         "rcm_after": best_rcm,
+        "real_rcm_before": diag_before["real_rcm_median"],
+        "real_rcm_after": diag_after["real_rcm_median"],
+        "ghost_rcm_before": diag_before["ghost_rcm_median"],
+        "ghost_rcm_after": diag_after["ghost_rcm_median"],
+        "separation_ratio_before": diag_before["separation_ratio"],
+        "separation_ratio_after": diag_after["separation_ratio"],
+        "camera_diagnostics_before": diag_before["per_camera"],
+        "camera_diagnostics_after": diag_after["per_camera"],
+        "best_cam": diag_before["best_cam"],
+        "worst_cam": diag_before["worst_cam"],
         "n_particles": len(obs_final),
         "n_obs": sum(len(p) for p in obs_final),
-        "hold_cam": hold_cam,
+        "hold_cam": hold_cam_idx,
         "iterations": len([t for t in trace if t["accepted"]]),
         "rcm_trace": trace,
         "success": success,

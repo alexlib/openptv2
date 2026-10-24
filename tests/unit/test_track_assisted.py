@@ -195,3 +195,73 @@ def _next_frame_row(store, frame, pid):
     _prev, _next, xyz = store.read_linkage(frame, name="ptv_is")
     dists = np.linalg.norm(xyz - true_pos, axis=1)
     return int(np.argmin(dists))
+
+
+def _add_ghost(store, num_cams, ghost_cams=(0, 1, 2)):
+    """An unlinked particle at DROPPED_FRAME holding the dropped particle's
+    targets in ``ghost_cams``: the way a ghost takes a real particle's
+    detections in the correspondence step."""
+    pos, ids = store.read_correspondences(DROPPED_FRAME)
+    ghost_ids = np.full(num_cams, -1, dtype=np.int32)
+    ghost_ids[list(ghost_cams)] = DROPPED_PID
+    ghost_pos = np.array([1000.0, 1000.0, 1000.0])
+    store.write_correspondences(
+        DROPPED_FRAME, np.vstack([pos, ghost_pos]), np.vstack([ids, ghost_ids])
+    )
+    prev, nxt, xyz = store.read_linkage(DROPPED_FRAME, name="ptv_is")
+    store.write_linkage(
+        DROPPED_FRAME,
+        np.append(prev, -1).astype(np.int32),
+        np.append(nxt, -2).astype(np.int32),
+        np.vstack([xyz, ghost_pos]),
+        name="ptv_is",
+    )
+    return ghost_pos
+
+
+def _run(scene, **kwargs):
+    return run_corrective_pass(
+        scene["cpar"],
+        scene["vpar"],
+        scene["tpar"],
+        scene["spar"],
+        scene["cals"],
+        scene["store"],
+        linkage_name="ptv_is",
+        max_passes=1,
+        **kwargs,
+    )
+
+
+def test_ghost_holding_the_targets_blocks_recovery_unless_released(scene):
+    store = scene["store"]
+    _add_ghost(store, scene["cpar"].num_cams)
+    true_pos = _load_trajectories()[DROPPED_FRAME][DROPPED_PID]
+
+    _run(scene, release_ghosts=False)
+
+    pos, _ids = store.read_correspondences(DROPPED_FRAME)
+    assert np.linalg.norm(pos - true_pos, axis=1).min() > 1e-3
+
+
+def test_released_ghost_gives_its_targets_back_and_is_removed(scene):
+    store = scene["store"]
+    num_cams = scene["cpar"].num_cams
+    ghost_pos = _add_ghost(store, num_cams)
+    true_pos = _load_trajectories()[DROPPED_FRAME][DROPPED_PID]
+
+    stats = _run(scene, release_ghosts=True)
+
+    pos, ids = store.read_correspondences(DROPPED_FRAME)
+    dists = np.linalg.norm(pos - true_pos, axis=1)
+    row = int(np.argmin(dists))
+    assert dists[row] < 1e-3, "the dropped particle was not recovered"
+    assert stats.ghosts_removed == 1
+    assert np.linalg.norm(pos - ghost_pos, axis=1).min() > 1.0, "ghost still there"
+    # links and target back-references follow the renumbered rows
+    prev, _next, xyz = store.read_linkage(DROPPED_FRAME, name="ptv_is")
+    assert len(prev) == len(pos)
+    np.testing.assert_allclose(xyz, pos)
+    targets = store.read_targets(0, DROPPED_FRAME)
+    assert targets[DROPPED_PID].tnr() == row
+    assert ids[row, 0] == DROPPED_PID

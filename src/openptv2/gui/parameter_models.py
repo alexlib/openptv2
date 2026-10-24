@@ -111,6 +111,7 @@ class PftVersionParams(SectionModel):
 class PtvParams(SectionModel):
     allcam_flag: bool = False
     pair_flag: bool = False
+    triangulation: str = "lsq"
     chfield: int = 0
     hp_flag: bool = True
     img_cal: list[str] = []
@@ -174,6 +175,13 @@ class TrackParams(SectionModel):
     track_mode: int = 0
     postprocess: bool = True
     leaf_weight: float = 1.0
+    vfc_mode: str = "off"
+    vfc_radius: float = 10.0
+    vfc_min_neighbors: int = 3
+    vfc_gate: float | None = None
+    vfc_post_min_tol: float = 0.5
+    vfc_bootstrap: bool = False
+    vfc_affine: bool = False
 
 
 class MaskingParams(SectionModel):

@@ -1087,6 +1087,13 @@ def py_sequence_loop(exp) -> None:
     if not parallel_preprocess and isinstance(ptv_params_dict, dict):
         parallel_preprocess = ptv_params_dict.get("parallel_preprocess", False)
 
+    # Triangulation of matched targets: "lsq" (default; point nearest all rays),
+    # "pairs" (liboptv: mean of pairwise ray midpoints) or "weighted". lsq is
+    # never worse and much better when cameras face each other.
+    tri_method = "lsq"
+    if isinstance(ptv_params_dict, dict):
+        tri_method = ptv_params_dict.get("triangulation", "lsq")
+
     store = _open_run_store(exp)
 
     if parallel_preprocess and not existing_target:
@@ -1115,6 +1122,7 @@ def py_sequence_loop(exp) -> None:
                 vpar=vpar,
                 zarr_store_path=str(store.store_path),
                 write_to_store=True,
+                method=tri_method,
             )
             for frame in frames:
                 pos, cam_ids = results[frame]
@@ -1169,7 +1177,9 @@ def py_sequence_loop(exp) -> None:
                 for corr, corresp in zip(corrected, sorted_corresp)
             ]
         )
-        pos, _ = point_positions(flat.transpose(1, 0, 2), exp.cpar, exp.cals, exp.vpar)
+        pos, _ = point_positions(
+            flat.transpose(1, 0, 2), exp.cpar, exp.cals, exp.vpar, method=tri_method
+        )
         if len(exp.cals) < 4:
             print_corresp = -1 * np.ones((4, sorted_corresp.shape[1]))
             print_corresp[: len(exp.cals), :] = sorted_corresp

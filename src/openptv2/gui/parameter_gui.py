@@ -83,6 +83,7 @@ class ParamHandler(Handler):
                     "hp_flag": main_params.HighPass,
                     "allcam_flag": main_params.Accept_OnlyAllCameras,
                     "pair_flag": pair_flag,
+                    "triangulation": main_params.Triangulation,
                     "tiff_flag": main_params.tiff_flag,
                     "imx": main_params.imx,
                     "imy": main_params.imy,
@@ -396,6 +397,23 @@ class TrackHandler(Handler):
                     "dvzmax": track_params.dvzmax,
                     "angle": track_params.angle,
                     "dacc": track_params.dacc,
+                    "leaf_weight": track_params.leaf_weight,
+                    "vfc_mode": track_params.vfc_mode,
+                    "vfc_radius": track_params.vfc_radius,
+                    "vfc_min_neighbors": int(track_params.vfc_min_neighbors),
+                    "vfc_gate": (
+                        None
+                        if track_params.vfc_gate <= 0
+                        else float(track_params.vfc_gate)
+                    ),
+                    "vfc_post_min_tol": track_params.vfc_post_min_tol,
+                    "vfc_bootstrap": bool(track_params.vfc_bootstrap),
+                    "vfc_affine": bool(track_params.vfc_affine),
+                    "corrective_passes": int(track_params.corrective_passes),
+                    "corrective_release_ghosts": bool(
+                        track_params.corrective_release_ghosts
+                    ),
+                    "corrective_forward": bool(track_params.corrective_forward),
                 },
                 experiment.pm.parameters.get("plugins", {}),
             )
@@ -432,6 +450,16 @@ class Tracking_Params(HasTraits):
     angle = Float()
     dacc = Float()
     leaf_weight = Float()
+    vfc_mode = Enum("off", "pre", "post", "both")
+    vfc_radius = Float(10.0)
+    vfc_min_neighbors = Int(3)
+    vfc_gate = Float(0.0)
+    vfc_post_min_tol = Float(0.5)
+    vfc_bootstrap = Bool(False)
+    vfc_affine = Bool(False)
+    corrective_passes = Int(0)
+    corrective_release_ghosts = Bool(True)
+    corrective_forward = Bool(True)
 
     def __init__(self, experiment: Experiment):
         super(Tracking_Params, self).__init__()
@@ -449,6 +477,24 @@ class Tracking_Params(HasTraits):
         self.dacc = float(tracking_params.get("dacc", 5.0))
         self.postprocess = bool(tracking_params.get("postprocess", True))
         self.leaf_weight = float(tracking_params.get("leaf_weight", 1.0))
+        raw_vfc_mode = str(tracking_params.get("vfc_mode", "off"))
+        self.vfc_mode = (
+            raw_vfc_mode
+            if raw_vfc_mode in ("off", "pre", "post", "both")
+            else "off"
+        )
+        self.vfc_radius = float(tracking_params.get("vfc_radius", 10.0))
+        self.vfc_min_neighbors = int(tracking_params.get("vfc_min_neighbors", 3))
+        raw_gate = tracking_params.get("vfc_gate", None)
+        self.vfc_gate = 0.0 if raw_gate is None else float(raw_gate)
+        self.vfc_post_min_tol = float(tracking_params.get("vfc_post_min_tol", 0.5))
+        self.vfc_bootstrap = bool(tracking_params.get("vfc_bootstrap", False))
+        self.vfc_affine = bool(tracking_params.get("vfc_affine", False))
+        self.corrective_passes = int(tracking_params.get("corrective_passes", 0))
+        self.corrective_release_ghosts = bool(
+            tracking_params.get("corrective_release_ghosts", True)
+        )
+        self.corrective_forward = bool(tracking_params.get("corrective_forward", True))
 
         self.tracker = infer_tracker(plugins_params)
         dir_val = infer_direction(tracking_params, plugins_params)
@@ -497,6 +543,33 @@ class Tracking_Params(HasTraits):
             show_border=True,
             label="Search Box & Kinematic Limits",
         ),
+        VGroup(
+            HGroup(
+                Item(name="vfc_mode", label="VFC mode (off/pre/post/both):"),
+                Item(name="vfc_radius", label="Radius (mm):"),
+                Item(name="vfc_min_neighbors", label="Min neighbors:"),
+            ),
+            HGroup(
+                Item(name="vfc_gate", label="Pre-gate (mm/f, 0=off):"),
+                Item(name="vfc_post_min_tol", label="Post min tol (mm/f):"),
+            ),
+            HGroup(
+                Item(name="vfc_bootstrap", label="Cold-start bootstrap:"),
+                Item(name="vfc_affine", label="Affine consensus (tr(A)=0):"),
+            ),
+            show_border=True,
+            label="Spatial Consensus (VFC — Two-Phase Tracker)",
+        ),
+        VGroup(
+            HGroup(
+                Item(name="corrective_passes", label="Passes (0=off, 1 is enough):"),
+                Item(name="corrective_release_ghosts", label="Release ghosts:"),
+                Item(name="corrective_forward", label="Extend track ends too:"),
+            ),
+            show_border=True,
+            label="Corrective Pass (extend tracks with free detections; "
+            "default 3D tracker)",
+        ),
         buttons=["Undo", "OK", "Cancel"],
         handler=TrackHandler(),
         title="Tracking Parameters",
@@ -508,6 +581,9 @@ class Main_Params(HasTraits):
     Num_Cam = Int(label="Number of cameras: ")
     Accept_OnlyAllCameras = Bool(label="Accept only points seen from all cameras?")
     pair_Flag = Bool(label="Include pairs")
+    Triangulation = Enum(
+        "lsq", "pairs", "weighted", label="3D from rays (lsq = nearest all rays)"
+    )
     pair_enable_flag = True
     all_enable_flag = False
     # hp_enable_flag = Bool()
@@ -593,6 +669,7 @@ class Main_Params(HasTraits):
             Item(name="Splitter_Order", enabled_when="Splitter"),
             Item(name="Accept_OnlyAllCameras", enabled_when="all_enable_flag"),
             Item(name="pair_Flag", enabled_when="pair_enable_flag"),
+            Item(name="Triangulation"),
             orientation="horizontal",
         ),
         Group(
@@ -770,6 +847,8 @@ class Main_Params(HasTraits):
         self.Refr_Water = ptv_params["mmp_n3"]
         self.Thick_Glass = ptv_params["mmp_d"]
         self.Accept_OnlyAllCameras = bool(ptv_params["allcam_flag"])
+        tri = str(ptv_params.get("triangulation", "lsq"))
+        self.Triangulation = tri if tri in ("lsq", "pairs", "weighted") else "lsq"
         if "pair_flag" in ptv_params:
             self.pair_Flag = bool(ptv_params["pair_flag"])
         elif "use_pairs" in ptv_params:
@@ -1155,7 +1234,7 @@ class Calib_Params(HasTraits):
     shaking_max_num_points = Int(label="shaking max num points")
     shaking_max_num_frames = Int(label="shaking max num frames")
     shaking_tol_px = Float(2.0, label="match tolerance (px)")
-    shaking_hold_cam = Int(1, label="held camera (1..N, fixes gauge)")
+    shaking_hold_cam = Int(0, label="held camera (0=auto, 1..N=cam)")
 
     Group6 = HGroup(
         VGroup(
@@ -1261,7 +1340,7 @@ class Calib_Params(HasTraits):
         self.shaking_max_num_points = int(shaking_params["shaking_max_num_points"])
         self.shaking_max_num_frames = int(shaking_params["shaking_max_num_frames"])
         self.shaking_tol_px = float(shaking_params.get("shaking_tol_px", 2.0))
-        self.shaking_hold_cam = int(shaking_params.get("shaking_hold_cam", 1))
+        self.shaking_hold_cam = int(shaking_params.get("shaking_hold_cam", 0))
 
     def __init__(self, experiment: Experiment):
         HasTraits.__init__(self)

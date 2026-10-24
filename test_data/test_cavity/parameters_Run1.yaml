@@ -20,20 +20,20 @@ cal_ori:
   cal_splitter: false
 criteria:
   X_lay:
-  - -40
-  - 40
+  - -40.0
+  - 40.0
   Zmax_lay:
-  - 20
-  - 20
+  - 40.0
+  - 40.0
   Zmin_lay:
-  - -20
-  - -20
+  - -40.0
+  - -40.0
   cn: 0.02
   cnx: 0.02
   cny: 0.02
   corrmin: 33.0
   csumg: 0.02
-  eps0: 0.05
+  eps0: 0.04
 detect_plate:
   gvth_1: 10
   gvth_2: 10
@@ -99,6 +99,8 @@ pft_version:
   Existing_Target: 0
 ptv:
   allcam_flag: false
+  pair_flag: false
+  triangulation: lsq
   chfield: 0
   hp_flag: true
   img_cal:
@@ -115,12 +117,20 @@ ptv:
   imy: 1024
   mmp_d: 6.0
   mmp_n1: 1.0
-  mmp_n2: 1.33
-  mmp_n3: 1.46
+  mmp_n2: 1.46
+  mmp_n3: 1.33
   pix_x: 0.012
   pix_y: 0.012
   tiff_flag: true
   splitter: false
+  splitter_order:
+  - 0
+  - 1
+  - 3
+  - 2
+  negative: false
+  parallel_preprocess: false
+  num_workers: 0
 sequence:
   base_name:
   - img/cam1.%d
@@ -150,18 +160,26 @@ targ_rec:
   nxmin: 2
   nymax: 100
   nymin: 2
-  sumg_min: 150
+  sumg_min: 75
 track:
   angle: 120.0
-  dacc: 0.24
-  dvxmax: 0.6
-  dvxmin: -0.6
-  dvymax: 0.6
-  dvymin: -0.6
-  dvzmax: 0.6
-  dvzmin: -0.6
+  dacc: 0.6
+  dvxmax: 1.0
+  dvxmin: -1.0
+  dvymax: 1.0
+  dvymin: -1.0
+  dvzmax: 1.0
+  dvzmin: -1.0
   flagNewParticles: true
   track_mode: 0
+  corrective_passes: 1
+masking:
+  mask_flag: false
+  mask_base_name: ''
+unsharp_mask:
+  flag: false
+  size: 3
+  strength: 1.0
 man_ori_coordinates:
   camera_0:
     point_1:
@@ -215,10 +233,3 @@ man_ori_coordinates:
     point_4:
       x: 988.0
       y: 299.0
-masking:
-  mask_flag: false
-  mask_base_name: ''
-unsharp_mask:
-  flag: false
-  size: 3
-  strength: 1.0
