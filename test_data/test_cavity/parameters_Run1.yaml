@@ -172,6 +172,9 @@ track:
   dvzmin: -1.0
   flagNewParticles: true
   track_mode: 0
+  corrective_passes: 1
+  corrective_release_ghosts: true
+  corrective_forward: true
 masking:
   mask_flag: false
   mask_base_name: ''

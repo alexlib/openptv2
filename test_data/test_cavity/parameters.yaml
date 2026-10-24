@@ -107,6 +107,7 @@ orient:
 pft_version:
   Existing_Target: 0
 ptv:
+  triangulation: lsq
   allcam_flag: false
   chfield: 0
   hp_flag: true
@@ -171,6 +172,9 @@ track:
   dvzmin: -15.5
   flagNewParticles: true
   track_mode: 1
+  corrective_passes: 1
+  corrective_release_ghosts: true
+  corrective_forward: true
 man_ori_coordinates:
   camera_0:
     point_1:
