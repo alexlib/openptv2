@@ -31,7 +31,12 @@ from openptv2.gui import ptv
 from openptv2.gui.parameter_manager import ParameterManager
 from openptv2.gui.ptv_calibration import dumbbell_ba_jac_sparsity, dumbbell_ba_residuals
 from openptv2.storage import RunStore, find_existing_store
-from openptv2.transforms import convert_arr_pixel_to_metric
+from openptv2.transforms import convert_arr_pixel_to_metric, distorted_to_flat
+
+
+def _to_flat(frame_targets: np.ndarray, cals) -> np.ndarray:
+    """(C, N, 2) distorted metric coords -> flat coords, as triangulation needs."""
+    return np.array([distorted_to_flat(t, cal) for t, cal in zip(frame_targets, cals)])
 
 
 @dataclass(frozen=True)
@@ -211,7 +216,7 @@ def run_dumbbell_calibration(
         keep = np.ones(num_frames, dtype=bool)
         removed = 0
         for frame_idx in range(num_frames):
-            frame_targets = per_frame[:, frame_idx, :, :]
+            frame_targets = _to_flat(per_frame[:, frame_idx, :, :], cals)
             xyz1, _err1 = multi_cam_point_positions(
                 frame_targets[:, 0, :][np.newaxis], cpar, cals
             )
@@ -243,11 +248,12 @@ def run_dumbbell_calibration(
 
         for frame_idx in range(num_frames_local):
             frame_targets = metric_targets[:, frame_idx, :, :]
+            flat_targets = _to_flat(frame_targets, cals)
             xyz1, _err1 = multi_cam_point_positions(
-                frame_targets[:, 0, :][np.newaxis], cpar, cals
+                flat_targets[:, 0, :][np.newaxis], cpar, cals
             )
             xyz2, _err2 = multi_cam_point_positions(
-                frame_targets[:, 1, :][np.newaxis], cpar, cals
+                flat_targets[:, 1, :][np.newaxis], cpar, cals
             )
             xyz = np.vstack([xyz1, xyz2])
 
@@ -296,7 +302,7 @@ def run_dumbbell_calibration(
         points = np.zeros((num_frames_local, 2, 3), dtype=float)
 
         for frame_idx in range(num_frames_local):
-            frame_targets = metric_targets[:, frame_idx, :, :]
+            frame_targets = _to_flat(metric_targets[:, frame_idx, :, :], cals)
             xyz1, _err1 = multi_cam_point_positions(
                 frame_targets[:, 0, :][np.newaxis], cpar, cals
             )

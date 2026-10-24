@@ -114,7 +114,14 @@ def test_multimedia_projection_and_triangulation_parity():
         per_cam_metric.append(c_xy)
 
     # --- 2. triangulation parity + ground-truth recovery ---
-    c_targs = np.array(per_cam_metric).transpose(1, 0, 2)  # (npts, ncam, 2)
+    # Triangulation takes flat (undistorted, principal-point-centred) coords,
+    # not the distorted metric coords img_coord returns.
+    from openptv2.transforms import distorted_to_flat
+
+    flat = [
+        distorted_to_flat(xy, py_cals[cam]) for cam, xy in enumerate(per_cam_metric)
+    ]
+    c_targs = np.array(flat).transpose(1, 0, 2)  # (npts, ncam, 2)
     c_res, _c_rcm = point_positions(c_targs, c_cpar, c_cals, c_vpar)
 
     py_res = np.array(
@@ -128,20 +135,10 @@ def test_multimedia_projection_and_triangulation_parity():
         err_msg="point_positions (multimedia) differs from optv",
     )
     # Ground truth: project-then-triangulate must recover the body coords.
-    # Tolerance reflects the real calibration's residual (~1.8 px RMS ->
-    # ~0.05 mm object space) plus the iterative distortion solver's finite
-    # tolerance; a perfect (synthetic) cal recovers to ~1e-6, but this fixture
-    # carries a realistic calibration. The parity checks above (1e-6 vs optv)
-    # are the strict correctness guard; this only rejects gross errors.
-    #
-    # 5/219 points (all visible, well inside frame in all 4 cameras --
-    # confirmed not a visibility/geometry dropout) recover to ~3.04mm rather
-    # than 2mm: optv shows the identical residual there (the parity checks
-    # above pass), so this is this dataset's real calibration residual at
-    # those grid points, not an algorithmic difference between engines.
+    # Only the iterative undistortion's finite tolerance separates the two.
     np.testing.assert_allclose(
         py_res,
         xyz,
-        atol=3.5,
+        atol=0.01,
         err_msg="round-trip did not recover known 3D body points",
     )
