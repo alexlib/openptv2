@@ -463,25 +463,19 @@ class Calibration:
         lines = ori_path.read_text().strip().splitlines()
         idx = 0
 
-        # Parse exterior: x0 y0 z0 (line 1), XR YR ZR (line 2 - reference point,
-        # NOT rotation angles). The .ori format stores XR/YR/ZR on line 2;
-        # lines 4-6 hold the rotation matrix dm directly.
+        # Parse exterior: x0 y0 z0 omega phi kappa (may span 2 lines)
         first_line = lines[idx].strip()
         idx += 1
         parts = first_line.split()
 
         if len(parts) >= 6:
-            x0, y0, z0 = [float(p) for p in parts[:3]]
-            # Remaining values on line 1 are ignored (.ori line 1 is position only)
+            x0, y0, z0, omega, phi, kappa = [float(p) for p in parts[:6]]
         elif len(parts) == 3:
+            # Values split across lines
             x0, y0, z0 = [float(p) for p in parts]
-            # Line 2: XR YR ZR reference point (NOT rotation angles)
             second_line = lines[idx].strip()
             idx += 1
-            xr, yr, zr = [float(p) for p in second_line.split()[:3]]
-            # Store reference point coords in omega/phi/kappa fields for
-            # storage compatibility (to_file writes them back as line 2)
-            omega, phi, kappa = xr, yr, zr
+            omega, phi, kappa = [float(p) for p in second_line.split()[:3]]
         else:
             raise ValueError(f"Invalid exterior orientation format: {first_line}")
 
@@ -489,7 +483,7 @@ class Calibration:
         while idx < len(lines) and lines[idx].strip() == "":
             idx += 1
 
-        # Parse rotation matrix: 3 rows of 3 values (use directly from file)
+        # Parse rotation matrix: 3 rows of 3 values
         dm = np.eye(3, dtype=np.float64)
         for i in range(3):
             row_parts = lines[idx].strip().split()
@@ -560,20 +554,16 @@ class Calibration:
                             she=float(fb_lines[6]),
                         )
 
-        ext = Exterior(x0=x0, y0=y0, z0=z0, omega=omega, phi=phi, kappa=kappa)
+        ext = Exterior(x0=x0, y0=y0, z0=z0, omega=omega, phi=phi, kappa=kappa, dm=dm)
         int_par = Interior(xh=xh, yh=yh, cc=cc)
         glass = Glass(vec_x=vec_x, vec_y=vec_y, vec_z=vec_z)
 
-        cal = cls(
+        return cls(
             ext_par=ext,
             int_par=int_par,
             glass_par=glass,
             added_par=added_par,
         )
-        # __init__/__post_init__ call compute_rotation_matrix() which overwrites
-        # dm from the (bogus) omega/phi/kappa angles. Restore the file's dm.
-        cal.ext_par.dm = dm
-        return cal
 
     def to_file(
         self,
