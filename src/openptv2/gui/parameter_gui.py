@@ -83,6 +83,7 @@ class ParamHandler(Handler):
                     "hp_flag": main_params.HighPass,
                     "allcam_flag": main_params.Accept_OnlyAllCameras,
                     "pair_flag": pair_flag,
+                    "triangulation": main_params.Triangulation,
                     "tiff_flag": main_params.tiff_flag,
                     "imx": main_params.imx,
                     "imy": main_params.imy,
@@ -408,6 +409,11 @@ class TrackHandler(Handler):
                     "vfc_post_min_tol": track_params.vfc_post_min_tol,
                     "vfc_bootstrap": bool(track_params.vfc_bootstrap),
                     "vfc_affine": bool(track_params.vfc_affine),
+                    "corrective_passes": int(track_params.corrective_passes),
+                    "corrective_release_ghosts": bool(
+                        track_params.corrective_release_ghosts
+                    ),
+                    "corrective_forward": bool(track_params.corrective_forward),
                 },
                 experiment.pm.parameters.get("plugins", {}),
             )
@@ -451,6 +457,9 @@ class Tracking_Params(HasTraits):
     vfc_post_min_tol = Float(0.5)
     vfc_bootstrap = Bool(False)
     vfc_affine = Bool(False)
+    corrective_passes = Int(0)
+    corrective_release_ghosts = Bool(True)
+    corrective_forward = Bool(True)
 
     def __init__(self, experiment: Experiment):
         super(Tracking_Params, self).__init__()
@@ -481,6 +490,11 @@ class Tracking_Params(HasTraits):
         self.vfc_post_min_tol = float(tracking_params.get("vfc_post_min_tol", 0.5))
         self.vfc_bootstrap = bool(tracking_params.get("vfc_bootstrap", False))
         self.vfc_affine = bool(tracking_params.get("vfc_affine", False))
+        self.corrective_passes = int(tracking_params.get("corrective_passes", 0))
+        self.corrective_release_ghosts = bool(
+            tracking_params.get("corrective_release_ghosts", True)
+        )
+        self.corrective_forward = bool(tracking_params.get("corrective_forward", True))
 
         self.tracker = infer_tracker(plugins_params)
         dir_val = infer_direction(tracking_params, plugins_params)
@@ -546,6 +560,16 @@ class Tracking_Params(HasTraits):
             show_border=True,
             label="Spatial Consensus (VFC — Two-Phase Tracker)",
         ),
+        VGroup(
+            HGroup(
+                Item(name="corrective_passes", label="Passes (0=off, 1 is enough):"),
+                Item(name="corrective_release_ghosts", label="Release ghosts:"),
+                Item(name="corrective_forward", label="Extend track ends too:"),
+            ),
+            show_border=True,
+            label="Corrective Pass (extend tracks with free detections; "
+            "default 3D tracker)",
+        ),
         buttons=["Undo", "OK", "Cancel"],
         handler=TrackHandler(),
         title="Tracking Parameters",
@@ -557,6 +581,9 @@ class Main_Params(HasTraits):
     Num_Cam = Int(label="Number of cameras: ")
     Accept_OnlyAllCameras = Bool(label="Accept only points seen from all cameras?")
     pair_Flag = Bool(label="Include pairs")
+    Triangulation = Enum(
+        "lsq", "pairs", "weighted", label="3D from rays (lsq = nearest all rays)"
+    )
     pair_enable_flag = True
     all_enable_flag = False
     # hp_enable_flag = Bool()
@@ -642,6 +669,7 @@ class Main_Params(HasTraits):
             Item(name="Splitter_Order", enabled_when="Splitter"),
             Item(name="Accept_OnlyAllCameras", enabled_when="all_enable_flag"),
             Item(name="pair_Flag", enabled_when="pair_enable_flag"),
+            Item(name="Triangulation"),
             orientation="horizontal",
         ),
         Group(
@@ -819,6 +847,8 @@ class Main_Params(HasTraits):
         self.Refr_Water = ptv_params["mmp_n3"]
         self.Thick_Glass = ptv_params["mmp_d"]
         self.Accept_OnlyAllCameras = bool(ptv_params["allcam_flag"])
+        tri = str(ptv_params.get("triangulation", "lsq"))
+        self.Triangulation = tri if tri in ("lsq", "pairs", "weighted") else "lsq"
         if "pair_flag" in ptv_params:
             self.pair_Flag = bool(ptv_params["pair_flag"])
         elif "use_pairs" in ptv_params:

@@ -160,5 +160,46 @@ def test_tracking_params_gui_vfc_roundtrip(tmp_path):
     assert saved["vfc_affine"] is True
 
 
+def test_tracking_params_gui_corrective_pass_roundtrip(tmp_path):
+    from types import SimpleNamespace
+
+    from openptv2.gui.experiment import Experiment
+    from openptv2.gui.parameter_gui import TrackHandler, Tracking_Params
+    from openptv2.gui.parameter_manager import ParameterManager
+
+    pm = ParameterManager()
+    pm.parameters = {
+        "num_cams": 4,
+        "track": {
+            "dvxmin": -1.0,
+            "dvxmax": 1.0,
+            "dvymin": -1.0,
+            "dvymax": 1.0,
+            "dvzmin": -1.0,
+            "dvzmax": 1.0,
+            "angle": 120.0,
+            "dacc": 0.6,
+            "flagNewParticles": True,
+            "track_mode": 0,
+        },
+        "plugins": {"selected_tracking": "default"},
+    }
+    exp = Experiment(pm=pm)
+    exp.save_active = lambda: None
+    tp = Tracking_Params(experiment=exp)
+    # off unless asked for; both options on by default once it runs
+    assert tp.corrective_passes == 0
+    assert tp.corrective_release_ghosts is True
+    assert tp.corrective_forward is True
+
+    tp.corrective_passes = 1
+    tp.corrective_forward = False
+    TrackHandler().closed(SimpleNamespace(object=tp), is_ok=True)
+    saved = exp.pm.parameters["track"]
+    assert saved["corrective_passes"] == 1
+    assert saved["corrective_release_ghosts"] is True
+    assert saved["corrective_forward"] is False
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
