@@ -101,6 +101,10 @@ class Cython3DTracker:
                     stats.get("links_after", 0),
                 )
 
+            from openptv2.track_assisted import run_configured_corrective_pass
+
+            run_configured_corrective_pass(self.exp, tracker, track_cfg)
+
     def track_frames(self, frame_particles: list[np.ndarray]) -> list[dict]:
         """Track 3D particle coordinate arrays across time frames.
 
