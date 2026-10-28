@@ -9,8 +9,8 @@ Handles:
 - Volume dimension calculations
 """
 
-from itertools import product
 import os
+from itertools import product
 from typing import Any
 
 import cython
@@ -48,12 +48,8 @@ else:
     from math import (
         tan as c_tan,
     )
-from .track_kernels import (
-    init_mmlut_data_fast as _init_mmlut_data_fast,
-)
-from .track_kernels import (
-    init_mmlut_data_nlay_fast as _init_mmlut_data_nlay_fast,
-)
+# NOTE: track_kernels imports are deferred to init_mmlut() to avoid a circular
+# import when track_kernels_pixel imports _mmlut_lookup_core from this module.
 
 # Y-remap mode constants (for interlaced cameras)
 NO_REMAP: cython.int = 0
@@ -473,19 +469,68 @@ def move_along_ray(
     return np.array([x, y, glob_Z], dtype=np.float64)
 
 
-@cython.ccall
-@cython.locals(
-    tx=cython.double,
-    ty=cython.double,
-    tz=cython.double,
-    sz=cython.double,
-    iz=cython.int,
-    R=cython.double,
-    sr=cython.double,
-    ir=cython.int,
-    v=cython.int,
-    mmf=cython.double,
-)
+@cython.cfunc
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nogil
+@cython.exceptval(check=False)
+def _mmlut_lookup_core(
+    tx: cython.double,
+    ty: cython.double,
+    tz: cython.double,
+    mmlut_nr: cython.int,
+    mmlut_nz: cython.int,
+    mmlut_rw: cython.double,
+    mmlut_data: cython.double[:],
+) -> cython.double:
+    """Single source of truth for the MMLUT bilinear lookup.
+
+    Takes already-relative coordinates (tx, ty, tz = pos - origin) and
+    returns the interpolated multimedia factor, or 0.0 when the point falls
+    outside the table so the caller falls back to the iterative Snell solve.
+    All inlined copies in imgcoord/track/track_kernels_* delegate here.
+    """
+    sz: cython.double = tz / mmlut_rw
+    iz: cython.int = int(sz)
+    sz -= iz
+    if sz < 0.0:
+        # int() truncates toward zero; floor the depth index so a point just
+        # below the LUT grid (tz in [-rw, 0)) lands in cell -1, gets rejected by
+        # the bounds check below, and falls back to the iterative solve instead
+        # of extrapolating with a negative interpolation weight.
+        iz = iz - 1
+        sz = sz + 1.0
+
+    R: cython.double = c_sqrt(tx * tx + ty * ty)
+    sr: cython.double = R / mmlut_rw
+    ir: cython.int = int(sr)
+    sr -= ir
+
+    # Bilinear interpolation needs the 4 cell corners
+    # (ir,iz)..(ir+1,iz+1) to be valid grid indices, i.e. ir+1 <= nr-1 and
+    # iz+1 <= nz-1. data has exactly nr*nz elements (indices 0..nr*nz-1).
+    # Points outside the LUT cells return 0.0 so the caller falls back to the
+    # iterative solve.
+    if ir < 0 or ir + 1 > mmlut_nr - 1:
+        return 0.0
+    if iz < 0 or iz + 1 > mmlut_nz - 1:
+        return 0.0
+
+    v4_0: cython.int = ir * mmlut_nz + iz
+    v4_1: cython.int = ir * mmlut_nz + (iz + 1)
+    v4_2: cython.int = (ir + 1) * mmlut_nz + iz
+    v4_3: cython.int = (ir + 1) * mmlut_nz + (iz + 1)
+
+    mmf: cython.double = (
+        mmlut_data[v4_0] * (1.0 - sr) * (1.0 - sz)
+        + mmlut_data[v4_1] * (1.0 - sr) * sz
+        + mmlut_data[v4_2] * sr * (1.0 - sz)
+        + mmlut_data[v4_3] * sr * sz
+    )
+
+    return mmf
+
+
 def get_mmf_from_mmlut(
     pos: cython.double[:],
     mmlut_origin: cython.double[:],
@@ -495,45 +540,10 @@ def get_mmf_from_mmlut(
     mmlut_data: cython.double[:],
 ) -> cython.double:
     """Get multimedia factor from look-up table via bilinear interpolation."""
-    tx = pos[0] - mmlut_origin[0]
-    ty = pos[1] - mmlut_origin[1]
-    tz = pos[2] - mmlut_origin[2]
-    sz = tz / mmlut_rw
-    iz = int(sz)
-    sz -= iz
-
-    R = c_sqrt(tx * tx + ty * ty)
-    sr = R / mmlut_rw
-    ir = int(sr)
-    sr -= ir
-
-    # Bilinear interpolation needs the 4 cell corners
-    # (ir,iz)..(ir+1,iz+1) to be valid grid indices, i.e. ir+1 <= nr-1 and
-    # iz+1 <= nz-1. data has exactly nr*nz elements (indices 0..nr*nz-1);
-    # the old check `v4 > nr*nz` let the exact far corner read one element
-    # past the end. Points outside the LUT cells return 0.0 so the caller
-    # falls back to the iterative solve.
-    # Keep in sync with imgcoord._get_mmf_from_mmlut_core.
-    if ir < 0 or ir + 1 > mmlut_nr - 1:
-        return 0.0
-    if iz < 0 or iz + 1 > mmlut_nz - 1:
-        return 0.0
-
-    # Get vertices of box for bilinear interpolation
-    v4_0: cython.int = ir * mmlut_nz + iz
-    v4_1: cython.int = ir * mmlut_nz + (iz + 1)
-    v4_2: cython.int = (ir + 1) * mmlut_nz + iz
-    v4_3: cython.int = (ir + 1) * mmlut_nz + (iz + 1)
-
-    # Bilinear interpolation
-    mmf = (
-        mmlut_data[v4_0] * (1 - sr) * (1 - sz)
-        + mmlut_data[v4_1] * (1 - sr) * sz
-        + mmlut_data[v4_2] * sr * (1 - sz)
-        + mmlut_data[v4_3] * sr * sz
-    )
-
-    return mmf
+    tx: cython.double = pos[0] - mmlut_origin[0]
+    ty: cython.double = pos[1] - mmlut_origin[1]
+    tz: cython.double = pos[2] - mmlut_origin[2]
+    return _mmlut_lookup_core(tx, ty, tz, mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data)
 
 
 @cython.ccall
@@ -570,15 +580,6 @@ def get_mmf_from_mmlut_batch(
     tx: cython.double
     ty: cython.double
     tz: cython.double
-    sz: cython.double
-    iz: cython.int
-    R: cython.double
-    sr: cython.double
-    ir: cython.int
-    v4_0: cython.int
-    v4_1: cython.int
-    v4_2: cython.int
-    v4_3: cython.int
 
     orig_x: cython.double = mmlut_origin[0]
     orig_y: cython.double = mmlut_origin[1]
@@ -588,29 +589,8 @@ def get_mmf_from_mmlut_batch(
         tx = positions[i, 0] - orig_x
         ty = positions[i, 1] - orig_y
         tz = positions[i, 2] - orig_z
-        sz = tz / mmlut_rw
-        iz = int(sz)
-        sz -= iz
-
-        R = c_sqrt(tx * tx + ty * ty)
-        sr = R / mmlut_rw
-        ir = int(sr)
-        sr -= ir
-
-        if ir < 0 or ir + 1 > mmlut_nr - 1 or iz < 0 or iz + 1 > mmlut_nz - 1:
-            res_mv[i] = 0.0
-            continue
-
-        v4_0 = ir * mmlut_nz + iz
-        v4_1 = ir * mmlut_nz + (iz + 1)
-        v4_2 = (ir + 1) * mmlut_nz + iz
-        v4_3 = (ir + 1) * mmlut_nz + (iz + 1)
-
-        res_mv[i] = (
-            mmlut_data[v4_0] * (1.0 - sr) * (1.0 - sz)
-            + mmlut_data[v4_1] * (1.0 - sr) * sz
-            + mmlut_data[v4_2] * sr * (1.0 - sz)
-            + mmlut_data[v4_3] * sr * sz
+        res_mv[i] = _mmlut_lookup_core(
+            tx, ty, tz, mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data
         )
 
     return result
@@ -877,6 +857,9 @@ def init_mmlut(vpar, cpar, cal):
 
     if cal.mmlut.data is None:
         if cpar.mm.nlay == 1:
+            from .track_kernels import (
+                init_mmlut_data_fast as _init_mmlut_data_fast,
+            )
             data = _init_mmlut_data_fast(
                 nr,
                 nz,
@@ -893,6 +876,9 @@ def init_mmlut(vpar, cpar, cal):
         else:
             n2_arr = np.ascontiguousarray(cpar.mm.n2[: cpar.mm.nlay], dtype=np.float64)
             d_arr = np.ascontiguousarray(cpar.mm.d[: cpar.mm.nlay], dtype=np.float64)
+            from .track_kernels import (
+                init_mmlut_data_nlay_fast as _init_mmlut_data_nlay_fast,
+            )
             data = _init_mmlut_data_nlay_fast(
                 nr,
                 nz,

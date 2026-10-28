@@ -255,6 +255,8 @@ def targ_rec_fast(
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
+@cython.nogil
+@cython.exceptval(check=False)
 def _init_mmlut_slice_1layer(
     data: cython.double[:],
     i_start: cython.int,
@@ -269,7 +271,7 @@ def _init_mmlut_slice_1layer(
     mm_n2_0: cython.double,
     mm_n3: cython.double,
     mm_d0: cython.double,
-):
+) -> cython.void:
     i: cython.int
     j: cython.int
     R: cython.double
@@ -376,6 +378,8 @@ def init_mmlut_data_fast(
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
+@cython.nogil
+@cython.exceptval(check=False)
 def _init_mmlut_slice_nlay(
     data: cython.double[:],
     i_start: cython.int,
@@ -391,7 +395,7 @@ def _init_mmlut_slice_nlay(
     n2: cython.double[:],
     d: cython.double[:],
     nlay: cython.int,
-):
+) -> cython.void:
     i: cython.int
     j: cython.int
     k: cython.int

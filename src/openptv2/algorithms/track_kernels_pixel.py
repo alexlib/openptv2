@@ -50,6 +50,16 @@ else:
 GRID_CELL_PX = 16.0
 
 
+if cython.compiled:
+    from cython.cimports.openptv2.algorithms.multimed import (
+        _mmlut_lookup_core,
+    )
+else:
+    from .multimed import (
+        _mmlut_lookup_core,
+    )
+
+
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -377,13 +387,6 @@ def _point_to_pixel_out(
     tx: cython.double
     ty: cython.double
     tz: cython.double
-    sz: cython.double
-    iz: cython.int
-    R: cython.double
-    sr: cython.double
-    ir: cython.int
-    v0: cython.int
-    v3: cython.int
     mmf: cython.double
     X_t: cython.double
     s_z: cython.double
@@ -481,28 +484,9 @@ def _point_to_pixel_out(
         tx = pos_t_0 - mmlut_origin[0]
         ty = -mmlut_origin[1]
         tz = pos_t_2 - mmlut_origin[2]
-        sz = tz / mmlut_rw
-        iz = int(sz)
-        sz -= iz
-        R = c_sqrt(tx * tx + ty * ty)
-        sr = R / mmlut_rw
-        ir = int(sr)
-        sr -= ir
-        # All four bilinear corners (ir..ir+1, iz..iz+1) must be inside the
-        # table, else fall back to the iterative solve; same test as
-        # imgcoord._get_mmf_from_mmlut_core / multimed.get_mmf_from_mmlut.
-        if 0 <= ir and ir + 1 <= mmlut_nr - 1 and 0 <= iz and iz + 1 <= mmlut_nz - 1:
-            v0 = ir * mmlut_nz + iz
-            v3 = v0 + mmlut_nz + 1
-            if v0 >= 0 and v3 < mmlut_nr * mmlut_nz:
-                mmf = (
-                    mmlut_data[v0] * (1.0 - sr) * (1.0 - sz)
-                    + mmlut_data[v0 + 1] * (1.0 - sr) * sz
-                    + mmlut_data[v0 + mmlut_nz] * sr * (1.0 - sz)
-                    + mmlut_data[v3] * sr * sz
-                )
-                if mmf > 0.0:
-                    radial_shift = mmf
+        mmf = _mmlut_lookup_core(tx, ty, tz, mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data)
+        if mmf > 0.0:
+            radial_shift = mmf
     if radial_shift == 1.0:
         radial_shift = _multimed_r_nlay_1layer(
             pos_t_0,

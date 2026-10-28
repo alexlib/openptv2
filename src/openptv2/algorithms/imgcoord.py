@@ -51,6 +51,15 @@ from .multimed import (
     _multimed_nlay_core as _multimed_nlay_core,
 )
 
+if cython.compiled:
+    from cython.cimports.openptv2.algorithms.multimed import (
+        _mmlut_lookup_core,
+    )
+else:
+    from .multimed import (
+        _mmlut_lookup_core,
+    )
+
 _DUMMY_MMLUT_DATA = np.zeros(1, dtype=np.float64)
 
 
@@ -118,41 +127,7 @@ def _get_mmf_from_mmlut_core(
     tx: cython.double = pos_x - mmlut_origin_x
     ty: cython.double = pos_y - mmlut_origin_y
     tz: cython.double = pos_z - mmlut_origin_z
-    sz: cython.double = tz / mmlut_rw
-    iz: cython.int = int(sz)
-    sz -= iz
-
-    R: cython.double = c_sqrt(tx * tx + ty * ty)
-    sr: cython.double = R / mmlut_rw
-    ir: cython.int = int(sr)
-    sr -= ir
-
-    # Bilinear interpolation needs the 4 cell corners
-    # (ir,iz)..(ir+1,iz+1) to be valid grid indices, i.e. ir+1 <= nr-1 and
-    # iz+1 <= nz-1. data has exactly nr*nz elements (indices 0..nr*nz-1);
-    # the old check `v4 > nr*nz` let the exact far corner read one element
-    # past the end (OOB under boundscheck(False)). Points outside the LUT
-    # cells return 0.0 so the caller falls back to the iterative solve.
-    # Keep in sync with multimed.get_mmf_from_mmlut.
-    if ir < 0 or ir + 1 > mmlut_nr - 1:
-        return 0.0
-    if iz < 0 or iz + 1 > mmlut_nz - 1:
-        return 0.0
-
-    v4_0: cython.int = ir * mmlut_nz + iz
-    v4_1: cython.int = ir * mmlut_nz + (iz + 1)
-    v4_2: cython.int = (ir + 1) * mmlut_nz + iz
-    v4_3: cython.int = (ir + 1) * mmlut_nz + (iz + 1)
-
-    # Bilinear interpolation
-    mmf: cython.double = (
-        mmlut_data[v4_0] * (1.0 - sr) * (1.0 - sz)
-        + mmlut_data[v4_1] * (1.0 - sr) * sz
-        + mmlut_data[v4_2] * sr * (1.0 - sz)
-        + mmlut_data[v4_3] * sr * sz
-    )
-
-    return mmf
+    return _mmlut_lookup_core(tx, ty, tz, mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data)
 
 
 @cython.cfunc

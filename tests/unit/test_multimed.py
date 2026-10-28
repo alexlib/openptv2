@@ -387,6 +387,72 @@ def test_get_mmf_far_corner_no_oob():
     assert get_mmf_from_mmlut(pos, org, nr, nz, rw, data) == 0.0
 
 
+def test_get_mmf_below_grid_falls_back_to_iterative():
+    """A point whose depth lies in [-rw, 0) — just below the LUT's first grid
+    row — must be rejected by the bilinear bounds check (mmf -> 0.0, the caller
+    then falls back to the iterative Snell solve), not interpolated/extrapolated.
+
+    Regression: the depth index was computed with int(), which truncates toward
+    zero. A tz in [-rw, 0) therefore kept cell index 0 with a *negative*
+    interpolation weight, silently extrapolating instead of falling back — the
+    same "points past the table ends" band the far-corner test above guards, but
+    on the low side.
+    """
+    nr, nz, rw = 4, 4, 2.0
+    org = np.array([0.0, 0.0, 0.0], dtype=np.float64)
+    # value encodes the radial cell: data[i * nz + j] = i + 1
+    data = np.array(
+        [float(i + 1) for i in range(nr) for j in range(nz)], dtype=np.float64
+    )
+
+    # tz = -0.5 → cell below row 0 → out of bounds → fallback (0.0)
+    assert get_mmf_from_mmlut(np.array([1.0, 0.0, -0.5]), org, nr, nz, rw, data) == 0.0
+    # tz = -1.5 → below the grid → fallback (0.0)
+    assert get_mmf_from_mmlut(np.array([1.0, 0.0, -1.5]), org, nr, nz, rw, data) == 0.0
+    # tz = -2.5 → below the grid by a full cell → fallback (0.0)
+    assert get_mmf_from_mmlut(np.array([1.0, 0.0, -2.5]), org, nr, nz, rw, data) == 0.0
+    # tz = 0.5 → inside the first cell → in-cell value (> 0, never the fallback)
+    assert get_mmf_from_mmlut(np.array([1.0, 0.0, 0.5]), org, nr, nz, rw, data) > 0.0
+
+
+def test_get_mmf_from_mmlut_batch_negative_depth_parity():
+    """Batch lookup must agree with the scalar lookup for below-grid points.
+
+    Same truncation bug family as above: the batch copy used int() too, so
+    negative depths took the wrong branch. Parity here is asserted bit-exact.
+    """
+    from openptv2.algorithms.multimed import get_mmf_from_mmlut_batch
+
+    nr, nz, rw = 4, 4, 2.0
+    org = np.array([0.0, 0.0, 0.0], dtype=np.float64)
+    data = np.array(
+        [float(i + 1) for i in range(nr) for j in range(nz)], dtype=np.float64
+    )
+    positions = np.array(
+        [
+            [1.0, 0.0, -0.5],  # below grid -> fallback
+            [1.0, 0.0, 0.5],  # in cell -> in-cell value
+            [1.0, 0.0, -2.5],  # below grid -> fallback
+            [0.0, 0.0, 0.0],  # on-axis, in cell
+        ],
+        dtype=np.float64,
+    )
+
+    batch_factors = get_mmf_from_mmlut_batch(positions, org, nr, nz, rw, data)
+    scalar_factors = np.array(
+        [
+            get_mmf_from_mmlut(positions[i], org, nr, nz, rw, data)
+            for i in range(len(positions))
+        ]
+    )
+
+    assert np.array_equal(batch_factors, scalar_factors)
+    assert batch_factors[0] == 0.0
+    assert batch_factors[2] == 0.0
+    assert batch_factors[1] > 0.0
+    assert batch_factors[3] > 0.0
+
+
 def test_invalidate_mmlut_clears_data():
     """invalidate_mmlut() drops a built LUT so it is rebuilt after a
     calibration change."""
