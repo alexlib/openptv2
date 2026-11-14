@@ -152,10 +152,10 @@ class Tracking:
             regime["use_2d"], regime["bidirectional"], regime["delta_t"], regime["confirm"],
         )
 
-        if regime["use_2d"]:
-            tracker.full_forward()
-        else:
-            tracker.full_forward_3d()
+        # Backbone is trackcorr (multi-camera epipolar engine): always run
+        # the full 2D+3D forward pass. 3D-only segment-priority remains a
+        # fast specialization available via the legacy preset.
+        tracker.full_forward()
 
         if direction == "forward_backward":
             tracker.full_backward()
