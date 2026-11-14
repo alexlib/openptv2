@@ -101,6 +101,63 @@ class Tracking:
         bidirectional = self._resolve_bool(track_cfg.get("bidirectional", "auto"), bidirectional)
         use_2d = self._resolve_bool(track_cfg.get("use_2d", "auto"), use_2d)
 
+    # ------------------------------------------------------------------
+    # multi-window probing for long / non-stationary sequences
+    # ------------------------------------------------------------------
+    @staticmethod
+    def sample_probe_windows(first: int, last: int, n_windows: int = 5, window: int = 30) -> list[tuple[int, int]]:
+        """Sample several frame windows spread across [first, last].
+
+        Data characteristics (density, motion, noise) can drift over thousands
+        of frames, so a single 20-40 frame probe is not enough. We take
+        ``n_windows`` windows of ``window`` frames, spaced evenly, and
+        aggregate (median for typical values, max for safety bounds like
+        v_max) so the chosen parameters cover the worst case along the run.
+        """
+        total = last - first + 1
+        if total <= window:
+            return [(first, last)]
+        n_windows = max(1, min(n_windows, total // window))
+        step = total / (n_windows + 1)
+        out = []
+        for i in range(1, n_windows + 1):
+            c = int(first + i * step)
+            s = max(first, c - window // 2)
+            e = min(last, s + window - 1)
+            s = max(first, e - window + 1)
+            out.append((s, e))
+        # de-duplicate
+        uniq = []
+        for w in out:
+            if w not in uniq:
+                uniq.append(w)
+        return uniq
+
+    @staticmethod
+    def aggregate_probe_metrics(per_window: list[dict]) -> dict:
+        """Aggregate per-window metrics: median for typical, max for safety."""
+        if not per_window:
+            return {}
+        import statistics
+        keys = per_window[0].keys()
+        agg = {}
+        for k in keys:
+            vals = [w[k] for w in per_window if k in w and w[k] is not None]
+            if not vals:
+                agg[k] = None
+                continue
+            if k in ("v_max", "density", "jump_rate"):
+                agg[k] = max(vals)  # safety bound
+            else:
+                agg[k] = statistics.median(vals)
+        # regime drift flag
+        densities = [w.get("density") for w in per_window if w.get("density") is not None]
+        if densities and (max(densities) - min(densities)) > 0.5 * (sum(densities) / len(densities) + 1e-9):
+            agg["regime_drift"] = True
+        else:
+            agg["regime_drift"] = False
+        return agg
+
         delta_t = track_cfg.get("delta_t", "auto")
         if delta_t == "auto":
             delta_t = 5 if slow_flow else 1
