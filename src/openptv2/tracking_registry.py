@@ -594,6 +594,28 @@ TWO_PHASE_INFO = TrackerInfo(
 )
 
 
+UNIFIED_INFO = TrackerInfo(
+    name="unified",
+    display_name="Unified Tracker (Robust / Correct / Fast)",
+    short_description="Single tracker combining Cython speed, bidirectional reciprocity, 2D disambiguation, slow-flow handling",
+    algorithm_summary=(
+        "One adaptive tracker: Cython segment-priority hot path, optional bidirectional "
+        "passes + reciprocity, optional 2D leaf re-ranking, coarse-to-fine delta-t for "
+        "slow flows, new-particle seeding, gap relinking, two-hop confirm link."
+    ),
+    supports_backward=True,
+    supports_new_particles=True,
+    supports_2d=True,
+    supports_postprocessing=True,
+    supports_gap_relinking=True,
+    supports_cost_weights=True,
+    speed_ranking="fast",
+    density_ranking="moderate",
+    accuracy_ranking="highest",
+    plugin_module="openptv2.plugins.unified_tracking",
+)
+
+
 def _build_registry() -> None:
     entries: list[TrackerInfo] = [
         PRIORITY_SEGMENT_3D_INFO,
@@ -604,6 +626,7 @@ def _build_registry() -> None:
         SPLITTER_INFO,
         HYBRID_DELTAT_3D_INFO,
         TWO_PHASE_INFO,
+        UNIFIED_INFO,
     ]
     for info in entries:
         TRACKER_REGISTRY[info.name] = info
@@ -613,6 +636,7 @@ def _build_registry() -> None:
     TRACKER_REGISTRY["fast"] = PRIORITY_SEGMENT_3D_INFO
     TRACKER_REGISTRY["trackcorr"] = FULL_MULTIPASS_INFO
     TRACKER_REGISTRY["multi_deltat_3d"] = HYBRID_DELTAT_3D_INFO
+    TRACKER_REGISTRY["unified_tracking"] = UNIFIED_INFO
 
 
 _build_registry()

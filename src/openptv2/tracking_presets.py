@@ -34,6 +34,7 @@ PRESET_CHOICES = [
     ("two_directional", "Two-Directional (Forward + Backward)"),
     ("standard_forward", "Standard Forward (2D + 3D)"),
     ("custom_plugin", "Custom / Plugin Algorithm"),
+    ("unified", "Unified Tracker (Robust / Correct / Fast)"),
 ]
 
 PRESET_MAP = dict(PRESET_CHOICES)
@@ -96,6 +97,15 @@ PRESET_CONFIGS: Dict[str, Dict[str, Any]] = {
         "postprocess": False,
         "selected_tracking": "standard_forward",
     },
+    "unified": {
+        "track_mode": 1,
+        "flagNewParticles": True,
+        "postprocess": True,
+        "bidirectional": True,
+        "use_2d": True,
+        "selected_tracking": "unified",
+    },
+
 }
 
 
