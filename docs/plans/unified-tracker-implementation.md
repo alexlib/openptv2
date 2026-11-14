@@ -261,6 +261,45 @@ Kept as advanced standalone (hardware/regime niches), not dropped:
 
 ---
 
+## 12.5. Layered / peeling tracking (new idea)
+
+User-proposed strategy to reduce ghosts and improve robustness: instead of
+building the full 3D cloud up front (which inflates ghost count), track
+top-down in quality layers:
+
+1. Sort correspondences by ghost probability (rcm/rcm_blob) ascending.
+2. Layer 0: track only the top quality tier (e.g. top 30%) → high-confidence
+   tracks.
+3. Remove tracked particles/targets from all frames ("clean the frames").
+4. Layer 1: track the next tier on the cleaned, sparser data.
+5. Repeat until no more tracks.
+6. Final postprocess (gap relink, reciprocity, confirm) on the accumulated set.
+
+Benefits:
+- Ghosts (low quality) are tracked last against a sparse, cleaned set and
+  most are rejected by gates/reciprocity.
+- Each layer is easier (sparser) → fewer ambiguities.
+- Natural fit with existing track-assisted re-correspondence (claims free targets).
+
+Implementation notes:
+- New module `src/openptv2/layered_tracking.py` with `peel_and_track(store, ...)`.
+- Index bookkeeping: each layer's particles are a subset of the original
+  correspondence indices; remap to a unified per-frame index space before
+  writing `ptv_is`, or write per-layer linkage and merge.
+- Config: `peeling: true|false`, `peel_layers: 3`, `peel_quantiles: [0.3,0.6,1.0]`.
+- Can be invoked by unified (`peeling: auto` enables when ghost rate is high)
+  and by a standalone preset.
+- Cost: N full tracking passes; mitigated by smaller clouds per layer and
+  parallelism.
+
+### Milestone K — Layered peeling tracking
+**Owner:** agent K. **Effort:** 3–4 sessions.
+- K1. Prototype on a single layer (quality-filtered subset) → verify tracking works on filtered cloud.
+- K2. Index remapping + accumulation into one linkage store.
+- K3. Multi-layer loop with cleaning.
+- K4. Final postprocess + tests vs. synthetic GT (expect higher precision, similar yield).
+- K5. Wire into unified as `peeling` option.
+
 ## 13. Open questions
 
 1. Should probe run be on by default in cloud/batch mode? (Proposed: on, with auto-pick; disable via `probe: false`.)
