@@ -337,6 +337,8 @@ Implementation notes:
 ## 14. Progress log
 
 - 2026-11-14: Branch created; scaffold + auto-heuristic + multi-window probing committed.
+- 2026-11-14: L1 (ghost filter pre-pass) implemented + tests; wired into unified.
+- 2026-11-14: K1 (layered peeling primitives) implemented + tests.
 - (append as work proceeds)
 
 ---
