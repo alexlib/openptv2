@@ -261,6 +261,32 @@ Kept as advanced standalone (hardware/regime niches), not dropped:
 
 ---
 
+## 12.4. Backbone improvements (trackcorr v2)
+
+Before unifying, make the backbone itself better. Improvements are split into
+Python-level (low risk, do first) and Cython-level (higher risk, later).
+
+Python-level:
+- B1. Early ghost filtering pre-pass: compute ghost probabilities (rcm/rcm_blob)
+  per correspondence; drop points above threshold; keep originals as backup.
+- B2. Adaptive search radii from `measure_motion_scale` (1.5x measured displacement).
+- B3. Frame-quality awareness: skip/interpolate frames with far fewer correspondences.
+- B4. Kink-based link rejection + gap relink repair.
+
+Cython-level (later):
+- B5. 4BE n+2 lookahead as tie-breaker in epipolar scoring.
+- B6. 2D leaf re-ranking inside epipolar candidate selection (ambiguous frames only).
+- B7. Multi-hypothesis deferred resolution (top-k + Hungarian on components).
+
+### Milestone L — Backbone improvements
+**Owner:** agent L. **Effort:** 2–4 sessions.
+- L1. Implement B1 ghost filtering pre-pass + tests on synthetic data.
+- L2. B2 adaptive radii.
+- L3. B4 link rejection.
+- L4. B3 frame quality.
+- L5. Validate B1–B4 vs. baseline on synthetic GT (expect precision up).
+- L6 (later). B5–B7 Cython work.
+
 ## 12.5. Layered / peeling tracking (new idea)
 
 User-proposed strategy to reduce ghosts and improve robustness: instead of
