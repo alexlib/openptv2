@@ -192,13 +192,31 @@ File: new `src/openptv2/tracking_decision.py`
 
 ---
 
-## 11. Milestone J — Cleanup
+## 11. Milestone J — Cleanup / dropping trackers
 
 **Owner:** agent J. **Effort:** 1 session.
 
-### J1. Deprecate individual plugins (not remove)
+Decision: drop the following as user-facing trackers (they become aliases → `unified`);
+their *techniques* are absorbed into the unified adaptive modules:
+
+- `priority_segment_3d` / `fast` / `fast_3d` — speed-only 3D tradeoff; unified uses trackcorr backbone + optional fast 3D path.
+- `standard_forward` — forward-only tradeoff; covered by unified with `bidirectional: false`.
+- `two_directional` — forward+backward without reciprocity; covered by unified `bidirectional: true, postprocess: false`.
+- `4be` — absorbed as the `lookahead` tie-breaker module.
+- `full_multipass` / `trackcorr` — this IS the unified backbone.
+
+Kept as advanced standalone (hardware/regime niches), not dropped:
+- `hybrid_deltat_3d` — slow high-FPS flows (also a unified module).
+- `two_phase` — 2D leaf ranking for ambiguous 3D (also a unified module).
+- `splitter_tracking` — 4-view splitter hardware.
+
+### J1. Convert dropped trackers to deprecated aliases
+- In `plugins/loader.py`: map dropped names → `unified` with fixed config bundles.
+- Print a one-line deprecation notice recommending `unified`.
+
 ### J2. Update GUI/recommender to default to `unified`
 ### J3. Update openptv-cloud notebooks to use `unified`
+### J4. Remove dropped trackers from `PRESET_CHOICES` user-facing list (keep aliases resolving).
 
 ---
 
