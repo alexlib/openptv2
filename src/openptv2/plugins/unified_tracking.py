@@ -1,16 +1,38 @@
-"""Unified tracker — single robust/correct/fast tracker combining the strengths
-of every openptv2 tracker.
+"""Unified tracker — the single tracker. End users do not pick a tracker; this
+one adapts to the data.
 
-This plugin is the recommended default. It keeps the Cython segment-priority
-engine on the hot path (speed), adds bidirectional passes + reciprocity
-(correctness), optional 2D leaf disambiguation (robustness on ambiguous 3D),
-coarse-to-fine Δt for slow flows, new-particle seeding, gap relinking, and
-the two-hop confirm link. Behaviour is governed by a small config; legacy
-presets map to fixed config bundles so existing experiments keep working.
+Goal: most accurate trajectories possible for the given data, with speed
+coming from the parallel-run option rather than from dropping accuracy.
 
-Design doc: see the proposal in the repo's tracking discussion. This module is
-the first concrete implementation; algorithms are reused from existing
-kernels, no new Cython is introduced.
+Adaptation is heuristic and (optionally) validated on a small probe run:
+  1. User (or pipeline) runs a small subset / probe and reports metrics.
+  2. Unified tracker reads the data characteristics (density, displacement vs.
+     noise, conditioning) and enables only the passes that help accuracy.
+
+Track YAML options (all default to "auto" unless noted):
+  v_max, max_cands, dt, cold_start_gate  - motion/search bounds (physics).
+  bidirectional: auto|true|false
+      Run forward+backward passes. Enabled when density is not extreme and
+      the data shows one-directional false links (auto). Disable to save time.
+  use_2d: auto|true|false
+      2D leaf re-ranking for ambiguous 3D. Enabled on dense/ambiguous data.
+  lookahead: true|false
+      4BE n+2-frame tie-breaker in the candidate cost. On by default.
+  delta_t: auto|1..N
+      Coarse-to-fine step for slow high-FPS flows. auto -> 5 if slow flow
+      (displacement < noise), else 1.
+  new_particles: true|false  - seed new particles mid-sequence. On by default.
+  postprocess: true|false    - gap relink + cold start + reciprocity. On.
+  confirm_link: auto|number|null
+      Two-hop confirmation to cut jump-steps. auto -> 0.3 when v_max small.
+  quality_post: false|true   - smoothness/reconnect/trim. Off by default
+      (extra cost); enable for final production runs.
+  slow_flow: false|true      - force coarse-to-fine. auto-detected otherwise.
+  parallel_workers: 0       - 0 sequential; >1 chunked/distributed (speed).
+  density_estimate: 0       - optional hint (particles/frame) for heuristics.
+
+Legacy tracker names are kept as aliases that map to this tracker with fixed
+config bundles, so existing experiments keep working.
 """
 
 from __future__ import annotations
@@ -58,27 +80,24 @@ class Tracking:
 
     def _auto_regime(self, exp: Any, track_cfg: dict) -> dict:
         """Best-effort regime detection; returns a dict of resolved flags."""
-        # Defaults chosen for correctness-first on typical data.
-        bidirectional = True
-        use_2d = True
-        slow_flow = False
-        try:
-            from openptv2.tracking_feasibility import measure_motion_scale
-
-            # We don't have frames here cheaply; leave slow_flow False unless
-            # the user / a conditioning report says otherwise. The hybrid
-            # plugin remains available as an explicit preset.
-            slow_flow = bool(track_cfg.get("slow_flow", False))
-        except Exception:  # pragma: no cover - defensive
-            pass
-
-        # Density heuristic from track_cfg if present.
+        # Defaults chosen for accuracy-first on typical data.
+        slow_flow = bool(track_cfg.get("slow_flow", False))
         density = float(track_cfg.get("density_estimate", 0.0) or 0.0)
-        if density > 2000:
-            bidirectional = True
-            use_2d = True
 
-        # Honour explicit overrides.
+        # Bidirectional + reciprocity: on by default for accuracy, but disable
+        # on extreme density where the backward pass becomes the bottleneck and
+        # the forward pass already saturates accuracy.
+        bidirectional = not (density > 5000)
+
+        # 2D leaf re-ranking: enable when data is dense/ambiguous (3D
+        # triangulation weak). On moderate density it helps disambiguate.
+        use_2d = density >= 500 or density == 0  # 0 = unknown -> keep on (safe)
+
+        # Slow flow / high-FPS detection can be supplied by a probe run.
+        if track_cfg.get("slow_flow") is True:
+            slow_flow = True
+
+        # Honour explicit overrides (auto -> resolved above).
         bidirectional = self._resolve_bool(track_cfg.get("bidirectional", "auto"), bidirectional)
         use_2d = self._resolve_bool(track_cfg.get("use_2d", "auto"), use_2d)
 

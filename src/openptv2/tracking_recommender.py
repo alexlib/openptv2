@@ -442,6 +442,25 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
             params["dvzmin"] = -extreme_cap
             params["dacc"] = min(params["dacc"], extreme_cap)
 
+    # Trackability guard (Raghunathan, Vradman & Shnapp 2026, "Time-marching
+    # stereo-matching for 3D-PTV", Eq. 2 and Sec. 2.1): prediction-seeded
+    # linking only picks the right nearest candidate while the search radius
+    # stays below the inter-particle separation. rho = p95_displacement /
+    # mean_interparticle_distance is the physical-space analogue of their
+    # trackability parameter Tr. For rho <= 1 the empirical factors above
+    # (0.8/0.6/0.4 sweep) already sit in the viable regime and are left
+    # untouched. For rho > 1 the displacement itself exceeds the mean
+    # spacing, the seeded-step box (1.8x spacing at factor 0.6) lands
+    # squarely in the ambiguous regime the paper identifies as ghost- and
+    # mismatch-producing, so the box is capped at the mean spacing -- the
+    # largest radius the nearest-candidate assumption still justifies.
+    if "dacc" in params and stats.mean_interparticle_distance > 0:
+        rho = p95_displacement / stats.mean_interparticle_distance
+        if rho > 1.0:
+            params["dacc"] = min(
+                params["dacc"], stats.mean_interparticle_distance
+            )
+
     # Tracker-specific params
     return params
 
