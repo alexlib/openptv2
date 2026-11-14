@@ -223,3 +223,54 @@ File: new `src/openptv2/tracking_decision.py`
 
 - 2026-11-14: Branch created; scaffold + auto-heuristic + multi-window probing committed.
 - (append as work proceeds)
+
+---
+
+## 15. Critical review (self-assessment)
+
+### Strengths
+- Unifies code paths; removes the "preset ran forward-only" class of bug.
+- Reuses existing, tested kernels; no new Cython.
+- Multi-window probing addresses non-stationarity.
+- Backward-compatible aliases.
+
+### Weaknesses and risks
+
+**W1. Probe cost.** A full grid search (v_max×delta_t×use_2d×bidirectional) on 5 windows is ~36 short runs. On large frames this is not cheap. Mitigation: limit grid to the most impactful axis first (v_max), then conditionally try delta_t/use_2d only if probe is poor. Add a `probe_budget_seconds` cap.
+
+**W2. Proxy metrics.** Median track length / jump rate are proxies, not ground truth. Optimizing them can overfit. Mitigation: validate the composite score against synthetic GT early (move milestone H to before C ships); keep GT comparison in CI.
+
+**W3. Auto thresholds are uncalibrated.** Ratios 0.5/0.2 and density 500/5000 are guesses. Mitigation: derive from the existing synthetic test cases; document the calibration dataset used.
+
+**W4. "Zero behavior change" claim is false as stated.** Unified backbone is trackcorr; e.g. `standard_forward` originally forward-only. Fixed bundles must be verified to reproduce original outputs byte-for-byte. Mitigation: add a regression test comparing unified (fixed bundle) vs. legacy on a reference dataset before deprecating.
+
+**W5. Per-trajectory quality (E) touches storage schema.** Risk of breaking `flowtracks`, `post.py`, `export.py`, and readers. Mitigation: reuse the existing `prio` array or a parallel sidecar file; avoid new block groups until validated. Consider deferring E to a later release.
+
+**W6. Interactive prompts in batch/cloud.** `probe_confirm` prompting is unusable in CI and cloud. Mitigation: default `probe_confirm: false` in non-TTY; auto-pick best; allow `--probe-confirm` CLI flag.
+
+**W7. Non-stationarity beyond probing.** A single config cannot be optimal everywhere. Mitigation (advanced, later): allow per-chunk config in `track_parallel` (each shard resolves its own regime). Out of scope for v1 but should be noted.
+
+**W8. Scope creep.** 10 milestones with 8 agents is a lot. Mitigation: ship A+B+C (auto-params + gate + probe) as v1; everything else is v2. Reorder: D (report) before E/F/G/H.
+
+**W9. Dependency on unaudited primitives.** `tracking_feasibility`, `quality_post`, `run_postprocess_passes` may have latent bugs. Mitigation: add targeted unit tests for each primitive before relying on them.
+
+**W10. Transparency.** Users must see what auto chose and why. Mitigation: always print resolved config + rationale + probe table; store in `TrackingDecision`.
+
+### Recommended reordering (v1 first)
+
+1. A (auto-params) — with tests against synthetic data.
+2. B (conditioning gate).
+3. C (probe) — limited grid, budget-capped.
+4. D (post-run report).
+5. I (docs/YAML).
+6. G (parallel).
+7. H (validation/CI).
+8. F (decision record) — fold into C/D.
+9. E (per-traj quality) — defer to v2.
+10. J (cleanup) — after validation.
+
+### Open questions to resolve before implementation
+
+1. Is there a canonical synthetic GT dataset available for calibration of thresholds? (Check `tests/test_data`.)
+2. Should probe be on by default in cloud? (Recommend: on, auto-pick, budget-capped.)
+3. Confirm backward-compat byte-identity is achievable for all legacy presets.
