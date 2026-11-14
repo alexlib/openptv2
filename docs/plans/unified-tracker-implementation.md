@@ -192,6 +192,38 @@ File: new `src/openptv2/tracking_decision.py`
 
 ---
 
+## 10.5. Features at risk when dropping trackers (must preserve)
+
+Dropping trackers risks losing capabilities that trackcorr backbone does not
+natively provide. The unified tracker must explicitly preserve these:
+
+1. **3D-only mode (no calibration / no 2D targets).**
+   `priority_segment_3d` and `4be` operate on 3D correspondence clouds alone.
+   trackcorr requires calibration for epipolar search. Unified needs a
+   `mode: 3d_only` branch using `full_forward_3d()` + `track3d_loop_fast`,
+   selected when cals/2D targets are unavailable.
+
+2. **New-particle seeding in 3D-only mode.**
+   `priority_segment_3d` does not seed new particles mid-sequence. Unified's
+   `new_particles` option must have a 3D cold-start seeding heuristic for the
+   3D-only branch (or delegate to the epipolar path when 2D is available).
+
+3. **Configurable cost weights.**
+   Only `two_phase` exposes cost weights. The 2D leaf-ranking module must
+   accept weight parameters (`app_weight`, etc.) for advanced users.
+
+4. **Splitter hardware path.**
+   Keep `splitter_tracking` as a standalone (hardware niche), not dropped.
+
+5. **Fast 3D speed path.**
+   `priority_segment_3d` is the fastest. Keep an internal fast-3D option
+   (`fast_3d_mode: true`) for speed-critical 3D-only runs, even though the
+   default backbone is trackcorr.
+
+6. **Bidirectional in 3D-only mode.**
+   Verified: `full_backward()` works after `full_forward_3d()`, so unified
+   can offer bidirectional + reciprocity in both modes.
+
 ## 11. Milestone J — Cleanup / dropping trackers
 
 **Owner:** agent J. **Effort:** 1 session.
