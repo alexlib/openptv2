@@ -194,6 +194,36 @@ class Tracking:
             except Exception as exc:  # pragma: no cover - fallback
                 log.warning("hybrid delegate failed: %r; falling back", exc)
 
+        # Optional early ghost filter (low-support correspondences) before tracking.
+        track_cfg.setdefault("ghost_filter", "auto")
+        gf = track_cfg.get("ghost_filter", "auto")
+        do_gf = gf in (True, "true", "yes", "on") or gf == "auto"
+        if do_gf:
+            try:
+                from openptv2.ghost_filter import filter_low_support
+
+                pm = getattr(self.exp, "pm", None)
+                if pm is None and hasattr(self.exp, "exp1"):
+                    pm = getattr(self.exp.exp1, "pm", None)
+                first = self.exp.spar.get_first() if hasattr(self.exp, "spar") else None
+                last = self.exp.spar.get_last() if hasattr(self.exp, "spar") else None
+                if first is None:
+                    # fall back to params
+                    first = int(pm.parameters.get("sequence", {}).get("first", 0)) if pm else 0
+                    last = int(pm.parameters.get("sequence", {}).get("last", 0)) if pm else 0
+                store = getattr(self.exp, "store", None) or getattr(getattr(self.exp, "tracker", None), "_store", None)
+                # try to get store from ptv
+                if store is None and self.ptv is not None:
+                    store = getattr(self.ptv, "store", None)
+                if store is not None and first is not None and last is not None and last >= first:
+                    dropped = filter_low_support(store, list(range(first, last + 1)),
+                                                min_cameras=int(track_cfg.get("ghost_min_cameras", 3)))
+                    total = sum(dropped.values())
+                    if total:
+                        log.info("[unified] ghost filter dropped %d low-support correspondences", total)
+            except Exception as exc:  # pragma: no cover - never break tracking
+                log.warning("[unified] ghost filter skipped: %r", exc)
+
         tracker = self.ptv.py_trackcorr_init(self.exp)
         self.exp.tracker = tracker
 
