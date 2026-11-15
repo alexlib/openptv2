@@ -35,6 +35,7 @@ from openptv2.tracking_postprocess import (
     count_links,
     enforce_reciprocity,
     link_step,
+    prune_kinky_links,
     read_linkage,
     relink_trajectory_gaps,
 )
@@ -336,6 +337,47 @@ def _choose_core_min_cameras(
     return max(2, num_cams - 1)
 
 
+def _split_kinky_chain(
+    chain: list[tuple[int, int]],
+    core_pos: dict[int, np.ndarray],
+    max_accel_err: float | None,
+) -> list[list[tuple[int, int]]]:
+    """Split or trim a reciprocal chain at kinematic velocity-jump kinks."""
+    if len(chain) < 3 or max_accel_err is None or max_accel_err <= 0:
+        return [chain]
+
+    from openptv2.tracking_report import _is_velocity_jump
+
+    def _triplet_is_kink(idx: int) -> bool:
+        f0, r0 = chain[idx]
+        f1, r1 = chain[idx + 1]
+        f2, r2 = chain[idx + 2]
+        p0 = core_pos[f0][r0]
+        p1 = core_pos[f1][r1]
+        p2 = core_pos[f2][r2]
+        dt1 = max(1, f1 - f0)
+        dt2 = max(1, f2 - f1)
+        v1 = (p1 - p0) / float(dt1)
+        v2 = (p2 - p1) / float(dt2)
+        acc_err = float(np.linalg.norm(v2 - v1))
+        return acc_err > float(max_accel_err) and _is_velocity_jump(
+            p0, p1, p2, dt1, dt2, jump_angle_deg=90.0, jump_ratio=1.0
+        )
+
+    for idx in range(len(chain) - 2):
+        if not _triplet_is_kink(idx):
+            continue
+        if idx == 0 and len(chain) >= 4 and not _triplet_is_kink(1):
+            return _split_kinky_chain(chain[1:], core_pos, max_accel_err)
+        if idx == len(chain) - 3 and len(chain) >= 4:
+            return _split_kinky_chain(chain[:-1], core_pos, max_accel_err)
+        left = _split_kinky_chain(chain[: idx + 1], core_pos, max_accel_err)
+        right = _split_kinky_chain(chain[idx + 1 :], core_pos, max_accel_err)
+        return left + right
+
+    return [chain]
+
+
 def _extract_verified_core(
     linkage_name: str,
     first: int,
@@ -345,6 +387,7 @@ def _extract_verified_core(
     core_ids: dict[int, np.ndarray],
     num_cams: int,
     min_core_length: int,
+    max_accel_err: float | None = None,
 ) -> tuple[
     dict[int, np.ndarray],
     dict[int, np.ndarray],
@@ -395,7 +438,9 @@ def _extract_verified_core(
                 chain.append((nxt_f, j))
                 cur_f, cur_i = nxt_f, j
             if len(chain) >= min_core_length:
-                tracks.append(chain)
+                for sub in _split_kinky_chain(chain, core_pos, max_accel_err):
+                    if len(sub) >= min_core_length:
+                        tracks.append(sub)
 
     # Assign compact per-frame indices 0..n_p1[f]-1 for verified core points.
     kept_rows: dict[int, list[int]] = {f: [] for f in frames}
@@ -452,25 +497,28 @@ def peel_and_track(
     store: Any,
     *,
     naming: dict[str, str] | None = None,
-    min_core_length: int = 2,
+    min_core_length: int = 3,
     min_core_cameras: int | None = None,
     rcm_threshold: float | None = None,
-    corrective_passes: int = 2,
+    corrective_passes: int = 1,
     allow_shared_targets: bool = False,
     predictor: str = "poly",
     radius_px: float = 3.0,
     engine: str = "3d",
+    tiers: int = 2,
 ) -> PeelStats:
-    """Run 2-Pass Clean-and-Claim tracking on ``store``.
+    """Run Clean-and-Claim multi-pass peeling tracking on ``store``.
 
-    1. **Pass 1 (Tight-Core):** Filter correspondences to high-purity core,
-       run bidirectional ``Tracker`` + ``enforce_reciprocity``, keep verified
-       core tracks of length >= ``min_core_length``.
+    1. **Core Pass(es):** Filter correspondences to high-purity core
+       (``tiers=2`` runs 1 core pass; ``tiers=3`` on ``>=3``-cam rigs runs
+       strict ``num_cams`` core then medium ``num_cams-1`` core), run
+       bidirectional ``Tracker`` + ``enforce_reciprocity``, and extract
+       kinematically smooth core tracks of length >= ``min_core_length``.
     2. **Prune:** Restore full correspondences and run
-       :func:`prune_claimed_correspondences` using Pass-1 claimed 2D targets.
-    3. **Pass 2 (Residual + Merge + ``track_assisted``):** Run bidirectional
-       ``Tracker`` + ``enforce_reciprocity`` on the pruned residual cloud,
-       merge Pass-1 and Pass-2 linkage into ``store``, run
+       :func:`prune_claimed_correspondences` using claimed 2D targets.
+    3. **Residual + Post-Prune + ``track_assisted``:** Track the pruned
+       residual cloud, prune unlinked residual rows conflicting with Pass-2
+       linked targets, merge into ``store``, run gated
        :func:`openptv2.track_assisted.run_corrective_pass`, and run final
        ``relink_trajectory_gaps`` + ``enforce_reciprocity``.
     """
@@ -480,8 +528,14 @@ def peel_and_track(
     first, last = spar.get_first(), spar.get_last()
     frames = list(range(first, last + 1))
     num_cams = int(cpar.get_num_cams())
+    eff_min_core_len = (
+        min(int(min_core_length), len(frames))
+        if len(frames) >= 2
+        else int(min_core_length)
+    )
+    dacc_val = float(tpar.dacc) if hasattr(tpar, "dacc") and float(tpar.dacc) > 0 else None
 
-    # Snapshot original correspondences and optional ghost probabilities.
+    # Snapshot original correspondences and optional rcm / ghost probabilities.
     orig_pos: dict[int, np.ndarray] = {}
     orig_ids: dict[int, np.ndarray] = {}
     orig_qual: dict[int, np.ndarray | None] = {}
@@ -495,63 +549,168 @@ def peel_and_track(
             ids = np.empty((0, num_cams), dtype=np.int32)
         orig_pos[f] = np.asarray(pos, dtype=np.float64)
         orig_ids[f] = np.asarray(ids, dtype=np.int32).reshape(-1, num_cams)
-        orig_qual[f] = store.read_point_quality(f)
+        rcm_arr = store.read_rcm(f) if hasattr(store, "read_rcm") else None
+        orig_qual[f] = rcm_arr if rcm_arr is not None else store.read_point_quality(f)
 
     core_min_cams = _choose_core_min_cameras(
         orig_ids, frames, num_cams, min_core_cameras
     )
-
     stats = PeelStats(min_core_cameras=core_min_cams)
-
-    # Pass 1: filter correspondences to tight core and track.
-    core_pos: dict[int, np.ndarray] = {}
-    core_ids: dict[int, np.ndarray] = {}
-    for f in frames:
-        pos, ids = orig_pos[f], orig_ids[f]
-        if len(pos) == 0:
-            core_pos[f] = pos
-            core_ids[f] = ids
-        else:
-            mask = camera_support(ids) >= core_min_cams
-            qual = orig_qual[f]
-            if rcm_threshold is not None and qual is not None and len(qual) == len(pos):
-                mask &= qual <= float(rcm_threshold)
-            core_pos[f] = pos[mask]
-            core_ids[f] = ids[mask]
-        stats.core_points_total += len(core_pos[f])
-        store.write_correspondences(f, core_pos[f], core_ids[f])
-
     use_3d = str(engine).strip().lower() in ("3d", "track3d", "cython_3d", "priority_segment_3d")
 
-    tracker_p1 = Tracker(cpar, vpar, tpar, spar, cals, naming=naming, store=store)
-    if use_3d:
-        tracker_p1.full_forward_3d()
-    else:
-        tracker_p1.full_forward()
-    tracker_p1.full_backward()
-    enforce_reciprocity(linkage_name, first, last, store=store)
-    stats.links_after_pass1 = count_links(linkage_name, first, last, store=store)
+    def _run_core_tier(
+        src_pos: dict[int, np.ndarray],
+        src_ids: dict[int, np.ndarray],
+        min_cams_tier: int,
+        min_len_tier: int,
+        apply_rcm: bool,
+    ) -> tuple[
+        dict[int, np.ndarray],
+        dict[int, np.ndarray],
+        dict[int, np.ndarray],
+        dict[int, np.ndarray],
+        dict[int, list[set[int]]],
+        int,
+        int,
+    ]:
+        c_pos: dict[int, np.ndarray] = {}
+        c_ids: dict[int, np.ndarray] = {}
+        for f in frames:
+            pos, ids = src_pos[f], src_ids[f]
+            if len(pos) == 0:
+                c_pos[f] = pos
+                c_ids[f] = ids
+            else:
+                mask = camera_support(ids) >= min_cams_tier
+                if apply_rcm and rcm_threshold is not None:
+                    qual = orig_qual[f]
+                    if qual is not None and len(qual) == len(pos):
+                        mask &= qual <= float(rcm_threshold)
+                c_pos[f] = pos[mask]
+                c_ids[f] = ids[mask]
+            stats.core_points_total += len(c_pos[f])
+            store.write_correspondences(f, c_pos[f], c_ids[f])
 
-    p1_pos, p1_ids, p1_prev, p1_next, claimed_by_frame, n_core_tracks = (
-        _extract_verified_core(
+        tr = Tracker(cpar, vpar, tpar, spar, cals, naming=naming, store=store)
+        if use_3d:
+            tr.full_forward_3d()
+            enforce_reciprocity(linkage_name, first, last, store=store)
+        else:
+            tr.full_forward()
+            tr.full_backward()
+            enforce_reciprocity(linkage_name, first, last, store=store)
+            # Re-read correspondences in case full_backward() appended new particles (tpar.add > 0).
+            for f in frames:
+                up_pos, up_ids = store.read_correspondences(f)
+                if len(up_pos) == 0:
+                    up_ids = np.empty((0, num_cams), dtype=np.int32)
+                c_pos[f] = np.asarray(up_pos, dtype=np.float64)
+                c_ids[f] = np.asarray(up_ids, dtype=np.int32).reshape(-1, num_cams)
+        n_links = count_links(linkage_name, first, last, store=store)
+        extracted = _extract_verified_core(
             linkage_name,
             first,
             last,
             store,
-            core_pos,
-            core_ids,
+            c_pos,
+            c_ids,
             num_cams,
-            min_core_length=min_core_length,
+            min_core_length=min_len_tier,
+            max_accel_err=dacc_val,
         )
-    )
-    stats.verified_core_tracks = n_core_tracks
-    stats.verified_core_points = sum(len(p1_pos[f]) for f in frames)
+        return (*extracted, n_links)
 
-    # Restore original cloud and deterministically prune claimed 2D targets.
-    for f in frames:
-        store.write_correspondences(f, orig_pos[f], orig_ids[f])
-    pruned = prune_claimed_correspondences(store, frames, claimed_by_frame)
-    stats.pruned_correspondences = sum(pruned.values())
+    def _merge_core_tier(
+        a_pos: dict[int, np.ndarray],
+        a_ids: dict[int, np.ndarray],
+        a_prv: dict[int, np.ndarray],
+        a_nxt: dict[int, np.ndarray],
+        b_pos: dict[int, np.ndarray],
+        b_ids: dict[int, np.ndarray],
+        b_prv: dict[int, np.ndarray],
+        b_nxt: dict[int, np.ndarray],
+    ) -> tuple[
+        dict[int, np.ndarray],
+        dict[int, np.ndarray],
+        dict[int, np.ndarray],
+        dict[int, np.ndarray],
+    ]:
+        m_pos_d: dict[int, np.ndarray] = {}
+        m_ids_d: dict[int, np.ndarray] = {}
+        m_prv_d: dict[int, np.ndarray] = {}
+        m_nxt_d: dict[int, np.ndarray] = {}
+        for f in frames:
+            na = len(a_pos[f])
+            nb = len(b_pos[f])
+            m_pos_d[f] = np.vstack([a_pos[f], b_pos[f]]) if (na + nb) > 0 else np.empty((0, 3), dtype=np.float64)
+            m_ids_d[f] = np.vstack([a_ids[f], b_ids[f]]) if (na + nb) > 0 else np.empty((0, num_cams), dtype=np.int32)
+            na_prev = len(a_pos[f - 1]) if (f - 1) in a_pos else 0
+            na_next = len(a_pos[f + 1]) if (f + 1) in a_pos else 0
+            adj_prv = np.where(b_prv[f] >= 0, b_prv[f] + na_prev, PREV_NONE).astype(np.int32)
+            adj_nxt = np.where(b_nxt[f] >= 0, b_nxt[f] + na_next, NEXT_NONE).astype(np.int32)
+            m_prv_d[f] = np.concatenate([a_prv[f], adj_prv]) if (na + nb) > 0 else np.empty(0, dtype=np.int32)
+            m_nxt_d[f] = np.concatenate([a_nxt[f], adj_nxt]) if (na + nb) > 0 else np.empty(0, dtype=np.int32)
+        return m_pos_d, m_ids_d, m_prv_d, m_nxt_d
+
+    if tiers >= 3 and num_cams >= 3:
+        # Tier 1: strict full-camera core with longer minimum chain length.
+        t1_pos, t1_ids, t1_prv, t1_nxt, claimed_t1, n_t1, links_t1 = _run_core_tier(
+            orig_pos,
+            orig_ids,
+            min_cams_tier=num_cams,
+            min_len_tier=min(max(4, eff_min_core_len), len(frames)) if len(frames) >= 2 else eff_min_core_len,
+            apply_rcm=True,
+        )
+        for f in frames:
+            store.write_correspondences(f, orig_pos[f], orig_ids[f])
+        pruned_t1 = prune_claimed_correspondences(store, frames, claimed_t1)
+        stats.pruned_correspondences += sum(pruned_t1.values())
+
+        mid_pos: dict[int, np.ndarray] = {}
+        mid_ids: dict[int, np.ndarray] = {}
+        for f in frames:
+            mp, mi = store.read_correspondences(f)
+            if len(mp) == 0:
+                mi = np.empty((0, num_cams), dtype=np.int32)
+            mid_pos[f] = np.asarray(mp, dtype=np.float64)
+            mid_ids[f] = np.asarray(mi, dtype=np.int32).reshape(-1, num_cams)
+
+        # Tier 2: medium core on pruned cloud.
+        t2_pos, t2_ids, t2_prv, t2_nxt, claimed_t2, n_t2, links_t2 = _run_core_tier(
+            mid_pos,
+            mid_ids,
+            min_cams_tier=max(2, num_cams - 1),
+            min_len_tier=eff_min_core_len,
+            apply_rcm=False,
+        )
+        for f in frames:
+            store.write_correspondences(f, mid_pos[f], mid_ids[f])
+        pruned_t2 = prune_claimed_correspondences(store, frames, claimed_t2)
+        stats.pruned_correspondences += sum(pruned_t2.values())
+
+        p1_pos, p1_ids, p1_prev, p1_next = _merge_core_tier(
+            t1_pos, t1_ids, t1_prv, t1_nxt, t2_pos, t2_ids, t2_prv, t2_nxt
+        )
+        stats.links_after_pass1 = links_t1 + links_t2
+        stats.verified_core_tracks = n_t1 + n_t2
+        stats.verified_core_points = sum(len(p1_pos[f]) for f in frames)
+    else:
+        p1_pos, p1_ids, p1_prev, p1_next, claimed_by_frame, n_core_tracks, links_p1 = _run_core_tier(
+            orig_pos,
+            orig_ids,
+            min_cams_tier=core_min_cams,
+            min_len_tier=eff_min_core_len,
+            apply_rcm=True,
+        )
+        stats.links_after_pass1 = links_p1
+        stats.verified_core_tracks = n_core_tracks
+        stats.verified_core_points = sum(len(p1_pos[f]) for f in frames)
+
+        # Restore original cloud and deterministically prune claimed 2D targets.
+        for f in frames:
+            store.write_correspondences(f, orig_pos[f], orig_ids[f])
+        pruned = prune_claimed_correspondences(store, frames, claimed_by_frame)
+        stats.pruned_correspondences = sum(pruned.values())
 
     res_pos: dict[int, np.ndarray] = {}
     res_ids: dict[int, np.ndarray] = {}
@@ -573,11 +732,20 @@ def peel_and_track(
     enforce_reciprocity(linkage_name, first, last, store=store)
     stats.links_after_pass2 = count_links(linkage_name, first, last, store=store)
 
-    # Merge Pass-1 verified core and Pass-2 residual into store.
-    merged_linkage: list[tuple[np.ndarray, np.ndarray]] = []
-    merged_xyz: list[np.ndarray] = []
+    # Re-read residual correspondences in case full_backward() appended new particles.
     for f in frames:
-        n1 = len(p1_pos[f])
+        up_pos, up_ids = store.read_correspondences(f)
+        if len(up_pos) == 0:
+            up_ids = np.empty((0, num_cams), dtype=np.int32)
+        res_pos[f] = np.asarray(up_pos, dtype=np.float64)
+        res_ids[f] = np.asarray(up_ids, dtype=np.int32).reshape(-1, num_cams)
+
+    # Read Pass-2 linkage and post-prune unlinked rows sharing 2D targets with linked Pass-2 tracks.
+    p2_prv_map: dict[int, np.ndarray] = {}
+    p2_nxt_map: dict[int, np.ndarray] = {}
+    keep_masks: dict[int, np.ndarray] = {}
+    remap_p2: dict[int, np.ndarray] = {}
+    for f in frames:
         n2 = len(res_pos[f])
         r2 = read_linkage(linkage_name, f, store=store)
         if r2 is None:
@@ -585,14 +753,67 @@ def peel_and_track(
             p2_nxt = np.full(n2, NEXT_NONE, dtype=np.int32)
         else:
             p2_prv, p2_nxt, _ = r2
+        p2_prv_map[f] = p2_prv
+        p2_nxt_map[f] = p2_nxt
+        linked = (p2_prv >= 0) | (p2_nxt >= 0)
+        claimed_p2: list[set[int]] = [
+            {int(v) for v in res_ids[f][linked, c] if v >= 0}
+            for c in range(num_cams)
+        ]
+        conflict = np.zeros(n2, dtype=bool)
+        if n2 > 0 and any(claimed_p2):
+            for c in range(num_cams):
+                if not claimed_p2[c]:
+                    continue
+                col = res_ids[f][:, c]
+                valid = (col >= 0) & (~linked)
+                if np.any(valid):
+                    conflict[valid] |= np.isin(col[valid], list(claimed_p2[c]))
+        keep = ~conflict
+        keep_masks[f] = keep
+        new_idx = np.full(n2, -1, dtype=np.int32)
+        new_idx[keep] = np.arange(int(keep.sum()), dtype=np.int32)
+        remap_p2[f] = new_idx
 
+    # Merge Pass-1 verified core and post-pruned Pass-2 residual into store.
+    merged_linkage: list[tuple[np.ndarray, np.ndarray]] = []
+    merged_xyz: list[np.ndarray] = []
+    for f in frames:
+        keep = keep_masks[f]
+        res_pos_f = res_pos[f][keep]
+        res_ids_f = res_ids[f][keep]
+        p2_prv = p2_prv_map[f][keep]
+        p2_nxt = p2_nxt_map[f][keep]
+        if (f - 1) in remap_p2:
+            rm_prev = remap_p2[f - 1]
+            if len(rm_prev) > 0:
+                p2_prv = np.where(
+                    (p2_prv >= 0) & (p2_prv < len(rm_prev)),
+                    rm_prev[np.clip(p2_prv, 0, len(rm_prev) - 1)],
+                    PREV_NONE,
+                ).astype(np.int32)
+            else:
+                p2_prv = np.full(len(p2_prv), PREV_NONE, dtype=np.int32)
+        if (f + 1) in remap_p2:
+            rm_next = remap_p2[f + 1]
+            if len(rm_next) > 0:
+                p2_nxt = np.where(
+                    (p2_nxt >= 0) & (p2_nxt < len(rm_next)),
+                    rm_next[np.clip(p2_nxt, 0, len(rm_next) - 1)],
+                    NEXT_NONE,
+                ).astype(np.int32)
+            else:
+                p2_nxt = np.full(len(p2_nxt), NEXT_NONE, dtype=np.int32)
+
+        n1 = len(p1_pos[f])
+        n2 = len(res_pos_f)
         m_pos = (
-            np.vstack([p1_pos[f], res_pos[f]])
+            np.vstack([p1_pos[f], res_pos_f])
             if (n1 + n2) > 0
             else np.empty((0, 3), dtype=np.float64)
         )
         m_ids = (
-            np.vstack([p1_ids[f], res_ids[f]])
+            np.vstack([p1_ids[f], res_ids_f])
             if (n1 + n2) > 0
             else np.empty((0, num_cams), dtype=np.int32)
         )
@@ -613,7 +834,18 @@ def peel_and_track(
 
     store.write_linkage_many(frames, merged_linkage, merged_xyz, name=linkage_name)
 
-    # Upgraded track_assisted corrective pass (3-4 pt poly + shared-target option).
+    dangle_val = float(getattr(tpar, "dangle", 0.0))
+    if dacc_val is not None and dacc_val > 0.0:
+        prune_kinky_links(
+            linkage_name,
+            first,
+            last,
+            max_accel_err=dacc_val,
+            max_angle_deg=dangle_val,
+            store=store,
+        )
+
+    # Upgraded track_assisted corrective pass (3-4 pt poly + ray-miss/kinematic gates).
     if corrective_passes > 0:
         stats.corrective_stats = run_corrective_pass(
             cpar,
@@ -629,6 +861,11 @@ def peel_and_track(
             predictor=predictor,
             allow_shared_targets=allow_shared_targets,
             radius_px=radius_px,
+            max_ray_miss_mm=rcm_threshold,
+            max_pos_err_mm=dacc_val,
+            gap_accel_err=0.25 * dacc_val if dacc_val is not None else None,
+            require_bidir_vel=True,
+            uniqueness_ratio=1.5,
         )
 
     # Final postprocess: tight gap relinking + reciprocity guard.
@@ -639,8 +876,19 @@ def peel_and_track(
         max_gap=2,
         max_accel_err=0.25 * float(tpar.dacc),
         store=store,
+        require_bidir_vel=True,
+        uniqueness_ratio=1.5,
     )
     enforce_reciprocity(linkage_name, first, last, store=store)
+    if dacc_val is not None and dacc_val > 0.0:
+        prune_kinky_links(
+            linkage_name,
+            first,
+            last,
+            max_accel_err=dacc_val,
+            max_angle_deg=dangle_val,
+            store=store,
+        )
     stats.links_final = count_links(linkage_name, first, last, store=store)
     return stats
 

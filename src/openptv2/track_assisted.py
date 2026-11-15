@@ -42,8 +42,10 @@ from openptv2.algorithms.constants import COORD_UNUSED
 from openptv2.algorithms.orientation import point_position
 from openptv2.algorithms.track import point_to_pixel
 from openptv2.tracking_postprocess import (
+    back_link_step,
     count_links,
     enforce_reciprocity,
+    link_step,
     read_linkage,
     relink_trajectory_gaps,
     write_linkage,
@@ -72,7 +74,14 @@ class CorrectiveStats:
 class _Frame:
     """One frame's particles, links and targets, held in memory for a pass."""
 
-    def __init__(self, store: Any, linkage_name: str, frame: int, num_cams: int):
+    def __init__(
+        self,
+        store: Any,
+        linkage_name: str,
+        frame: int,
+        num_cams: int,
+        target_cache: dict[int, tuple[list[np.ndarray], list[Any]]] | None = None,
+    ):
         from scipy.spatial import cKDTree
 
         self.frame = frame
@@ -103,17 +112,23 @@ class _Frame:
         self.next = list(nxt)
         self.xyz = list(np.asarray(xyz, dtype=np.float64))
         self.ids = list(np.asarray(ids, dtype=np.int32).reshape(-1, num_cams))
-        self.targets = []
-        self.trees = []
-        for cam in range(num_cams):
-            if store.has_targets(cam, frame):
-                ta = store.read_targets(cam, frame)
-                xy = np.array([ta[i].pos() for i in range(len(ta))]).reshape(-1, 2)
-            else:
-                xy = np.empty((0, 2))
-            self.targets.append(xy)
-            self.trees.append(cKDTree(xy) if len(xy) else None)
+        if target_cache is not None and frame in target_cache:
+            self.targets, self.trees = target_cache[frame]
+        else:
+            self.targets = []
+            self.trees = []
+            for cam in range(num_cams):
+                if store.has_targets(cam, frame):
+                    ta = store.read_targets(cam, frame)
+                    xy = np.array([ta[i].pos() for i in range(len(ta))]).reshape(-1, 2)
+                else:
+                    xy = np.empty((0, 2))
+                self.targets.append(xy)
+                self.trees.append(cKDTree(xy) if len(xy) else None)
+            if target_cache is not None:
+                target_cache[frame] = (self.targets, self.trees)
         self.dirty = False
+        self.ids_dirty = False
 
     def unlinked(self) -> np.ndarray:
         prev = np.asarray(self.prev[: self.n_initial])
@@ -136,6 +151,7 @@ class _Frame:
         for col in self.prio.values():
             col.append(PRIO_ADDED)
         self.dirty = True
+        self.ids_dirty = True
         return len(self.xyz) - 1
 
 
@@ -221,6 +237,8 @@ def _claim_particle(
     *,
     allow_shared_targets: bool = False,
     shared_weight: float = 0.25,
+    max_ray_miss_mm: float | None = None,
+    max_pos_err_mm: float | None = None,
 ):
     """Nearest free target within ``radius_px`` of the projected prediction in
     every camera; triangulate when >= 2 cameras hit.
@@ -277,6 +295,10 @@ def _claim_particle(
         )
     else:
         pos, _dist = point_position(targets_metric, num_cams, cpar.mm, cals, method="lsq")
+        if max_ray_miss_mm is not None and np.isfinite(_dist) and float(_dist) > float(max_ray_miss_mm):
+            return None
+    if max_pos_err_mm is not None and float(np.linalg.norm(pos - predicted_pos)) > float(max_pos_err_mm):
+        return None
     for cam in range(num_cams):
         if cam_ids[cam] >= 0:
             claimed[cam].add(int(cam_ids[cam]))
@@ -297,12 +319,16 @@ def _extend_tracks(
     predictor: str = "poly",
     allow_shared_targets: bool = False,
     shared_weight: float = 0.25,
+    max_ray_miss_mm: float | None = None,
+    max_pos_err_mm: float | None = None,
+    target_cache: dict[int, tuple[list[np.ndarray], list[Any]]] | None = None,
 ) -> tuple[int, int, int, int, int]:
     """One backward (and optionally forward) sweep. Returns
     (claimed_total, claimed_2cam, claimed_3cam, claimed_shared, ghosts_removed)."""
     num_cams = cpar.num_cams
     frames = {
-        f: _Frame(store, linkage_name, f, num_cams) for f in range(first, last + 1)
+        f: _Frame(store, linkage_name, f, num_cams, target_cache=target_cache)
+        for f in range(first, last + 1)
     }
     claimed = {f: fr.claimed_sets(release_ghosts) for f, fr in frames.items()}
     claimed_total = claimed_2cam = claimed_3cam = claimed_shared = 0
@@ -328,6 +354,8 @@ def _extend_tracks(
                 radius_px,
                 allow_shared_targets=allow_shared_targets,
                 shared_weight=shared_weight,
+                max_ray_miss_mm=max_ray_miss_mm,
+                max_pos_err_mm=max_pos_err_mm,
             )
             if got is None:
                 continue
@@ -356,14 +384,16 @@ def _extend_tracks(
         if not fr.dirty:
             continue
         xyz = np.asarray(fr.xyz, dtype=np.float64).reshape(-1, 3)
-        ids = np.asarray(fr.ids, dtype=np.int32).reshape(-1, num_cams)
-        store.write_correspondences(f, xyz, ids)
+        if fr.ids_dirty:
+            ids = np.asarray(fr.ids, dtype=np.int32).reshape(-1, num_cams)
+            store.write_correspondences(f, xyz, ids)
         prev = np.asarray(fr.prev, np.int32)
         nxt = np.asarray(fr.next, np.int32)
         write_linkage(linkage_name, f, prev, nxt, xyz, store=store)
         for name, col in fr.prio.items():
             store.write_linkage(f, prev, nxt, xyz, name=name, prio=np.asarray(col))
-        _write_target_rows(store, f, ids)
+        if fr.ids_dirty:
+            _write_target_rows(store, f, ids)
     return claimed_total, claimed_2cam, claimed_3cam, claimed_shared, ghosts_removed
 
 
@@ -386,22 +416,52 @@ def _drop_reclaimed_ghosts(frames: dict[int, _Frame], num_cams: int) -> int:
         removed += int(drop.sum())
     if removed == 0:
         return 0
+    new_index_by_frame = {
+        f: np.cumsum(keep) - 1
+        for f, keep in keep_by_frame.items()
+        if not keep.all()
+    }
+
+    def next_of(m: int):
+        return frames[m].next if m in frames else None
+
+    def prev_of(m: int):
+        return frames[m].prev if m in frames else None
+
+    # Resolve each link's actual target frame (accounting for gap-bridged links
+    # with step > 1) BEFORE mutating any frame's prev/next lists.
+    updates: list[tuple[int, str, int, int]] = []
+    for g, fr_g in frames.items():
+        for k, v in enumerate(fr_g.prev):
+            if v >= 0:
+                step = back_link_step(next_of, g, k, v)
+                if step == 0:
+                    step = 1
+                target_f = g - step
+                if target_f in new_index_by_frame and v < len(new_index_by_frame[target_f]):
+                    updates.append((g, "prev", k, int(new_index_by_frame[target_f][v])))
+        for k, v in enumerate(fr_g.next):
+            if v >= 0:
+                step = link_step(prev_of, g, k, v)
+                if step == 0:
+                    step = 1
+                target_f = g + step
+                if target_f in new_index_by_frame and v < len(new_index_by_frame[target_f]):
+                    updates.append((g, "next", k, int(new_index_by_frame[target_f][v])))
+
+    for g, attr, k, new_v in updates:
+        getattr(frames[g], attr)[k] = new_v
+        frames[g].dirty = True
+
     for f, keep in keep_by_frame.items():
         if keep.all():
             continue
-        new_index = np.cumsum(keep) - 1
-        for g, attr in ((f - 1, "next"), (f + 1, "prev")):
-            if g in frames:
-                links = getattr(frames[g], attr)
-                for k, v in enumerate(links):
-                    if v >= 0:
-                        links[k] = int(new_index[v])
-                frames[g].dirty = True
         fr = frames[f]
         for attr in ("xyz", "ids", "prev", "next"):
             setattr(fr, attr, [v for v, k in zip(getattr(fr, attr), keep) if k])
         fr.prio = {n: [v for v, k in zip(c, keep) if k] for n, c in fr.prio.items()}
         fr.dirty = True
+        fr.ids_dirty = True
     return removed
 
 
@@ -436,6 +496,11 @@ def run_corrective_pass(
     allow_shared_targets: bool = False,
     radius_px: float = ADD_RADIUS_PX,
     shared_weight: float = 0.25,
+    max_ray_miss_mm: float | None = None,
+    max_pos_err_mm: float | None = None,
+    gap_accel_err: float | None = None,
+    require_bidir_vel: bool = False,
+    uniqueness_ratio: float = 0.0,
 ) -> CorrectiveStats:
     """The Stage-2 corrective pass. Iterates track extension + gap-bridging +
     reciprocity while the sequence's total link count keeps changing by more
@@ -443,6 +508,7 @@ def run_corrective_pass(
     stats = CorrectiveStats()
     first, last = spar.first, spar.last
     stats.links_before = count_links(linkage_name, first, last, store=store)
+    target_cache: dict[int, tuple[list[np.ndarray], list[Any]]] = {}
 
     for p in range(1, max_passes + 1):
         stats.passes_run = p
@@ -461,6 +527,9 @@ def run_corrective_pass(
             predictor=predictor,
             allow_shared_targets=allow_shared_targets,
             shared_weight=shared_weight,
+            max_ray_miss_mm=max_ray_miss_mm,
+            max_pos_err_mm=max_pos_err_mm,
+            target_cache=target_cache,
         )
         stats.claimed_total += claimed
         stats.claimed_2cam += claimed_2cam
@@ -473,8 +542,10 @@ def run_corrective_pass(
             first,
             last,
             max_gap=2,
-            max_accel_err=float(tpar.dacc),
+            max_accel_err=float(gap_accel_err) if gap_accel_err is not None else float(tpar.dacc),
             store=store,
+            require_bidir_vel=require_bidir_vel,
+            uniqueness_ratio=uniqueness_ratio,
         )
         stats.reciprocity[f"pass{p}"] = enforce_reciprocity(
             linkage_name,
