@@ -500,7 +500,7 @@ def peel_and_track(
     min_core_length: int = 3,
     min_core_cameras: int | None = None,
     rcm_threshold: float | None = None,
-    corrective_passes: int = 2,
+    corrective_passes: int = 1,
     allow_shared_targets: bool = False,
     predictor: str = "poly",
     radius_px: float = 3.0,
@@ -594,17 +594,18 @@ def peel_and_track(
         tr = Tracker(cpar, vpar, tpar, spar, cals, naming=naming, store=store)
         if use_3d:
             tr.full_forward_3d()
+            enforce_reciprocity(linkage_name, first, last, store=store)
         else:
             tr.full_forward()
-        tr.full_backward()
-        enforce_reciprocity(linkage_name, first, last, store=store)
-        # Re-read correspondences in case full_backward() appended new particles (tpar.add > 0).
-        for f in frames:
-            up_pos, up_ids = store.read_correspondences(f)
-            if len(up_pos) == 0:
-                up_ids = np.empty((0, num_cams), dtype=np.int32)
-            c_pos[f] = np.asarray(up_pos, dtype=np.float64)
-            c_ids[f] = np.asarray(up_ids, dtype=np.int32).reshape(-1, num_cams)
+            tr.full_backward()
+            enforce_reciprocity(linkage_name, first, last, store=store)
+            # Re-read correspondences in case full_backward() appended new particles (tpar.add > 0).
+            for f in frames:
+                up_pos, up_ids = store.read_correspondences(f)
+                if len(up_pos) == 0:
+                    up_ids = np.empty((0, num_cams), dtype=np.int32)
+                c_pos[f] = np.asarray(up_pos, dtype=np.float64)
+                c_ids[f] = np.asarray(up_ids, dtype=np.int32).reshape(-1, num_cams)
         n_links = count_links(linkage_name, first, last, store=store)
         extracted = _extract_verified_core(
             linkage_name,

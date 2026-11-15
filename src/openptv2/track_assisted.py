@@ -74,7 +74,14 @@ class CorrectiveStats:
 class _Frame:
     """One frame's particles, links and targets, held in memory for a pass."""
 
-    def __init__(self, store: Any, linkage_name: str, frame: int, num_cams: int):
+    def __init__(
+        self,
+        store: Any,
+        linkage_name: str,
+        frame: int,
+        num_cams: int,
+        target_cache: dict[int, tuple[list[np.ndarray], list[Any]]] | None = None,
+    ):
         from scipy.spatial import cKDTree
 
         self.frame = frame
@@ -105,17 +112,23 @@ class _Frame:
         self.next = list(nxt)
         self.xyz = list(np.asarray(xyz, dtype=np.float64))
         self.ids = list(np.asarray(ids, dtype=np.int32).reshape(-1, num_cams))
-        self.targets = []
-        self.trees = []
-        for cam in range(num_cams):
-            if store.has_targets(cam, frame):
-                ta = store.read_targets(cam, frame)
-                xy = np.array([ta[i].pos() for i in range(len(ta))]).reshape(-1, 2)
-            else:
-                xy = np.empty((0, 2))
-            self.targets.append(xy)
-            self.trees.append(cKDTree(xy) if len(xy) else None)
+        if target_cache is not None and frame in target_cache:
+            self.targets, self.trees = target_cache[frame]
+        else:
+            self.targets = []
+            self.trees = []
+            for cam in range(num_cams):
+                if store.has_targets(cam, frame):
+                    ta = store.read_targets(cam, frame)
+                    xy = np.array([ta[i].pos() for i in range(len(ta))]).reshape(-1, 2)
+                else:
+                    xy = np.empty((0, 2))
+                self.targets.append(xy)
+                self.trees.append(cKDTree(xy) if len(xy) else None)
+            if target_cache is not None:
+                target_cache[frame] = (self.targets, self.trees)
         self.dirty = False
+        self.ids_dirty = False
 
     def unlinked(self) -> np.ndarray:
         prev = np.asarray(self.prev[: self.n_initial])
@@ -138,6 +151,7 @@ class _Frame:
         for col in self.prio.values():
             col.append(PRIO_ADDED)
         self.dirty = True
+        self.ids_dirty = True
         return len(self.xyz) - 1
 
 
@@ -307,12 +321,14 @@ def _extend_tracks(
     shared_weight: float = 0.25,
     max_ray_miss_mm: float | None = None,
     max_pos_err_mm: float | None = None,
+    target_cache: dict[int, tuple[list[np.ndarray], list[Any]]] | None = None,
 ) -> tuple[int, int, int, int, int]:
     """One backward (and optionally forward) sweep. Returns
     (claimed_total, claimed_2cam, claimed_3cam, claimed_shared, ghosts_removed)."""
     num_cams = cpar.num_cams
     frames = {
-        f: _Frame(store, linkage_name, f, num_cams) for f in range(first, last + 1)
+        f: _Frame(store, linkage_name, f, num_cams, target_cache=target_cache)
+        for f in range(first, last + 1)
     }
     claimed = {f: fr.claimed_sets(release_ghosts) for f, fr in frames.items()}
     claimed_total = claimed_2cam = claimed_3cam = claimed_shared = 0
@@ -368,14 +384,16 @@ def _extend_tracks(
         if not fr.dirty:
             continue
         xyz = np.asarray(fr.xyz, dtype=np.float64).reshape(-1, 3)
-        ids = np.asarray(fr.ids, dtype=np.int32).reshape(-1, num_cams)
-        store.write_correspondences(f, xyz, ids)
+        if fr.ids_dirty:
+            ids = np.asarray(fr.ids, dtype=np.int32).reshape(-1, num_cams)
+            store.write_correspondences(f, xyz, ids)
         prev = np.asarray(fr.prev, np.int32)
         nxt = np.asarray(fr.next, np.int32)
         write_linkage(linkage_name, f, prev, nxt, xyz, store=store)
         for name, col in fr.prio.items():
             store.write_linkage(f, prev, nxt, xyz, name=name, prio=np.asarray(col))
-        _write_target_rows(store, f, ids)
+        if fr.ids_dirty:
+            _write_target_rows(store, f, ids)
     return claimed_total, claimed_2cam, claimed_3cam, claimed_shared, ghosts_removed
 
 
@@ -443,6 +461,7 @@ def _drop_reclaimed_ghosts(frames: dict[int, _Frame], num_cams: int) -> int:
             setattr(fr, attr, [v for v, k in zip(getattr(fr, attr), keep) if k])
         fr.prio = {n: [v for v, k in zip(c, keep) if k] for n, c in fr.prio.items()}
         fr.dirty = True
+        fr.ids_dirty = True
     return removed
 
 
@@ -489,6 +508,7 @@ def run_corrective_pass(
     stats = CorrectiveStats()
     first, last = spar.first, spar.last
     stats.links_before = count_links(linkage_name, first, last, store=store)
+    target_cache: dict[int, tuple[list[np.ndarray], list[Any]]] = {}
 
     for p in range(1, max_passes + 1):
         stats.passes_run = p
@@ -509,6 +529,7 @@ def run_corrective_pass(
             shared_weight=shared_weight,
             max_ray_miss_mm=max_ray_miss_mm,
             max_pos_err_mm=max_pos_err_mm,
+            target_cache=target_cache,
         )
         stats.claimed_total += claimed
         stats.claimed_2cam += claimed_2cam
