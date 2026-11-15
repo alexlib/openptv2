@@ -270,3 +270,57 @@ def test_chunked_tracking_with_postprocessing(cavity_test_env):
     assert nlinks > 0
     assert store.sealed
     assert len(store.traj_index()["trajid"]) > 0
+
+
+def test_unified_parallel_workers_saves_decision_and_links(cavity_test_env):
+    """Unified plugin with parallel_workers > 1 delegates to chunked parallel and saves TrackingDecision."""
+    from types import SimpleNamespace
+
+    from openptv2.plugins.unified_tracking import Tracking
+    from openptv2.tracking_decision import TrackingDecision
+
+    cpar = ControlPar.from_yaml("parameters.yaml")
+    vpar = VolumePar.from_yaml("parameters.yaml")
+    tpar = TrackPar.from_yaml("parameters.yaml")
+    spar = SequencePar.from_yaml("parameters.yaml")
+    cals = _load_cavity_cals(cpar, cavity_test_env)
+
+    # Populate store with correspondences from a quick legacy-backed pass
+    store = RunStore("res/run_unified_par.zarr", mode="w")
+    first, last = spar.get_first(), spar.get_last()
+    from openptv2.storage.legacy import _load_rt_is
+
+    for f in range(first, last + 1):
+        rt_path = Path(f"res/rt_is.{f}")
+        if rt_path.exists():
+            pos, ids = _load_rt_is(rt_path)
+            store.write_correspondences(f, pos, ids)
+
+    pm = SimpleNamespace(
+        parameters={
+            "track": {
+                "parallel_workers": 2,
+                "use_2d": False,
+                "postprocess": True,
+                "slow_flow": False,
+            },
+            "plugins": {"selected_tracking": "unified"},
+        }
+    )
+    exp = SimpleNamespace(
+        cpar=cpar,
+        vpar=vpar,
+        track_par=tpar,
+        spar=spar,
+        cals=cals,
+        store=store,
+        pm=pm,
+    )
+    plugin = Tracking(exp=exp)
+    plugin.do_tracking()
+
+    assert store.sealed
+    assert len(store.traj_index()["trajid"]) > 0
+    loaded = TrackingDecision.load(store)
+    assert loaded.chosen_config["use_2d"] is False
+    assert loaded.report_metrics["total_particles"] > 0

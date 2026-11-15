@@ -49,6 +49,8 @@ class Tracking:
     def __init__(self, ptv: Any = None, exp: Any = None):
         self.ptv = ptv
         self.exp = exp
+        self._resolved: dict[str, Any] = {}
+        self._decision: Any = None
 
     # ------------------------------------------------------------------
     # regime detection helpers
@@ -78,11 +80,42 @@ class Tracking:
             return v in ("1", "true", "yes", "on")
         return bool(val)
 
+    @staticmethod
+    def _is_auto_value(val: Any) -> bool:
+        if val is None:
+            return True
+        if isinstance(val, str):
+            return val.strip().lower() in ("auto", "")
+        return False
+
+    def _resolve_store_and_range(self, exp: Any) -> tuple[Any, Any, int | None, int | None]:
+        """Extract ``(pm, store, first, last)`` from an experiment object."""
+        from openptv2.tracking_estimator import _resolve_frame_range, _unwrap_exp
+
+        pm, spar, store, _cals, _cpar = _unwrap_exp(exp)
+        if store is None and self.ptv is not None:
+            store = getattr(self.ptv, "store", None)
+        first, last = _resolve_frame_range(spar, pm, store)
+        return pm, store, first, last
+
     def _auto_regime(self, exp: Any, track_cfg: dict) -> dict:
         """Best-effort regime detection; returns a dict of resolved flags."""
-        # Defaults chosen for accuracy-first on typical data.
-        slow_flow = bool(track_cfg.get("slow_flow", False))
-        density = float(track_cfg.get("density_estimate", 0.0) or 0.0)
+        est: dict[str, Any] = {}
+        if exp is not None:
+            from openptv2.tracking_estimator import _unwrap_exp, estimate_params
+
+            _, _, store, _, _ = _unwrap_exp(exp)
+            if store is not None:
+                est = estimate_params(exp, track_cfg)
+
+        if est:
+            slow_flow = bool(est.get("slow_flow", False))
+            density = float(est.get("density", 0.0) or 0.0)
+        else:
+            slow_flow = bool(track_cfg.get("slow_flow", False))
+            density = float(track_cfg.get("density_estimate", 0.0) or 0.0)
+            if track_cfg.get("slow_flow") is True:
+                slow_flow = True
 
         # Bidirectional + reciprocity: on by default for accuracy, but disable
         # on extreme density where the backward pass becomes the bottleneck and
@@ -93,13 +126,37 @@ class Tracking:
         # triangulation weak). On moderate density it helps disambiguate.
         use_2d = density >= 500 or density == 0  # 0 = unknown -> keep on (safe)
 
-        # Slow flow / high-FPS detection can be supplied by a probe run.
-        if track_cfg.get("slow_flow") is True:
-            slow_flow = True
-
         # Honour explicit overrides (auto -> resolved above).
         bidirectional = self._resolve_bool(track_cfg.get("bidirectional", "auto"), bidirectional)
         use_2d = self._resolve_bool(track_cfg.get("use_2d", "auto"), use_2d)
+
+        raw_delta_t = track_cfg.get("delta_t", "auto")
+        if self._is_auto_value(raw_delta_t):
+            delta_t = 5 if slow_flow else 1
+        else:
+            delta_t = int(raw_delta_t)
+
+        confirm = track_cfg.get("confirm_link", "auto")
+        if self._is_auto_value(confirm):
+            confirm = None
+
+        regime = {
+            "bidirectional": bidirectional,
+            "use_2d": use_2d,
+            "slow_flow": slow_flow,
+            "delta_t": delta_t,
+            "confirm": confirm,
+        }
+        self._resolved = {
+            **est,
+            "density": density,
+            "slow_flow": slow_flow,
+            "bidirectional": bidirectional,
+            "use_2d": use_2d,
+            "delta_t": delta_t,
+            "confirm_link": confirm,
+        }
+        return regime
 
     # ------------------------------------------------------------------
     # multi-window probing for long / non-stationary sequences
@@ -158,106 +215,396 @@ class Tracking:
             agg["regime_drift"] = False
         return agg
 
-        delta_t = track_cfg.get("delta_t", "auto")
-        if delta_t == "auto":
-            delta_t = 5 if slow_flow else 1
+    def _apply_conditioning_gate(self, regime: dict, track_cfg: dict) -> None:
+        """Apply B1 conditioning gate warnings and safe regime overrides."""
+        conditioning_ratio = self._resolved.get("conditioning_ratio")
+        if conditioning_ratio is None:
+            return
+        ratio = float(conditioning_ratio)
+        if ratio < 0.2:
+            msg = (
+                f"[unified] STRONG WARNING: conditioning_ratio={ratio:.3f} < 0.2 "
+                "(displacement is far below Z noise floor). Calibration improvements "
+                "(camera geometry, stereo calibration, detection accuracy) are strongly "
+                "recommended; proceeding with slow_flow and 2D disambiguation."
+            )
+            log.warning(msg)
+            print(msg)
+        elif ratio < 0.5:
+            msg = (
+                f"[unified] WARNING: conditioning_ratio={ratio:.3f} < 0.5 "
+                "(displacement is below Z noise floor). Recommending slow_flow "
+                "coarse-to-fine tracking (delta_t=5) and 2D disambiguation."
+            )
+            log.warning(msg)
+            print(msg)
 
-        confirm = track_cfg.get("confirm_link", "auto")
-        if confirm == "auto":
-            confirm = 0.3
+        if ratio < 0.5:
+            if self._is_auto_value(track_cfg.get("slow_flow")):
+                regime["slow_flow"] = True
+                self._resolved["slow_flow"] = True
+                if self._is_auto_value(track_cfg.get("delta_t", "auto")):
+                    regime["delta_t"] = 5
+                    self._resolved["delta_t"] = 5
+            raw_use_2d = track_cfg.get("use_2d", "auto")
+            if self._is_auto_value(raw_use_2d) or self._resolve_bool(raw_use_2d, True):
+                regime["use_2d"] = True
+                self._resolved["use_2d"] = True
 
-        return {
-            "bidirectional": bidirectional,
-            "use_2d": use_2d,
-            "slow_flow": slow_flow,
-            "delta_t": delta_t,
-            "confirm": confirm,
-        }
+    @staticmethod
+    def _apply_v_max_to_tpar(exp: Any, v_max: float | None) -> None:
+        """Apply resolved v_max to ``exp.track_par`` in-memory."""
+        tpar = getattr(exp, "track_par", None)
+        if tpar is None or v_max is None:
+            return
+        v_val = float(v_max)
+        for setter, val in (
+            ("set_dvxmin", -v_val),
+            ("set_dvxmax", v_val),
+            ("set_dvymin", -v_val),
+            ("set_dvymax", v_val),
+            ("set_dvzmin", -v_val),
+            ("set_dvzmax", v_val),
+        ):
+            if hasattr(tpar, setter):
+                getattr(tpar, setter)(val)
+            else:
+                setattr(tpar, setter[4:], val)
+
+    def _run_hybrid_deltat(self, pm: Any, track_cfg: dict, regime: dict) -> bool:
+        """Delegate to ``hybrid_deltat_3d`` with temporary in-memory track_cfg."""
+        from openptv2.plugins import hybrid_deltat_3d
+
+        if not hasattr(hybrid_deltat_3d, "Tracking"):
+            return False
+
+        params = getattr(pm, "parameters", None) if pm is not None else None
+        had_track = isinstance(params, dict) and "track" in params
+        orig_track = params.get("track") if isinstance(params, dict) else None
+        if isinstance(params, dict):
+            mem_track = dict(track_cfg)
+            v_max = self._resolved.get("v_max")
+            if v_max is not None:
+                v_val = float(v_max)
+                for k in ("dvxmax", "dvymax", "dvzmax"):
+                    mem_track[k] = v_val
+                for k in ("dvxmin", "dvymin", "dvzmin"):
+                    mem_track[k] = -v_val
+            if self._is_auto_value(track_cfg.get("stride")):
+                dt = int(regime["delta_t"])
+                mem_track["stride"] = dt if dt > 1 else 5
+            params["track"] = mem_track
+
+        try:
+            hybrid_deltat_3d.Tracking(ptv=self.ptv, exp=self.exp).do_tracking()
+            return True
+        finally:
+            if isinstance(params, dict):
+                if had_track:
+                    params["track"] = orig_track
+                else:
+                    params.pop("track", None)
+
+    def _save_tracking_decision(
+        self,
+        store: Any,
+        first: int | None,
+        last: int | None,
+        regime: dict,
+        chosen_config: dict[str, Any],
+        *,
+        probe_metrics: list[dict[str, Any]] | None = None,
+        grid_search_table: list[dict[str, Any]] | None = None,
+    ) -> None:
+        """Populate and persist ``TrackingDecision`` (including post-run report)."""
+        from openptv2.tracking_decision import TrackingDecision
+
+        raw_ratio = self._resolved.get("conditioning_ratio")
+        decision = TrackingDecision(
+            resolved_config=dict(self._resolved),
+            regime_flags=dict(regime),
+            conditioning_ratio=float(raw_ratio) if raw_ratio is not None else None,
+            probe_metrics=list(probe_metrics or []),
+            grid_search_table=list(grid_search_table or []),
+            chosen_config=dict(chosen_config),
+        )
+        if store is not None:
+            if hasattr(store, "linkage_frames"):
+                try:
+                    from openptv2.tracking_report import generate_report
+
+                    generate_report(
+                        store,
+                        first=first,
+                        last=last,
+                        print_report=False,
+                        decision=decision,
+                        save_decision=False,
+                    )
+                except Exception as exc:  # pragma: no cover - never break tracking
+                    log.warning("[unified] report generation skipped: %r", exc)
+            decision.save(store)
+        self._decision = decision
 
     def do_tracking(self) -> None:
         if self.exp is None:
             raise ValueError("No experiment object provided")
 
-        track_cfg = self._track_cfg(self.exp)
-        plugins_cfg = self._plugins_cfg(self.exp)
+        track_cfg = dict(self._track_cfg(self.exp))
         regime = self._auto_regime(self.exp, track_cfg)
+        self._apply_conditioning_gate(regime, track_cfg)
 
+        pm, store, first, last = self._resolve_store_and_range(self.exp)
+        probe_metrics: list[dict[str, Any]] = []
+        grid_search_table: list[dict[str, Any]] = []
+
+        probe_opt = track_cfg.get("probe", False)
+        do_probe = (
+            probe_opt in (True, "true", "yes", "on")
+            or (
+                isinstance(probe_opt, str)
+                and probe_opt.strip().lower() == "auto"
+                and first is not None
+                and last is not None
+                and (last - first + 1) >= 60
+            )
+        )
+        if do_probe and store is not None and first is not None and last is not None and last >= first:
+            try:
+                from openptv2.tracking_probe import confirm_probe_selection, select_best_config
+
+                wins = self.sample_probe_windows(
+                    first,
+                    last,
+                    n_windows=int(track_cfg.get("probe_windows", 5)),
+                    window=int(track_cfg.get("probe_window_frames", 30)),
+                )
+                base_probe_cfg = {
+                    "v_max": self._resolved.get("v_max"),
+                    "slow_flow": bool(regime["slow_flow"]),
+                    "delta_t": int(regime["delta_t"]),
+                    "use_2d": bool(regime["use_2d"]),
+                    "bidirectional": bool(regime["bidirectional"]),
+                    "confirm_link": regime["confirm"],
+                }
+                best_cfg, probe_metrics, grid_search_table = select_best_config(
+                    self.exp,
+                    wins,
+                    base_probe_cfg,
+                    ptv=self.ptv,
+                    probe_budget_seconds=float(track_cfg.get("probe_budget_seconds", 30.0)),
+                )
+                selected = confirm_probe_selection(
+                    best_cfg,
+                    probe_metrics,
+                    grid_search_table,
+                    initial_config=base_probe_cfg,
+                    probe_confirm=track_cfg.get("probe_confirm", "auto"),
+                )
+                for key in ("slow_flow", "delta_t", "use_2d", "bidirectional"):
+                    if key in selected:
+                        regime[key] = selected[key]
+                if selected.get("v_max") is not None:
+                    self._resolved["v_max"] = selected["v_max"]
+            except Exception as exc:  # pragma: no cover - never break tracking
+                log.warning("[unified] probe skipped: %r", exc)
+
+        v_max = self._resolved.get("v_max")
+        chosen_config: dict[str, Any] = {
+            "v_max": v_max,
+            "bidirectional": bool(regime["bidirectional"]),
+            "use_2d": bool(regime["use_2d"]),
+            "slow_flow": bool(regime["slow_flow"]),
+            "delta_t": int(regime["delta_t"]),
+            "confirm_link": regime["confirm"],
+        }
+
+        ran_hybrid = False
         # Slow flow -> delegate to hybrid_deltat_3d plugin (coarse-to-fine).
         if regime["slow_flow"] or int(regime["delta_t"]) > 1:
             try:
-                from openptv2.plugins import hybrid_deltat_3d
-
-                mod = hybrid_deltat_3d
-                if hasattr(mod, "Tracking"):
-                    mod.Tracking(ptv=self.ptv, exp=self.exp).do_tracking()
-                    return
+                ran_hybrid = self._run_hybrid_deltat(pm, track_cfg, regime)
             except Exception as exc:  # pragma: no cover - fallback
                 log.warning("hybrid delegate failed: %r; falling back", exc)
 
-        # Optional early ghost filter (low-support correspondences) before tracking.
-        track_cfg.setdefault("ghost_filter", "auto")
-        gf = track_cfg.get("ghost_filter", "auto")
-        do_gf = gf in (True, "true", "yes", "on") or gf == "auto"
-        if do_gf:
-            try:
-                from openptv2.ghost_filter import filter_low_support
+        ran_parallel = False
+        raw_workers = track_cfg.get("parallel_workers", 0)
+        explicit_parallel = not self._is_auto_value(raw_workers) and int(raw_workers or 0) > 1
+        if not ran_hybrid and explicit_parallel:
+            workers = int(raw_workers or 0)
+            if (
+                workers > 1
+                and store is not None
+                and hasattr(self.exp, "cpar")
+                and hasattr(self.exp, "vpar")
+                and hasattr(self.exp, "track_par")
+                and hasattr(self.exp, "spar")
+                and hasattr(self.exp, "cals")
+            ):
+                try:
+                    from openptv2.tracking_chunked import track_sequence_chunked_parallel
 
-                pm = getattr(self.exp, "pm", None)
-                if pm is None and hasattr(self.exp, "exp1"):
-                    pm = getattr(self.exp.exp1, "pm", None)
-                first = self.exp.spar.get_first() if hasattr(self.exp, "spar") else None
-                last = self.exp.spar.get_last() if hasattr(self.exp, "spar") else None
-                if first is None:
-                    # fall back to params
-                    first = int(pm.parameters.get("sequence", {}).get("first", 0)) if pm else 0
-                    last = int(pm.parameters.get("sequence", {}).get("last", 0)) if pm else 0
-                store = getattr(self.exp, "store", None) or getattr(getattr(self.exp, "tracker", None), "_store", None)
-                # try to get store from ptv
-                if store is None and self.ptv is not None:
-                    store = getattr(self.ptv, "store", None)
-                if store is not None and first is not None and last is not None and last >= first:
-                    dropped = filter_low_support(store, list(range(first, last + 1)),
-                                                min_cameras=int(track_cfg.get("ghost_min_cameras", 3)))
+                    self._apply_v_max_to_tpar(self.exp, v_max)
+                    track_sequence_chunked_parallel(
+                        self.exp.cpar,
+                        self.exp.vpar,
+                        self.exp.track_par,
+                        self.exp.spar,
+                        self.exp.cals,
+                        store=store,
+                        n_workers=workers,
+                        mode="corr" if regime["use_2d"] else "3d",
+                        postprocess=bool(track_cfg.get("postprocess", True)),
+                    )
+                    ran_parallel = True
+                except Exception as exc:  # pragma: no cover - fallback to sequential
+                    log.warning("[unified] parallel chunked tracking skipped: %r", exc)
+
+        ran_peeling = False
+        if not ran_hybrid and not ran_parallel:
+            peel_opt = track_cfg.get("peeling", True)
+            ghost_est = float(self._resolved.get("ghost_rate") or 0.0)
+            if isinstance(peel_opt, str) and peel_opt.strip().lower() == "auto":
+                do_peeling = ghost_est > 0.25
+            else:
+                do_peeling = self._resolve_bool(peel_opt, True)
+            if (
+                do_peeling
+                and store is not None
+                and hasattr(self.exp, "cpar")
+                and hasattr(self.exp, "cals")
+            ):
+                try:
+                    from openptv2.layered_tracking import peel_and_track
+
+                    self._apply_v_max_to_tpar(self.exp, v_max)
+                    peel_and_track(
+                        self.exp.cpar,
+                        self.exp.vpar,
+                        self.exp.track_par,
+                        self.exp.spar,
+                        self.exp.cals,
+                        store,
+                        allow_shared_targets=bool(track_cfg.get("allow_shared_targets", False)),
+                        engine=str(track_cfg.get("peel_engine", "3d")),
+                    )
+                    ran_peeling = True
+                except Exception as exc:  # pragma: no cover - fallback
+                    log.warning("[unified] peeling skipped: %r", exc)
+
+        if not ran_hybrid and not ran_peeling and not ran_parallel:
+            if self._is_auto_value(raw_workers):
+                workers = 0
+                if first is not None and last is not None and (last - first + 1) >= 24:
+                    import os
+
+                    workers = min(os.cpu_count() or 1, 8)
+                if (
+                    workers > 1
+                    and store is not None
+                    and hasattr(self.exp, "cpar")
+                    and hasattr(self.exp, "vpar")
+                    and hasattr(self.exp, "track_par")
+                    and hasattr(self.exp, "spar")
+                    and hasattr(self.exp, "cals")
+                ):
+                    try:
+                        from openptv2.tracking_chunked import track_sequence_chunked_parallel
+
+                        self._apply_v_max_to_tpar(self.exp, v_max)
+                        track_sequence_chunked_parallel(
+                            self.exp.cpar,
+                            self.exp.vpar,
+                            self.exp.track_par,
+                            self.exp.spar,
+                            self.exp.cals,
+                            store=store,
+                            n_workers=workers,
+                            mode="corr" if regime["use_2d"] else "3d",
+                            postprocess=bool(track_cfg.get("postprocess", True)),
+                        )
+                        ran_parallel = True
+                    except Exception as exc:  # pragma: no cover - fallback to sequential
+                        log.warning("[unified] parallel chunked tracking skipped: %r", exc)
+
+        if not ran_hybrid and not ran_peeling and not ran_parallel:
+            # Optional early ghost filter (low-support correspondences) before tracking.
+            gf = track_cfg.get("ghost_filter", "auto")
+            do_gf = gf in (True, "true", "yes", "on") or gf == "auto"
+            if do_gf and store is not None and first is not None and last is not None and last >= first:
+                try:
+                    from openptv2.ghost_filter import filter_low_support
+
+                    dropped = filter_low_support(
+                        store,
+                        list(range(first, last + 1)),
+                        min_cameras=int(track_cfg.get("ghost_min_cameras", 3)),
+                    )
                     total = sum(dropped.values())
                     if total:
                         log.info("[unified] ghost filter dropped %d low-support correspondences", total)
-            except Exception as exc:  # pragma: no cover - never break tracking
-                log.warning("[unified] ghost filter skipped: %r", exc)
+                except Exception as exc:  # pragma: no cover - never break tracking
+                    log.warning("[unified] ghost filter skipped: %r", exc)
 
-        tracker = self.ptv.py_trackcorr_init(self.exp)
-        self.exp.tracker = tracker
+            self._apply_v_max_to_tpar(self.exp, v_max)
+            tracker = self.ptv.py_trackcorr_init(self.exp)
+            self.exp.tracker = tracker
+            if store is None:
+                store = getattr(tracker, "_store", None)
 
-        from openptv2.tracking_presets import infer_direction
-
-        direction = infer_direction(track_cfg, plugins_cfg)
-        # Unified prefers bidirectional unless user forced otherwise.
-        if regime["bidirectional"] and direction != "forward_backward":
-            direction = "forward_backward"
-
-        log.info(
-            "Unified tracking: 2d=%s bidir=%s delta_t=%s confirm=%s",
-            regime["use_2d"], regime["bidirectional"], regime["delta_t"], regime["confirm"],
-        )
-
-        # Backbone is trackcorr (multi-camera epipolar engine): always run
-        # the full 2D+3D forward pass. 3D-only segment-priority remains a
-        # fast specialization available via the legacy preset.
-        tracker.full_forward()
-
-        if direction == "forward_backward":
-            tracker.full_backward()
-
-        if track_cfg.get("postprocess", True):
-            stats = tracker.postprocess()
             log.info(
-                "Post-process links: %s -> %s",
-                stats.get("links_before", 0),
-                stats.get("links_after", 0),
+                "Unified tracking: 2d=%s bidir=%s delta_t=%s confirm=%s",
+                regime["use_2d"], regime["bidirectional"], regime["delta_t"], regime["confirm"],
             )
 
-        from openptv2.track_assisted import run_configured_corrective_pass
+            # Backbone is trackcorr (multi-camera epipolar engine) when use_2d=True;
+            # 3D-only pass when use_2d=False.
+            if regime["use_2d"] or not hasattr(tracker, "full_forward_3d"):
+                tracker.full_forward()
+            else:
+                tracker.full_forward_3d()
 
-        run_configured_corrective_pass(self.exp, tracker, track_cfg)
+            if regime["bidirectional"]:
+                tracker.full_backward()
+
+            confirm_tol = regime["confirm"]
+            if confirm_tol is not None and float(confirm_tol) > 0:
+                try:
+                    from openptv2.tracking_postprocess import confirm_links
+
+                    linkage_base = getattr(tracker, "_naming", {}).get("linkage", "")
+                    if linkage_base and first is not None and last is not None and last >= first:
+                        confirm_links(
+                            linkage_base,
+                            first,
+                            last,
+                            tol=float(confirm_tol),
+                            store=store,
+                        )
+                except Exception as exc:  # pragma: no cover - never break tracking
+                    log.warning("[unified] confirm_links skipped: %r", exc)
+
+            if track_cfg.get("postprocess", True):
+                stats = tracker.postprocess()
+                log.info(
+                    "Post-process links: %s -> %s",
+                    stats.get("links_before", 0),
+                    stats.get("links_after", 0),
+                )
+
+            from openptv2.track_assisted import run_configured_corrective_pass
+
+            run_configured_corrective_pass(self.exp, tracker, track_cfg)
+
+        self._save_tracking_decision(
+            store,
+            first,
+            last,
+            regime,
+            chosen_config,
+            probe_metrics=probe_metrics,
+            grid_search_table=grid_search_table,
+        )
 
     def track_frames(self, frame_particles: list) -> list:
         """Array-level API: delegate to Cython 3D engine for now."""

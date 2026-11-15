@@ -599,9 +599,9 @@ UNIFIED_INFO = TrackerInfo(
     display_name="Unified Tracker (Robust / Correct / Fast)",
     short_description="Single tracker combining Cython speed, bidirectional reciprocity, 2D disambiguation, slow-flow handling",
     algorithm_summary=(
-        "One adaptive tracker: Cython segment-priority hot path, optional bidirectional "
-        "passes + reciprocity, optional 2D leaf re-ranking, coarse-to-fine delta-t for "
-        "slow flows, new-particle seeding, gap relinking, two-hop confirm link."
+        "One adaptive tracker: trackcorr (multi-camera epipolar) backbone, optional "
+        "bidirectional passes + reciprocity, optional 2D leaf re-ranking, coarse-to-fine "
+        "delta-t for slow flows, new-particle seeding, gap relinking, two-hop confirm link."
     ),
     supports_backward=True,
     supports_new_particles=True,

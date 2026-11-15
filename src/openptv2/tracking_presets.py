@@ -1,7 +1,21 @@
 """Tracking preset definitions, configuration mapping, and preset resolution."""
 
+import logging
 from enum import Enum
 from typing import Any, Dict
+
+_log = logging.getLogger(__name__)
+
+_LEGACY_PRESETS = frozenset({
+    "fast",
+    "fast_3d",
+    "priority_segment_3d",
+    "standard_forward",
+    "two_directional",
+    "full_multipass",
+    "4be",
+    "four_be",
+})
 
 
 class TrackingPreset(str, Enum):
@@ -101,13 +115,17 @@ PRESET_CONFIGS: Dict[str, Dict[str, Any]] = {
         "track_mode": 1,
         "flagNewParticles": True,
         "postprocess": True,
-        "bidirectional": "auto",
-        "use_2d": "auto",
-        "delta_t": "auto",
-        "confirm_link": "auto",
+        "bidirectional": "auto",  # auto -> True unless extreme density (>5000)
+        "use_2d": "auto",         # auto -> True unless sparse (<500) with strong 3D
+        "delta_t": "auto",        # auto -> 5 if slow_flow (disp < noise_floor), else 1
+        "confirm_link": "auto",   # auto -> None (reciprocity guards precision; set mm tol explicitly if desired)
         "lookahead": True,
         "new_particles": True,
         "quality_post": False,
+        "probe": False,           # set True or "auto" (>=60 frames) for multi-window probe
+        "peeling": False,         # set True or "auto" (ghost_rate > 0.25) for 2-Pass Clean-and-Claim
+        "ghost_filter": "auto",   # auto -> drop low-support (<3 cam) correspondences when cals allow
+        "parallel_workers": 0,    # 0 sequential; >1 or "auto" (>=24 frames) for chunked parallel
         "selected_tracking": "unified",
     },
 
@@ -154,6 +172,11 @@ def apply_preset(
     custom_plugin_name: str | None = None,
 ) -> tuple[Dict[str, Any], Dict[str, Any]]:
     """Apply tracking pipeline choice to track and plugins dicts while strictly preserving velocity search bounds."""
+    if preset_name in _LEGACY_PRESETS:
+        _log.info(
+            "Tracking preset %r is deprecated; prefer 'unified' for new experiments.",
+            preset_name,
+        )
     track_params = dict(track_params)
     plugins_params = dict(plugins_params) if plugins_params else {}
 
