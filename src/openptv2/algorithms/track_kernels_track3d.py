@@ -8,10 +8,12 @@ from openptv2.algorithms.constants import NEXT_NONE
 UNSUPPORTED_PENALTY = 1e6
 
 if cython.compiled:
+    from cython.cimports.libc.math import acos as c_acos
     from cython.cimports.libc.math import floor as c_floor
     from cython.cimports.libc.math import isnan as c_isnan
     from cython.cimports.libc.math import sqrt as c_sqrt
 else:
+    from math import acos as c_acos
     from math import floor as c_floor
     from math import isnan as c_isnan
     from math import sqrt as c_sqrt
@@ -219,6 +221,8 @@ def track3d_loop_fast(
     shared_count: cython.int[:] = None,
     shared_i: cython.int[:] = None,
     shared_k: cython.int[:] = None,
+    dacc: cython.double = 0.0,
+    dangle: cython.double = 0.0,
 ):
     """Full track3d loop (3 levels) — single compiled entry.
 
@@ -274,6 +278,16 @@ def track3d_loop_fast(
     use_share: cython.bint
     share_cap: cython.int
     w: cython.int
+    v1x: cython.double
+    v1y: cython.double
+    v1z: cython.double
+    v1_norm: cython.double
+    v2x: cython.double
+    v2y: cython.double
+    v2z: cython.double
+    v2_norm: cython.double
+    cos_a: cython.double
+    angle: cython.double
 
     count1 = 0
     np2 = num_parts_2
@@ -378,6 +392,10 @@ def track3d_loop_fast(
         pred_x = 2.0 * path_x_1[i, 0] - path_x_0[prev_idx, 0]
         pred_y = 2.0 * path_x_1[i, 1] - path_x_0[prev_idx, 1]
         pred_z = 2.0 * path_x_1[i, 2] - path_x_0[prev_idx, 2]
+        v1x = path_x_1[i, 0] - path_x_0[prev_idx, 0]
+        v1y = path_x_1[i, 1] - path_x_0[prev_idx, 1]
+        v1z = path_x_1[i, 2] - path_x_0[prev_idx, 2]
+        v1_norm = c_sqrt(v1x * v1x + v1y * v1y + v1z * v1z)
 
         n_cands = _find_closest_in_3d_grid(
             path_x_2, np2, pred_x, pred_y, pred_z, dx, dy, dz,
@@ -390,6 +408,25 @@ def track3d_loop_fast(
             d1 = path_x_2[k, 1] - 2.0 * path_x_1[i, 1] + path_x_0[prev_idx, 1]
             d2 = path_x_2[k, 2] - 2.0 * path_x_1[i, 2] + path_x_0[prev_idx, 2]
             acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
+            if dacc > 0.0:
+                if dangle > 0.0:
+                    v2x = path_x_2[k, 0] - path_x_1[i, 0]
+                    v2y = path_x_2[k, 1] - path_x_1[i, 1]
+                    v2z = path_x_2[k, 2] - path_x_1[i, 2]
+                    v2_norm = c_sqrt(v2x * v2x + v2y * v2y + v2z * v2z)
+                    if v1_norm > 1e-12 and v2_norm > 1e-12:
+                        cos_a = (v1x * v2x + v1y * v2y + v1z * v2z) / (v1_norm * v2_norm)
+                        if cos_a > 1.0:
+                            cos_a = 1.0
+                        elif cos_a < -1.0:
+                            cos_a = -1.0
+                        angle = c_acos(cos_a) * 57.29577951308232
+                    else:
+                        angle = 0.0
+                    if not ((acc < dacc and angle < dangle) or acc < dacc * 0.1):
+                        continue
+                elif acc >= dacc:
+                    continue
             edge_cost[n_edges] = acc
             edge_i[n_edges] = i
             edge_k[n_edges] = k

@@ -163,6 +163,9 @@ def track3d_loop(run_info, step):
         csg = float(run_info._cold_start_gate)
     elif hasattr(tpar, "cold_start_gate"):
         csg = float(tpar.cold_start_gate)
+    gate_dacc = bool(getattr(run_info, "_gate_dacc", False))
+    dacc_val = float(getattr(tpar, "dacc", 0.0)) if gate_dacc else 0.0
+    dangle_val = float(getattr(tpar, "dangle", 0.0)) if gate_dacc else 0.0
     count1 = _track3d_loop_fast(
         orig_parts,
         fb.buf[0].path_x,
@@ -181,6 +184,8 @@ def track3d_loop(run_info, step):
         dz,
         MAX_CANDS,
         csg,
+        dacc=dacc_val,
+        dangle=dangle_val,
     )
 
     _sync_soa_to_aos(fb.buf[1])

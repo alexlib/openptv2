@@ -478,6 +478,9 @@ class Tracking:
                     from openptv2.layered_tracking import peel_and_track
 
                     self._apply_v_max_to_tpar(self.exp, v_max)
+                    peel_tiers = int(track_cfg.get("peel_tiers", 3 if ghost_est > 0.35 else 2))
+                    raw_rcm = track_cfg.get("rcm_threshold")
+                    rcm_thresh = float(raw_rcm) if raw_rcm is not None else None
                     peel_and_track(
                         self.exp.cpar,
                         self.exp.vpar,
@@ -487,6 +490,8 @@ class Tracking:
                         store,
                         allow_shared_targets=bool(track_cfg.get("allow_shared_targets", False)),
                         engine=str(track_cfg.get("peel_engine", "3d")),
+                        tiers=peel_tiers,
+                        rcm_threshold=rcm_thresh,
                     )
                     ran_peeling = True
                 except Exception as exc:  # pragma: no cover - fallback
@@ -545,42 +550,6 @@ class Tracking:
                         log.info("[unified] ghost filter dropped %d low-support correspondences", total)
                 except Exception as exc:  # pragma: no cover - never break tracking
                     log.warning("[unified] ghost filter skipped: %r", exc)
-
-            # Optional ILP uniqueness pass (spatial ghost suppression).
-            try:
-                from openptv2.ghost_ilp import ilp_uniqueness_frame, resolve_ilp_config
-
-                _resolve_ctx = dict(regime)
-                _resolve_ctx.update(self._resolved or {})
-                do_ilp = resolve_ilp_config(track_cfg, _resolve_ctx)
-                if do_ilp and store is not None and first is not None and last is not None and last >= first:
-                    total_dropped = 0
-                    for f in range(first, last + 1):
-                        if not store.has_correspondences(f):
-                            continue
-                        pos, cam_ids = store.read_correspondences(f)
-                        if len(pos) == 0:
-                            continue
-                        # confidence from rcm if available, else uniform
-                        conf = None
-                        try:
-                            if hasattr(store, "read_correspondence_confidence"):
-                                conf = store.read_correspondence_confidence(f)
-                        except Exception:
-                            conf = None
-                        keep = ilp_uniqueness_frame(
-                            pos, cam_ids, conf=conf,
-                            max_size=int(track_cfg.get("ilp_max_size", 20)),
-                            time_limit_s=float(track_cfg.get("ilp_time_limit_s", 1.0)),
-                        )
-                        n_drop = int((~keep).sum())
-                        if n_drop > 0:
-                            store.write_correspondences(f, pos[keep], cam_ids[keep])
-                            total_dropped += n_drop
-                    if total_dropped:
-                        log.info("[unified] ILP uniqueness dropped %d ghost correspondences", total_dropped)
-            except Exception as exc:  # pragma: no cover - never break tracking
-                log.warning("[unified] ILP uniqueness skipped: %r", exc)
 
             self._apply_v_max_to_tpar(self.exp, v_max)
             tracker = self.ptv.py_trackcorr_init(self.exp)
