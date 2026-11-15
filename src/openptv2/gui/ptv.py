@@ -786,7 +786,7 @@ def py_determination_proc_c(
         ]
     )
 
-    pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
+    pos, rcm = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
 
     if num_cams < 4:
         print_corresp = -1 * np.ones((4, concatenated_corresp.shape[1]))
@@ -798,6 +798,7 @@ def py_determination_proc_c(
         store.write_correspondences(
             frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
         )
+        store.write_rcm(frame=frame, rcm=rcm)
         print(f"Saved 3D correspondences for frame {frame} to {store.store_path}")
         return
 
@@ -1177,7 +1178,7 @@ def py_sequence_loop(exp) -> None:
                 for corr, corresp in zip(corrected, sorted_corresp)
             ]
         )
-        pos, _ = point_positions(
+        pos, rcm = point_positions(
             flat.transpose(1, 0, 2), exp.cpar, exp.cals, exp.vpar, method=tri_method
         )
         if len(exp.cals) < 4:
@@ -1189,6 +1190,7 @@ def py_sequence_loop(exp) -> None:
         store.write_correspondences(
             frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
         )
+        store.write_rcm(frame=frame, rcm=rcm)
 
 
 def _convert_optv_params_for_python_engine(cpar, vpar, tpar, cals, num_cams):
@@ -1555,11 +1557,12 @@ def py_sequence_loop_python(exp) -> None:
                     for corr, corresp in zip(corrected, concatenated_corresp)
                 ]
             )
-            pos, _ = alg_point_positions(
+            pos, rcm = alg_point_positions(
                 flat.transpose(1, 0, 2), cpar_py, [c._cal for c in cals_py], vpar_py
             )
         else:
             pos = np.zeros((0, 3))
+            rcm = np.zeros((0,), dtype=np.float64)
 
         if num_cams < 4:
             print_corresp = -1 * np.ones((4, concatenated_corresp.shape[1]), dtype=int)
@@ -1570,6 +1573,7 @@ def py_sequence_loop_python(exp) -> None:
         store.write_correspondences(
             frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
         )
+        store.write_rcm(frame=frame, rcm=rcm)
 
         print(
             "Frame "

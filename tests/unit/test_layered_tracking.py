@@ -275,3 +275,118 @@ def test_peel_and_track_dense_ghost_improves_over_single_pass(tmp_path: Path):
     assert stats.pruned_correspondences > 0
     assert peel_prec >= 0.95
     assert peel_yield > base_yield
+
+
+def test_split_kinky_chain_trims_ghost_jump():
+    from openptv2.layered_tracking import _split_kinky_chain
+
+    # Smooth 5-frame track at v=(1,0,0) with a leading ghost jump at frame 0
+    core_pos = {
+        0: np.array([[0.0, 10.0, 0.0]]),  # kinky jump from (0,10,0) -> (1,0,0)
+        1: np.array([[1.0, 0.0, 0.0]]),
+        2: np.array([[2.0, 0.0, 0.0]]),
+        3: np.array([[3.0, 0.0, 0.0]]),
+        4: np.array([[4.0, 0.0, 0.0]]),
+    }
+    chain = [(f, 0) for f in range(5)]
+    subs = _split_kinky_chain(chain, core_pos, max_accel_err=2.0)
+    assert subs == [[(1, 0), (2, 0), (3, 0), (4, 0)]]
+
+
+def test_run_store_write_and_read_rcm(tmp_path: Path):
+    store = RunStore(tmp_path / "rcm.zarr", mode="w")
+    assert store.read_rcm(10001) is None
+    rcm = np.array([0.05, 0.42, 0.01], dtype=np.float32)
+    store.write_rcm(10001, rcm)
+    got = store.read_rcm(10001)
+    assert got is not None
+    assert np.allclose(got, rcm)
+
+
+def test_relink_trajectory_gaps_bidir_vel_rejects_crossing_ghost(tmp_path: Path):
+    from openptv2.algorithms.constants import NEXT_NONE, PREV_NONE
+    from openptv2.tracking_postprocess import relink_trajectory_gaps
+
+    store = RunStore(tmp_path / "gap.zarr", mode="w")
+    # Track A moves along +x: frame 1 (0,0,0) -> frame 2 (1,0,0), ends at frame 2.
+    # Crossing ghost B starts at frame 4 (3,0,0) -> frame 5 (3,2,0) (90-deg turn, v_out=(0,2,0)).
+    store.write_linkage(
+        1,
+        np.array([PREV_NONE], dtype=np.int32),
+        np.array([0], dtype=np.int32),
+        np.array([[0.0, 0.0, 0.0]]),
+    )
+    store.write_linkage(
+        2,
+        np.array([0], dtype=np.int32),
+        np.array([NEXT_NONE], dtype=np.int32),
+        np.array([[1.0, 0.0, 0.0]]),
+    )
+    store.write_linkage(
+        3,
+        np.empty(0, dtype=np.int32),
+        np.empty(0, dtype=np.int32),
+        np.empty((0, 3), dtype=np.float64),
+    )
+    store.write_linkage(
+        4,
+        np.array([PREV_NONE], dtype=np.int32),
+        np.array([0], dtype=np.int32),
+        np.array([[3.0, 0.0, 0.0]]),
+    )
+    store.write_linkage(
+        5,
+        np.array([0], dtype=np.int32),
+        np.array([NEXT_NONE], dtype=np.int32),
+        np.array([[3.0, 2.0, 0.0]]),
+    )
+
+    res = relink_trajectory_gaps(
+        "ptv_is",
+        1,
+        5,
+        max_gap=2,
+        max_accel_err=0.5,
+        store=store,
+        require_bidir_vel=True,
+        uniqueness_ratio=1.5,
+    )
+    assert res["bridged_gaps"] == 0
+
+
+def test_prune_kinky_links_breaks_step1_and_gap_bridged_kinks(tmp_path: Path):
+    from openptv2.algorithms.constants import NEXT_NONE, PREV_NONE
+    from openptv2.tracking_postprocess import prune_kinky_links, read_linkage
+
+    store = RunStore(tmp_path / "kinks.zarr", mode="w")
+    # Smooth track 0->1->2 at v=(1, 0, 0), then a sharp kink at frame 4 (gap-1 bridge 2->4).
+    frames = {
+        0: ([PREV_NONE], [0], [[0.0, 0.0, 0.0]]),
+        1: ([0], [0], [[1.0, 0.0, 0.0]]),
+        2: ([0], [0], [[2.0, 0.0, 0.0]]),
+        4: ([0], [NEXT_NONE], [[4.0, 5.0, 0.0]]),
+    }
+    for f, (prv, nxt, xyz) in frames.items():
+        store.write_linkage(
+            f,
+            np.array(prv, dtype=np.int32),
+            np.array(nxt, dtype=np.int32),
+            np.array(xyz, dtype=np.float64),
+            name="ptv_is",
+        )
+
+    res = prune_kinky_links(
+        "ptv_is",
+        0,
+        4,
+        max_accel_err=0.5,
+        max_angle_deg=45.0,
+        store=store,
+    )
+    assert res["broken_kinks"] == 1
+    _, nxt1, _ = read_linkage("ptv_is", 1, store=store)
+    _, nxt2, _ = read_linkage("ptv_is", 2, store=store)
+    prv4, _, _ = read_linkage("ptv_is", 4, store=store)
+    assert nxt1[0] == 0  # smooth 0->1->2 preserved
+    assert nxt2[0] == NEXT_NONE  # kinky 2->4 broken
+    assert prv4[0] == PREV_NONE

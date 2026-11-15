@@ -478,6 +478,30 @@ class RunStore:
             cols = bs.read(frame)
             if cols is not None:
                 return cols["ghost"]
+        return None
+
+    def write_rcm(self, frame: int, rcm: np.ndarray) -> None:
+        """Per-point ray-miss residual ``rcm`` (mm, shape (N,)), row-aligned
+        with the correspondences of ``frame``."""
+        rcm_arr = np.asarray(rcm, dtype=np.float32).reshape(-1)
+        try:
+            self.root.require_group("rcm").create_array(
+                _frame_key(frame), data=rcm_arr, overwrite=True
+            )
+        except Exception as exc:
+            raise RunStoreError(
+                f"Failed to write rcm for frame {frame}: {exc}"
+            ) from exc
+        self._mark_unsealed()
+
+    def read_rcm(self, frame: int) -> np.ndarray | None:
+        """Per-point ray-miss residual (mm) for ``frame``, or None if absent."""
+        if "rcm" not in self.root:
+            return None
+        try:
+            return np.asarray(self.root["rcm"][_frame_key(frame)], dtype=np.float32)
+        except KeyError:
+            return None
         try:
             return np.asarray(self.root["quality"][_frame_key(frame)])
         except KeyError:

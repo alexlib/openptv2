@@ -216,6 +216,9 @@ def enforce_reciprocity(
     def next_of(m):
         return frames[m][1] if m in frames else None
 
+    def prev_of(m):
+        return frames[m][0] if m in frames else None
+
     for k in range(first, last + 1):
         if k not in frames:
             continue
@@ -490,6 +493,9 @@ def relink_trajectory_gaps(
     max_gap: int = 2,
     max_accel_err: float = 5.0,
     store: Any = None,
+    *,
+    require_bidir_vel: bool = False,
+    uniqueness_ratio: float = 0.0,
 ) -> dict[str, int]:
     """
     Multi-pass post-processing gap relinking across linkage files.
@@ -550,6 +556,9 @@ def relink_trajectory_gaps(
     def next_of(m):
         return frames[m][1] if m in frames else None
 
+    def prev_of(m):
+        return frames[m][0] if m in frames else None
+
     for gap in range(1, max_gap + 1):
         # Kinematic residual over dt = gap+1 frames is a*dt^2/2. ``dacc`` gates
         # the *maximum* acceleration, so the effective residual scale is about
@@ -591,13 +600,31 @@ def relink_trajectory_gaps(
 
                 cand_xyz = xyz_target[starts_target]
                 dists = np.linalg.norm(cand_xyz - pred_pos, axis=1)
-                best_cand = np.argmin(dists)
-
-                if dists[best_cand] > tol:
-                    continue
+                if uniqueness_ratio > 1.0 and len(dists) >= 2:
+                    order = np.argsort(dists)
+                    best_cand = int(order[0])
+                    if dists[best_cand] > tol:
+                        continue
+                    if dists[int(order[1])] < uniqueness_ratio * max(float(dists[best_cand]), 1e-9):
+                        continue
+                else:
+                    best_cand = int(np.argmin(dists))
+                    if dists[best_cand] > tol:
+                        continue
                 target_idx = starts_target[best_cand]
                 if prev_target[target_idx] >= 0:
                     continue  # claimed by an earlier end this pass
+
+                if require_bidir_vel and next_target[target_idx] >= 0:
+                    t_next_idx = int(next_target[target_idx])
+                    fwd = link_step(prev_of, k + gap + 1, int(target_idx), t_next_idx)
+                    if fwd == 0:
+                        fwd = 1
+                    f_next = k + gap + 1 + fwd
+                    if f_next in frames and t_next_idx < len(frames[f_next][2]):
+                        v_out = (frames[f_next][2][t_next_idx] - xyz_target[target_idx]) / fwd
+                        if float(np.linalg.norm(v_out - v_est)) > max_accel_err * (gap + 1):
+                            continue
 
                 next_k[end_idx] = target_idx
                 prev_target[target_idx] = end_idx
@@ -608,3 +635,85 @@ def relink_trajectory_gaps(
     write_linkage_frames(linkage_base, frames, dirty, store=store)
 
     return {"bridged_gaps": bridged}
+
+
+def prune_kinky_links(
+    linkage_base: str,
+    first: int,
+    last: int,
+    *,
+    max_accel_err: float,
+    max_angle_deg: float = 0.0,
+    store: Any = None,
+) -> dict[str, int]:
+    """Break reciprocal links at kinematic velocity-jump kinks."""
+    if max_accel_err <= 0.0:
+        return {"broken_kinks": 0}
+
+    frames: dict[int, tuple[np.ndarray, np.ndarray, np.ndarray]] = {}
+    for k in range(first, last + 1):
+        r = read_linkage(linkage_base, k, store=store)
+        if r is not None:
+            prv, nxt, xyz = r
+            frames[k] = (prv.copy(), nxt.copy(), xyz)
+
+    def next_of(m: int):
+        return frames[m][1] if m in frames else None
+
+    def prev_of(m: int):
+        return frames[m][0] if m in frames else None
+
+    cos_thr = float(np.cos(np.radians(max_angle_deg))) if max_angle_deg > 0.0 else 0.0
+    dirty: set[int] = set()
+    broken = 0
+
+    for f1 in range(first + 1, last):
+        if f1 not in frames:
+            continue
+        prv1, nxt1, xyz1 = frames[f1]
+        for i1 in range(len(xyz1)):
+            i0 = int(prv1[i1])
+            i2 = int(nxt1[i1])
+            if i0 < 0 or i2 < 0:
+                continue
+            dt1 = back_link_step(next_of, f1, i1, i0)
+            dt2 = link_step(prev_of, f1, i1, i2)
+            if dt1 == 0 or dt2 == 0:
+                continue
+            f0 = f1 - dt1
+            f2 = f1 + dt2
+            if f0 not in frames or f2 not in frames:
+                continue
+            if i0 >= len(frames[f0][2]) or i2 >= len(frames[f2][2]):
+                continue
+
+            v1 = (xyz1[i1] - frames[f0][2][i0]) / float(dt1)
+            v2 = (frames[f2][2][i2] - xyz1[i1]) / float(dt2)
+            acc = float(np.linalg.norm(v2 - v1))
+            if acc <= max_accel_err:
+                continue
+
+            n1 = float(np.linalg.norm(v1))
+            n2 = float(np.linalg.norm(v2))
+            ang_bad = True
+            if n1 > 1e-9 and n2 > 1e-9 and max_angle_deg > 0.0:
+                cos_a = float(np.dot(v1, v2) / (n1 * n2))
+                ang_bad = cos_a < cos_thr
+
+            if not (ang_bad or acc > 1.5 * max_accel_err):
+                continue
+
+            # Break the trailing edge by default, or the leading edge if f0 is
+            # a 1-step track head jumping onto an established continuation.
+            if frames[f0][0][i0] < 0 and frames[f2][1][i2] >= 0 and n1 > 1.5 * max(n2, 1e-9):
+                prv1[i1] = PREV_NONE
+                frames[f0][1][i0] = NEXT_NONE
+                dirty.update((f0, f1))
+            else:
+                nxt1[i1] = NEXT_NONE
+                frames[f2][0][i2] = PREV_NONE
+                dirty.update((f1, f2))
+            broken += 1
+
+    write_linkage_frames(linkage_base, frames, dirty, store=store)
+    return {"broken_kinks": broken}

@@ -299,8 +299,6 @@ def estimate_params(
         "conditioning_ratio": conditioning_ratio,
         "slow_flow": slow_flow,
         "ghost_rate": ghost_rate,
-        "ilp_recommended": bool((ghost_rate or 0.0) > 0.15 or density >= 500.0),
-        "smoothing_recommended": bool(slow_flow or (rho is not None and rho > 1.0)),
         "displacement": displacement,
         "mean_interparticle_distance": mean_ipd,
         "rho": rho,
