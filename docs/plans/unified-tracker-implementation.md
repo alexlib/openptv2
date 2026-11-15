@@ -127,6 +127,20 @@ Use this table to claim work in parallel sessions. **Rules for parallel agents:*
 - [x] **Step 5b — Per-Trajectory Quality Score & Downstream Weighting (`E1`–`E2`, v2)**
   - **Depends on:** Step 4c
 
+### Wave 6 — Ghost Elimination Hardening (after Wave 5 passes)
+- [x] **Step 6a — Core Purity, Kinematic Splitting & Multi-Tier Peeling (`layered_tracking.py`)**
+  - Raise `peel_and_track` default `min_core_length` from `2` to `3` (clamped to `min(min_core_length, len(frames))` for 2-frame runs).
+  - Add kinematic smoothness splitting/trimming inside `_extract_verified_core` (rejecting/splitting triplets failing both `_is_velocity_jump` and `||Δv|| > max_accel_err`) before populating `claimed_by_frame`.
+  - Add post-Pass-2 pruning of Pass-2 claimed 2D targets from unlinked residual rows before `run_corrective_pass`.
+  - Add 3-tier progressive peeling (`tiers=3` option: `N_cams` strict core → `N_cams - 1` medium core → residual `>= 2` cams + gated `track_assisted`, gracefully collapsing on `<= 2`-cam rigs).
+- [x] **Step 6b — Gate `track_assisted` & `relink_trajectory_gaps` (`track_assisted.py`, `tracking_postprocess.py`)**
+  - Capture 3D ray-miss `_dist` in `_claim_particle` and reject when `_dist > max_ray_miss_mm`; check `||pos - predicted|| <= accel_tol` in `_extend_tracks`.
+  - Pass `gap_accel_err` into `run_corrective_pass` so `0.25 * tpar.dacc` is respected.
+  - Add optional `require_bidir_vel` and `uniqueness_ratio` gates to `relink_trajectory_gaps`.
+- [x] **Step 6c — Persist `rcm` at Correspondence Time (`run_store.py`, `correspondences.py`, `gui/ptv.py`, `*_sequence.py`)**
+  - Persist the `rcm` (mm) already returned by `point_positions(...)` via `RunStore.write_rcm` / `read_rcm` (`quality` BlockSet `"rcm"` column) and wire `read_rcm` into `peel_and_track`'s `rcm_threshold` filter.
+  - **Verify:** `uv run pytest tests/unit/test_layered_tracking.py tests/unit/test_track_assisted_poly.py tests/unit/test_unified_tracking.py tests/benchmarks/test_unified_gt_scorecard.py -v` and before/after ghost benchmark (`N60_ghost50`, `N200_ghost50`, `N200_ghost70`).
+
 ---
 
 ## 2. Milestone A — Auto-parameter estimation (highest impact)
@@ -418,6 +432,464 @@ Implementation notes:
 - K4. Final postprocess + tests vs. synthetic dense GT (expect higher precision and yield at high density without OTF).
 - K5. Wire into unified as `peeling` option (`auto` when `ghost_rate` / `density` is high).
 
+## 12.6 Anti-Ghost Strategy (consolidated) — critical review
+
+Three complementary levers, ordered from pipeline-level to solver-level. Each is
+already scoped in the milestones above (K, L, B7); this section collects them as
+one coherent strategy and records the critical review.
+
+### Idea 1 — Two-Pass "Clean-and-Claim" (Tight-Core + deterministic 2D-target pruning)
+**Where:** `src/openptv2/layered_tracking.py` (Milestone K: K2, K4, K5).
+**Mechanism:** Pass 1 tracks only high-purity correspondences (tighter epipolar
+tolerance, low-rcm / 4-cam quadruplets) with `full_forward` + `full_backward` +
+strict reciprocity, keeping only verified core tracks (length ≥ 4, smooth). Then
+mark every 2D target ID claimed by those tracks and drop any remaining 3D
+correspondence referencing a claimed target (O(N) mask, no re-triangulation).
+Pass 2 runs `trackcorr` on the ghost-depleted residual cloud, then `track_assisted`
+with polynomial predictor / subset triangulation / shared-target fallback.
+**Config:** `peeling: auto|true|false` (auto when `ghost_rate` or `density` high).
+
+### Idea 2 — Early Ghost-Filter Pre-Pass (rcm / rcm_blob scoring)
+**Where:** `src/openptv2/ghost_filter.py` (Milestone L: L1).
+**Mechanism:** Compute per-correspondence ghost probability from reconstruction-
+consistency (`rcm`) and blob-consistency (`rcm_blob`) before tracking; down-weight
+or quarantine high-probability correspondences. Keep originals as backup rather
+than hard-dropping, so real particles are not silently lost.
+
+### Idea 3 — Conflict-Component Hungarian Resolution
+**Where:** backbone solver (Milestone L: L6 / B7).
+**Mechanism:** Keep the fast greedy 1-to-1 path for unambiguous links; for
+components with ≥2 competing tracks vs. ≥2 candidates, solve the optimal bipartite
+assignment with `scipy.optimize.linear_sum_assignment`. Cost is paid only where
+ambiguity exists.
+
+---
+
+### Why this works (root cause, not just mechanism)
+
+Ghosts are not a detection bug or a tracking bug in isolation — they are a **combinatorial
+correspondence** phenomenon. Given N 2D targets per camera, the number of candidate 3D
+points is ~N^k; real particles produce consistent multi-camera matches, while ghosts are
+accidental alignments of targets from *different* particles. Each idea attacks a different
+manifestation of that root cause, which is why they compose rather than duplicate:
+
+- **Idea 2 (rcm) — geometric inconsistency.** A 3D point is only as real as the
+  agreement of its constituent 2D targets: back-project the rays and a real particle's
+  rays meet, while a ghost's rays miss. rcm measures that miss *before* any temporal
+  tracking, so it is a pure, tracking-independent ghost signal. It must be *soft*
+  because rcm has a distance dependence (volume centre vs. edges) and real particles
+  near edges overlap the ghost distribution — hard thresholds delete real data.
+- **Idea 1 (Clean-and-Claim) — 2D-target ownership.** A single 2D target in one
+  camera at one instant can belong to at most one physical particle. Ghosts are
+  *parasitic*: they almost always reuse 2D targets that belong to real particles,
+  because the combinatorics of forming a ghost from entirely unused targets are far
+  less likely. Once a verified (reciprocal, smooth, long) track has claimed its 2D
+  targets, any other correspondence reusing one of them is by necessity a ghost (or a
+  duplicate). Pruning by ownership removes the *substrate* ghosts need, deterministically
+  and without re-triangulation. This is why it is safe where hard deletion is not:
+  it only removes correspondences that conflict with an already-verified reality.
+- **Idea 3 (Hungarian) — assignment-level suboptimality.** Ghost links are created not
+  only at detection but at the *linking* step, when greedy nearest-neighbour assignment
+  makes locally optimal choices inside a dense ambiguous region and those errors cascade.
+  Solving the optimal bipartite matching over the whole ambiguous component (tracks vs.
+  candidates) breaks the cascade. It is restricted to ambiguous components because for
+  unambiguous 1-to-1 links greedy is already optimal and cheaper.
+
+**Why "soft, not hard" is the cross-cutting principle:** ghosts and real particles overlap
+in every single-feature space (rcm, displacement, smoothness) near decision boundaries.
+Threshold-based deletion therefore trades recall for precision unpredictably. The safe
+operations are *claim-based* (a verified reality overrules a candidate) and *global-
+assignment* (optimal over a component), which never delete a real particle merely because
+it looks ghost-like.
+
+### Critical review
+
+**Strengths**
+- *Determinism over deletion.* Clean-and-Claim removes ghosts by *claiming* 2D
+  targets rather than by deleting points, so it cannot accidentally drop real
+  particles the way a hard rcm threshold can. This matches the empirical finding
+  in `docs/plans/2026-09-30-tracker-plan.md` that soft use works and hard
+  deletion does not.
+- *Complementary, not redundant.* Idea 1 is a pipeline-level prune, Idea 2 a
+  scoring pre-filter, Idea 3 a solver-level assignment fix — they operate at
+  different stages and compose.
+- *Bounded cost.* Idea 1 is 2 passes on a shrinking cloud; Idea 3 only pays the
+  Hungarian cost on ambiguous components.
+
+**Risks / weaknesses**
+- **W1 — Pass-1 purity is the linchpin.** If the tight core is too loose,
+  pruning deletes real residual correspondences; if too tight, too little is
+  pruned and Pass 2 re-creates ghosts. The `0.5 * eps0` tolerance and
+  length ≥ 4 thresholds are uncalibrated guesses (see W3 of §15). Needs
+  calibration against the synthetic GT scorecard (H0/H1) before shipping.
+- **W2 — 2D-target identity assumption.** Clean-and-Claim assumes a stable 2D
+  target ID across frames and that a real particle "owns" its 2D target. With
+  merged/occluded blobs or camera dropouts, one real particle can legitimately
+  share a target, which is exactly why `track_assisted` needs the non-exclusive
+  shared-target fallback — but that fallback re-opens the door to ghost survival.
+  The two mechanisms must be reconciled (shared targets allowed only in Pass 2,
+  never in Pass 1).
+- **W3 — rcm distance dependence.** rcm scales with distance from the volume
+  centre, so Idea 2 requires the per-run straight-line fit normalization already
+  identified in `2026-09-30-tracker-plan.md` (A10). Using raw rcm will bias
+  pruning toward the volume edges.
+- **W4 — Hungarian on large components.** `linear_sum_assignment` is cubic in
+  component size; at very high density an ambiguous component can grow large.
+  Need a component-size cap (fall back to greedy above N) and profiling.
+- **W5 — Interaction / ordering.** Running Idea 2 before Idea 1 could prune
+  correspondences that Pass 1 would have used to build the tight core; running
+  Idea 1 first makes Idea 2's input already depleted. The intended order is
+  Idea 2 (soft scoring) → Idea 1 (hard claim) → Idea 3 (solver), but this
+  ordering is not yet enforced in code and must be documented in the
+  `Estimator → Engine → Refiner` stages.
+- **W6 — No byte-identity guarantee.** Unified with these levers enabled will
+  not reproduce legacy tracker outputs (W4 of §15). A regression test
+  comparing unified (fixed bundle) vs. legacy on a reference dataset is required
+  before deprecation (J1).
+
+**Verdict:** Proceed, but gate shipping on (a) calibration of the Pass-1
+tolerance/length thresholds against synthetic GT, (b) enforcing the
+Idea 2 → 1 → 3 ordering, and (c) a component-size cap for the Hungarian solver.
+
+### 12.6.1 Reshuffled alternatives (out-of-the-box)
+
+The staged design (rcm → Clean-and-Claim → Hungarian) is not the only
+factorization. Three reshuffles worth considering, with critical notes:
+
+**Reshuffle A — Merge Clean-and-Claim and Hungarian into one "Hungarian Claim
+Resolution" step.** Instead of (1) verify core tracks, (2) greedily claim their
+2D targets, (3) separately solve ambiguous links, treat the whole thing as one
+assignment: Pass-1 candidate tracks are the "left" set, 2D targets are the
+"right" set, and a residual correspondence is a ghost iff assigning it would
+conflict with a higher-weight verified track. `linear_sum_assignment` over the
+target-overlap cost matrix picks the globally optimal non-overlapping subset of
+tracks in one shot. This *is* Milestone K's conflict-component Hungarian (B7)
+applied to claim resolution — i.e. Ideas 1 and 3 collapse into a single stage.
+- *Pro:* removes the purity-threshold risk of Pass 1 (no separate "tight core"
+  tolerance to calibrate); global optimum instead of greedy claim; one less
+  pipeline stage.
+- *Con:* Hungarian is cubic in component size and needs a component-size cap;
+  and it loses the *interpretability* of "these targets are claimed by track X",
+  which is valuable for the audit record (`TrackingDecision`) and for debugging.
+  Also, a single assignment pass cannot express "keep the core, then expand" —
+  the two-pass intent (conservative core first, aggressive expansion second)
+  has to be encoded as weights/costs, which re-introduces tuning.
+
+**Reshuffle B — One composite "realness" score, single pass.** Fuse all three
+signals into one scalar per 3D correspondence / trajectory:
+  `realness = w1·(1 - rcm_norm) + w2·claim_status + w3·(1 - assign_cost_norm)`,
+then sort and (softly) gate seeding (`q_seed`) and continuation (`q_young`) —
+exactly the mechanism that already worked in `2026-09-30-tracker-plan.md`
+(−0.008…−0.013 velocity error, −0.038 at 4× density). No multi-pass, no
+pruning, no Hungarian at runtime.
+- *Pro:* simplest possible implementation; single tunable surface; reuses a
+  *proven* mechanism (soft gating) instead of an unproven one (deterministic
+  pruning); audit record is just one number per trajectory.
+- *Con:* the tracker plan explicitly found that **link-cost weighting alone has
+  no effect** — a pure score only works when it gates *seeding/continuation*,
+  not when it re-weights links. So this reshuffle is only viable if the score
+  feeds q_seed/q_young, not the link cost. Also, conflating geometric (rcm),
+  ownership (claim), and assignment (cost) failure modes into one number makes
+  it hard to know *why* a particle was dropped, defeating the auditability
+  principle (§0.6). And it forgoes the deterministic pruning that is the
+  *largest* potential gain (ghosts cause ~60% of two_phase's error).
+
+**Reshuffle C — Hungarian-first, then rcm refines (invert the order).** Run
+Hungarian on the raw correspondence cloud first to find the globally optimal
+link set; treat high-cost unmatched correspondences as ghost candidates; then
+apply rcm (Idea 2) as a refinement/weight on the survivors; claim targets last.
+- *Pro:* attacks the assignment problem at its largest (whole cloud), where
+  greedy errors are most damaging.
+- *Con:* Hungarian on the *whole* cloud is O(N^3) and N is the full 3D
+  correspondence count — infeasible at high density without the component
+  decomposition, which is exactly what Clean-and-Claim's pruning provides. So
+  this ordering is only viable *after* pruning, i.e. it is the staged order
+  with the stages renamed. Not actually a reshuffle.
+
+**Recommendation (12.6.1).** Do not pick one. Use a **two-tier** design:
+  - **Tier 1 (deterministic, cheap, auditable):** Reshuffle A's Hungarian Claim
+    Resolution on a *pre-filtered* cloud (rcm soft-weighted, not hard-pruned)
+    to produce a high-confidence core set + an explicit claimed-target mask.
+    This keeps the interpretable claim record and the conservative-then-expansive
+    intent, while removing the fragile Pass-1 tolerance threshold.
+  - **Tier 2 (soft):** the composite realness score from Reshuffle B, but used
+    *only* to gate q_seed/q_young in `track_assisted` (Pass 2 expansion), never
+    as a link weight — honouring the tracker plan's finding.
+
+  Net effect: three ideas → two stages, with Hungarian doing double duty (claim
+  resolution + conflict links) and the realness score confined to its one proven
+  use. The single-score heuristic is rejected as the *primary* mechanism but
+  retained as a *secondary* gating signal.
+
+### 12.6.2 Calibration-aware and multi-cycle epipolar ideas (out-of-the-box)
+
+Two further reshuffles that attack the same root cause from the geometry side.
+
+**Idea 4 — Calibration-aware ghost thresholds.** rcm has a distance dependence
+(volume centre vs. edges) and, more fundamentally, the *number of cameras seeing a
+point* varies across the volume. With 2 cameras two rays always have a closest
+point, so rcm≈0 even for ghosts; with 4 cameras ghosts have large rcm. So ghost-
+ness is spatially heterogeneous and camera-coverage dependent. Instead of one
+global rcm threshold (or a crude per-run straight-line fit), use the calibration
+maps (camera poses, distortion, coverage) to compute an expected rcm floor and a
+threshold *per region / per point*, keyed on camera count and distance from the
+volume centre.
+- *Pro:* fixes the rcm distance-dependence issue (W3 of §12.6) at its source;
+  better recall near boundaries where real particles are hardest to track and
+  where ghosts are hardest to distinguish; naturally explains why a global
+  threshold misbehaves.
+- *Con:* requires a calibration-quality / coverage field that may not exist for
+  all rigs; couples ghost logic to calibration correctness (a bad calibration
+  gives bad thresholds); adds a per-point computation; must be validated that
+  the region keying doesn't just re-learn the global fit.
+
+**Idea 5 — Multi-cycle epipolar consistency (1-2-3-4, 2-3-4-1, …).** Instead
+of one fixed camera ordering for epipolar search/triangulation, run several
+cyclic orderings and require cross-consistency. A ghost that happens to satisfy
+epipolar constraints in ordering 1-2-3-4 (because its targets accidentally align
+along that reference) frequently fails in 2-3-4-1 (different reference camera →
+different epipolar lines). The disagreement across cycles is itself a ghost
+signal, analogous to rcm but measured across *reference frames* rather than rays.
+- *Pro:* stronger geometric filter than single-ordering epipolar search; the
+  cross-cycle variance can feed the realness score (Idea B) as an additional
+  feature; generalizes the existing 2-of-4/3-of-4 subset triangulation (K3) to
+  the correspondence stage.
+- *Pro (compounding):* combined with Idea 4, a point seen by ≥3 cameras in
+  multiple cycles is high-confidence real; a 2-camera point surviving only one
+  cycle is suspect.
+- *Con:* cost is N_cycles × correspondence cost — needs a cap (2 cycles likely
+  enough; diminishing returns beyond); some persistent ghosts agree across cycles
+  (not a silver bullet); aggregation rule (intersection = strict, union = loose)
+  must be chosen and calibrated; risks over-filtering real particles in sparse
+  regions where only one cycle yields a match.
+
+**How these connect to the existing plan.** Idea 4 feeds Idea 2 (rcm pre-pass)
+by replacing the global threshold with a calibration-keyed one. Idea 5 feeds
+either Idea 2 (as an extra realness feature) or Idea 1 (as an extra pruning
+criterion: drop correspondences that fail cross-cycle consistency). Both also
+belong in the realness score's feature set if Reshuffle B is adopted. Neither
+requires new Cython; both are pre-pass / correspondence-stage logic.
+
+**Recommendation (updated two-tier).**
+  - **Tier 1:** Reshuffle A (Hungarian Claim Resolution) on an rcm-soft-
+    weighted, **calibration-keyed** cloud (Idea 4), with cross-cycle consistency
+    (Idea 5) as an additional pruning criterion. This replaces the fragile
+    Pass-1 tolerance with a per-point, geometry-aware confidence.
+  - **Tier 2:** composite realness score (Idea B) for q_seed/q_young gating,
+    now including rcm_norm, claim_status, assign_cost_norm, camera_count, and
+    cross_cycle_agreement as features.
+
+### 12.6.4 Detailed implementation plan — ILP uniqueness + temporal joint smoothing
+
+**Goal:** suppress ghosts by combining (1) ILP/assignment for spatial uniqueness
+with (5) temporal joint smoothing, while keeping tracking fast (target: no more
+than ~2× the current trackcorr runtime on the dense benchmark).
+
+**Principle:** both levers are *opt-in via `auto`* and only escalate when the
+estimator reports high density/ghost_rate. The common case stays on the fast
+trackcorr path. Parallelism (G1) absorbs the rest.
+
+#### Available building blocks (verified present)
+- `scipy.optimize.milp` (scipy 1.18) — MILP solver, no new dependency.
+- `scipy.optimize.linear_sum_assignment` — bipartite Hungarian, already used.
+- `networkx` 3.7 — connected components on conflict graphs.
+- Existing: `ghost_filter.py`, `layered_tracking.py`, `track_assisted.py`,
+  `tracking_estimator.py`, `tracking_probe.py`, `RunStore`/linkage blocks.
+
+#### Stage A — Component decomposition (cheap, O(N))
+File: `src/openptv2/ghost_components.py` (new)
+- Build conflict graph per frame: node = candidate 3D point; edge = two points
+  share at least one 2D target.
+- `connected_components()` via networkx (or union-find for speed) → list of
+  component (list of point indices).
+- Classify each component: size 1 (trivial, keep), size 2 (bipartite →
+  Hungarian), size ≥3 (ILP or greedy fallback).
+- Store component sizes in `TrackingDecision` for audit.
+
+#### Stage B — Spatial uniqueness via ILP (per component, bounded size)
+File: `src/openptv2/ghost_ilp.py` (new)
+- For each component of size ≥3 (and optionally size 2 via Hungarian):
+  - Variables x_i ∈ {0,1}.
+  - Objective: maximize Σ conf_i · x_i
+    (conf_i = rcm-based confidence, calibration-keyed, + cross-cycle agreement
+    from Idea 4/5).
+  - Constraints: for each 2D target t in the component:
+      Σ_{i: t∈point_i} x_i ≤ 1.
+  - Solve with `scipy.optimize.milp`. Cap component size at `ilp_max_size`
+    (default 20); larger components fall back to greedy + log a warning.
+- For 2-camera components use `linear_sum_assignment` (cheaper, exact for
+  bipartite) instead of MILP.
+- Output: selected point indices per frame → feeds Pass 2 / trackcorr.
+- Config: `ilp_uniqueness: auto|true|false`, `ilp_max_size`, `ilp_time_limit_s`.
+
+#### Stage C — Temporal joint smoothing (sliding window)
+File: `src/openptv2/temporal_smoothing.py` (new)
+- Sliding window of W frames (default 5, config `smooth_window`).
+- Within a window, link selected 3D points across frames using the existing
+  trackcorr nearest-neighbour + motion model (constant velocity seeded from
+  last 2 frames), producing candidate trajectories.
+- Jointly optimize over the window: minimize
+    Σ_traj [ Σ_frame reprojection_residual² + λ·acceleration² ]
+  subject to point uniqueness (each 3D point used by at most one trajectory)
+  and trajectory continuity.
+- Implementation: iterative re-weighted least squares (IRLS) — cheap, no solver:
+  1. Link points greedily to form trajectories.
+  2. Fit a smooth (e.g. cubic) model per trajectory; compute residuals.
+  3. Down-weight / drop points with residual > threshold (ghosts have high
+     residual because they don't follow a smooth motion).
+  4. Re-link and repeat 2–3 times (config `smooth_iterations`, default 3).
+- Drop trajectories whose final residual exceeds `smooth_residual_threshold`
+  (calibration-keyed, like rcm).
+- Config: `temporal_smoothing: auto|true|false`, `smooth_window`,
+  `smooth_iterations`, `smooth_residual_threshold`.
+
+#### Stage D — Wiring into unified tracker
+File: `src/openptv2/plugins/unified_tracking.py`
+- In `do_tracking()`, after estimation/conditioning gate:
+  - If `ilp_uniqueness` resolves true: run Stage A+B per frame (parallel over
+    frames via the existing chunked runner) → produce cleaned 3D point sets.
+  - Feed cleaned sets into trackcorr (existing backbone).
+  - If `temporal_smoothing` resolves true: run Stage C on the resulting
+    trajectories before postprocess.
+- Apply resolved config to `trackcorr`/`hybrid_deltat_3d` without mutating
+  user YAML (existing pattern).
+- Write ILP component stats + smoothing residual stats into `TrackingDecision`.
+
+#### Stage E — Estimator integration
+File: `src/openptv2/tracking_estimator.py`
+- Add `ghost_rate` already computed; add `ilp_recommended` flag (true when
+  `ghost_rate > 0.15` or `density` high) and `smoothing_recommended` flag
+  (true when flow is non-stationary / probe shows high jump_rate).
+- `auto` resolves these flags; explicit user override wins.
+
+#### Stage F — Tests
+- `tests/unit/test_ghost_components.py` (new): component decomposition on
+  synthetic conflict graphs; size classification.
+- `tests/unit/test_ghost_ilp.py` (new): ILP on small components; uniqueness
+  constraint holds; fallback on oversized components.
+- `tests/unit/test_temporal_smoothing.py` (new): smoothing drops high-residual
+  ghost trajectories; real smooth trajectories survive.
+- `tests/benchmarks/test_unified_gt_scorecard.py`: add a "ghost-heavy" case;
+  assert ILP+smoothing improves precision without hurting yield beyond 2%.
+
+#### Speed budget & fast-path rules
+- MILP only on components of size 3–`ilp_max_size` (default 20); size 1–2 use
+  Hungarian or trivial keep; nothing runs on the whole cloud.
+- Temporal smoothing runs only when `auto` recommends it (or user forces); IRLS
+  with 3 iterations is O(window × points) and vectorizable.
+- Both stages run in the existing parallel chunked runner (G1) — no new
+  parallelism code.
+- Hard cap: `ilp_time_limit_s` (default 1.0s per component) → fall back to
+  greedy on timeout; log in `TrackingDecision`.
+- Fast path (low density, low ghost_rate): both stages skipped entirely →
+  identical to current trackcorr runtime.
+
+#### Waves (parallelizable)
+- Wave 0: Stage A (components) + Stage E (estimator flags) — disjoint files.
+- Wave 1: Stage B (ILP) depends on A; Stage C (smoothing) independent.
+- Wave 2: Stage D (wiring) depends on A/B/C/E; Stage F (tests) depends on D.
+- Wave 3: benchmark (F scorecard) depends on all.
+
+#### Risks
+- R1: MILP latency on large components → cap + timeout + greedy fallback.
+- R2: over-smoothing deletes real but erratic particles (turbulence) → residual
+  threshold must be calibration-keyed and conservative; IRLS down-weights rather
+  than hard-drops first.
+- R3: interaction with Clean-and-Claim (Tier 1) → ILP replaces the greedy
+  claim step; keep both behind the same `peeling`/`ilp_uniqueness` flags to
+  avoid double-pruning. Recommendation: ILP subsumes Clean-and-Claim's claim
+  step when enabled; Clean-and-Claim remains the fallback when MILP is off.
+
+### 12.6.3 Deeper algorithmic ideas from other fields
+
+Ghosts are a special case of a general problem: **combinatorial false
+positives from nonlinear projections** — many fields face it. Analogies and
+candidate algorithms, with critical notes:
+
+1. **Multi-dimensional assignment / ILP** (data association, sensor fusion).
+   Formulate "select a subset of 3D points maximizing total confidence, subject
+   to each 2D target used at most once" as an integer program. Hungarian is the
+   bipartite (2-camera) special case; ILP solvers handle the k-camera case and
+   give a principled optimum instead of a greedy/heuristic one.
+   - *Pro:* exact-ish, principled, directly encodes the uniqueness constraint.
+   - *Con:* NP-hard in general; needs LP-relaxation or branch-and-bound; may
+     be too slow at high density without the Clean-and-Claim pruning first.
+
+2. **Factor graphs / belief propagation** (SLAM, probabilistic data association).
+   Model 2D targets and 3D points as a bipartite factor graph with factors for
+   geometric consistency and uniqueness; run loopy BP / message passing to
+   compute marginals (probability each point is real). Handles combinatorics
+   probabilistically and scales better than ILP.
+   - *Pro:* soft, principled, naturally produces the "realness" probability
+     that Reshuffle B wants; handles uncertainty.
+   - *Con:* approximate; convergence not guaranteed; more machinery than the
+     current codebase.
+
+3. **Sparse recovery / L1 regularization** (compressed sensing, tomographic
+   reconstruction). The 3D point cloud is a sparse source; camera images are
+   nonlinear projections. Recover the sparse source via convex L1 minimization
+   (basis pursuit) instead of combinatorial search — ghosts are the dense
+   "noise" that sparsity penalizes.
+   - *Pro:* convex (fast, global optimum), principled, directly attacks the
+     combinatorial explosion.
+   - *Con:* requires a discretized 3D grid / basis; nonlinearity of projection
+     makes the sensing matrix expensive; may blur point positions.
+
+4. **Consensus voting / Hough transform** (robust fitting, RANSAC family).
+   Each 2D target votes for 3D points along its ray; real points accumulate
+   votes from all cameras, ghosts get fewer. Accumulate in a 3D voting space.
+   rcm is a continuous version of this; voting makes the threshold explicit
+   and robust.
+   - *Pro:* simple, robust, geometrically intuitive, handles outliers.
+   - *Con:* voting-space resolution vs. memory trade-off; ghosts that happen
+     to get many votes survive.
+
+5. **Temporal joint smoothing / sliding-window MHT** (multi-hypothesis
+   tracking). Ghosts don't persist as smooth trajectories. Instead of frame-pair
+   greedy linking, optimize a whole window (N frames) jointly with a motion
+   model; ghosts have high residual and are pruned by the smoother. This
+   exploits the one thing ghosts lack: temporal coherence.
+   - *Pro:* attacks ghosts at their weakest point (no persistent motion);
+     leverages data we already have.
+   - *Con:* window size vs. cost; ghosts that persist a few frames survive;
+     needs a motion model (constant velocity etc.).
+
+6. **Graph spectral methods** (community detection). Build an affinity graph
+   between candidate 3D points (edge weight = shared 2D targets / geometric
+   consistency); ghosts form a different spectral cluster than real points.
+   Spectral clustering separates them without per-point thresholds.
+   - *Pro:* principled, no thresholds, captures global structure.
+   - *Con:* graph can be huge; spectral decomposition is O(N^3); cluster count
+     must be chosen.
+
+**Recommended deeper direction:** combine **(1) ILP/assignment for the
+uniqueness constraint** (it is exactly what Clean-and-Claim approximates, and
+the codebase already uses `linear_sum_assignment`) with **(5) temporal joint
+smoothing** (ghosts lack temporal coherence, and we already track through time).
+Together they attack both the spatial (combinatorial) and temporal (persistence)
+dimensions of ghosts, which is stronger than any single idea above. Sparse
+recovery (3) is the most "out-of-the-box" but the grid/basis cost is high;
+keep it as a research option.
+
+**Verdict:** Proceed, but gate shipping on (a) calibration of the Pass-1
+tolerance/length thresholds against synthetic GT, (b) enforcing the
+Idea 2 → 1 → 3 ordering, and (c) a component-size cap for the Hungarian solver.
+tolerance/length thresholds against synthetic GT, (b) enforcing the
+Idea 2 → 1 → 3 ordering, and (c) a component-size cap for the Hungarian solver.
+  - **Tier 1 (deterministic, cheap, auditable):** Reshuffle A's Hungarian Claim
+    Resolution on a *pre-filtered* cloud (rcm soft-weighted, not hard-pruned)
+    to produce a high-confidence core set + an explicit claimed-target mask.
+    This keeps the interpretable claim record and the conservative-then-expansive
+    intent, while removing the fragile Pass-1 tolerance threshold.
+  - **Tier 2 (soft):** the composite realness score from Reshuffle B, but used
+    *only* to gate q_seed/q_young in `track_assisted` (Pass 2 expansion), never
+    as a link weight — honouring the tracker plan's finding.
+
+  Net effect: three ideas → two stages, with Hungarian doing double duty (claim
+  resolution + conflict links) and the realness score confined to its one proven
+  use. The single-score heuristic is rejected as the *primary* mechanism but
+  retained as a *secondary* gating signal.
+
 ## 13. Open questions
 
 1. Should probe run be on by default in cloud/batch mode? (Proposed: on, with auto-pick; disable via `probe: false`.)
@@ -433,6 +905,7 @@ Implementation notes:
 - 2026-11-14: K1 (layered peeling primitives) implemented + tests.
 - 2026-11-15: Waves 0–4 completed and verified (50/50 tests passing).
 - 2026-11-15: Wave 5 completed in openptv2: legacy preset/plugin deprecation notices + `unified` recommender default (`tracking_presets.py`, `tracking_recommender.py`, `plugins/loader.py`), and `compute_trajectory_quality_scores(..., write_prio=...)` with quantized `int32` `prio` persistence (`tracking_report.py`, `test_tracking_report.py`). Verified: 51 passed (unified suite) + 48 passed, 1 skipped (preset/recommender/plugin suite).
+- 2026-11-15: Wave 6 (Ghost Elimination Hardening) completed: `min_core_length=3`, `_split_kinky_chain`, post-Pass-2 pruning, `tiers=3` progressive peeling (`layered_tracking.py`), ray-miss/3D-residual/bidir-vel/uniqueness gates (`track_assisted.py`, `tracking_postprocess.py`), and `RunStore.write_rcm`/`read_rcm` persistence (`run_store.py`, `correspondences.py`, `gui/ptv.py`). Verified: 23 passed; `N200_ghost50` `tiers=3` eliminated 100% of Pass-1 ghost leaks (`3000/3000` verified, `200/200` tracks, `1.000` yield, `0.999` precision, `0.000` jump rate).
 - (append as work proceeds)
 
 ---
