@@ -117,6 +117,142 @@ def smooth_trajectories(
     return out
 
 
+def extract_trajectories(
+    store: Any,
+    first: int,
+    last: int,
+    linkage_name: str = "ptv_is",
+) -> list[list[tuple[int, int]]]:
+    """Extract trajectories from a store's linkage as lists of (frame, point_index).
+
+    Follows the ``next`` pointers. Returns a list of trajectories, each a list
+    of (frame, idx) pairs.
+    """
+    import numpy as np
+
+    # read per-frame linkage
+    frames_data: dict[int, tuple[np.ndarray, np.ndarray, np.ndarray]] = {}
+    for f in range(first, last + 1):
+        try:
+            prev, nxt, pos = store.read_linkage(f, name=linkage_name)
+        except Exception:
+            continue
+        frames_data[f] = (np.asarray(prev).ravel(), np.asarray(nxt).ravel(), np.asarray(pos))
+    if not frames_data:
+        return []
+
+    # Build trajectories: start from points whose prev == -1 (or unvisited).
+    visited: set[tuple[int, int]] = set()
+    trajs: list[list[tuple[int, int]]] = []
+    for start_f in range(first, last + 1):
+        if start_f not in frames_data:
+            continue
+        prev_arr, _, _ = frames_data[start_f]
+        n = len(prev_arr)
+        for i in range(n):
+            if int(prev_arr[i]) != -1:
+                continue
+            # walk forward
+            chain: list[tuple[int, int]] = []
+            f, idx = start_f, i
+            seen: set[tuple[int, int]] = set()
+            while True:
+                key = (f, idx)
+                if key in seen:
+                    break
+                seen.add(key)
+                chain.append(key)
+                if f not in frames_data:
+                    break
+                _, nxt_arr, _ = frames_data[f]
+                if idx >= len(nxt_arr):
+                    break
+                ni = int(nxt_arr[idx])
+                if ni < 0:
+                    break
+                # find which frame holds point ni: next points to global index?
+                # Convention: next stores index into next frame's point list.
+                f_next = f + 1
+                if f_next > last or f_next not in frames_data:
+                    break
+                if ni >= len(frames_data[f_next][0]):
+                    break
+                f, idx = f_next, ni
+            if chain:
+                for k in chain:
+                    visited.add(k)
+                trajs.append(chain)
+    # Also include any unvisited points as singleton trajectories.
+    for f in range(first, last + 1):
+        if f not in frames_data:
+            continue
+        prev_arr, _, _ = frames_data[f]
+        for i in range(len(prev_arr)):
+            if (f, i) not in visited:
+                trajs.append([(f, i)])
+                visited.add((f, i))
+    return trajs
+
+
+def trajectory_positions_from_store(
+    store: Any,
+    traj: list[tuple[int, int]],
+    linkage_name: str = "ptv_is",
+) -> np.ndarray:
+    """Return (T, 3) positions for a trajectory."""
+    import numpy as np
+
+    pts = []
+    for f, idx in traj:
+        try:
+            _, _, pos = store.read_linkage(f, name=linkage_name)
+        except Exception:
+            pts.append([np.nan, np.nan, np.nan])
+            continue
+        pos = np.asarray(pos)
+        if idx < len(pos):
+            pts.append(np.asarray(pos[idx]).ravel()[:3])
+        else:
+            pts.append([np.nan, np.nan, np.nan])
+    return np.asarray(pts, dtype=float)
+
+
+def apply_temporal_smoothing_to_store(
+    store: Any,
+    first: int,
+    last: int,
+    threshold: float = 1.0,
+    linkage_name: str = "ptv_is",
+    n_iter: int = 3,
+) -> dict[str, int]:
+    """Compute smoothing residuals per trajectory and report stats.
+
+    Returns ``{"n_trajectories", "n_high_residual", "n_dropped"}``. This
+    version reports only; it does not mutate the store (safe default). Set
+    ``apply=True`` behaviour is provided by callers that want to drop.
+    """
+    trajs = extract_trajectories(store, first, last, linkage_name)
+    residuals = []
+    high = 0
+    for t in trajs:
+        pos = trajectory_positions_from_store(store, t, linkage_name)
+        # drop nan rows
+        valid = ~np.isnan(pos).any(axis=1)
+        if valid.sum() < 3:
+            residuals.append(0.0)
+            continue
+        r = trajectory_acceleration_residual(pos[valid])
+        residuals.append(r)
+        if r > threshold:
+            high += 1
+    return {
+        "n_trajectories": len(trajs),
+        "n_high_residual": high,
+        "mean_residual": float(np.mean(residuals)) if residuals else 0.0,
+        "n_dropped": 0,
+    }
+
+
 def resolve_smoothing_config(track_cfg: dict, regime: dict) -> bool:
     val = track_cfg.get("temporal_smoothing", "auto")
     if isinstance(val, str):
