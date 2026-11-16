@@ -21,15 +21,15 @@ OUT_HTML = Path("/tmp/complex_case_3d.html")
 
 def main():
     spec = bm.ScenarioSpec(
-        num_particles=80,
-        num_frames=20,
-        velocity=1.5,
-        velocity_jitter=0.4,
-        noise_mm=0.1,
-        ghost_ratio=0.35,
+        num_particles=300,
+        num_frames=30,
+        velocity=1.2,
+        velocity_jitter=0.25,
+        noise_mm=0.05,
+        ghost_ratio=0.25,
         seed=7,
         flow_type="turbulent",
-        curvature=0.05,
+        curvature=0.03,
     )
     true_tracks, frame_gt = bm.generate_scenario(spec)
     rig = bm.make_standard_rig(refract=False)
