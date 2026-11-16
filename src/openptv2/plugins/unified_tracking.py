@@ -419,6 +419,8 @@ class Tracking:
             "confirm_link": regime["confirm"],
         }
 
+        self._apply_ilp_uniqueness(store, first, last, track_cfg, regime)
+
         ran_hybrid = False
         # Slow flow -> delegate to hybrid_deltat_3d plugin (coarse-to-fine).
         if regime["slow_flow"] or int(regime["delta_t"]) > 1:
@@ -601,6 +603,8 @@ class Tracking:
 
             run_configured_corrective_pass(self.exp, tracker, track_cfg)
 
+        self._apply_temporal_smoothing(store, first, last, track_cfg, regime, v_max)
+
         self._save_tracking_decision(
             store,
             first,
@@ -610,6 +614,135 @@ class Tracking:
             probe_metrics=probe_metrics,
             grid_search_table=grid_search_table,
         )
+
+    def _apply_ilp_uniqueness(
+        self,
+        store: Any,
+        first: int | None,
+        last: int | None,
+        track_cfg: dict[str, Any],
+        regime: dict[str, Any],
+    ) -> None:
+        """Apply optional ILP uniqueness ghost suppression on correspondences."""
+        if store is None or first is None or last is None or last < first:
+            return
+        try:
+            from openptv2.ghost_ilp import ilp_uniqueness_frame, resolve_ilp_config
+
+            ctx = dict(regime)
+            ctx.update(self._resolved or {})
+            if not resolve_ilp_config(track_cfg, ctx):
+                return
+
+            total_dropped = 0
+            max_size = int(track_cfg.get("ilp_max_size", 20))
+            time_limit_s = float(track_cfg.get("ilp_time_limit_s", 1.0))
+            for f in range(first, last + 1):
+                if not store.has_correspondences(f):
+                    continue
+                pos, cam_ids = store.read_correspondences(f)
+                if len(pos) == 0:
+                    continue
+                conf = None
+                if hasattr(store, "read_correspondence_confidence"):
+                    try:
+                        conf = store.read_correspondence_confidence(f)
+                    except Exception:
+                        conf = None
+                keep = ilp_uniqueness_frame(
+                    pos, cam_ids, conf=conf, max_size=max_size, time_limit_s=time_limit_s
+                )
+                n_drop = int((~keep).sum())
+                if n_drop > 0:
+                    store.write_correspondences(f, pos[keep], cam_ids[keep])
+                    total_dropped += n_drop
+            if total_dropped:
+                log.info("[unified] ILP uniqueness dropped %d ghost correspondences", total_dropped)
+        except Exception as exc:  # pragma: no cover - never break tracking
+            log.warning("[unified] ILP uniqueness skipped: %r", exc)
+
+    def _apply_temporal_smoothing(
+        self,
+        store: Any,
+        first: int | None,
+        last: int | None,
+        track_cfg: dict[str, Any],
+        regime: dict[str, Any],
+        v_max: float | None,
+    ) -> None:
+        """Apply optional IRLS temporal smoothing filter to drop rough/ghost trajectories."""
+        if store is None or first is None or last is None or last < first:
+            return
+        try:
+            from openptv2.temporal_smoothing import resolve_smoothing_config, smooth_trajectories
+            from openptv2.tracking_postprocess import read_linkage, write_linkage_frames
+
+            ctx = dict(regime)
+            ctx.update(self._resolved or {})
+            if not resolve_smoothing_config(track_cfg, ctx):
+                return
+
+            tracker = getattr(self.exp, "tracker", None)
+            linkage_base = getattr(tracker, "_naming", {}).get("linkage", "") or "ptv_is"
+            frames: dict[int, tuple[Any, Any, Any]] = {}
+            for f in range(first, last + 1):
+                rec = read_linkage(linkage_base, f, store=store)
+                if rec is not None:
+                    prv, nxt, xyz = rec
+                    frames[f] = (prv.copy(), nxt.copy(), xyz)
+            if not frames:
+                return
+
+            visited: set[tuple[int, int]] = set()
+            chains: list[list[tuple[int, int]]] = []
+            traj_arrays = []
+            for f in sorted(frames):
+                prv, nxt, _ = frames[f]
+                for i in range(len(prv)):
+                    if int(prv[i]) >= 0 or (f, i) in visited:
+                        continue
+                    chain: list[tuple[int, int]] = []
+                    cur_f, cur_i = f, i
+                    while cur_f in frames and 0 <= cur_i < len(frames[cur_f][1]):
+                        if (cur_f, cur_i) in visited:
+                            break
+                        visited.add((cur_f, cur_i))
+                        chain.append((cur_f, cur_i))
+                        nxt_i = int(frames[cur_f][1][cur_i])
+                        if nxt_i < 0:
+                            break
+                        # Follow forward to next frame that links back or next sequential frame.
+                        nxt_f = cur_f + 1
+                        while nxt_f <= last and nxt_f not in frames:
+                            nxt_f += 1
+                        if nxt_f not in frames:
+                            break
+                        cur_f, cur_i = nxt_f, nxt_i
+                    if len(chain) >= 3:
+                        import numpy as np
+
+                        chains.append(chain)
+                        traj_arrays.append(np.array([frames[cf][2][ci] for cf, ci in chain], dtype=float))
+
+            if not chains:
+                return
+            thresh = float(track_cfg.get("temporal_smoothing_threshold", max(1.5, 0.5 * float(v_max or 2.0))))
+            keep_flags = smooth_trajectories(traj_arrays, threshold=thresh)
+            dirty: set[int] = set()
+            dropped = 0
+            for chain, keep in zip(chains, keep_flags):
+                if keep:
+                    continue
+                dropped += 1
+                for cf, ci in chain:
+                    frames[cf][0][ci] = -1
+                    frames[cf][1][ci] = -1
+                    dirty.add(cf)
+            if dirty:
+                write_linkage_frames(linkage_base, frames, dirty, store=store)
+                log.info("[unified] temporal smoothing dropped %d rough trajectories", dropped)
+        except Exception as exc:  # pragma: no cover - never break tracking
+            log.warning("[unified] temporal smoothing skipped: %r", exc)
 
     def track_frames(self, frame_particles: list) -> list:
         """Array-level API: delegate to Cython 3D engine for now."""
