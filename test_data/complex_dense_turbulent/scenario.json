@@ -1,0 +1,25 @@
+{
+  "num_particles": 1000,
+  "num_frames": 40,
+  "domain": [
+    80.0,
+    80.0,
+    80.0
+  ],
+  "velocity": 1.2,
+  "velocity_jitter": 0.25,
+  "velocity_sweep": [],
+  "acceleration": 0.0,
+  "curvature": 0.03,
+  "birth_fraction": 0.0,
+  "death_fraction": 0.0,
+  "entering_particles": 0,
+  "leaving_particles": 0,
+  "crossings": [],
+  "crossing_particle_ids": [],
+  "gap_probability": 0.0,
+  "noise_mm": 0.05,
+  "ghost_ratio": 0.25,
+  "seed": 7,
+  "flow_type": "turbulent"
+}

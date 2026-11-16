@@ -21,8 +21,8 @@ OUT_HTML = Path("/tmp/complex_case_3d.html")
 
 def main():
     spec = bm.ScenarioSpec(
-        num_particles=300,
-        num_frames=30,
+        num_particles=1000,
+        num_frames=40,
         velocity=1.2,
         velocity_jitter=0.25,
         noise_mm=0.05,
@@ -33,9 +33,13 @@ def main():
     )
     true_tracks, frame_gt = bm.generate_scenario(spec)
     rig = bm.make_standard_rig(refract=False)
-    work_dir = Path("/tmp/complex_case")
+    work_dir = Path("test_data/complex_dense_turbulent")
     work_dir.mkdir(parents=True, exist_ok=True)
+    work_dir = work_dir.resolve()
     yaml_path = bm.write_experiment(rig, frame_gt, work_dir, first_frame=10001)
+    # Save scenario spec for reproducibility / future benchmarking.
+    import json
+    (work_dir / "scenario.json").write_text(json.dumps(spec.__dict__, indent=2, default=str))
 
     t0 = time.perf_counter()
     pred = bm.run_tracker(
