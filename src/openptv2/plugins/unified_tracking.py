@@ -625,6 +625,24 @@ class Tracking:
         except Exception as exc:  # pragma: no cover - never break tracking
             log.warning("[unified] trajectory-level ghost filter skipped: %r", exc)
 
+        # Multi-frame stitching: merge fragments + split kinks.
+        try:
+            stitch_opt = track_cfg.get("stitch", "auto")
+            do_stitch = stitch_opt in (True, "true", "yes", "on") or stitch_opt == "auto"
+            if do_stitch and store is not None and first is not None and last is not None and last >= first:
+                from openptv2.trajectory_stitch import stitch_trajectories
+
+                st = stitch_trajectories(
+                    store, first, last,
+                    max_gap=int(track_cfg.get("max_gap", 2)),
+                    spatial_tol=float(track_cfg.get("stitch_spatial_tol", 5.0)),
+                    kink_angle_deg=float(track_cfg.get("stitch_kink_angle", 90.0)),
+                    linkage_name=linkage_name,
+                )
+                log.info("[unified] trajectory stitch: %s", st)
+        except Exception as exc:  # pragma: no cover - never break tracking
+            log.warning("[unified] trajectory stitch skipped: %r", exc)
+
         self._save_tracking_decision(
             store,
             first,
