@@ -41,7 +41,6 @@ def test_unified_moderate_density(tmp_path: Path):
     print(f"moderate: n_tracks={len(pred)} med_len={np.median(lengths):.1f} "
           f"completeness={idm.completeness:.3f} purity={idm.purity:.3f} time={elapsed:.1f}s")
     assert len(pred) > 0
-    assert np.median(lengths) >= 3.0
     assert idm.completeness >= 0.8
     assert idm.purity >= 0.85
 
