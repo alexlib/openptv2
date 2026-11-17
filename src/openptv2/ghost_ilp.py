@@ -198,3 +198,148 @@ def resolve_ilp_config(track_cfg: dict, regime: dict) -> bool:
     ghost_rate = float(regime.get("ghost_rate", 0.0) or 0.0)
     density = float(regime.get("density", 0.0) or 0.0)
     return ghost_rate > 0.15 or density >= 500.0
+
+
+def trajectory_ilp_uniqueness(
+    traj_targets: Sequence[Sequence[tuple[int, int, int]]],
+    scores: Sequence[float],
+    *,
+    max_size: int = 50,
+    time_limit_s: float = 1.0,
+) -> np.ndarray:
+    """Select a subset of trajectories maximizing total score s.t. no two
+    selected trajectories share a ``(frame, cam, target_id)`` observation.
+
+    Parameters
+    ----------
+    traj_targets : sequence of sequences of ``(frame, cam, target_id)``
+        2D observations used by each candidate trajectory.
+    scores : sequence of float
+        Positive quality/weight score per trajectory (e.g. length * smoothness * RCM).
+    max_size : int
+        Maximum connected-component size for exact MILP; larger components use
+        a greedy score-descending fallback.
+    time_limit_s : float
+        MILP solver time limit per component.
+
+    Returns
+    -------
+    np.ndarray of bool
+        Boolean keep-mask of length ``len(traj_targets)``.
+    """
+    n = len(traj_targets)
+    if n == 0:
+        return np.zeros(0, dtype=bool)
+    score_arr = np.asarray(scores, dtype=float)
+    if score_arr.shape != (n,):
+        raise ValueError(f"scores shape {score_arr.shape} != ({n},)")
+
+    obs_sets = [set(ts) for ts in traj_targets]
+    # Build connected components of trajectories sharing any (frame, cam, tid).
+    obs_to_trajs: dict[tuple[int, int, int], list[int]] = {}
+    for idx, ts in enumerate(obs_sets):
+        for obs in ts:
+            obs_to_trajs.setdefault(obs, []).append(idx)
+
+    parent = list(range(n))
+
+    def find(x: int) -> int:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(a: int, b: int) -> None:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[ra] = rb
+
+    for users in obs_to_trajs.values():
+        if len(users) > 1:
+            first_u = users[0]
+            for other_u in users[1:]:
+                union(first_u, other_u)
+
+    groups: dict[int, list[int]] = {}
+    for i in range(n):
+        groups.setdefault(find(i), []).append(i)
+
+    keep = np.zeros(n, dtype=bool)
+    for comp in groups.values():
+        if len(comp) == 1:
+            keep[comp[0]] = True
+            continue
+        if len(comp) == 2:
+            i, j = comp[0], comp[1]
+            if not (obs_sets[i] & obs_sets[j]):
+                keep[i] = True
+                keep[j] = True
+            elif score_arr[i] >= score_arr[j]:
+                keep[i] = True
+            else:
+                keep[j] = True
+            continue
+
+        if len(comp) > max_size:
+            _greedy_select_trajs(comp, obs_sets, score_arr, keep)
+            continue
+
+        obs_index: dict[tuple[int, int, int], int] = {}
+        traj_obs: list[list[int]] = []
+        for idx in comp:
+            ids = []
+            for obs in obs_sets[idx]:
+                if obs not in obs_index:
+                    obs_index[obs] = len(obs_index)
+                ids.append(obs_index[obs])
+            traj_obs.append(ids)
+
+        n_obs = len(obs_index)
+        if n_obs == 0:
+            for idx in comp:
+                keep[idx] = True
+            continue
+
+        c = -score_arr[comp]
+        A = np.zeros((n_obs, len(comp)), dtype=float)
+        for k, ids in enumerate(traj_obs):
+            for o in ids:
+                A[o, k] = 1.0
+        try:
+            res = milp(
+                c=c,
+                constraints=LinearConstraint(A, -np.inf, np.ones(n_obs)),
+                integrality=np.ones(len(comp)),
+                bounds=Bounds(0.0, 1.0),
+                options={"time_limit": time_limit_s, "disp": False},
+            )
+            if res.x is not None and np.any(res.x > 0.5):
+                for k, idx in enumerate(comp):
+                    if res.x[k] > 0.5:
+                        keep[idx] = True
+            else:
+                _greedy_select_trajs(comp, obs_sets, score_arr, keep)
+        except Exception:
+            _greedy_select_trajs(comp, obs_sets, score_arr, keep)
+
+    return keep
+
+
+def _greedy_select_trajs(
+    comp: Sequence[int],
+    obs_sets: Sequence[set[tuple[int, int, int]]],
+    scores: np.ndarray,
+    keep: np.ndarray,
+) -> None:
+    order = sorted(comp, key=lambda i: scores[i], reverse=True)
+    used: set[tuple[int, int, int]] = set()
+    any_kept = False
+    for idx in order:
+        if obs_sets[idx] & used:
+            continue
+        keep[idx] = True
+        used |= obs_sets[idx]
+        any_kept = True
+    if not any_kept and comp:
+        best = max(comp, key=lambda i: scores[i])
+        keep[best] = True

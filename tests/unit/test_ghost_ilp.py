@@ -86,3 +86,38 @@ def test_solve_component_ilp_overflow_fallback():
     sel = solve_component_ilp(pos, cam, list(range(n)), conf, max_size=5)
     assert len(sel) == 1
     assert sel[0] == int(np.argmax(conf))
+
+
+def test_trajectory_ilp_keeps_non_conflicting():
+    from openptv2.ghost_ilp import trajectory_ilp_uniqueness
+
+    trajs = [
+        [(1, 0, 10), (2, 0, 11)],
+        [(1, 0, 20), (2, 0, 21)],
+    ]
+    keep = trajectory_ilp_uniqueness(trajs, [2.0, 1.5])
+    assert keep.tolist() == [True, True]
+
+
+def test_trajectory_ilp_prefers_two_clean_over_one_spanning_ghost():
+    from openptv2.ghost_ilp import trajectory_ilp_uniqueness
+
+    # Trajectory 1 spans targets from both Trajectory 0 and Trajectory 2.
+    # sum(score[0] + score[2]) = 3.0 + 3.0 = 6.0 > score[1] = 4.0 -> keep {0, 2}.
+    trajs = [
+        [(1, 0, 1), (2, 0, 2)],
+        [(1, 0, 1), (3, 0, 3)],
+        [(3, 0, 3), (4, 0, 4)],
+    ]
+    keep = trajectory_ilp_uniqueness(trajs, [3.0, 4.0, 3.0])
+    assert keep.tolist() == [True, False, True]
+
+
+def test_trajectory_ilp_overflow_fallback():
+    from openptv2.ghost_ilp import trajectory_ilp_uniqueness
+
+    trajs = [[(1, 0, 99), (2, 0, i)] for i in range(10)]
+    scores = [float(i) for i in range(10)]
+    keep = trajectory_ilp_uniqueness(trajs, scores, max_size=3)
+    assert keep.sum() == 1
+    assert bool(keep[9]) is True

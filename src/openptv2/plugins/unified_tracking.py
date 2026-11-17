@@ -95,7 +95,18 @@ class Tracking:
         pm, spar, store, _cals, _cpar = _unwrap_exp(exp)
         if store is None and self.ptv is not None:
             store = getattr(self.ptv, "store", None)
+        opened_store = None
+        if store is None and self.ptv is not None and hasattr(self.ptv, "_open_run_store"):
+            try:
+                opened_store = self.ptv._open_run_store(exp)
+                store = opened_store
+            except Exception:
+                store = None
         first, last = _resolve_frame_range(spar, pm, store)
+        if opened_store is not None and (
+            first is None or not opened_store.has_correspondences(first)
+        ):
+            store = None
         return pm, store, first, last
 
     def _auto_regime(self, exp: Any, track_cfg: dict) -> dict:
@@ -419,7 +430,8 @@ class Tracking:
             "confirm_link": regime["confirm"],
         }
 
-        self._apply_ilp_uniqueness(store, first, last, track_cfg, regime)
+        if str(track_cfg.get("ilp_mode", "trajectory")).strip().lower() == "frame":
+            self._apply_ilp_uniqueness(store, first, last, track_cfg, regime)
 
         ran_hybrid = False
         # Slow flow -> delegate to hybrid_deltat_3d plugin (coarse-to-fine).
@@ -603,7 +615,10 @@ class Tracking:
 
             run_configured_corrective_pass(self.exp, tracker, track_cfg)
 
-        self._apply_temporal_smoothing(store, first, last, track_cfg, regime, v_max)
+        post_store = store or getattr(getattr(self.exp, "tracker", None), "_store", None)
+        if str(track_cfg.get("ilp_mode", "trajectory")).strip().lower() != "frame":
+            self._apply_trajectory_ilp(post_store, first, last, track_cfg, regime)
+        self._apply_temporal_smoothing(post_store, first, last, track_cfg, regime, v_max)
 
         self._save_tracking_decision(
             store,
@@ -661,6 +676,196 @@ class Tracking:
         except Exception as exc:  # pragma: no cover - never break tracking
             log.warning("[unified] ILP uniqueness skipped: %r", exc)
 
+    def _load_linkage_chains(
+        self,
+        store: Any,
+        first: int,
+        last: int,
+        *,
+        min_length: int = 2,
+    ) -> tuple[str, dict[int, tuple[Any, Any, Any]], list[list[tuple[int, int]]]]:
+        """Load linkage frames from ``store`` and extract connected trajectories."""
+        from openptv2.tracking_postprocess import read_linkage
+
+        tracker = getattr(self.exp, "tracker", None)
+        linkage_base = getattr(tracker, "_naming", {}).get("linkage", "") or "ptv_is"
+        frames: dict[int, tuple[Any, Any, Any]] = {}
+        for f in range(first, last + 1):
+            rec = read_linkage(linkage_base, f, store=store)
+            if rec is not None:
+                prv, nxt, xyz = rec
+                frames[f] = (prv.copy(), nxt.copy(), xyz)
+        if not frames:
+            return linkage_base, frames, []
+
+        visited: set[tuple[int, int]] = set()
+        chains: list[list[tuple[int, int]]] = []
+        for f in sorted(frames):
+            prv, _, _ = frames[f]
+            for i in range(len(prv)):
+                if int(prv[i]) >= 0 or (f, i) in visited:
+                    continue
+                chain: list[tuple[int, int]] = []
+                cur_f, cur_i = f, i
+                while cur_f in frames and 0 <= cur_i < len(frames[cur_f][1]):
+                    if (cur_f, cur_i) in visited:
+                        break
+                    visited.add((cur_f, cur_i))
+                    chain.append((cur_f, cur_i))
+                    nxt_i = int(frames[cur_f][1][cur_i])
+                    if nxt_i < 0:
+                        break
+                    nxt_f = cur_f + 1
+                    while nxt_f <= last and nxt_f not in frames:
+                        nxt_f += 1
+                    if nxt_f not in frames:
+                        break
+                    cur_f, cur_i = nxt_f, nxt_i
+                if len(chain) >= min_length:
+                    chains.append(chain)
+        return linkage_base, frames, chains
+
+    @staticmethod
+    def _unlink_dropped_chains(
+        linkage_base: str,
+        frames: dict[int, tuple[Any, Any, Any]],
+        chains: list[list[tuple[int, int]]],
+        keep_flags: Any,
+        store: Any,
+    ) -> int:
+        """Unlink dropped chains in-place and persist dirty frames."""
+        from openptv2.tracking_postprocess import write_linkage_frames
+
+        dirty: set[int] = set()
+        dropped = 0
+        for chain, keep in zip(chains, keep_flags):
+            if keep:
+                continue
+            dropped += 1
+            for cf, ci in chain:
+                frames[cf][0][ci] = -1
+                frames[cf][1][ci] = -1
+                dirty.add(cf)
+        if dirty:
+            write_linkage_frames(linkage_base, frames, dirty, store=store)
+        return dropped
+
+    def _apply_trajectory_ilp(
+        self,
+        store: Any,
+        first: int | None,
+        last: int | None,
+        track_cfg: dict[str, Any],
+        regime: dict[str, Any],
+    ) -> None:
+        """Post-tracking trajectory-level ILP uniqueness over shared 2D targets.
+
+        Scores each trajectory by length, temporal smoothness, and camera/RCM
+        support, then resolves shared-target conflicts without breaking temporal
+        continuity.
+        """
+        if store is None or first is None or last is None or last < first:
+            return
+        try:
+            import numpy as np
+            from scipy.spatial import cKDTree
+
+            from openptv2.ghost_ilp import resolve_ilp_config, trajectory_ilp_uniqueness
+            from openptv2.temporal_smoothing import trajectory_acceleration_residual
+
+            ctx = dict(regime)
+            ctx.update(self._resolved or {})
+            if not resolve_ilp_config(track_cfg, ctx):
+                return
+
+            linkage_base, frames, chains = self._load_linkage_chains(
+                store, first, last, min_length=2
+            )
+            if not chains:
+                return
+
+            # Load per-frame 2D target IDs and optional RCM quality.
+            corres_map: dict[int, tuple[np.ndarray, np.ndarray, cKDTree | None]] = {}
+            for f in frames:
+                if not store.has_correspondences(f):
+                    continue
+                pos, cam_ids = store.read_correspondences(f)
+                if len(pos) > 0:
+                    tree = cKDTree(pos) if len(pos) != len(frames[f][2]) else None
+                    corres_map[f] = (pos, cam_ids, tree)
+            if not corres_map:
+                return
+
+            rcm_by_frame: dict[int, np.ndarray] = {}
+            cpar = getattr(self.exp, "cpar", None)
+            cals = getattr(self.exp, "cals", None)
+            if cpar is not None and cals is not None:
+                try:
+                    from openptv2.layered_tracking import compute_correspondence_rcm
+
+                    for f, (pos, cam_ids, _) in corres_map.items():
+                        if store.has_targets(f):
+                            targets = [store.read_targets(f, c) for c in range(len(cals))]
+                            rcm_by_frame[f] = compute_correspondence_rcm(
+                                pos, cam_ids, targets, cpar, cals
+                            )
+                except Exception:
+                    rcm_by_frame = {}
+
+            traj_targets: list[list[tuple[int, int, int]]] = []
+            scores: list[float] = []
+            max_cams = max(1, len(cals) if cals is not None else 4)
+            for chain in chains:
+                obs: list[tuple[int, int, int]] = []
+                cam_counts: list[int] = []
+                rcms: list[float] = []
+                pts = np.array([frames[cf][2][ci] for cf, ci in chain], dtype=float)
+                for cf, ci in chain:
+                    entry = corres_map.get(cf)
+                    if entry is None:
+                        continue
+                    pos, cam_ids, tree = entry
+                    cidx = ci
+                    if tree is not None:
+                        dist, nn = tree.query(frames[cf][2][ci])
+                        if dist > 1e-3:
+                            continue
+                        cidx = int(nn)
+                    elif cidx >= len(cam_ids) or np.linalg.norm(pos[cidx] - frames[cf][2][ci]) > 1e-3:
+                        continue
+                    row = cam_ids[cidx]
+                    n_c = 0
+                    for cam, tid in enumerate(row):
+                        if tid is not None and int(tid) >= 0:
+                            obs.append((cf, cam, int(tid)))
+                            n_c += 1
+                    cam_counts.append(n_c)
+                    if cf in rcm_by_frame and cidx < len(rcm_by_frame[cf]):
+                        val = float(rcm_by_frame[cf][cidx])
+                        if np.isfinite(val):
+                            rcms.append(val)
+
+                traj_targets.append(obs)
+                accel = trajectory_acceleration_residual(pts)
+                smooth_factor = 1.0 / (1.0 + accel)
+                cam_factor = (float(np.mean(cam_counts)) / max_cams) if cam_counts else 0.5
+                rcm_factor = (1.0 / (1.0 + float(np.mean(rcms)))) if rcms else 1.0
+                scores.append(len(chain) * smooth_factor * max(0.25, cam_factor) * rcm_factor)
+
+            keep_flags = trajectory_ilp_uniqueness(
+                traj_targets,
+                scores,
+                max_size=int(track_cfg.get("ilp_max_size", 50)),
+                time_limit_s=float(track_cfg.get("ilp_time_limit_s", 1.0)),
+            )
+            dropped = self._unlink_dropped_chains(
+                linkage_base, frames, chains, keep_flags, store
+            )
+            if dropped:
+                log.info("[unified] trajectory ILP dropped %d conflicting ghost trajectories", dropped)
+        except Exception as exc:  # pragma: no cover - never break tracking
+            log.warning("[unified] trajectory ILP skipped: %r", exc)
+
     def _apply_temporal_smoothing(
         self,
         store: Any,
@@ -674,72 +879,30 @@ class Tracking:
         if store is None or first is None or last is None or last < first:
             return
         try:
+            import numpy as np
+
             from openptv2.temporal_smoothing import resolve_smoothing_config, smooth_trajectories
-            from openptv2.tracking_postprocess import read_linkage, write_linkage_frames
 
             ctx = dict(regime)
             ctx.update(self._resolved or {})
             if not resolve_smoothing_config(track_cfg, ctx):
                 return
 
-            tracker = getattr(self.exp, "tracker", None)
-            linkage_base = getattr(tracker, "_naming", {}).get("linkage", "") or "ptv_is"
-            frames: dict[int, tuple[Any, Any, Any]] = {}
-            for f in range(first, last + 1):
-                rec = read_linkage(linkage_base, f, store=store)
-                if rec is not None:
-                    prv, nxt, xyz = rec
-                    frames[f] = (prv.copy(), nxt.copy(), xyz)
-            if not frames:
-                return
-
-            visited: set[tuple[int, int]] = set()
-            chains: list[list[tuple[int, int]]] = []
-            traj_arrays = []
-            for f in sorted(frames):
-                prv, nxt, _ = frames[f]
-                for i in range(len(prv)):
-                    if int(prv[i]) >= 0 or (f, i) in visited:
-                        continue
-                    chain: list[tuple[int, int]] = []
-                    cur_f, cur_i = f, i
-                    while cur_f in frames and 0 <= cur_i < len(frames[cur_f][1]):
-                        if (cur_f, cur_i) in visited:
-                            break
-                        visited.add((cur_f, cur_i))
-                        chain.append((cur_f, cur_i))
-                        nxt_i = int(frames[cur_f][1][cur_i])
-                        if nxt_i < 0:
-                            break
-                        # Follow forward to next frame that links back or next sequential frame.
-                        nxt_f = cur_f + 1
-                        while nxt_f <= last and nxt_f not in frames:
-                            nxt_f += 1
-                        if nxt_f not in frames:
-                            break
-                        cur_f, cur_i = nxt_f, nxt_i
-                    if len(chain) >= 3:
-                        import numpy as np
-
-                        chains.append(chain)
-                        traj_arrays.append(np.array([frames[cf][2][ci] for cf, ci in chain], dtype=float))
-
+            linkage_base, frames, chains = self._load_linkage_chains(
+                store, first, last, min_length=3
+            )
             if not chains:
                 return
+            traj_arrays = [
+                np.array([frames[cf][2][ci] for cf, ci in chain], dtype=float)
+                for chain in chains
+            ]
             thresh = float(track_cfg.get("temporal_smoothing_threshold", max(1.5, 0.5 * float(v_max or 2.0))))
             keep_flags = smooth_trajectories(traj_arrays, threshold=thresh)
-            dirty: set[int] = set()
-            dropped = 0
-            for chain, keep in zip(chains, keep_flags):
-                if keep:
-                    continue
-                dropped += 1
-                for cf, ci in chain:
-                    frames[cf][0][ci] = -1
-                    frames[cf][1][ci] = -1
-                    dirty.add(cf)
-            if dirty:
-                write_linkage_frames(linkage_base, frames, dirty, store=store)
+            dropped = self._unlink_dropped_chains(
+                linkage_base, frames, chains, keep_flags, store
+            )
+            if dropped:
                 log.info("[unified] temporal smoothing dropped %d rough trajectories", dropped)
         except Exception as exc:  # pragma: no cover - never break tracking
             log.warning("[unified] temporal smoothing skipped: %r", exc)
