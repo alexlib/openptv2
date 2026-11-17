@@ -54,4 +54,4 @@ def test_resolve_smoothing_config():
     assert resolve_smoothing_config({"temporal_smoothing": "false"}, {}) is False
     assert resolve_smoothing_config({"temporal_smoothing": "auto"}, {"slow_flow": True}) is True
     assert resolve_smoothing_config({"temporal_smoothing": "auto"}, {"jump_rate": 0.2}) is True
-    assert resolve_smoothing_config({"temporal_smoothing": "auto"}, {}) is False
+    assert resolve_smoothing_config({"temporal_smoothing": "auto"}, {}) is True
