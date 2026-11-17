@@ -176,7 +176,7 @@ def _make_mock_ptv_and_tracker(store: RunStore) -> tuple[SimpleNamespace, Simple
     def _full_backward() -> None:
         calls.append("full_backward")
 
-    def _postprocess() -> dict[str, int]:
+    def _postprocess(max_gap: int = 2) -> dict[str, int]:
         calls.append("postprocess")
         return {"links_before": 0, "links_after": 0}
 

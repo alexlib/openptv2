@@ -472,6 +472,7 @@ class Tracking:
                 do_peeling
                 and store is not None
                 and hasattr(self.exp, "cpar")
+                and hasattr(self.exp, "vpar")
                 and hasattr(self.exp, "cals")
             ):
                 try:
@@ -590,11 +591,13 @@ class Tracking:
                     log.warning("[unified] confirm_links skipped: %r", exc)
 
             if track_cfg.get("postprocess", True):
-                stats = tracker.postprocess()
+                max_gap = int(track_cfg.get("max_gap", 2))
+                stats = tracker.postprocess(max_gap=max_gap)
                 log.info(
-                    "Post-process links: %s -> %s",
+                    "Post-process links: %s -> %s (max_gap=%d)",
                     stats.get("links_before", 0),
                     stats.get("links_after", 0),
+                    max_gap,
                 )
 
             from openptv2.track_assisted import run_configured_corrective_pass
@@ -616,6 +619,7 @@ class Tracking:
                     store, first, last,
                     residual_threshold=float(track_cfg.get("smooth_residual_threshold", 2.0)),
                     linkage_name=linkage_name,
+                    point_level=bool(track_cfg.get("point_level_smoothing", True)),
                 )
                 log.info("[unified] trajectory-level ghost filter: %s", stats)
         except Exception as exc:  # pragma: no cover - never break tracking

@@ -169,7 +169,7 @@ def trajectory_targets(store, traj, frame_camids):
     return out
 
 
-def trajectory_level_ghost_filter(store, first, last, residual_threshold=2.0, linkage_name="ptv_is"):
+def trajectory_level_ghost_filter(store, first, last, residual_threshold=2.0, linkage_name="ptv_is", point_level=False):
     # Pre-read per-frame data once.
     frame_linkage = {}
     frame_camids = {}
@@ -257,12 +257,84 @@ def trajectory_level_ghost_filter(store, first, last, residual_threshold=2.0, li
         except Exception:
             pass
 
+    # Point-level smoothing: drop individual high-residual points from kept trajectories.
+    point_dropped = 0
+    if point_level:
+        for i, inf in enumerate(info):
+            if not keep_flags[i]:
+                continue
+            traj = inf["traj"]
+            pos = None
+            # compute per-point residual from smooth fit
+            pts_pos = []
+            for f, idx in traj:
+                ld = frame_linkage.get(f)
+                if ld is None:
+                    pts_pos.append([np.nan, np.nan, np.nan]); continue
+                _, _, p = ld
+                p = np.asarray(p)
+                if idx < len(p):
+                    pts_pos.append(np.asarray(p[idx]).ravel()[:3])
+                else:
+                    pts_pos.append([np.nan, np.nan, np.nan])
+            pos = np.asarray(pts_pos, dtype=float)
+            valid = ~np.isnan(pos).any(axis=1)
+            if valid.sum() < 3:
+                continue
+            # fit smooth model on valid frames
+            idxs = np.array([j for j in range(len(traj)) if valid[j]], dtype=float)
+            P = pos[valid]
+            deg = min(3, len(P) - 1)
+            A = np.vander(idxs, deg + 1)
+            try:
+                beta = np.linalg.lstsq(A, P, rcond=None)[0]
+            except Exception:
+                continue
+            pred = A @ beta
+            resid = np.sqrt(np.sum((P - pred) ** 2, axis=1))
+            thr = residual_threshold
+            # map back to traj indices
+            bad_frames = set()
+            vi = 0
+            for j in range(len(traj)):
+                if not valid[j]:
+                    continue
+                if resid[vi] > thr:
+                    bad_frames.add(j)
+                vi += 1
+            # unlink bad points (keep at least 2)
+            if len(bad_frames) >= len(traj) - 2:
+                bad_frames = set()
+            to_drop_pts = {}
+            for j, (f, idx) in enumerate(traj):
+                if j in bad_frames:
+                    to_drop_pts.setdefault(f, set()).add(idx)
+            for f, idxs in to_drop_pts.items():
+                ld = frame_linkage.get(f)
+                if ld is None:
+                    continue
+                prev, nxt, pos_arr = ld
+                prev = np.asarray(prev).ravel().copy()
+                nxt = np.asarray(nxt).ravel().copy()
+                pos_arr = np.asarray(pos_arr)
+                for idx in idxs:
+                    if idx < len(prev):
+                        if prev[idx] != -1 or nxt[idx] != -1:
+                            point_dropped += 1
+                        prev[idx] = -1
+                        nxt[idx] = -1
+                try:
+                    store.write_linkage(f, prev, nxt, pos_arr, name=linkage_name)
+                except Exception:
+                    pass
+
     return {
         "n_trajectories": len(trajs),
         "n_ghost_residual": n_ghost,
         "n_conflict_dropped": n_conflict,
         "n_kept": int(sum(keep_flags)),
-        "n_dropped_points": dropped_points,
+        "n_dropped_points": dropped_points + point_dropped,
+        "n_point_dropped": point_dropped,
     }
 
 
@@ -285,7 +357,7 @@ def resolve_smoothing_config(track_cfg, regime):
     ghost_rate = regime.get("ghost_rate", None)
     density = float(regime.get("density", 0.0) or 0.0)
     if ghost_rate is None:
-        ghost_rate = 1.0
-    else:
-        ghost_rate = float(ghost_rate or 0.0)
-    return slow or jump_rate > 0.1 or ghost_rate > 0.15 or density == 0 or density >= 500.0
+        # Unknown regime: be conservative, only enable for clearly dense scenes.
+        return density >= 500.0 or slow or jump_rate > 0.1
+    ghost_rate = float(ghost_rate or 0.0)
+    return slow or jump_rate > 0.1 or ghost_rate > 0.2
