@@ -638,7 +638,7 @@ class Tracking:
                     store, first, last,
                     max_gap=int(track_cfg.get("max_gap", 2)),
                     spatial_tol=float(track_cfg.get("stitch_spatial_tol", 5.0)),
-                    kink_angle_deg=float(track_cfg.get("stitch_kink_angle", 90.0)),
+                    kink_angle_deg=float(track_cfg.get("stitch_kink_angle", 60.0)),
                     linkage_name=linkage_name,
                 )
                 log.info("[unified] trajectory stitch: %s", st)
