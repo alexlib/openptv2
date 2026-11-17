@@ -55,3 +55,35 @@ def test_resolve_smoothing_config():
     assert resolve_smoothing_config({"temporal_smoothing": "auto"}, {"slow_flow": True}) is True
     assert resolve_smoothing_config({"temporal_smoothing": "auto"}, {"jump_rate": 0.2}) is True
     assert resolve_smoothing_config({"temporal_smoothing": "auto"}, {}) is False
+
+
+def test_irls_predict_state_quadratic():
+    from openptv2.temporal_smoothing import irls_predict_state
+
+    t = np.arange(6, dtype=float)
+    pos = np.column_stack([t, 0.5 * t ** 2, np.zeros_like(t)])
+    p_pred, v_pred, resid = irls_predict_state(t, pos, 6.0)
+    assert np.allclose(p_pred, [6.0, 18.0, 0.0], atol=1e-6)
+    assert np.allclose(v_pred, [1.0, 6.0, 0.0], atol=1e-6)
+    assert resid < 1e-6
+
+
+def test_stitch_tracklets_irls_connects_broken_tracklet():
+    from openptv2.temporal_smoothing import stitch_tracklets_irls
+
+    # 6 frames: tracklet A (0,1,2) -> broken link -> tracklet B (3,4,5)
+    frames = {}
+    for f in range(6):
+        prv = np.array([-1], dtype=np.int32)
+        nxt = np.array([-1], dtype=np.int32)
+        xyz = np.array([[float(f), 0.0, 0.0]], dtype=np.float64)
+        frames[f] = (prv, nxt, xyz)
+    for f in (0, 1, 3, 4):
+        frames[f][1][0] = 0
+        frames[f + 1][0][0] = 0
+
+    n_stitched, dirty = stitch_tracklets_irls(frames, 0, 5, pos_tol=0.5, vel_tol=0.5)
+    assert n_stitched == 1
+    assert dirty == {2, 3}
+    assert int(frames[2][1][0]) == 0
+    assert int(frames[3][0][0]) == 0

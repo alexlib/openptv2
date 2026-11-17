@@ -616,6 +616,7 @@ class Tracking:
             run_configured_corrective_pass(self.exp, tracker, track_cfg)
 
         post_store = store or getattr(getattr(self.exp, "tracker", None), "_store", None)
+        self._apply_irls_stitching(post_store, first, last, track_cfg, regime, v_max)
         if str(track_cfg.get("ilp_mode", "trajectory")).strip().lower() != "frame":
             self._apply_trajectory_ilp(post_store, first, last, track_cfg, regime)
         self._apply_temporal_smoothing(post_store, first, last, track_cfg, regime, v_max)
@@ -675,6 +676,80 @@ class Tracking:
                 log.info("[unified] ILP uniqueness dropped %d ghost correspondences", total_dropped)
         except Exception as exc:  # pragma: no cover - never break tracking
             log.warning("[unified] ILP uniqueness skipped: %r", exc)
+
+    def _apply_irls_stitching(
+        self,
+        store: Any,
+        first: int | None,
+        last: int | None,
+        track_cfg: dict[str, Any],
+        regime: dict[str, Any],
+        v_max: float | None,
+    ) -> None:
+        """Stitch fragmented tracklets using IRLS-smoothed multi-frame prediction."""
+        if store is None or first is None or last is None or last < first:
+            return
+        if not self._resolve_bool(track_cfg.get("irls_stitch", "auto"), bool(track_cfg.get("postprocess", True))):
+            return
+        try:
+            from openptv2.temporal_smoothing import stitch_tracklets_irls
+            from openptv2.tracking_postprocess import read_linkage, write_linkage_frames
+
+            tracker = getattr(self.exp, "tracker", None)
+            linkage_base = getattr(tracker, "_naming", {}).get("linkage", "") or "ptv_is"
+            frames: dict[int, tuple[Any, Any, Any]] = {}
+            for f in range(first, last + 1):
+                rec = read_linkage(linkage_base, f, store=store)
+                if rec is not None:
+                    prv, nxt, xyz = rec
+                    frames[f] = (prv.copy(), nxt.copy(), xyz)
+            if not frames:
+                return
+
+            tpar = getattr(self.exp, "track_par", None)
+            dacc_val = None
+            if track_cfg.get("dacc") is not None:
+                dacc_val = float(track_cfg["dacc"])
+            elif tpar is not None and hasattr(tpar, "get_dacc"):
+                dacc_val = float(tpar.get_dacc())
+
+            angle_val = None
+            if track_cfg.get("angle") is not None:
+                angle_val = float(track_cfg["angle"])
+            elif tpar is not None and hasattr(tpar, "get_dangle"):
+                angle_val = float(tpar.get_dangle())
+
+            max_step = None
+            if v_max is not None:
+                max_step = (3.0 ** 0.5) * float(v_max)
+            elif tpar is not None and all(
+                hasattr(tpar, fn) for fn in ("get_dvxmax", "get_dvymax", "get_dvzmax")
+            ):
+                max_step = (
+                    float(tpar.get_dvxmax()) ** 2
+                    + float(tpar.get_dvymax()) ** 2
+                    + float(tpar.get_dvzmax()) ** 2
+                ) ** 0.5
+
+            default_tol = max(0.8, 0.5 * float(v_max or 2.0))
+            if dacc_val is not None and dacc_val > 0:
+                default_tol = min(default_tol, max(1.5 * dacc_val, 0.35))
+            pos_tol = float(track_cfg.get("irls_stitch_pos_tol", default_tol))
+            vel_tol = float(track_cfg.get("irls_stitch_vel_tol", default_tol))
+            n_stitched, dirty = stitch_tracklets_irls(
+                frames,
+                first,
+                last,
+                pos_tol=pos_tol,
+                vel_tol=vel_tol,
+                max_step=max_step,
+                max_angle_deg=angle_val,
+            )
+            if dirty:
+                write_linkage_frames(linkage_base, frames, dirty, store=store)
+                log.info("[unified] IRLS stitching connected %d tracklet link(s)", n_stitched)
+        except Exception as exc:  # pragma: no cover - never break tracking
+            log.warning("[unified] IRLS stitching skipped: %r", exc)
 
     def _load_linkage_chains(
         self,
