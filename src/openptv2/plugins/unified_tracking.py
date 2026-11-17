@@ -601,24 +601,25 @@ class Tracking:
 
             run_configured_corrective_pass(self.exp, tracker, track_cfg)
 
-        # Optional temporal smoothing post-pass (ghost suppression).
+        # Trajectory-level ghost suppression (temporal coherence + target uniqueness).
         try:
             from openptv2.temporal_smoothing import (
-                apply_temporal_smoothing_to_store,
+                trajectory_level_ghost_filter,
                 resolve_smoothing_config,
             )
 
             _ctx = dict(regime)
             _ctx.update(self._resolved or {})
+            linkage_name = (getattr(self.ptv, "_naming", {}) or {}).get("linkage", "ptv_is") if self.ptv else "ptv_is"
             if resolve_smoothing_config(track_cfg, _ctx) and store is not None and first is not None and last is not None and last >= first:
-                stats = apply_temporal_smoothing_to_store(
+                stats = trajectory_level_ghost_filter(
                     store, first, last,
-                    threshold=float(track_cfg.get("smooth_residual_threshold", 1.0)),
-                    linkage_name=getattr(self.ptv, "_naming", {}).get("linkage", "ptv_is") if self.ptv else "ptv_is",
+                    residual_threshold=float(track_cfg.get("smooth_residual_threshold", 2.0)),
+                    linkage_name=linkage_name,
                 )
-                log.info("[unified] temporal smoothing: %s", stats)
+                log.info("[unified] trajectory-level ghost filter: %s", stats)
         except Exception as exc:  # pragma: no cover - never break tracking
-            log.warning("[unified] temporal smoothing skipped: %r", exc)
+            log.warning("[unified] trajectory-level ghost filter skipped: %r", exc)
 
         self._save_tracking_decision(
             store,

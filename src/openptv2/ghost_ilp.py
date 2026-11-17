@@ -194,7 +194,8 @@ def resolve_ilp_config(track_cfg: dict, regime: dict) -> bool:
         return True
     if val is False:
         return False
-    # auto
+    # auto: conservative — per-frame ILP can fragment tracks, so only enable
+    # at very high ghost rates. Trajectory-level filtering is preferred.
     ghost_rate = float(regime.get("ghost_rate", 0.0) or 0.0)
     density = float(regime.get("density", 0.0) or 0.0)
-    return ghost_rate > 0.15 or density >= 500.0
+    return ghost_rate > 0.4 or density >= 2000.0
