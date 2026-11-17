@@ -209,7 +209,18 @@ def trajectory_level_ghost_filter(store, first, last, residual_threshold=2.0, li
         r = trajectory_acceleration_residual(p) if len(p) >= 3 else 0.0
         sc = trajectory_score(p)
         tgts = trajectory_targets(store, t, frame_camids)
-        info.append({"traj": t, "resid": r, "score": sc, "targets": tgts, "ghost": r > residual_threshold})
+        # Velocity-statistics ghost criteria (learned from good vs bad tracks):
+        #   good tracks: vel_mean ~1.0, vel_std ~0.43 (matches GT turbulent flow)
+        #   bad/ghost tracks: vel_mean ~2.1, vel_std ~0.31 (faster, uniform)
+        vels = np.diff(p, axis=0) if len(p) >= 2 else np.zeros((0, 3))
+        vel_mag = np.linalg.norm(vels, axis=1) if len(vels) else np.array([0.0])
+        vm = float(np.mean(vel_mag)) if len(vel_mag) else 0.0
+        vs = float(np.std(vel_mag)) if len(vel_mag) > 1 else 0.0
+        # ghost if: too fast, too uniform, or too straight (curvature ~0)
+        is_ghost_vel = (vm > 1.5) or (vm > 0 and vs < 0.15) or (len(vels) >= 2 and vs == 0.0)
+        info.append({"traj": t, "resid": r, "score": sc, "targets": tgts,
+                     "vel_mean": vm, "vel_std": vs,
+                     "ghost": (r > residual_threshold) or is_ghost_vel})
 
     kept_targets = set()
     keep_flags = [False] * len(info)
