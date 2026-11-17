@@ -369,6 +369,14 @@ def compute_self_consistency_metrics(
         "total_particles": int(total_particles),
         "reciprocity_rate": float(reciprocity_rate),
         "track_length_stats": track_length_stats,
+        "length_match_score": float(
+            1.0
+            - min(
+                1.0,
+                abs(float(track_length_stats.get("median", 0)) - float(hi - lo + 1))
+                / float(max(1, hi - lo + 1)),
+            )
+        ) if track_length_stats.get("count", 0) > 0 else 0.0,
         "jump_step_rate": float(jump_step_rate),
         "gap_distribution": gap_distribution,
         "estimated_ghost_rate": float(estimated_ghost_rate),
@@ -454,6 +462,7 @@ def compute_trajectory_quality_scores(
     max_step: int = MAX_LINK_STEP,
     jump_angle_deg: float = 90.0,
     jump_ratio: float = 1.0,
+    target_length: int | None = None,
     write_prio: bool = False,
 ) -> dict[tuple[int, int], float]:
     """Score each particle's trajectory in ``[0.0, 1.0]`` and optionally write quantized ``prio``.
@@ -467,6 +476,9 @@ def compute_trajectory_quality_scores(
     frames, lo, hi = _load_linkage_frames(store, first, last, linkage_name)
     if not frames or lo is None or hi is None:
         return {}
+
+    if target_length is None:
+        target_length = max(1, hi - lo + 1)
 
     def prev_of(frame: int) -> np.ndarray | None:
         entry = frames.get(frame)
@@ -501,7 +513,11 @@ def compute_trajectory_quality_scores(
         if len(chain) < 2:
             return 0.0
         n_edges = len(edges)
-        length_score = min(1.0, float(n_edges) / 5.0)
+        # Length score saturates at the target (full GT) length, so long tracks
+        # are rewarded up to the real trajectory length rather than at 5 frames.
+        # target_length is in frames; convert to edges for the saturation point.
+        denom = max(1, int(target_length) - 1)
+        length_score = min(1.0, float(n_edges) / float(denom))
         recip_frac = float(sum(1 for _, is_rec in edges if is_rec)) / float(n_edges)
         n_gaps = sum(1 for step, _ in edges if step > 1)
         gap_penalty = min(0.4, 0.1 * float(n_gaps) / float(n_edges))
