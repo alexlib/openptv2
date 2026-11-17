@@ -351,6 +351,8 @@ class Tracking:
             raise ValueError("No experiment object provided")
 
         track_cfg = dict(self._track_cfg(self.exp))
+        # Enable track_assisted corrective extension by default to repair fragments.
+        track_cfg.setdefault("corrective_passes", 2)
         regime = self._auto_regime(self.exp, track_cfg)
         self._apply_conditioning_gate(regime, track_cfg)
 
