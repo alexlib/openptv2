@@ -181,7 +181,20 @@ def stitch_trajectories(
             tol = spatial_tol + (np.linalg.norm(va) if va is not None else 1.0) * gap
             if dist > tol:
                 continue
-            score = dist + (0 if vel_ok else 10)
+            # Smoothness check: merging must not create a kink. Compute the
+            # combined trajectory residual; reject if too rough.
+            combined = [p for p in ia["traj"]] + [p for p in ib["traj"]]
+            cpos = []
+            for (f, s) in combined:
+                pp = _pos(frames, f, s)
+                cpos.append(pp if pp is not None else [np.nan]*3)
+            cpos = np.asarray(cpos, float)
+            if np.isnan(cpos).any():
+                continue
+            cresid = float(np.sqrt(np.mean((cpos[2:] - 2*cpos[1:-1] + cpos[:-2])**2))) if len(cpos) >= 3 else 0.0
+            if cresid > 2.0:
+                continue
+            score = dist + cresid
             cands.append((score, a, b, gap))
 
     cands.sort(key=lambda c: c[0])
