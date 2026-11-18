@@ -627,6 +627,22 @@ class Tracking:
         except Exception as exc:  # pragma: no cover - never break tracking
             log.warning("[unified] trajectory-level ghost filter skipped: %r", exc)
 
+        # Multi-D search: epipolar (2D) consistency re-ranking (soft scoring).
+        try:
+            rerank_opt = track_cfg.get("epipolar_rerank", "auto")
+            do_rerank = rerank_opt in (True, "true", "yes", "on") or rerank_opt == "auto"
+            if do_rerank and store is not None and first is not None and last is not None and last >= first:
+                from openptv2.epipolar_rerank import rerank_trajectories
+
+                rstats = rerank_trajectories(
+                    store, first, last,
+                    linkage_name=linkage_name,
+                    min_consistency=float(track_cfg.get("epipolar_min_consistency", 0.5)),
+                )
+                log.info("[unified] epipolar re-rank: %s", rstats)
+        except Exception as exc:  # pragma: no cover - never break tracking
+            log.warning("[unified] epipolar re-rank skipped: %r", exc)
+
         # Multi-frame stitching: merge fragments + split kinks.
         try:
             stitch_opt = track_cfg.get("stitch", "auto")
