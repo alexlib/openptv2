@@ -661,6 +661,24 @@ class Tracking:
         except Exception as exc:  # pragma: no cover - never break tracking
             log.warning("[unified] trajectory stitch skipped: %r", exc)
 
+        # Sliding-window MHT: re-optimize links over windows of frames.
+        try:
+            mht_opt = track_cfg.get("mht", "auto")
+            do_mht = mht_opt in (True, "true", "yes", "on")  # auto-disabled: MHT over-merges at current tuning
+            if do_mht and store is not None and first is not None and last is not None and last >= first:
+                from openptv2.mht_linker import mht_relink
+
+                mstats = mht_relink(
+                    store, first, last,
+                    window=int(track_cfg.get("mht_window", 3)),
+                    max_gap=int(track_cfg.get("max_gap", 2)),
+                    spatial_tol=float(track_cfg.get("mht_spatial_tol", 2.0)),
+                    linkage_name=linkage_name,
+                )
+                log.info("[unified] MHT relink: %s", mstats)
+        except Exception as exc:  # pragma: no cover - never break tracking
+            log.warning("[unified] MHT relink skipped: %r", exc)
+
         self._save_tracking_decision(
             store,
             first,

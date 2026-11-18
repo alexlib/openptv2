@@ -1,18 +1,12 @@
 """Multi-D search: combine 3D priority linking with epipolar (2D) consistency scoring.
 
 Instead of using epipolar geometry as a hard filter (reject if 2D targets
-disagree), this module uses epipolar consistency as a *soft scoring term*:
+disagree), this module uses epipolar consistency as a *soft scoring term*.
 
-1. For each 3D correspondence, compute an epipolar consistency score from
-   its 2D targets (how well the back-projected rays agree). This is the
-   continuous version of the rcm ghost signal.
-2. Re-score each trajectory by its mean consistency.
-3. Filter trajectories below a threshold (ghost removal) and re-link
-   ambiguous candidates preferring high-consistency links.
-
-This achieves the "multi-D search" goal at the Python level without
-modifying the Cython track3d kernel (B6). The Cython-level version would
-push the epipolar score into the priority cascade's candidate cost.
+At the Python level this is a post-pass: trajectories whose mean epipolar
+consistency (ray-miss distance) is below threshold are unlinked. The
+Cython-level version (B6) would push the epipolar score into the track3d
+priority cascade's candidate cost for speed.
 """
 
 from __future__ import annotations
@@ -21,62 +15,53 @@ from typing import Any
 
 import numpy as np
 
-from .ghost_components import conflict_components
+from .temporal_smoothing import extract_trajectories
 
 
-def epipolar_consistency_score(cam_ids_row: np.ndarray, pos_row: np.ndarray) -> float:
+def epipolar_consistency_score(cam_ids_row, pos_row, rcm_val=None):
     """Score a single 3D point's epipolar consistency from its 2D targets.
 
-    Returns a value in [0, 1]: 1 = perfect ray agreement (real), 0 = poor (ghost).
-    Uses the number of cameras seeing the point and a simple spread heuristic.
-    Without calibration data, falls back to camera-count proxy.
+    Returns [0,1]: 1 = perfect ray agreement (real), 0 = poor (ghost).
+    If rcm_val (ray-miss mm) given, use exponential decay. Else camera-count.
     """
     n_cams = len(cam_ids_row)
     n_seen = int(np.sum(np.asarray(cam_ids_row) >= 0))
     if n_seen < 2:
         return 0.0
-    # Base score from camera count: 4-cam = 1.0, 3-cam = 0.75, 2-cam = 0.5
-    base = n_seen / float(n_cams)
-    return float(base)
+    if rcm_val is not None and rcm_val >= 0:
+        return float(np.exp(-rcm_val / 5.0))
+    return float(n_seen / float(n_cams))
 
 
-def compute_point_consistency(pos: np.ndarray, cam_ids: np.ndarray) -> np.ndarray:
-    """Return per-point consistency scores (length N)."""
+def compute_point_consistency(pos, cam_ids, rcm=None):
     n = len(pos)
     if n == 0:
         return np.zeros(0, dtype=float)
     scores = np.zeros(n, dtype=float)
     for i in range(n):
-        scores[i] = epipolar_consistency_score(cam_ids[i], pos[i])
+        rv = float(rcm[i]) if (rcm is not None and i < len(rcm)) else None
+        scores[i] = epipolar_consistency_score(cam_ids[i], pos[i], rcm_val=rv)
     return scores
 
 
-def rerank_trajectories(
-    store: Any,
-    first: int,
-    last: int,
-    linkage_name: str = "ptv_is",
-    min_consistency: float = 0.5,
-) -> dict[str, int]:
+def rerank_trajectories(store, first, last, linkage_name="ptv_is", min_consistency=0.5):
     """Post-pass: score each trajectory by mean epipolar consistency and unlink
-    trajectories below ``min_consistency``. Returns stats."""
-    from .temporal_smoothing import extract_trajectories, trajectory_positions_from_store
-
-    # Pre-read correspondences for consistency scores.
-    frame_consistency: dict[int, np.ndarray] = {}
+    trajectories below min_consistency. Uses rcm if available."""
+    frame_consistency = {}
     for f in range(first, last + 1):
         try:
             pos, cam_ids = store.read_correspondences(f)
-            frame_consistency[f] = compute_point_consistency(np.asarray(pos), np.asarray(cam_ids))
+            rcm = store.read_rcm(f) if hasattr(store, "read_rcm") else None
+            frame_consistency[f] = compute_point_consistency(np.asarray(pos), np.asarray(cam_ids), rcm=rcm)
         except Exception:
             frame_consistency[f] = None
 
     trajs = extract_trajectories(store, first, last, linkage_name)
+
     to_unlink = {}
     n_dropped = 0
     n_kept = 0
     for t in trajs:
-        # mean consistency over the trajectory's points
         cs = []
         for (f, idx) in t:
             fc = frame_consistency.get(f)
@@ -90,7 +75,6 @@ def rerank_trajectories(
         else:
             n_kept += 1
 
-    # Unlink dropped trajectories.
     dropped_points = 0
     frame_linkage = {}
     for f in range(first, last + 1):
