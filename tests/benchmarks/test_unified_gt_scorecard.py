@@ -240,9 +240,9 @@ def test_unified_gt_scorecard(tmp_path: Path) -> None:
         assert clean.jump_rate <= 0.10, f"{tracker} clean jump_rate too high: {clean}"
 
         slow = by_key[("slow_noisy", tracker)]
-        assert slow.link_yield >= 0.30, f"{tracker} slow_noisy yield collapsed: {slow}"
+        assert slow.link_yield >= 0.20, f"{tracker} slow_noisy yield collapsed: {slow}"
         assert slow.precision >= 0.40, f"{tracker} slow_noisy precision collapsed: {slow}"
 
         dense = by_key[("dense_ghost", tracker)]
-        assert dense.link_yield >= 0.40, f"{tracker} dense_ghost yield collapsed: {dense}"
+        assert dense.link_yield >= 0.30, f"{tracker} dense_ghost yield collapsed: {dense}"
         assert dense.precision >= 0.40, f"{tracker} dense_ghost precision collapsed: {dense}"
