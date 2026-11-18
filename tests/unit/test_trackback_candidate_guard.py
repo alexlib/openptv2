@@ -68,12 +68,8 @@ A_F3 = np.array([6.0, 0.0, 0.0])
 B_F0 = np.array([-3.0, 9.0, 0.0])
 
 
-def _write_frame(res_dir, img_dir, frame, particles, cals, cpar):
-    """Write rt_is/ptv_is/added/target files for one frame.
-
-    ``particles`` is a list of (x, y, z) triples. Targets are written
-    y-sorted per camera (candsearch_in_pix relies on that ordering).
-    """
+def _write_frame(store, frame, particles, cals, cpar):
+    """Write correspondence, linkage, and camera target data for one frame into RunStore."""
     n = len(particles)
 
     cam_slot_to_targ = {}
@@ -90,33 +86,30 @@ def _write_frame(res_dir, img_dir, frame, particles, cals, cpar):
             slot: targ_idx for targ_idx, (slot, px, py) in enumerate(entries)
         }
 
-    with open(res_dir / f"rt_is.{frame}", "w") as fh:
-        fh.write(f"{n}\n")
-        for slot, (x, y, z) in enumerate(particles):
-            cam_indices = " ".join(
-                f"{cam_slot_to_targ[cam][slot]:4d}" for cam in range(NUM_CAMS)
-            )
-            fh.write(f"{slot + 1:4d} {x:9.3f} {y:9.3f} {z:9.3f} {cam_indices}\n")
+    pos_3d = np.array(particles, dtype=np.float64).reshape(n, 3)
+    cam_ids = np.array(
+        [[cam_slot_to_targ[cam][slot] for cam in range(NUM_CAMS)] for slot in range(n)],
+        dtype=np.int32,
+    ).reshape(n, NUM_CAMS)
+    store.write_correspondences(frame=frame, pos_3d=pos_3d, cam_target_ids=cam_ids)
 
-    with open(res_dir / f"ptv_is.{frame}", "w") as fh:
-        fh.write(f"{n}\n")
-        for x, y, z in particles:
-            fh.write(f"  -1   -2 {x:10.3f} {y:10.3f} {z:10.3f}\n")
-
-    with open(res_dir / f"added.{frame}", "w") as fh:
-        fh.write(f"{n}\n")
-        for x, y, z in particles:
-            fh.write(f"  -1   -2 {x:10.3f} {y:10.3f} {z:10.3f} 4\n")
+    prev_ids = np.full(n, -1, dtype=np.int32)
+    next_ids = np.full(n, -2, dtype=np.int32)
+    prio = np.full(n, 4, dtype=np.int32)
+    store.write_linkage(
+        frame=frame, prev_ids=prev_ids, next_ids=next_ids, pos_3d=pos_3d, name="ptv_is", prio=prio
+    )
 
     for cam in range(NUM_CAMS):
         entries = cam_targ_entries[cam]
-        with open(img_dir / f"cam{cam + 1}.{frame}_targets", "w") as fh:
-            fh.write(f"{n}\n")
-            for targ_pnr, (orig_slot, px, py) in enumerate(entries):
-                fh.write(
-                    f"{targ_pnr:4d} {px:9.4f} {py:9.4f} "
-                    f"  100    10    10  1000 {orig_slot:5d}\n"
-                )
+        arr = np.array(
+            [
+                [targ_pnr, px, py, 100.0, 10.0, 10.0, 1000.0, orig_slot]
+                for targ_pnr, (orig_slot, px, py) in enumerate(entries)
+            ],
+            dtype=np.float64,
+        ).reshape(n, 8)
+        store.write_targets(cam, frame, arr)
 
 
 @pytest.fixture
@@ -139,10 +132,13 @@ def bait_scene(tmp_path):
     vpar = VolumePar.from_yaml(str(yaml_path))
     tpar = TrackPar.from_yaml(str(yaml_path))  # default dv=+-10, dacc=5.0, dangle=120
 
-    _write_frame(res_dir, img_dir, F0, [tuple(B_F0)], cals, cpar)
-    _write_frame(res_dir, img_dir, F1, [tuple(A_F1)], cals, cpar)
-    _write_frame(res_dir, img_dir, F2, [tuple(A_F2)], cals, cpar)
-    _write_frame(res_dir, img_dir, F3, [tuple(A_F3)], cals, cpar)
+    from openptv2.storage import RunStore
+
+    store = RunStore(res_dir / "run.zarr", mode="w")
+    _write_frame(store, F0, [tuple(B_F0)], cals, cpar)
+    _write_frame(store, F1, [tuple(A_F1)], cals, cpar)
+    _write_frame(store, F2, [tuple(A_F2)], cals, cpar)
+    _write_frame(store, F3, [tuple(A_F3)], cals, cpar)
 
     seq_par = SequencePar(
         num_cams=NUM_CAMS,
@@ -153,6 +149,7 @@ def bait_scene(tmp_path):
 
     return {
         "tmp_path": tmp_path,
+        "store": store,
         "seq_par": seq_par,
         "tpar": tpar,
         "vpar": vpar,
@@ -186,6 +183,7 @@ def test_backward_pass_rejects_out_of_criteria_candidate(bait_scene):
             bait_scene["cals"],
             0.0001,
         )
+        run.fb.store = bait_scene["store"]
 
         track_forward_start(run)
         for step in range(run.seq_par.first, run.seq_par.last):
@@ -194,11 +192,9 @@ def test_backward_pass_rejects_out_of_criteria_candidate(bait_scene):
 
         trackback_c(run)
 
-        with open("res/ptv_is." + str(F1)) as fh:
-            lines = fh.readlines()
-        n = int(lines[0])
-        assert n == 1, "expected exactly one particle (A) at F1"
-        prev, next_ = (int(v) for v in lines[1].split()[:2])
+        prev_ids, next_ids, _ = bait_scene["store"].read_linkage(F1, "ptv_is")
+        assert len(prev_ids) == 1, "expected exactly one particle (A) at F1"
+        prev, next_ = int(prev_ids[0]), int(next_ids[0])
 
         assert next_ == 0, "forward link A(F1)->A(F2) must still be present"
         assert prev == -1, (

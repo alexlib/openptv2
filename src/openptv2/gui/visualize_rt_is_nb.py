@@ -191,28 +191,7 @@ def _(np, plt):
                         return ax
             except Exception:
                 pass
-        # ASCII fallback (pre-zarr runs via import_run)
-        d = np.loadtxt(filename, usecols=(0, 1, 2, 3), skiprows=1)
-
-        # %%
-
-        ax = plt.figure(figsize=(12, 10)).add_subplot(projection="3d")
-
-        #
-        for row in d:
-            ax.plot(row[1], row[2], row[3], "ro")
-            ax.text(row[1], row[2], row[3], f"{row[0]:.0f}", None)
-
-        ax.set_xlim(d[:, 1].min(), d[:, 1].max())
-        ax.set_ylim(d[:, 2].min(), d[:, 2].max())
-        ax.set_zlim(d[:, 3].min(), d[:, 3].max())
-
-        ax.set_xlabel("x")
-        ax.set_ylabel("y")
-        ax.set_zlabel("z")
-        # ax.set_title(filename.split("/")[-1])
-
-        return ax
+        raise FileNotFoundError(f"No Zarr correspondences found for frame {frame}")
 
     return (plot_3d_target,)
 

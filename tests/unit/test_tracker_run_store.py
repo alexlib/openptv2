@@ -56,12 +56,43 @@ def _read_calibrations(cpar, base_path: Path):
     ]
 
 
+def _seed_cavity_store(store: RunStore, res_dir: Path) -> None:
+    import numpy as np
+
+    for rt_file in sorted(res_dir.glob("rt_is.*")):
+        frame = int(rt_file.suffix.lstrip("."))
+        lines = [ln.strip() for ln in rt_file.read_text().splitlines() if ln.strip()]
+        n = int(lines[0]) if lines else 0
+        if n > 0:
+            rows = np.loadtxt(lines[1 : n + 1], dtype=np.float64).reshape(n, 8)
+            pos_3d = rows[:, 1:4]
+            cam_ids = rows[:, 4:8].astype(np.int32)
+        else:
+            pos_3d = np.empty((0, 3), dtype=np.float64)
+            cam_ids = np.empty((0, 4), dtype=np.int32)
+        store.write_correspondences(frame=frame, pos_3d=pos_3d, cam_target_ids=cam_ids)
+
+    img_dir = res_dir.parent / "img"
+    if img_dir.exists():
+        for cam in range(4):
+            for tfile in sorted(img_dir.glob(f"cam{cam + 1}.*_targets")):
+                frame = int(tfile.name.split(".")[1].split("_")[0])
+                lines = [ln.strip() for ln in tfile.read_text().splitlines() if ln.strip()]
+                n = int(lines[0]) if lines else 0
+                if n > 0:
+                    arr = np.loadtxt(lines[1 : n + 1], dtype=np.float64).reshape(n, 8)
+                else:
+                    arr = np.empty((0, 8), dtype=np.float64)
+                store.write_targets(cam, frame, arr)
+
+
 def test_tracker_full_forward_3d_writes_through_store(cavity_orig_workdir, monkeypatch):
     monkeypatch.chdir(cavity_orig_workdir)
 
     cpar = ControlPar.from_yaml("parameters.yaml")
     cals = _read_calibrations(cpar, cavity_orig_workdir)
     store = RunStore("res/run.zarr", mode="w")
+    _seed_cavity_store(store, Path("res"))
 
     tracker = Tracker(
         cpar,
@@ -115,6 +146,7 @@ def test_tracker_restart_clears_stale_linkage(cavity_orig_workdir, monkeypatch):
     cpar = ControlPar.from_yaml("parameters.yaml")
     cals = _read_calibrations(cpar, cavity_orig_workdir)
     store = RunStore("res/run.zarr", mode="w")
+    _seed_cavity_store(store, Path("res"))
 
     def _new_tracker():
         return Tracker(
@@ -161,6 +193,7 @@ def test_tracker_postprocess_writes_through_store(cavity_orig_workdir, monkeypat
     cpar = ControlPar.from_yaml("parameters.yaml")
     cals = _read_calibrations(cpar, cavity_orig_workdir)
     store = RunStore("res/run.zarr", mode="w")
+    _seed_cavity_store(store, Path("res"))
 
     tracker = Tracker(
         cpar,

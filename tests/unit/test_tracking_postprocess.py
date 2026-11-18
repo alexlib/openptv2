@@ -3,6 +3,7 @@
 import numpy as np
 import pytest
 
+from openptv2.storage import RunStore
 from openptv2.tracking_postprocess import (
     confirm_links,
     count_links,
@@ -15,8 +16,10 @@ from openptv2.tracking_postprocess import (
 )
 
 
-def _write(base, frame, prev, nxt, xyz):
-    write_linkage(base, frame, np.array(prev), np.array(nxt), np.array(xyz, float))
+def _write(base, frame, prev, nxt, xyz, store=None):
+    write_linkage(
+        base, frame, np.array(prev), np.array(nxt), np.array(xyz, float), store=store
+    )
 
 
 def test_write_linkage_with_store_skips_ascii(tmp_path):
@@ -45,72 +48,79 @@ def test_write_linkage_with_store_skips_ascii(tmp_path):
 
 
 def test_enforce_reciprocity_noop_on_symmetric_links(tmp_path):
-    base = str(tmp_path / "ptv_is")
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    base = "ptv_is"
     # frame0: i0->j0, i1->j1 ; frame1: j0.prev=i0, j1.prev=i1  (fully reciprocal)
-    _write(base, 0, [-1, -1], [0, 1], [[0, 0, 0], [1, 0, 0]])
-    _write(base, 1, [0, 1], [-2, -2], [[0, 1, 0], [1, 1, 0]])
-    stats = enforce_reciprocity(base, 0, 1)
+    _write(base, 0, [-1, -1], [0, 1], [[0, 0, 0], [1, 0, 0]], store=store)
+    _write(base, 1, [0, 1], [-2, -2], [[0, 1, 0], [1, 1, 0]], store=store)
+    stats = enforce_reciprocity(base, 0, 1, store=store)
     assert stats == {"severed_next": 0, "severed_prev": 0}
-    assert list(read_linkage(base, 0)[1]) == [0, 1]  # next unchanged
+    assert list(read_linkage(base, 0, store=store)[1]) == [0, 1]  # next unchanged
 
 
 def test_enforce_reciprocity_severs_one_sided_links(tmp_path):
-    base = str(tmp_path / "ptv_is")
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    base = "ptv_is"
     # frame0 next: i0->j0, i1->j1
-    _write(base, 0, [-1, -1], [0, 1], [[0, 0, 0], [1, 0, 0]])
+    _write(base, 0, [-1, -1], [0, 1], [[0, 0, 0], [1, 0, 0]], store=store)
     # frame1 prev: BOTH claim i0 -> j1's back-link (0) disagrees with next0[1]=1
-    _write(base, 1, [0, 0], [-2, -2], [[0, 1, 0], [1, 1, 0]])
-    stats = enforce_reciprocity(base, 0, 1)
+    _write(base, 1, [0, 0], [-2, -2], [[0, 1, 0], [1, 1, 0]], store=store)
+    stats = enforce_reciprocity(base, 0, 1, store=store)
     # forward i1->j1 severed (j1.prev != 1); backward j1.prev=0 severed (n0[0]!=1)
     assert stats["severed_next"] == 1
     assert stats["severed_prev"] == 1
-    prev1, next1, _ = read_linkage(base, 1)
-    next0 = read_linkage(base, 0)[1]
+    prev1, next1, _ = read_linkage(base, 1, store=store)
+    next0 = read_linkage(base, 0, store=store)[1]
     assert next0[0] == 0 and next0[1] == -2  # only the reciprocal link survives
     assert prev1[0] == 0 and prev1[1] == -1
 
 
 def test_seed_cold_start_recovers_velocity_consistent_link(tmp_path):
-    base = str(tmp_path / "ptv_is")
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    base = "ptv_is"
     # frame2: particle m at x=10 ; frame1: particle j at x=5 linked forward to m
     # (velocity v=+5), but NOT linked back; frame0 has a free particle at x=0
     # exactly where j came from (5 - 5).
-    _write(base, 0, [-1], [-2], [[0, 0, 0]])
-    _write(base, 1, [-1], [0], [[5, 0, 0]])
-    _write(base, 2, [0], [-2], [[10, 0, 0]])
-    before = count_links(base, 0, 2)
-    stats = seed_cold_start(base, 0, 2, dv_max=15.5)
-    after = count_links(base, 0, 2)
+    _write(base, 0, [-1], [-2], [[0, 0, 0]], store=store)
+    _write(base, 1, [-1], [0], [[5, 0, 0]], store=store)
+    _write(base, 2, [0], [-2], [[10, 0, 0]], store=store)
+    before = count_links(base, 0, 2, store=store)
+    stats = seed_cold_start(base, 0, 2, dv_max=15.5, store=store)
+    after = count_links(base, 0, 2, store=store)
     assert stats["added"] == 1
     assert after == before + 1
     # bidirectional: frame0 particle now points to j, frame1 j points back
-    assert read_linkage(base, 0)[1][0] == 0
-    assert read_linkage(base, 1)[0][0] == 0
+    assert read_linkage(base, 0, store=store)[1][0] == 0
+    assert read_linkage(base, 1, store=store)[0][0] == 0
 
 
 def test_seed_cold_start_rejects_out_of_tolerance(tmp_path):
-    base = str(tmp_path / "ptv_is")
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    base = "ptv_is"
     # free frame0 particle is far from the predicted origin -> no link
-    _write(base, 0, [-1], [-2], [[100, 0, 0]])
-    _write(base, 1, [-1], [0], [[5, 0, 0]])
-    _write(base, 2, [0], [-2], [[10, 0, 0]])
-    stats = seed_cold_start(base, 0, 2, dv_max=15.5)
+    _write(base, 0, [-1], [-2], [[100, 0, 0]], store=store)
+    _write(base, 1, [-1], [0], [[5, 0, 0]], store=store)
+    _write(base, 2, [0], [-2], [[10, 0, 0]], store=store)
+    stats = seed_cold_start(base, 0, 2, dv_max=15.5, store=store)
     assert stats["added"] == 0
 
 
 def test_relink_trajectory_gaps_bridges_missing_frame(tmp_path):
-    base = str(tmp_path / "ptv_is")
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    base = "ptv_is"
     # Frame 0: x=0, link to frame 1
     # Frame 1: x=2, end of track (next=-2)
     # Frame 2: missing detection (gap=1)
     # Frame 3: x=6, start of track (prev=-1, next=0) -> pred pos at frame 3 is 2 + 2*2 = 6!
-    _write(base, 0, [-1], [0], [[0, 0, 0]])
-    _write(base, 1, [0], [-2], [[2, 0, 0]])
-    _write(base, 2, [], [], np.zeros((0, 3)))  # empty frame
-    _write(base, 3, [-1], [0], [[6, 0, 0]])
-    _write(base, 4, [0], [-2], [[8, 0, 0]])
+    _write(base, 0, [-1], [0], [[0, 0, 0]], store=store)
+    _write(base, 1, [0], [-2], [[2, 0, 0]], store=store)
+    _write(base, 2, [], [], np.zeros((0, 3)), store=store)  # empty frame
+    _write(base, 3, [-1], [0], [[6, 0, 0]], store=store)
+    _write(base, 4, [0], [-2], [[8, 0, 0]], store=store)
 
-    stats = relink_trajectory_gaps(base, first=0, last=4, max_gap=2, max_accel_err=1.0)
+    stats = relink_trajectory_gaps(
+        base, first=0, last=4, max_gap=2, max_accel_err=1.0, store=store
+    )
     assert stats["bridged_gaps"] == 1
 
     # A bridged gap is a single cross-frame link (frame 1 -> frame 3), not a
@@ -118,78 +128,82 @@ def test_relink_trajectory_gaps_bridges_missing_frame(tmp_path):
     # the particle was never observed, and it matches how ground truth
     # represents a gap (a link of step > 1). Consumers recover the step via
     # link_step()/back_link_step().
-    _prev1, next1, _ = read_linkage(base, 1)
-    prev3, _next3, _ = read_linkage(base, 3)
+    _prev1, next1, _ = read_linkage(base, 1, store=store)
+    prev3, _next3, _ = read_linkage(base, 3, store=store)
 
     assert next1[0] == 0  # points straight into frame 3
     assert prev3[0] == 0
-    assert read_linkage(base, 2) is None  # skipped frame left empty
+    assert read_linkage(base, 2, store=store)[0].size == 0  # skipped frame left empty
 
-    frames = {k: read_linkage(base, k) for k in range(5)}
-    frames = {k: v for k, v in frames.items() if v is not None}
+    frames = {k: read_linkage(base, k, store=store) for k in range(5)}
+    frames = {k: v for k, v in frames.items() if v is not None and len(v[0]) > 0}
     assert link_step(lambda m: frames[m][0] if m in frames else None, 1, 0, 0) == 2
 
 
 def test_enforce_reciprocity_keeps_gap_bridged_cross_frame_link(tmp_path):
     """A bridge written by relink_trajectory_gaps (next pointing 2 frames
     ahead) must survive reciprocity -- it used to be severed right back out."""
-    base = str(tmp_path / "ptv_is")
-    _write(base, 0, [-1], [0], [[0, 0, 0]])
-    _write(base, 1, [0], [-2], [[2, 0, 0]])
-    _write(base, 2, [], [], np.zeros((0, 3)))
-    _write(base, 3, [-1], [0], [[6, 0, 0]])
-    _write(base, 4, [0], [-2], [[8, 0, 0]])
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    base = "ptv_is"
+    _write(base, 0, [-1], [0], [[0, 0, 0]], store=store)
+    _write(base, 1, [0], [-2], [[2, 0, 0]], store=store)
+    _write(base, 2, [], [], np.zeros((0, 3)), store=store)
+    _write(base, 3, [-1], [0], [[6, 0, 0]], store=store)
+    _write(base, 4, [0], [-2], [[8, 0, 0]], store=store)
 
     assert (
-        relink_trajectory_gaps(base, first=0, last=4, max_gap=2, max_accel_err=1.0)[
-            "bridged_gaps"
-        ]
+        relink_trajectory_gaps(
+            base, first=0, last=4, max_gap=2, max_accel_err=1.0, store=store
+        )["bridged_gaps"]
         == 1
     )
-    stats = enforce_reciprocity(base, 0, 4)
+    stats = enforce_reciprocity(base, 0, 4, store=store)
 
     assert stats == {"severed_next": 0, "severed_prev": 0}
-    assert read_linkage(base, 1)[1][0] == 0  # bridge intact
-    assert read_linkage(base, 3)[0][0] == 0
+    assert read_linkage(base, 1, store=store)[1][0] == 0  # bridge intact
+    assert read_linkage(base, 3, store=store)[0][0] == 0
 
 
-def _chain(base, xyz_by_frame, links):
+def _chain(base, xyz_by_frame, links, store=None):
     """One particle per frame at xyz_by_frame[k]; links[k] = True links k->k+1."""
     n = len(xyz_by_frame)
     for k in range(n):
         prev = [0 if k > 0 and links[k - 1] else -1]
         nxt = [0 if k < n - 1 and links[k] else -2]
-        _write(base, k + 1, prev, nxt, [xyz_by_frame[k]])
+        _write(base, k + 1, prev, nxt, [xyz_by_frame[k]], store=store)
 
 
 def test_confirm_links_severs_a_jump_and_keeps_the_straight_part(tmp_path):
     """Frames 1-3 straight, frame 4 jumps by 5: the link into the jump has an
     onward link that does not continue the velocity, so it is severed; the
     straight links stay. The link into the last frame cannot be judged."""
-    base = str(tmp_path / "ptv_is")
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    base = "ptv_is"
     xyz = [(0, 0, 0), (1, 0, 0), (2, 0, 0), (3, 5, 0), (4, 5, 0)]
-    _chain(base, xyz, [True, True, True, True])
-    stats = confirm_links(base, 1, 5, tol=0.3)
+    _chain(base, xyz, [True, True, True, True], store=store)
+    stats = confirm_links(base, 1, 5, tol=0.3, store=store)
     assert stats == {"links": 4, "severed": 2}
-    nxt = [read_linkage(base, k)[1][0] for k in range(1, 6)]
+    nxt = [read_linkage(base, k, store=store)[1][0] for k in range(1, 6)]
     # 1->2 kept (2->3 continues within 0.3? kink of 2->3 is 5, so 1->2 also
     # severed); 3->4 severed; 4->5 into last frame untouched
     assert nxt == [0, -2, -2, 0, -2]
 
 
 def test_confirm_links_is_a_noop_on_a_straight_track(tmp_path):
-    base = str(tmp_path / "ptv_is")
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    base = "ptv_is"
     xyz = [(k, 0.5 * k, 0) for k in range(6)]
-    _chain(base, xyz, [True] * 5)
-    assert confirm_links(base, 1, 6, tol=0.3)["severed"] == 0
-    assert count_links(base, 1, 6) == 5
+    _chain(base, xyz, [True] * 5, store=store)
+    assert confirm_links(base, 1, 6, tol=0.3, store=store)["severed"] == 0
+    assert count_links(base, 1, 6, store=store) == 5
 
 
 def test_confirm_links_ends_severs_dead_end_link(tmp_path):
     """A link into a particle with no onward link (dying track grabbing a
     stranger) is only severed with ends=True."""
-    base = str(tmp_path / "ptv_is")
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    base = "ptv_is"
     xyz = [(k, 0, 0) for k in range(6)]
-    _chain(base, xyz, [True, True, True, True, False])  # track ends in frame 5
-    assert confirm_links(base, 1, 6, tol=0.3)["severed"] == 0
-    assert confirm_links(base, 1, 6, tol=0.3, ends=True)["severed"] == 1
+    _chain(base, xyz, [True, True, True, True, False], store=store)  # track ends in frame 5
+    assert confirm_links(base, 1, 6, tol=0.3, store=store)["severed"] == 0
+    assert confirm_links(base, 1, 6, tol=0.3, ends=True, store=store)["severed"] == 1

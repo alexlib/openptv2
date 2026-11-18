@@ -400,71 +400,46 @@ class Plot3DPositions(HasTraits):
     )
 
 
-def _read_positions(rt_is_path: Path, frame: Optional[int] = None) -> np.ndarray:
-    """Read an rt_is file or Zarr store and return its (N, 3) metric xyz positions.
-
-    Zarr is the database of record — the store is checked first when a
-    frame is known. ASCII is only for pre-zarr runs (via import_run) or
-    when no store exists. A file that exists but holds zero particles is
-    returned as an empty (0, 3) array.
-    """
-    # Zarr-first: when the frame is known, the unified RunStore wins.
-    if frame is not None:
-        try:
-            from openptv2.storage import RunStore, find_existing_store
-
-            # The rt_is file's parent may be res/, the experiment root, or
-            # the store itself -- let find_existing_store disambiguate.
-            zarr_path = find_existing_store(rt_is_path.parent) or (
-                find_existing_store(rt_is_path.parent.parent)
-                if rt_is_path.parent.name == "res"
-                else None
-            )
-            if zarr_path is not None:
-                store = RunStore(zarr_path, mode="r")
-                if store.has_correspondences(frame):
-                    pos_3d, _ = store.read_correspondences(frame)
-                    return np.asarray(pos_3d, dtype=float)
-        except Exception:
-            pass
-
+def _read_positions(store_path: Path, frame: Optional[int] = None) -> np.ndarray:
+    """Read (N, 3) metric xyz positions for ``frame`` from the Zarr RunStore."""
+    if frame is None:
+        return np.empty((0, 3), dtype=float)
     try:
-        rows = ptv.read_rt_is_file(str(rt_is_path))  # [[x, y, z, p0..p3], ...]
-    except ValueError:
-        # read_rt_is_file raises ValueError when the header count is 0.
-        return np.empty((0, 3), dtype=float)
-    if not rows:
-        return np.empty((0, 3), dtype=float)
-    return np.asarray(rows, dtype=float)[:, :3]
+        from openptv2.storage import RunStore, find_existing_store
+
+        zarr_path = find_existing_store(store_path) or find_existing_store(
+            store_path.parent
+        ) or (
+            find_existing_store(store_path.parent.parent)
+            if store_path.parent.name == "res"
+            else None
+        )
+        if zarr_path is not None:
+            store = RunStore(zarr_path, mode="r")
+            if store.has_correspondences(frame):
+                pos_3d, _ = store.read_correspondences(frame)
+                return np.asarray(pos_3d, dtype=float)
+    except Exception:
+        pass
+    return np.empty((0, 3), dtype=float)
 
 
-def create_3d_positions_panel(rt_is_path, frame, bounds=None) -> Plot3DPositions:
-    """Read an rt_is file and return a ready-to-show Plot3DPositions window.
-
-    Args:
-        rt_is_path: path to the rt_is.<frame> file.
-        frame: frame identifier for the title.
-        bounds: optional field-of-view axis limits (see build_3d_figure).
-    """
-    points = _read_positions(Path(rt_is_path), frame=frame)
+def create_3d_positions_panel(store_path, frame, bounds=None) -> Plot3DPositions:
+    """Read 3D positions from RunStore and return a ready-to-show Plot3DPositions window."""
+    points = _read_positions(Path(store_path), frame=frame)
     return Plot3DPositions(figure=build_3d_figure(points, frame, bounds=bounds))
 
 
 def read_positions_sequence(
     exp_path, first: int, last: int, max_frames: int = 50
 ) -> dict:
-    """Read per-frame 3D positions (rt_is file, falling back to the store)
-    across a frame range, same source as _read_positions per frame. Caps at
-    max_frames (keeping the first max_frames), matching
-    plot_3d_trajectories's own clamp -- so both stay bounded for a
-    responsive interactive window."""
+    """Read per-frame 3D positions from the RunStore across a frame range."""
     exp_path = Path(exp_path)
-    res_dir = exp_path / "res"
     last_clamped = min(last, first + max_frames - 1)
 
     frames_points = {}
     for frame in range(first, last_clamped + 1):
-        pts = _read_positions(res_dir / f"rt_is.{frame}", frame=frame)
+        pts = _read_positions(exp_path, frame=frame)
         if pts.shape[0] > 0:
             frames_points[frame] = pts
     return frames_points

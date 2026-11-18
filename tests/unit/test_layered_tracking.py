@@ -223,12 +223,18 @@ def test_peel_and_track_dense_ghost_improves_over_single_pass(tmp_path: Path):
     rig = bm.make_standard_rig(refract=False)
 
     # 1. Single-pass baseline
-    from openptv2.storage.legacy import export_run, import_run
+    from openptv2.storage import RunStore
 
     base_dir = tmp_path / "baseline"
     base_yaml = bm.write_experiment(rig, frame_gt, base_dir, first_frame=first_frame)
+    base_store = RunStore(base_dir / "res" / "run.zarr", mode="a")
+    bm.write_dataset_store(
+        rig,
+        frame_gt,
+        bm.DatasetSpec(dir=base_dir, first_frame=first_frame, num_cams=4),
+        store=base_store,
+    )
     base_exp = _setup_exp(base_yaml, first_frame, last_frame, dv)
-    base_store = import_run(base_dir, base_dir / "res" / "run.zarr")
     base_tracker = Tracker(
         base_exp.cpar,
         base_exp.vpar,
@@ -241,15 +247,20 @@ def test_peel_and_track_dense_ghost_improves_over_single_pass(tmp_path: Path):
     base_tracker.full_forward()
     base_tracker.full_backward()
     enforce_reciprocity("ptv_is", first_frame, last_frame, store=base_store)
-    export_run(base_store, base_dir)
     base_pred = read_trajectories(base_dir / "res", first_frame, last_frame, num_cams=4)
     base_yield, base_prec = _link_metrics(true_tracks_abs, base_pred, eps=eps)
 
     # 2. 2-Pass Clean-and-Claim (peel_and_track)
     peel_dir = tmp_path / "peel"
     peel_yaml = bm.write_experiment(rig, frame_gt, peel_dir, first_frame=first_frame)
+    peel_store = RunStore(peel_dir / "res" / "run.zarr", mode="a")
+    bm.write_dataset_store(
+        rig,
+        frame_gt,
+        bm.DatasetSpec(dir=peel_dir, first_frame=first_frame, num_cams=4),
+        store=peel_store,
+    )
     peel_exp = _setup_exp(peel_yaml, first_frame, last_frame, dv)
-    peel_store = import_run(peel_dir, peel_dir / "res" / "run.zarr")
     stats = peel_and_track(
         peel_exp.cpar,
         peel_exp.vpar,
@@ -261,7 +272,6 @@ def test_peel_and_track_dense_ghost_improves_over_single_pass(tmp_path: Path):
         allow_shared_targets=False,
         predictor="poly",
     )
-    export_run(peel_store, peel_dir)
     peel_pred = read_trajectories(peel_dir / "res", first_frame, last_frame, num_cams=4)
     peel_yield, peel_prec = _link_metrics(true_tracks_abs, peel_pred, eps=eps)
 

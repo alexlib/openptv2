@@ -70,6 +70,10 @@ def _load(scene_dir):
 
 
 def _run_track3d(tmp_path, scene_dir, first, last, **tpar_overrides):
+    import numpy as np
+
+    from openptv2.storage import RunStore
+
     cpar, vpar, spar, cals = _load(scene_dir)
     tpar = TrackPar.from_yaml(str(scene_dir / "parameters_Run1.yaml"))
     for k, v in tpar_overrides.items():
@@ -77,33 +81,43 @@ def _run_track3d(tmp_path, scene_dir, first, last, **tpar_overrides):
 
     res = tmp_path / "res_track3d"
     res.mkdir(parents=True, exist_ok=True)
+    store = RunStore(res / "run.zarr", mode="w")
     for f in range(first, last + 1):
-        shutil.copy(scene_dir / "res_orig" / f"rt_is.{f}", res / f"rt_is.{f}")
+        rt_file = scene_dir / "res_orig" / f"rt_is.{f}"
+        lines = [ln.strip() for ln in rt_file.read_text().splitlines() if ln.strip()]
+        n = int(lines[0]) if lines else 0
+        if n > 0:
+            rows = np.loadtxt(lines[1 : n + 1], dtype=np.float64).reshape(n, 8)
+            pos_3d = rows[:, 1:4]
+            cam_ids = rows[:, 4:8].astype(np.int32)
+        else:
+            pos_3d = np.empty((0, 3), dtype=np.float64)
+            cam_ids = np.empty((0, 4), dtype=np.int32)
+        store.write_correspondences(frame=f, pos_3d=pos_3d, cam_target_ids=cam_ids)
+
     naming = {
         "corres": str(res / "rt_is"),
         "linkage": str(res / "ptv_is"),
         "prio": str(res / "added"),
     }
-    tr = Tracker(cpar, vpar, tpar, spar, cals, naming)
+    tr = Tracker(cpar, vpar, tpar, spar, cals, naming, store=store)
     tr.full_forward_3d()
-    return naming["linkage"]
+    return store
 
 
-def _validate_by_identity(linkage_base, row_gt, first, last):
+def _validate_by_identity(store, row_gt, first, last):
     """correct: link matches ground truth (same true pid both ends, not a
     ghost); wrong: link exists but the two ends disagree (includes any link
     touching a ghost row -- a ghost has no consistent identity to match)."""
     correct = wrong = 0
     lost = 0
     for f in range(first, last):
-        with open(f"{linkage_base}.{f}") as fh:
-            lines = fh.readlines()
-        n = int(lines[0])
+        _prev, next_ids, _pos = store.read_linkage(f, "ptv_is")
+        n = len(next_ids)
         gt_here = row_gt[f]
         gt_next = row_gt[f + 1]
         for row in range(n):
-            parts = lines[row + 1].split()
-            nxt = int(parts[1])
+            nxt = int(next_ids[row])
             pid_here = gt_here[row] if row < len(gt_here) else -1
             if nxt < 0:
                 lost += 1

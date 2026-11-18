@@ -129,22 +129,14 @@ def _load_calibrations():
 
 
 def _generate_test_files(frames, cals, cpar):
-    """Write rt_is, ptv_is, added, and target files for all frames.
+    """Write correspondences, initial linkage, and y-sorted targets into res_orig/run.zarr."""
+    from openptv2.storage import RunStore
 
-    Targets must be sorted by pixel-y because candsearch_in_pix does a binary
-    search + early termination on y. The rt_is correspondence indices must
-    point to the target's position in the y-sorted array, not the particle
-    slot.
-    """
-    res_dir = TEST_DIR / "res_orig"
-    img_dir = TEST_DIR / "img_orig"
+    store = RunStore(TEST_DIR / "res_orig" / "run.zarr", mode="w")
 
     for f_num, particles in frames.items():
         n = len(particles)
 
-        # First, project all particles to all cameras and sort by pixel-y.
-        # cam_target_order[cam] = list of (target_pnr_in_sorted_file, particle_slot)
-        # cam_slot_to_targ[cam][particle_slot] = target index in sorted file
         cam_slot_to_targ = {}
         cam_targ_entries = {}
         for cam in range(NUM_CAMS):
@@ -160,37 +152,30 @@ def _generate_test_files(frames, cals, cpar):
                 s2t[slot] = targ_idx
             cam_slot_to_targ[cam] = s2t
 
-        # --- rt_is (correspondence) — cam indices point to sorted target positions ---
-        with open(res_dir / f"rt_is.{f_num}", "w") as fh:
-            fh.write(f"{n}\n")
-            for slot, (pid, x, y, z) in enumerate(particles):
-                cam_indices = " ".join(
-                    f"{cam_slot_to_targ[cam][slot]:4d}" for cam in range(NUM_CAMS)
-                )
-                fh.write(f"{slot + 1:4d} {x:9.3f} {y:9.3f} {z:9.3f} {cam_indices}\n")
+        pos_3d = np.array([[x, y, z] for (_pid, x, y, z) in particles], dtype=np.float64).reshape(n, 3)
+        cam_ids = np.array(
+            [[cam_slot_to_targ[cam][slot] for cam in range(NUM_CAMS)] for slot in range(n)],
+            dtype=np.int32,
+        ).reshape(n, NUM_CAMS)
+        store.write_correspondences(frame=f_num, pos_3d=pos_3d, cam_target_ids=cam_ids)
 
-        # --- ptv_is (linkage — initially unlinked) ---
-        with open(res_dir / f"ptv_is.{f_num}", "w") as fh:
-            fh.write(f"{n}\n")
-            for slot, (pid, x, y, z) in enumerate(particles):
-                fh.write(f"  -1   -2 {x:10.3f} {y:10.3f} {z:10.3f}\n")
+        prev_ids = np.full(n, -1, dtype=np.int32)
+        next_ids = np.full(n, -2, dtype=np.int32)
+        prio = np.full(n, 4, dtype=np.int32)
+        store.write_linkage(
+            frame=f_num, prev_ids=prev_ids, next_ids=next_ids, pos_3d=pos_3d, name="ptv_is", prio=prio
+        )
 
-        # --- added (prio file — initially unlinked) ---
-        with open(res_dir / f"added.{f_num}", "w") as fh:
-            fh.write(f"{n}\n")
-            for slot, (pid, x, y, z) in enumerate(particles):
-                fh.write(f"  -1   -2 {x:10.3f} {y:10.3f} {z:10.3f} 4\n")
-
-        # --- target files per camera (y-sorted) ---
         for cam in range(NUM_CAMS):
             entries = cam_targ_entries[cam]
-            with open(img_dir / f"cam{cam + 1}.{f_num}_targets", "w") as fh:
-                fh.write(f"{n}\n")
-                for targ_pnr, (orig_slot, px, py) in enumerate(entries):
-                    fh.write(
-                        f"{targ_pnr:4d} {px:9.4f} {py:9.4f} "
-                        f"  100    10    10  1000 {orig_slot:5d}\n"
-                    )
+            arr = np.array(
+                [
+                    [targ_pnr, px, py, 100.0, 10.0, 10.0, 1000.0, orig_slot]
+                    for targ_pnr, (orig_slot, px, py) in enumerate(entries)
+                ],
+                dtype=np.float64,
+            ).reshape(n, 8)
+            store.write_targets(cam, f_num, arr)
 
 
 # ---------------------------------------------------------------------------
@@ -267,6 +252,22 @@ def _build_ground_truth_links(frames):
     return gt_next, gt_prev, slot_to_pid
 
 
+def _read_linkage_store(store, f_num):
+    if not store.has_linkage(f_num, "ptv_is"):
+        return None
+    prev_ids, next_ids, pos = store.read_linkage(f_num, "ptv_is")
+    return [
+        {
+            "prev": int(pr),
+            "next": int(nx),
+            "x": float(pt[0]),
+            "y": float(pt[1]),
+            "z": float(pt[2]),
+        }
+        for pr, nx, pt in zip(prev_ids, next_ids, pos)
+    ]
+
+
 def _validate_tracking_result(frames, gt_next, slot_to_pid, label):
     """Check that every link in the output matches ground truth.
 
@@ -275,6 +276,9 @@ def _validate_tracking_result(frames, gt_next, slot_to_pid, label):
     - wrong: link exists but points to wrong particle
     - missed: ground truth says link should exist but tracker didn't find it
     """
+    from openptv2.storage import RunStore
+
+    store = RunStore(TEST_DIR / "res" / "run.zarr", mode="r")
     sorted_frames = sorted(frames.keys())
     n_correct = 0
     n_wrong = 0
@@ -285,11 +289,9 @@ def _validate_tracking_result(frames, gt_next, slot_to_pid, label):
         if fi == len(sorted_frames) - 1:
             continue  # last frame has no "next"
 
-        path = TEST_DIR / f"res/ptv_is.{f_num}"
-        if not path.exists():
+        linkage = _read_linkage_store(store, f_num)
+        if linkage is None:
             continue
-
-        linkage = _parse_linkage(path)
 
         for slot, entry in enumerate(linkage):
             expected_next = gt_next.get((f_num, slot), -1)
@@ -329,9 +331,12 @@ def _validate_tracking_result(frames, gt_next, slot_to_pid, label):
 def _check_trajectory_distances(frames, label):
     """Check that no trajectory link jumps an unreasonable distance.
 
-    Reads ptv_is files and verifies that linked particles have
+    Reads ptv_is linkage from RunStore and verifies that linked particles have
     positions consistent with smooth motion.
     """
+    from openptv2.storage import RunStore
+
+    store = RunStore(TEST_DIR / "res" / "run.zarr", mode="r")
     sorted_frames = sorted(frames.keys())
     max_jump = 0.0
     jumps = []
@@ -340,13 +345,10 @@ def _check_trajectory_distances(frames, label):
         f_curr = sorted_frames[fi]
         f_next = sorted_frames[fi + 1]
 
-        curr_path = TEST_DIR / f"res/ptv_is.{f_curr}"
-        next_path = TEST_DIR / f"res/ptv_is.{f_next}"
-        if not curr_path.exists() or not next_path.exists():
+        curr_data = _read_linkage_store(store, f_curr)
+        next_data = _read_linkage_store(store, f_next)
+        if curr_data is None or next_data is None:
             continue
-
-        curr_data = _parse_linkage(curr_path)
-        next_data = _parse_linkage(next_path)
 
         for slot, entry in enumerate(curr_data):
             if entry["next"] >= 0:
@@ -388,23 +390,20 @@ def synthetic_data():
 
 
 def _setup_working_copy():
-    """Copy res_orig/img_orig to res/img for a fresh run."""
+    """Copy res_orig/run.zarr to res/run.zarr for a fresh run."""
+    from openptv2.storage import RunStore
+
     res = TEST_DIR / "res"
-    img = TEST_DIR / "img"
     if res.exists():
         shutil.rmtree(res)
-    if img.exists():
-        shutil.rmtree(img)
-    shutil.copytree(TEST_DIR / "res_orig", res)
-    shutil.copytree(TEST_DIR / "img_orig", img)
+    res.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(TEST_DIR / "res_orig" / "run.zarr", res / "run.zarr")
+    return RunStore(res / "run.zarr", mode="a")
 
 
 def _setup_working_copy_res_only():
-    """Reset only res/ (keeps img/ from prior run for second forward pass)."""
-    res = TEST_DIR / "res"
-    if res.exists():
-        shutil.rmtree(res)
-    shutil.copytree(TEST_DIR / "res_orig", res)
+    """Reset res/run.zarr from res_orig/run.zarr."""
+    return _setup_working_copy()
 
 
 # ---------------------------------------------------------------------------
@@ -419,7 +418,7 @@ class TestSyntheticTrack3d:
         original = os.getcwd()
         try:
             os.chdir(TEST_DIR)
-            _setup_working_copy()
+            store = _setup_working_copy()
 
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
@@ -442,6 +441,7 @@ class TestSyntheticTrack3d:
                 cals,
                 0.0001,
             )
+            run.fb.store = store
             track_forward_start(run)
             for step in range(run.seq_par.first, run.seq_par.last):
                 track3d_loop(run, step)
@@ -475,7 +475,7 @@ class TestSyntheticTrack3d:
         original = os.getcwd()
         try:
             os.chdir(TEST_DIR)
-            _setup_working_copy()
+            store = _setup_working_copy()
 
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
@@ -498,6 +498,7 @@ class TestSyntheticTrack3d:
                 cals,
                 0.0001,
             )
+            run.fb.store = store
             track_forward_start(run)
             for step in range(run.seq_par.first, run.seq_par.last):
                 track3d_loop(run, step)
@@ -530,7 +531,7 @@ class TestSyntheticTrackcorr:
         original = os.getcwd()
         try:
             os.chdir(TEST_DIR)
-            _setup_working_copy()
+            store = _setup_working_copy()
 
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
@@ -553,6 +554,7 @@ class TestSyntheticTrackcorr:
                 cals,
                 0.0001,
             )
+            run.fb.store = store
             track_forward_start(run)
             for step in range(run.seq_par.first, run.seq_par.last):
                 trackcorr_c_loop(run, step)
@@ -590,7 +592,7 @@ class TestSyntheticTrackcorr:
         original = os.getcwd()
         try:
             os.chdir(TEST_DIR)
-            _setup_working_copy()
+            store = _setup_working_copy()
 
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
@@ -613,6 +615,7 @@ class TestSyntheticTrackcorr:
                 cals,
                 0.0001,
             )
+            run.fb.store = store
             track_forward_start(run)
             for step in range(run.seq_par.first, run.seq_par.last):
                 trackcorr_c_loop(run, step)
@@ -652,7 +655,7 @@ class TestSyntheticComparison:
             os.chdir(TEST_DIR)
 
             # --- track3d ---
-            _setup_working_copy()
+            store = _setup_working_copy()
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
@@ -673,6 +676,7 @@ class TestSyntheticComparison:
                 cals,
                 0.0001,
             )
+            run_t3.fb.store = store
             track_forward_start(run_t3)
             for step in range(run_t3.seq_par.first, run_t3.seq_par.last):
                 track3d_loop(run_t3, step)
@@ -683,7 +687,7 @@ class TestSyntheticComparison:
             )
 
             # --- trackcorr ---
-            _setup_working_copy()
+            store = _setup_working_copy()
             cals2 = [
                 Calibration.from_file(
                     f"cal/cam{i + 1}.tif.ori", f"cal/cam{i + 1}.tif.addpar"
@@ -703,6 +707,7 @@ class TestSyntheticComparison:
                 cals2,
                 0.0001,
             )
+            run_tc.fb.store = store
             track_forward_start(run_tc)
             for step in range(run_tc.seq_par.first, run_tc.seq_par.last):
                 trackcorr_c_loop(run_tc, step)
@@ -747,7 +752,7 @@ class TestSyntheticForwardBackwardForward:
 
     def _run_fbf(self, add):
         """Run forward-backward-forward and return per-frame link counts."""
-        _setup_working_copy()
+        store = _setup_working_copy()
         cpar = ControlPar.from_yaml("parameters.yaml")
         cals = [
             Calibration.from_file(
@@ -769,6 +774,7 @@ class TestSyntheticForwardBackwardForward:
             cals,
             0.0001,
         )
+        run.fb.store = store
         run.tpar = run.tpar._replace(add=add)
 
         # Forward
@@ -782,7 +788,7 @@ class TestSyntheticForwardBackwardForward:
         trackback_c(run)
 
         # Forward again
-        _setup_working_copy_res_only()
+        store2 = _setup_working_copy_res_only()
         run2 = tr_new(
             SequencePar.from_yaml("parameters.yaml"),
             TrackPar.from_yaml("parameters.yaml"),
@@ -796,6 +802,7 @@ class TestSyntheticForwardBackwardForward:
             cals,
             0.0001,
         )
+        run2.fb.store = store2
         run2.tpar = run2.tpar._replace(add=add)
         track_forward_start(run2)
         for step in range(run2.seq_par.first, run2.seq_par.last):
@@ -838,7 +845,7 @@ class TestSyntheticForwardBackwardForward:
         original = os.getcwd()
         try:
             os.chdir(TEST_DIR)
-            _setup_working_copy()
+            store = _setup_working_copy()
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
@@ -860,6 +867,7 @@ class TestSyntheticForwardBackwardForward:
                 cals,
                 0.0001,
             )
+            run.fb.store = store
 
             # Forward
             track_forward_start(run)
@@ -870,19 +878,18 @@ class TestSyntheticForwardBackwardForward:
             # Snapshot forward results
             fwd_links = {}
             for frame in range(FIRST, LAST + 1):
-                path = TEST_DIR / f"res/ptv_is.{frame}"
-                if path.exists():
-                    fwd_links[frame] = _parse_linkage(path)
+                data = _read_linkage_store(store, frame)
+                if data is not None:
+                    fwd_links[frame] = data
 
             # Backward
             trackback_c(run)
 
             # Check backward didn't corrupt any frame
             for frame in range(FIRST, LAST + 1):
-                path = TEST_DIR / f"res/ptv_is.{frame}"
-                if not path.exists():
+                back_data = _read_linkage_store(store, frame)
+                if back_data is None:
                     continue
-                back_data = _parse_linkage(path)
                 fwd_data = fwd_links[frame]
 
                 assert len(back_data) == len(fwd_data), (
@@ -924,7 +931,7 @@ class TestTrackbackCandidateGuard:
         original = os.getcwd()
         try:
             os.chdir(TEST_DIR)
-            _setup_working_copy()
+            store = _setup_working_copy()
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
@@ -946,6 +953,7 @@ class TestTrackbackCandidateGuard:
                 cals,
                 0.0001,
             )
+            run.fb.store = store
             # Tight acceleration/angle gate, wide velocity box: candidates
             # near the crossing trajectories fall inside the box but most
             # fail acc/angle. Only the fix keeps them out of the link list.
@@ -968,10 +976,9 @@ class TestTrackbackCandidateGuard:
             for fi, f_num in enumerate(sorted_frames):
                 if fi == 0:
                     continue  # first frame has no "prev"
-                path = TEST_DIR / f"res/ptv_is.{f_num}"
-                if not path.exists():
+                linkage = _read_linkage_store(store, f_num)
+                if linkage is None:
                     continue
-                linkage = _parse_linkage(path)
                 for slot, entry in enumerate(linkage):
                     expected_prev = gt_prev.get((f_num, slot), -1)
                     actual_prev = entry["prev"]

@@ -13,6 +13,7 @@ from openptv2.algorithms.imgcoord import img_coord_batch
 from openptv2.algorithms.parameters import ControlPar, VolumePar
 from openptv2.algorithms.trafo import metric_to_pixel_batch
 from openptv2.correspondences import match_frame_correspondences
+from openptv2.storage import RunStore
 from openptv2.tracking_framebuf import read_targets
 from tests._support import find_test_data_root
 
@@ -37,10 +38,13 @@ def test_lsq_triangulation_reprojects_better_than_pairs(monkeypatch):
         Calibration.from_file(f"cal/cam{c}.tif.ori", f"cal/cam{c}.tif.addpar")
         for c in range(1, 5)
     ]
-    assert os.path.exists("img/cam1.10001_targets")
+    store = RunStore("run.zarr", mode="r")
 
     def run(method):
-        targets = [read_targets(f"img/cam{c}.%d", 10001) for c in range(1, 5)]
+        targets = [
+            read_targets(f"img/cam{c}.%d", 10001, cam_idx=c - 1, store=store)
+            for c in range(1, 5)
+        ]
         pos, ids = match_frame_correspondences(targets, cpar, cals, vpar, method=method)
         # match_frame_correspondences sorts the targets in place, as ids refer to
         return pos, ids, _worst_reprojection_px(pos, ids, targets, cals, cpar)

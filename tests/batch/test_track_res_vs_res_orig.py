@@ -89,7 +89,23 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
         res_dir = work_dir / "res"
 
         # First run: no new particle — need sequence+tracking ("both")
-        # because res/ is empty and tracking needs rt_is.* files
+        # Seed RunStore from newpart/*_targets since Existing_Target=1
+        from openptv2.storage import RunStore
+        import numpy as np
+
+        seed_store = RunStore(res_dir / "run.zarr", mode="w")
+        for frame in range(first, last + 1):
+            for cam_idx in range(3):
+                tfile = work_dir / "newpart" / f"cam{cam_idx + 1}.{frame}_targets"
+                if tfile.exists():
+                    lines = tfile.read_text().splitlines()
+                    n = int(lines[0].strip()) if lines else 0
+                    if n > 0:
+                        arr = np.loadtxt(lines[1 : n + 1], dtype=np.float64).reshape(n, 8)
+                    else:
+                        arr = np.empty((0, 8), dtype=np.float64)
+                    seed_store.write_targets(cam_idx, frame, arr)
+
         with open(yaml_path, "r") as f:
             yml = yaml.safe_load(f)
         yml["track"]["flagNewParticles"] = False

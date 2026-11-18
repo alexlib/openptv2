@@ -36,7 +36,6 @@ from openptv2.algorithms.tracking_frame_buf import (
     Pathinfo,
     Target,
     TargetArray,
-    _resolve_file_base,
     compare_corres,
     compare_path_info,
     compare_targets,
@@ -225,19 +224,25 @@ class TestTargetArray:
         ]
 
     def test_write_and_read_targets(self, tmp_path):
-        base = str(tmp_path / "tgt")
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        base = str(tmp_path / "cam1")
         t1 = Target(pnr=0, x=1.0, y=2.0, n=10, nx=5, ny=3, sumg=100, tnr=7)
         ta = TargetArray([t1])
-        result = ta.write(base, 1)
+        result = ta.write(base, 1, store=store, cam_idx=0)
         assert result is True
         # read back using static method
-        ta2 = TargetArray.read_targets(base, 1)
+        ta2 = TargetArray.read_targets(base, 1, store=store, cam_idx=0)
         assert len(ta2) == 1
 
     def test_write_zero_frame(self, tmp_path):
-        base = str(tmp_path / "tgt")
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        base = str(tmp_path / "cam1")
         ta = TargetArray([Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)])
-        result = ta.write(base, 0)
+        result = ta.write(base, 0, store=store, cam_idx=0)
         assert result is True
 
 
@@ -264,39 +269,23 @@ class TestCompareTargets:
 
 
 # ===========================================================================
-# _resolve_file_base
-# ===========================================================================
-
-
-class TestResolveFileBase:
-    def test_format_d_in_base(self):
-        result = _resolve_file_base("/data/frame%d", 5)
-        assert result == "/data/frame5_targets"
-
-    def test_positive_frame_num(self):
-        result = _resolve_file_base("/data/cam", 3)
-        assert result == "/data/cam0003_targets"
-
-    def test_zero_frame_num(self):
-        result = _resolve_file_base("/data/cam", 0)
-        assert result == "/data/cam_targets"
-
-
-# ===========================================================================
 # read_targets / write_targets
 # ===========================================================================
 
 
 class TestReadWriteTargets:
     def test_write_then_read(self, tmp_path):
-        base = str(tmp_path / "cam")
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        base = str(tmp_path / "cam1")
         targets = [
             Target(pnr=i, x=float(i), y=float(i * 2), n=10, nx=5, ny=5, sumg=100, tnr=i)
             for i in range(3)
         ]
-        ok = write_targets(targets, 3, base, 1)
+        ok = write_targets(targets, 3, base, 1, store=store, cam_idx=0)
         assert ok is True
-        read = read_targets(base, 1)
+        read = read_targets(base, 1, cam_idx=0, store=store)
         assert len(read) == 3
         assert read[0].c_pnr == 0
 
@@ -304,33 +293,18 @@ class TestReadWriteTargets:
         result = read_targets(str(tmp_path / "nofile"), 1)
         assert result == []
 
-    def test_write_with_percent_d(self, tmp_path):
-        base = str(tmp_path / "cam%d")
-        targets = [Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)]
-        ok = write_targets(targets, 1, base, 7)
-        assert ok is True
-        read = read_targets(base, 7)
-        assert len(read) == 1
-
-    def test_read_short_line_returns_empty(self, tmp_path):
-        # Create a targets file with fewer than 8 fields on a line
-        fname = str(tmp_path / "cam0001_targets")
-        with open(fname, "w") as f:
-            f.write("1\n")
-            f.write("0 1.0 2.0\n")  # only 3 fields → return []
-        result = read_targets(str(tmp_path / "cam"), 1)
-        assert result == []
-
-    def test_write_ioerror(self):
-        # write to non-existent directory → IOError → returns False
-        result = write_targets([], 0, "/nonexistent_dir_xyz/cam", 1)
-        assert result is False
+    def test_write_without_store_raises(self):
+        with pytest.raises(ValueError, match="RunStore"):
+            write_targets([], 0, "/nonexistent_dir_xyz/cam", 1)
 
     def test_write_zero_targets(self, tmp_path):
-        base = str(tmp_path / "empty")
-        ok = write_targets([], 0, base, 1)
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        base = str(tmp_path / "cam1")
+        ok = write_targets([], 0, base, 1, store=store, cam_idx=0)
         assert ok is True
-        read = read_targets(base, 1)
+        read = read_targets(base, 1, cam_idx=0, store=store)
         assert read == []
 
 
@@ -570,14 +544,28 @@ def _make_prio_file(path, entries):
 
 class TestReadPathFrame:
     def test_nonexistent_corres(self, tmp_path):
-        cor, path = read_path_frame(str(tmp_path / "no"), "", "", 1)
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        cor, path = read_path_frame("rt_is", "", "", 1, store=store)
+        assert cor == []
+        assert path == []
+
+    def test_none_store_returns_empty(self):
+        cor, path = read_path_frame("rt_is", "", "", 1, store=None)
         assert cor == []
         assert path == []
 
     def test_simple_read(self, tmp_path):
-        cbase = str(tmp_path / "rt_is")
-        _make_corres_file(f"{cbase}.1", [(1.0, 2.0, 3.0, 0, 1, 2, 3)])
-        cor, path = read_path_frame(cbase, "", "", 1)
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        store.write_correspondences(
+            frame=1,
+            pos_3d=np.array([[1.0, 2.0, 3.0]]),
+            cam_target_ids=np.array([[0, 1, 2, 3]], dtype=np.int32),
+        )
+        cor, path = read_path_frame("rt_is", "", "", 1, store=store)
         assert len(cor) == 1
         assert cor[0].nr == 1
         assert list(cor[0].p) == [0, 1, 2, 3]
@@ -588,191 +576,150 @@ class TestReadPathFrame:
         ]
 
     def test_read_with_linkage(self, tmp_path):
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        _make_corres_file(f"{cbase}.1", [(1.0, 2.0, 3.0, 0, 1, 2, 3)])
-        _make_linkage_file(f"{lbase}.1", [(-1, -2, 1.0, 2.0, 3.0)])
-        cor, path = read_path_frame(cbase, lbase, "", 1)
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        pos = np.array([[1.0, 2.0, 3.0]])
+        store.write_correspondences(
+            frame=1, pos_3d=pos, cam_target_ids=np.array([[0, 1, 2, 3]], dtype=np.int32)
+        )
+        store.write_linkage(
+            frame=1,
+            prev_ids=np.array([-1], dtype=np.int32),
+            next_ids=np.array([-2], dtype=np.int32),
+            pos_3d=pos,
+            name="ptv_is",
+        )
+        cor, path = read_path_frame("rt_is", "ptv_is", "", 1, store=store)
         assert len(path) == 1
         assert path[0].prev == -1
         assert path[0].next_idx == -2
 
     def test_read_with_prio(self, tmp_path):
-        cbase = str(tmp_path / "rt_is")
-        pbase = str(tmp_path / "added")
-        _make_corres_file(f"{cbase}.2", [(1.0, 2.0, 3.0, 0, 1, 2, 3)])
-        _make_prio_file(f"{pbase}.2", [(-1, -2, 1.0, 2.0, 3.0, 3)])
-        cor, path = read_path_frame(cbase, "", pbase, 2)
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        pos = np.array([[1.0, 2.0, 3.0]])
+        store.write_correspondences(
+            frame=2, pos_3d=pos, cam_target_ids=np.array([[0, 1, 2, 3]], dtype=np.int32)
+        )
+        store.write_linkage(
+            frame=2,
+            prev_ids=np.array([-1], dtype=np.int32),
+            next_ids=np.array([-2], dtype=np.int32),
+            pos_3d=pos,
+            name="ptv_is",
+            prio=np.array([3], dtype=np.int32),
+        )
+        cor, path = read_path_frame("rt_is", "ptv_is", "added", 2, store=store)
         assert path[0].prio == 3
 
-    def test_read_linkage_missing_line(self, tmp_path):
-        """Linkage file exists but has empty lines → falls back to PREV/NEXT_NONE."""
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        _make_corres_file(f"{cbase}.1", [(1.0, 2.0, 3.0, 0, 1, 2, 3)])
-        # Write a linkage file with header but no data line for the entry
-        with open(f"{lbase}.1", "w") as f:
-            f.write("1\n")
-            # intentionally no data line → readline returns ""
-        cor, path = read_path_frame(cbase, lbase, "", 1)
-        assert path[0].prev == PREV_NONE
-        assert path[0].next_idx == NEXT_NONE
-
-    def test_read_prio_missing_line(self, tmp_path):
-        """Prio file exists but has empty data line → prio_val defaults to 4."""
-        cbase = str(tmp_path / "rt_is")
-        pbase = str(tmp_path / "added")
-        _make_corres_file(f"{cbase}.1", [(1.0, 2.0, 3.0, 0, 1, 2, 3)])
-        with open(f"{pbase}.1", "w") as f:
-            f.write("1\n")
-            # no data line
-        cor, path = read_path_frame(cbase, "", pbase, 1)
-        assert path[0].prio == 4
-
     def test_read_nonexistent_linkage(self, tmp_path):
-        """Linkage file does not exist → linkage_file stays None."""
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        _make_corres_file(f"{cbase}.1", [(1.0, 2.0, 3.0, 0, 1, 2, 3)])
-        # linkage file for frame 1 does not exist
-        cor, path = read_path_frame(cbase, lbase, "", 1)
+        """Linkage group does not exist → defaults to PREV_NONE / NEXT_NONE / prio=4."""
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        store.write_correspondences(
+            frame=1,
+            pos_3d=np.array([[1.0, 2.0, 3.0]]),
+            cam_target_ids=np.array([[0, 1, 2, 3]], dtype=np.int32),
+        )
+        cor, path = read_path_frame("rt_is", "ptv_is", "", 1, store=store)
         assert len(path) == 1
         assert path[0].prev == PREV_NONE
-
-    def test_read_nonexistent_prio(self, tmp_path):
-        """Prio file does not exist → prio_file stays None."""
-        cbase = str(tmp_path / "rt_is")
-        pbase = str(tmp_path / "added")
-        _make_corres_file(f"{cbase}.1", [(1.0, 2.0, 3.0, 0, 1, 2, 3)])
-        cor, path = read_path_frame(cbase, "", pbase, 1)
+        assert path[0].next_idx == NEXT_NONE
         assert path[0].prio == 4
 
-    def test_read_short_corres_line(self, tmp_path):
-        """Corres line with < 8 fields → break → returns partial."""
-        cbase = str(tmp_path / "rt_is")
-        with open(f"{cbase}.1", "w") as f:
-            f.write("2\n")
-            f.write("1 1.0 2.0 3.0 0 1\n")  # only 6 fields → break
-        cor, path = read_path_frame(cbase, "", "", 1)
-        assert len(cor) == 0
-
-    def test_read_empty_lines_skipped(self, tmp_path):
-        """Empty lines in corres file are skipped."""
-        cbase = str(tmp_path / "rt_is")
-        with open(f"{cbase}.1", "w") as f:
-            f.write("1\n")
-            f.write("\n")
-            f.write("1 1.0 2.0 3.0 0 1 2 3\n")
-        cor, path = read_path_frame(cbase, "", "", 1)
-        assert len(cor) == 1
-
     def test_read_multiple_entries(self, tmp_path):
-        cbase = str(tmp_path / "rt_is")
-        entries = [(float(i), 0.0, 0.0, i, i, i, i) for i in range(5)]
-        _make_corres_file(f"{cbase}.3", entries)
-        cor, path = read_path_frame(cbase, "", "", 3)
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        pos = np.array([[float(i), 0.0, 0.0] for i in range(5)])
+        cam_ids = np.array([[i, i, i, i] for i in range(5)], dtype=np.int32)
+        store.write_correspondences(frame=3, pos_3d=pos, cam_target_ids=cam_ids)
+        cor, path = read_path_frame("rt_is", "", "", 3, store=store)
         assert len(cor) == 5
 
 
 class TestWritePathFrame:
-    def test_write_then_read_roundtrip(self, tmp_path):
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        pbase = str(tmp_path / "added")
+    def test_write_requires_store(self):
+        with pytest.raises(ValueError, match="RunStore"):
+            write_path_frame([], [], 0, "rt_is", "", None, 1, store=None)
 
+    def test_write_then_read_roundtrip(self, tmp_path):
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
         cor_buf = [Corres(nr=1, p=[0, 1, 2, 3])]
         p = Pathinfo(x=[1.0, 2.0, 3.0], prev=-1, next_idx=-2, prio=3)
-        path_buf = [p]
 
-        ok = write_path_frame(cor_buf, path_buf, 1, cbase, lbase, pbase, 5)
+        ok = write_path_frame(
+            cor_buf, [p], 1, "rt_is", "ptv_is", "added", 5, store=store
+        )
         assert ok is True
-        assert Path(f"{cbase}.5").exists()
-        assert Path(f"{lbase}.5").exists()
-        assert Path(f"{pbase}.5").exists()
+        assert store.has_correspondences(5)
+        assert store.has_linkage(5, "ptv_is")
 
-        cor2, path2 = read_path_frame(cbase, lbase, pbase, 5)
+        cor2, path2 = read_path_frame("rt_is", "ptv_is", "added", 5, store=store)
         assert len(cor2) == 1
         assert path2[0].prio == 3
 
     def test_write_no_linkage_no_prio(self, tmp_path):
-        cbase = str(tmp_path / "rt_is")
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
         cor_buf = [Corres(nr=1, p=[0, 1, 2, 3])]
         p = Pathinfo(x=[1.0, 2.0, 3.0])
-        ok = write_path_frame(cor_buf, [p], 1, cbase, "", None, 1)
+        ok = write_path_frame(cor_buf, [p], 1, "rt_is", "", None, 1, store=store)
         assert ok is True
-        assert Path(f"{cbase}.1").exists()
+        assert store.has_correspondences(1)
+        assert not store.has_linkage(1, "ptv_is")
 
     def test_write_with_numpy_array_cor_buf(self, tmp_path):
         """Branch: cor_buf is (nr_array, p_array) tuple of ndarrays."""
-        cbase = str(tmp_path / "rt_is")
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
         nr_arr = np.array([1], dtype=np.int32)
         p_arr = np.array([[0, 1, 2, 3]], dtype=np.int32)
         p = Pathinfo(x=[1.0, 2.0, 3.0])
-        ok = write_path_frame((nr_arr, p_arr), [p], 1, cbase, "", None, 1)
+        ok = write_path_frame((nr_arr, p_arr), [p], 1, "rt_is", "", None, 1, store=store)
         assert ok is True
 
     def test_write_with_generic_object_cor_buf(self, tmp_path):
         """Branch: cor_buf[pix] has .p attribute (else branch)."""
-        cbase = str(tmp_path / "rt_is")
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
 
         class FakeCor:
             def __init__(self):
                 self.p = np.zeros(4, dtype=np.int32)
 
         p = Pathinfo(x=[1.0, 2.0, 3.0])
-        # Make it NOT match the isinstance(cor_buf[0], Corres) branch
-        # by wrapping in a non-list
         cor_buf = (FakeCor(),)
-        ok = write_path_frame(cor_buf, [p], 1, cbase, "", None, 2)
+        ok = write_path_frame(cor_buf, [p], 1, "rt_is", "", None, 2, store=store)
         assert ok is True
 
     def test_write_with_no_p_attr(self, tmp_path):
         """Branch: cor_buf[pix] has no .p attribute → zeros."""
-        cbase = str(tmp_path / "rt_is")
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
 
         class NoPAttr:
             pass
 
         p = Pathinfo(x=[0.0, 0.0, 0.0])
         cor_buf = (NoPAttr(),)
-        ok = write_path_frame(cor_buf, [p], 1, cbase, "", None, 3)
+        ok = write_path_frame(cor_buf, [p], 1, "rt_is", "", None, 3, store=store)
         assert ok is True
 
-    def test_write_corres_ioerror(self):
-        ok = write_path_frame([], [], 0, "/nonexistent_xyz/rt_is", "", None, 1)
-        assert ok is False
-
-    def test_write_linkage_ioerror(self, tmp_path):
-        """Linkage file open fails → returns False."""
-        cbase = str(tmp_path / "rt_is")
-        # Make a directory where the linkage file should go so open fails
-        bad_lbase = str(tmp_path / "linkdir")
-        os.makedirs(f"{bad_lbase}.1", exist_ok=True)  # create dir at .1 path
-        ok = write_path_frame([], [], 0, cbase, bad_lbase, None, 1)
-        assert ok is False
-
-    def test_write_prio_ioerror(self, tmp_path):
-        """Prio file open fails → returns False (with linkage_file open)."""
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        bad_pbase = str(tmp_path / "priodir")
-        os.makedirs(f"{bad_pbase}.1", exist_ok=True)  # create dir at .1 path
-        ok = write_path_frame([], [], 0, cbase, lbase, bad_pbase, 1)
-        assert ok is False
-
-    def test_write_prio_ioerror_no_linkage(self, tmp_path):
-        """Prio file open fails AND no linkage file → branch 465->467 (if linkage_file: False)."""
-        cbase = str(tmp_path / "rt_is")
-        bad_pbase = str(tmp_path / "priodir2")
-        os.makedirs(f"{bad_pbase}.1", exist_ok=True)
-        # Pass empty string for linkage_file_base so linkage_fname is None
-        ok = write_path_frame([], [], 0, cbase, "", bad_pbase, 1)
-        assert ok is False
-
     def test_write_zero_parts(self, tmp_path):
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        ok = write_path_frame([], [], 0, cbase, lbase, None, 1)
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        ok = write_path_frame([], [], 0, "rt_is", "ptv_is", None, 1, store=store)
         assert ok is True
 
 
@@ -892,44 +839,51 @@ class TestFrame:
         assert list(c.p) == [10, 11, 12, 13]
 
     def test_read_nonexistent_returns_false(self, tmp_path):
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
         frm = Frame(num_cams=1, max_targets=10)
-        cbase = str(tmp_path / "rt_is")
-        result = frm.read(cbase, "", frame_num=1)
+        result = frm.read("rt_is", "", frame_num=1, store=store)
         assert result is False
 
     def test_read_and_write_roundtrip(self, tmp_path):
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        pbase = str(tmp_path / "added")
-        tbase = str(tmp_path / "cam1.")
+        from openptv2.storage import RunStore
 
-        # Write a targets file
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        cbase = "rt_is"
+        lbase = "ptv_is"
+        pbase = "added"
+        tbase = "cam1."
+
         t = Target(pnr=0, x=1.0, y=2.0, n=10, nx=5, ny=5, sumg=100, tnr=0)
-        write_targets([t], 1, tbase, 7)
+        write_targets([t], 1, tbase, 7, store=store, cam_idx=0)
 
-        # Write a path frame
         cor_buf = [Corres(nr=1, p=[0, -1, -1, -1])]
         path_buf = [Pathinfo(x=[1.0, 2.0, 3.0])]
-        write_path_frame(cor_buf, path_buf, 1, cbase, lbase, pbase, 7)
+        write_path_frame(cor_buf, path_buf, 1, cbase, lbase, pbase, 7, store=store)
 
         frm = Frame(num_cams=1, max_targets=10)
-        ok = frm.read(cbase, lbase, pbase, [tbase], 7)
+        ok = frm.read(cbase, lbase, pbase, [tbase], 7, store=store)
         assert ok is True
         assert frm.num_parts == 1
         assert frm.num_targets[0] == 1
 
     def test_read_legacy_args(self, tmp_path):
         """Exercise the is_legacy branch: target_file_base is list, frame_num is int."""
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        tbase = [str(tmp_path / "cam1.")]
+        from openptv2.storage import RunStore
 
-        # Write files
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        cbase = "rt_is"
+        lbase = "ptv_is"
+        tbase = ["cam1."]
+
         write_targets(
             [Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
             1,
             tbase[0],
             2,
+            store=store,
+            cam_idx=0,
         )
         write_path_frame(
             [Corres(nr=1, p=[0, -1, -1, -1])],
@@ -939,21 +893,29 @@ class TestFrame:
             lbase,
             None,
             2,
+            store=store,
         )
 
         frm = Frame(num_cams=1, max_targets=10)
-        # Legacy call: positional args where args[0] is list (tbase) and args[1] is int (frame_num)
-        ok = frm.read(cbase, lbase, tbase, 2)
+        ok = frm.read(cbase, lbase, tbase, 2, store=store)
         assert ok is True
 
     def test_read_with_string_target_file_base(self, tmp_path):
         """Branch: target_file_base is a string (not list)."""
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        tbase = str(tmp_path / "cam1.")
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        cbase = "rt_is"
+        lbase = "ptv_is"
+        tbase = "cam1."
 
         write_targets(
-            [Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)], 1, tbase, 3
+            [Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
+            1,
+            tbase,
+            3,
+            store=store,
+            cam_idx=0,
         )
         write_path_frame(
             [Corres(nr=1, p=[0, -1, -1, -1])],
@@ -963,24 +925,30 @@ class TestFrame:
             lbase,
             None,
             3,
+            store=store,
         )
 
         frm = Frame(num_cams=1, max_targets=10)
-        ok = frm.read(cbase, lbase, None, tbase, 3)
+        ok = frm.read(cbase, lbase, None, tbase, 3, store=store)
         assert ok is True
 
     def test_read_kwargs_prio_and_target(self, tmp_path):
-        """Cover lines 707, 709: prio_file_base and target_file_base passed as kwargs."""
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        pbase = str(tmp_path / "added")
-        tbase = [str(tmp_path / "cam1.")]
+        """Cover prio_file_base and target_file_base passed as kwargs."""
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        cbase = "rt_is"
+        lbase = "ptv_is"
+        pbase = "added"
+        tbase = ["cam1."]
 
         write_targets(
             [Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
             1,
             tbase[0],
             4,
+            store=store,
+            cam_idx=0,
         )
         write_path_frame(
             [Corres(nr=1, p=[0, -1, -1, -1])],
@@ -990,52 +958,57 @@ class TestFrame:
             lbase,
             pbase,
             4,
+            store=store,
         )
 
         frm = Frame(num_cams=1, max_targets=10)
         ok = frm.read(
-            cbase, lbase, prio_file_base=pbase, target_file_base=tbase, frame_num=4
+            cbase,
+            lbase,
+            prio_file_base=pbase,
+            target_file_base=tbase,
+            frame_num=4,
+            store=store,
         )
         assert ok is True
 
     def test_read_legacy_target_file_base_preset_via_kwargs(self, tmp_path):
-        """Legacy branch: target_file_base already set via kwarg → 723->725 False branch taken."""
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        tbase = [str(tmp_path / "cam1.")]
+        """Legacy branch: target_file_base already set via kwarg."""
+        from openptv2.storage import RunStore
 
-        # No files written → read returns False, but the branch is exercised
+        store = RunStore(tmp_path / "run.zarr", mode="w")
         frm = Frame(num_cams=1, max_targets=10)
-        # is_legacy=True because remaining_args[1] is int (99).
-        # target_file_base is already set via kwarg → skip line 724 → 723->725 taken ✓
-        ok = frm.read(cbase, lbase, 99, 99, target_file_base=tbase)
-        assert ok is False  # file doesn't exist
+        ok = frm.read("rt_is", "ptv_is", 99, 99, target_file_base=["cam1."], store=store)
+        assert ok is False
 
     def test_read_legacy_target_and_frame_num_preset(self, tmp_path):
-        """Legacy branch: both target_file_base and frame_num preset → covers 723->725, 725->727."""
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        tbase = [str(tmp_path / "cam1.")]
+        """Legacy branch: both target_file_base and frame_num preset."""
+        from openptv2.storage import RunStore
 
+        store = RunStore(tmp_path / "run.zarr", mode="w")
         frm = Frame(num_cams=1, max_targets=10)
-        # is_legacy=True because remaining_args[1] is int.
-        # target_file_base and frame_num are both already set via kwargs:
-        # → 723->725 False branch ✓; 725->727 False branch ✓
-        ok = frm.read(cbase, lbase, 99, 99, target_file_base=tbase, frame_num=99)
-        assert ok is False  # file doesn't exist
+        ok = frm.read(
+            "rt_is", "ptv_is", 99, 99, target_file_base=["cam1."], frame_num=99, store=store
+        )
+        assert ok is False
 
     def test_read_legacy_with_prio_in_args(self, tmp_path):
-        """Legacy branch with 3 positional args: tbase, frame_num, prio_base → covers line 728."""
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        pbase = str(tmp_path / "added")
-        tbase = [str(tmp_path / "cam1.")]
+        """Legacy branch with 3 positional args: tbase, frame_num, prio_base."""
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        cbase = "rt_is"
+        lbase = "ptv_is"
+        pbase = "added"
+        tbase = ["cam1."]
 
         write_targets(
             [Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
             1,
             tbase[0],
             9,
+            store=store,
+            cam_idx=0,
         )
         write_path_frame(
             [Corres(nr=1, p=[0, -1, -1, -1])],
@@ -1045,18 +1018,21 @@ class TestFrame:
             lbase,
             pbase,
             9,
+            store=store,
         )
 
         frm = Frame(num_cams=1, max_targets=10)
-        # Legacy: args[0] is list → is_legacy=True; pops tbase, frame_num, pbase
-        ok = frm.read(cbase, lbase, tbase, 9, pbase)
+        ok = frm.read(cbase, lbase, tbase, 9, pbase, store=store)
         assert ok is True
 
     def test_write(self, tmp_path):
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        pbase = str(tmp_path / "added")
-        tbase = [str(tmp_path / "cam1.")]
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        cbase = "rt_is"
+        lbase = "ptv_is"
+        pbase = "added"
+        tbase = ["cam1."]
 
         frm = Frame(num_cams=1, max_targets=10)
         frm.num_parts = 1
@@ -1065,74 +1041,51 @@ class TestFrame:
         frm.num_targets[0] = 1
         frm.targets[0][0] = Target(pnr=0, x=1.0, y=2.0, n=5, nx=3, ny=3, sumg=80, tnr=0)
 
-        ok = frm.write(cbase, lbase, pbase, tbase, 1)
+        ok = frm.write(cbase, lbase, pbase, tbase, 1, store=store)
         assert ok is True
-        assert Path(f"{cbase}.1").exists()
+        assert store.has_correspondences(1)
+        assert store.has_linkage(1, "ptv_is")
+        assert store.has_targets(0, 1)
 
     def test_write_no_targets(self, tmp_path):
         """Write branch: num_targets[cam] == 0 skips write_targets."""
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        tbase = [str(tmp_path / "cam1.")]
+        from openptv2.storage import RunStore
 
+        store = RunStore(tmp_path / "run.zarr", mode="w")
         frm = Frame(num_cams=1, max_targets=10)
         frm.num_parts = 0
         frm.num_targets[0] = 0
 
-        ok = frm.write(cbase, lbase, None, tbase, 1)
+        ok = frm.write("rt_is", "ptv_is", None, ["cam1."], 1, store=store)
         assert ok is True
+        assert store.has_correspondences(1)
 
-    def test_write_path_frame_failure(self, tmp_path):
-        """Frame.write returns False when write_path_frame fails (line 793)."""
+    def test_write_requires_store(self):
+        """Frame.write raises ValueError when store is None."""
         frm = Frame(num_cams=1, max_targets=10)
         frm.num_parts = 1
         frm.correspond[0] = Corres(nr=1, p=[0, 1, 2, 3])
         frm.path_info[0] = Pathinfo(x=[1.0, 2.0, 3.0])
 
-        # Use invalid path → write_path_frame returns False
-        ok = frm.write(
-            "/nonexistent_xyz/rt_is",
-            "/nonexistent_xyz/ptv_is",
-            None,
-            [str(tmp_path / "cam1.")],
-            1,
-        )
-        assert ok is False
-
-    def test_write_targets_failure(self, tmp_path):
-        """Frame.write returns False when write_targets fails (line 804)."""
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-
-        frm = Frame(num_cams=1, max_targets=10)
-        frm.num_parts = 1
-        frm.correspond[0] = Corres(nr=1, p=[0, 1, 2, 3])
-        frm.path_info[0] = Pathinfo(x=[1.0, 2.0, 3.0])
-        frm.num_targets[0] = 1
-        frm.targets[0][0] = Target(pnr=0, x=1.0, y=2.0, n=5, nx=3, ny=3, sumg=80, tnr=0)
-
-        # write_path_frame will succeed, but write_targets will fail
-        ok = frm.write(cbase, lbase, None, ["/nonexistent_xyz/cam1."], 1)
-        assert ok is False
+        with pytest.raises(ValueError, match="RunStore"):
+            frm.write("rt_is", "ptv_is", None, ["cam1."], 1, store=None)
 
     def test_init_with_frame_num(self, tmp_path):
         """Frame.__init__ kwargs branch: read called when frame_num provided."""
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        pbase = str(tmp_path / "added")
-        tbase = [str(tmp_path / "cam1.")]
+        from openptv2.storage import RunStore
 
-        # File doesn't exist → read returns False but no exception
+        store = RunStore(tmp_path / "run.zarr", mode="w")
         frm = Frame(
             num_cams=1,
             max_targets=10,
             frame_num=1,
-            corres_file_base=cbase,
-            linkage_file_base=lbase,
-            prio_file_base=pbase,
-            target_file_base=tbase,
+            corres_file_base="rt_is",
+            linkage_file_base="ptv_is",
+            prio_file_base="added",
+            target_file_base=["cam1."],
+            store=store,
         )
-        assert frm.num_parts == 0  # nothing read (file missing)
+        assert frm.num_parts == 0  # nothing read (frame missing)
 
 
 # ===========================================================================
@@ -1142,14 +1095,18 @@ class TestFrame:
 
 class TestFrameBuf:
     def _make_fb(self, tmp_path):
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
         return FrameBuf(
             buf_len=3,
             num_cams=1,
             max_targets=10,
-            corres_file_base=str(tmp_path / "rt_is"),
-            linkage_file_base=str(tmp_path / "ptv_is"),
-            prio_file_base=str(tmp_path / "added"),
-            target_file_base=[str(tmp_path / "cam1.")],
+            corres_file_base="rt_is",
+            linkage_file_base="ptv_is",
+            prio_file_base="added",
+            target_file_base=["cam1."],
+            store=store,
         )
 
     def test_init(self, tmp_path):
@@ -1190,19 +1147,24 @@ class TestFrameBuf:
         fb.buf[0].num_parts = 0
         ok = fb.write_frame_from_start(1)
         assert ok is True
+        assert fb.store.has_correspondences(1)
 
     def test_read_then_write_roundtrip(self, tmp_path):
-        cbase = str(tmp_path / "rt_is")
-        lbase = str(tmp_path / "ptv_is")
-        pbase = str(tmp_path / "added")
-        tbase = [str(tmp_path / "cam1.")]
+        from openptv2.storage import RunStore
 
-        # Prepare files
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        cbase = "rt_is"
+        lbase = "ptv_is"
+        pbase = "added"
+        tbase = ["cam1."]
+
         write_targets(
             [Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
             1,
             tbase[0],
             5,
+            store=store,
+            cam_idx=0,
         )
         write_path_frame(
             [Corres(nr=1, p=[0, -1, -1, -1])],
@@ -1212,6 +1174,7 @@ class TestFrameBuf:
             lbase,
             pbase,
             5,
+            store=store,
         )
 
         fb = FrameBuf(
@@ -1222,6 +1185,7 @@ class TestFrameBuf:
             linkage_file_base=lbase,
             prio_file_base=pbase,
             target_file_base=tbase,
+            store=store,
         )
         ok = fb.read_frame_at_end(5, read_links=True)
         assert ok is True
@@ -1229,6 +1193,7 @@ class TestFrameBuf:
 
         ok2 = fb.write_frame_from_start(6)
         assert ok2 is True
+        assert store.has_correspondences(6)
 
 
 # ===========================================================================

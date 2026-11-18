@@ -38,19 +38,32 @@ except ImportError:
 
 # Helper to load interpreted/fallback version of algorithms/imgcoord.py
 def load_interpreted_imgcoord():
-    path = (
-        Path(__file__).parent.parent.parent
-        / "src"
-        / "openptv2"
-        / "algorithms"
-        / "imgcoord.py"
-    )
+    import types
+
+    algo_dir = Path(__file__).parent.parent.parent / "src" / "openptv2" / "algorithms"
+    pkg_name = "openptv2_interpreted_algo"
+    if pkg_name not in sys.modules:
+        pkg = types.ModuleType(pkg_name)
+        pkg.__path__ = [str(algo_dir)]
+        sys.modules[pkg_name] = pkg
+
+    # Load interpreted multimed first so relative `from .multimed import ...`
+    # gets pure-Python helpers (including @cython.cfunc _mmlut_lookup_core).
+    mm_name = f"{pkg_name}.multimed"
+    if mm_name not in sys.modules:
+        mm_spec = importlib.util.spec_from_file_location(
+            mm_name, str(algo_dir / "multimed.py")
+        )
+        mm_mod = importlib.util.module_from_spec(mm_spec)
+        sys.modules[mm_name] = mm_mod
+        mm_spec.loader.exec_module(mm_mod)
+
+    ic_name = f"{pkg_name}.imgcoord"
     spec = importlib.util.spec_from_file_location(
-        "openptv2.algorithms.imgcoord_fallback", str(path)
+        ic_name, str(algo_dir / "imgcoord.py")
     )
     module = importlib.util.module_from_spec(spec)
-    # Ensure a clean module namespace
-    sys.modules["openptv2.algorithms.imgcoord_fallback"] = module
+    sys.modules[ic_name] = module
     spec.loader.exec_module(module)
     return module
 

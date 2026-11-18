@@ -86,9 +86,6 @@ def export_ptv_is_to_paraview(
         except Exception:
             dataset = []
 
-    if not dataset:
-        dataset = trajectories_ptvis(ptv_is_pattern, xuap=xuap)
-
     dataframes = []
     for traj in dataset:
         dataframes.append(

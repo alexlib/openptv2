@@ -34,33 +34,22 @@ def _estimate_max_targets(
     a frame with more particles than max_targets silently corrupts memory
     rather than raising. The old code hardcoded max_targets=10000 regardless
     of the actual data; this peeks at the real correspondence counts across
-    the run's frames (via the store if attached, else the rt_is ASCII line
-    counts) and sizes from the observed maximum instead, so a 20k-particle
-    run doesn't run into the same fixed cap a small run happened to fit
-    under.
+    the run's frames via the attached RunStore and sizes from the observed
+    maximum instead, so a 20k-particle run doesn't run into the same fixed cap
+    a small run happened to fit under.
 
     Falls back to `floor` if no counts could be read (e.g. sequence hasn't
-    been processed yet) -- unchanged old behaviour, not a regression.
+    been processed yet).
     """
     counts = []
-    first, last = spar.get_first(), spar.get_last()
-    for f in range(first, last + 1):
-        n = None
-        if store is not None:
+    if store is not None:
+        first, last = spar.get_first(), spar.get_last()
+        for f in range(first, last + 1):
             try:
                 pos, _ids = store.read_correspondences(f)
-                n = len(pos)
+                counts.append(len(pos))
             except Exception:
-                n = None
-        if n is None:
-            path = f"{naming['corres']}.{f}"
-            try:
-                with open(path, encoding="utf-8") as fh:
-                    n = int(fh.readline().strip())
-            except (OSError, ValueError):
-                n = None
-        if n is not None:
-            counts.append(n)
+                pass
 
     if not counts:
         return floor

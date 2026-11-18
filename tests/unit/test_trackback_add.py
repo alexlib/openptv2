@@ -200,6 +200,7 @@ def test_trackback_c_passes_the_volume_y_limits(monkeypatch, tmp_path):
     import openptv2.algorithms.track as track
     from openptv2.algorithms.parameters import SequencePar, TrackPar, VolumePar
     from openptv2.algorithms.tracking_run import tr_new
+    from openptv2.storage import RunStore
 
     sys.path.insert(0, str(Path(__file__).parent))
     from test_track import read_all_calibration
@@ -221,6 +222,7 @@ def test_trackback_c_passes_the_volume_y_limits(monkeypatch, tmp_path):
 
     monkeypatch.setattr(track, "_trackback_loop_fast", spy)
     cpar = ControlPar.from_yaml("parameters.yaml")
+    store = RunStore(work / "res" / "run.zarr", mode="w")
     run = tr_new(
         SequencePar.from_yaml("parameters.yaml"),
         TrackPar.from_yaml("parameters.yaml"),
@@ -234,6 +236,7 @@ def test_trackback_c_passes_the_volume_y_limits(monkeypatch, tmp_path):
         read_all_calibration(cpar.num_cams, base_path="."),
         0.0001,
     )
+    run.fb.store = store
     run.seq_par.first, run.seq_par.last = 10240, 10250
     track.trackback_c(run)
 

@@ -159,6 +159,8 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
 
     num_particles = len(traj_defs)
 
+    store = RunStore(resolve_store_path(test_dir / "res"), mode="w")
+
     # Frame-by-frame data generation
     for f_idx, f in enumerate(frames):
         pts_3d = []
@@ -178,29 +180,19 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
                 # Format target: pnr, x_pix, y_pix, nx, ny, npix, sumg, tnr
                 cam_targets[i].append((p_idx, x_pix, y_pix, 5, 5, 25, 120, p_idx))
 
-        # Write cam*_targets files for this frame
+        # Write cam*_targets into RunStore for this frame
         for i in range(4):
-            targets_file = test_dir / "img" / f"cam{i + 1}.{f}_targets"
-            target_arr = np.array(cam_targets[i])
+            target_arr = np.array(cam_targets[i], dtype=np.float64)
             # OpenPTV binary search expects targets sorted by y_pix (column 2)
             target_arr = target_arr[np.argsort(target_arr[:, 2])]
-            np.savetxt(
-                targets_file,
-                target_arr,
-                fmt="%4d %9.4f %9.4f %5d %5d %5d %5d %5d",
-                header=f"{num_particles}",
-                comments="",
-            )
+            store.write_targets(i, f, target_arr)
 
-        # Write corresponding rt_is file
-        rt_is_file = test_dir / "res" / f"rt_is.{f}"
-        with open(rt_is_file, "w", encoding="utf-8") as fh:
-            fh.write(f"{num_particles}\n")
-            for p_idx, pt in enumerate(pts_3d):
-                # Format: index, x, y, z, pnr_cam1, pnr_cam2, pnr_cam3, pnr_cam4
-                fh.write(
-                    f"{p_idx + 1:4d} {pt[0]:9.3f} {pt[1]:9.3f} {pt[2]:9.3f} {p_idx:4d} {p_idx:4d} {p_idx:4d} {p_idx:4d}\n"
-                )
+        # Write corresponding 3D points into RunStore
+        cam_ids = np.array(
+            [[p_idx, p_idx, p_idx, p_idx] for p_idx in range(num_particles)],
+            dtype=np.int32,
+        )
+        store.write_correspondences(frame=f, pos_3d=pts_3d, cam_target_ids=cam_ids)
 
     # 4. Execute pyptv-batch Tracking on the synthetic dataset
     print("\n--- Running Tracking on Symmetric Synthetic Dataset ---")

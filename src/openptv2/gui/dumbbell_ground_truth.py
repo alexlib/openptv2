@@ -102,10 +102,11 @@ def _write_two_targets(
         t.set_sum_grey_value(int(sum_grey))
         t.set_tnr(0)
 
-    short_base.parent.mkdir(parents=True, exist_ok=True)
-    ptv.write_targets(targs, str(short_base), int(frame))
-    if store is not None:
-        store.write_targets(cam, frame, targs)
+    if store is None:
+        raise ValueError(
+            "RunStore is required (ASCII _targets files are removed)"
+        )
+    store.write_targets(cam, frame, targs)
 
 
 def _project_points_px(xyz: np.ndarray, cal, cpar) -> np.ndarray:

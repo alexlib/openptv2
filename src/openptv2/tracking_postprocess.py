@@ -51,36 +51,15 @@ def _path(base: str, frame: int) -> str:
 def read_linkage(
     linkage_base: str, frame: int, store: Any = None
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
-    """Return (prev, next, xyz) arrays for a frame, or None if the file/store
-    entry is absent or empty. ``prev``/``next`` are int32; ``xyz`` is (n, 3)
-    float64.
-
-    ``store``: an ``openptv2.storage.RunStore``, or None. When given, reads
-    through it (its own frame-key convention) instead of guessing a
-    ``run.zarr`` path with a hand-built, differently-padded key -- the two
-    conventions collided silently before this (see
-    docs/plans/2026-08-14-storage-formats-as-built.md).
-    """
-    base_path = Path(linkage_base)
-    if store is not None:
-        name = base_path.name
-        if store.has_linkage(frame, name):
-            prev, nxt, xyz = store.read_linkage(frame, name)
-            return prev, nxt, xyz
-
-    p = _path(linkage_base, frame)
-    if not os.path.exists(p) or os.path.getsize(p) == 0:
+    """Return (prev, next, xyz) arrays for a frame from ``RunStore``, or None
+    if ``store`` is None or the entry is absent/empty."""
+    if store is None:
         return None
-    try:
-        data = np.loadtxt(p, skiprows=1, ndmin=2)
-    except Exception:
-        return None
-    if data.size == 0:
-        return None
-    prev = data[:, 0].astype(np.int32)
-    nxt = data[:, 1].astype(np.int32)
-    xyz = np.ascontiguousarray(data[:, 2:5], dtype=np.float64)
-    return prev, nxt, xyz
+    name = Path(linkage_base).name
+    if store.has_linkage(frame, name):
+        prev, nxt, xyz = store.read_linkage(frame, name)
+        return prev, nxt, xyz
+    return None
 
 
 def write_linkage(
@@ -91,27 +70,11 @@ def write_linkage(
     xyz: np.ndarray,
     store: Any = None,
 ) -> None:
-    """Write a frame's linkage to the unified RunStore when ``store`` is
-    given, otherwise to ASCII (store-backed runs no longer write ASCII --
-    see docs/plans/2026-08-15-zarr-only-transition-plan.md and
-    ``write_path_frame``'s identical store-vs-ASCII split). ``linkage_base``
-    may be a store-only namespace (e.g. warmup's ``"warmup/cycle1"`` scratch
-    group) with no real on-disk directory, so falling through to ASCII when
-    a store is given would raise FileNotFoundError."""
+    """Write a frame's linkage to the unified RunStore."""
+    if store is None:
+        raise ValueError("write_linkage requires a RunStore (ASCII linkage is removed)")
     base_path = Path(linkage_base)
-    if store is not None:
-        store.write_linkage(frame, prev, nxt, xyz, name=base_path.name)
-        return
-
-    p = _path(linkage_base, frame)
-    n = len(prev)
-    with open(p, "w", encoding="utf-8") as f:
-        f.write(f"{n}\n")
-        for i in range(n):
-            f.write(
-                f"{int(prev[i]):4d} {int(nxt[i]):4d} "
-                f"{xyz[i, 0]:10.3f} {xyz[i, 1]:10.3f} {xyz[i, 2]:10.3f}\n"
-            )
+    store.write_linkage(frame, prev, nxt, xyz, name=base_path.name)
 
 
 def write_linkage_frames(

@@ -63,20 +63,59 @@ def test_pick_empty():
 
 
 @pytest.mark.unit
-def test_suggest_eps0_on_test_splitter():
-    """End-to-end on the 4-camera splitter fixture (committed cal targets):
+def test_suggest_eps0_on_test_splitter(tmp_path):
+    """End-to-end on the 4-camera splitter geometry (RunStore frame 0):
     the recommended eps0 must be a real spurious-free knee, and widening the
     band must eventually introduce spurious quadruplets."""
-    if not (SPLITTER / "cal" / "cam_1.tif_targets").exists():
-        pytest.skip("test_splitter cal targets not present")
+    import shutil
+    import numpy as np
     from openptv2.algorithms.calibration import Calibration
+    from openptv2.imgcoord import image_coordinates
+    from openptv2.transforms import convert_arr_metric_to_pixel
+    from openptv2.autocalibration import read_calblock
+    from openptv2.storage import RunStore
+    from openptv2.tracking_framebuf import TargetArray
 
-    base = SPLITTER.resolve()
+    dst = tmp_path / "splitter"
+    shutil.copytree(
+        SPLITTER,
+        dst,
+        ignore=shutil.ignore_patterns("*_targets", "res", "run.zarr"),
+    )
+    base = dst.resolve()
     cpar = _load_dataset_params(base, resolve_calblock(base)).cpar
     cals = [
         Calibration.from_file(*[str(p) for p in cam_files(base, c)[1:]])
         for c in range(cpar.num_cams)
     ]
+    fix, _ = read_calblock(str(resolve_calblock(base)))
+    fix = np.asarray(fix, float)
+    store = RunStore(base / "res" / "run.zarr", mode="w")
+    ghost_xyz = fix[:3] + np.array([5.0, 0.0, 0.0])
+    for c in range(cpar.num_cams):
+        px = convert_arr_metric_to_pixel(
+            image_coordinates(fix, cals[c], cpar.mm), cpar
+        )
+        # Perturb cam 0 of ghost_xyz slightly so it only matches at wide eps0.
+        gpx = convert_arr_metric_to_pixel(
+            image_coordinates(ghost_xyz, cals[c], cpar.mm), cpar
+        )
+        if c == 0:
+            gpx = gpx + np.array([3.0, 3.0])
+        all_px = np.vstack([px, gpx])
+        tarr = TargetArray(len(all_px))
+        for i, (x, y) in enumerate(all_px):
+            t = tarr[i]
+            t.set_pnr(i)
+            t.set_pos((float(x), float(y)))
+            t.set_pixel_counts(25, 5, 5)
+            t.set_sum_grey_value(500)
+            t.set_tnr(i)
+        tarr.sort_y()
+        for i, t in enumerate(tarr):
+            t.set_pnr(i)
+        store.write_targets(c, 0, tarr)
+
     r = suggest_eps0(base, cpar, cals)
     assert r is not None
     assert r["recommended"] is not None and r["recommended"] > 0

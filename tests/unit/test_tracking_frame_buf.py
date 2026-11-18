@@ -20,37 +20,38 @@ from openptv2.algorithms.tracking_frame_buf import (
     write_targets,
 )
 
+from openptv2.storage import RunStore
+
 TEST_DATA = os.path.join(os.path.dirname(__file__), "..", "..", "test_data")
 
 EPS = 1e-6
 
 
-def test_read_targets():
-    file_base = os.path.join(TEST_DATA, "sample_")
-    frame_num = 42
-
+def test_read_targets(tmp_path):
+    store = RunStore(tmp_path / "run.zarr", mode="w")
     t1 = Target(
         pnr=0, x=1127.0000, y=796.0000, n=13320, nx=111, ny=120, sumg=828903, tnr=1
     )
     t2 = Target(
         pnr=1, x=796.0000, y=809.0000, n=13108, nx=113, ny=116, sumg=658928, tnr=0
     )
+    frame_num = 42
+    write_targets([t1, t2], 2, "img/cam1", frame_num, store=store, cam_idx=0)
 
-    targets = read_targets(file_base, frame_num)
+    targets = read_targets("img/cam1", frame_num, cam_idx=0, store=store)
     assert len(targets) == 2
     assert compare_targets(targets[0], t1)
     assert compare_targets(targets[1], t2)
 
 
-def test_zero_targets():
-    file_base = os.path.join(TEST_DATA, "sample_")
-    frame_num = 1
-
-    targets = read_targets(file_base, frame_num)
+def test_zero_targets(tmp_path):
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    targets = read_targets("img/cam1", 1, cam_idx=0, store=store)
     assert len(targets) == 0
 
 
 def test_write_targets(tmp_path):
+    store = RunStore(tmp_path / "run.zarr", mode="w")
     t1 = Target(
         pnr=0, x=1127.0000, y=796.0000, n=13320, nx=111, ny=120, sumg=828903, tnr=1
     )
@@ -59,19 +60,20 @@ def test_write_targets(tmp_path):
     )
     tbuf = [t1, t2]
 
-    file_base = os.path.join(str(tmp_path), "test_")
+    file_base = "img/cam1"
     frame_num = 42
     num_targets = 2
 
-    assert write_targets(tbuf, num_targets, file_base, frame_num)
+    assert write_targets(tbuf, num_targets, file_base, frame_num, store=store, cam_idx=0)
 
-    targets_read = read_targets(file_base, frame_num)
+    targets_read = read_targets(file_base, frame_num, cam_idx=0, store=store)
     assert len(targets_read) == 2
     assert compare_targets(targets_read[0], t1)
     assert compare_targets(targets_read[1], t2)
 
 
-def test_read_path_frame():
+def test_read_path_frame(tmp_path):
+    store = RunStore(tmp_path / "run.zarr", mode="w")
     path_correct = Pathinfo(
         x=np.array([45.219, -20.269, 25.946]),
         prev=PREV_NONE,
@@ -81,13 +83,17 @@ def test_read_path_frame():
         inlist=0,
     )
     c_correct = Corres(nr=3, p=np.array([96, 66, 26, 26], dtype=np.int32))
-
-    file_base = os.path.join(TEST_DATA, "rt_is")
     frame_num = 818
 
-    cor_buf, path_buf = read_path_frame(file_base, "", "", frame_num)
-    assert len(cor_buf) == 80
-    assert len(path_buf) == 80
+    cor_in = [Corres(nr=i + 1, p=np.array([i, i, i, i], dtype=np.int32)) for i in range(3)]
+    cor_in[2] = c_correct
+    path_in = [Pathinfo(x=np.array([1.0, 2.0, 3.0]), prev=PREV_NONE, next_idx=NEXT_NONE, prio=4) for _ in range(3)]
+    path_in[2] = path_correct
+    write_path_frame(cor_in, path_in, 3, "res/rt_is", "", "", frame_num, store=store)
+
+    cor_buf, path_buf = read_path_frame("res/rt_is", "", "", frame_num, store=store)
+    assert len(cor_buf) == 3
+    assert len(path_buf) == 3
 
     assert cor_buf[2].nr == c_correct.nr
     assert np.array_equal(cor_buf[2].p, c_correct.p)
@@ -96,19 +102,23 @@ def test_read_path_frame():
     path_correct.prev = 0
     path_correct.next_idx = 0
     path_correct.prio = 0
+    path_in[2] = path_correct
+    write_path_frame(
+        cor_in, path_in, 3, "res/rt_is", "res/ptv_is", "res/added", frame_num, store=store
+    )
 
-    linkage_base = os.path.join(TEST_DATA, "ptv_is")
-    prio_base = os.path.join(TEST_DATA, "added")
-
-    cor_buf, path_buf = read_path_frame(file_base, linkage_base, prio_base, frame_num)
-    assert len(cor_buf) == 80
-    assert len(path_buf) == 80
+    cor_buf, path_buf = read_path_frame(
+        "res/rt_is", "res/ptv_is", "res/added", frame_num, store=store
+    )
+    assert len(cor_buf) == 3
+    assert len(path_buf) == 3
     assert cor_buf[2].nr == c_correct.nr
     assert np.array_equal(cor_buf[2].p, c_correct.p)
     assert compare_path_info(path_buf[2], path_correct)
 
 
 def test_write_path_frame(tmp_path):
+    store = RunStore(tmp_path / "run.zarr", mode="w")
     cor_buf = [
         Corres(nr=1, p=np.array([96, 66, 26, 26], dtype=np.int32)),
         Corres(nr=2, p=np.array([30, 31, 32, 33], dtype=np.int32)),
@@ -132,12 +142,10 @@ def test_write_path_frame(tmp_path):
         ),
     ]
 
-    corres_file_base = os.path.join(str(tmp_path), "rt_is")
-    linkage_file_base = os.path.join(str(tmp_path), "ptv_is")
     frame_num = 42
 
     assert write_path_frame(
-        cor_buf, path_buf, 2, corres_file_base, linkage_file_base, None, frame_num
+        cor_buf, path_buf, 2, "res/rt_is", "res/ptv_is", None, frame_num, store=store
     )
 
 
@@ -161,13 +169,11 @@ def test_init_frame():
 
 
 def test_read_write_frame(tmp_path):
-    target_files = [
-        os.path.join(str(tmp_path), "target_test_cam0"),
-        os.path.join(str(tmp_path), "target_test_cam1"),
-    ]
-    corres_base = os.path.join(str(tmp_path), "corres_test")
-    linkage_base = os.path.join(str(tmp_path), "ptv_test")
-    prio_base = os.path.join(str(tmp_path), "added_test")
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    target_files = ["img/cam1", "img/cam2"]
+    corres_base = "res/rt_is"
+    linkage_base = "res/ptv_is"
+    prio_base = "res/added"
     frame_num = 7
     cams = 2
     max_targets = 100
@@ -196,10 +202,12 @@ def test_read_write_frame(tmp_path):
 
     frm.num_targets[cams - 1] = 0
 
-    assert frm.write(corres_base, linkage_base, "", target_files, frame_num)
+    assert frm.write(
+        corres_base, linkage_base, "", target_files, frame_num, store=store
+    )
 
     readback = Frame(num_cams=cams, max_targets=max_targets)
-    assert readback.read(corres_base, "", "", target_files, frame_num)
+    assert readback.read(corres_base, "", "", target_files, frame_num, store=store)
 
     assert readback.correspond[2].nr == 3
     assert np.array_equal(readback.correspond[2].p, np.array([96, 66, 26, 26]))
@@ -211,10 +219,14 @@ def test_read_write_frame(tmp_path):
     t_path.prio = 0
     frm.path_info[2] = t_path
 
-    assert frm.write(corres_base, linkage_base, prio_base, target_files, frame_num)
+    assert frm.write(
+        corres_base, linkage_base, prio_base, target_files, frame_num, store=store
+    )
 
     readback = Frame(num_cams=cams, max_targets=max_targets)
-    assert readback.read(corres_base, linkage_base, prio_base, target_files, frame_num)
+    assert readback.read(
+        corres_base, linkage_base, prio_base, target_files, frame_num, store=store
+    )
 
     assert readback.correspond[2].nr == 3
     assert np.array_equal(readback.correspond[2].p, np.array([96, 66, 26, 26]))
@@ -229,9 +241,10 @@ def test_read_raises_when_particle_count_exceeds_max_targets(tmp_path):
     frame with more particles than max_targets must now raise a clear
     ValueError from read(), before any buffer is written past its capacity.
     """
-    target_files = [os.path.join(str(tmp_path), "target_test_cam0")]
-    corres_base = os.path.join(str(tmp_path), "corres_test")
-    linkage_base = os.path.join(str(tmp_path), "ptv_test")
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    target_files = ["img/cam1"]
+    corres_base = "res/rt_is"
+    linkage_base = "res/ptv_is"
     frame_num = 1
     n_particles = 5
 
@@ -258,11 +271,15 @@ def test_read_raises_when_particle_count_exceeds_max_targets(tmp_path):
         )
     writer.num_parts = n_particles
     writer.num_targets[0] = n_particles
-    assert writer.write(corres_base, linkage_base, "", target_files, frame_num)
+    assert writer.write(
+        corres_base, linkage_base, "", target_files, frame_num, store=store
+    )
 
     too_small = Frame(num_cams=1, max_targets=n_particles - 1)
     with pytest.raises(ValueError, match="exceeds max_targets"):
-        too_small.read(corres_base, linkage_base, "", target_files, frame_num)
+        too_small.read(
+            corres_base, linkage_base, "", target_files, frame_num, store=store
+        )
 
 
 def test_compare_corres():

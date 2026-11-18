@@ -337,10 +337,10 @@ def main():
 
             parser = argparse.ArgumentParser(prog="openptv recommend")
             parser.add_argument(
-                "rt_is_dir",
+                "store_dir",
                 nargs="?",
                 default="res",
-                help="Directory containing rt_is.# files, or the experiment root / run store (default: res)",
+                help="Experiment root, res directory, or run.zarr store (default: res)",
             )
             parser.add_argument("--first", type=int, default=None, help="First frame")
             parser.add_argument("--last", type=int, default=None, help="Last frame")
@@ -368,7 +368,7 @@ def main():
             )
 
             rec = recommend_from_files(
-                args.rt_is_dir,
+                args.store_dir,
                 args.first or 0,
                 args.last or 0,
                 user_preferences={

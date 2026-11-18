@@ -269,21 +269,6 @@ def create_3d_trajectories_panel(
         except Exception:
             trajectories = []
 
-    if not trajectories:
-        ptv_is_pattern = str(Path(exp_path) / "res" / "ptv_is.%d")
-        try:
-            from flowtracks.io import trajectories_ptvis
-
-            trajectories = trajectories_ptvis(
-                ptv_is_pattern,
-                first=first_frame,
-                last=effective_last,
-                xuap=xuap,
-                traj_min_len=traj_min_len,
-            )
-        except Exception:
-            trajectories = []
-
     fig = build_3d_trajectories_figure(
         trajectories,
         bounds=bounds,

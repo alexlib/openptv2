@@ -475,17 +475,13 @@ def recommend_from_files(
     last: int,
     user_preferences: dict[str, Any] | None = None,
 ) -> Recommendation:
-    """Analyse tracked 3D positions and recommend a tracker.
-
-    Positions come from the experiment's RunStore when one exists under
-    ``rt_is_dir`` or its parent (zarr is the database of record); the
-    ``rt_is.#`` ASCII files remain the fallback for legacy runs.
+    """Analyse 3D positions from the experiment's RunStore and recommend a tracker.
 
     Parameters
     ----------
     rt_is_dir : str or Path
-        Directory containing ``rt_is.#`` files (e.g. ``"res"``), or the
-        experiment root / store path -- resolved via ``find_existing_store``.
+        Experiment root, ``res`` directory, or ``run.zarr`` store path --
+        resolved via ``find_existing_store``.
     first, last : int
         Frame range.
     user_preferences : dict, optional
@@ -495,11 +491,9 @@ def recommend_from_files(
     -------
     Recommendation
     """
-    from openptv2.algorithms.tracking_frame_buf import Frame
     from openptv2.storage import RunStore, find_existing_store
 
     rt_is_dir = Path(rt_is_dir)
-    corres_base = str(rt_is_dir / "rt_is")
 
     store = None
     for candidate_root in (rt_is_dir, rt_is_dir.parent):
@@ -520,13 +514,7 @@ def recommend_from_files(
             pos, _ids = store.read_correspondences(fn)
             frame_particles.append(np.asarray(pos, dtype=float))
     else:
-        for fn in range(first, last + 1):
-            if not (rt_is_dir / f"rt_is.{fn}").exists():
-                frame_particles.append(np.empty((0, 3)))
-                continue
-            frame = Frame(num_cams=4, max_targets=10000)
-            frame.read(corres_base, "", target_file_base="", frame_num=fn)
-            frame_particles.append(frame.positions())
+        frame_particles = [np.empty((0, 3)) for _ in range(first, last + 1)]
 
     stats = compute_dataset_stats(frame_particles)
     return recommend_tracker(stats, user_preferences)

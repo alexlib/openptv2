@@ -552,11 +552,15 @@ def test_determination_3d_cloud_is_physically_bounded():
     pytest.importorskip("skimage")
     from openptv2.gui.ptv import read_targets
 
+    from openptv2.storage import RunStore, find_existing_store
+
     ds = Path(__file__).resolve().parents[2] / "test_data" / "test_cavity"
     yaml = ds / "parameters_Run1.yaml"
-    if not yaml.exists() or not (ds / "img" / "cam1.10001_targets").exists():
-        pytest.skip("test_cavity fixture not available")
+    store_path = find_existing_store(ds)
+    if not yaml.exists() or store_path is None:
+        pytest.skip("test_cavity RunStore fixture not available")
 
+    store = RunStore(store_path, mode="r")
     cwd = os.getcwd()
     os.chdir(ds)
     try:
@@ -571,7 +575,7 @@ def test_determination_3d_cloud_is_physically_bounded():
 
         detections, corrected = [], []
         for i in range(nc):
-            t = read_targets(f"img/cam{i + 1}", 10001)
+            t = read_targets(f"img/cam{i + 1}", 10001, store=store, cam_idx=i)
             if len(t) > 0:
                 t.sort_y()
             detections.append(t)

@@ -41,30 +41,58 @@ def test_tracker_minimal(tmp_path):
             # print(f"Setting tracker image base name for cam {cam_id+1}: {Path(short_name).resolve()}")
             spar.set_img_base_name(cam_id, str(Path(short_name).resolve()) + ".")
 
+        import numpy as np
+
+        from openptv2.storage import RunStore
+
+        res_dir = tmp_path / "res"
+        img_dir = tmp_path / "img"
+        store = RunStore(res_dir / "run.zarr", mode="w")
+        for rt_file in sorted(res_dir.glob("rt_is.*")):
+            frame = int(rt_file.suffix.lstrip("."))
+            lines = [ln.strip() for ln in rt_file.read_text().splitlines() if ln.strip()]
+            n = int(lines[0]) if lines else 0
+            if n > 0:
+                rows = np.loadtxt(lines[1 : n + 1], dtype=np.float64).reshape(n, 8)
+                pos_3d = rows[:, 1:4]
+                cam_ids = rows[:, 4:8].astype(np.int32)
+            else:
+                pos_3d = np.empty((0, 3), dtype=np.float64)
+                cam_ids = np.empty((0, 4), dtype=np.int32)
+            store.write_correspondences(frame=frame, pos_3d=pos_3d, cam_target_ids=cam_ids)
+
+        for cam in range(cpar.get_num_cams()):
+            for tfile in sorted(img_dir.glob(f"cam{cam + 1}.*_targets")):
+                frame = int(tfile.name.split(".")[1].split("_")[0])
+                lines = [ln.strip() for ln in tfile.read_text().splitlines() if ln.strip()]
+                n = int(lines[0]) if lines else 0
+                arr = (
+                    np.loadtxt(lines[1 : n + 1], dtype=np.float64).reshape(n, 8)
+                    if n > 0
+                    else np.empty((0, 8), dtype=np.float64)
+                )
+                store.write_targets(cam, frame, arr)
+
         # Set up tracker using loaded parameters
-        tracker = Tracker(cpar, vpar, track_par, spar, cals, default_naming)
+        tracker = Tracker(cpar, vpar, track_par, spar, cals, default_naming, store=store)
         tracker.full_forward()
 
-        # Check that output files are created and contain tracks
-        res_dir = tmp_path / "res"
+        # Check that output linkage is created in RunStore and contains tracks
         first = spar.get_first()
         last = spar.get_last()
         for frame in range(first, last + 1):
-            ptv_is_file = res_dir / f"ptv_is.{frame}"
-            assert ptv_is_file.exists(), f"Output file {ptv_is_file} not created."
-            with open(ptv_is_file, "r") as f:
-                lines = f.readlines()
-            # print(f"Checking {ptv_is_file}: {len(lines)} lines")
-            # print(lines)
-
-            num_tracks = int(lines[0].strip()) if lines else 0
+            assert store.has_linkage(frame, "ptv_is"), (
+                f"Output linkage for frame {frame} not created."
+            )
+            prev_ids, _, _ = store.read_linkage(frame, "ptv_is")
+            num_tracks = len(prev_ids)
 
             # Every frame in [first, last] must be populated. The last frame
             # (written by trackcorr_c_finish) carries each particle's prev-link
             # with next = -2; it must NOT be empty. An empty last frame was the
             # symptom of the forward off-by-one (an extra step that ran one past
             # `last` and clobbered the final write).
-            assert num_tracks > 0, f"No tracks found in {ptv_is_file}."
+            assert num_tracks > 0, f"No tracks found in RunStore frame {frame}."
     finally:
         os.chdir(old_cwd)
 

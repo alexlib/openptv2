@@ -378,112 +378,133 @@ def test_sort_candidates_by_freq():
     assert dest[1][1] == 0  # freq
 
 
-def test_trackcorr_no_add():
-    import os
+def _seed_track_store(store, base_dir, num_cams):
+    from pathlib import Path
 
-    original = os.getcwd()
-    try:
-        os.chdir("test_data/track")
-        _require_fixtures("res_orig", "img_orig")
-        if os.path.exists("res"):
-            shutil.rmtree("res")
-        if os.path.exists("img"):
-            shutil.rmtree("img")
-        shutil.copytree("res_orig", "res")
-        shutil.copytree("img_orig", "img")
+    base_dir = Path(base_dir)
+    for rt_file in sorted((base_dir / "res_orig").glob("rt_is.*")):
+        frame = int(rt_file.suffix.lstrip("."))
+        lines = [ln.strip() for ln in rt_file.read_text().splitlines() if ln.strip()]
+        n = int(lines[0]) if lines else 0
+        if n > 0:
+            rows = np.loadtxt(lines[1 : n + 1], dtype=np.float64).reshape(n, 8)
+            pos_3d = rows[:, 1:4]
+            cam_ids = rows[:, 4:8].astype(np.int32)
+        else:
+            pos_3d = np.empty((0, 3), dtype=np.float64)
+            cam_ids = np.empty((0, 4), dtype=np.int32)
+        store.write_correspondences(frame=frame, pos_3d=pos_3d, cam_target_ids=cam_ids)
 
-        cpar = ControlPar.from_yaml("parameters.yaml")
-        calib = read_all_calibration(cpar.num_cams, base_path=".")
-
-        # Manually create run
-        run = tr_new(
-            SequencePar.from_yaml("parameters.yaml"),
-            TrackPar.from_yaml("parameters.yaml"),
-            VolumePar.from_yaml("parameters.yaml"),
-            ControlPar.from_yaml("parameters.yaml"),
-            4,
-            20000,
-            "res/rt_is",
-            "res/ptv_is",
-            "res/added",
-            calib,
-            0.0001,
-        )
-
-        # update add
-        run.tpar = run.tpar._replace(add=0)
-
-        track_forward_start(run)
-        trackcorr_c_loop(run, run.seq_par.first)
-
-        for step in range(run.seq_par.first + 1, run.seq_par.last):
-            trackcorr_c_loop(run, step)
-
-        trackcorr_c_finish(run, run.seq_par.last)
-
-        range_val = run.seq_par.last - run.seq_par.first
-        npart = run.npart / range_val
-        nlinks = run.nlinks / range_val
-
-        assert abs(npart - 2.0) < EPS
-        assert abs(nlinks - 2.0) < EPS
-
-    finally:
-        os.chdir(original)
+    for cam in range(num_cams):
+        for tfile in sorted((base_dir / "img_orig").glob(f"cam{cam + 1}.*_targets")):
+            frame = int(tfile.name.split(".")[1].split("_")[0])
+            lines = [ln.strip() for ln in tfile.read_text().splitlines() if ln.strip()]
+            n = int(lines[0]) if lines else 0
+            if n > 0:
+                arr = np.loadtxt(lines[1 : n + 1], dtype=np.float64).reshape(n, 8)
+            else:
+                arr = np.empty((0, 8), dtype=np.float64)
+            store.write_targets(cam, frame, arr)
 
 
-def test_trackcorr_with_add():
-    import os
+def test_trackcorr_no_add(tmp_path, monkeypatch):
+    from pathlib import Path
 
-    original = os.getcwd()
-    try:
-        os.chdir("test_data/track")
-        _require_fixtures("res_orig", "img_orig")
-        if os.path.exists("res"):
-            shutil.rmtree("res")
-        if os.path.exists("img"):
-            shutil.rmtree("img")
-        shutil.copytree("res_orig", "res")
-        shutil.copytree("img_orig", "img")
+    from openptv2.storage import RunStore
 
-        cpar = ControlPar.from_yaml("parameters.yaml")
-        calib = read_all_calibration(cpar.num_cams, base_path=".")
+    src_dir = Path("test_data/track").resolve()
+    if not (src_dir / "res_orig").exists() or not (src_dir / "img_orig").exists():
+        pytest.skip("test_data/track fixtures missing")
+    work_dir = tmp_path / "track"
+    shutil.copytree(src_dir, work_dir)
+    monkeypatch.chdir(work_dir)
 
-        run = tr_new(
-            SequencePar.from_yaml("parameters.yaml"),
-            TrackPar.from_yaml("parameters.yaml"),
-            VolumePar.from_yaml("parameters.yaml"),
-            ControlPar.from_yaml("parameters.yaml"),
-            4,
-            20000,
-            "res/rt_is",
-            "res/ptv_is",
-            "res/added",
-            calib,
-            0.0001,
-        )
+    cpar = ControlPar.from_yaml("parameters.yaml")
+    calib = read_all_calibration(cpar.num_cams, base_path=".")
+    store = RunStore(work_dir / "res" / "run.zarr", mode="w")
+    _seed_track_store(store, work_dir, cpar.num_cams)
 
-        run.seq_par.first = 10240
-        run.seq_par.last = 10250
-        run.tpar = run.tpar._replace(add=1)
+    run = tr_new(
+        SequencePar.from_yaml("parameters.yaml"),
+        TrackPar.from_yaml("parameters.yaml"),
+        VolumePar.from_yaml("parameters.yaml"),
+        ControlPar.from_yaml("parameters.yaml"),
+        4,
+        20000,
+        "res/rt_is",
+        "res/ptv_is",
+        "res/added",
+        calib,
+        0.0001,
+    )
+    run.fb.store = store
+    run.tpar = run.tpar._replace(add=0)
 
-        track_forward_start(run)
-        trackcorr_c_loop(run, run.seq_par.first)
+    track_forward_start(run)
+    trackcorr_c_loop(run, run.seq_par.first)
 
-        for step in range(run.seq_par.first + 1, run.seq_par.last):
-            trackcorr_c_loop(run, step)
+    for step in range(run.seq_par.first + 1, run.seq_par.last):
+        trackcorr_c_loop(run, step)
 
-        trackcorr_c_finish(run, run.seq_par.last)
+    trackcorr_c_finish(run, run.seq_par.last)
 
-        range_val = run.seq_par.last - run.seq_par.first
-        npart = run.npart / range_val
-        nlinks = run.nlinks / range_val
+    range_val = run.seq_par.last - run.seq_par.first
+    npart = run.npart / range_val
+    nlinks = run.nlinks / range_val
 
-        assert abs(npart - 2.0) < EPS
-        assert abs(nlinks - 2.0) < EPS
+    assert abs(npart - 2.0) < EPS
+    assert abs(nlinks - 2.0) < EPS
 
-    finally:
-        os.chdir(original)
+
+def test_trackcorr_with_add(tmp_path, monkeypatch):
+    from pathlib import Path
+
+    from openptv2.storage import RunStore
+
+    src_dir = Path("test_data/track").resolve()
+    if not (src_dir / "res_orig").exists() or not (src_dir / "img_orig").exists():
+        pytest.skip("test_data/track fixtures missing")
+    work_dir = tmp_path / "track"
+    shutil.copytree(src_dir, work_dir)
+    monkeypatch.chdir(work_dir)
+
+    cpar = ControlPar.from_yaml("parameters.yaml")
+    calib = read_all_calibration(cpar.num_cams, base_path=".")
+    store = RunStore(work_dir / "res" / "run.zarr", mode="w")
+    _seed_track_store(store, work_dir, cpar.num_cams)
+
+    run = tr_new(
+        SequencePar.from_yaml("parameters.yaml"),
+        TrackPar.from_yaml("parameters.yaml"),
+        VolumePar.from_yaml("parameters.yaml"),
+        ControlPar.from_yaml("parameters.yaml"),
+        4,
+        20000,
+        "res/rt_is",
+        "res/ptv_is",
+        "res/added",
+        calib,
+        0.0001,
+    )
+    run.fb.store = store
+    run.seq_par.first = 10240
+    run.seq_par.last = 10250
+    run.tpar = run.tpar._replace(add=1)
+
+    track_forward_start(run)
+    trackcorr_c_loop(run, run.seq_par.first)
+
+    for step in range(run.seq_par.first + 1, run.seq_par.last):
+        trackcorr_c_loop(run, step)
+
+    trackcorr_c_finish(run, run.seq_par.last)
+
+    range_val = run.seq_par.last - run.seq_par.first
+    npart = run.npart / range_val
+    nlinks = run.nlinks / range_val
+
+    assert abs(npart - 2.0) < EPS
+    assert abs(nlinks - 2.0) < EPS
 
 
 @pytest.mark.slow

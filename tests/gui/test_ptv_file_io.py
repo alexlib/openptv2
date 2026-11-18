@@ -21,102 +21,47 @@ from openptv2.gui.ptv import (
 
 
 class TestReadTargets:
-    """Test read_targets function"""
+    """Test read_targets function (RunStore-backed)"""
 
-    def test_read_targets_valid_file(self):
-        """Test reading targets from a valid file"""
-        mock_file_content = (
-            "2\n1 100.5 200.5 30 25 15 150 0\n2 110.5 210.5 25 20 10 140 1\n"
-        )
-        base_names = ["img_cam1_%04d.tif"]
-        short_file_bases = generate_short_file_bases(base_names)
-        with patch("builtins.open", mock_open(read_data=mock_file_content)):
-            with patch("os.path.exists", return_value=True):
-                result = read_targets(short_file_bases[0], 10000)
-                assert result is not None
+    def test_read_targets_from_store(self, tmp_path):
+        from openptv2.storage import RunStore
+        from openptv2.tracking_framebuf import TargetArray
 
-    def test_read_targets_nonexistent_file(self):
-        """Test reading targets from nonexistent file"""
-        base_names = ["img_cam1_%04d.tif"]
-        short_file_bases = generate_short_file_bases(base_names)
-        with patch("os.path.exists", return_value=False):
-            with pytest.raises(FileNotFoundError):
-                read_targets(short_file_bases[0], 10000)
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        tarr = TargetArray(2)
+        tarr[0].set_pnr(0)
+        tarr[0].set_pos((100.5, 200.5))
+        tarr[1].set_pnr(1)
+        tarr[1].set_pos((110.5, 210.5))
+        store.write_targets(0, 10000, tarr)
 
-    def test_read_targets_empty_file(self):
-        """Test reading targets from empty file"""
-        base_names = ["img_cam1_%04d.tif"]
-        short_file_bases = generate_short_file_bases(base_names)
-        with patch("builtins.open", mock_open(read_data="")):
-            with patch("os.path.exists", return_value=True):
-                with pytest.raises(ValueError):
-                    read_targets(short_file_bases[0], 10000)
+        result = read_targets("img/cam1", 10000, store=store, cam_idx=0)
+        assert len(result) == 2
 
-    def test_read_targets_invalid_format(self):
-        """Test reading targets from file with invalid format"""
-        mock_file_content = "1\n1 100.5 200.5 30\n"  # Only 4 columns instead of 8
-        base_names = ["img_cam1_%04d.tif"]
-        short_file_bases = generate_short_file_bases(base_names)
-        with patch("builtins.open", mock_open(read_data=mock_file_content)):
-            with patch("os.path.exists", return_value=True):
-                with pytest.raises(ValueError, match="Bad format for file"):
-                    read_targets(short_file_bases[0], 10000)
+    def test_read_targets_without_store_raises(self):
+        with pytest.raises(FileNotFoundError):
+            read_targets("img/cam1", 10000)
 
 
 class TestWriteTargets:
-    """Test write_targets function"""
+    """Test write_targets function (RunStore-backed)"""
 
-    @staticmethod
-    def _make_target():
-        mock_target = Mock()
-        mock_target.pnr.return_value = 1
-        mock_target.pos.return_value = [100.5, 200.5]
-        mock_target.count_pixels.return_value = [5, 6, 7]
-        mock_target.sum_grey_value.return_value = 150
-        mock_target.tnr.return_value = 0
-        return mock_target
+    def test_write_targets_to_store(self, tmp_path):
+        from openptv2.storage import RunStore
+        from openptv2.tracking_framebuf import TargetArray
 
-    def test_write_targets_basic(self, tmp_path):
-        """Test writing targets to file"""
-        targets = [self._make_target()]
-        short_file_base = str(tmp_path / "cam1")
+        store = RunStore(tmp_path / "run.zarr", mode="w")
+        tarr = TargetArray(1)
+        tarr[0].set_pnr(0)
+        tarr[0].set_pos((100.5, 200.5))
 
-        result = write_targets(targets, short_file_base, 123456789)
-
-        output_path = tmp_path / "cam1.123456789_targets"
+        result = write_targets(tarr, "cam1", 123456789, store=store, cam_idx=0)
         assert result is True
-        assert output_path.exists()
-        assert output_path.read_text(encoding="utf-8").startswith("1\n")
+        assert store.has_targets(0, 123456789)
 
-    def test_write_targets_empty_list(self, tmp_path):
-        """Test writing empty target list"""
-        targets = []
-        short_file_base = str(tmp_path / "cam1")
-
-        result = write_targets(targets, short_file_base, 123456789)
-
-        output_path = tmp_path / "cam1.123456789_targets"
-        assert result is True
-        assert output_path.read_text(encoding="utf-8") == "0\n"
-
-    def test_write_targets_permission_error(self):
-        """Test writing targets with permission error"""
-        targets = [self._make_target()]
-
-        with patch(
-            "openptv2.gui.ptv.np.savetxt",
-            side_effect=PermissionError("Permission denied"),
-        ):
-            with pytest.raises(PermissionError, match="Cannot write output file"):
-                write_targets(targets, "cam1", 123456789)
-
-    def test_write_targets_invalid_path(self):
-        """Test writing targets to invalid path"""
-        targets = [self._make_target()]
-
-        with patch("openptv2.gui.ptv.np.savetxt", side_effect=OSError("Disk full")):
-            with pytest.raises(OSError, match="Failed to write output file"):
-                write_targets(targets, "cam1", 123456789)
+    def test_write_targets_without_store_raises(self):
+        with pytest.raises(ValueError, match="RunStore"):
+            write_targets([], "cam1", 123456789)
 
 
 class TestOutputHelpers:
@@ -352,50 +297,28 @@ class TestFileBaseToFilename:
 
 
 class TestReadRtIsFile:
-    """Test read_rt_is_file function"""
+    """Test read_rt_is_file function (Zarr-backed)"""
 
-    def test_read_rt_is_file_valid_content(self):
-        """Test reading valid rt_is file content"""
-        # Mock rt_is file content with proper format
-        mock_content = """2
-0 100.5 200.5 50.0 1 2 3 4
-1 110.5 210.5 60.0 5 6 7 8
-"""
-        with patch("builtins.open", mock_open(read_data=mock_content)):
-            result = read_rt_is_file("test.rt")
+    def test_read_rt_is_file_from_store(self, tmp_path):
+        from openptv2.storage import RunStore
 
-            assert len(result) == 2
-            assert result[0] == [100.5, 200.5, 50.0, 1, 2, 3, 4]
-            assert result[1] == [110.5, 210.5, 60.0, 5, 6, 7, 8]
-
-    def test_read_rt_is_file_empty_file(self):
-        """Test reading empty rt_is file raises ValueError"""
-        mock_content = "0\n"
-        with patch("builtins.open", mock_open(read_data=mock_content)):
-            with pytest.raises(ValueError, match="Failed to read the number of rows"):
-                read_rt_is_file("empty.rt")
+        res_dir = tmp_path / "res"
+        res_dir.mkdir()
+        store = RunStore(res_dir / "run.zarr", mode="w")
+        store.write_correspondences(
+            10001,
+            np.array([[100.5, 200.5, 50.0], [110.5, 210.5, 60.0]]),
+            np.array([[1, 2, 3, 4], [5, 6, 7, 8]], dtype=np.int32),
+        )
+        result = read_rt_is_file(str(res_dir / "rt_is.10001"))
+        assert len(result) == 2
+        assert result[0] == [100.5, 200.5, 50.0, 1, 2, 3, 4]
+        assert result[1] == [110.5, 210.5, 60.0, 5, 6, 7, 8]
 
     def test_read_rt_is_file_nonexistent_file(self):
-        """Test reading nonexistent file raises IOError"""
-        with pytest.raises(IOError):
-            read_rt_is_file("nonexistent_file.rt")
-
-    def test_read_rt_is_file_invalid_format(self):
-        """Test reading file with invalid format"""
-        # Missing values in line
-        mock_content = """1
-0 100.5 200.5
-"""
-        with patch("builtins.open", mock_open(read_data=mock_content)):
-            with pytest.raises(ValueError, match="Incorrect number of values in line"):
-                read_rt_is_file("invalid.rt")
-
-    def test_read_rt_is_file_zero_rows_error(self):
-        """Test file with zero rows raises ValueError"""
-        mock_content = "0\n"
-        with patch("builtins.open", mock_open(read_data=mock_content)):
-            with pytest.raises(ValueError, match="Failed to read the number of rows"):
-                read_rt_is_file("zero_rows.rt")
+        """Test reading nonexistent store raises FileNotFoundError"""
+        with pytest.raises(FileNotFoundError):
+            read_rt_is_file("nonexistent_file.10001")
 
 
 class TestExtractFrameNum:

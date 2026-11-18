@@ -478,6 +478,9 @@ class RunStore:
             cols = bs.read(frame)
             if cols is not None:
                 return cols["ghost"]
+        key = f"quality/{_frame_key(frame)}"
+        if key in self.root:
+            return np.asarray(self.root[key], dtype=np.float32)
         return None
 
     def write_rcm(self, frame: int, rcm: np.ndarray) -> None:

@@ -62,42 +62,45 @@ def test_parallel_preprocessing_parity(temp_cavity_dir):
     # Ensure output targets directory exists
     ptv._ensure_target_output_writable(exp.target_filenames)
 
-    # Delete any pre-existing targets in the temp copy
-    for frame in range(10000, 10005):
-        for i_cam in range(exp.pm.num_cams):
-            target_file = Path(f"{exp.target_filenames[i_cam]}.{frame:04d}_targets")
-            if target_file.exists():
-                target_file.unlink()
+    from openptv2.storage import RunStore
+
+    seq_zarr = temp_cavity_dir / "res_seq.zarr"
+    par_zarr = temp_cavity_dir / "res_par.zarr"
 
     # 3. Run preprocessing sequentially (num_workers=1)
     os.environ["OPENPTV_PARALLEL_PREPROCESS"] = "True"
     os.environ["OPENPTV_NUM_WORKERS"] = "1"
-    ptv.preprocess_and_detect_all_parallel(exp_mock, num_workers=1)
+    ptv.preprocess_and_detect_all_parallel(
+        exp_mock, num_workers=1, zarr_store_path=str(seq_zarr)
+    )
 
     # Read and store baseline sequential targets
+    seq_store = RunStore(seq_zarr, mode="r")
     sequential_targets = {}
     for frame in range(10000, 10005):
         sequential_targets[frame] = []
         for i_cam in range(exp.pm.num_cams):
-            targs = read_targets(exp.target_filenames[i_cam], frame)
+            targs = read_targets(
+                exp.target_filenames[i_cam], frame, store=seq_store, cam_idx=i_cam
+            )
             sequential_targets[frame].append(list(targs))
-
-    # Delete the generated sequential targets to prevent false positives
-    for frame in range(10000, 10005):
-        for i_cam in range(exp.pm.num_cams):
-            target_file = Path(f"{exp.target_filenames[i_cam]}.{frame:04d}_targets")
-            if target_file.exists():
-                target_file.unlink()
 
     # 4. Run preprocessing in parallel (num_workers=4)
     os.environ["OPENPTV_PARALLEL_PREPROCESS"] = "True"
     os.environ["OPENPTV_NUM_WORKERS"] = "4"
-    ptv.preprocess_and_detect_all_parallel(exp_mock, num_workers=4)
+    ptv.preprocess_and_detect_all_parallel(
+        exp_mock, num_workers=4, zarr_store_path=str(par_zarr)
+    )
 
     # 5. Read and compare the parallel-generated targets with baseline
+    par_store = RunStore(par_zarr, mode="r")
     for frame in range(10000, 10005):
         for i_cam in range(exp.pm.num_cams):
-            parallel_targs = list(read_targets(exp.target_filenames[i_cam], frame))
+            parallel_targs = list(
+                read_targets(
+                    exp.target_filenames[i_cam], frame, store=par_store, cam_idx=i_cam
+                )
+            )
             seq_targs = sequential_targets[frame][i_cam]
 
             assert len(parallel_targs) == len(seq_targs), (
