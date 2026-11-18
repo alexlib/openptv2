@@ -62,7 +62,7 @@ class Tracking:
             else:
                 print("Running TrackCorr Tracking (Forward only)...")
                 tracker.full_forward()
-                if track_cfg.get("postprocess", False):
+                if track_cfg.get("postprocess", True):
                     stats = tracker.postprocess(reciprocity=False)
                     print(
                         f"Post-process links: {stats.get('links_before', 0)} -> "

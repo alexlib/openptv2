@@ -255,7 +255,7 @@ _LEGACY_TRACKER_ALIASES = {
 
 # Legacy preset names that ran forward+backward (used only when a saved
 # track section has no explicit "direction" key yet).
-_DIRECTION_BACKWARD_PRESETS = {"full_multipass", "two_directional"}
+_DIRECTION_BACKWARD_PRESETS = {"full_multipass", "two_directional", "trackcorr", "cython_epipolar_tracking"}
 
 
 def infer_tracker(plugins_params: Dict[str, Any] | None) -> str:
