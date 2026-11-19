@@ -862,11 +862,13 @@ authority.
   brightness per particle (the appearance cue) on wp2 tracks: median |Δ log sumg| of linked pairs
   and its 95th percentile.
 
-### 15.5 Open decision: blobs only, or patches?
-The plan keeps the earlier rule "target space only, no image subtraction". Everything above uses
-only blob attributes (centre, pixel count, extent, grey sum). The pixels of a merged blob carry
-more (its shape, the positions of the peaks); fitting 2–3 known-brightness spots to the small
-patch, with the tracks supplying the start positions, would sharpen the split. It is local to
-the merged blobs (no full-image OTF). Decision: first measure with blob attributes only (J1); open
-the patch option only if J1 stays well above the E1c ceiling and the shortfall comes from the split,
-not from the association.
+### 15.5 Decision (user, 2026-11-19): blob attributes first, patches only if the data ask for it
+Use blob attributes only (centre, pixel count, extent, grey sum) plus the 3D/time context. Open the
+patch option (fitting 2–3 known-brightness spots to the small pixel patch of a merged blob, started
+from the tracks' positions; local to merged blobs, no full-image OTF) **only if** J1 on perfectly
+associated data (J1-oracle, 15.4) stays well above the E1c ceiling (0.063 sparse, 0.131 ×4) **and**
+the shortfall is shown to come from the split of the centre (the residual between the corrected and the
+true spot centres), not from association or from the brightness model. Test for that before opening
+it: compare the per-particle centre error after the minimum-norm split with the B3 prediction error
+(0.27 px); if they are about equal, the split is as good as the prediction allows and a patch fit is the
+only way further.
