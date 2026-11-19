@@ -219,3 +219,13 @@ Targets are set from the measured ceilings; they are goals, not promises.
   Consequences for the plan: (1) H2 must give the linkers noise-aware gating (per-link tolerance from the points'
   variances); (2) x4 targets move to H4; (3) particles with no clean camera and no trusted path should carry a
   large variance, not a confident wrong position.
+- 2026-11-20, H2 first results (`scripts/joint_bounds.py h2`, `src/openptv2/merge_post.py`, tests `test_merge_post.py`):
+  merge-aware refinement of real `two_phase` tracks (60-frame default-merge-rate case; membership inferred from the
+  tracks: a point without a view in a camera attaches to the blob its projection falls on, radius 2 px; links
+  unchanged). Velocity error 0.1909 -> 0.1608 (-16 %; common set 0.172 -> 0.143); attachment radius 1.2 / 2 / 3 px
+  gives 0.164 / 0.161 / 0.167 (insensitive). Alternating loop (link on the corrected positions, then correct again
+  from the new tracks): 0.1566 after one and 0.1526 after two rounds (-20 %; common set 0.1294, -25 %). Link recall
+  was already 0.991 -> 0.997: linking is not the bottleneck at this merge rate; the missing yield is (0.66 against
+  0.80 with perfect association): particles absent from the cloud. Plan gate for H2 (-30 %) not met by the post-step
+  alone, above the stop line (-15 %); proceeding to H3 (recovery). Cost: 11 s for 69k rows (0.18 s/frame), python
+  loops; to be vectorised later (matcher 0.10 s/frame).

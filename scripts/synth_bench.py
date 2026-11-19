@@ -748,8 +748,9 @@ def track(case: str, tracker: str) -> Path:
         np.savez_compressed(run_dir / "pred.npz", trajid=tid, frame=arr[:, 0].astype(int),
                             pos=arr[:, 1:4])
     (run_dir / "run.json").write_text(json.dumps(out, indent=2))
-    # the copied store is large and fully reproducible
-    shutil.rmtree(run_dir / "res")
+    # the copied store is large and fully reproducible (KEEP_STORE=1 keeps it, e.g. for scripts/joint_bounds.py h2)
+    if not os.environ.get("KEEP_STORE"):
+        shutil.rmtree(run_dir / "res")
     print(json.dumps(out))
     return run_dir
 

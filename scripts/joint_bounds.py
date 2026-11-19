@@ -522,6 +522,92 @@ def h1(case: str, rounds: int = 3, window: int = 9, order: int = 2, var_c: float
     return out
 
 
+def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int = 2, iters: int = 0,
+       **opts) -> dict:
+    """H2: merge-aware refinement of a REAL tracker run (no truth in the algorithm).
+
+    Runs ``tracker`` on the case (keeping its store), finds shared blobs from the tracks
+    (:mod:`openptv2.merge_post`), refines the positions (:func:`openptv2.merge_refine.refine_merged`) and
+    scores raw and refined positions of the *same* track rows against truth (links unchanged).
+    With ``iters`` > 0 the loop continues: the refined positions replace those of the case's point cloud, the
+    tracker links again on them (case ``<case>_H2i<k>``), and the new tracks give new shared blobs and new
+    positions (always computed from the raw blob centres, never from earlier refinements).
+    Writes ``runs/<case>/<tracker>+h2base``, ``+h2`` and ``+h2i<k>`` (``pred.npz``) for ``synth_bench eval``.
+    """
+    import os
+    import shutil
+
+    from openptv2.merge_post import arrays_from_store, extend_membership
+    from openptv2.merge_refine import refine_merged, shared_blobs
+    from openptv2.storage import RunStore
+
+    case_dir, info, exp, store0, tr = case_setup(case)
+    cpar, cals, vpar = exp.cpar, list(exp.cals), exp.vpar
+    n_cams, n_out = len(cals), info["n_out"]
+    os.environ["KEEP_STORE"] = "1"
+
+    def tracked_arrays(run_case):
+        run_dir = sb.WORK / "runs" / run_case / tracker
+        if not (run_dir / "res" / "run.zarr").exists():
+            sb.track(run_case, tracker)
+        return arrays_from_store(RunStore(run_dir / "res" / "run.zarr", mode="r"), "ptv_is", 1, n_out, n_cams)
+
+    def refine_from(a):
+        blob, centre, sumg, n_att = extend_membership(a["frame"], a["pos"], a["blob"], a["centre"], a["sumg"],
+                                                      a["blobs"], cpar, cals, radius=radius)
+        res = refine_merged(a["frame"], a["tid"], blob, centre, sumg, cpar, cals, vpar, **opts)
+        return res, blob, n_att
+
+    def write_pred(label, a, pos):
+        keep = np.bincount(a["tid"])[a["tid"]] >= min_len
+        d = sb.WORK / "runs" / case / f"{tracker}+{label}"
+        d.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(d / "pred.npz", trajid=a["tid"][keep], frame=a["frame"][keep], pos=pos[keep])
+        (d / "run.json").write_text(json.dumps({"tracker": f"{tracker}+{label}", "case": case, "time_s": 0.0,
+                                                "status": "ok"}))
+        return int(keep.sum())
+
+    a = tracked_arrays(case)
+    res, blob, n_att = refine_from(a)
+    new_pos = np.where(np.isfinite(res.x[:, :1]), res.x, a["pos"])
+    tracked = write_pred("h2base", a, a["pos"])
+    write_pred("h2", a, new_pos)
+    out = {"rows": int(len(a["frame"])), "tracked_rows": tracked, "attachments": int(n_att),
+           "rows_with_a_shared_blob": float((shared_blobs(a["frame"], blob) >= 2).any(1).mean()),
+           "info": res.info, "iterations": []}
+    for k in range(1, iters + 1):
+        run_case = f"{case}_H2i{k}"
+        d = sb.WORK / "cases" / run_case
+        if d.exists():
+            shutil.rmtree(d)
+        shutil.copytree(case_dir, d)
+        st = RunStore(d / "res" / "run.zarr", mode="a")
+        off = 0
+        for f in range(1, n_out + 1):
+            pos0, ids0 = st.read_correspondences(f)
+            n = len(pos0)
+            seg = new_pos[off: off + n]
+            assert len(seg) == n and (a["frame"][off: off + n] == f).all(), "row alignment lost"
+            st.write_correspondences(f, np.where(np.isfinite(seg[:, :1]), seg, pos0), ids0)
+            off += n
+        sb.stamp_tnr(d)
+        shutil.rmtree(sb.WORK / "runs" / run_case / tracker, ignore_errors=True)
+        sb.track(run_case, tracker)
+        a = tracked_arrays(run_case)
+        res, blob, n_att = refine_from(a)
+        new_pos = np.where(np.isfinite(res.x[:, :1]), res.x, a["pos"])
+        write_pred(f"h2i{k}", a, new_pos)
+        out["iterations"].append({"k": k, "attachments": int(n_att),
+                                  "rows_with_a_shared_blob": float((shared_blobs(a["frame"], blob) >= 2).any(1).mean())})
+    return out
+
+
+def shared_blobs_count(frame, blob):
+    from openptv2.merge_refine import shared_blobs
+
+    return shared_blobs(frame, blob)
+
+
 def m3(case: str, n_part: int = 300, half: int = 10, deg: int = 3, clean_only: bool = True,
        sigma_depth_weighting: bool = False) -> dict:
     """Estimator bound with PERFECT association: velocity of true particles at the middle of a
@@ -651,6 +737,12 @@ def main(argv=None) -> None:
     q6.add_argument("--no-prior", action="store_true")
     q6.add_argument("--prior-scale", type=float, default=1.0)
     q6.add_argument("--tag", default="")
+    q7 = sub.add_parser("h2")
+    q7.add_argument("--case", required=True)
+    q7.add_argument("--tracker", default="two_phase")
+    q7.add_argument("--radius", type=float, default=2.0)
+    q7.add_argument("--rounds", type=int, default=3)
+    q7.add_argument("--iters", type=int, default=0)
     q5 = sub.add_parser("b3")
     q5.add_argument("--case", required=True)
     q5.add_argument("--order", type=int, default=3)
@@ -670,6 +762,11 @@ def main(argv=None) -> None:
         r = demerge_inputs(a.case, a.sigma)
         save("M2_inputs", f"{a.case}_sigma{a.sigma:g}", r)
         print(json.dumps(r))
+        return
+    if a.cmd == "h2":
+        r = h2(a.case, a.tracker, a.radius, iters=a.iters, rounds=a.rounds)
+        save("H2", f"{a.case}|{a.tracker}", r)
+        print(json.dumps(r, indent=1))
         return
     if a.cmd == "h1":
         r = h1(a.case, a.rounds, a.window, a.order, a.var_c, a.write, not a.no_trust, a.gate, a.support, not a.no_prior, a.prior_scale)
