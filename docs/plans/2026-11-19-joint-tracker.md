@@ -872,3 +872,59 @@ true spot centres), not from association or from the brightness model. Test for 
 it: compare the per-particle centre error after the minimum-norm split with the B3 prediction error
 (0.27 px); if they are about equal, the split is as good as the prediction allows and a patch fit is the
 only way further.
+
+## 16. M0 gate: real recording against the benchmark (2026-11-19)
+
+Script: `scripts/joint_m0.py <run folder>` (read-only). Same statistics on real wp2
+(`CompleteTest-e2e-local/wp2/test`) and on the rendered synthetic run (`Synthetic-CompleteTest/syn1/test`,
+its image-pipeline output), 40 frames each. There is no truth on real data, so these are proxies.
+
+| Statistic | real wp2 | rendered synthetic |
+|---|---|---|
+| blobs per camera and frame | 1443 | 1285 |
+| matched 3D points per frame / share seen by 4 cameras | 1139 / 62 % | 1128 / 67 % |
+| blob pixel count, median / 90 % / 99 % | 6 / 11 / 29 | 7 / 16 / 36 |
+| share of blobs larger than 2× the median size | 7.2 % | 13.0 % |
+| matched points with another matched point's projection within 2 px / 3 px | 1.2 % / 12.5 % | 0.4 % / 8.3 % |
+| brightness change of a linked pair, \|Δ log grey sum\|, median / 90 % / 95 % | 0.053 / 0.18 / 0.26 | 0.021 / 0.10 / 0.15 |
+
+Reading:
+- **Gate passed, with a correction.** Real blobs are smaller and large blobs are about half as
+  frequent (7.2 % against 13.0 %), while projected particles are, if anything, closer together.
+  So merging exists on real data at roughly **half to equal** the benchmark's rate, not below a
+  third. The benchmark at its default overstates it.
+- **The brightness cue is weaker on real data:** linked pairs change their grey sum 2.5× more
+  (95 % within 0.26 in log, i.e. ×1.3, against ×1.16). The "grey sum above 1.25× typical" test of
+  15.2 would give several per cent false alarms on real data; use about 1.5× or a per-run threshold
+  from the measured spread, and count on the 3D/cross-camera cue more.
+
+**Benchmark with a real-like merge rate.** `scripts/synth_bench.py` has a new environment variable
+`MERGE_SCALE` (scale of the merge radius, default 1.0, case names get `_m<scale>`). Share of merged
+observations: 26.8 % at 1.0, 16.0 % at 0.75, 10.6 % at 0.6, 6.0 % at 0.45. Ladder on 60-frame sparse
+cases (velocity error / yield / long completeness):
+
+| Input → linker | `_m0.75` (16 % merged) | `_m0.6` (11 % merged) |
+|---|---|---|
+| greedy cloud → `two_phase` | 0.122 / 0.754 / 0.70 | 0.091 / 0.781 / 0.74 |
+| greedy cloud → hybrid `trackcorr` | 0.164 / 0.760 / 0.73 | 0.171 / 0.785 / 0.76 |
+| greedy cloud → perfect linker | 0.095 / 0.760 / 0.73 | 0.061 / 0.785 / 0.76 |
+| clean blobs only (E1a) → perfect linker | 0.083 / 0.702 / 0.65 | 0.060 / 0.755 / 0.72 |
+| merged blobs as they are (E1b) → perfect linker | 0.106 / 0.795 / 0.78 | 0.067 / 0.812 / 0.81 |
+| merged blobs corrected to 0.3 px (E1c) → perfect linker | **0.060 / 0.821 / 0.82** | **0.051 / 0.819 / 0.82** |
+
+- At real-like merge rates the ceiling is still about **2× lower velocity error than `two_phase`**
+  (0.122 → 0.060 and 0.091 → 0.051), with 4–7 points more particles and 8–12 points more long-track
+  completeness. Smaller than the 2.9× at the default rate, still the largest lever measured.
+- About half of that gain is association (greedy cloud with a perfect linker: 0.095 and 0.061), so
+  at real-like rates **association and merged blobs matter about equally**; the plan's order (J1
+  measurement correction, then J2/J3 recovery and linking) stays, but J2/J3 are not optional.
+- **Warning for the implementation.** `two_phase` run on the corrected input (E1c) is *worse* than on
+  the greedy cloud (0.138 against 0.122; 0.109 against 0.091) although its links are 99.9 % correct
+  and the perfect linker reaches 0.060 on the same points. Likely cause (not verified): the ghost
+  rules and confirmation recompute the ray miss distance from the *stored blob centres*, which for
+  a corrected point are the uncorrected merged centres, so corrected points look like ghosts and
+  tracks are cut. Consequence: the corrected per-particle pixel positions must be stored and used by
+  every later step (`point_quality.rcm_from_arrays`, `rcm/`, the hybrid kernel's `w_epi`), or those
+  steps must be told which observations were corrected. Verify this first in J1.
+- Use `_m0.75` and `_m0.6` cases next to the default ones when judging J1–J3 (build the 150/200-frame
+  versions; the 60-frame ones here are quick checks).

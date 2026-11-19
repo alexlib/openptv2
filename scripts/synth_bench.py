@@ -59,6 +59,9 @@ SRC_RUN = SRC / "syn1" / "test"
 WORK = Path("/Users/alex/Downloads/HiDImaging/tracker-bench-2026-09-29")
 FPS = 5000.0
 NUM_CAMS = 4
+#: scale of the blob-merge radius (1.0 = the calibration against the rendered synthetic run). Real wp2
+#: has smaller particle images and about half as many large blobs (scripts/joint_m0.py), so < 1 emulates it.
+MERGE_SCALE = float(os.environ.get("MERGE_SCALE", "1.0"))
 
 TRACKERS = [
     "priority_segment_3d",
@@ -284,6 +287,7 @@ def case_name(
     tag = "" if sigma_px == DEFAULT_SIGMA_PX else f"_s{sigma_px:g}"
     tag += f"_a{amp_jitter:g}" if amp_jitter else ""
     tag += f"_f{amp_flicker:g}" if amp_flicker is not None else ""
+    tag += f"_m{MERGE_SCALE:g}" if MERGE_SCALE != 1.0 else ""
     return f"{level}_d{mult:g}_c{cluster:g}_k{k}_n{n_out}{tag}"
 
 
@@ -347,7 +351,7 @@ def _target_rows(xy, amp, merge, sigma_px, rng, extra=None, amp_min=0.0):
     n = len(xy)
     parent = np.arange(n)
     if merge and n > 1:
-        rad = 0.72 * np.sqrt(2 * np.log(np.maximum(amp / 40.0, 1.0)))
+        rad = MERGE_SCALE * 0.72 * np.sqrt(2 * np.log(np.maximum(amp / 40.0, 1.0)))
         pairs = cKDTree(xy).query_pairs(2 * rad.max(), output_type="ndarray")
         d = np.linalg.norm(xy[pairs[:, 0]] - xy[pairs[:, 1]], axis=1)
         pairs = pairs[d < rad[pairs[:, 0]] + rad[pairs[:, 1]]]
