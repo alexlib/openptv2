@@ -628,8 +628,10 @@ comparable; the yield column says how much of that is selection.)
    ceiling beats `two_phase` as long as the de-merge error stays below about 0.9 px (sparse) and 0.75 px (×4).
 4. **A track can predict a blob centre well enough** (B3, sparse, clean particles, linear
    extrapolation from 2 positions): 0.27 px RMS, median 0.21, 90 % below 0.40, 99 % below 0.62.
-   (Order-3 prediction and the ×4 case: see the JSON when finished; not in this table.) A
-   de-merge error of 0.3–0.5 px is therefore plausible, well inside the break-even.
+   Same at ×4: 0.28 px RMS (median 0.23, 99 % below 0.65). A quadratic extrapolation from 3
+   positions is *worse* (0.39 px sparse, 0.43 px ×4; 99 % below 1.0 px): it amplifies the noise,
+   as in the earlier reconnect finding, so use linear prediction (or a two-sided smoothed position
+   in a post-step). A de-merge error of 0.3–0.5 px is therefore plausible, well inside the break-even.
 5. **Association (matching + linking) is the second, smaller bottleneck.** Sparse: greedy cloud with
    a perfect linker 0.1435, `two_phase` 0.1825: association costs 0.039 (21 % of the error);
    removing every ghost from the input gains `two_phase` only 0.005–0.018 (section 10). Hybrid
@@ -710,8 +712,7 @@ both. The matcher still runs once per frame (it is the cost); no candidate pool.
   (`~/Downloads/HiDImaging/CompleteTest-e2e-local/wp2/test/res/run.zarr`, read-only, 100 frames) and on
   the benchmark's `two_phase` output (same numbers on the case with known truth). **If the real share is
   below a third of the benchmark's, stop and report**: the ceiling in 13.2 would not apply.
-- B3 (rest): order-3 prediction and the ×4 case (the script and the sparse order-2 result exist).
-  Needed for the de-merge variance in J1.
+- B3: done (linear 0.27 / 0.28 px, quadratic 0.39 / 0.43 px; sparse / ×4).
 - Done: B0, B1, B1b, B2, the ladder (L0, E1a, E1b), M2 (E1c) for σ = 0.1, 0.3, 0.6, 1.0, M3, B3 (sparse,
   order 2), timing. Dropped: B4, B5, B6 (the pool and the probation length are only needed in J2; B6
   moves into J2), M1.
