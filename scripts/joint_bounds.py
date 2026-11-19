@@ -423,6 +423,179 @@ def b3(case: str, n_frames: int = 12, order: int = 3) -> dict:
             "share_below_0.3px": float(np.mean(e < 0.3)), "share_below_1px": float(np.mean(e < 1.0))}
 
 
+def h1(case: str, rounds: int = 3, window: int = 9, order: int = 2, var_c: float = 0.01,
+       write: bool = False, mode: str = "effective") -> dict:
+    """H1 of docs/plans/2026-11-20-holistic-ptv.md: the blob model on PERFECTLY ASSOCIATED data.
+
+    Every truth particle with >= 2 detected cameras is a track with known blob membership (truth). Starting
+    from the raw blob centres (positions of ``E1b``), each round predicts every particle's pixel position in
+    every camera from its other frames (leave-one-out local polynomial), gives every particle in a shared
+    blob its effective observation (blob centre minus the other members' predictions, divided by its
+    brightness share), and re-triangulates with weights 1/variance (Gauss-Newton on the reprojection error).
+    Reports 3D error against truth by number of merged cameras, and the pixel error of the corrected centres
+    against the true spot centres (render calibration), the raw blob centres and the predictions.
+    """
+    import shutil
+
+    from openptv2.blob_model import (
+        local_poly_predict,
+        signature_from_history,
+        split_blob_effective,
+        triangulate_weighted,
+    )
+    from openptv2.loco import pixels_to_flat, project_pixels
+    from openptv2.orientation import point_positions
+    from openptv2.storage import RunStore
+
+    case_dir, info, exp, store, tr = case_setup(case)
+    cpar, cals, vpar = exp.cpar, list(exp.cals), exp.vpar
+    n_cams, n_out = len(cals), info["n_out"]
+    fr, pid, blob, truth = tr["frame"], tr["particle_id"], tr["blob_tid"], tr["pos_mm"]
+    det = blob >= 0
+    n_all = len(fr)
+    cx = np.full((n_all, n_cams, 2), np.nan)
+    sumg = np.full((n_all, n_cams), np.nan)
+    shared = np.zeros((n_all, n_cams), bool)
+    frame_idx = {}
+    for f in range(1, n_out + 1):
+        sel = np.flatnonzero(fr == f)
+        frame_idx[f] = sel
+        rows = raw_targets(store, f, n_cams)
+        shared[sel] = shared_mask(blob[sel])
+        for c in range(n_cams):
+            d = det[sel, c]
+            cx[sel[d], c] = rows[c][blob[sel[d], c], 1:3]
+            sumg[sel[d], c] = rows[c][blob[sel[d], c], 6]
+    clean = det & ~shared
+    # brightness signature per particle and camera: median grey sum over the frames where it is alone
+    n_pid = int(pid.max()) + 1
+    sig = np.full((n_pid, n_cams), np.nan)
+    for c in range(n_cams):
+        m = np.flatnonzero(clean[:, c])
+        o = m[np.argsort(pid[m], kind="stable")]
+        cuts = np.flatnonzero(np.r_[True, pid[o][1:] != pid[o][:-1], True])
+        for a, b in zip(cuts[:-1], cuts[1:]):
+            sig[pid[o[a]], c] = signature_from_history(sumg[o[a:b], c], np.ones(b - a, bool))
+    pop = np.flatnonzero(det.sum(1) >= 2)                    # particles that can be triangulated
+    pidx = np.full(n_all, -1)
+    pidx[pop] = np.arange(len(pop))
+    ev = det[pop].sum(1) >= 3                                 # the population the output is judged on
+    n_pop = len(pop)
+    fr_p, pid_p = fr[pop], pid[pop]
+    f_rows = {f: np.flatnonzero(fr_p == f) for f in range(1, n_out + 1)}
+    render = list(sb._experiment(case_dir, case_dir / "parameters_Run1.yaml", 1, n_out).cals)
+    sb._render_cals(render, cpar)
+    own = np.full((n_pop, n_cams, 2), np.nan)                # true spot centres (px), for diagnostics only
+    for c in range(n_cams):
+        d = det[pop, c]
+        own[d, c] = sb._project(truth[pop][d], render[c], cpar)
+
+    def triangulate_all(obs_px, obs_var, x_start=None):
+        x = np.zeros((n_pop, 3)) if x_start is None else x_start.copy()
+        for f, rr in f_rows.items():
+            if len(rr) == 0:
+                continue
+            if x_start is None:
+                flat = np.full((len(rr), n_cams, 2), -1e10)
+                for c in range(n_cams):
+                    v = ~np.isnan(obs_px[rr, c, 0])
+                    flat[v, c] = pixels_to_flat(obs_px[rr[v], c], cals[c], cpar)
+                x0 = np.asarray(point_positions(flat, cpar, cals, vpar, method="lsq")[0], float)
+            else:
+                x0 = x_start[rr]
+            x[rr] = triangulate_weighted(obs_px[rr], obs_var[rr], cpar, cals, x0, n_iter=3)
+        return x
+
+    def report(x, label):
+        bias = np.median((x - truth[pop])[ev], axis=0)
+        err = np.linalg.norm(x - truth[pop] - bias, axis=1)
+        nm = shared[pop].sum(1)
+        out = {"all_rms": float(np.sqrt(np.mean(err[ev] ** 2))), "all_median": float(np.median(err[ev]))}
+        for k, name in ((0, "0"), (1, "1"), (2, "2"), (3, "3+")):
+            m = ev & ((nm == k) if k < 3 else (nm >= 3))
+            out[f"merged_cams_{name}"] = {"n": int(m.sum()), "rms": float(np.sqrt(np.mean(err[m] ** 2))) if m.any() else None}
+        out["label"] = label
+        return out
+
+    obs_raw = cx[pop]
+    obs_var_raw = np.where(np.isnan(obs_raw[:, :, 0]), np.nan, var_c)
+    x = triangulate_all(obs_raw, obs_var_raw)
+    results = [report(x, "round0 raw blob centres (equal weights)")]
+    px_diag = []
+    for rnd in range(1, rounds + 1):
+        pred3 = local_poly_predict(pid_p, fr_p, x, None, window=window, order=order)
+        pred_px = np.full((n_pop, n_cams, 2), np.nan)
+        for c in range(n_cams):
+            ok = np.isfinite(pred3[:, 0]) & det[pop, c]
+            if ok.any():
+                pred_px[ok, c] = project_pixels(pred3[ok], cals[c], cpar)
+        cl = clean[pop] & np.isfinite(pred_px[:, :, 0])
+        resid2 = np.mean(((obs_raw - pred_px)[cl]) ** 2)
+        var_p = max(float(resid2) - var_c, 0.01)           # prediction variance, learned from the clean blobs
+        obs_px, obs_var = obs_raw.copy(), obs_var_raw.copy()
+        n_groups = 0
+        eff_err, raw_err, pred_err, zz = [], [], [], []
+        for f in range(1, n_out + 1):
+            sel = frame_idx[f]
+            for c in range(n_cams):
+                idx = sel[det[sel, c]]
+                b = blob[idx, c]
+                o = np.argsort(b, kind="stable")
+                idx, b = idx[o], b[o]
+                cuts = np.flatnonzero(np.r_[True, b[1:] != b[:-1], True])
+                for a, e in zip(cuts[:-1], cuts[1:]):
+                    if e - a < 2:
+                        continue
+                    mem = idx[a:e]
+                    centre = cx[mem[0], c]
+                    pm = pidx[mem]
+                    pr = np.where((pm >= 0)[:, None], pred_px[np.maximum(pm, 0), c], np.nan)
+                    unknown = ~np.isfinite(pr[:, 0])
+                    pr[unknown] = centre
+                    vp = np.where(unknown, 1.0, var_p)       # a member without a path: a blob radius of doubt
+                    s_eff, v_eff = split_blob_effective(centre, pr, sig[pid[mem], c], var_c, vp)
+                    n_groups += 1
+                    for j in range(len(mem)):
+                        if pm[j] < 0:
+                            continue
+                        obs_px[pm[j], c] = s_eff[j]
+                        obs_var[pm[j], c] = v_eff[j]
+                        t = own[pm[j], c]
+                        eff_err.append(np.linalg.norm(s_eff[j] - t))
+                        raw_err.append(np.linalg.norm(centre - t))
+                        if not unknown[j]:
+                            pred_err.append(np.linalg.norm(pr[j] - t))
+                        zz.append(np.sum((s_eff[j] - t) ** 2) / v_eff[j] / 2)
+        x = triangulate_all(obs_px, obs_var, x_start=x)
+        results.append(report(x, f"round{rnd} effective observations"))
+        rms = lambda a: float(np.sqrt(np.mean(np.square(a)))) if len(a) else None  # noqa: E731
+        px_diag.append({"round": rnd, "var_p_px2": var_p, "merged_groups": n_groups,
+                        "merged_obs": len(eff_err), "raw_centre_rms_px": rms(raw_err),
+                        "effective_obs_rms_px": rms(eff_err), "effective_obs_median_px": float(np.median(eff_err)),
+                        "prediction_rms_px": rms(pred_err), "variance_calibration_z2": float(np.mean(zz))})
+    out = {"case": case, "rounds": results, "pixel_error_of_merged_observations": px_diag}
+    if write:
+        d = sb.WORK / "cases" / f"{case}_H1"
+        if d.exists():
+            shutil.rmtree(d)
+        shutil.copytree(case_dir, d)
+        o = RunStore(d / "res" / "run.zarr", mode="a")
+        for f in range(1, n_out + 1):
+            sel = frame_idx[f]
+            keep = det[sel].sum(1) >= 3
+            rows_k = sel[keep]
+            pi = pidx[rows_k]
+            ids = np.where(det[rows_k], blob[rows_k], -1).astype(np.int32)
+            o.write_correspondences(f, x[pi], ids)
+            ob = np.zeros((len(rows_k), n_cams, 4), np.float32)
+            ob[:, :, 0:2] = obs_px[pi]
+            ob[:, :, 2] = obs_var[pi]
+            ob[:, :, 3] = det[rows_k] + shared[rows_k]       # 0 unused, 1 alone, 2 shared
+            o.write_observations(f, ob)
+        sb.stamp_tnr(d)
+    return out
+
+
 def m3(case: str, n_part: int = 300, half: int = 10, deg: int = 3, clean_only: bool = True,
        sigma_depth_weighting: bool = False) -> dict:
     """Estimator bound with PERFECT association: velocity of true particles at the middle of a
@@ -539,6 +712,13 @@ def main(argv=None) -> None:
     q4 = sub.add_parser("demerge")
     q4.add_argument("--case", required=True)
     q4.add_argument("--sigma", type=float, required=True)
+    q6 = sub.add_parser("h1")
+    q6.add_argument("--case", required=True)
+    q6.add_argument("--rounds", type=int, default=3)
+    q6.add_argument("--window", type=int, default=9)
+    q6.add_argument("--order", type=int, default=2)
+    q6.add_argument("--var-c", type=float, default=0.01)
+    q6.add_argument("--write", action="store_true")
     q5 = sub.add_parser("b3")
     q5.add_argument("--case", required=True)
     q5.add_argument("--order", type=int, default=3)
@@ -558,6 +738,11 @@ def main(argv=None) -> None:
         r = demerge_inputs(a.case, a.sigma)
         save("M2_inputs", f"{a.case}_sigma{a.sigma:g}", r)
         print(json.dumps(r))
+        return
+    if a.cmd == "h1":
+        r = h1(a.case, a.rounds, a.window, a.order, a.var_c, a.write)
+        save("H1", a.case, r)
+        print(json.dumps(r, indent=1))
         return
     if a.cmd == "b3":
         r = b3(a.case, order=a.order)

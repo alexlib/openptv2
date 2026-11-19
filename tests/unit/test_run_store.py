@@ -378,3 +378,31 @@ def test_sealed_trajectories_mark_vel_unfilled(tmp_path):
     assert attrs["pos_units"] == "m"
     assert "unfilled" in attrs["vel_units"]
     assert attrs["time_units"] == "frame"
+
+
+def test_observations_round_trip(tmp_path):
+    store = RunStore(tmp_path / "run" / "res" / "run.zarr", mode="w")
+    assert store.read_observations(7) is None
+    assert not store.has_observations(7)
+    obs = np.zeros((3, 4, 4), dtype=np.float32)
+    obs[:, :, 0:2] = np.arange(24, dtype=np.float32).reshape(3, 4, 2)
+    obs[:, :, 2] = 0.04
+    obs[:, :, 3] = 1
+    obs[1, 2] = [np.nan, np.nan, np.nan, 0]  # camera not used
+    store.write_observations(7, obs)
+    assert store.has_observations(7)
+    back = store.read_observations(7)
+    assert back.shape == (3, 4, 4)
+    np.testing.assert_array_equal(np.isnan(back), np.isnan(obs))
+    np.testing.assert_allclose(np.nan_to_num(back), np.nan_to_num(obs))
+    # overwrite with a different row count
+    store.write_observations(7, obs[:2])
+    assert store.read_observations(7).shape == (2, 4, 4)
+
+
+def test_observations_reject_bad_shape(tmp_path):
+    store = RunStore(tmp_path / "run" / "res" / "run.zarr", mode="w")
+    with pytest.raises(RunStoreError):
+        store.write_observations(1, np.zeros((3, 4)))
+    with pytest.raises(RunStoreError):
+        store.write_observations(1, np.zeros((3, 4, 3)))

@@ -68,13 +68,17 @@ real-like rates (`MERGE_SCALE=0.75`, `0.6`; build 150–200-frame versions). Bas
 (below) plus yield, long-track completeness, pieces per long track, ghost share.
 
 **H0. Foundations (small, first)**
-- Observation table: per 3D point and camera the pixel position actually used, its weight
-  and the number of particles sharing the blob. New optional arrays in `RunStore`
-  (`storage/run_store.py`), written next to `correspondences/`. `point_quality.rcm_from_arrays`,
-  `rcm/` and the hybrid kernel's `w_epi` read it when present. Reason: `two_phase` on
-  corrected points scored worse than on raw ones although its links were 99.9 % right;
-  the likely cause is that later steps recompute ray miss from the uncorrected blob
-  centres. Verify that cause first.
+- Observation table: per 3D point and camera the pixel position actually used, its **variance** and
+  the number of particles sharing the blob. New optional arrays in `RunStore` (`storage/run_store.py`),
+  written next to `correspondences/`. Consumers: link confirmation and ghost marks use the per-point
+  variance (below), `point_quality.rcm_from_arrays` the corrected pixels.
+  *Reviewed assumption (2026-11-20):* the first guess was that later steps recompute ray miss from the
+  uncorrected blob centres, so corrected points look like ghosts. Measured: switching the ghost rules
+  off changes `two_phase` on the corrected points from 0.138 to 0.141 (no effect); switching off
+  its **link confirmation** as well gives 0.076 (perfect linker 0.060). So the cause is the
+  confirmation tolerance (8x the median kink of the run), which cuts true links of the noisier
+  corrected points. Fix to build in H2: confirmation tolerance per link from the points' own
+  variances instead of one run-wide value.
 - Scoring in `scripts/synth_bench.py::evaluate_pred`: `subset` (truth keys matched by
   plain `two_phase`) → velocity and position error on the common set and on the extra
   points separately.
@@ -168,3 +172,25 @@ Targets are set from the measured ceilings; they are goals, not promises.
 
 ## Progress log
 
+- 2026-11-20, H0a: cause of "two_phase worse on corrected points" found: link confirmation, not ghost marks
+  (sparse `_m0.75_E1c0.3`: default 0.138; ghost rules off 0.141; ghost rules and confirmation off 0.076; perfect linker 0.060).
+- 2026-11-20, H0 done: `RunStore.write/read/has_observations` (group `obs`, shape (N, C, 4) = x_px, y_px, var_px2,
+  n_share; tests in `tests/unit/test_run_store.py`); common-set scoring `synth_bench eval --ref two_phase`
+  (`common_set_errors`, tests `test_synth_bench_common_set.py`); `src/openptv2/loco.py` (leave-one-camera-out residual,
+  tests `test_loco.py`). LOCO baseline on 4-camera points, 20 frames: real wp2 median 0.34 px / p90 0.68 / rms 0.44;
+  rendered synthetic 0.31 / 0.54 / 0.37 (`scripts/joint_m0.py`). Caveat: LOCO only sees points the matcher accepted, so
+  strongly merged blobs (rejected by the epipolar band) are under-represented; it is a consistency check, not a
+  full measure.
+- 2026-11-20, H1 first result (`scripts/joint_bounds.py h1`, module `src/openptv2/blob_model.py`, tests `test_blob_model.py`):
+  blob model on perfectly associated data = leave-one-out path prediction + per-particle *effective observation*
+  of a shared blob (blob centre minus the other members' predictions, over its brightness share; the particle's own
+  prediction never enters) + Gauss-Newton triangulation with weights 1/variance, 2 rounds. Case `_m0.75` (60 frames),
+  3D error vs truth (mm), raw blob centres -> H1: all 0.143 -> 0.074; 1 merged camera 0.178 -> 0.067; 2: 0.243 -> 0.096;
+  3+: 0.321 -> 0.236; clean particles unchanged (0.050). Velocity error with the perfect linker 0.0603 against 0.1061
+  (merged blobs as they are, E1b) and 0.0595 (ideal centres, E1c): the gap is closed to 98 % (gate was 60 %).
+  `two_phase` on the H1 input: 0.0918 (greedy cloud 0.1219), link precision 0.990, long completeness 0.775 (0.699).
+  Reviewed: the variance claimed for corrected observations is about 1.8x too small (z^2 = 1.76), and the pixel
+  error of the corrected centres has a heavy tail (median 0.29 px, rms 0.91 px; raw merged centre rms 0.87 px,
+  prediction rms 0.36 px) coming from dim members whose weight is small. Assumptions that make this an upper
+  bound: truth association, brightness signature from truth "alone" frames, centre noise var_c = 0.01 px^2 set to the
+  benchmark's. Next: other cases, then H2 (real tracks).

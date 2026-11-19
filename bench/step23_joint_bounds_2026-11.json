@@ -901,6 +901,14 @@
     "L1_d4_c0_k1_n150_s0.08_a0.18_f0.05": {
       "E1a": 141954,
       "E1b": 775001
+    },
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05_m0.75": {
+      "E1a": 63729,
+      "E1b": 74125
+    },
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05_m0.6": {
+      "E1a": 68280,
+      "E1b": 73948
     }
   },
   "M2_inputs": {
@@ -943,6 +951,16 @@
       "rows_blobs": 3058510,
       "blobs_replaced": 2004192,
       "share_replaced": 0.6552837819722676
+    },
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05_m0.75_sigma0.3": {
+      "rows_blobs": 293500,
+      "blobs_replaced": 45849,
+      "share_replaced": 0.15621465076660987
+    },
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05_m0.6_sigma0.3": {
+      "rows_blobs": 292908,
+      "blobs_replaced": 30150,
+      "share_replaced": 0.10293334425826539
     }
   },
   "M3_all_w21_d3": {
@@ -1198,6 +1216,192 @@
       "rms_y_px": 0.30415838310500226,
       "share_below_0.3px": 0.45468639412220685,
       "share_below_1px": 0.9857436554211183
+    }
+  },
+  "H1": {
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05_m0.75": {
+      "case": "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05_m0.75",
+      "rounds": [
+        {
+          "all_rms": 0.1428387163425189,
+          "all_median": 0.0474445523113591,
+          "merged_cams_0": {
+            "n": 41343,
+            "rms": 0.04978580110561986
+          },
+          "merged_cams_1": {
+            "n": 23172,
+            "rms": 0.17804641106599736
+          },
+          "merged_cams_2": {
+            "n": 7163,
+            "rms": 0.24300418207422445
+          },
+          "merged_cams_3+": {
+            "n": 2447,
+            "rms": 0.3211289508845777
+          },
+          "label": "round0 raw blob centres (equal weights)"
+        },
+        {
+          "all_rms": 0.07942174499598006,
+          "all_median": 0.03573376779508048,
+          "merged_cams_0": {
+            "n": 41343,
+            "rms": 0.0497887253773794
+          },
+          "merged_cams_1": {
+            "n": 23172,
+            "rms": 0.07014767945917975
+          },
+          "merged_cams_2": {
+            "n": 7163,
+            "rms": 0.11091317231655938
+          },
+          "merged_cams_3+": {
+            "n": 2447,
+            "rms": 0.2580467280049523
+          },
+          "label": "round1 effective observations"
+        },
+        {
+          "all_rms": 0.07417577153430012,
+          "all_median": 0.034017091877889906,
+          "merged_cams_0": {
+            "n": 41343,
+            "rms": 0.04978545079329682
+          },
+          "merged_cams_1": {
+            "n": 23172,
+            "rms": 0.06671984998711156
+          },
+          "merged_cams_2": {
+            "n": 7163,
+            "rms": 0.09567831354394218
+          },
+          "merged_cams_3+": {
+            "n": 2447,
+            "rms": 0.23630716793089468
+          },
+          "label": "round2 effective observations"
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "round": 1,
+          "var_p_px2": 0.0243013640872195,
+          "merged_groups": 22684,
+          "merged_obs": 46681,
+          "raw_centre_rms_px": 0.86863768868537,
+          "effective_obs_rms_px": 1.0209846889963665,
+          "effective_obs_median_px": 0.35158911186287417,
+          "prediction_rms_px": 0.45752728043950036,
+          "variance_calibration_z2": 1.7341487425953703
+        },
+        {
+          "round": 2,
+          "var_p_px2": 0.01307908441789859,
+          "merged_groups": 22684,
+          "merged_obs": 46681,
+          "raw_centre_rms_px": 0.86863768868537,
+          "effective_obs_rms_px": 0.9418421736378567,
+          "effective_obs_median_px": 0.3103429157001357,
+          "prediction_rms_px": 0.3714020659925366,
+          "variance_calibration_z2": 1.8758949590752687
+        }
+      ]
+    },
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05_m0.6": {
+      "case": "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05_m0.6",
+      "rounds": [
+        {
+          "all_rms": 0.09770741004966318,
+          "all_median": 0.03783526946017826,
+          "merged_cams_0": {
+            "n": 50132,
+            "rms": 0.04903084984553811
+          },
+          "merged_cams_1": {
+            "n": 18764,
+            "rms": 0.14392727124636992
+          },
+          "merged_cams_2": {
+            "n": 4076,
+            "rms": 0.1861702171579695
+          },
+          "merged_cams_3+": {
+            "n": 976,
+            "rms": 0.23840907266495262
+          },
+          "label": "round0 raw blob centres (equal weights)"
+        },
+        {
+          "all_rms": 0.06259440895634082,
+          "all_median": 0.03204171377360239,
+          "merged_cams_0": {
+            "n": 50132,
+            "rms": 0.04903188263407652
+          },
+          "merged_cams_1": {
+            "n": 18764,
+            "rms": 0.06711681522030295
+          },
+          "merged_cams_2": {
+            "n": 4076,
+            "rms": 0.09986181309276798
+          },
+          "merged_cams_3+": {
+            "n": 976,
+            "rms": 0.21241219421971708
+          },
+          "label": "round1 effective observations"
+        },
+        {
+          "all_rms": 0.06136563807065466,
+          "all_median": 0.0312672992903375,
+          "merged_cams_0": {
+            "n": 50132,
+            "rms": 0.049030673262275094
+          },
+          "merged_cams_1": {
+            "n": 18764,
+            "rms": 0.06498363397811094
+          },
+          "merged_cams_2": {
+            "n": 4076,
+            "rms": 0.09461899226719332
+          },
+          "merged_cams_3+": {
+            "n": 976,
+            "rms": 0.20799090906742532
+          },
+          "label": "round2 effective observations"
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "round": 1,
+          "var_p_px2": 0.017694774933748672,
+          "merged_groups": 15326,
+          "merged_obs": 30758,
+          "raw_centre_rms_px": 0.674034656925125,
+          "effective_obs_rms_px": 0.8675052121804837,
+          "effective_obs_median_px": 0.2849236871894562,
+          "prediction_rms_px": 0.3241184603248103,
+          "variance_calibration_z2": 1.070555520382914
+        },
+        {
+          "round": 2,
+          "var_p_px2": 0.012422505041966113,
+          "merged_groups": 15326,
+          "merged_obs": 30758,
+          "raw_centre_rms_px": 0.674034656925125,
+          "effective_obs_rms_px": 0.8646687678117752,
+          "effective_obs_median_px": 0.2757132308224062,
+          "prediction_rms_px": 0.2744725685753983,
+          "variance_calibration_z2": 1.1414508395055074
+        }
+      ]
     }
   }
 }

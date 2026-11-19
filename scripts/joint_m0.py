@@ -5,6 +5,7 @@ as in the benchmark's rendered frames? Same statistics on a real run and on the 
   1. blob counts and size distribution (pixel count n, grey sum) per camera
   2. share of matched 3D points whose projection in a camera lies within r px of another point's projection
   3. brightness stability along tracks: |delta log(grey sum)| of linked pairs, per camera
+  4. leave-one-camera-out residual (px) of the 4-camera points (openptv2.loco): truth-free consistency
 
     uv run python scripts/joint_m0.py <run folder> [--frames 40]
 
@@ -18,6 +19,8 @@ from pathlib import Path
 
 import numpy as np
 from scipy.spatial import cKDTree
+
+from openptv2.loco import loco_residuals, summarize
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import synth_bench as sb  # noqa: E402
@@ -35,7 +38,7 @@ def m0(run: Path, n_frames: int) -> dict:
     pick = [frames_all[i] for i in np.linspace(1, len(frames_all) - 3, n_frames).astype(int)]
     nblob, n_all, sg_all, npts = [], [], [], []
     prox = {r: [0, 0] for r in (1.0, 1.5, 2.0, 3.0)}
-    dlog, cams_seen = [], []
+    dlog, cams_seen, loco_all = [], [], []
     for f in pick:
         rows = [np.asarray(store.root[f"targets/cam_{c}/frame_{f:06d}"]) for c in range(n_cams)]
         nblob.append([len(r) for r in rows])
@@ -45,6 +48,11 @@ def m0(run: Path, n_frames: int) -> dict:
         ids = np.asarray(ids)[:, :n_cams]
         npts.append(len(pos))
         cams_seen.append((ids >= 0).sum(1))
+        pxy = np.full((len(pos), n_cams, 2), np.nan)
+        for c in range(n_cams):
+            u = ids[:, c] >= 0
+            pxy[u, c] = rows[c][ids[u, c], 1:3]
+        loco_all.append(loco_residuals(pxy, cpar, cals, exp.vpar))
         for c in range(n_cams):
             used = ids[:, c] >= 0
             if used.sum() < 2:
@@ -76,6 +84,7 @@ def m0(run: Path, n_frames: int) -> dict:
     dlog = np.array(dlog)
     q = [25, 50, 75, 90, 95, 99]
     return {
+        "loco_leave_one_camera_out_px": summarize(np.concatenate(loco_all)),
         "frames": len(pick), "blobs_per_cam_per_frame": float(np.mean(nblob)), "points_per_frame": float(np.mean(npts)),
         "share_4cam_points": float(np.mean(np.concatenate(cams_seen) == 4)),
         "n_pixels_quantiles": dict(zip(map(str, q), np.percentile(n_all, q).round(1).tolist())),
