@@ -1,7 +1,7 @@
 # Plan: a joint stereo-matching + tracking algorithm ("joint tracker")
 
 Date: 2026-11-19. Branch: `feat/zarr-only-remove-legacy`. Status: step 0 measured; **plan revised the
-same day, and again after merging `feat/ilp-temporal-smoothing-impl`: read sections 10–14 first; section 14 is the current plan.** Sections 3–9 are the original design and are kept for
+same day, and again after merging `feat/ilp-temporal-smoothing-impl`: the current plan is `docs/plans/2026-11-20-holistic-ptv.md`; this file is the lab record (sections 10-16 hold the measurements).** Sections 3–9 are the original design and are kept for
 the record; where they differ from section 11, section 11 wins.
 Related: `docs/plans/2026-09-30-tracker-plan.md` (benchmark facts),
 `docs/plans/2026-10-09-trackcorr-two-phase-merge.md`,
