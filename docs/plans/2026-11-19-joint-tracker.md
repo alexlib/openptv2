@@ -744,3 +744,103 @@ the common-set error; time of the correction below the matcher's.
   `synth_bench eval`; the truth check of the correction itself: compare the corrected blob centres with
   `render` projections as in `demerge_inputs`.
 - Cython is not needed until J3 (the loop is per blob, cheap); do not touch `correspondences()`.
+
+## 15. Reframing (2026-11-19): one space–time–camera inference, not a pipeline
+
+### 15.1 The assumption that was wrong
+Detection → stereo matching → tracking assumes every blob is one particle, every stage is decided
+once, and each stage only passes its result on. Section 13 showed that the first assumption fails
+for 26 % (sparse) to 66 % (×4) of the blob observations, and that this, not the linker, limits the
+accuracy. The deeper point: **the image plane, the 3D position and time are one object.** A blob
+is evidence about particles that exist in 3D and move through time; and what a blob contains is
+visible only from its context:
+- **in time:** particles enter and leave a blob; a particle that was alone in the blob before and
+  after is inside it now;
+- **across cameras:** a 3D particle seen cleanly by 2–3 cameras predicts where it must be in the
+  others; a blob that is larger/brighter or off-centre there is a merged one;
+- **in appearance:** each particle has a persistent brightness per camera; a blob's grey sum is
+  (about) the sum of its particles' brightnesses, so the count is readable.
+A single frame knows none of this; it can only learn "what a typical particle image looks like".
+
+### 15.2 What the data say about the three cues (truth-based, 2026-11-19)
+Scripts: `scripts/joint_info_coverage.py` (coverage), the appearance numbers from the rendered
+frames of `Synthetic-CompleteTest` (openptv2's own detections, truth from the render).
+
+**Can a merged observation be resolved? (share of merged observations)**
+
+| Cue | sparse | ×4 |
+|---|---|---|
+| same frame: the particle is clean (single) in ≥ 2 other cameras | 64 % | 21 % |
+| same camera: the particle was alone in its blob within ± 3 frames | 31 % | 18 % |
+| 3D view: the particle has ≥ 2 clean cameras (a 3D position) at the same or a frame within ± 3 | **76 %** | 38 % |
+| … within ± 6 frames | 80 % | 48 % |
+| … clean on both sides (interpolation, not extrapolation), ± 3 | 64 % | 20 % |
+| not resolvable by any of these within ± 6 | 20 % | 52 % |
+
+- Per-camera history alone is weak (31 %): overlapping particles stay overlapped for several
+  frames. The 3D view (any camera, any nearby frame) is much stronger (76 %): this is the argument
+  for treating camera, space and time together.
+- At ×4 more than half of the merged observations have no clean 3D moment within ±6 frames. There
+  the cues must be combined over a whole cluster of particles and frames (joint hypotheses), and the
+  method meets the known density limit of blob-based matching.
+
+**Can the blob itself say it is merged? (single vs merged, rendered frames, blobs with ≥ 1 particle)**
+
+| Information | AUC |
+|---|---|
+| the blob alone: pixel count / grey sum | 0.78 / 0.73 |
+| the blob **and the particle's own typical appearance** (grey sum / its median over its alone-in-blob frames) | **0.95** |
+
+With the context ratio: a single particle's grey sum stays within 0.90–1.11 of its typical value
+(5–95 %); merged blobs have a median ratio 1.99 (two particles). Threshold 1.25: finds 74 % of the
+merged observations, 96 % of the alarms are right, 1.1 % false alarms among single blobs; threshold
+1.5: 62 % found, 99 % right. (Truth identities were used to define "the particle"; real data needs a track.
+Real linked pairs change blob brightness per camera by a median 0.06 on wp2, so the signature exists there.)
+
+### 15.3 The model
+Latent: particles `k` with smooth 3D trajectories `X_k(t)` and per-camera brightness `a_{k,c}`
+(persistent, slowly varying). Observations: per camera and frame, blobs with centre, pixel count,
+extent and grey sum. Blob model: a blob holds `m ≥ 1` spots; its centre is the brightness-weighted
+mean of the spots' centres, its grey sum the sum of their brightnesses, its size grows with `m` and
+the spots' separation. Detection → matching → tracking is a greedy coordinate ascent on this model with
+the wrong `m = 1`. The better procedure is an **order-free loop** (EM / coordinate ascent):
+1. **Explain blob mass.** For each blob: the tracked particles that project into it and their
+   brightness `a_{k,c}` explain a part of its grey sum and shift its centre; the split of the
+   centre uses the minimum-norm rule of section 14.2 point 2.
+2. **Update** trajectories and brightness from the de-merged measurements (re-triangulation with
+   per-camera weights; clean cameras dominate).
+3. **Look at the residual.** Grey sum not explained by the tracked particles in a blob, in a camera
+   where the 3D evidence says there should be exactly one more particle (or two cameras see a clean
+   particle that is absent here), is a **birth hypothesis**; a track whose blob is empty or too weak
+   is an **occlusion** (coast) or a death. Births and deaths are what enter/leave events are.
+4. **Repeat** in any order, forward and backward in time, until stable.
+The matcher keeps its role as a cheap generator of first hypotheses (once per frame), not as the
+authority.
+
+### 15.4 What changes in the plan (section 14)
+- **J1 becomes the blob-content model, not just a re-triangulation:** (a) per track and camera a
+  brightness signature `a_{k,c}` (median over alone-in-blob frames, updated); (b) mass accounting
+  to count the members of a blob and to flag merged blobs (the 0.95 AUC cue) instead of using only
+  "two predictions on one blob"; (c) the minimum-norm centre split; (d) camera selection by the
+  cross-camera evidence (use clean cameras when ≥ 2 exist: 64 % of the merged observations at sparse density).
+- **J2 (recovery) is the birth/death step of 15.3:** unexplained blob mass + cross-camera evidence
+  create a particle; the matcher's leftovers are one source of hypotheses.
+- **A new first step, J1-oracle:** run the J1 algorithm on **perfectly associated** data (the
+  ladder inputs: truth identities, merged blobs left as they are, E1b) and compare with the ceilings
+  E1c (0.063 sparse, 0.131 ×4) and E1b (0.230 / 0.868). It measures how much of the ceiling the
+  estimation captures without the association problem. Then replace truth identities by tracks
+  (`two_phase`, hybrid `trackcorr`) and measure the loss of association (J1 proper).
+- **×4 needs joint hypotheses over clusters** (more than half of merged observations lack a clean 3D
+  moment within ± 6 frames). Plan it as stage J3b after J1–J3 are measured, not before.
+- **M0 stays the gate** (real merge rate), now with a second part: the stability of real blob
+  brightness per particle (the appearance cue) on wp2 tracks: median |Δ log sumg| of linked pairs
+  and its 95th percentile.
+
+### 15.5 Open decision: blobs only, or patches?
+The plan keeps the earlier rule "target space only, no image subtraction". Everything above uses
+only blob attributes (centre, pixel count, extent, grey sum). The pixels of a merged blob carry
+more (its shape, the positions of the peaks); fitting 2–3 known-brightness spots to the small
+patch, with the tracks supplying the start positions, would sharpen the split. It is local to
+the merged blobs (no full-image OTF). Decision: first measure with blob attributes only (J1); open
+the patch option only if J1 stays well above the E1c ceiling and the shortfall comes from the split,
+not from the association.
