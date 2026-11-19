@@ -494,6 +494,9 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
         lost = []
         persist: dict = {}
         ndet_list: list = []
+        # truth point -> stored target index per camera (-1 = not detected);
+        # the joint-tracker bounds (scripts/joint_bounds.py) need it
+        blob_tid = np.full((len(fr), NUM_CAMS), -1, np.int32)
         for fo in range(1, n_out + 1):
             sel = np.flatnonzero(fr == fo)
             tid = np.full((len(sel), NUM_CAMS), -1, np.int32)
@@ -527,6 +530,7 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
                 store.write_targets(cam, fo, rows)
                 lost.append(1 - (t_of >= 0).sum() / max(len(sel), 1))
             ndet_list.append((sel, ndet_frame))
+            blob_tid[sel] = tid
             if level == "L0":
                 seen = (tid >= 0).sum(1) >= 2
                 store.write_correspondences(fo, pos[sel][seen], tid[seen])
@@ -545,6 +549,7 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
         for sel_, nd_ in ndet_list:
             nd[sel_] = nd_
         truth["ndet"] = nd  # cameras that detected each truth point (for recovery bounds)
+        truth["blob_tid"] = blob_tid  # target index per truth point and camera
     np.savez_compressed(case_dir / "truth.npz", **truth)
     (case_dir / "case.json").write_text(json.dumps(stats, indent=2))
     if level != "L2":  # L2's targets already carry the pipeline's tnr

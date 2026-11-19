@@ -239,3 +239,68 @@ iteration → 2d final cleanup. Revert any part that gains only by dropping true
   The 4× density case shows how far "tracks pick first" pushes that limit in blob space.
 - Speed budget: prototype may be several times slower than `two_phase`; target after
   Cython is at most 2× trackcorr on the dense case.
+
+## 10. Results of step 0 (2026-11-19)
+
+Cases: `L1_d{1,2,4}_c0_k1_n{200,150,150}` and `L1_d2_c0.3_k4_n150`, all
+`_s0.08_a0.18_f0.05`. Raw numbers: `bench/step23_joint_bounds_2026-11.json`;
+scripts: `scripts/joint_bounds.py` (B1, B2 inputs), `scripts/synth_bench.py` (0b: `truth.npz`
+now has `blob_tid`, the target index of every truth point per camera; the rebuilt cases
+are identical to the old ones otherwise).
+
+**Step 0a (commit 2f33ef73):** gap-bridged links followed in `_load_linkage_chains`; trajectory
+ILP uses `point_quality.frame_rcm`.
+
+### B0: baselines (vErr / link precision / yield / ghost share)
+
+| Case | oracle | two_phase | trackcorr | trackcorr@fwd | unified (peeling default) | unified+peeling=false |
+|---|---|---|---|---|---|---|
+| sparse | 0.1435 | **0.1825** / 0.961 / 0.680 / 3.8 % | 0.2968 / 0.922 / 0.684 / 7.3 % | 0.2939 | 0.5051 / 0.895 / 0.745 / 9.1 % | = trackcorr |
+| ×2 | 0.3336 | **0.3111** / 0.957 / 0.504 / 4.3 % | 0.5084 / 0.906 / 0.521 / 7.7 % | 0.5043 | 0.8766 / 0.856 / 0.614 / 10.8 % | = trackcorr |
+| ×4 | 0.5675 | **0.4091** / 0.928 / 0.225 / 7.1 % | 1.0504 / 0.819 / 0.247 / 14.9 % | 1.0495 | 2.0785 / 0.672 / 0.308 / 25.3 % | = trackcorr |
+| clustered, skip 4 | 0.1605 | **0.1697** / 0.941 / 0.375 / 5.3 % | 0.7581 / 0.867 / 0.403 / 8.1 % | 0.7593 | 0.8250 / 0.785 / 0.432 / 11.8 % | = trackcorr |
+
+(oracle is the perfect linker on the same input; its vErr can exceed two_phase's because it
+keeps more, noisier points.) Findings:
+1. **`unified` with the default peeling is clearly worse than `trackcorr` and `two_phase`** on every
+   case (link precision 0.67–0.89, ghost share 9–25 %). Peeling is the cause: `peeling=false` is
+   identical to plain `trackcorr`. (More long tracks and yield, lower accuracy.)
+2. **`two_phase` is the tracker to beat**; trackcorr and unified are far behind it.
+3. Headroom of two_phase to the perfect linker on the sparse case: 0.183 → 0.144.
+
+### B1: pool coverage (truth points seen by ≥ 3 cameras, 10 frames per case)
+
+| Case | lost by greedy | pool recovers | "clean" truth lost by greedy (blob not shared) |
+|---|---|---|---|
+| sparse | 13.6 % | 57 % | 0.2 % |
+| ×2 | 31.5 % | 49 % | 1.0 % |
+| ×4 | 61.6 % | 32 % | 2.9 % |
+| clustered, skip 4 | 43.2 % | 23 % | 0.5 % |
+
+- The sparse figure reproduces the earlier 12.8 %. Pool size is 4.7–5.8× the greedy cloud
+  (5300 rows per frame, no `MAXCAND` saturation); every greedy row is in the pool (sanity check passed).
+- **Almost all of the loss is blob sharing (merged blobs), not ghosts stealing blobs:** truth points
+  whose blobs are not shared lose only 0.2–2.9 %. The pool recovers the part whose merged-blob
+  centroid still passes the epipolar band; it recovers little at high density.
+- B1b (2-camera combinations): no change to the recall of points seen by ≥ 3 cameras.
+- Verdict against the proposed go/no-go (≥ half of the lost points): passes sparse (57 %),
+  borderline ×2 (49 %), fails ×4 and clustered.
+
+### B2: ceiling of perfect selection from the pool (two_phase on the input; vErr / yield / long completeness / ghost share)
+
+| Case | greedy cloud | greedy, ghosts removed | perfect pool selection |
+|---|---|---|---|
+| sparse | 0.1825 / 0.680 / 0.503 / 3.8 % | 0.1743 / 0.678 / 0.501 / 0.8 % | **0.2412** / 0.714 / 0.516 / 2.6 % |
+| ×2 | 0.3111 / 0.504 / 0.344 / 4.3 % | 0.3054 / 0.501 / 0.342 / 2.1 % | **0.3964** / 0.575 / 0.372 / 5.2 % |
+| ×4 | 0.4091 / 0.225 / 0.157 / 7.1 % | 0.3913 / 0.222 / 0.156 / 4.0 % | **0.4924** / 0.302 / 0.196 / 8.3 % |
+
+- Removing every ghost from the input gains only 0.005–0.018 for two_phase (it already has the
+  ghost rules).
+- **Perfect pool selection gains points (+3 to +8 points yield, +1.5 to +4 points long-track
+  completeness) but makes the velocity error worse by 0.06–0.10 on all three cases.** The recovered
+  points are merged-blob points whose centroid is shifted; their 3D positions are noisy. Under the
+  rule "accuracy ranks above density", this is not a win.
+
+### Decision point (stopped here, as the plan says)
+B1/B2 fail for the pool as designed. Plan section 4 says: drop the pool and build only the claim
+logic. Options and the recommendation are in the report to the user; nothing beyond step 0 is built.
