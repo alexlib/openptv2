@@ -223,6 +223,8 @@ def track3d_loop_fast(
     shared_k: cython.int[:] = None,
     dacc: cython.double = 0.0,
     dangle: cython.double = 0.0,
+    w_epi: cython.double = 0.0,
+    epi_scores: cython.double[:] = None,
 ):
     """Full track3d loop (3 levels) — single compiled entry.
 
@@ -427,7 +429,10 @@ def track3d_loop_fast(
                         continue
                 elif acc >= dacc:
                     continue
-            edge_cost[n_edges] = acc
+            _epi = 0.0
+            if w_epi > 0.0 and epi_scores is not None and k < epi_scores.shape[0]:
+                _epi = w_epi * (1.0 - epi_scores[k])
+            edge_cost[n_edges] = acc + _epi
             edge_i[n_edges] = i
             edge_k[n_edges] = k
             n_edges += 1
@@ -520,7 +525,10 @@ def track3d_loop_fast(
             d1 = path_x_2[k, 1] - pred_y
             d2 = path_x_2[k, 2] - pred_z
             acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
-            edge_cost[n_edges] = acc
+            _epi = 0.0
+            if w_epi > 0.0 and epi_scores is not None and k < epi_scores.shape[0]:
+                _epi = w_epi * (1.0 - epi_scores[k])
+            edge_cost[n_edges] = acc + _epi
             edge_i[n_edges] = i
             edge_k[n_edges] = k
             n_edges += 1
@@ -594,7 +602,10 @@ def track3d_loop_fast(
             dist = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
             if use_csg and dist > cold_start_gate:
                 continue  # inconsistent with the local flow field: reject
-            edge_cost[n_edges] = dist
+            _epi = 0.0
+            if w_epi > 0.0 and epi_scores is not None and k < epi_scores.shape[0]:
+                _epi = w_epi * (1.0 - epi_scores[k])
+            edge_cost[n_edges] = dist + _epi
             edge_i[n_edges] = i
             edge_k[n_edges] = k
             n_edges += 1
