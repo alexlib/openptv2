@@ -319,3 +319,27 @@ def test_conditioning_gate_below_0_2_strong_warning_and_proceeds(
     assert decision.chosen_config["v_max"] == pytest.approx(0.15, rel=0.05)
     assert isinstance(decision.report_metrics, dict)
     assert "reciprocity_rate" in decision.report_metrics
+
+
+def test_load_linkage_chains_follows_gap_bridged_links(tmp_path: Path):
+    """A link that skips a frame (relink_trajectory_gaps) must be followed to the
+    frame that reciprocates it, not to the next stored frame."""
+    from openptv2.plugins.unified_tracking import Tracking
+
+    store = RunStore(tmp_path / "gap.zarr", mode="w")
+    none_p, none_n = -1, -2
+    xyz = lambda rows: np.asarray(rows, dtype=np.float64)  # noqa: E731
+    # frame 1: A (row 0). frame 2: unrelated B only (A is missing).
+    # frame 3: C (row 0, unrelated), A (row 1), linked from frame 1 over the gap.
+    store.write_linkage(1, np.array([none_p]), np.array([1]), xyz([[0, 0, 0]]), name="ptv_is")
+    store.write_linkage(
+        2, np.array([none_p, none_p]), np.array([none_n, none_n]),
+        xyz([[9, 9, 9], [8, 8, 8]]), name="ptv_is",
+    )
+    store.write_linkage(
+        3, np.array([none_p, 0]), np.array([none_n, none_n]),
+        xyz([[5, 5, 5], [2, 0, 0]]), name="ptv_is",
+    )
+    plugin = Tracking(exp=SimpleNamespace(tracker=SimpleNamespace(_naming={"linkage": "ptv_is"})))
+    _, _, chains = plugin._load_linkage_chains(store, 1, 3, min_length=2)
+    assert chains == [[(1, 0), (3, 1)]]

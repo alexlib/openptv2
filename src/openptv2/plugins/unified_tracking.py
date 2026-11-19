@@ -760,7 +760,7 @@ class Tracking:
         min_length: int = 2,
     ) -> tuple[str, dict[int, tuple[Any, Any, Any]], list[list[tuple[int, int]]]]:
         """Load linkage frames from ``store`` and extract connected trajectories."""
-        from openptv2.tracking_postprocess import read_linkage
+        from openptv2.tracking_postprocess import link_step, read_linkage
 
         tracker = getattr(self.exp, "tracker", None)
         linkage_base = getattr(tracker, "_naming", {}).get("linkage", "") or "ptv_is"
@@ -772,6 +772,10 @@ class Tracking:
                 frames[f] = (prv.copy(), nxt.copy(), xyz)
         if not frames:
             return linkage_base, frames, []
+
+        def prev_of(frame: int) -> Any:
+            rec = frames.get(frame)
+            return None if rec is None else rec[0]
 
         visited: set[tuple[int, int]] = set()
         chains: list[list[tuple[int, int]]] = []
@@ -790,12 +794,12 @@ class Tracking:
                     nxt_i = int(frames[cur_f][1][cur_i])
                     if nxt_i < 0:
                         break
-                    nxt_f = cur_f + 1
-                    while nxt_f <= last and nxt_f not in frames:
-                        nxt_f += 1
-                    if nxt_f not in frames:
+                    # A gap-bridged link lands in the frame that reciprocates
+                    # it; a one-sided link is followed one frame, as before.
+                    step = link_step(prev_of, cur_f, cur_i, nxt_i) or 1
+                    if cur_f + step not in frames:
                         break
-                    cur_f, cur_i = nxt_f, nxt_i
+                    cur_f, cur_i = cur_f + step, nxt_i
                 if len(chain) >= min_length:
                     chains.append(chain)
         return linkage_base, frames, chains
@@ -875,17 +879,12 @@ class Tracking:
             cpar = getattr(self.exp, "cpar", None)
             cals = getattr(self.exp, "cals", None)
             if cpar is not None and cals is not None:
-                try:
-                    from openptv2.layered_tracking import compute_correspondence_rcm
+                from openptv2.point_quality import frame_rcm
 
-                    for f, (pos, cam_ids, _) in corres_map.items():
-                        if store.has_targets(f):
-                            targets = [store.read_targets(f, c) for c in range(len(cals))]
-                            rcm_by_frame[f] = compute_correspondence_rcm(
-                                pos, cam_ids, targets, cpar, cals
-                            )
-                except Exception:
-                    rcm_by_frame = {}
+                n_cams = len(cals)
+                for f in corres_map:
+                    if all(store.has_targets(c, f) for c in range(n_cams)):
+                        rcm_by_frame[f] = frame_rcm(store, f, list(cals), cpar)
 
             traj_targets: list[list[tuple[int, int, int]]] = []
             scores: list[float] = []
