@@ -133,3 +133,37 @@ def test_gap_filling_needs_blobs_short_gaps_and_enough_cameras(rig):
     short = dict(a, frame=a["frame"][:3], tid=a["tid"][:3], pos=a["pos"][:3], blob=a["blob"][:3],
                  centre=a["centre"][:3], sumg=a["sumg"][:3])
     assert len(fill_gaps(short, short["pos"], cpar, cals, min_rows=4)["frame"]) == 0     # too short a track
+
+
+def test_hermite_interpolation_follows_a_curved_path_better_than_linear(rig):
+    from openptv2.merge_post import _hermite
+
+    p = lambda t: np.array([0.1 * t, 0.02 * t**2, 0.0])          # noqa: E731
+    v = lambda t: np.array([0.1, 0.04 * t, 0.0])                 # noqa: E731
+    got = _hermite(p(2), p(8), v(2), v(8), 3, 6)                  # frame 5 of a gap 2..8
+    lin = p(2) + (p(8) - p(2)) * 3 / 6
+    assert np.linalg.norm(got - p(5)) < 1e-9                      # exact for a quadratic path
+    assert np.linalg.norm(lin - p(5)) > 0.1
+
+
+def test_a_long_gap_is_bridged_with_growing_radius_and_hermite(rig):
+    from openptv2.merge_post import fill_gaps
+
+    cpar, cals, a, truth_gap = _track_with_a_gap(rig, gap_frames=(3, 4, 5, 6, 7))
+    # blobs sit on the true (straight) path; ask for the long gap with the Hermite path and a mass check
+    new = fill_gaps(a, a["pos"], cpar, cals, radius=1.0, max_gap=6, interp="hermite", min_rows=2,
+                    radius_growth=0.2, mass_range=(0.7, 1.3))
+    assert sorted(new["frame"].tolist()) == [3, 4, 5, 6, 7]
+
+
+def test_mass_check_rejects_a_blob_that_is_too_bright_or_too_dim(rig):
+    from openptv2.merge_post import fill_gaps
+
+    cpar, cals, a, _ = _track_with_a_gap(rig)
+    bright = dict(a, blobs={k: (v[0], np.array([300.0])) for k, v in a["blobs"].items()})   # 3x the signature
+    assert len(fill_gaps(bright, a["pos"], cpar, cals, mass_range=(0.7, 1.3))["frame"]) == 0
+    assert len(fill_gaps(bright, a["pos"], cpar, cals)["frame"]) == 1                          # no check: accepted
+    dim = dict(a, blobs={k: (v[0], np.array([20.0])) for k, v in a["blobs"].items()})
+    assert len(fill_gaps(dim, a["pos"], cpar, cals, mass_range=(0.7, 1.3))["frame"]) == 0
+    ok = fill_gaps(a, a["pos"], cpar, cals, mass_range=(0.7, 1.3))
+    assert len(ok["frame"]) == 1

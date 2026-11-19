@@ -147,6 +147,22 @@ def arrays_from_store(store: Any, linkage_name: str, first: int, last: int, n_ca
             "tid": tid, "blobs": blobs}
 
 
+def _hermite(p0, p1, v0, v1, g, span):
+    """Cubic Hermite position ``g`` frames after p0 on a gap of ``span`` frames (velocities in mm/frame)."""
+    u = g / span
+    h00, h10 = 2 * u**3 - 3 * u**2 + 1, u**3 - 2 * u**2 + u
+    h01, h11 = -2 * u**3 + 3 * u**2, u**3 - u**2
+    return h00 * p0 + h10 * span * v0 + h01 * p1 + h11 * span * v1
+
+
+def track_signatures(a: dict) -> dict:
+    """Typical grey sum per (track id, camera) from the frames where the track's blob is used by one point."""
+    from openptv2.merge_refine import _signatures, shared_blobs
+
+    share = shared_blobs(a["frame"], a["blob"])
+    return _signatures(a["tid"], (a["blob"] >= 0) & (share == 1), a["sumg"])
+
+
 def fill_gaps(
     a: dict,
     pos: np.ndarray,
@@ -156,13 +172,21 @@ def fill_gaps(
     max_gap: int = 3,
     min_cams: int = 3,
     min_rows: int = 4,
+    interp: str = "linear",
+    radius_growth: float = 0.0,
+    radius_max: float = 4.0,
+    mass_range: tuple[float, float] | None = None,
 ) -> dict:
     """Rows for the frames a track skipped: where its path says the particle is, blobs are claimed.
 
     For every track with at least ``min_rows`` rows, every missing frame between two of its rows (at most
-    ``max_gap`` frames) gets a predicted position (linear interpolation of the neighbouring rows' ``pos``),
-    projected into every camera; the nearest blob within ``radius`` px is taken in each camera (a blob another
-    point already uses is shared), and the row is added if at least ``min_cams`` cameras have one.
+    ``max_gap`` frames) gets a predicted position (``interp``: ``linear``, or ``hermite`` using the end
+    velocities), projected into every camera; the nearest blob within ``radius`` px (growing by
+    ``radius_growth`` px per frame of distance from the nearer known row, at most ``radius_max``) is taken in
+    each camera (a blob another point already uses is shared), and the row is added if at least ``min_cams``
+    cameras have one. With ``mass_range = (lo, hi)`` a blob is accepted only if its grey sum is within
+    ``lo..hi`` times the sum of the typical grey sums (signatures) of the points already using it and of the
+    claiming track, when all are known: the brightness-mass check.
     Returns a dict with the new rows (``frame``, ``tid``, ``pos``, ``blob``, ``centre``, ``sumg``) in the same
     layout as :func:`arrays_from_store`.
     """
@@ -172,19 +196,24 @@ def fill_gaps(
     order = np.lexsort((frame, tid))
     t_sorted = tid[order]
     cuts = np.flatnonzero(np.r_[True, t_sorted[1:] != t_sorted[:-1], True])
-    todo = []                                                  # (frame, tid, predicted position)
+    todo = []                                                  # (frame, tid, predicted position, distance to a row)
     for s0, s1 in zip(cuts[:-1], cuts[1:]):
         if s1 - s0 < min_rows:
             continue
         idx = order[s0:s1]
         f = frame[idx]
         for i in np.flatnonzero(np.diff(f) > 1):
-            gap = int(f[i + 1] - f[i] - 1)
+            span = int(f[i + 1] - f[i])
+            gap = span - 1
             if gap > max_gap:
                 continue
             p0, p1 = pos[idx[i]], pos[idx[i + 1]]
+            if interp == "hermite":
+                v0 = (p0 - pos[idx[i - 1]]) / (f[i] - f[i - 1]) if i > 0 else (p1 - p0) / span
+                v1 = ((pos[idx[i + 2]] - p1) / (f[i + 2] - f[i + 1])) if i + 2 < len(idx) else (p1 - p0) / span
             for g in range(1, gap + 1):
-                todo.append((int(f[i]) + g, int(tid[idx[i]]), p0 + (p1 - p0) * g / (gap + 1)))
+                pg = _hermite(p0, p1, v0, v1, g, span) if interp == "hermite" else p0 + (p1 - p0) * g / span
+                todo.append((int(f[i]) + g, int(tid[idx[i]]), pg, min(g, span - g)))
     if not todo:
         return {k: np.zeros((0,) + v.shape[1:], v.dtype) for k, v in
                 (("frame", frame), ("tid", tid), ("pos", pos), ("blob", a["blob"]), ("centre", a["centre"]),
@@ -192,9 +221,17 @@ def fill_gaps(
     tf = np.array([t[0] for t in todo])
     tt = np.array([t[1] for t in todo])
     tp = np.array([t[2] for t in todo])
+    td = np.array([t[3] for t in todo], float)
     blob = np.full((len(todo), n_cams), -1, dtype=a["blob"].dtype)
     centre = np.full((len(todo), n_cams, 2), np.nan)
     sumg = np.full((len(todo), n_cams), np.nan)
+    if mass_range is not None:
+        sig = track_signatures(a)
+        users: dict = {}
+        for r in np.flatnonzero((a["blob"] >= 0).any(1)):
+            for c in range(n_cams):
+                if a["blob"][r, c] >= 0:
+                    users.setdefault((int(frame[r]), c, int(a["blob"][r, c])), []).append(int(tid[r]))
     for f in np.unique(tf):
         rows = np.flatnonzero(tf == f)
         for c in range(n_cams):
@@ -204,10 +241,21 @@ def fill_gaps(
             if len(cent) == 0:
                 continue
             px = project_pixels(tp[rows], cals[c], cpar)
-            d, j = cKDTree(cent).query(px, distance_upper_bound=radius)
-            hit = np.isfinite(d)
-            blob[rows[hit], c] = j[hit]
-            centre[rows[hit], c] = cent[j[hit]]
-            sumg[rows[hit], c] = sg[j[hit]]
+            tree = cKDTree(cent)
+            for k, r in enumerate(rows):
+                rad = min(radius + radius_growth * td[r], radius_max)
+                d, j = tree.query(px[k], distance_upper_bound=rad)
+                if not np.isfinite(d):
+                    continue
+                if mass_range is not None:
+                    owners = users.get((int(f), c, int(j)), [])
+                    sigs = [sig.get((o, c), np.nan) for o in owners] + [sig.get((int(tt[r]), c), np.nan)]
+                    if not np.any(np.isnan(sigs)):
+                        ratio = sg[j] / float(np.sum(sigs))
+                        if not (mass_range[0] <= ratio <= mass_range[1]):
+                            continue
+                blob[r, c] = j
+                centre[r, c] = cent[j]
+                sumg[r, c] = sg[j]
     ok = (blob >= 0).sum(1) >= min_cams
     return {"frame": tf[ok], "tid": tt[ok], "pos": tp[ok], "blob": blob[ok], "centre": centre[ok], "sumg": sumg[ok]}

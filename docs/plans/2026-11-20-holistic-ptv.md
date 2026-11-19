@@ -239,3 +239,20 @@ Targets are set from the measured ceilings; they are goals, not promises.
   (a) bridging of long gaps with interpolation on the refined path and a mass/brightness check on the claimed blob,
   (b) births for particles never tracked (unexplained blob mass, leftover blobs), (c) the 60-frame cases have edge
   effects; use the 150-200-frame cases for H3 gates. Not done yet.
+- 2026-11-20, H3 long-gap recovery (`merge_post.fill_gaps` with cubic Hermite interpolation, radius growing 0.25 px per
+  frame from the nearer known point, brightness-mass check `0.7 <= blob grey sum / (owner signatures + claimer
+  signature) <= 1.4`; pieces re-joined with `reconnect_pieces` on the refined path first; tests `test_merge_post.py`).
+  200-frame default-merge-rate case, `two_phase` tracks (velocity error, common set, yield, long completeness,
+  ghost share): raw 0.1725 / 0.1583 / 0.657 / 0.491 / 3.6 %; refinement only 0.1585 / 0.1357 / 0.658 / 0.493 / 3.4 %;
+  **refinement + recovery with mass check 0.1461 / 0.1225 / 0.672 / 0.564 / 3.4 %** (-15 % velocity error, -23 % on the
+  common set, +7 points long-track completeness, pieces per long track 2.24 -> 1.73); same without the mass check:
+  0.1992 / 0.1109 / 0.691 / 0.591 / 4.6 %, link precision 0.963 -> 0.943: more particles are recovered but the wrong
+  claims cost accuracy. So the brightness-mass accounting is what makes recovery safe (the strong cue of section 15).
+  Extra (recovered) points: 2.8 % of the output, velocity error 0.234 (3x the common set's 0.12: noisy but few).
+  Gates: H3 asked yield +10 points (default rate); reached +1.5. Perfect-association H1 inputs reach yield 0.80 and
+  velocity error 0.092, so most of the potential is still open. Where the loss is, not yet measured: (a) accuracy of
+  the inferred membership (attachments are 17k of 69k rows on the 60-frame case, a third of rows end up with a shared
+  blob, the truth share is ~27 %; false attachments are likely), (b) particles never in the cloud (19 % of the missed
+  points), (c) 3+-merged-camera particles (no clean camera, information-limited). Next: measure membership accuracy against
+  truth (map rows to truth by position), test the alternatives (mass check on attachments, signatures before
+  attaching), births from unexplained mass, noise-aware link confirmation (variances now exist in `obs`), then H4.

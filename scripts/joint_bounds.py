@@ -522,8 +522,9 @@ def h1(case: str, rounds: int = 3, window: int = 9, order: int = 2, var_c: float
     return out
 
 
-def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int = 2, iters: int = 0,
-       fill: bool = False, fill_radius: float = 1.5, fill_gap: int = 3, **opts) -> dict:
+def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int = 2, iters: int = 0, tag: str = "",
+       fill: bool = False, fill_radius: float = 1.5, fill_gap: int = 3, fill_growth: float = 0.0,
+       fill_hermite: bool = False, mass: tuple | None = None, **opts) -> dict:
     """H2: merge-aware refinement of a REAL tracker run (no truth in the algorithm).
 
     Runs ``tracker`` on the case (keeping its store), finds shared blobs from the tracks
@@ -564,7 +565,9 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
             path = np.where(np.isfinite(res.x[:, :1]), res.x, a["pos"])
             # re-join fragments on the refined path, then claim blobs where the path says the particle is
             a = {**a, "tid": reconnect_pieces(a["tid"], a["frame"], path, max_gap=fill_gap + 1, min_len=4)}
-            new = fill_gaps(a, path, cpar, cals, radius=fill_radius, max_gap=fill_gap)
+            new = fill_gaps(a, path, cpar, cals, radius=fill_radius, max_gap=fill_gap,
+                            interp="hermite" if fill_hermite else "linear", radius_growth=fill_growth,
+                            mass_range=mass)
             if len(new["frame"]):
                 a = {**a, **{k: np.concatenate([a[k], new[k]]) for k in ("frame", "tid", "pos", "blob", "centre", "sumg")}}
                 blob, centre, sumg = a["blob"], a["centre"], a["sumg"]
@@ -589,7 +592,7 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
     new_pos = np.where(np.isfinite(res.x[:, :1]), res.x, a["pos"])
     base_a = a0
     tracked = write_pred("h2base", base_a, base_a["pos"])
-    write_pred("h2fill" if fill else "h2", a, new_pos)
+    write_pred(("h2fill" + tag) if fill else "h2", a, new_pos)
     out = {"rows": int(len(a["frame"])), "tracked_rows": tracked, "attachments": int(n_att),
            "rows_with_a_shared_blob": float((shared_blobs(a["frame"], blob) >= 2).any(1).mean()),
            "info": res.info, "iterations": []}
@@ -764,6 +767,10 @@ def main(argv=None) -> None:
     q7.add_argument("--fill", action="store_true")
     q7.add_argument("--fill-radius", type=float, default=1.5)
     q7.add_argument("--fill-gap", type=int, default=3)
+    q7.add_argument("--growth", type=float, default=0.0)
+    q7.add_argument("--hermite", action="store_true")
+    q7.add_argument("--mass", type=float, nargs=2, default=None)
+    q7.add_argument("--tag", default="")
     q5 = sub.add_parser("b3")
     q5.add_argument("--case", required=True)
     q5.add_argument("--order", type=int, default=3)
@@ -785,8 +792,9 @@ def main(argv=None) -> None:
         print(json.dumps(r))
         return
     if a.cmd == "h2":
-        r = h2(a.case, a.tracker, a.radius, iters=a.iters, fill=a.fill, fill_radius=a.fill_radius,
-               fill_gap=a.fill_gap, rounds=a.rounds)
+        r = h2(a.case, a.tracker, a.radius, iters=a.iters, tag=a.tag, fill=a.fill, fill_radius=a.fill_radius,
+               fill_gap=a.fill_gap, fill_growth=a.growth, fill_hermite=a.hermite,
+               mass=tuple(a.mass) if a.mass else None, rounds=a.rounds)
         save("H2", f"{a.case}|{a.tracker}", r)
         print(json.dumps(r, indent=1))
         return

@@ -2668,6 +2668,33 @@
         }
       ],
       "iterations": []
+    },
+    "L1_d1_c0_k1_n200_s0.08_a0.18_f0.05|two_phase": {
+      "rows": 241159,
+      "tracked_rows": 206366,
+      "attachments": 110571,
+      "rows_with_a_shared_blob": 0.40944770877305015,
+      "info": [
+        {
+          "round": 1,
+          "var_p_px2": 0.03178959171187987,
+          "trusted_share": 0.8705957480334551,
+          "gated_obs": 2072
+        },
+        {
+          "round": 2,
+          "var_p_px2": 0.020963423198539673,
+          "trusted_share": 0.8705957480334551,
+          "gated_obs": 4216
+        },
+        {
+          "round": 3,
+          "var_p_px2": 0.01970928368566712,
+          "trusted_share": 0.8705957480334551,
+          "gated_obs": 4927
+        }
+      ],
+      "iterations": []
     }
   }
 }
