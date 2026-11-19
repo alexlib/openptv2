@@ -909,6 +909,14 @@
     "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05_m0.6": {
       "E1a": 68280,
       "E1b": 73948
+    },
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05": {
+      "E1a": 53511,
+      "E1b": 74353
+    },
+    "L1_d4_c0_k1_n60_s0.08_a0.18_f0.05": {
+      "E1a": 57756,
+      "E1b": 308878
     }
   },
   "M2_inputs": {
@@ -961,6 +969,16 @@
       "rows_blobs": 292908,
       "blobs_replaced": 30150,
       "share_replaced": 0.10293334425826539
+    },
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05_sigma0.3": {
+      "rows_blobs": 294375,
+      "blobs_replaced": 74547,
+      "share_replaced": 0.25323821656050954
+    },
+    "L1_d4_c0_k1_n60_s0.08_a0.18_f0.05_sigma0.3": {
+      "rows_blobs": 1219693,
+      "blobs_replaced": 786927,
+      "share_replaced": 0.6451844849482615
     }
   },
   "M3_all_w21_d3": {
@@ -1400,6 +1418,1225 @@
           "effective_obs_median_px": 0.2757132308224062,
           "prediction_rms_px": 0.2744725685753983,
           "variance_calibration_z2": 1.1414508395055074
+        }
+      ]
+    },
+    "L1_d1_c0_k1_n200_s0.08_a0.18_f0.05": {
+      "case": "L1_d1_c0_k1_n200_s0.08_a0.18_f0.05",
+      "rounds": [
+        {
+          "all_rms": 0.2699060026088756,
+          "all_median": 0.08408686586861706,
+          "merged_cams_0": {
+            "n": 93855,
+            "rms": 0.051760967609379864
+          },
+          "merged_cams_1": {
+            "n": 84040,
+            "rms": 0.2550164698352806
+          },
+          "merged_cams_2": {
+            "n": 45635,
+            "rms": 0.35595455580938934
+          },
+          "merged_cams_3+": {
+            "n": 24600,
+            "rms": 0.5170704121644044
+          },
+          "label": "round0 raw blob centres (equal weights)"
+        },
+        {
+          "all_rms": 0.3039268146591456,
+          "all_median": 0.046217697012867896,
+          "merged_cams_0": {
+            "n": 93855,
+            "rms": 0.05180217672741996
+          },
+          "merged_cams_1": {
+            "n": 84040,
+            "rms": 0.07748290438394133
+          },
+          "merged_cams_2": {
+            "n": 45635,
+            "rms": 0.1617300891783476
+          },
+          "merged_cams_3+": {
+            "n": 24600,
+            "rms": 0.9232781331245163
+          },
+          "label": "round1 effective observations"
+        },
+        {
+          "all_rms": 0.36739164750269604,
+          "all_median": 0.04676496048154984,
+          "merged_cams_0": {
+            "n": 93855,
+            "rms": 0.05181669105416103
+          },
+          "merged_cams_1": {
+            "n": 84040,
+            "rms": 0.078154094785416
+          },
+          "merged_cams_2": {
+            "n": 45635,
+            "rms": 0.16599423764606638
+          },
+          "merged_cams_3+": {
+            "n": 24600,
+            "rms": 1.1310294475699492
+          },
+          "label": "round2 effective observations"
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "round": 1,
+          "var_p_px2": 0.10638439415693288,
+          "merged_groups": 120390,
+          "merged_obs": 263329,
+          "raw_centre_rms_px": 1.2617731687278053,
+          "effective_obs_rms_px": 2.94682790739938,
+          "effective_obs_median_px": 0.5060712491749266,
+          "prediction_rms_px": 1.284593182575335,
+          "variance_calibration_z2": 5.0431803320595
+        },
+        {
+          "round": 2,
+          "var_p_px2": 0.2700770834792615,
+          "merged_groups": 120390,
+          "merged_obs": 263329,
+          "raw_centre_rms_px": 1.2617731687278053,
+          "effective_obs_rms_px": 5.042048791875782,
+          "effective_obs_median_px": 0.40176174881016746,
+          "prediction_rms_px": 2.1527186782054466,
+          "variance_calibration_z2": 7.73982763633518
+        }
+      ]
+    },
+    "L1_d4_c0_k1_n150_s0.08_a0.18_f0.05": {
+      "case": "L1_d4_c0_k1_n150_s0.08_a0.18_f0.05",
+      "rounds": [
+        {
+          "all_rms": 0.7077641289033886,
+          "all_median": 0.35699265397649016,
+          "merged_cams_0": {
+            "n": 48120,
+            "rms": 0.05781741068369408
+          },
+          "merged_cams_1": {
+            "n": 103715,
+            "rms": 0.3756569426545018
+          },
+          "merged_cams_2": {
+            "n": 182616,
+            "rms": 0.5684548826515516
+          },
+          "merged_cams_3+": {
+            "n": 440550,
+            "rms": 0.8447984408234024
+          },
+          "label": "round0 raw blob centres (equal weights)"
+        },
+        {
+          "all_rms": 1.4267242424309652,
+          "all_median": 0.16815343875676925,
+          "merged_cams_0": {
+            "n": 48120,
+            "rms": 0.05860892211159747
+          },
+          "merged_cams_1": {
+            "n": 103715,
+            "rms": 0.09424455755758855
+          },
+          "merged_cams_2": {
+            "n": 182616,
+            "rms": 0.6494593306802315
+          },
+          "merged_cams_3+": {
+            "n": 440550,
+            "rms": 1.8448711041272057
+          },
+          "label": "round1 effective observations"
+        },
+        {
+          "all_rms": 10.322155563099605,
+          "all_median": 0.17234195282545747,
+          "merged_cams_0": {
+            "n": 48120,
+            "rms": 0.05817448076120404
+          },
+          "merged_cams_1": {
+            "n": 103715,
+            "rms": 0.0944773191569341
+          },
+          "merged_cams_2": {
+            "n": 182616,
+            "rms": 1.0062045034815756
+          },
+          "merged_cams_3+": {
+            "n": 440550,
+            "rms": 13.675219494591758
+          },
+          "label": "round2 effective observations"
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "round": 1,
+          "var_p_px2": 0.2785712550008216,
+          "merged_groups": 629778,
+          "merged_obs": 2069065,
+          "raw_centre_rms_px": 2.135047416354903,
+          "effective_obs_rms_px": 6.753536401124096,
+          "effective_obs_median_px": 1.5906965910267354,
+          "prediction_rms_px": 1.4829370924842284,
+          "variance_calibration_z2": 3.0469818067093017
+        },
+        {
+          "round": 2,
+          "var_p_px2": 0.39932524312088885,
+          "merged_groups": 629778,
+          "merged_obs": 2069065,
+          "raw_centre_rms_px": 2.135047416354903,
+          "effective_obs_rms_px": 14.246052800122731,
+          "effective_obs_median_px": 1.4062041394606295,
+          "prediction_rms_px": 3.7748252382807146,
+          "variance_calibration_z2": 8.289419226478337
+        }
+      ]
+    },
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05": {
+      "case": "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05",
+      "rounds": [
+        {
+          "all_rms": 0.258973262568353,
+          "all_median": 0.08089159611850552,
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.051725199955437735
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.24996980996328408
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.3533183806100385
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.4975172660187089
+          },
+          "label": "round0 raw blob centres (equal weights)"
+        },
+        {
+          "all_rms": 0.1758989557104193,
+          "all_median": 0.04674503484085847,
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.04515152952404215
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.09213892061309167
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.19542127121937125
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.47719056518413927
+          },
+          "label": "round1 effective observations + path prior"
+        },
+        {
+          "all_rms": 0.1712937308228427,
+          "all_median": 0.03538480465377106,
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.03625989744765822
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.06814762101141046
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.17034653436823222
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.49600405116316426
+          },
+          "label": "round2 effective observations + path prior"
+        },
+        {
+          "all_rms": 0.17110325479706118,
+          "all_median": 0.03237539277859581,
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.03537974412463961
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.05984162874157219
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.1611750728235634
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.5056600531309523
+          },
+          "label": "round3 effective observations + path prior"
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "round": 1,
+          "var_p_px2": 0.04425985228307549,
+          "merged_groups": 35105,
+          "gated_obs": 900,
+          "trusted_share": 0.9262768300470463,
+          "merged_obs": 75035,
+          "raw_centre_rms_px": 1.2208306664125606,
+          "effective_obs_rms_px": 1.4684027589154491,
+          "effective_obs_median_px": 0.5052623557102215,
+          "prediction_rms_px": 0.5232625374082323,
+          "variance_calibration_z2": 1.26444133243569
+        },
+        {
+          "round": 2,
+          "var_p_px2": 0.01368619995935831,
+          "merged_groups": 35105,
+          "gated_obs": 1992,
+          "trusted_share": 0.9262768300470463,
+          "merged_obs": 73943,
+          "raw_centre_rms_px": 1.2130547188053666,
+          "effective_obs_rms_px": 1.4452412549703826,
+          "effective_obs_median_px": 0.41400223800159885,
+          "prediction_rms_px": 0.30616731806013525,
+          "variance_calibration_z2": 1.1878778048007452
+        },
+        {
+          "round": 3,
+          "var_p_px2": 0.01110833747047245,
+          "merged_groups": 35105,
+          "gated_obs": 2188,
+          "trusted_share": 0.9262768300470463,
+          "merged_obs": 73747,
+          "raw_centre_rms_px": 1.212732470722364,
+          "effective_obs_rms_px": 1.4565834451614168,
+          "effective_obs_median_px": 0.3972705039340544,
+          "prediction_rms_px": 0.2759656151459779,
+          "variance_calibration_z2": 1.1631706933303498
+        }
+      ]
+    },
+    "L1_d4_c0_k1_n60_s0.08_a0.18_f0.05": {
+      "case": "L1_d4_c0_k1_n60_s0.08_a0.18_f0.05",
+      "rounds": [
+        {
+          "all_rms": 0.651954684994644,
+          "all_median": 0.33967961092852195,
+          "merged_cams_0": {
+            "n": 18946,
+            "rms": 0.058589794121994714
+          },
+          "merged_cams_1": {
+            "n": 42576,
+            "rms": 0.36257584113505864
+          },
+          "merged_cams_2": {
+            "n": 76553,
+            "rms": 0.5442631438167566
+          },
+          "merged_cams_3+": {
+            "n": 170803,
+            "rms": 0.7763572082300317
+          },
+          "label": "round0 raw blob centres (equal weights)"
+        },
+        {
+          "all_rms": 0.6924320837664177,
+          "all_median": 0.15670367669890722,
+          "merged_cams_0": {
+            "n": 18946,
+            "rms": 0.05662941267804358
+          },
+          "merged_cams_1": {
+            "n": 42576,
+            "rms": 0.09351339132137441
+          },
+          "merged_cams_2": {
+            "n": 76553,
+            "rms": 0.3355873118952281
+          },
+          "merged_cams_3+": {
+            "n": 170803,
+            "rms": 0.9022431570433369
+          },
+          "label": "round1 effective observations + path prior"
+        },
+        {
+          "all_rms": 0.7203194085445925,
+          "all_median": 0.13068692695108403,
+          "merged_cams_0": {
+            "n": 18946,
+            "rms": 0.04340489582606481
+          },
+          "merged_cams_1": {
+            "n": 42576,
+            "rms": 0.07692301222989754
+          },
+          "merged_cams_2": {
+            "n": 76553,
+            "rms": 0.33928329183689027
+          },
+          "merged_cams_3+": {
+            "n": 170803,
+            "rms": 0.9407565838561746
+          },
+          "label": "round2 effective observations + path prior"
+        },
+        {
+          "all_rms": 0.7305248098287046,
+          "all_median": 0.12751245997544317,
+          "merged_cams_0": {
+            "n": 18946,
+            "rms": 0.04206966353961399
+          },
+          "merged_cams_1": {
+            "n": 42576,
+            "rms": 0.07402566405910303
+          },
+          "merged_cams_2": {
+            "n": 76553,
+            "rms": 0.3389008716434416
+          },
+          "merged_cams_3+": {
+            "n": 170803,
+            "rms": 0.9550061053869651
+          },
+          "label": "round3 effective observations + path prior"
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "round": 1,
+          "var_p_px2": 0.1680512009330572,
+          "merged_groups": 255110,
+          "gated_obs": 2783,
+          "trusted_share": 0.48640030993641387,
+          "merged_obs": 809791,
+          "raw_centre_rms_px": 2.005216531797625,
+          "effective_obs_rms_px": 3.3955744610968135,
+          "effective_obs_median_px": 1.2882691331404217,
+          "prediction_rms_px": 0.8674135285429406,
+          "variance_calibration_z2": 0.8977922679647512
+        },
+        {
+          "round": 2,
+          "var_p_px2": 0.014489854732062627,
+          "merged_groups": 255110,
+          "gated_obs": 7846,
+          "trusted_share": 0.48640030993641387,
+          "merged_obs": 804728,
+          "raw_centre_rms_px": 2.0029744391522586,
+          "effective_obs_rms_px": 3.683737803367851,
+          "effective_obs_median_px": 1.2556161308336615,
+          "prediction_rms_px": 0.3523861313539233,
+          "variance_calibration_z2": 1.1615535798846306
+        },
+        {
+          "round": 3,
+          "var_p_px2": 0.01032022445457075,
+          "merged_groups": 255110,
+          "gated_obs": 8018,
+          "trusted_share": 0.48640030993641387,
+          "merged_obs": 804556,
+          "raw_centre_rms_px": 2.0027583631323846,
+          "effective_obs_rms_px": 3.7145557100616253,
+          "effective_obs_median_px": 1.2544748897515257,
+          "prediction_rms_px": 0.33844621966065475,
+          "variance_calibration_z2": 1.191177460517063
+        }
+      ]
+    }
+  },
+  "H1_trust": {
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05_m0.75": {
+      "case": "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05_m0.75",
+      "rounds": [
+        {
+          "all_rms": 0.1428387163425189,
+          "all_median": 0.0474445523113591,
+          "merged_cams_0": {
+            "n": 41343,
+            "rms": 0.04978580110561986
+          },
+          "merged_cams_1": {
+            "n": 23172,
+            "rms": 0.17804641106599736
+          },
+          "merged_cams_2": {
+            "n": 7163,
+            "rms": 0.24300418207422445
+          },
+          "merged_cams_3+": {
+            "n": 2447,
+            "rms": 0.3211289508845777
+          },
+          "label": "round0 raw blob centres (equal weights)"
+        },
+        {
+          "all_rms": 0.08342677633446136,
+          "all_median": 0.035942173339124035,
+          "merged_cams_0": {
+            "n": 41343,
+            "rms": 0.0497894596386343
+          },
+          "merged_cams_1": {
+            "n": 23172,
+            "rms": 0.07010512911469469
+          },
+          "merged_cams_2": {
+            "n": 7163,
+            "rms": 0.11508880259797268
+          },
+          "merged_cams_3+": {
+            "n": 2447,
+            "rms": 0.28920219886303217
+          },
+          "label": "round1 effective observations"
+        },
+        {
+          "all_rms": 0.07936135060499133,
+          "all_median": 0.03433336901474018,
+          "merged_cams_0": {
+            "n": 41343,
+            "rms": 0.04978975830119198
+          },
+          "merged_cams_1": {
+            "n": 23172,
+            "rms": 0.06757212726176248
+          },
+          "merged_cams_2": {
+            "n": 7163,
+            "rms": 0.09967944353030875
+          },
+          "merged_cams_3+": {
+            "n": 2447,
+            "rms": 0.27673075693501525
+          },
+          "label": "round2 effective observations"
+        },
+        {
+          "all_rms": 0.07951793709104334,
+          "all_median": 0.03447780357220503,
+          "merged_cams_0": {
+            "n": 41343,
+            "rms": 0.04979062171984312
+          },
+          "merged_cams_1": {
+            "n": 23172,
+            "rms": 0.06786912952830419
+          },
+          "merged_cams_2": {
+            "n": 7163,
+            "rms": 0.10075741601867992
+          },
+          "merged_cams_3+": {
+            "n": 2447,
+            "rms": 0.27625834658999937
+          },
+          "label": "round3 effective observations"
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "round": 1,
+          "var_p_px2": 0.02235596592620502,
+          "merged_groups": 22684,
+          "gated_obs": 576,
+          "trusted_share": 0.9700401037980656,
+          "merged_obs": 46105,
+          "raw_centre_rms_px": 0.8595601666927699,
+          "effective_obs_rms_px": 0.987757793409869,
+          "effective_obs_median_px": 0.3467429014714392,
+          "prediction_rms_px": 0.36304523950888906,
+          "variance_calibration_z2": 0.9527359505029109
+        },
+        {
+          "round": 2,
+          "var_p_px2": 0.011734089331586863,
+          "merged_groups": 22684,
+          "gated_obs": 949,
+          "trusted_share": 0.9700401037980656,
+          "merged_obs": 45732,
+          "raw_centre_rms_px": 0.8571020648495653,
+          "effective_obs_rms_px": 0.9475418614444474,
+          "effective_obs_median_px": 0.30684045697341145,
+          "prediction_rms_px": 0.2435434026778177,
+          "variance_calibration_z2": 0.8402211736057276
+        },
+        {
+          "round": 3,
+          "var_p_px2": 0.01175045651844372,
+          "merged_groups": 22684,
+          "gated_obs": 971,
+          "trusted_share": 0.9700401037980656,
+          "merged_obs": 45710,
+          "raw_centre_rms_px": 0.8568841267435658,
+          "effective_obs_rms_px": 0.9212241199701072,
+          "effective_obs_median_px": 0.29322118549416887,
+          "prediction_rms_px": 0.23342954625131623,
+          "variance_calibration_z2": 0.7851143335473934
+        }
+      ]
+    },
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05": {
+      "case": "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05",
+      "rounds": [
+        {
+          "all_rms": 0.258973262568353,
+          "all_median": 0.08089159611850552,
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.051725199955437735
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.24996980996328408
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.3533183806100385
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.4975172660187089
+          },
+          "label": "round0 raw blob centres (equal weights)"
+        },
+        {
+          "all_rms": 0.16946978478894312,
+          "all_median": 0.045526116014848954,
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.05177332398886883
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.0758102895887643
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.16184953780588338
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.48429493237443133
+          },
+          "label": "round1 effective observations"
+        },
+        {
+          "all_rms": 0.18425091853684242,
+          "all_median": 0.041564922667705985,
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.05176839431966354
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.07154239265513569
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.17166894974866606
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.5373741761493731
+          },
+          "label": "round2 effective observations"
+        },
+        {
+          "all_rms": 0.1843685346632234,
+          "all_median": 0.041893167687144406,
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.05177259908309372
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.0719345664663583
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.17415439712911393
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.5360345338842853
+          },
+          "label": "round3 effective observations"
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "round": 1,
+          "var_p_px2": 0.04425985228307549,
+          "merged_groups": 35105,
+          "gated_obs": 900,
+          "trusted_share": 0.9262768300470463,
+          "merged_obs": 75035,
+          "raw_centre_rms_px": 1.2208306664125606,
+          "effective_obs_rms_px": 1.4684027589154491,
+          "effective_obs_median_px": 0.5052623557102215,
+          "prediction_rms_px": 0.5232625374082323,
+          "variance_calibration_z2": 1.26444133243569
+        },
+        {
+          "round": 2,
+          "var_p_px2": 0.011821469819619184,
+          "merged_groups": 35105,
+          "gated_obs": 2399,
+          "trusted_share": 0.9262768300470463,
+          "merged_obs": 73536,
+          "raw_centre_rms_px": 1.212475643748918,
+          "effective_obs_rms_px": 1.5183348650663644,
+          "effective_obs_median_px": 0.40826393237653413,
+          "prediction_rms_px": 0.2674869318313174,
+          "variance_calibration_z2": 1.1757551184536208
+        },
+        {
+          "round": 3,
+          "var_p_px2": 0.011852648212034996,
+          "merged_groups": 35105,
+          "gated_obs": 2411,
+          "trusted_share": 0.9262768300470463,
+          "merged_obs": 73524,
+          "raw_centre_rms_px": 1.2122474575715092,
+          "effective_obs_rms_px": 1.4917041219617084,
+          "effective_obs_median_px": 0.3816805398894894,
+          "prediction_rms_px": 0.2499662827144656,
+          "variance_calibration_z2": 1.0853459615807701
+        }
+      ]
+    },
+    "L1_d4_c0_k1_n60_s0.08_a0.18_f0.05": {
+      "case": "L1_d4_c0_k1_n60_s0.08_a0.18_f0.05",
+      "rounds": [
+        {
+          "all_rms": 0.651954684994644,
+          "all_median": 0.33967961092852195,
+          "merged_cams_0": {
+            "n": 18946,
+            "rms": 0.058589794121994714
+          },
+          "merged_cams_1": {
+            "n": 42576,
+            "rms": 0.36257584113505864
+          },
+          "merged_cams_2": {
+            "n": 76553,
+            "rms": 0.5442631438167566
+          },
+          "merged_cams_3+": {
+            "n": 170803,
+            "rms": 0.7763572082300317
+          },
+          "label": "round0 raw blob centres (equal weights)"
+        },
+        {
+          "all_rms": 0.7220916101718888,
+          "all_median": 0.1609796902184608,
+          "merged_cams_0": {
+            "n": 18946,
+            "rms": 0.059322371874912336
+          },
+          "merged_cams_1": {
+            "n": 42576,
+            "rms": 0.09371121430198279
+          },
+          "merged_cams_2": {
+            "n": 76553,
+            "rms": 0.3738155873335958
+          },
+          "merged_cams_3+": {
+            "n": 170803,
+            "rms": 0.9368636051941797
+          },
+          "label": "round1 effective observations"
+        },
+        {
+          "all_rms": 0.7769324736378478,
+          "all_median": 0.15530051836054704,
+          "merged_cams_0": {
+            "n": 18946,
+            "rms": 0.05901302138648317
+          },
+          "merged_cams_1": {
+            "n": 42576,
+            "rms": 0.0910514248525453
+          },
+          "merged_cams_2": {
+            "n": 76553,
+            "rms": 0.39628267750905827
+          },
+          "merged_cams_3+": {
+            "n": 170803,
+            "rms": 1.009330905407884
+          },
+          "label": "round2 effective observations"
+        },
+        {
+          "all_rms": 0.7757743556338144,
+          "all_median": 0.1553858020003258,
+          "merged_cams_0": {
+            "n": 18946,
+            "rms": 0.05904494413016873
+          },
+          "merged_cams_1": {
+            "n": 42576,
+            "rms": 0.09129317104286802
+          },
+          "merged_cams_2": {
+            "n": 76553,
+            "rms": 0.40170725062668733
+          },
+          "merged_cams_3+": {
+            "n": 170803,
+            "rms": 1.0067499546500855
+          },
+          "label": "round3 effective observations"
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "round": 1,
+          "var_p_px2": 0.1680512009330572,
+          "merged_groups": 255110,
+          "gated_obs": 2783,
+          "trusted_share": 0.48640030993641387,
+          "merged_obs": 809791,
+          "raw_centre_rms_px": 2.005216531797625,
+          "effective_obs_rms_px": 3.3955744610968135,
+          "effective_obs_median_px": 1.2882691331404217,
+          "prediction_rms_px": 0.8674135285429406,
+          "variance_calibration_z2": 0.8977922679647512
+        },
+        {
+          "round": 2,
+          "var_p_px2": 0.013712775453603812,
+          "merged_groups": 255110,
+          "gated_obs": 8435,
+          "trusted_share": 0.48640030993641387,
+          "merged_obs": 804139,
+          "raw_centre_rms_px": 2.0028811557879376,
+          "effective_obs_rms_px": 3.7751177763580492,
+          "effective_obs_median_px": 1.2635762365367176,
+          "prediction_rms_px": 0.36621008479716427,
+          "variance_calibration_z2": 1.2030637336982173
+        },
+        {
+          "round": 3,
+          "var_p_px2": 0.013565569484651407,
+          "merged_groups": 255110,
+          "gated_obs": 8028,
+          "trusted_share": 0.48640030993641387,
+          "merged_obs": 804546,
+          "raw_centre_rms_px": 2.0021154706949305,
+          "effective_obs_rms_px": 3.7663053364687693,
+          "effective_obs_median_px": 1.2570807606524446,
+          "prediction_rms_px": 0.3612285589688271,
+          "variance_calibration_z2": 1.1895497044358772
+        }
+      ]
+    }
+  },
+  "H1_prior": {
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05": {
+      "case": "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05",
+      "rounds": [
+        {
+          "all_rms": 0.258973262568353,
+          "all_median": 0.08089159611850552,
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.051725199955437735
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.24996980996328408
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.3533183806100385
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.4975172660187089
+          },
+          "label": "round0 raw blob centres (equal weights)"
+        },
+        {
+          "all_rms": 0.1758989557104193,
+          "all_median": 0.04674503484085847,
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.04515152952404215
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.09213892061309167
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.19542127121937125
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.47719056518413927
+          },
+          "label": "round1 effective observations + path prior"
+        },
+        {
+          "all_rms": 0.1712937308228427,
+          "all_median": 0.03538480465377106,
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.03625989744765822
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.06814762101141046
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.17034653436823222
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.49600405116316426
+          },
+          "label": "round2 effective observations + path prior"
+        },
+        {
+          "all_rms": 0.17110325479706118,
+          "all_median": 0.03237539277859581,
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.03537974412463961
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.05984162874157219
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.1611750728235634
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.5056600531309523
+          },
+          "label": "round3 effective observations + path prior"
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "round": 1,
+          "var_p_px2": 0.04425985228307549,
+          "merged_groups": 35105,
+          "gated_obs": 900,
+          "trusted_share": 0.9262768300470463,
+          "merged_obs": 75035,
+          "raw_centre_rms_px": 1.2208306664125606,
+          "effective_obs_rms_px": 1.4684027589154491,
+          "effective_obs_median_px": 0.5052623557102215,
+          "prediction_rms_px": 0.5232625374082323,
+          "variance_calibration_z2": 1.26444133243569
+        },
+        {
+          "round": 2,
+          "var_p_px2": 0.01368619995935831,
+          "merged_groups": 35105,
+          "gated_obs": 1992,
+          "trusted_share": 0.9262768300470463,
+          "merged_obs": 73943,
+          "raw_centre_rms_px": 1.2130547188053666,
+          "effective_obs_rms_px": 1.4452412549703826,
+          "effective_obs_median_px": 0.41400223800159885,
+          "prediction_rms_px": 0.30616731806013525,
+          "variance_calibration_z2": 1.1878778048007452
+        },
+        {
+          "round": 3,
+          "var_p_px2": 0.01110833747047245,
+          "merged_groups": 35105,
+          "gated_obs": 2188,
+          "trusted_share": 0.9262768300470463,
+          "merged_obs": 73747,
+          "raw_centre_rms_px": 1.212732470722364,
+          "effective_obs_rms_px": 1.4565834451614168,
+          "effective_obs_median_px": 0.3972705039340544,
+          "prediction_rms_px": 0.2759656151459779,
+          "variance_calibration_z2": 1.1631706933303498
+        }
+      ]
+    },
+    "L1_d4_c0_k1_n60_s0.08_a0.18_f0.05": {
+      "case": "L1_d4_c0_k1_n60_s0.08_a0.18_f0.05",
+      "rounds": [
+        {
+          "all_rms": 0.651954684994644,
+          "all_median": 0.33967961092852195,
+          "merged_cams_0": {
+            "n": 18946,
+            "rms": 0.058589794121994714
+          },
+          "merged_cams_1": {
+            "n": 42576,
+            "rms": 0.36257584113505864
+          },
+          "merged_cams_2": {
+            "n": 76553,
+            "rms": 0.5442631438167566
+          },
+          "merged_cams_3+": {
+            "n": 170803,
+            "rms": 0.7763572082300317
+          },
+          "label": "round0 raw blob centres (equal weights)"
+        },
+        {
+          "all_rms": 0.6924320837664177,
+          "all_median": 0.15670367669890722,
+          "merged_cams_0": {
+            "n": 18946,
+            "rms": 0.05662941267804358
+          },
+          "merged_cams_1": {
+            "n": 42576,
+            "rms": 0.09351339132137441
+          },
+          "merged_cams_2": {
+            "n": 76553,
+            "rms": 0.3355873118952281
+          },
+          "merged_cams_3+": {
+            "n": 170803,
+            "rms": 0.9022431570433369
+          },
+          "label": "round1 effective observations + path prior"
+        },
+        {
+          "all_rms": 0.7203194085445925,
+          "all_median": 0.13068692695108403,
+          "merged_cams_0": {
+            "n": 18946,
+            "rms": 0.04340489582606481
+          },
+          "merged_cams_1": {
+            "n": 42576,
+            "rms": 0.07692301222989754
+          },
+          "merged_cams_2": {
+            "n": 76553,
+            "rms": 0.33928329183689027
+          },
+          "merged_cams_3+": {
+            "n": 170803,
+            "rms": 0.9407565838561746
+          },
+          "label": "round2 effective observations + path prior"
+        },
+        {
+          "all_rms": 0.7305248098287046,
+          "all_median": 0.12751245997544317,
+          "merged_cams_0": {
+            "n": 18946,
+            "rms": 0.04206966353961399
+          },
+          "merged_cams_1": {
+            "n": 42576,
+            "rms": 0.07402566405910303
+          },
+          "merged_cams_2": {
+            "n": 76553,
+            "rms": 0.3389008716434416
+          },
+          "merged_cams_3+": {
+            "n": 170803,
+            "rms": 0.9550061053869651
+          },
+          "label": "round3 effective observations + path prior"
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "round": 1,
+          "var_p_px2": 0.1680512009330572,
+          "merged_groups": 255110,
+          "gated_obs": 2783,
+          "trusted_share": 0.48640030993641387,
+          "merged_obs": 809791,
+          "raw_centre_rms_px": 2.005216531797625,
+          "effective_obs_rms_px": 3.3955744610968135,
+          "effective_obs_median_px": 1.2882691331404217,
+          "prediction_rms_px": 0.8674135285429406,
+          "variance_calibration_z2": 0.8977922679647512
+        },
+        {
+          "round": 2,
+          "var_p_px2": 0.014489854732062627,
+          "merged_groups": 255110,
+          "gated_obs": 7846,
+          "trusted_share": 0.48640030993641387,
+          "merged_obs": 804728,
+          "raw_centre_rms_px": 2.0029744391522586,
+          "effective_obs_rms_px": 3.683737803367851,
+          "effective_obs_median_px": 1.2556161308336615,
+          "prediction_rms_px": 0.3523861313539233,
+          "variance_calibration_z2": 1.1615535798846306
+        },
+        {
+          "round": 3,
+          "var_p_px2": 0.01032022445457075,
+          "merged_groups": 255110,
+          "gated_obs": 8018,
+          "trusted_share": 0.48640030993641387,
+          "merged_obs": 804556,
+          "raw_centre_rms_px": 2.0027583631323846,
+          "effective_obs_rms_px": 3.7145557100616253,
+          "effective_obs_median_px": 1.2544748897515257,
+          "prediction_rms_px": 0.33844621966065475,
+          "variance_calibration_z2": 1.191177460517063
+        }
+      ]
+    }
+  },
+  "H1_lib": {
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05": {
+      "case": "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05",
+      "rounds": [
+        {
+          "all_rms": 0.258973262568353,
+          "all_median": 0.08089159611850552,
+          "label": "round0 raw blob centres (equal weights)",
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.051725199955437735
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.24996980996328408
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.3533183806100385
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.4975172660187089
+          }
+        },
+        {
+          "all_rms": 0.1758989557104193,
+          "all_median": 0.04674503484085847,
+          "label": "round1 merge-aware",
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.04515152952404215
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.09213892061309167
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.19542127121937125
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.47719056518413927
+          }
+        },
+        {
+          "all_rms": 0.1712937308228427,
+          "all_median": 0.03538480465377106,
+          "label": "round2 merge-aware",
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.03625989744765822
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.06814762101141046
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.17034653436823222
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.49600405116316426
+          }
+        },
+        {
+          "all_rms": 0.17110325479706118,
+          "all_median": 0.03237539277859581,
+          "label": "round3 merge-aware",
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.03537974412463961
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.05984162874157219
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.1611750728235634
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.5056600531309523
+          }
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "merged_obs": 73747,
+          "raw_centre_rms_px": 1.212732470722364,
+          "effective_obs_rms_px": 1.4565834451614166,
+          "effective_obs_median_px": 0.3972705039340544,
+          "prediction_rms_px": 0.27596561514597795,
+          "variance_calibration_z2": 1.1631706933303498,
+          "rounds": [
+            {
+              "round": 1,
+              "var_p_px2": 0.04425985228307549,
+              "trusted_share": 0.9262768300470463,
+              "gated_obs": 900
+            },
+            {
+              "round": 2,
+              "var_p_px2": 0.01368619995935831,
+              "trusted_share": 0.9262768300470463,
+              "gated_obs": 1992
+            },
+            {
+              "round": 3,
+              "var_p_px2": 0.01110833747047245,
+              "trusted_share": 0.9262768300470463,
+              "gated_obs": 2188
+            }
+          ]
         }
       ]
     }

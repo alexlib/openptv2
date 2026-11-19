@@ -87,15 +87,21 @@ def triangulate_weighted(
     x0: np.ndarray,
     n_iter: int = 3,
     step_mm: float = 0.01,
+    cam_index: list[int] | None = None,
 ) -> np.ndarray:
     """Weighted least-squares position (mm) of points from pixel observations, by Gauss-Newton on the
     reprojection error (maximum likelihood for pixel noise with variance ``var_px``).
 
-    ``pixel_xy`` (N, C, 2) with NaN for unused cameras, ``var_px`` (N, C), ``x0`` (N, 3) a start (e.g. the
-    ordinary triangulation). Points with fewer than two cameras keep ``x0``.
+    ``pixel_xy`` (N, S, 2) with NaN for unused slots, ``var_px`` (N, S), ``x0`` (N, 3) a start (e.g. the
+    ordinary triangulation). Slot ``s`` is an observation in camera ``cam_index[s]`` (default: slot = camera),
+    so a camera can appear twice: e.g. a second block of slots holding the *projected path prediction* of the
+    particle (a temporal prior) next to the measured blobs. Points with fewer than two valid slots keep ``x0``.
     """
     pixel_xy = np.asarray(pixel_xy, float)
     n, n_cams, _ = pixel_xy.shape
+    cam_of = list(range(n_cams)) if cam_index is None else list(cam_index)
+    if len(cam_of) != n_cams:
+        raise ValueError("cam_index must have one entry per observation slot")
     x = np.asarray(x0, float).copy()
     valid = ~np.isnan(pixel_xy[:, :, 0]) & np.isfinite(var_px) & (var_px > 0)
     ok = valid.sum(1) >= 2
@@ -110,13 +116,13 @@ def triangulate_weighted(
             rows = np.flatnonzero(ok & valid[:, c])
             if len(rows) == 0:
                 continue
-            base = project_pixels(x[rows], cals[c], cpar)
+            base = project_pixels(x[rows], cals[cam_of[c]], cpar)
             jac = np.zeros((len(rows), 2, 3))
             for ax in range(3):
                 d = np.zeros(3)
                 d[ax] = step_mm
-                jac[:, :, ax] = (project_pixels(x[rows] + d, cals[c], cpar)
-                                 - project_pixels(x[rows] - d, cals[c], cpar)) / (2 * step_mm)
+                jac[:, :, ax] = (project_pixels(x[rows] + d, cals[cam_of[c]], cpar)
+                                 - project_pixels(x[rows] - d, cals[cam_of[c]], cpar)) / (2 * step_mm)
             r = pixel_xy[rows, c] - base                         # (k, 2)
             w = w_all[rows, c][:, None, None]
             a_mat[rows] += np.einsum("kij,kil->kjl", jac * np.sqrt(w), jac * np.sqrt(w))
@@ -168,19 +174,24 @@ def local_poly_predict(
     window: int = 9,
     order: int = 2,
     min_points: int = 5,
-) -> np.ndarray:
+    return_support: bool = False,
+):
     """Leave-one-out prediction of every point of a trajectory from its neighbours.
 
     A weighted local polynomial of degree ``order`` in time is fitted to the ``window`` nearest points of the
     same trajectory *excluding the point itself* and evaluated at the point's frame. A bad observation (e.g.
     a merged blob) therefore does not pull its own prediction. Returns ``(N, 3)``; NaN for trajectories
     with fewer than ``min_points`` points. Gaps in frame numbers are handled (times, not indices, are used).
+    With ``return_support`` also returns ``(N,)``: the sum of the weights of the window points actually used
+    (excluding the point itself), so a caller that down-weights doubtful points can tell how well supported a
+    prediction is (support >= 3 means at least about three good neighbours).
     """
     trajid = np.asarray(trajid)
     frame = np.asarray(frame, float)
     pos = np.asarray(pos, float)
     w_all = np.ones(len(trajid)) if weights is None else np.asarray(weights, float)
     out = np.full((len(trajid), 3), np.nan)
+    support = np.zeros(len(trajid))
     order_idx = np.lexsort((frame, trajid))
     ids_sorted = trajid[order_idx]
     cuts = np.flatnonzero(np.r_[True, ids_sorted[1:] != ids_sorted[:-1], True])
@@ -204,4 +215,5 @@ def local_poly_predict(
         m_mat = atw @ a_mat + 1e-9 * np.eye(deg + 1)
         coef = np.linalg.solve(m_mat, atw @ pos[idx][win])
         out[idx] = coef[:, 0, :]
-    return out
+        support[idx] = wt.sum(1)
+    return (out, support) if return_support else out

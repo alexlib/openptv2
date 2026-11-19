@@ -194,3 +194,28 @@ Targets are set from the measured ceilings; they are goals, not promises.
   prediction rms 0.36 px) coming from dim members whose weight is small. Assumptions that make this an upper
   bound: truth association, brightness signature from truth "alone" frames, centre noise var_c = 0.01 px^2 set to the
   benchmark's. Next: other cases, then H2 (real tracks).
+- 2026-11-20, H1 completed and reviewed. Module `src/openptv2/merge_refine.py` (truth-free `refine_merged`), tests
+  `test_merge_refine.py`, `test_blob_model.py`; benchmark driver `scripts/joint_bounds.py h1` is a thin wrapper.
+  *Review finding:* the first version (all predictions trusted, fixed variance) diverged: particles merged in >= 3
+  cameras got worse each round (sparse: 0.52 -> 0.92 -> 1.13 mm; x4: 0.85 -> 1.8 -> 13.7 mm) and the variance was
+  2-3x too small (z^2 5-8), because poor positions gave bad predictions, which spoiled the partners' effective
+  observations. The velocity-error numbers had hidden it (medians improved). *Fix:* predictions are made from frames
+  with >= 2 clean cameras only and trusted only with >= 3 such frames in the window; an effective observation more
+  than 4 sigma from the particle's own trusted prediction is dropped; the trusted path prediction enters the
+  position fit as pseudo-observations. Now stable (rounds 2 and 3 agree), calibrated (z^2 1.1-1.2).
+  Gate (perfect linker, velocity error; gap closed = (E1b - H1) / (E1b - E1c)):
+  | case (60-frame dev cases) | greedy | E1b raw merged | **H1** | E1c ceiling | gap closed |
+  |---|---|---|---|---|---|
+  | real-like `_m0.6` | 0.061 | 0.067 | 0.050 | 0.051 | ~100 % |
+  | real-like `_m0.75` | 0.095 | 0.106 | 0.060 | 0.060 | ~100 % (earlier version) |
+  | default merge rate | 0.166 | 0.245 | 0.092 | 0.065 | **85 %** |
+  | x4 density | 0.581 | 0.834 | 0.562 | 0.134 | **39 %** (gate 60 % not met) |
+  `two_phase` on the H1 input: default rate 0.202 -> 0.105 (common set 0.175 -> 0.083), yield 0.684 -> 0.773, long
+  completeness 0.60 -> 0.76, ghost 3.9 % -> 1.6 %; x4: yield 0.227 -> 0.590, long completeness 0.18 -> 0.48, but
+  velocity error 0.433 -> 0.670 and link precision 0.929 -> 0.876 (the noisier extra points). By number of merged
+  cameras (3D error mm, default rate, round 3): clean 0.052 -> 0.035; 1 merged camera 0.250 -> 0.060; 2: 0.353 ->
+  0.161; 3+: 0.498 -> 0.506 (not helped). At x4 the 3+ group is 57 % of the particles and 49 % of predictions are
+  trusted: information-limited, which is what the coverage analysis said (H4: cluster hypotheses).
+  Consequences for the plan: (1) H2 must give the linkers noise-aware gating (per-link tolerance from the points'
+  variances); (2) x4 targets move to H4; (3) particles with no clean camera and no trusted path should carry a
+  large variance, not a confident wrong position.

@@ -180,3 +180,46 @@ def test_local_poly_predict_handles_gaps_short_tracks_and_several_tracks():
     pred = local_poly_predict(tid, f, pos, window=7, order=1)
     assert pred[:9] == pytest.approx(pos[:9], abs=1e-6)            # a line stays a line across the gap
     assert np.all(np.isnan(pred[9:]))                              # fewer than min_points
+
+
+def test_local_poly_predict_reports_support_and_downweights_doubtful_points():
+    from openptv2.blob_model import local_poly_predict
+
+    t = np.arange(15)
+    traj = np.c_[0.1 * t, 0.02 * t, 0.0 * t]
+    tid = np.zeros(15, int)
+    w = np.ones(15)
+    w[5:10] = 0.01                                       # five doubtful frames
+    bad = traj.copy()
+    bad[5:10] += 3.0                                     # ... and they are wrong
+    pred, sup = local_poly_predict(tid, t, bad, w, window=9, order=1, return_support=True)
+    assert sup[2] > 3.0                                  # well supported by good neighbours
+    _, sup5 = local_poly_predict(tid, t, bad, w, window=5, order=1, return_support=True)
+    assert sup5[7] < 0.1                                 # window entirely inside the doubtful stretch
+    assert np.abs(pred[2] - traj[2]).max() < 0.1         # the doubtful frames hardly pull a good one
+    plain = local_poly_predict(tid, t, bad, None, window=9, order=1)
+    assert np.abs(pred[3] - traj[3]).max() < np.abs(plain[3] - traj[3]).max()
+
+
+def test_prior_slots_pull_a_poorly_measured_point_to_the_path(rig):
+    cpar, cals, pts, px = rig
+    bad = px.copy()
+    bad[:, :, :] += np.random.default_rng(5).normal(0, 2.0, bad.shape)       # every camera badly off
+    var = np.full(px.shape[:2], 4.0)                                           # ... and said to be
+    x_noprior = triangulate_weighted(bad, var, cpar, cals, pts, n_iter=4)
+    both = np.concatenate([bad, px], axis=1)                                   # slots 4..7: exact path prediction
+    var_both = np.concatenate([var, np.full(px.shape[:2], 0.01)], axis=1)
+    x_prior = triangulate_weighted(both, var_both, cpar, cals, pts, n_iter=4, cam_index=[0, 1, 2, 3, 0, 1, 2, 3])
+    assert np.linalg.norm(x_prior - pts, axis=1).mean() < 0.1 * np.linalg.norm(x_noprior - pts, axis=1).mean()
+
+
+def test_duplicate_camera_slots_add_their_weights(rig):
+    cpar, cals, pts, px = rig
+    noisy = px + np.random.default_rng(6).normal(0, 0.5, px.shape)
+    var = np.full(px.shape[:2], 0.2)
+    a = triangulate_weighted(noisy, var, cpar, cals, pts, n_iter=4)
+    b = triangulate_weighted(np.concatenate([noisy, noisy], axis=1), np.concatenate([var, var], axis=1),
+                             cpar, cals, pts, n_iter=4, cam_index=[0, 1, 2, 3, 0, 1, 2, 3])
+    assert np.abs(a - b).max() < 1e-6                                          # same estimate, just more certain
+    with pytest.raises(ValueError):
+        triangulate_weighted(px, var, cpar, cals, pts, cam_index=[0, 1])
