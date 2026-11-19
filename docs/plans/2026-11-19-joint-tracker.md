@@ -1,7 +1,7 @@
 # Plan: a joint stereo-matching + tracking algorithm ("joint tracker")
 
 Date: 2026-11-19. Branch: `feat/zarr-only-remove-legacy`. Status: step 0 measured; **plan revised the
-same day, and again after merging `feat/ilp-temporal-smoothing-impl`: read sections 10, 11 and 12 first.** Sections 3–9 are the original design and are kept for
+same day, and again after merging `feat/ilp-temporal-smoothing-impl`: read sections 10–14 first; section 14 is the current plan.** Sections 3–9 are the original design and are kept for
 the record; where they differ from section 11, section 11 wins.
 Related: `docs/plans/2026-09-30-tracker-plan.md` (benchmark facts),
 `docs/plans/2026-10-09-trackcorr-two-phase-merge.md`,
@@ -566,3 +566,181 @@ Findings:
   by whoever owns that change.
 - Not run after the merge: the benchmark tests (`tests/benchmarks`), the clustered case with the merged
   code, the pure-Python fallback tests.
+
+## 13. Where the error comes from: bottleneck analysis (2026-11-19)
+
+Goal restated: improve the combined stereo-matching + tracking result (accurate velocities, few
+ghosts, long trajectories, many particles kept) with **no constraint on the order** of matching and
+tracking. The question of this section: which stage limits the result, measured with truth? Method: an
+**error-budget ladder**. Each rung gives the perfect linker (`oracle`) a different input, so the
+difference between rungs is the cost of one thing. Cases: sparse (`L1_d1_c0_k1_n200`) and ×4
+(`L1_d4_c0_k1_n150`), both `_s0.08_a0.18_f0.05`. Raw numbers: `bench/step23_joint_bounds_2026-11.json`
+(`error_budget_ladder`, `M3_*`, `B3_*`). Scripts: `scripts/joint_bounds.py` (`ladder`, `demerge`, `m3`, `b3`).
+
+### 13.1 The ladder (velocity error vErr; yield = share of true points output; longC = long-track completeness; frag = pieces per long track)
+
+Sparse case:
+
+| Rung | Input to the linker | vErr | yield | longC | frag |
+|---|---|---|---|---|---|
+| L0 | exact projections, no noise, identity matching | **0.0009** | 0.995 | 0.973 | 1.16 |
+| E1c σ=0.1 px | perfect association, every merged blob replaced by each particle's own centre ± 0.1 px | 0.0436 | 0.825 | 0.824 | 0.91 |
+| E1c σ=0.3 px | same, ± 0.3 px | 0.0634 | 0.824 | 0.822 | 0.91 |
+| E1c σ=0.6 px | same, ± 0.6 px | 0.1060 | 0.790 | 0.786 | 0.92 |
+| E1a | perfect association, **clean blobs only** (≥ 3 cameras) | 0.1034 | 0.573 | 0.422 | 2.29 |
+| greedy cloud | what the matcher gives (with ghosts), perfect linker | 0.1435 | 0.691 | 0.556 | 1.83 |
+| E1c σ=1.0 px | same, ± 1.0 px | 0.2090 | 0.703 | 0.642 | 1.29 |
+| E1b | perfect association, **all detected blobs, merged ones used as they are** | 0.2297 | 0.726 | 0.588 | 1.79 |
+| `two_phase` | greedy cloud, real linker | **0.1825** | 0.680 | 0.503 | 2.29 |
+| hybrid `trackcorr` | greedy cloud, real linker | 0.2648 | 0.694 | 0.556 | 1.84 |
+
+×4 density:
+
+| Rung | vErr | yield | longC | frag |
+|---|---|---|---|---|
+| L0 | 0.0009 | 0.996 | 0.980 | 1.11 |
+| E1c σ=0.1 | 0.0589 | 0.857 | 0.850 | 1.03 |
+| E1c σ=0.3 | 0.1311 | 0.850 | 0.843 | 1.02 |
+| E1a (clean blobs only) | 0.2559 | 0.143 | 0.111 | 0.90 |
+| E1c σ=0.6 | 0.2590 | 0.739 | 0.717 | 1.08 |
+| `two_phase` | **0.4091** | 0.225 | 0.157 | 1.48 |
+| E1c σ=1.0 | 0.5180 | 0.571 | 0.409 | 2.22 |
+| greedy cloud, perfect linker | 0.5675 | 0.258 | 0.183 | 1.61 |
+| E1b (merged blobs as they are) | 0.8676 | 0.462 | 0.275 | 2.83 |
+
+(vErr is averaged over each rung's own output points, so rungs with different yield are not exactly
+comparable; the yield column says how much of that is selection.)
+
+### 13.2 What the ladder says
+
+1. **The estimator and the tracker are not the limit.** With exact data the whole chain is accurate
+   to 0.0009 (L0), and `two_phase` links L0 almost as well as the perfect linker. Everything above
+   that is the noise of the measurements and the association.
+2. **The measurement is the bottleneck, and the measurement problem is merged blobs.** Of all blob
+   observations of particles seen by ≥ 3 cameras, **26 % (sparse) and 66 % (×4) are merged blobs**
+   (two or more particles in one blob, with a shifted centre). Using them as they are (E1b) is
+   2–3× worse than the greedy cloud; leaving them out (E1a) is better in accuracy but throws away
+   43 % (sparse) and 86 % (×4) of the particles.
+3. **The ceiling of correcting merged blobs is large.** If each particle in a merged blob gets its own
+   centre to within 0.3 px (E1c): vErr 0.063 and 0.131, which is **2.9× and 3.1× lower than `two_phase`**,
+   while 82–85 % of the particles stay (against 68 % and 22 %), long-track completeness 0.82 and
+   0.84 (against 0.50 and 0.16) and about one piece per long track (against 2.3 and 1.5). This
+   ceiling beats `two_phase` as long as the de-merge error stays below about 0.9 px (sparse) and 0.75 px (×4).
+4. **A track can predict a blob centre well enough** (B3, sparse, clean particles, linear
+   extrapolation from 2 positions): 0.27 px RMS, median 0.21, 90 % below 0.40, 99 % below 0.62.
+   (Order-3 prediction and the ×4 case: see the JSON when finished; not in this table.) A
+   de-merge error of 0.3–0.5 px is therefore plausible, well inside the break-even.
+5. **Association (matching + linking) is the second, smaller bottleneck.** Sparse: greedy cloud with
+   a perfect linker 0.1435, `two_phase` 0.1825: association costs 0.039 (21 % of the error);
+   removing every ghost from the input gains `two_phase` only 0.005–0.018 (section 10). Hybrid
+   `trackcorr` has the best continuity but keeps 7.4 % ghosts and has the higher error.
+6. **Depth noise is real but is not a lever.** The depth axis carries most of the velocity error
+   (RMS 26 mm/s against 4–5 mm/s in-plane for clean particles, sparse, 150 particles). Fitting one
+   trajectory directly to all blob centres (image space, `m3`) instead of fitting 3D points
+   improves it by only 5 % (0.0501 → 0.0476), 8 % at ×4 (0.0668 → 0.0615) and 3 % with merged
+   blobs (0.277 → 0.269). Merged blobs make the same particles 5.5× worse (0.050 → 0.277). So the
+   per-frame triangulation + polynomial smoothing is already close to the information in the
+   blobs; improving the blobs is what pays. (The ×4 run with merged blobs gave no result.)
+7. **Speed.** The matcher costs 0.10 s per frame (sparse, 1150 points) and 0.44 s per frame (×4,
+   2560 points); `two_phase` links at 0.02–0.03 s per frame, hybrid `trackcorr` 0.19, merged
+   `unified` 0.5–1.0. So the matcher is the cost of the fast pipeline. Any scheme that runs the
+   matcher more than once per frame, or builds a large candidate pool, multiplies the dominant cost.
+   De-merging is cheap (a projection and a small solve per merged blob).
+
+### 13.3 Levers that the measurements rule out (do not spend time here)
+- A candidate pool / perfect selection from it (B1, B2): recovers part of the lost points, but the
+  recovered ones are the merged-blob points and they are noisy; the same points are better served by correcting the blob.
+- Image-space trajectory fitting as such (3–8 %).
+- Ghost removal on `two_phase` (0.005–0.018). (Ghosts do matter for hybrid `trackcorr`: 7.4 %.)
+- Cost weights, wider gates, re-matching freed blobs (earlier findings, `2026-09-30-tracker-plan.md`).
+- `trajectory_stitch.stitch_trajectories` in its present form (section 12).
+
+### 13.4 Caveats (read before trusting the ceiling)
+- The merge model is the benchmark's (`synth_bench._target_rows`, calibrated to reproduce the image
+  pipeline's 2D recall to ~2 %); **whether real recordings have as many merged blobs is not
+  measured (bound M0)**. Everything in 13.2 points 2–3 depends on it.
+- E1c assumes the particles in each merged blob are known, and that each gets a centre with
+  independent error σ. A real implementation must find the particles from tracks, which exist
+  only after the particle was tracked before or after the merge (cold start, long overlaps), and must
+  split the blob between them using brightness. The ceiling is for the case where this works.
+- B3 uses clean particles with perfectly associated history; real histories contain errors.
+
+## 14. Current plan (2026-11-19, after the bottleneck analysis): merge-aware joint tracker
+
+Replaces sections 11.1–11.3 where they differ; 11.5 (scoring) and 12 (merged branch,
+baselines) still apply.
+
+### 14.1 Principle (no fixed order)
+The information must flow both ways. Detections → matcher → 3D points → tracks is the old direction.
+The new one: **tracks → which blobs are merged and where each particle sits inside them → better
+3D points and particles the matcher could not form → better tracks.** It is one loop, started from
+the existing matcher and linker, iterated until stable, and it can run forward in time, backward, or
+both. The matcher still runs once per frame (it is the cost); no candidate pool.
+
+### 14.2 The loop
+1. **Start:** greedy cloud from the existing matcher; link with the better of `two_phase` and hybrid
+   `trackcorr` (decided by J0 below). These tracks are the first predictions.
+2. **Track-informed measurement correction (J1).** For every track point and every camera, project
+   the track's predicted position (two-sided smoothed position when run as a post-step: its error is
+   smaller than the causal prediction's 0.27 px). Several predictions (of different particles) on one
+   blob, or a blob much brighter or larger than its track's usual (brightness is persistent per
+   particle and camera: linked pairs change it by a median 0.06), mark the blob as merged. The blob has
+   one measured centre `c`, the brightness-weighted mean of the spots' centres `s_j = p_j + δ_j`
+   (`p_j` predicted). The minimum-norm solution of "weighted mean of `s_j` equals `c`" is
+   `δ_j = w_j r / Σ w_k²` with `r = c − Σ w_j p_j` and `w_j` the brightness shares. Each particle gets
+   the pixel `s_j`, with a larger variance than a clean blob. Then re-triangulate (least squares, per-camera
+   weights: `track_assisted._triangulate_weighted_lsq`); when ≥ 2 clean cameras remain and the
+   merged ones disagree, drop the merged ones.
+3. **Recovery (J2).** A particle whose blob was merged is often missing from the cloud (the matcher
+   could not form it). Tracks that end or have a gap, and whose prediction falls on a merged blob,
+   take the blob with the same split (a claim in blob space, `track_assisted._claim_particle` with
+   shared blobs), add the point and continue. New particles in merged blobs have no track: they enter
+   from the leftover blobs after the tracks have taken theirs (existing matcher on the reduced target
+   lists), on probation (smoothness for N frames, dead-end rule, taking blobs through the past at promotion).
+4. **Iterate (J3).** Better positions give better predictions and better links; repeat 2–3 with a
+   forward and a backward sweep until the set of tracks is stable (expected 2–3 rounds).
+5. **Final cleanup** with what exists and has been measured to help: `reconnect.reconnect_pieces`,
+   `smoothness_filter`, `quality_post` trimming, IRLS stitching. Not `stitch_trajectories` (section 12).
+
+### 14.3 Gate and bounds
+- **M0 (gate, do first):** the real merge rate. No truth on real data, so a proxy on tracked output:
+  project every linked 3D point into each camera and count the share of points whose projection lies
+  within r = 1, 1.5, 2, 3 px of another point's projection; also the share of 3-camera points whose
+  missing-camera projection falls within r of a blob used by another point. Compute on real wp2
+  (`~/Downloads/HiDImaging/CompleteTest-e2e-local/wp2/test/res/run.zarr`, read-only, 100 frames) and on
+  the benchmark's `two_phase` output (same numbers on the case with known truth). **If the real share is
+  below a third of the benchmark's, stop and report**: the ceiling in 13.2 would not apply.
+- B3 (rest): order-3 prediction and the ×4 case (the script and the sparse order-2 result exist).
+  Needed for the de-merge variance in J1.
+- Done: B0, B1, B1b, B2, the ladder (L0, E1a, E1b), M2 (E1c) for σ = 0.1, 0.3, 0.6, 1.0, M3, B3 (sparse,
+  order 2), timing. Dropped: B4, B5, B6 (the pool and the probation length are only needed in J2; B6
+  moves into J2), M1.
+
+### 14.4 Stages (one change each, each measured on sparse, ×2, ×4 against `two_phase`, hybrid `trackcorr` and `unified+stitch=false`)
+
+| Stage | What | Expected (from 13.1, not a promise) | Stop / go |
+|---|---|---|---|
+| J0 | Which linker first. Run J1 on the output of both `two_phase` and hybrid `trackcorr` | choose the one with the lower common-set vErr after J1 | decides the core of J2–J4 |
+| J1 | Track-informed measurement correction as a **post-step** on a finished run (no change to links, no new points): `src/openptv2/blob_demerge.py` (find merged blobs from predicted pixel positions; minimum-norm offsets with brightness weights; weights) and a post step `merge_aware_refine(store, linkage_name, ...)` that rewrites correspondences, positions and `rcm/` | vErr sparse 0.18 → ~0.10–0.12 (E1c σ=0.6 is 0.106, σ=0.3 is 0.063); ×4 0.41 → 0.20–0.26 | go to J2 if common-set vErr falls ≥ 30 %; if < 15 %, stop and re-measure the de-merge error against B3 |
+| J2 | Recovery: tracks claim merged blobs; leftover matching and probation for newborns | yield sparse 0.68 → 0.75–0.80; ×4 0.23 → 0.5–0.8 (ceiling 0.82 / 0.85); longC up | go if the extra points' position error is below 2× the common-set error |
+| J3 | Forward + backward rounds until stable | frag 2.3 → ~1.3 | |
+| J4 | Real data: wp2 (300 frames), lv_multi; speed; docs | more tracks of ≥ 50 frames, roughness not higher | |
+
+Success (as 11.5): on sparse, ×2, ×4 common-set vErr not above `two_phase`'s (target: ≥ 30 % below),
+yield and long completeness higher, ghost share not higher, position error of extra points below 2×
+the common-set error; time of the correction below the matcher's.
+
+### 14.5 Implementation notes for the next model
+- Use the worktree `/Users/alex/Documents/Github/openptv2-joint` (section 11.6). `scripts/joint_bounds.py`
+  has the helpers: `case_setup`, `raw_targets`, `triangulate`, `shared_mask` (truth: blobs shared by
+  several particles), `purity`, and the sub-commands `ladder`, `demerge`, `m3`, `b3`, `b1`, `b2`. The
+  truth blob map is `truth.npz['blob_tid']`.
+- The correction needs, per output point, the blob (camera → target index): `correspondences/` has it
+  (`cam_target_ids`); the blob's brightness is `sumg` (column 6) and its pixel count `n` (column 3) of
+  `targets/cam_*/frame_*`. Positions of tracks: `linkage/<name>/` (prev, next, pos).
+- Write `rcm/` again after changing positions (the hybrid engine and the ghost marks read it), and keep
+  row order of `correspondences/` equal to the linkage rows.
+- Test on the benchmark with a variant label, e.g. `two_phase` then the post step, and check with
+  `synth_bench eval`; the truth check of the correction itself: compare the corrected blob centres with
+  `render` projections as in `demerge_inputs`.
+- Cython is not needed until J3 (the loop is per blob, cheap); do not touch `correspondences()`.

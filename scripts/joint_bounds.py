@@ -265,6 +265,259 @@ def b2(case: str) -> dict:
     return stats
 
 
+def shared_mask(blob: np.ndarray) -> np.ndarray:
+    """(n_truth, n_cams) True where the particle's blob is shared with another particle."""
+    sh = np.zeros(blob.shape, bool)
+    for cam in range(blob.shape[1]):
+        _u, inv, cnt = np.unique(blob[:, cam], return_inverse=True, return_counts=True)
+        sh[:, cam] = (blob[:, cam] >= 0) & (cnt[inv] > 1)
+    return sh
+
+
+def ladder_inputs(case: str, min_cams: int = 3) -> dict:
+    """Error-budget inputs with PERFECT association (no matcher, no ghosts):
+
+    ``<case>_E1a``  every truth particle, rows from its clean (unshared) blobs only
+    ``<case>_E1b``  every truth particle, rows from all its detected blobs (merged ones too)
+    Both need >= ``min_cams`` cameras. Track with synth_bench ``oracle`` to get the accuracy
+    floor of the measurements + estimator, with association made free.
+    """
+    import shutil
+
+    from openptv2.storage import RunStore
+
+    case_dir, info, exp, store, tr = case_setup(case)
+    cpar, cals, vpar = exp.cpar, list(exp.cals), exp.vpar
+    outs, stats = {}, {}
+    for tag in ("E1a", "E1b"):
+        d = sb.WORK / "cases" / f"{case}_{tag}"
+        if d.exists():
+            shutil.rmtree(d)
+        shutil.copytree(case_dir, d)
+        outs[tag] = RunStore(d / "res" / "run.zarr", mode="a")
+        stats[tag] = 0
+    for f in range(1, info["n_out"] + 1):
+        sel = np.flatnonzero(tr["frame"] == f)
+        blob = tr["blob_tid"][sel]
+        sh = shared_mask(blob)
+        for tag, use in (("E1a", (blob >= 0) & ~sh), ("E1b", blob >= 0)):
+            ids = np.where(use, blob, -1).astype(np.int32)
+            ids = ids[(ids >= 0).sum(1) >= min_cams]
+            pos = triangulate(store, f, ids, cpar, cals, vpar) if len(ids) else np.empty((0, 3))
+            outs[tag].write_correspondences(f, pos, ids)
+            stats[tag] += len(ids)
+    for tag in outs:
+        sb.stamp_tnr(sb.WORK / "cases" / f"{case}_{tag}")
+    return stats
+
+
+def demerge_inputs(case: str, sigma_px: float, min_cams: int = 3) -> dict:
+    """M2: perfect association AND ideal de-merging. Like ``E1b`` (all detected blobs), but a
+    merged (shared) blob is replaced, for each of its particles, by that particle's own spot
+    centre (projection of the true position with the render calibration) plus Gaussian noise of
+    ``sigma_px``. Tracks as ``<case>_E1c<sigma>``; use synth_bench ``oracle``."""
+    import shutil
+
+    from openptv2.orientation import point_positions
+    from openptv2.storage import RunStore
+    from openptv2.transforms import convert_arr_pixel_to_metric, distorted_to_flat
+
+    case_dir, info, exp, store, tr = case_setup(case)
+    cpar, cals, vpar = exp.cpar, list(exp.cals), exp.vpar
+    render = list(sb._experiment(case_dir, case_dir / "parameters_Run1.yaml", 1, info["n_out"]).cals)
+    sb._render_cals(render, cpar)
+    n_cams = len(cals)
+    d = sb.WORK / "cases" / f"{case}_E1c{sigma_px:g}"
+    if d.exists():
+        shutil.rmtree(d)
+    shutil.copytree(case_dir, d)
+    out = RunStore(d / "res" / "run.zarr", mode="a")
+    rng = np.random.default_rng(1)
+    total = replaced = 0
+    for f in range(1, info["n_out"] + 1):
+        sel = np.flatnonzero(tr["frame"] == f)
+        blob = tr["blob_tid"][sel]
+        sh = shared_mask(blob)
+        rows = raw_targets(store, f, n_cams)
+        keep = (blob >= 0).sum(1) >= min_cams
+        px = np.full((len(sel), n_cams, 2), np.nan)
+        for cam in range(n_cams):
+            det = blob[:, cam] >= 0
+            px[det, cam] = rows[cam][blob[det, cam], 1:3]
+            m = det & sh[:, cam]
+            if m.any():
+                own = sb._project(tr["pos_mm"][sel[m]], render[cam], cpar)
+                px[m, cam] = own + rng.normal(0, sigma_px, own.shape)
+        replaced += int((sh & (blob >= 0))[keep].sum())
+        total += int(((blob >= 0))[keep].sum())
+        flat = np.full((n_cams, int(keep.sum()), 2), -1e10)
+        for cam in range(n_cams):
+            ok = keep & ~np.isnan(px[:, cam, 0])
+            idx = np.flatnonzero(ok[keep])
+            if len(idx):
+                met = convert_arr_pixel_to_metric(px[ok, cam], cpar)
+                flat[cam, idx] = distorted_to_flat(met, cals[cam])
+        pos = np.asarray(point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar, method="lsq")[0], float)
+        out.write_correspondences(f, pos, blob[keep].astype(np.int32))
+    sb.stamp_tnr(d)
+    return {"rows_blobs": total, "blobs_replaced": replaced, "share_replaced": replaced / max(total, 1)}
+
+
+def b3(case: str, n_frames: int = 12, order: int = 3) -> dict:
+    """Prediction error in PIXELS: predict a particle's 3D position at t from its ``order`` previous
+    positions (lsq of its clean blobs, quadratic/linear extrapolation as ``track_assisted``), project
+    into each camera where it has a clean blob at t and compare with that blob's centre. This is the
+    error of the offset a track would use to de-merge a blob. Also by number of clean cameras at t-1..t-3
+    (how well a position can be known)."""
+    from openptv2.correspondences import MatchedCoords
+    from openptv2.orientation import point_positions
+    from openptv2.track_assisted import _predict_position
+
+    case_dir, info, exp, store, tr = case_setup(case)
+    cpar, cals, vpar = exp.cpar, list(exp.cals), exp.vpar
+    n_cams = len(cals)
+    f_list = np.linspace(order + 2, info["n_out"] - 2, n_frames).astype(int)
+    errs, errs_cam, errs_dim = [], [], []
+    for f in f_list:
+        frs = [f - j for j in range(order, -1, -1)]  # f-order .. f
+        sels = {g: np.flatnonzero(tr["frame"] == g) for g in frs}
+        pid = {g: tr["particle_id"][sels[g]] for g in frs}
+        common = set(pid[frs[0]].tolist())
+        for g in frs[1:]:
+            common &= set(pid[g].tolist())
+        mcs = {g: [MatchedCoords(store.read_targets(c, int(g)), cpar, cals[c]) for c in range(n_cams)]
+               for g in frs}
+        rows_f = raw_targets(store, int(f), n_cams)
+        loc = {g: {int(p): i for i, p in enumerate(pid[g])} for g in frs}
+        clean = {g: ~shared_mask(tr["blob_tid"][sels[g]]) & (tr["blob_tid"][sels[g]] >= 0) for g in frs}
+        for p in sorted(common):
+            hist = []
+            ok = True
+            for g in frs[:-1]:
+                i = loc[g][p]
+                use = clean[g][i]
+                if use.sum() < 3:
+                    ok = False
+                    break
+                ids = np.where(use, tr["blob_tid"][sels[g]][i], -1).astype(np.int32)[None]
+                flat = np.array([mc.get_by_pnrs(ids[:, c]) for c, mc in enumerate(mcs[g])])
+                hist.append(np.asarray(point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar,
+                                                       method="lsq")[0], float)[0])
+            if not ok:
+                continue
+            pred = _predict_position(hist[::-1], "poly" if order >= 3 else "linear")
+            i_t = loc[f][p]
+            for c in range(n_cams):
+                if not clean[f][i_t][c]:
+                    continue
+                px = sb._project(pred[None], cals[c], cpar)[0]
+                meas = rows_f[c][tr["blob_tid"][sels[f]][i_t][c], 1:3]
+                errs.append(np.linalg.norm(px - meas))
+                errs_cam.append(c)
+                errs_dim.append(px - meas)
+    e = np.array(errs)
+    d = np.array(errs_dim)
+    return {"n": len(e), "rms_px": float(np.sqrt(np.mean(e**2))), "median_px": float(np.median(e)),
+            "p90_px": float(np.percentile(e, 90)), "p99_px": float(np.percentile(e, 99)),
+            "rms_x_px": float(np.sqrt(np.mean(d[:, 0] ** 2))), "rms_y_px": float(np.sqrt(np.mean(d[:, 1] ** 2))),
+            "share_below_0.3px": float(np.mean(e < 0.3)), "share_below_1px": float(np.mean(e < 1.0))}
+
+
+def m3(case: str, n_part: int = 300, half: int = 10, deg: int = 3, clean_only: bool = True,
+       sigma_depth_weighting: bool = False) -> dict:
+    """Estimator bound with PERFECT association: velocity of true particles at the middle of a
+    (2*half+1)-frame window from (A) per-frame lsq 3D points + a degree-``deg`` polynomial in time
+    (what smoothing the tracker output does) and (B) one degree-``deg`` trajectory fitted directly to
+    all blob centres of all cameras and frames (reprojection error in pixels)."""
+    from scipy.optimize import least_squares
+
+    case_dir, info, exp, store, tr = case_setup(case)
+    cpar, cals, vpar = exp.cpar, list(exp.cals), exp.vpar
+    n_cams, k = len(cals), int(info["k"])
+    flow = sb.Flow()
+    f0 = info["n_out"] // 2
+    frames = np.arange(f0 - half, f0 + half + 1)
+    # particles detected (clean or not, per option) in >= 3 cameras in every frame of the window
+    by_f = {f: np.flatnonzero(tr["frame"] == f) for f in frames}
+    pid = {f: tr["particle_id"][by_f[f]] for f in frames}
+    common = set(pid[frames[0]].tolist())
+    for f in frames[1:]:
+        common &= set(pid[f].tolist())
+    rows = {f: raw_targets(store, int(f), n_cams) for f in frames}
+    from openptv2.correspondences import MatchedCoords
+    from openptv2.orientation import point_positions
+
+    mcs = {f: [MatchedCoords(store.read_targets(c, int(f)), cpar, cals[c]) for c in range(n_cams)]
+           for f in frames}
+
+    def tri(f, ids):  # lsq position of one row, coordinate tables built once per frame
+        flat = np.array([mc.get_by_pnrs(ids[:, c]) for c, mc in enumerate(mcs[f])])
+        return np.asarray(point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar, method="lsq")[0], float)
+
+    cand = []
+    for p in sorted(common):
+        ok = True
+        info_f = {}
+        for f in frames:
+            i = by_f[f][np.flatnonzero(pid[f] == p)[0]]
+            blob = tr["blob_tid"][i]
+            if clean_only:
+                shr = shared_mask(tr["blob_tid"][by_f[f]])[np.flatnonzero(pid[f] == p)[0]]
+                use = (blob >= 0) & ~shr
+            else:
+                use = blob >= 0
+            if use.sum() < 3:
+                ok = False
+                break
+            info_f[f] = (i, use, blob)
+        if ok:
+            cand.append((p, info_f))
+    rng = np.random.default_rng(0)
+    pick = rng.choice(len(cand), min(n_part, len(cand)), replace=False)
+    t = frames - f0
+    V = np.vander(t.astype(float), deg + 1, increasing=True)
+    dV = np.zeros(deg + 1)
+    dV[1] = 1.0  # d/dt at t=0 of the polynomial: coefficient 1
+    errA, errB, u_sq = [], [], []
+    for ci in pick:
+        p, info_f = cand[ci]
+        pts, obs = [], []
+        for f in frames:
+            i, use, blob = info_f[f]
+            ids = np.where(use, blob, -1).astype(np.int32)[None]
+            pts.append(tri(f, ids)[0])
+            obs.append([rows[f][c][blob[c], 1:3] if use[c] else None for c in range(n_cams)])
+        pts = np.array(pts)
+        coef_a = np.linalg.lstsq(V, pts, rcond=None)[0]          # (deg+1, 3)
+        pos_true = tr["pos_mm"][info_f[f0][0]]
+        tn = 1.0 + (f0 - 1) * k
+        u_true = flow.velocity(pos_true[None], tn)[0] * sb.FPS / k * k  # mm/s as in evaluate_pred
+        va = coef_a[1] * sb.FPS / k
+        def resid(x):
+            c = x.reshape(deg + 1, 3)
+            xyz = V @ c
+            out = []
+            for cam in range(n_cams):
+                m = [j for j in range(len(frames)) if obs[j][cam] is not None]
+                if not m:
+                    continue
+                pr = sb._project(xyz[m], cals[cam], cpar)
+                out.append((pr - np.array([obs[j][cam] for j in m])).ravel())
+            return np.concatenate(out)
+        sol = least_squares(resid, coef_a.ravel(), method="lm", max_nfev=60)
+        vb = sol.x.reshape(deg + 1, 3)[1] * sb.FPS / k
+        errA.append(va - u_true)
+        errB.append(vb - u_true)
+        u_sq.append(np.sum(u_true**2))
+    errA, errB = np.array(errA), np.array(errB)
+    u_rms = float(np.sqrt(np.mean(u_sq)))
+    rel = lambda e: float(np.sqrt(np.mean(np.sum(e**2, 1))) / u_rms)  # noqa: E731
+    return {"n_particles": len(errA), "window": 2 * half + 1, "deg": deg, "clean_only": clean_only,
+            "vErr_3d_points_polyfit": rel(errA), "vErr_image_space_fit": rel(errB),
+            "rms_axis_3d": np.sqrt(np.mean(errA**2, 0)).tolist(),
+            "rms_axis_image": np.sqrt(np.mean(errB**2, 0)).tolist(), "u_rms_mm_s": u_rms}
+
+
 def save(key: str, case: str, value: dict) -> None:
     data = json.loads(OUT.read_text()) if OUT.exists() else {}
     data.setdefault(key, {})[case] = value
@@ -281,7 +534,41 @@ def main(argv=None) -> None:
     p.add_argument("--pairs", action="store_true")
     q = sub.add_parser("b2")
     q.add_argument("--case", required=True)
+    q2 = sub.add_parser("ladder")
+    q2.add_argument("--case", required=True)
+    q4 = sub.add_parser("demerge")
+    q4.add_argument("--case", required=True)
+    q4.add_argument("--sigma", type=float, required=True)
+    q5 = sub.add_parser("b3")
+    q5.add_argument("--case", required=True)
+    q5.add_argument("--order", type=int, default=3)
+    q3 = sub.add_parser("m3")
+    q3.add_argument("--case", required=True)
+    q3.add_argument("--n", type=int, default=300)
+    q3.add_argument("--half", type=int, default=10)
+    q3.add_argument("--deg", type=int, default=3)
+    q3.add_argument("--all-detected", action="store_true")
     a = ap.parse_args(argv)
+    if a.cmd == "ladder":
+        r = ladder_inputs(a.case)
+        save("E1_inputs", a.case, r)
+        print(json.dumps(r))
+        return
+    if a.cmd == "demerge":
+        r = demerge_inputs(a.case, a.sigma)
+        save("M2_inputs", f"{a.case}_sigma{a.sigma:g}", r)
+        print(json.dumps(r))
+        return
+    if a.cmd == "b3":
+        r = b3(a.case, order=a.order)
+        save(f"B3_pred_error_px_order{a.order}", a.case, r)
+        print(json.dumps(r))
+        return
+    if a.cmd == "m3":
+        r = m3(a.case, a.n, a.half, a.deg, not a.all_detected)
+        save("M3_" + ("all" if a.all_detected else "clean") + f"_w{2*a.half+1}_d{a.deg}", a.case, r)
+        print(json.dumps(r, indent=1))
+        return
     if a.cmd == "b2":
         r = b2(a.case)
         save("B2_inputs", a.case, r)
