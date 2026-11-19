@@ -1,7 +1,7 @@
 # Plan: a joint stereo-matching + tracking algorithm ("joint tracker")
 
 Date: 2026-11-19. Branch: `feat/zarr-only-remove-legacy`. Status: step 0 measured; **plan revised the
-same day: read sections 10 and 11 first.** Sections 3–9 are the original design and are kept for
+same day, and again after merging `feat/ilp-temporal-smoothing-impl`: read sections 10, 11 and 12 first.** Sections 3–9 are the original design and are kept for
 the record; where they differ from section 11, section 11 wins.
 Related: `docs/plans/2026-09-30-tracker-plan.md` (benchmark facts),
 `docs/plans/2026-10-09-trackcorr-two-phase-merge.md`,
@@ -447,9 +447,11 @@ On real data: more tracks of ≥ 50 frames, roughness not higher.
 
 - Work in the worktree `/Users/alex/Documents/Github/openptv2-joint` (branch
   `feat/zarr-only-remove-legacy`). The main checkout `/Users/alex/Documents/Github/openptv2` is on
-  `main` with someone else's untracked files; do not switch it. The worktree has no environment
-  yet: `uv sync --extra dev --python 3.13`, then `uv run python setup.py build_ext --inplace`
-  (uncompiled runs are 50–100× slower).
+  `main` with someone else's untracked files; do not switch it. The worktree has its own
+  environment (`uv sync --extra dev --python 3.13` and `uv run python setup.py build_ext --inplace`
+  were run on 2026-11-19; repeat the build after changing anything in `algorithms/`; the main
+  checkout's environment imports the main checkout's sources, not the worktree's).
+  Gitignored test data exists only in the main checkout (e.g. `test_data/test_cavity/run.zarr`).
 - Benchmark data: `~/Downloads/HiDImaging/tracker-bench-2026-09-29` (`cases/`, `runs/`); source
   truth `~/Downloads/HiDImaging/Synthetic-CompleteTest`. Paths are constants at the top of
   `scripts/synth_bench.py`. Never write into the real runs
@@ -463,3 +465,104 @@ On real data: more tracks of ≥ 50 frames, roughness not higher.
   comparing with truth, as `evaluate_pred` does.
 - Earlier findings that still hold: soft rules beat deletion; link-cost weights have no effect;
   never tune a rule on particle speed; 2–3-camera adds without a check hurt trackcorr badly.
+
+## 12. After merging `feat/ilp-temporal-smoothing-impl` (2026-11-19)
+
+The merge (`5139900d`) brought in a parallel line of work on ghost suppression. What it added,
+what it does on the truth benchmark, and what it changes in this plan. Raw numbers:
+`bench/step23_joint_bounds_2026-11.json` (`merged_unified`, `merged_ablation_sparse`); run labels
+in `runs/` carry `+merged=1` / `+m=1`.
+
+### 12.1 What came in
+
+| Module | What it does | Default in the merged code |
+|---|---|---|
+| `trajectory_stitch.stitch_trajectories` | after tracking: merge fragments across a gap, split at kinks of ≥ 60° | on (`stitch: auto`), epipolar engine only |
+| `temporal_smoothing.trajectory_level_ghost_filter` (+ `extract_trajectories`, velocity statistics `vel_mean`/`vel_std`, point-level smoothing) | drop or trim trajectories by smoothness and velocity statistics | on when `resolve_smoothing_config` says so |
+| `epipolar_rerank.rerank_trajectories` | soft 2D-consistency score (camera count, rcm) over trajectories | on (`epipolar_rerank: auto`) |
+| `mht_linker.mht_relink` | sliding-window Hungarian re-linking | **off** (the author: over-merges) |
+| `frame_quality` | find frames with few correspondences, interpolate them | on |
+| `calibration_aware` | rcm normalisation by distance from the centre, multi-cycle consistency, per-region threshold | modules only, partly wired |
+| hybrid `trackcorr` | 3D priority cascade (track3d kernel) plus epipolar soft score `w_epi` (rcm-based) in the kernel; runs forward + backward + postprocess | default engine of `trackcorr` (`trackcorr_engine: 3d_hybrid`; the old engine is `epipolar`) |
+| `unified` engine choice | dense (ghost rate > 0.2 or density ≥ 500) → 3D engine, else epipolar; corrective passes 2; per-frame ILP removed | on |
+
+`docs/software_map.md` and `docs/agent_memory_ilp_tracker.md` describe this line of work. Their
+benchmark is the scenario scorecard (`tests/benchmarks`), not the truth benchmark used here; their
+claim "priority_segment_3d is better for dense scenes" is not tested on the truth benchmark.
+
+### 12.2 Re-baseline on the truth benchmark (sparse case, 200 frames; vErr / link precision / link recall* / ghost / long completeness / pieces per long track / yield)
+
+| Tracker | vErr | lnkP | lnkR* | ghost | longC | frag | yield | time |
+|---|---|---|---|---|---|---|---|---|
+| oracle | 0.1435 | 1.000 | 1.000 | 0.5 % | 0.556 | 1.83 | 0.691 | 7 s |
+| `two_phase` | **0.1825** | 0.961 | 0.957 | 3.8 % | 0.503 | 2.29 | 0.680 | 4 s |
+| `trackcorr`, old engine (`trackcorr_engine=epipolar`) | 0.2968 | 0.922 | 0.878 | 7.3 % | 0.439 | 2.99 | 0.684 | 52 s |
+| **`trackcorr`, hybrid (new default)** | 0.2648 | 0.921 | **0.999** | 7.4 % | **0.556** | **1.84** | 0.694 | 37 s |
+| `unified` before the merge (= merged with `stitch=false`) | 0.5051 | 0.895 | 0.938 | 9.1 % | 0.605 | 1.76 | 0.745 | 108 s |
+| `unified` merged (default) | 1.5171 | 0.913 | 0.660 | 9.4 % | 0.387 | 4.45 | 0.731 | 198 s |
+
+Merged `unified` at the other densities (vErr / lnkR* / frag): ×2 2.834 / 0.633 / 3.82 (was
+0.877 / 0.926 / 2.30); ×4 5.266 / 0.603 / 2.31 (was 2.079 / 0.929 / 2.04); with `peeling=false`
+even worse (1.96, 3.43, 8.33). Time 2–4× longer.
+
+Findings:
+1. **The regression of the merged `unified` is `stitch_trajectories` alone.** Ablation on the sparse
+   case: `stitch=false` reproduces the pre-merge numbers to all digits; `temporal_smoothing=false`
+   and `epipolar_rerank=false` change nothing (identical output: they are no-ops or not triggered
+   here). The stitch pass raises acceleration error from 30 to 177 and cuts link recall from 0.94
+   to 0.66: it makes wrong joins and wrong kink splits. It costs about 90 s.
+2. **The hybrid `trackcorr` is a real step forward in continuity:** link recall 0.88 → 0.999, pieces
+   per long track 2.99 → 1.84 (better than `two_phase`'s 2.29), long completeness 0.556 (equal to the
+   perfect linker's), velocity error 0.297 → 0.265. It still keeps the ghosts (7.4 % against 3.8 %
+   for `two_phase`) and has a higher velocity error than `two_phase`.
+3. **Two baselines now, not one:** `two_phase` is best on accuracy and ghost share; hybrid `trackcorr`
+   is best on continuity. A joint tracker has to be compared with both.
+4. The B0 table in section 10 stays valid for the pre-merge code; rows for `trackcorr` and `unified`
+   there are superseded by the table above for the merged code.
+
+### 12.3 Consequences for the plan
+
+- **Linking core.** Section 11.3 starts from `two_phase`. The hybrid `trackcorr` links nearly every
+  reachable pair, `two_phase` rejects ghosts better. Add stage **J0**: apply the merge-aware
+  re-triangulation of J1 as a post-step to *both* trackers and keep the one that scores better on
+  the common set; decide the linking core of J2–J4 from that. Run J1 on `two_phase` and on
+  hybrid `trackcorr` output.
+- **Reuse list (11.3), changed:**
+  - do **not** reuse `trajectory_stitch.stitch_trajectories` as it is (harmful on this benchmark);
+    keep `temporal_smoothing.stitch_tracklets_irls` and `reconnect.reconnect_pieces`;
+  - `temporal_smoothing.trajectory_level_ghost_filter` and `epipolar_rerank` showed no effect here;
+    use them only if a later stage shows they help;
+  - candidates worth testing in J3/J4: `frame_quality` (low-correspondence frames) and
+    `calibration_aware.normalize_rcm` as an input to the ghost mark (it matches the earlier
+    finding that rcm grows with distance from the centre);
+  - the kernel's `w_epi` soft score uses the stored `rcm/` array; `rcm/` is not updated after
+    later rewrites of `correspondences/` (see section 2), so a merged-blob correction must write
+    `rcm/` again if the hybrid engine is used on its output.
+- **Scoring (11.5):** the comparison set is `two_phase`, hybrid `trackcorr` and `unified+stitch=false`
+  (not the merged `unified` default). Success additionally: long completeness not below the hybrid
+  `trackcorr`'s 0.556 on the sparse case.
+- **Decisions for the user (not part of this plan's work):**
+  1. `stitch` should not be on by default in `unified` (finding 1); fixing `stitch_trajectories` is a
+     separate task: its merge test accepts joins that raise acceleration error sixfold.
+  2. `peeling` default in `unified` (section 10, finding 4) is still open.
+  3. `docs/software_map.md` says dense data should use the 3D engine and sparse the epipolar one;
+     that has not been checked on the truth benchmark (only sparse/×2/×4 L1 cases exist here;
+     B0 and 12.2 show `two_phase` ahead of both at every density).
+
+### 12.4 State of the repository
+
+- Merge commit `5139900d` is on `feat/zarr-only-remove-legacy` and on its origin (committed and
+  pushed by someone else while the merge was being finished). Conflicts were resolved in
+  `unified_tracking.py` (both post-processing chains kept: IRLS stitching, trajectory ILP,
+  smoothing, then the other branch's ghost filter, re-rank, stitch, MHT), `temporal_smoothing.py`,
+  `ghost_ilp.py` (our `trajectory_ilp_uniqueness`, auto thresholds ghost rate > 0.15 or density ≥ 500
+  kept), `track3d` kernels (`w_epi`), `gui/ptv.py` and `run_store.py` (Zarr-only versions).
+- Unit tests after the merge: 1975 passed, 3 failed, 95 skipped (excluding slow, gui,
+  `test_determinism.py`). The failures are not caused by the merge: two in
+  `tests/unit/test_cython_epipolar_direction.py` (the default `trackcorr` engine is the hybrid, which
+  runs the 3D engine and the backward pass; the tests assume the old forward-only epipolar run) and
+  `test_sequence_triangulation_method.py` (needs the gitignored `test_data/test_cavity/run.zarr`,
+  which only the main checkout has). The two direction tests should be updated to the hybrid default
+  by whoever owns that change.
+- Not run after the merge: the benchmark tests (`tests/benchmarks`), the clustered case with the merged
+  code, the pure-Python fallback tests.
