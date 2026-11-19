@@ -562,6 +562,20 @@ class Tracking:
                 except Exception as exc:  # pragma: no cover - never break tracking
                     log.warning("[unified] ghost filter skipped: %r", exc)
 
+            # Frame-quality awareness: interpolate low-quality frames.
+            try:
+                from openptv2.frame_quality import interpolate_frame_correspondences, low_quality_frames
+
+                if store is not None and first is not None and last is not None and last >= first:
+                    lq = low_quality_frames(store, first, last, threshold=float(track_cfg.get("frame_quality_threshold", 0.5)))
+                    n_interp = 0
+                    for f in lq:
+                        n_interp += interpolate_frame_correspondences(store, f, first, last)
+                    if n_interp:
+                        log.info("[unified] frame-quality: interpolated %d points in %d low-quality frames", n_interp, len(lq))
+            except Exception as exc:  # pragma: no cover - never break tracking
+                log.warning("[unified] frame-quality skipped: %r", exc)
+
             self._apply_v_max_to_tpar(self.exp, v_max)
             tracker = self.ptv.py_trackcorr_init(self.exp)
             self.exp.tracker = tracker
