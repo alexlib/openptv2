@@ -145,3 +145,69 @@ def arrays_from_store(store: Any, linkage_name: str, first: int, last: int, n_ca
                 sumg[r, c] = sg[blob[r, c]]
     return {"frame": frame, "row": row, "pos": pos, "blob": blob, "centre": centre, "sumg": sumg,
             "tid": tid, "blobs": blobs}
+
+
+def fill_gaps(
+    a: dict,
+    pos: np.ndarray,
+    cpar: Any,
+    cals: list,
+    radius: float = 1.5,
+    max_gap: int = 3,
+    min_cams: int = 3,
+    min_rows: int = 4,
+) -> dict:
+    """Rows for the frames a track skipped: where its path says the particle is, blobs are claimed.
+
+    For every track with at least ``min_rows`` rows, every missing frame between two of its rows (at most
+    ``max_gap`` frames) gets a predicted position (linear interpolation of the neighbouring rows' ``pos``),
+    projected into every camera; the nearest blob within ``radius`` px is taken in each camera (a blob another
+    point already uses is shared), and the row is added if at least ``min_cams`` cameras have one.
+    Returns a dict with the new rows (``frame``, ``tid``, ``pos``, ``blob``, ``centre``, ``sumg``) in the same
+    layout as :func:`arrays_from_store`.
+    """
+    frame, tid = a["frame"], a["tid"]
+    blobs = a["blobs"]
+    n_cams = a["blob"].shape[1]
+    order = np.lexsort((frame, tid))
+    t_sorted = tid[order]
+    cuts = np.flatnonzero(np.r_[True, t_sorted[1:] != t_sorted[:-1], True])
+    todo = []                                                  # (frame, tid, predicted position)
+    for s0, s1 in zip(cuts[:-1], cuts[1:]):
+        if s1 - s0 < min_rows:
+            continue
+        idx = order[s0:s1]
+        f = frame[idx]
+        for i in np.flatnonzero(np.diff(f) > 1):
+            gap = int(f[i + 1] - f[i] - 1)
+            if gap > max_gap:
+                continue
+            p0, p1 = pos[idx[i]], pos[idx[i + 1]]
+            for g in range(1, gap + 1):
+                todo.append((int(f[i]) + g, int(tid[idx[i]]), p0 + (p1 - p0) * g / (gap + 1)))
+    if not todo:
+        return {k: np.zeros((0,) + v.shape[1:], v.dtype) for k, v in
+                (("frame", frame), ("tid", tid), ("pos", pos), ("blob", a["blob"]), ("centre", a["centre"]),
+                 ("sumg", a["sumg"]))}
+    tf = np.array([t[0] for t in todo])
+    tt = np.array([t[1] for t in todo])
+    tp = np.array([t[2] for t in todo])
+    blob = np.full((len(todo), n_cams), -1, dtype=a["blob"].dtype)
+    centre = np.full((len(todo), n_cams, 2), np.nan)
+    sumg = np.full((len(todo), n_cams), np.nan)
+    for f in np.unique(tf):
+        rows = np.flatnonzero(tf == f)
+        for c in range(n_cams):
+            if (int(f), c) not in blobs:
+                continue
+            cent, sg = blobs[(int(f), c)]
+            if len(cent) == 0:
+                continue
+            px = project_pixels(tp[rows], cals[c], cpar)
+            d, j = cKDTree(cent).query(px, distance_upper_bound=radius)
+            hit = np.isfinite(d)
+            blob[rows[hit], c] = j[hit]
+            centre[rows[hit], c] = cent[j[hit]]
+            sumg[rows[hit], c] = sg[j[hit]]
+    ok = (blob >= 0).sum(1) >= min_cams
+    return {"frame": tf[ok], "tid": tt[ok], "pos": tp[ok], "blob": blob[ok], "centre": centre[ok], "sumg": sumg[ok]}

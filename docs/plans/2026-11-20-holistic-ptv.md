@@ -229,3 +229,13 @@ Targets are set from the measured ceilings; they are goals, not promises.
   0.80 with perfect association): particles absent from the cloud. Plan gate for H2 (-30 %) not met by the post-step
   alone, above the stop line (-15 %); proceeding to H3 (recovery). Cost: 11 s for 69k rows (0.18 s/frame), python
   loops; to be vectorised later (matcher 0.10 s/frame).
+- 2026-11-20, H3 first look. Gap filling inside tracks (`merge_post.fill_gaps`, tests) after refinement and
+  re-joining pieces (`reconnect_pieces` on the refined path) adds only +0.5 points of yield (0.662 -> 0.667) and
+  makes the velocity error slightly worse (0.1608 -> 0.1685, noisy extra points). Reason (`scripts/joint_missing_points.py`,
+  60-frame default-rate case): the tracker output holds 80 % of the eligible true points (seen by >= 3 cameras);
+  of the missing 20 % only 34 % belong to a particle found within +-3 frames (9 % on both sides), 48 % within +-6
+  frames, and 19 % to particles never found at all. The gaps are long (merged episodes: median 5, 90th percentile 19
+  frames) and `two_phase` links only consecutive frames, so holes appear as separate fragments. Recovery therefore needs
+  (a) bridging of long gaps with interpolation on the refined path and a mass/brightness check on the claimed blob,
+  (b) births for particles never tracked (unexplained blob mass, leftover blobs), (c) the 60-frame cases have edge
+  effects; use the 150-200-frame cases for H3 gates. Not done yet.

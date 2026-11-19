@@ -523,7 +523,7 @@ def h1(case: str, rounds: int = 3, window: int = 9, order: int = 2, var_c: float
 
 
 def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int = 2, iters: int = 0,
-       **opts) -> dict:
+       fill: bool = False, fill_radius: float = 1.5, fill_gap: int = 3, **opts) -> dict:
     """H2: merge-aware refinement of a REAL tracker run (no truth in the algorithm).
 
     Runs ``tracker`` on the case (keeping its store), finds shared blobs from the tracks
@@ -537,7 +537,7 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
     import os
     import shutil
 
-    from openptv2.merge_post import arrays_from_store, extend_membership
+    from openptv2.merge_post import arrays_from_store, extend_membership, fill_gaps
     from openptv2.merge_refine import refine_merged, shared_blobs
     from openptv2.storage import RunStore
 
@@ -545,6 +545,8 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
     cpar, cals, vpar = exp.cpar, list(exp.cals), exp.vpar
     n_cams, n_out = len(cals), info["n_out"]
     os.environ["KEEP_STORE"] = "1"
+    if fill and iters:
+        raise ValueError("gap filling adds rows, which cannot be written back to the case yet: use iters=0")
 
     def tracked_arrays(run_case):
         run_dir = sb.WORK / "runs" / run_case / tracker
@@ -556,7 +558,21 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
         blob, centre, sumg, n_att = extend_membership(a["frame"], a["pos"], a["blob"], a["centre"], a["sumg"],
                                                       a["blobs"], cpar, cals, radius=radius)
         res = refine_merged(a["frame"], a["tid"], blob, centre, sumg, cpar, cals, vpar, **opts)
-        return res, blob, n_att
+        if fill:
+            from openptv2.reconnect import reconnect_pieces
+
+            path = np.where(np.isfinite(res.x[:, :1]), res.x, a["pos"])
+            # re-join fragments on the refined path, then claim blobs where the path says the particle is
+            a = {**a, "tid": reconnect_pieces(a["tid"], a["frame"], path, max_gap=fill_gap + 1, min_len=4)}
+            new = fill_gaps(a, path, cpar, cals, radius=fill_radius, max_gap=fill_gap)
+            if len(new["frame"]):
+                a = {**a, **{k: np.concatenate([a[k], new[k]]) for k in ("frame", "tid", "pos", "blob", "centre", "sumg")}}
+                blob, centre, sumg = a["blob"], a["centre"], a["sumg"]
+                blob, centre, sumg, n2 = extend_membership(a["frame"], a["pos"], blob, centre, sumg, a["blobs"],
+                                                           cpar, cals, radius=radius)
+                n_att += n2
+                res = refine_merged(a["frame"], a["tid"], blob, centre, sumg, cpar, cals, vpar, **opts)
+        return res, blob, n_att, a
 
     def write_pred(label, a, pos):
         keep = np.bincount(a["tid"])[a["tid"]] >= min_len
@@ -568,10 +584,12 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
         return int(keep.sum())
 
     a = tracked_arrays(case)
-    res, blob, n_att = refine_from(a)
+    a0 = a
+    res, blob, n_att, a = refine_from(a)
     new_pos = np.where(np.isfinite(res.x[:, :1]), res.x, a["pos"])
-    tracked = write_pred("h2base", a, a["pos"])
-    write_pred("h2", a, new_pos)
+    base_a = a0
+    tracked = write_pred("h2base", base_a, base_a["pos"])
+    write_pred("h2fill" if fill else "h2", a, new_pos)
     out = {"rows": int(len(a["frame"])), "tracked_rows": tracked, "attachments": int(n_att),
            "rows_with_a_shared_blob": float((shared_blobs(a["frame"], blob) >= 2).any(1).mean()),
            "info": res.info, "iterations": []}
@@ -594,7 +612,7 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
         shutil.rmtree(sb.WORK / "runs" / run_case / tracker, ignore_errors=True)
         sb.track(run_case, tracker)
         a = tracked_arrays(run_case)
-        res, blob, n_att = refine_from(a)
+        res, blob, n_att, a = refine_from(a)
         new_pos = np.where(np.isfinite(res.x[:, :1]), res.x, a["pos"])
         write_pred(f"h2i{k}", a, new_pos)
         out["iterations"].append({"k": k, "attachments": int(n_att),
@@ -743,6 +761,9 @@ def main(argv=None) -> None:
     q7.add_argument("--radius", type=float, default=2.0)
     q7.add_argument("--rounds", type=int, default=3)
     q7.add_argument("--iters", type=int, default=0)
+    q7.add_argument("--fill", action="store_true")
+    q7.add_argument("--fill-radius", type=float, default=1.5)
+    q7.add_argument("--fill-gap", type=int, default=3)
     q5 = sub.add_parser("b3")
     q5.add_argument("--case", required=True)
     q5.add_argument("--order", type=int, default=3)
@@ -764,7 +785,8 @@ def main(argv=None) -> None:
         print(json.dumps(r))
         return
     if a.cmd == "h2":
-        r = h2(a.case, a.tracker, a.radius, iters=a.iters, rounds=a.rounds)
+        r = h2(a.case, a.tracker, a.radius, iters=a.iters, fill=a.fill, fill_radius=a.fill_radius,
+               fill_gap=a.fill_gap, rounds=a.rounds)
         save("H2", f"{a.case}|{a.tracker}", r)
         print(json.dumps(r, indent=1))
         return

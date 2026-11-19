@@ -2643,42 +2643,31 @@
   },
   "H2": {
     "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05|two_phase": {
-      "rows": 69144,
+      "rows": 69580,
       "tracked_rows": 62533,
-      "attachments": 16811,
-      "rows_with_a_shared_blob": 0.33583535809325465,
+      "attachments": 33704,
+      "rows_with_a_shared_blob": 0.3447686116700201,
       "info": [
         {
           "round": 1,
-          "var_p_px2": 0.032348254969448445,
-          "trusted_share": 0.8716157584172163,
-          "gated_obs": 510
+          "var_p_px2": 0.03211383486152507,
+          "trusted_share": 0.8755102040816326,
+          "gated_obs": 494
         },
         {
           "round": 2,
-          "var_p_px2": 0.022143816673062616,
-          "trusted_share": 0.8716157584172163,
-          "gated_obs": 1295
+          "var_p_px2": 0.021966228010955484,
+          "trusted_share": 0.8755102040816326,
+          "gated_obs": 1259
         },
         {
           "round": 3,
-          "var_p_px2": 0.02111865862375116,
-          "trusted_share": 0.8716157584172163,
-          "gated_obs": 1581
+          "var_p_px2": 0.020927951365325256,
+          "trusted_share": 0.8755102040816326,
+          "gated_obs": 1536
         }
       ],
-      "iterations": [
-        {
-          "k": 1,
-          "attachments": 16968,
-          "rows_with_a_shared_blob": 0.3373105403216476
-        },
-        {
-          "k": 2,
-          "attachments": 16985,
-          "rows_with_a_shared_blob": 0.3376576420224459
-        }
-      ]
+      "iterations": []
     }
   }
 }

@@ -86,3 +86,50 @@ def test_no_attachment_beyond_the_radius_or_for_points_with_too_few_cameras(rig)
     b3, _, _, n_att3 = extend_membership(frame, pts, blob, centre, sumg, near, cpar, cals, radius=2.0)
     assert b3[1, 1] == -1 and b3[1, 2] == -1                  # two-camera point untouched
     assert b3[0, 2] == 0                                      # three-camera point 0 took the blob under its projection
+
+
+def _track_with_a_gap(rig, gap_frames=(4,)):
+    from openptv2.merge_post import fill_gaps  # noqa: F401
+
+    cpar, cals, pts, px = rig
+    p0 = pts[0]
+    vel = np.array([0.05, 0.03, 0.0])
+    frames = [f for f in range(1, 9) if f not in gap_frames]
+    pos = np.array([p0 + vel * f for f in frames])
+    blobs = {}
+    for f in range(1, 9):
+        truth = p0 + vel * f
+        for c in range(4):
+            blobs[(f, c)] = (project_pixels(truth[None], cals[c], cpar), np.array([100.0]))
+    n = len(frames)
+    a = {"frame": np.array(frames), "tid": np.zeros(n, int), "pos": pos,
+         "blob": np.zeros((n, 4), int), "centre": np.zeros((n, 4, 2)), "sumg": np.full((n, 4), 100.0),
+         "blobs": blobs}
+    return cpar, cals, a, p0 + vel * gap_frames[0]
+
+
+def test_a_track_gap_is_filled_from_the_blobs_where_the_path_says(rig):
+    from openptv2.merge_post import fill_gaps
+
+    cpar, cals, a, truth_gap = _track_with_a_gap(rig)
+    new = fill_gaps(a, a["pos"], cpar, cals, radius=1.5)
+    assert len(new["frame"]) == 1 and new["frame"][0] == 4 and new["tid"][0] == 0
+    assert (new["blob"][0] == 0).all()                        # a blob in every camera
+    assert np.linalg.norm(new["pos"][0] - truth_gap) < 1e-3
+
+
+def test_gap_filling_needs_blobs_short_gaps_and_enough_cameras(rig):
+    from openptv2.merge_post import fill_gaps
+
+    cpar, cals, a, _ = _track_with_a_gap(rig)
+    far = dict(a, blobs={k: (v[0] + 30.0, v[1]) for k, v in a["blobs"].items()})
+    assert len(fill_gaps(far, a["pos"], cpar, cals, radius=1.5)["frame"]) == 0          # no blob near the path
+    cpar, cals, a2, _ = _track_with_a_gap(rig, gap_frames=(3, 4, 5, 6))
+    assert len(fill_gaps(a2, a2["pos"], cpar, cals, max_gap=3)["frame"]) == 0           # gap of four frames
+    assert len(fill_gaps(a2, a2["pos"], cpar, cals, max_gap=4)["frame"]) == 4
+    two = dict(a, blobs={k: v for k, v in a["blobs"].items() if k[1] < 2})                # only two cameras have blobs
+    assert len(fill_gaps(two, a["pos"], cpar, cals, min_cams=3)["frame"]) == 0
+    assert len(fill_gaps(two, a["pos"], cpar, cals, min_cams=2)["frame"]) == 1
+    short = dict(a, frame=a["frame"][:3], tid=a["tid"][:3], pos=a["pos"][:3], blob=a["blob"][:3],
+                 centre=a["centre"][:3], sumg=a["sumg"][:3])
+    assert len(fill_gaps(short, short["pos"], cpar, cals, min_rows=4)["frame"]) == 0     # too short a track
