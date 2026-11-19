@@ -52,6 +52,9 @@ def rerank_trajectories(store, first, last, linkage_name="ptv_is", min_consisten
         try:
             pos, cam_ids = store.read_correspondences(f)
             rcm = store.read_rcm(f) if hasattr(store, "read_rcm") else None
+            if rcm is not None:
+                from openptv2.calibration_aware import normalize_rcm
+                rcm = normalize_rcm(rcm, np.asarray(pos))
             frame_consistency[f] = compute_point_consistency(np.asarray(pos), np.asarray(cam_ids), rcm=rcm)
         except Exception:
             frame_consistency[f] = None

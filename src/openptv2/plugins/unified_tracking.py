@@ -122,9 +122,17 @@ class Tracking:
         # the forward pass already saturates accuracy.
         bidirectional = not (density > 5000)
 
-        # 2D leaf re-ranking: enable when data is dense/ambiguous (3D
-        # triangulation weak). On moderate density it helps disambiguate.
-        use_2d = density >= 500 or density == 0  # 0 = unknown -> keep on (safe)
+        # Engine selection: dense scenes benefit from the 3D priority cascade
+        # (priority_segment_3d) which is more robust to 2D ghost ambiguity.
+        # Sparse/clean scenes use the epipolar engine (trackcorr) for speed.
+        # use_2d=True means "run epipolar 2D engine"; False means "3D engine".
+        ghost_rate = float(est.get("ghost_rate", 0.0) or 0.0) if est else 0.0
+        if density == 0:
+            use_2d = True  # unknown -> epipolar (safe, fast)
+        elif ghost_rate > 0.2 or density >= 500:
+            use_2d = False  # ghosty/dense -> 3D engine (priority_segment_3d)
+        else:
+            use_2d = True  # clean/sparse -> epipolar
 
         # Honour explicit overrides (auto -> resolved above).
         bidirectional = self._resolve_bool(track_cfg.get("bidirectional", "auto"), bidirectional)
@@ -616,7 +624,7 @@ class Tracking:
             _ctx = dict(regime)
             _ctx.update(self._resolved or {})
             linkage_name = (getattr(self.ptv, "_naming", {}) or {}).get("linkage", "ptv_is") if self.ptv else "ptv_is"
-            if resolve_smoothing_config(track_cfg, _ctx) and store is not None and first is not None and last is not None and last >= first:
+            if regime.get("use_2d", True) and resolve_smoothing_config(track_cfg, _ctx) and store is not None and first is not None and last is not None and last >= first:
                 stats = trajectory_level_ghost_filter(
                     store, first, last,
                     residual_threshold=float(track_cfg.get("smooth_residual_threshold", 2.0)),
@@ -627,8 +635,10 @@ class Tracking:
         except Exception as exc:  # pragma: no cover - never break tracking
             log.warning("[unified] trajectory-level ghost filter skipped: %r", exc)
 
-        # Multi-D search: epipolar (2D) consistency re-ranking (soft scoring).
+        # Multi-D search: only for epipolar engine.
         try:
+            if not regime.get("use_2d", True):
+                raise RuntimeError("skip rerank in 3D mode")
             rerank_opt = track_cfg.get("epipolar_rerank", "auto")
             do_rerank = rerank_opt in (True, "true", "yes", "on") or rerank_opt == "auto"
             if do_rerank and store is not None and first is not None and last is not None and last >= first:
@@ -643,8 +653,10 @@ class Tracking:
         except Exception as exc:  # pragma: no cover - never break tracking
             log.warning("[unified] epipolar re-rank skipped: %r", exc)
 
-        # Multi-frame stitching: merge fragments + split kinks.
+        # Multi-frame stitching: only for epipolar engine (3D engine has its own gap bridging).
         try:
+            if not regime.get("use_2d", True):
+                raise RuntimeError("skip stitch in 3D mode")
             stitch_opt = track_cfg.get("stitch", "auto")
             do_stitch = stitch_opt in (True, "true", "yes", "on") or stitch_opt == "auto"
             if do_stitch and store is not None and first is not None and last is not None and last >= first:

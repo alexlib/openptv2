@@ -29,20 +29,20 @@ def test_auto_regime_defaults():
 
 def test_auto_regime_density_thresholds():
     plugin = Tracking()
-    # Moderate-low density (<500): use_2d off, bidirectional on
+    # Sparse (<500): epipolar engine (use_2d on), bidirectional on
     r_low = plugin._auto_regime(None, {"density_estimate": 200})
     assert r_low["bidirectional"] is True
-    assert r_low["use_2d"] is False
+    assert r_low["use_2d"] is True
 
-    # Dense (>=500, <=5000): both on
+    # Dense (>=500, <=5000): 3D engine (use_2d off), bidirectional on
     r_mid = plugin._auto_regime(None, {"density_estimate": 1000})
     assert r_mid["bidirectional"] is True
-    assert r_mid["use_2d"] is True
+    assert r_mid["use_2d"] is False
 
-    # Extreme density (>5000): bidirectional off, use_2d on
+    # Extreme density (>5000): bidirectional off, 3D engine (use_2d off)
     r_high = plugin._auto_regime(None, {"density_estimate": 6000})
     assert r_high["bidirectional"] is False
-    assert r_high["use_2d"] is True
+    assert r_high["use_2d"] is False
 
 
 def test_auto_regime_slow_flow_and_overrides():
@@ -132,10 +132,10 @@ def test_auto_regime_with_runstore_and_explicit_overrides(
     plugin = Tracking()
     regime = plugin._auto_regime(exp, {})
 
-    # Density=30 (<500) -> use_2d False; conditioning_ratio ~ 0.4 < 1.0 -> slow_flow True -> delta_t=5
+    # Density=30 (<500) -> use_2d True (sparse -> epipolar); conditioning_ratio ~ 0.4 < 1.0 -> slow_flow True -> delta_t=5
     assert regime["slow_flow"] is True
     assert regime["delta_t"] == 5
-    assert regime["use_2d"] is False
+    assert regime["use_2d"] is True
     assert regime["bidirectional"] is True
     assert plugin._resolved["v_max"] == pytest.approx(0.3, rel=0.05)
     assert plugin._resolved["conditioning_ratio"] == pytest.approx(0.4, rel=0.05)
