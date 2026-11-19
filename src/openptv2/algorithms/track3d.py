@@ -1,4 +1,5 @@
 import cython
+import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import sqrt as c_sqrt
