@@ -1,4 +1,5 @@
 import cython
+import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import sqrt as c_sqrt
@@ -166,6 +167,26 @@ def track3d_loop(run_info, step):
     gate_dacc = bool(getattr(run_info, "_gate_dacc", False))
     dacc_val = float(getattr(tpar, "dacc", 0.0)) if gate_dacc else 0.0
     dangle_val = float(getattr(tpar, "dangle", 0.0)) if gate_dacc else 0.0
+    w_epi = float(getattr(run_info, "_w_epi", 0.0))
+    # Compute epi_scores from store if available and w_epi > 0.
+    epi_scores = getattr(run_info, "_epi_scores", None)
+    if w_epi > 0.0 and epi_scores is None and getattr(run_info, "store", None) is not None:
+        try:
+            store = run_info.store
+            frame2 = step + 1
+            rcm = store.read_rcm(frame2) if hasattr(store, "read_rcm") else None
+            pos2, cam_ids2 = store.read_correspondences(frame2)
+            np2 = len(pos2)
+            if rcm is not None and len(rcm) == np2:
+                epi_scores = np.exp(-np.asarray(rcm, dtype=float) / 5.0)
+            elif cam_ids2 is not None and len(cam_ids2) == np2:
+                n_seen = np.count_nonzero(np.asarray(cam_ids2) >= 0, axis=1)
+                n_cams = np.asarray(cam_ids2).shape[1] if np.asarray(cam_ids2).ndim == 2 else 1
+                epi_scores = (n_seen / float(n_cams)).astype(float)
+            else:
+                epi_scores = None
+        except Exception:
+            epi_scores = None
     count1 = _track3d_loop_fast(
         orig_parts,
         fb.buf[0].path_x,
@@ -186,6 +207,8 @@ def track3d_loop(run_info, step):
         csg,
         dacc=dacc_val,
         dangle=dangle_val,
+        w_epi=w_epi,
+        epi_scores=epi_scores,
     )
 
     _sync_soa_to_aos(fb.buf[1])

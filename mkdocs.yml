@@ -100,6 +100,7 @@ nav:
     - GUI Testing Guide: HOW_TO_TEST_GUI.md
   - Algorithms:
     - Tracking Core: algorithms/tracking.md
+    - Software Map (Trackers & Strategy): software_map.md
     - Correspondence eps0 Semantics: algorithms/correspondence-eps0-semantics.md
     - Burgers Gap Relinking Case Study: algorithms/burgers_gap_relinking_case_study.md
   - Decisions:

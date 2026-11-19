@@ -194,7 +194,9 @@ def resolve_ilp_config(track_cfg: dict, regime: dict) -> bool:
         return True
     if val is False:
         return False
-    # auto
+    # auto: on at moderate ghost rate or density (the trajectory-level ILP is
+    # the default mode; the per-frame ILP can fragment tracks and is opt-in
+    # through ``ilp_mode: frame``).
     ghost_rate = float(regime.get("ghost_rate", 0.0) or 0.0)
     density = float(regime.get("density", 0.0) or 0.0)
     return ghost_rate > 0.15 or density >= 500.0

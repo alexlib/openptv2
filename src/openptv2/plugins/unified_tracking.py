@@ -133,9 +133,17 @@ class Tracking:
         # the forward pass already saturates accuracy.
         bidirectional = not (density > 5000)
 
-        # 2D leaf re-ranking: enable when data is dense/ambiguous (3D
-        # triangulation weak). On moderate density it helps disambiguate.
-        use_2d = density >= 500 or density == 0  # 0 = unknown -> keep on (safe)
+        # Engine selection: dense scenes benefit from the 3D priority cascade
+        # (priority_segment_3d) which is more robust to 2D ghost ambiguity.
+        # Sparse/clean scenes use the epipolar engine (trackcorr) for speed.
+        # use_2d=True means "run epipolar 2D engine"; False means "3D engine".
+        ghost_rate = float(est.get("ghost_rate", 0.0) or 0.0) if est else 0.0
+        if density == 0:
+            use_2d = True  # unknown -> epipolar (safe, fast)
+        elif ghost_rate > 0.2 or density >= 500:
+            use_2d = False  # ghosty/dense -> 3D engine (priority_segment_3d)
+        else:
+            use_2d = True  # clean/sparse -> epipolar
 
         # Honour explicit overrides (auto -> resolved above).
         bidirectional = self._resolve_bool(track_cfg.get("bidirectional", "auto"), bidirectional)
@@ -362,6 +370,8 @@ class Tracking:
             raise ValueError("No experiment object provided")
 
         track_cfg = dict(self._track_cfg(self.exp))
+        # Enable track_assisted corrective extension by default to repair fragments.
+        track_cfg.setdefault("corrective_passes", 2)
         regime = self._auto_regime(self.exp, track_cfg)
         self._apply_conditioning_gate(regime, track_cfg)
 
@@ -486,6 +496,7 @@ class Tracking:
                 do_peeling
                 and store is not None
                 and hasattr(self.exp, "cpar")
+                and hasattr(self.exp, "vpar")
                 and hasattr(self.exp, "cals")
             ):
                 try:
@@ -565,6 +576,20 @@ class Tracking:
                 except Exception as exc:  # pragma: no cover - never break tracking
                     log.warning("[unified] ghost filter skipped: %r", exc)
 
+            # Frame-quality awareness: interpolate low-quality frames.
+            try:
+                from openptv2.frame_quality import interpolate_frame_correspondences, low_quality_frames
+
+                if store is not None and first is not None and last is not None and last >= first:
+                    lq = low_quality_frames(store, first, last, threshold=float(track_cfg.get("frame_quality_threshold", 0.5)))
+                    n_interp = 0
+                    for f in lq:
+                        n_interp += interpolate_frame_correspondences(store, f, first, last)
+                    if n_interp:
+                        log.info("[unified] frame-quality: interpolated %d points in %d low-quality frames", n_interp, len(lq))
+            except Exception as exc:  # pragma: no cover - never break tracking
+                log.warning("[unified] frame-quality skipped: %r", exc)
+
             self._apply_v_max_to_tpar(self.exp, v_max)
             tracker = self.ptv.py_trackcorr_init(self.exp)
             self.exp.tracker = tracker
@@ -604,11 +629,13 @@ class Tracking:
                     log.warning("[unified] confirm_links skipped: %r", exc)
 
             if track_cfg.get("postprocess", True):
-                stats = tracker.postprocess()
+                max_gap = int(track_cfg.get("max_gap", 2))
+                stats = tracker.postprocess(max_gap=max_gap)
                 log.info(
-                    "Post-process links: %s -> %s",
+                    "Post-process links: %s -> %s (max_gap=%d)",
                     stats.get("links_before", 0),
                     stats.get("links_after", 0),
+                    max_gap,
                 )
 
             from openptv2.track_assisted import run_configured_corrective_pass
@@ -620,6 +647,83 @@ class Tracking:
         if str(track_cfg.get("ilp_mode", "trajectory")).strip().lower() != "frame":
             self._apply_trajectory_ilp(post_store, first, last, track_cfg, regime)
         self._apply_temporal_smoothing(post_store, first, last, track_cfg, regime, v_max)
+
+        # Trajectory-level ghost suppression (temporal coherence + target uniqueness).
+        try:
+            from openptv2.temporal_smoothing import (
+                trajectory_level_ghost_filter,
+                resolve_smoothing_config,
+            )
+
+            _ctx = dict(regime)
+            _ctx.update(self._resolved or {})
+            linkage_name = (getattr(self.ptv, "_naming", {}) or {}).get("linkage", "ptv_is") if self.ptv else "ptv_is"
+            if regime.get("use_2d", True) and resolve_smoothing_config(track_cfg, _ctx) and store is not None and first is not None and last is not None and last >= first:
+                stats = trajectory_level_ghost_filter(
+                    store, first, last,
+                    residual_threshold=float(track_cfg.get("smooth_residual_threshold", 2.0)),
+                    linkage_name=linkage_name,
+                    point_level=bool(track_cfg.get("point_level_smoothing", True)),
+                )
+                log.info("[unified] trajectory-level ghost filter: %s", stats)
+        except Exception as exc:  # pragma: no cover - never break tracking
+            log.warning("[unified] trajectory-level ghost filter skipped: %r", exc)
+
+        # Multi-D search: only for epipolar engine.
+        try:
+            if not regime.get("use_2d", True):
+                raise RuntimeError("skip rerank in 3D mode")
+            rerank_opt = track_cfg.get("epipolar_rerank", "auto")
+            do_rerank = rerank_opt in (True, "true", "yes", "on") or rerank_opt == "auto"
+            if do_rerank and store is not None and first is not None and last is not None and last >= first:
+                from openptv2.epipolar_rerank import rerank_trajectories
+
+                rstats = rerank_trajectories(
+                    store, first, last,
+                    linkage_name=linkage_name,
+                    min_consistency=float(track_cfg.get("epipolar_min_consistency", 0.5)),
+                )
+                log.info("[unified] epipolar re-rank: %s", rstats)
+        except Exception as exc:  # pragma: no cover - never break tracking
+            log.warning("[unified] epipolar re-rank skipped: %r", exc)
+
+        # Multi-frame stitching: only for epipolar engine (3D engine has its own gap bridging).
+        try:
+            if not regime.get("use_2d", True):
+                raise RuntimeError("skip stitch in 3D mode")
+            stitch_opt = track_cfg.get("stitch", "auto")
+            do_stitch = stitch_opt in (True, "true", "yes", "on") or stitch_opt == "auto"
+            if do_stitch and store is not None and first is not None and last is not None and last >= first:
+                from openptv2.trajectory_stitch import stitch_trajectories
+
+                st = stitch_trajectories(
+                    store, first, last,
+                    max_gap=int(track_cfg.get("max_gap", 2)),
+                    spatial_tol=float(track_cfg.get("stitch_spatial_tol", 5.0)),
+                    kink_angle_deg=float(track_cfg.get("stitch_kink_angle", 60.0)),
+                    linkage_name=linkage_name,
+                )
+                log.info("[unified] trajectory stitch: %s", st)
+        except Exception as exc:  # pragma: no cover - never break tracking
+            log.warning("[unified] trajectory stitch skipped: %r", exc)
+
+        # Sliding-window MHT: re-optimize links over windows of frames.
+        try:
+            mht_opt = track_cfg.get("mht", "auto")
+            do_mht = mht_opt in (True, "true", "yes", "on")  # auto-disabled: MHT over-merges at current tuning
+            if do_mht and store is not None and first is not None and last is not None and last >= first:
+                from openptv2.mht_linker import mht_relink
+
+                mstats = mht_relink(
+                    store, first, last,
+                    window=int(track_cfg.get("mht_window", 3)),
+                    max_gap=int(track_cfg.get("max_gap", 2)),
+                    spatial_tol=float(track_cfg.get("mht_spatial_tol", 2.0)),
+                    linkage_name=linkage_name,
+                )
+                log.info("[unified] MHT relink: %s", mstats)
+        except Exception as exc:  # pragma: no cover - never break tracking
+            log.warning("[unified] MHT relink skipped: %r", exc)
 
         self._save_tracking_decision(
             store,

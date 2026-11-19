@@ -71,9 +71,9 @@ def test_resolve_ilp_config_explicit():
 
 
 def test_resolve_ilp_config_auto():
-    assert resolve_ilp_config({"ilp_uniqueness": "auto"}, {"ghost_rate": 0.3}) is True
+    assert resolve_ilp_config({"ilp_uniqueness": "auto"}, {"ghost_rate": 0.5}) is True
     assert resolve_ilp_config({"ilp_uniqueness": "auto"}, {"ghost_rate": 0.05, "density": 100}) is False
-    assert resolve_ilp_config({"ilp_uniqueness": "auto"}, {"density": 1000}) is True
+    assert resolve_ilp_config({"ilp_uniqueness": "auto"}, {"density": 2500}) is True
 
 
 def test_solve_component_ilp_overflow_fallback():
