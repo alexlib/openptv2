@@ -1,6 +1,8 @@
 # Plan: a joint stereo-matching + tracking algorithm ("joint tracker")
 
-Date: 2026-11-19. Branch: `feat/zarr-only-remove-legacy`. Status: plan, nothing implemented yet.
+Date: 2026-11-19. Branch: `feat/zarr-only-remove-legacy`. Status: step 0 measured; **plan revised the
+same day: read sections 10 and 11 first.** Sections 3–9 are the original design and are kept for
+the record; where they differ from section 11, section 11 wins.
 Related: `docs/plans/2026-09-30-tracker-plan.md` (benchmark facts),
 `docs/plans/2026-10-09-trackcorr-two-phase-merge.md`,
 `docs/plans/unified-tracker-implementation.md` (peeling, ILP, stitching).
@@ -88,7 +90,7 @@ different than designed; see step 0a):
 4. Peeling default: on in code, off in `PRESET_CONFIGS["unified"]` and in `docs/tracking.md`.
 5. Peeling pass 2 mixes `full_forward_3d` with the epipolar `full_backward`.
 
-## 3. The idea in plain words
+## 3. The idea in plain words (original design; revised in section 11)
 
 1. **Keep every candidate.** Per frame, keep all blob combinations that pass the
    epipolar test, each with its 3D position, ray miss distance (rcm), number of cameras
@@ -301,6 +303,163 @@ keeps more, noisier points.) Findings:
   points are merged-blob points whose centroid is shifted; their 3D positions are noisy. Under the
   rule "accuracy ranks above density", this is not a win.
 
-### Decision point (stopped here, as the plan says)
-B1/B2 fail for the pool as designed. Plan section 4 says: drop the pool and build only the claim
-logic. Options and the recommendation are in the report to the user; nothing beyond step 0 is built.
+### Extra check: merged blobs (2026-11-19, one-off script, 8 frames per case)
+
+A blob is "merged" when two or more true particles share it in that camera
+(`truth.npz['blob_tid']`). For each true particle, the pool combination with the most cameras
+(the B2 pick), by the number of merged blobs it uses:
+
+| Merged blobs in the pick | Share of picks (sparse / ×4) | RMS position error, mm (sparse / ×4) | More than 0.4 mm off (sparse / ×4) |
+|---|---|---|---|
+| 0 | 62 % / 25 % | 0.068 / 0.076 | 0 % / 0 % |
+| 1 | 24 % / 27 % | 0.21 / 0.25 | 6 % / 11 % |
+| 2 | 9 % / 25 % | 0.42 / 0.48 | 27 % / 32 % |
+| 3 | 5 % / 23 % | 0.68 / 0.79 | 43 % / 52 % |
+
+- 38 % (sparse) and 75 % (×4) of true particles have at least one merged blob in a frame.
+- Where a combination of ≥ 3 cameras without merged blobs exists (34 % of the merged picks on
+  the sparse case, 9 % at ×4), using it cuts the RMS error from 0.18 to 0.08 mm.
+- Greedy cloud, sparse case: 7.3 % of rows are made of blobs of different particles; 8.4 % are
+  more than 0.4 mm from truth. Of the rows made of one particle's own blobs, 1.5 % (sparse) and
+  10.4 % (×4) are still more than 0.4 mm off: these are merged-blob points.
+
+### What step 0 means
+
+1. **The main enemy on this benchmark is overlapping particle images (merged blobs), not ghosts
+   stealing blobs.** A merged blob has a shifted centre; a 3D point that uses it is 3–10× less
+   accurate, and with 2–3 merged blobs it is often far enough off to count as a ghost.
+2. **B2 did not measure the pool's ceiling.** Its "perfect" pick preferred more cameras, so it took
+   4-camera combinations containing merged blobs over clean 3-camera ones. And its velocity error
+   was averaged over a larger, noisier set of points, so it rose even where no original point
+   changed. The same run shows what the extra points buy: perfect-linker long-track completeness
+   0.553 → 0.628 and pieces per long track 1.83 → 1.53 (sparse).
+3. **`two_phase` is the baseline to beat.** `trackcorr` and `unified` are far behind it.
+4. **Peeling should not be the default in `unified`** (worse than plain `trackcorr` on all four
+   cases). Separate decision for the user; not part of this plan.
+5. Not yet known: whether real data has as many merged blobs as the benchmark's merge model
+   (`synth_bench._target_rows`), and whether track breaks happen at the overlap events.
+
+## 11. Revised plan (2026-11-19): merge-aware joint tracker
+
+### 11.1 The idea in plain words
+
+The first design said: tracks own their blobs, so ghosts lose. Step 0 shows the larger loss is
+elsewhere: two real particles overlap in one camera, the detector gives one blob with a shifted
+centre, and the matcher builds an inaccurate point or none. The matcher cannot know a blob is
+merged. **A tracker can: two tracks that are predicted onto the same blob tell it.** So:
+
+1. **Tracks predict first.** Every confirmed track predicts its 3D position and its position in
+   each camera.
+2. **Find merged blobs from the predictions.** A blob is merged when two or more predictions fall
+   on it (within the blob radius). Blob size is a second hint.
+3. **Triangulate around the merge.** A track uses only its clean cameras when enough remain
+   (how many is decided by bound B3).
+4. **Otherwise de-merge the centre.** For a merged blob with centre `c` and predictions `p_i`,
+   particle `i` gets the 2D position `c + (p_i − mean(p))` (brightness-weighted mean when the
+   brightness is known), used with a lower weight. Blobs only; no images.
+5. **Keep the track through the overlap.** One or two frames without a usable position are
+   coasted, so the track does not break at the overlap.
+6. **New particles come from the leftover blobs.** Blobs taken by confirmed tracks are removed
+   (a merged blob counts as taken); the existing matcher runs on the rest. This needs no change
+   to `algorithms/correspondences.py`: `match_frame_correspondences` is called on the reduced
+   target lists.
+7. **Newborns are on probation**, as in section 3 (point 4): smooth motion for N frames, dead-end
+   rule, and at promotion the track takes its blobs through its past. The existing `two_phase`
+   rules (`q_seed`, `q_young`, `confirm_auto`) are the starting point.
+8. **Forward, then backward, until stable; final cleanup** as in section 3 (points 6–7).
+
+The candidate pool (section 5) is no longer a required part. It comes back only if bound M1 shows
+a gain that the steps above cannot reach.
+
+### 11.2 Bounds to run before building (all truth-based, in `scripts/joint_bounds.py`)
+
+Results go to `bench/step23_joint_bounds_2026-11.json` (new keys `M0`…`B6`) and to a new
+section 12 of this file. Cases: the three `_s0.08_a0.18_f0.05` cases sparse, ×2, ×4 (the
+clustered case when time allows).
+
+| # | Experiment | How | Go / no-go (proposed, not measured) |
+|---|---|---|---|
+| M0 | Do real recordings have as many overlaps as the benchmark? | No truth on real data, so use a proxy on tracked output: project every linked 3D point of a frame into each camera; share of points with another projected point within r = 1, 1.5, 2, 3 px. Compute on real wp2 (`~/Downloads/HiDImaging/CompleteTest-e2e-local/wp2/test/res/run.zarr`, read-only, 100 frames) and, the same way, on the sparse case's `two_phase` output. Also: share of 3-camera points whose projection into the missing camera lies within r px of a blob used by another point | If the real shares are below a third of the synthetic ones, the benchmark overstates merging: report and stop before building |
+| M1 | Fair ceiling of selection | Per true particle take: (a) the best pool row without merged blobs and ≥ 3 cameras; else (b) a row from its clean cameras only when ≥ 2 are clean (build the id row from `blob_tid`, triangulate with `triangulate`); else (c) the most-camera row as in B2. Write the cloud (`<case>_M1`), track with `two_phase` and `oracle`. Report variants a, a+b, a+b+c | Position error of the added points below 2× the clean error; common-set velocity error (see 11.5) not worse than B2ng; long completeness higher |
+| M2 | Ceiling of de-merging | For every merged blob give each of its true particles the 2D position `c + (p_i − mean(p))`, with `p_i` = projection of the true position plus Gaussian noise of 0.3 px and of 0.6 px (two runs; equal weights and brightness weights). Triangulate each particle from its clean and de-merged positions (`transforms.convert_arr_pixel_to_metric`, `distorted_to_flat`, `orientation.point_positions(method="lsq")`). Report position error by number of merged blobs (table above as reference), then track (`<case>_M2`) | RMS error of merged picks at least halved at 0.3 px noise |
+| B3 | Predict-then-claim | For every true particle with truth at t−2, t−1: predict t with `track_assisted._predict_position` from the true positions plus the measured 3D noise (0.019 mm in-plane, 0.094 mm depth); project; take the nearest blob within `radius_px` (1.5, 2, 3) per camera. Report share of correct blobs, wrong blobs and misses, split by cameras hit (4 / 3 / 2) and by merged / clean blob; and the prediction error in px (this sets the M2 noise level and the merge radius) | ≥ 95 % correct claims for a camera count to be allowed to claim |
+| B4 | Leftover matching | Remove the blobs of a share f = 0.5, 0.8, 0.95 of the true particles (merged blobs removed when any owner is in the share), run `match_frame_correspondences` on the rest, count identity ghosts and recovered true points | Ghost rows fall faster than (1 − f) |
+| B6 | Probation length | Link the leftover candidates of B4 (f = 0.8) with `two_phase`; life-time histogram of ghost chains vs real chains | N where ≥ 90 % of ghost chains are dead and < 2 % of real ones |
+| F1 | Do tracks break at overlaps? | On the sparse `two_phase` output: for each end of a track piece whose true particle continues, is a merged blob involved in the next true point (yes / no) against the base rate (38 %) | Informative only |
+
+B5 (per-frame exact selection) is dropped: the stored cloud is already unique and the pool is no
+longer central.
+
+### 11.3 Build (only what the bounds support)
+
+New module `src/openptv2/joint_tracking.py`, plugin `src/openptv2/plugins/joint_tracking.py`,
+name `joint` in `plugins/loader.py` and `tracking_registry.py`. Python first. Output in the usual
+run-store layout (`write_correspondences`, `write_linkage_many`), cam ids may repeat for a merged
+blob. `trackcorr`, `two_phase`, `unified` are not changed.
+
+Reuse, do not re-implement:
+- linking, ghost rules, confirmation: `plugins/two_phase_tracking.py`
+  (`_match_two_phase_frame`, `ghost_probabilities`, `_merge_bidirectional_links`) and
+  `tracking_postprocess` (`confirm_link_tuples`, `kink_statistics`);
+- prediction and claims: `track_assisted._predict_position`, `_claim_particle`,
+  `_triangulate_weighted_lsq` (already supports a lower weight for shared blobs);
+- leftover matching: `correspondences.match_frame_correspondences(..., return_rcm=True)`;
+- cleanup: `ghost_ilp.trajectory_ilp_uniqueness`, `temporal_smoothing.stitch_tracklets_irls`,
+  `reconnect.reconnect_pieces`, `smoothness_filter`.
+
+Stages, one change each, each measured on the cases against `two_phase`:
+- **J1 Merge-aware re-triangulation only.** Run `two_phase` as it is; then, per frame, project the
+  linked points' predictions, mark merged blobs, and recompute the position of every linked point
+  that uses a merged blob (clean cameras, or de-merged centre with lower weight). No link changes.
+  This isolates the accuracy gain of points 2–4.
+- **J2 Claims through overlaps.** Tracks that end while their prediction falls on a blob used by
+  another track claim it as shared and continue (points 3–5); camera counts per B3.
+- **J3 Tracks first, leftovers second.** The frame loop of 11.1 (points 1, 6, 7): confirmed tracks
+  take blobs, the matcher runs on the leftovers, newborns on probation.
+- **J4 Backward sweep and iteration; final cleanup.**
+
+Rules: revert a stage that gains only by dropping true points; one stage per commit; numbers into
+section 12; pure-Python fallback tests and a Cython rebuild only if `algorithms/` is touched
+(not expected before J4).
+
+### 11.4 Then
+
+Real wp2 (300 frames) and lv_multi on scratch copies (`scripts/real_retrack.py`,
+`scripts/realism_metrics.py`); profile; docs (`docs/trackers.md`).
+
+### 11.5 How to score (changed)
+
+`synth_bench.evaluate_pred` averages the velocity error over whatever points a tracker outputs,
+so a tracker that keeps more (harder) points looks worse. Add to it:
+- `subset`: an optional set of truth keys `(particle_id, frame)`; when given, also report
+  `vel_err_rel_subset`, the velocity error over output points matched to those keys. Use the keys
+  matched by plain `two_phase` on the same case (the **common set**).
+- report `pos_err_mm` for the common set and for the extra points separately.
+
+Success for `joint` on sparse, ×2, ×4:
+- common-set velocity error not higher than `two_phase`;
+- long-track completeness higher and pieces per long track lower;
+- true points kept (yield) higher; position error of the extra points below 2× the common-set error;
+- ghost share not higher.
+On real data: more tracks of ≥ 50 frames, roughness not higher.
+
+### 11.6 Notes for whoever implements this
+
+- Work in the worktree `/Users/alex/Documents/Github/openptv2-joint` (branch
+  `feat/zarr-only-remove-legacy`). The main checkout `/Users/alex/Documents/Github/openptv2` is on
+  `main` with someone else's untracked files; do not switch it. The worktree has no environment
+  yet: `uv sync --extra dev --python 3.13`, then `uv run python setup.py build_ext --inplace`
+  (uncompiled runs are 50–100× slower).
+- Benchmark data: `~/Downloads/HiDImaging/tracker-bench-2026-09-29` (`cases/`, `runs/`); source
+  truth `~/Downloads/HiDImaging/Synthetic-CompleteTest`. Paths are constants at the top of
+  `scripts/synth_bench.py`. Never write into the real runs
+  (`~/Downloads/HiDImaging/CompleteTest-e2e-local`, `openptv-cloud/examples/lv-multi`).
+- `scripts/joint_bounds.py` has `case_setup`, `raw_targets`, `pool_frame`, `purity` (identity
+  match of rows to truth; a row is pure for every particle whose own blobs it uses),
+  `triangulate`, `b1`, `b2`, `save`. Add each bound as a sub-command.
+- Timing on this machine: `two_phase` 4–5 s per case, `trackcorr` 45–95 s, `unified` 70–110 s,
+  `eval` about a minute per tracker; sweeps with `-j 3`. zsh: pass lists as arrays.
+- Positions carry a calibration bias (about −0.17 mm in depth); subtract the median offset before
+  comparing with truth, as `evaluate_pred` does.
+- Earlier findings that still hold: soft rules beat deletion; link-cost weights have no effect;
+  never tune a rule on particle speed; 2–3-camera adds without a check hurt trackcorr badly.
