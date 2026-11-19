@@ -798,6 +798,31 @@ merged observations, 96 % of the alarms are right, 1.1 % false alarms among sing
 1.5: 62 % found, 99 % right. (Truth identities were used to define "the particle"; real data needs a track.
 Real linked pairs change blob brightness per camera by a median 0.06 on wp2, so the signature exists there.)
 
+**Does the blob's shape change more when it is merged?** (rendered frames 100–130, intensity-weighted
+second moments of the blob's pixels; scripts `scripts/joint_blob_shape.py`, `joint_blob_context.py`)
+Yes, but weakly. Same particle and camera, the blob at frame `f` and `f+L`; both single against both merged:
+
+| Lag | minor-axis variance, median change single / merged | elongation, single / merged | grey sum, single / merged | AUC (minor variance / grey sum) |
+|---|---|---|---|---|
+| 1 frame | 0.048 / 0.074 | 0.098 / 0.143 | 0.023 / 0.025 | 0.57 / 0.53 |
+| 3 frames | 0.065 / 0.139 | 0.164 / 0.260 | 0.027 / 0.040 | 0.61 / 0.59 |
+| 6 frames | 0.078 / 0.204 | 0.235 / 0.349 | 0.030 / 0.056 | 0.62 / 0.64 |
+
+- Merged blobs do change 1.5–2.6× more, and the gap grows with the lag (partners drift apart, arrive
+  or leave). But single blobs also change a lot (pixel noise, thresholding, neighbours), so as a stand-alone
+  test the shape change is weak (AUC 0.55–0.62). With blob attributes only (`n`, `nx`, `ny`) it is
+  invisible at one frame (AUC 0.47–0.57): extents move in whole pixels.
+- Static shape is also only moderate: AUC 0.67–0.71 (variances), 0.73 (low peakiness); relative to
+  the particle's own typical shape no better (0.44–0.66). **Brightness mass is the strong appearance
+  cue (0.95), shape is a weak supporting one.**
+- Arrivals and departures show clearly in the grey sum: single → merged, next/previous ratio median 1.48
+  (5–95 %: 0.96–9.3); merged → single median 0.68 (0.10–1.03), against ±2–3 % for an unchanged blob.
+  Merged episodes are long: median 5 frames, mean 8, 90 % up to 19 frames.
+- Use: weak cues add up when combined. Each camera and each frame contributes a small log-likelihood
+  for "this blob holds m particles"; four cameras times several frames, tied together by the same
+  particles' 3D track, is the point of one joint model. Shape terms go into the model as soft evidence,
+  not as a classifier on their own.
+
 ### 15.3 The model
 Latent: particles `k` with smooth 3D trajectories `X_k(t)` and per-camera brightness `a_{k,c}`
 (persistent, slowly varying). Observations: per camera and frame, blobs with centre, pixel count,
