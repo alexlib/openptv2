@@ -1,7 +1,8 @@
 """Tracking plugin ``holistic``: two_phase linking inside the holistic loop (:func:`openptv2.holistic.run_holistic`).
 
 YAML (``track:`` section, besides the two_phase keys): ``holistic_rounds`` (default 2), ``holistic_min_resid``
-(default 0.25), ``holistic_partner_min_len`` (default 10).
+(default 0.25), ``holistic_partner_min_len`` (default 10), ``holistic_extend`` (default 0: passes of strict
+track-assisted extension after the loop; helps at moderate density, not at very dense data).
 """
 
 from __future__ import annotations
@@ -54,3 +55,14 @@ class Tracking:
                      rounds=int(track_cfg.get("holistic_rounds", 2)),
                      min_resid=float(track_cfg.get("holistic_min_resid", 0.25)),
                      partner_min_len=int(track_cfg.get("holistic_partner_min_len", 10)))
+        passes = int(track_cfg.get("holistic_extend", 0))
+        if passes > 0:                                        # strict track-assisted extension on the final tracks
+            from openptv2.storage import RunStore
+            from openptv2.track_assisted import run_corrective_pass
+
+            store = RunStore(store.store_path, mode="a")          # fresh object: no cached linkage
+            spar = self.exp.spar
+            spar.first, spar.last = frames[0], frames[-1]
+            run_corrective_pass(cpar, vpar, self.exp.track_par, spar, list(cals), store, max_passes=passes,
+                                forward=True, release_ghosts=False, radius_px=1.2, max_ray_miss_mm=0.15,
+                                max_pos_err_mm=0.3)

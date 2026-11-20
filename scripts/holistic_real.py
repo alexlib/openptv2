@@ -46,6 +46,7 @@ def main() -> None:
     ap.add_argument("--rounds", type=int, default=2)
     ap.add_argument("--src", default=str(DEFAULT_SRC))
     ap.add_argument("--min-resid", type=float, default=0.25)
+    ap.add_argument("--extend", type=int, default=0, help="passes of strict track-assisted extension after the loop")
     ap.add_argument("--score-only", action="store_true", help="score an existing run folder, do not rerun")
     a = ap.parse_args()
     from openptv2.loco import loco_residuals, project_pixels, summarize
@@ -111,6 +112,18 @@ def main() -> None:
                              rounds=a.rounds, min_resid=a.min_resid, initial_link=False)
         report["loop_time_s"] = round(time.perf_counter() - t0, 1)
         report["births"] = stats["rounds"]
+    if a.extend:
+        from openptv2.track_assisted import run_corrective_pass
+
+        spar = exp.spar
+        spar.first, spar.last = first, a.last
+        t0 = time.perf_counter()
+        es = run_corrective_pass(cpar, vpar, exp.track_par, spar, cals, RunStore(store_path, mode="a"),
+                                 max_passes=a.extend, forward=True, release_ghosts=False, radius_px=1.2,
+                                 max_ray_miss_mm=0.15, max_pos_err_mm=0.3)
+        report["extend"] = {"claimed": es.claimed_total, "claimed_2cam": es.claimed_2cam,
+                            "time_s": round(time.perf_counter() - t0, 1)}
+        print("extend", report["extend"])
     st = RunStore(store_path, mode="a")          # the linker wrote through its own store object: read afresh
     final = arrays_from_store(st, "ptv_is", first, a.last, n_cams)
     score("final", final["tid"], final["frame"], final["pos"], final["blob"])

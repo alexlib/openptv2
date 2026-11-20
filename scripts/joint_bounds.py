@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -816,7 +817,7 @@ def mass_match_inputs(case: str, cap_max: int = 3, min_cams: int = 3) -> dict:
             "capacity_share": {str(k): float(np.mean(c == k)) for k in (1, 2, 3)}}
 
 
-def hol(case: str, rounds: int = 2, tag: str = "", **cfg_over) -> dict:
+def hol(case: str, rounds: int = 2, tag: str = "", extend: int = 0, **cfg_over) -> dict:
     """The library loop (:func:`openptv2.holistic.run_holistic`, as in the ``holistic`` plugin) on a copy of ``case``,
     linker = ``two_phase`` ``track_store`` with the case's ``track`` section (+ ``cfg_over``). Writes
     ``runs/<case>/holistic<tag>/pred.npz`` for ``synth_bench eval --ref two_phase``."""
@@ -847,6 +848,15 @@ def hol(case: str, rounds: int = 2, tag: str = "", **cfg_over) -> dict:
 
     t0 = time.perf_counter()
     stats = run_holistic(RunStore(path, mode="a"), frames, cpar, cals, vpar, relink, rounds=rounds)
+    if extend:                                           # track-assisted extension on the final tracks
+        from openptv2.track_assisted import run_corrective_pass
+
+        spar = exp.spar
+        spar.first, spar.last = 1, n_out
+        st = run_corrective_pass(cpar, vpar, exp.track_par, spar, list(cals), RunStore(path, mode="a"),
+                                 max_passes=extend, forward=True, **{"allow_shared_targets": False, **json.loads(os.environ.get("EXT_KW", "{}"))})
+        stats["extend"] = {"claimed": st.claimed_total, "claimed_2cam": st.claimed_2cam,
+                           "links": [st.links_before, st.links_after]}
     stats["time_s"] = round(time.perf_counter() - t0, 1)
     a = arrays_from_store(RunStore(path, mode="r"), "ptv_is", 1, n_out, len(cals))
     out = sb.WORK / "runs" / case / f"holistic{tag}"
@@ -1027,6 +1037,7 @@ def main(argv=None) -> None:
     q10.add_argument("--rounds", type=int, default=2)
     q10.add_argument("--tag", default="")
     q10.add_argument("--no-noise-aware", action="store_true")
+    q10.add_argument("--extend", type=int, default=0)
     q5 = sub.add_parser("b3")
     q5.add_argument("--case", required=True)
     q5.add_argument("--order", type=int, default=3)
@@ -1048,7 +1059,7 @@ def main(argv=None) -> None:
         print(json.dumps(r))
         return
     if a.cmd == "hol":
-        r = hol(a.case, a.rounds, a.tag, noise_aware_confirm=not a.no_noise_aware)
+        r = hol(a.case, a.rounds, a.tag, extend=a.extend, noise_aware_confirm=not a.no_noise_aware)
         save("HOL", f"{a.case}|{a.tag}", r)
         print(json.dumps(r, indent=1))
         return

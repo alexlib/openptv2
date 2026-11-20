@@ -595,3 +595,28 @@ Result: **186 s -> 116 s** (0.58 s per frame). Left: per-group Python loops in `
 projection itself (20 s, analytic Jacobian would remove 6 of 7 evaluations). Then Cython if still needed.
 Note: HEAD gives 0.1063 / 0.0769 / 0.736 / 0.649 on this case (my earlier table said 0.1082 / 0.0733 / 0.741 /
 0.670; the case files were rebuilt in between), still -24 % against `two_phase`.
+
+## Where yield is lost (breakdown by clean cameras, `scripts/joint_yield_breakdown.py`)
+Truth points grouped by the number of cameras in which the particle sits alone in its blob. "cloud" = found in the
+matcher's 3D points, "final" = found in the holistic output (0.4 mm).
+
+| group (share of truth) | d1 cloud | d1 final | x4 share | x4 cloud | x4 final |
+|---|---|---|---|---|---|
+| no blob in >= 2 cameras | 14.6 % | 0 | 9.7 % | 0 | 0 |
+| 4 clean | 29.5 % | 100 % | 4.7 % | 99.6 % | |
+| 3 clean | 28.7 % | 99.5 % | 11.3 % | 86.7 % | |
+| **2 clean** | 17.3 % | 49 % -> **72 %** | 21.3 % | **34 %** | |
+| 1 clean | 6.4 % | 31 % -> 49 % | 26.7 % | 16 % -> 19 % | |
+| 0 clean (all merged) | 3.6 % | 30 % -> 35 % | 26.3 % | 11 % -> 12 % | |
+(x4 final over all >= 2-clean points 62.6 %, 1 clean 19 %, 0 clean 12 %; yield 0.265.)
+Reading: at the default density the loop already brings the 2-clean group from 49 % to 72 %; what is left is ~4 points
+of all particles in the 2-clean group, ~3 in 1-clean, ~2 in 0-clean, and 14.6 % that have no blob at all (the ceiling is
+near 0.85). At x4 the 2-clean group (21 % of all particles) is the main loss: two views are ambiguous in a cloud of
+6,000 particles, so the matcher keeps 34 % of them, and 1-clean / 0-clean (53 %) are not recovered.
+**Strict track-assisted extension** (`run_corrective_pass`, radius 1.2 px, ray miss 0.15 mm, position within 0.3 mm
+of the prediction, ghosts not released; option `holistic_extend`): d1 vErr 0.1295 -> 0.1255, common set 0.0856 ->
+0.0765, long completeness 0.627 -> 0.651, yield 0.737 -> 0.746, ghost unchanged; 2-clean 72 % -> 76.5 %. x4: yield
+0.252 -> 0.267 but velocity error 0.382 -> 0.436 (new points are noisy, ghost 5.1 -> 5.6 %): not useful there.
+The unrestricted pass (radius 3 px, ghosts released) claims 65k points at x4 and makes 24 % ghosts. So extension helps
+a little where tracks already exist; at x4 the tracks that would carry it do not exist (only 25 % of particles
+are tracked), the start of tracks is the problem, which needs the 2-view ambiguity resolved *in time*.
