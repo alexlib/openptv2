@@ -1264,7 +1264,10 @@ def track_store(
                 if tree is not None:
                     for j in tree.query_ball_point(p, 0.6):
                         close.append((tids_list[j], tpos[j]))
-                if len(close) >= 2:
+                # Conservative membership: only split when exactly two tracks claim
+                # the blob and their predicted positions are close (real merge).
+                if (len(close) == 2
+                        and np.linalg.norm(close[0][1] - close[1][1]) < 1.0):
                     preds_arr = np.array([tp for (_, tp) in close])
                     intensities = np.ones(len(close))
                     mp_all = project_fn(p.reshape(1, 3)).reshape(-1)
@@ -1277,8 +1280,13 @@ def track_store(
                         split_pos, _ = merged_split.split_merged_blob(
                             merged_px, seen_i, intensities, preds_arr, cals, cpar
                         )
-                        for sp in split_pos:
-                            new_pts.append(sp)
+                        # accept split only if constituents stay close to predictions
+                        if np.max([np.linalg.norm(split_pos[k] - preds_arr[k]) for k in range(len(preds_arr))]) < 0.5:
+                            for sp in split_pos:
+                                new_pts.append(sp)
+                                new_seen_frame.append(np.asarray(seen_i, dtype=bool).copy())
+                        else:
+                            new_pts.append(p)
                             new_seen_frame.append(np.asarray(seen_i, dtype=bool).copy())
                     except Exception:
                         new_pts.append(p)
