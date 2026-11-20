@@ -84,6 +84,8 @@ BUILTIN_TRACKING_PLUGINS = {
     "two_phase": "openptv2.plugins.two_phase_tracking",
     "unified": "openptv2.plugins.unified_tracking",
     "unified_tracking": "openptv2.plugins.unified_tracking",
+    "blob_loop": "openptv2.plugins.blob_loop_tracking",
+    "two_phase_blob_loop": "openptv2.plugins.blob_loop_tracking",
 }
 
 LEGACY_ALIASES = {

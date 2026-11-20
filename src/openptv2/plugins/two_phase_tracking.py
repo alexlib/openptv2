@@ -195,6 +195,7 @@ class TwoPhaseTrackerConfig:
     use_velocity: bool = True
     cost_mode: str = "projected"
     allow_shared: bool = False
+    split_merged: bool = False
     max_shared: int = 2
     share_tol: float | None = 1.0
     max_group_size: int = 128
@@ -348,6 +349,8 @@ def _match_two_phase_frame(
     blob_gate: float | None = None,
     young0: np.ndarray | None = None,
     q_block: float = 1.0,
+    merged1: np.ndarray | None = None,
+    merged_noise_scale: float = 1.4,
 ) -> tuple[set[tuple[int, int]], set[tuple[int, int]]]:
     """Two-phase frame-to-frame matching: 3D search + 2D ranking.
 
@@ -453,6 +456,12 @@ def _match_two_phase_frame(
                 return set(), set()
     if ghost1 is not None and q_weight > 0:
         cost_arr = cost_arr * (1.0 + q_weight * np.asarray(ghost1)[col_arr])
+    if merged1 is not None and merged_noise_scale > 1.0:
+        # Idea 9: inflate measurement noise on split/merged detections so their
+        # residual is scaled by 1 / merged_noise_scale (softer gate, clean stays preferred).
+        is_m = np.asarray(merged1, dtype=bool)[col_arr]
+        if np.any(is_m):
+            cost_arr = np.where(is_m, cost_arr / merged_noise_scale, cost_arr)
 
     # Phase 2: Hungarian via connected components
     n_nodes = n_pred + n_cand
@@ -575,6 +584,8 @@ class TwoPhaseTracker:
         frame_seen: list[np.ndarray] | None = None,
         frame_ghost: list[np.ndarray] | None = None,
         frame_logb: list[np.ndarray] | None = None,
+        frame_merged: list[np.ndarray] | None = None,
+        merged_noise_scale: float = 1.4,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
@@ -629,6 +640,8 @@ class TwoPhaseTracker:
                 frame_seen=frame_seen,
                 frame_ghost=frame_ghost,
                 frame_logb=frame_logb,
+                frame_merged=frame_merged,
+                merged_noise_scale=merged_noise_scale,
             )
 
         # Bidirectional tracking: forward + backward on reversed frames.
@@ -645,6 +658,8 @@ class TwoPhaseTracker:
             frame_seen=frame_seen,
             frame_ghost=frame_ghost,
             frame_logb=frame_logb,
+            frame_merged=frame_merged,
+            merged_noise_scale=merged_noise_scale,
         )
         bwd_kw = dict(
             return_chains=False,
@@ -652,6 +667,8 @@ class TwoPhaseTracker:
             frame_seen=_rev(frame_seen),
             frame_ghost=_rev(frame_ghost),
             frame_logb=_rev(frame_logb),
+            frame_merged=_rev(frame_merged),
+            merged_noise_scale=merged_noise_scale,
         )
 
         def run_fwd():
@@ -715,6 +732,8 @@ class TwoPhaseTracker:
         frame_seen: list[np.ndarray] | None = None,
         frame_ghost: list[np.ndarray] | None = None,
         frame_logb: list[np.ndarray] | None = None,
+        frame_merged: list[np.ndarray] | None = None,
+        merged_noise_scale: float = 1.4,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
@@ -744,16 +763,20 @@ class TwoPhaseTracker:
         # (frame_idx, row) -> tid, for emitting row-based links
         loc2tid: dict[tuple[int, int], int] = {}
         for i, p in enumerate(frame_particles[0]):
+            is_m0 = bool(frame_merged[0][i]) if frame_merged is not None else False
+            p_arr = np.asarray(p, dtype=np.float64)
             tracks[next_tid] = {
-                "pos": np.asarray(p, dtype=np.float64),
+                "pos": p_arr,
                 "vel": np.zeros(3),
                 "last_t": 0,
                 "last_row": i,
+                "last_clean_pos": None if is_m0 else p_arr.copy(),
+                "last_clean_t": None if is_m0 else 0,
                 "misses": 0,
                 "shared_streak": 0,
             }
             loc2tid[(0, i)] = next_tid
-            hist[next_tid] = [(0, i, False)]
+            hist[next_tid] = [(0, i, is_m0)]
             next_tid += 1
 
         all_links = []
@@ -833,6 +856,8 @@ class TwoPhaseTracker:
                 ),
                 logb1=frame_logb[t + 1] if frame_logb is not None else None,
                 blob_gate=self.cfg.blob_gate,
+                merged1=frame_merged[t + 1] if frame_merged is not None else None,
+                merged_noise_scale=merged_noise_scale,
             )
             matched_det = set()
             for ai, det in got:
@@ -840,6 +865,9 @@ class TwoPhaseTracker:
                 tr = tracks[tid]
                 gap = t + 1 - tr["last_t"]
                 old_pos = tr["pos"]
+                is_merged_det = (
+                    bool(frame_merged[t + 1][det]) if frame_merged is not None else False
+                )
                 if (int(ai), int(det)) in got_shared and tr.get(
                     "shared_streak", 0
                 ) < self.cfg.max_shared:
@@ -847,9 +875,22 @@ class TwoPhaseTracker:
                     tr["pos"] = pts1[det].copy()
                     tr["shared_streak"] = tr.get("shared_streak", 0) + 1
                     is_shared = True
-                else:
-                    tr["vel"] = (pts1[det] - old_pos) / (gap * self.cfg.dt)
+                elif is_merged_det:
+                    # Idea 9: tagged merged/split point -- follow position,
+                    # NEVER update velocity from it.
                     tr["pos"] = pts1[det].copy()
+                    is_shared = True
+                else:
+                    if tr["last_clean_pos"] is not None:
+                        clean_gap = t + 1 - tr["last_clean_t"]
+                        tr["vel"] = (pts1[det] - tr["last_clean_pos"]) / (
+                            clean_gap * self.cfg.dt
+                        )
+                    else:
+                        tr["vel"] = (pts1[det] - old_pos) / (gap * self.cfg.dt)
+                    tr["pos"] = pts1[det].copy()
+                    tr["last_clean_pos"] = pts1[det].copy()
+                    tr["last_clean_t"] = t + 1
                     tr["shared_streak"] = 0
                     is_shared = False
                 all_links.append((tr["last_t"], tr["last_row"], t + 1, det))
@@ -877,16 +918,23 @@ class TwoPhaseTracker:
                         and frame_ghost[t + 1][det] > self.cfg.q_seed
                     ):
                         continue  # doubtful point: may not start a trajectory
+                    is_m = (
+                        bool(frame_merged[t + 1][det])
+                        if frame_merged is not None
+                        else False
+                    )
                     tracks[next_tid] = {
                         "pos": pts1[det].copy(),
                         "vel": np.zeros(3),
                         "last_t": t + 1,
                         "last_row": det,
+                        "last_clean_pos": None if is_m else pts1[det].copy(),
+                        "last_clean_t": None if is_m else t + 1,
                         "misses": 0,
                         "shared_streak": 0,
                     }
                     loc2tid[(t + 1, det)] = next_tid
-                    hist[next_tid] = [(t + 1, det, False)]
+                    hist[next_tid] = [(t + 1, det, is_m)]
                     next_tid += 1
 
         confirm_tol = self.cfg.confirm_tol
@@ -1129,6 +1177,7 @@ def track_store(
         cost_mode=cost_mode,
         max_gap=max_gap,
         allow_shared=allow_shared,
+        split_merged=bool(track_cfg.get("split_merged", False)),
         max_shared=max_shared,
         share_tol=share_tol,
         max_group_size=max_group_size,
@@ -1142,7 +1191,124 @@ def track_store(
     )
     tracker = TwoPhaseTracker(cfg)
     project_fn = build_project_fn(cals, cpar)
-    frame_logb = logb_list if blob_gate else None
+    # Optional predictor-based merged-blob split (Idea 4 + 11): two-pass recovery.
+    if cfg.split_merged:
+        want_q = False
+    if cfg.split_merged and project_fn is not None:
+        from collections import defaultdict
+        from scipy.spatial import cKDTree
+        # Pass 1 on baseline points
+        t1 = TwoPhaseTracker(cfg)
+        links1 = t1.track_frames(
+            [p.copy() for p in frame_particles],
+            [lf.copy() for lf in frame_leaves],
+            project_fn=project_fn,
+            frame_seen=frame_seen,
+            frame_ghost=None,
+            frame_logb=None,
+        )
+        # Build track positions
+        traj_of = defaultdict(dict)
+        # chain links into trajectories
+        nxt = defaultdict(list)
+        for (a, ra, b, rb) in links1:
+            nxt[(a, ra)].append((b, rb))
+        allpts = set()
+        for fi, P in enumerate(frame_particles):
+            for r in range(len(P)):
+                allpts.add((fi, r))
+        preds = defaultdict(dict)  # tid -> {frame_idx: pos}
+        # simple: assign each link chain a tid
+        tid = 0
+        visited = set()
+        for start in allpts:
+            if start in visited:
+                continue
+            # find if start has predecessor
+            if any((start[0], start[1]) == (b, rb) for (_, _, b, rb) in links1):
+                continue
+            cur = start
+            chain_pts = []
+            while cur in allpts and cur not in visited:
+                visited.add(cur)
+                chain_pts.append(cur)
+                cands = nxt.get(cur, [])
+                if not cands:
+                    break
+                cur = cands[0]
+                if cur in visited:
+                    break
+            for (fi, r) in chain_pts:
+                preds[tid][fi] = frame_particles[fi][r].copy()
+            tid += 1
+        # tracks by frame
+        tracks_by_frame = defaultdict(list)
+        for t, fmap in preds.items():
+            for fi, pos in fmap.items():
+                tracks_by_frame[fi].append((t, pos))
+        # Pass 2: split merged points
+        new_particles = []
+        new_leaves = []
+        new_seen_all = []
+        for fi, P in enumerate(frame_particles):
+            pos = np.asarray(P, dtype=float)
+            lf = frame_leaves[fi]
+            new_pts = []
+            new_seen_frame = []
+            tlist = tracks_by_frame.get(fi, [])
+            tpos = np.array([tp for (_, tp) in tlist]) if tlist else np.zeros((0, 3))
+            tree = cKDTree(tpos) if len(tpos) else None
+            tids_list = [t for (t, _) in tlist]
+            for i, p in enumerate(pos):
+                close = []
+                if tree is not None:
+                    for j in tree.query_ball_point(p, 0.6):
+                        close.append((tids_list[j], tpos[j]))
+                # Conservative membership: only split when exactly two tracks claim
+                # the blob and their predicted positions are close (real merge).
+                if (len(close) == 2
+                        and np.linalg.norm(close[0][1] - close[1][1]) < 1.0):
+                    preds_arr = np.array([tp for (_, tp) in close])
+                    intensities = np.ones(len(close))
+                    mp_all = project_fn(p.reshape(1, 3)).reshape(-1)
+                    n_cams = len(cals)
+                    merged_px = mp_all.reshape(n_cams, 2)
+                    seen_i = frame_seen[fi][i] if (fi < len(frame_seen) and i < len(frame_seen[fi])) else np.ones(n_cams, dtype=bool)
+                    try:
+                        from openptv2 import merged_split
+
+                        split_pos, _ = merged_split.split_merged_blob(
+                            merged_px, seen_i, intensities, preds_arr, cals, cpar
+                        )
+                        # accept split only if constituents stay close to predictions
+                        if np.max([np.linalg.norm(split_pos[k] - preds_arr[k]) for k in range(len(preds_arr))]) < 0.5:
+                            for sp in split_pos:
+                                new_pts.append(sp)
+                                new_seen_frame.append(np.asarray(seen_i, dtype=bool).copy())
+                        else:
+                            new_pts.append(p)
+                            new_seen_frame.append(np.asarray(seen_i, dtype=bool).copy())
+                    except Exception:
+                        new_pts.append(p)
+                        new_seen_frame.append(np.asarray(seen_i, dtype=bool).copy())
+                else:
+                    new_pts.append(p)
+                    _s = frame_seen[fi][i] if (fi < len(frame_seen) and i < len(frame_seen[fi])) else np.ones(len(cals), dtype=bool)
+                    new_seen_frame.append(np.asarray(_s, dtype=bool).copy())
+            new_seen_all.append(np.array(new_seen_frame, dtype=bool) if new_seen_frame else np.zeros((0, len(cals)), dtype=bool))
+            new_particles.append(np.array(new_pts, dtype=float) if new_pts else np.zeros((0, 3)))
+            # leaves
+            if len(new_pts):
+                xy = project_fn(np.array(new_pts, dtype=float))
+                new_leaves.append(np.nan_to_num(np.asarray(xy).reshape(len(new_pts), -1)))
+            else:
+                new_leaves.append(np.zeros((0, 0)))
+        frame_particles = new_particles
+        frame_leaves = new_leaves
+        frame_seen = new_seen_all
+        frame_logb = None
+    else:
+        frame_logb = logb_list if blob_gate else None
     frame_ghost = None
     if want_q:
         frame_ghost = ghost_probabilities(
