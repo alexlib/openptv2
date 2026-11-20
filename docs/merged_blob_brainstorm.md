@@ -141,6 +141,13 @@ split of the merged centre) is required for vErr, not just Idea 11 (adding point
 Predictor-based two-pass (Idea 11 + 4, L1_d1): vel 19.65 → 19.35 (improvement). Membership via nearest
 predicted track; split via merged_split. First vErr gain achieved.
 
+Plugin integration (split_merged flag, gated, default off): n=12 case shows no improvement
+(vErr 0.308→0.339, ghost 0.036→0.068) despite conservative gating (exact-2 tracks, <1mm apart,
+<0.5mm residual). Root cause: split points are treated as clean (Idea 9 noise inflation not yet
+applied in tracker), and predictor-based membership is noisy. Tuning stopped per early-stop rule.
+Next: apply per-point noise inflation in tracker (merged flag) before re-enabling.
+predicted track; split via merged_split. First vErr gain achieved.
+
 Full outer loop (feat/blob-ownership-loop, "blob_loop" plugin): tested on L1_d1 (n=12 and n=200).
 Results much worse than two_phase (n=200: vErr 0.42 vs 0.16, ghost 0.07 vs 0.04, 80s vs 4s).
 Not recommended as-is; needs tuning before it can replace two_phase. The predictor-based split_merged
