@@ -59,3 +59,29 @@ edits, expect a conflict); speed: per-group loops, analytic Jacobian, Cython.
 
 ## 4. Results
 (appended per step below)
+
+### N1 result: Eulerian statistics on full wp1 + wp2 (1,072 frames, 3 rounds) - gate NOT met
+Tracks (truth-free realism metrics, per run, wp1 / wp2): mean length 24.3 / 24.2 -> 34.9 / 34.3; jump share 1.13 / 1.16
+-> 0.32 / 0.37 %; sideways jitter 0.0077 / 0.0076 -> 0.0051 / 0.0052 mm (-33 %), depth 0.0365 / 0.0363 -> 0.0267 /
+0.0272 (-26 %); tracks of 50+ frames 5,961 / 5,723 -> 5,825 / 5,583 (about -2 %; fewer but longer tracks).
+
+Downstream (identical post-processing for both: reconnect, repair, Savitzky-Golay 21/2, then the openptv-analysis
+Eulerian stages; the `two_phase` baseline reproduces the existing `phaseRegionMetrics.csv` exactly), phases 5-10, global:
+| metric | holistic vs `two_phase` | `two_phase` vs legacy (MATLAB) | holistic vs legacy |
+|---|---|---|---|
+| mean velocity | +0.0 % (-0.3..+0.4) | -11.1 % | -11.1 % |
+| MKE | +0.1 % | -26.1 % | -26.0 % |
+| VSS | -0.2 % | -23.9 % | -24.0 % |
+| eps | -0.2 % (-1.7..+1.4) | -45.5 % | -45.6 % |
+Reading: (1) the phase-averaged statistics do not see the tracker improvement at all, to within 1-2 %: a voxel average
+over thousands of points, after reconnect/repair/smoothing, hides what the realism metrics show; (2) the systematic
+gap to the legacy table (-11 % velocity, -26 % MKE, -45 % eps) is the same for both trackers, so it does not come
+from linking: detection, calibration, mask/binning definitions, or legacy noise inflating VSS/eps (legacy eps is higher,
+which is what noise does). The jet-region numbers differ by 10-100x between us and legacy (mask proxy 3,254 against
+5,746 hand-mask voxels, documented earlier) and say nothing about trackers.
+Consequences for the order: the tracker-side steps (N2, N3) improve tracks the downstream statistics cannot reward;
+the next steps that can move these numbers are on the geometry side: N4 (self-calibration, depth jitter) and finding
+the cause of the common gap to legacy (same frames: compare detections/positions of the legacy and the new tracks,
+then binning on both).
+Tooling: `scripts/eulerian_compare.py` (post-processing in the openptv-cloud tool environment, flowtracks 1.6.1; analysis
+stages from openptv-analysis with its flowtracks zarr reader disabled, `postprocess` stage skipped, no `legacy_root`).
