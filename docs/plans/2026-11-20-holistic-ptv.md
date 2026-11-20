@@ -580,3 +580,18 @@ New points: L2 6.9 % of the output with velocity error 0.188 (was 0.25). These a
 Births: 5.5 % of points; 91.6 % are on tracks of 2+ points (was 57 % before the cleanup), 72.6 % on tracks of
 10+, median track 30; 83 % of births sit on tracks that also hold established points. The cleanup works on real
 data as on the benchmark: fewer, longer tracks, no loss of long tracks, births now almost all linked.
+
+## Speed, first pass (L2 image pipeline, 200 frames, 2 rounds)
+Profile of the loop (186 s): `project_pixels` 45 s (236k single calls from the weighted triangulation and the joint
+solver), `estimate_signatures` 43 s (a per-track mask over all rows), group loops in `refine_merged`,
+`birth_targets`, `split_blob_effective`. Done, all with identical output (checked against HEAD, same scores):
+- the finite-difference Jacobian is projected in one stacked call per camera instead of seven; the joint solver
+  projects all needed (particle, camera) pairs per iteration in one batch;
+- the weighted triangulation keeps the Jacobian of its first iteration (`frozen_jacobian`): same quality
+  (0.1061 vs 0.1063 velocity error, yield 0.736, long completeness 0.649);
+- `estimate_signatures` works in track space with grouped reductions (equal to the old function on random data).
+Result: **186 s -> 116 s** (0.58 s per frame). Left: per-group Python loops in `refine_merged` (10 s own time),
+`split_blob_effective`/`brightness_shares` (25 s cumulative, 752k calls), `birth_targets` (6 s), and the
+projection itself (20 s, analytic Jacobian would remove 6 of 7 evaluations). Then Cython if still needed.
+Note: HEAD gives 0.1063 / 0.0769 / 0.736 / 0.649 on this case (my earlier table said 0.1082 / 0.0733 / 0.741 /
+0.670; the case files were rebuilt in between), still -24 % against `two_phase`.
