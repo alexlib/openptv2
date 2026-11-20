@@ -563,6 +563,20 @@ New points: L2 6.9 % of the output with velocity error 0.188 (was 0.25). These a
 
 ## Next steps (updated)
 1. Dense: cluster hypotheses in time (yield at x4 0.25 against the 0.85 ceiling).
-2. Rerun real wp2 with the defaults (noise-aware + cleanup).
+2. ~~Rerun real wp2 with the defaults~~ done, see below.
 3. Speed: vectorise the group loops (`refine_merged`, `estimate_signatures`, `birth_targets`), then Cython.
-4. Product: `holistic` in the GUI tracker list and in `unified`; a docs page.
+4. Product: `holistic` in the GUI tracker list (done), docs page (done), `unified` integration (open).
+
+## Real wp2 with the new defaults (300 frames, scratch copy)
+| | `two_phase` | loop (before) | **noise-aware + cleanup** |
+|---|---|---|---|
+| tracks | 14,674 | 11,742 | **10,828** |
+| mean length | 20.7 | 28.2 | **30.4** |
+| tracks of 50+ frames | 1,533 | 1,822 | **1,827** |
+| jump share | 1.44 % | 0.47 % | **0.46 %** |
+| LOCO, shared blobs, median (corrected) | 0.40 px | 0.37 px | **0.369 px** |
+| LOCO, all 4-camera, median | | | 0.343 px (raw 0.349) |
+
+Births: 5.5 % of points; 91.6 % are on tracks of 2+ points (was 57 % before the cleanup), 72.6 % on tracks of
+10+, median track 30; 83 % of births sit on tracks that also hold established points. The cleanup works on real
+data as on the benchmark: fewer, longer tracks, no loss of long tracks, births now almost all linked.
