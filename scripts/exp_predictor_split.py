@@ -114,9 +114,18 @@ for f in range(1, n_out + 1):
             n_cams = len(cals)
             merged_px = mp_all.reshape(n_cams, 2)
             seen = np.ones(n_cams, dtype=bool)
-            split_pos, _, init_r, _ = merged_split.split_merged_blob(merged_px, seen, intensities, preds, cals, cpar)
+            # initial consistency: do predictions already explain the merged centre?
+            from openptv2 import merged_split as _ms
+            # project preds and compute centroid residual before optimization
+            init_proj = np.array([_ms._project(p, [], cpar) if False else None for p in preds]) if False else None
+            # simpler: use merged_split's returned init_rms (already computed)
+            split_pos, _, init_r, final_r = merged_split.split_merged_blob(merged_px, seen, intensities, preds, cals, cpar)
             n_split_attempted += 1
-            if init_r > 2.0:
+            if n_split_attempted <= 3:
+                print(f"  init_r={init_r:.3f} final_r={final_r:.3f}", flush=True)
+            # brightness gate: merged blob should be brighter than single particle
+            bri_ok = frame_brightness[f-1][i] > 1.2 * med_bri if (f-1 < len(frame_brightness)) else True
+            if init_r > 1.5 or final_r > 0.5 or not bri_ok:
                 split_pos = None
             else:
                 n_split_accepted += 1
