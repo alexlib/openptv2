@@ -61,6 +61,31 @@ for tid, fmap in traj_of.items():
 
 # Pass 2: build split frames
 split_frames = []
+n_split_attempted = 0
+n_split_accepted = 0
+# per-point brightness from store
+frame_brightness = []
+for f in range(1, n_out + 1):
+    pos_3d, cam_ids, rows = __import__("openptv2.point_quality", fromlist=["read_frame_arrays"]).read_frame_arrays(store, f, 4)
+    n = len(pos_3d)
+    bri = np.zeros(n)
+    for i in range(n):
+        for c in range(4):
+            if rows[c] is not None and cam_ids[i, c] >= 0:
+                bri[i] += rows[c][cam_ids[i, c], 6]
+    frame_brightness.append(bri)
+# median single-particle brightness: points claimed by exactly 1 track
+single_bris = []
+for f in range(1, n_out + 1):
+    tracks_here = tracks_by_frame.get(f-1, [])
+    # map point->num tracks via KDTree already; approximate: all points
+    pass
+# compute median brightness of all points as baseline (single particles dominate)
+all_bri = np.concatenate(frame_brightness)
+med_bri = np.median(all_bri[all_bri > 0])
+bri_threshold = 1.5 * med_bri
+print("median brightness:", med_bri, "threshold:", bri_threshold)
+
 for f in range(1, n_out + 1):
     pos = base_frames[f - 1].copy()
     # leaves for this frame's original points
@@ -89,9 +114,17 @@ for f in range(1, n_out + 1):
             n_cams = len(cals)
             merged_px = mp_all.reshape(n_cams, 2)
             seen = np.ones(n_cams, dtype=bool)
-            split_pos, _ = merged_split.split_merged_blob(merged_px, seen, intensities, preds, cals, cpar)
-            for sp in split_pos:
-                new_pts.append(sp)
+            split_pos, _, init_r, _ = merged_split.split_merged_blob(merged_px, seen, intensities, preds, cals, cpar)
+            n_split_attempted += 1
+            if init_r > 2.0:
+                split_pos = None
+            else:
+                n_split_accepted += 1
+            if split_pos is not None:
+                for sp in split_pos:
+                    new_pts.append(sp)
+            else:
+                new_pts.append(p)
         else:
             new_pts.append(p)
     split_frames.append(np.array(new_pts, dtype=float) if new_pts else np.zeros((0, 3)))
@@ -115,6 +148,7 @@ pf2, pp2, pt2 = links_to_pred(links2, split_frames)
 pred2 = {"trajid": pt2, "frame": pf2, "pos": pp2, "w": None}
 flow = Flow()
 res2 = evaluate_pred(case_dir, pred2, flow)
+print("split attempted/accepted:", n_split_attempted, n_split_accepted)
 print("predictor-split vel(best):", min(v["vel"] for v in res2["by_window"].values()))
 
 # baseline vErr

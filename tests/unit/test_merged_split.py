@@ -14,7 +14,7 @@ def test_split_returns_constituent_count(monkeypatch):
     def fake_project(pt, cals, cpar):
         return np.tile(np.asarray(pt, float)[:2] * 5.0, (len(cals), 1)).reshape(len(cals), 2)
     monkeypatch.setattr(merged_split, "_project", fake_project)
-    pos, flags = merged_split.split_merged_blob(
+    pos, flags, init_r, final_r = merged_split.split_merged_blob(
         merged_px, seen, intensities, preds, cals=[None, None], cpar=None
     )
     assert pos.shape == (2, 3)
@@ -31,6 +31,6 @@ def test_split_moves_toward_predictions(monkeypatch):
     monkeypatch.setattr(merged_split, "_project", fake_project)
     merged_px = np.array([[1.0, 0.0], [1.0, 0.0]])  # midpoint of 0 and 2 -> proj 1
     seen = np.array([True, True])
-    pos, _ = merged_split.split_merged_blob(merged_px, seen, intensities, preds, cals=[None, None], cpar=None, weight_pred=0.1)
+    pos, _, _, _ = merged_split.split_merged_blob(merged_px, seen, intensities, preds, cals=[None, None], cpar=None, weight_pred=0.1)
     # constituents should separate
     assert pos[1, 0] > pos[0, 0]

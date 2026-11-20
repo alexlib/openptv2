@@ -74,6 +74,10 @@ def split_merged_blob(
         res.append(weight_pred * (pts - preds).ravel())
         return np.concatenate(res)
 
+    # initial residual: do the predicted constituents explain the merged centre?
+    init_res = residuals(x0)
+    init_rms = float(np.sqrt(np.mean(init_res ** 2))) if init_res.size else 0.0
     sol = least_squares(residuals, x0, method="trf", max_nfev=200)
     pts = sol.x.reshape(K, 3)
-    return pts, np.ones(K, dtype=bool)
+    final_rms = float(np.sqrt(np.mean(sol.fun ** 2))) if sol.fun.size else 0.0
+    return pts, np.ones(K, dtype=bool), init_rms, final_rms
