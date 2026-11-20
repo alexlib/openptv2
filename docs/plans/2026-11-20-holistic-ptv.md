@@ -435,3 +435,50 @@ the last relink. L2 image-pipeline case: velocity error -15 %, common set -37 %,
 better cross-camera consistency of corrected blobs. Not solved: dense (x4); speed (python, about 0.6 s/frame per
 round). Next: fix the joint solve (damping), rerun wp2 with the current loop, a births loop with cluster hypotheses for
 dense data, then the `holistic` plugin.
+
+## Implementation summary (as of 2026-11-20)
+
+### Library (`src/openptv2/`)
+| module | what it does | key functions |
+|---|---|---|
+| `storage/run_store.py` | observation table next to correspondences: pixel used, variance, particles in the blob | `write_observations`, `read_observations`, `has_observations` |
+| `loco.py` | truth-free leave-one-camera-out consistency (px) | `project_pixels`, `pixels_to_flat`, `loco_residuals`, `summarize` |
+| `blob_model.py` | the blob model: split of a shared blob, prediction, weighted triangulation, joint cluster solve | `brightness_shares`, `split_blob` (Kalman), `split_blob_effective` (own prediction never used), `signature_from_history` (quantile), `local_poly_predict` (leave-one-out, support), `triangulate_weighted` (slots per camera, path prior slots, covariance), `solve_cluster` (joint Gauss-Newton; diverged, being fixed) |
+| `merge_refine.py` | refinement loop on tracks (truth-free) | `refine_merged` (trusted predictions, 4-sigma gate, path prior, hidden-partner check, `signatures=`, `partner_min_len=`, `mode="effective"/"joint"`), `shared_blobs`; result has positions, used pixels, variances, shares, predictions, position variance |
+| `merge_post.py` | everything that works on a tracker run | `arrays_from_store`, `chains_from_linkage`, `extend_membership` (98 % correct), `fill_gaps` (Hermite, growing radius, mass check), `track_signatures`, `row_signatures`, `estimate_signatures` (joint + cross-camera), `birth_targets` (residual brightness), `birth_points`, `paired_births`, `stamp_tnr` |
+
+### Benchmark and analysis scripts (`scripts/`)
+- `synth_bench.py`: `blob_tid` in truth, `MERGE_SCALE` (real-like merge rates), `KEEP_STORE`, `eval --ref` (common set at
+  its own best window), `common_set_errors`.
+- `joint_bounds.py`: bounds and drivers: `b1` (pool coverage), `b2`, `ladder` (E1a/E1b), `demerge` (E1c ceiling), `m3`
+  (estimator), `b3` (prediction error), `h1` (blob model with true association), `h2` (refinement of a tracker run,
+  recovery), `h3` (births loop), `mm` (mass-aware matcher), `mass_select`.
+- Diagnostics: `joint_m0.py` (real vs benchmark), `joint_info_coverage.py`, `joint_blob_context.py`,
+  `joint_blob_shape.py`, `joint_missing_points.py`, `joint_h2_diag.py` (membership accuracy, oracle ablation),
+  `joint_birth_bound.py`, `joint_birth_quality.py`, `joint_birth_recall.py`, `joint_extra_points.py`.
+- Real data: `holistic_real.py` (the loop on a scratch copy of a real run, truth-free scores).
+
+### Tests (`tests/unit/`)
+`test_blob_model.py`, `test_merge_refine.py`, `test_merge_post.py`, `test_loco.py`, `test_run_store.py` (observations),
+`test_synth_bench_common_set.py`, `test_mass_select.py`: 80 tests.
+
+### Status per stage
+| stage | status |
+|---|---|
+| H0 foundations | done |
+| H1 blob model, true association | done; closes 85-100 % of the gap at sparse/real-like rates, 39 % at x4 |
+| H2 refinement on real tracks | done; membership inference 98 % correct; alone it helps on synthetic blob tables, hurts on real image blobs |
+| H3 births, relink, rounds | done; best result (L2: -15 % velocity error, -37 % common set, +5.4 yield, +11 long completeness) |
+| H4 dense / cluster hypotheses | started: joint cluster solve (diverges), single-frame mass matcher (negative) |
+| H5 real data | wp2 run with an older loop: longer tracks, better cross-camera consistency; rerun pending |
+| speed | not started (python, ~0.6 s/frame per round) |
+
+## Next steps (in order)
+1. **Fix the joint cluster solve**: damped steps with a cap, a weak prior on the start positions, accept a cluster only
+   if its cost drops and positions stay near the start; compare with the per-member split under true association.
+2. **Rerun real wp2 with the current loop** (joint signatures, safe births, output = last relink); truth-free scores.
+3. **Dense data**: the births loop at x4 with the new signatures; then cluster hypotheses in time (joint solve over a
+   cluster of overlapping particles across frames, births only where tracks back the brightness).
+4. **`holistic` plugin**: the loop as a library function with an injectable linker and a tracking plugin, so it runs
+   in the normal pipeline; tests.
+5. Later: noise-aware link confirmation in `two_phase` from the per-point variances; speed (vectorise, Cython).
