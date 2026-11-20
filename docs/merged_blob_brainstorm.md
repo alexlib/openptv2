@@ -139,6 +139,7 @@ centres (and without 2D-leaf consistency) does not help tracking. This confirms 
 split of the merged centre) is required for vErr, not just Idea 11 (adding points).
 
 Predictor-based two-pass (Idea 11 + 4, L1_d1): vel 19.65 → 19.35 (improvement). Membership via nearest
+predicted track; split via merged_split. Integrated into src/openptv2/blob_recovery.py (recover()).
 predicted track; split via merged_split. First vErr gain achieved.
 
 Extended tuning (init-residual gate, exact-2 tracks, <1mm): sparse cases improve (L1_d1 19.65→19.35,
