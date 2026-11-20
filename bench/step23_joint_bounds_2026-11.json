@@ -3226,6 +3226,80 @@
         ],
         "iterations": []
       }
+    },
+    "L1_d4_c0_k1_n60_s0.08_a0.18_f0.05|two_phase|None|j": {
+      "residual_targets": 128829,
+      "births": 33343,
+      "residual_births": 33343,
+      "births_per_frame": 555.7166666666667,
+      "births_with_2plus_residual_views": 15930,
+      "h2_on_augmented": {
+        "rows": 190108,
+        "tracked_rows": 189140,
+        "attachments": 131734,
+        "rows_with_a_shared_blob": 0.6840374944768237,
+        "info": [
+          {
+            "round": 1,
+            "var_p_px2": 0.05058609615866039,
+            "trusted_share": 0.4073631830328024,
+            "gated_obs": 655,
+            "hidden_partner_obs": 90936
+          },
+          {
+            "round": 2,
+            "var_p_px2": 0.034561718761934465,
+            "trusted_share": 0.4073631830328024,
+            "gated_obs": 1226,
+            "hidden_partner_obs": 90936
+          },
+          {
+            "round": 3,
+            "var_p_px2": 0.035326580457761554,
+            "trusted_share": 0.4073631830328024,
+            "gated_obs": 1369,
+            "hidden_partner_obs": 90936
+          }
+        ],
+        "iterations": []
+      }
+    },
+    "L1_d4_c0_k1_n60_s0.08_a0.18_f0.05_H3j|two_phase|None|j": {
+      "residual_targets": 119808,
+      "births": 12334,
+      "residual_births": 12334,
+      "births_per_frame": 205.56666666666666,
+      "births_with_2plus_residual_views": 8085,
+      "h2_on_augmented": {
+        "rows": 202364,
+        "tracked_rows": 201474,
+        "attachments": 144960,
+        "rows_with_a_shared_blob": 0.7318100057322449,
+        "info": [
+          {
+            "round": 1,
+            "var_p_px2": 0.050862987970123105,
+            "trusted_share": 0.3931776402917515,
+            "gated_obs": 708,
+            "hidden_partner_obs": 82001
+          },
+          {
+            "round": 2,
+            "var_p_px2": 0.03337471068226339,
+            "trusted_share": 0.3931776402917515,
+            "gated_obs": 1408,
+            "hidden_partner_obs": 82001
+          },
+          {
+            "round": 3,
+            "var_p_px2": 0.033661848430485614,
+            "trusted_share": 0.3931776402917515,
+            "gated_obs": 1523,
+            "hidden_partner_obs": 82001
+          }
+        ],
+        "iterations": []
+      }
     }
   },
   "MM_inputs": {
@@ -3365,6 +3439,130 @@
               "var_p_px2": 65410.88226571922,
               "trusted_share": 0.9262768300470463,
               "gated_obs": 271,
+              "hidden_partner_obs": 0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "H1_joint2": {
+    "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05": {
+      "case": "L1_d1_c0_k1_n60_s0.08_a0.18_f0.05",
+      "rounds": [
+        {
+          "all_rms": 0.258973262568353,
+          "all_median": 0.08089159611850552,
+          "label": "round0 raw blob centres (equal weights)",
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.051725199955437735
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.24996980996328408
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.3533183806100385
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.4975172660187089
+          }
+        },
+        {
+          "all_rms": 0.17016685731672337,
+          "all_median": 0.04377920832718657,
+          "label": "round1 merge-aware",
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.04515230597490897
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.08912985865660779
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.18670674616959268
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.4629244319222255
+          }
+        },
+        {
+          "all_rms": 0.1669189887423708,
+          "all_median": 0.033250804419006144,
+          "label": "round2 merge-aware",
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.036305146056637996
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.06555850476529115
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.16753037143088512
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.48242495919340245
+          }
+        },
+        {
+          "all_rms": 0.1675753037275292,
+          "all_median": 0.030539819820443456,
+          "label": "round3 merge-aware",
+          "merged_cams_0": {
+            "n": 28708,
+            "rms": 0.03553192869241942
+          },
+          "merged_cams_1": {
+            "n": 25767,
+            "rms": 0.057753890921734274
+          },
+          "merged_cams_2": {
+            "n": 13208,
+            "rms": 0.16196373924212418
+          },
+          "merged_cams_3+": {
+            "n": 6670,
+            "rms": 0.492717028172215
+          }
+        }
+      ],
+      "pixel_error_of_merged_observations": [
+        {
+          "merged_obs": 74267,
+          "raw_centre_rms_px": 1.2123841674854747,
+          "effective_obs_rms_px": 1.4464673107101806,
+          "effective_obs_median_px": 0.3833836529756331,
+          "prediction_rms_px": 0.26304015783170204,
+          "variance_calibration_z2": 1.110445132646857,
+          "rounds": [
+            {
+              "round": 1,
+              "var_p_px2": 0.04425985228307549,
+              "trusted_share": 0.9262768300470463,
+              "gated_obs": 900,
+              "hidden_partner_obs": 0
+            },
+            {
+              "round": 2,
+              "var_p_px2": 0.013925141144652734,
+              "trusted_share": 0.9262768300470463,
+              "gated_obs": 1497,
+              "hidden_partner_obs": 0
+            },
+            {
+              "round": 3,
+              "var_p_px2": 0.01147839847605272,
+              "trusted_share": 0.9262768300470463,
+              "gated_obs": 1668,
               "hidden_partner_obs": 0
             }
           ]
