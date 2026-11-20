@@ -103,3 +103,29 @@ are exactly the merged ones. A pixel-domain confirmation cannot be right without
 brightness-weighted mean of the members), i.e. it belongs inside the births acceptance, not next to it.
 Possible reuse: the prior as one more term in the births acceptance (cost already includes brightness and path); not a
 standalone stage. Not pursued; next is N4.
+
+### N4 result, part 1: is the leave-one-camera-out floor systematic? (`scripts/loco_map.py`, wp2 holistic, 1072 frames)
+208,818 clean 4-camera points (no shared blob). Residual rms per camera 0.30-0.31 px. A cubic polynomial in image position
+fitted on odd frames explains 22-41 % of the variance on the even frames; adding depth terms 45-54 %: rms 0.30 -> 0.20-0.22 px
+on held-out frames. So about half of the floor is a smooth, repeatable (calibration-type) error, not detection noise.
+Gate (depth jitter -20 %) **not met**: correcting every observation with the fitted fields and re-triangulating leaves the track
+metrics slightly worse (depth jitter 0.0393 -> 0.0410, jump share 4.8 -> 6.0 %; metrics are from re-triangulated raw
+observations, not the refined holistic positions). Reasons: a smooth spatial error moves with a particle and barely
+changes frame-to-frame jitter; and the leave-one-camera-out residual of camera c contains the errors of the three others,
+so correcting all four cameras by their own residual field double-counts. A real volume self-calibration would solve for all
+cameras together (bundle adjustment over the long tracks); its benefit is accuracy (spatial bias of positions and velocity),
+which the jitter metrics cannot show. Not built.
+
+### N4 result, part 2: the gap to the legacy table is mostly a pipeline asymmetry
+Legacy tracks (MATLAB, imported in `CompleteTest-e2e-legacy`): 4.8 % of their points move faster than 2.5 m/s (p99 5.3 m/s,
+max 18 m/s; ours p99 1.6, capped at 2.5 by the post-processing). The legacy table was computed without that cap.
+Same analysis (phases 5-10, global), the legacy tracks with the same 2.5 m/s cap applied:
+| metric | legacy as published | legacy, same cap | `two_phase` | holistic |
+|---|---|---|---|---|
+| mean velocity | 0.541 | 0.496 | 0.488 | 0.488 |
+| MKE | 259.0 | 213.4 | 209.1 | 209.2 |
+| VSS | 2.048 | 1.765 | 1.572 | 1.569 |
+| eps | 469.5 | 328.5 | 265.2 | 264.7 |
+The cap removes most of the difference (velocity -11 % -> -1.6 %, MKE -26 % -> -2 %, VSS -24 % -> -11 %, eps -45 % -> -19 %).
+What remains, VSS +12 % and eps +24 % in legacy, is the sign noise gives (gradient statistics grow with position noise).
+Conclusion: the apparent gap says nothing against the new trackers; compare with identical filtering. Both trackers agree to 0.3 %.
