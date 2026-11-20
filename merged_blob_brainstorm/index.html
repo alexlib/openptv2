@@ -2451,6 +2451,11 @@ not, because adding hidden partners at truth positions without correcting the ke
 centres (and without 2D-leaf consistency) does not help tracking. This confirms Idea 4 (mixture-centroid
 split of the merged centre) is required for vErr, not just Idea 11 (adding points).</p>
 <p>Predictor-based two-pass (Idea 11 + 4, L1_d1): vel 19.65 → 19.35 (improvement). Membership via nearest
+predicted track; split via merged_split. First vErr gain achieved.</p>
+<p>Full outer loop (feat/blob-ownership-loop, "blob_loop" plugin): tested on L1_d1 (n=12 and n=200).
+Results much worse than two_phase (n=200: vErr 0.42 vs 0.16, ghost 0.07 vs 0.04, 80s vs 4s).
+Not recommended as-is; needs tuning before it can replace two_phase. The predictor-based split_merged
+flag (gated, default off) is the more promising incremental step.
 predicted track; split via merged_split. First vErr gain achieved. Next: wire into plugin do_tracking.
 not, because adding hidden partners at truth positions without correcting the kept particles' shifted
 centres (and without 2D-leaf consistency) does not help tracking. This confirms Idea 4 (mixture-centroid
