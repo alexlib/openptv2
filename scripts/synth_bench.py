@@ -615,9 +615,9 @@ def _track_optv_c(case: str, label: str, overrides: list[str]) -> Path:
     import tempfile
 
     import benchmark_utils as bu  # scripts/
+    from openptv2.storage.legacy import export_run
 
     from openptv2.storage import RunStore
-    from openptv2.storage.legacy import export_run
 
     case_dir = WORK / "cases" / case
     run_dir = WORK / "runs" / case / label
@@ -933,7 +933,17 @@ def evaluate_pred(case_dir: Path, pred: dict, flow: Flow, eps: float = 0.4,
         okm = w_gid >= 0
         r["_keys"] = w_gid[okm].astype(np.int64) * 100000 + w_fr[okm]
         if ref_keys is not None:
-            r.update(common_set_errors(r["_keys"], w_ev[okm], ref_keys, w_urms))
+            # each variant at the smoothing window that is best ON THE COMMON SET (the overall best window
+            # depends on which extra points a variant outputs, which would bias the comparison)
+            best = None
+            for w, (f_w, p_w, e_w, u_w) in per_window.items():
+                g_w = _match(by_frame, f_w, p_w, eps)[0]
+                o_w = g_w >= 0
+                cs = common_set_errors(g_w[o_w].astype(np.int64) * 100000 + f_w[o_w], e_w[o_w], ref_keys, u_w)
+                if best is None or (np.isfinite(cs["vel_err_common"]) and cs["vel_err_common"] < best[1]["vel_err_common"]):
+                    best = (w, cs)
+            r.update(best[1])
+            r["vel_win_common"] = best[0]
     else:
         keep = (np.zeros(0, int), np.zeros(0, int), np.zeros((0, 3)))
         r.update(vel_err_rel=1.0, vel_err_rel_p95=1.0, vel_win=0, acc_err_rel=1.0, acc_win=0)

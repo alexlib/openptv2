@@ -70,13 +70,14 @@ def clean_centre(centre: np.ndarray, var_centre: float) -> tuple[np.ndarray, flo
     return np.asarray(centre, float).reshape(2), float(var_centre)
 
 
-def signature_from_history(sumg: np.ndarray, alone: np.ndarray) -> float:
-    """Typical brightness of one particle in one camera: median grey sum over the frames where its blob
-    held only this particle. NaN if there is no such frame."""
+def signature_from_history(sumg: np.ndarray, alone: np.ndarray, quantile: float = 0.5) -> float:
+    """Typical brightness of one particle in one camera: a quantile (default the median) of the grey sums over the
+    frames where its blob held only this particle. A lower quantile resists frames where an unseen particle hid in
+    the blob and inflated it. NaN if there is no such frame."""
     sumg = np.asarray(sumg, float)
     alone = np.asarray(alone, bool)
     v = sumg[alone & np.isfinite(sumg) & (sumg > 0)]
-    return float(np.median(v)) if len(v) else float("nan")
+    return float(np.quantile(v, quantile)) if len(v) else float("nan")
 
 
 def triangulate_weighted(
@@ -88,7 +89,8 @@ def triangulate_weighted(
     n_iter: int = 3,
     step_mm: float = 0.01,
     cam_index: list[int] | None = None,
-) -> np.ndarray:
+    return_cov: bool = False,
+):
     """Weighted least-squares position (mm) of points from pixel observations, by Gauss-Newton on the
     reprojection error (maximum likelihood for pixel noise with variance ``var_px``).
 
@@ -96,6 +98,8 @@ def triangulate_weighted(
     ordinary triangulation). Slot ``s`` is an observation in camera ``cam_index[s]`` (default: slot = camera),
     so a camera can appear twice: e.g. a second block of slots holding the *projected path prediction* of the
     particle (a temporal prior) next to the measured blobs. Points with fewer than two valid slots keep ``x0``.
+    With ``return_cov`` also returns ``(N, 3, 3)`` position covariances (mm^2, inverse of the weighted normal
+    matrix at the solution; NaN where fewer than two slots), the uncertainty a smoother can weight by.
     """
     pixel_xy = np.asarray(pixel_xy, float)
     n, n_cams, _ = pixel_xy.shape
@@ -105,8 +109,9 @@ def triangulate_weighted(
     x = np.asarray(x0, float).copy()
     valid = ~np.isnan(pixel_xy[:, :, 0]) & np.isfinite(var_px) & (var_px > 0)
     ok = valid.sum(1) >= 2
+    cov = np.full((n, 3, 3), np.nan)
     if not ok.any():
-        return x
+        return (x, cov) if return_cov else x
     w_all = np.where(valid, 1.0 / np.where(valid, var_px, 1.0), 0.0)
     eye = np.eye(3)
     for _ in range(n_iter):
@@ -130,6 +135,10 @@ def triangulate_weighted(
         idx = np.flatnonzero(ok)
         step = np.linalg.solve(a_mat[idx] + 1e-9 * eye, b_vec[idx][:, :, None])[:, :, 0]
         x[idx] += step
+    if return_cov:
+        idx = np.flatnonzero(ok)
+        cov[idx] = np.linalg.inv(a_mat[idx] + 1e-9 * eye)
+        return x, cov
     return x
 
 

@@ -46,6 +46,7 @@ class RefineResult:
     obs_var: np.ndarray              # (N, C) its variance (px^2)
     n_share: np.ndarray              # (N, C) 0 not detected, 1 alone, k >= 2 particles in the blob
     pred_px: np.ndarray              # (N, C, 2) trusted path prediction (NaN = none)
+    pos_var: np.ndarray | None = None  # (N,) position variance (mm^2, trace / 3 of the covariance)
     x_rounds: list = field(default_factory=list)
     info: list = field(default_factory=list)
 
@@ -62,7 +63,7 @@ def shared_blobs(frame: np.ndarray, blob: np.ndarray) -> np.ndarray:
     return out
 
 
-def _signatures(pid: np.ndarray, clean: np.ndarray, sumg: np.ndarray) -> dict:
+def _signatures(pid: np.ndarray, clean: np.ndarray, sumg: np.ndarray, quantile: float = 0.5) -> dict:
     """Typical grey sum per (particle, camera): median over the frames where its blob held only it."""
     sig = {}
     for c in range(clean.shape[1]):
@@ -72,7 +73,7 @@ def _signatures(pid: np.ndarray, clean: np.ndarray, sumg: np.ndarray) -> dict:
             continue
         cuts = np.flatnonzero(np.r_[True, pid[o][1:] != pid[o][:-1], True])
         for a, b in zip(cuts[:-1], cuts[1:]):
-            sig[(int(pid[o[a]]), c)] = signature_from_history(sumg[o[a:b], c], np.ones(b - a, bool))
+            sig[(int(pid[o[a]]), c)] = signature_from_history(sumg[o[a:b], c], np.ones(b - a, bool), quantile)
     return sig
 
 
@@ -118,6 +119,8 @@ def refine_merged(
     raw = centre[est]
     raw_var = np.where(np.isnan(raw[:, :, 0]), np.nan, var_c)
 
+    pos_var = np.full(n_est, np.nan)
+
     def fit(obs_px, obs_var, x_start=None, prior_px=None, prior_var=None):
         x = np.full((n_est, 3), np.nan) if x_start is None else x_start.copy()
         cam_ix = list(range(n_cams))
@@ -137,7 +140,9 @@ def refine_merged(
                 x0 = np.asarray(point_positions(flat, cpar, cals, vpar, method="lsq")[0], float)
             else:
                 x0 = x_start[rr]
-            x[rr] = triangulate_weighted(obs_px[rr], obs_var[rr], cpar, cals, x0, n_iter=3, cam_index=cam_ix)
+            x[rr], cv = triangulate_weighted(obs_px[rr], obs_var[rr], cpar, cals, x0, n_iter=3, cam_index=cam_ix,
+                                             return_cov=True)
+            pos_var[rr] = np.trace(cv, axis1=1, axis2=2) / 3.0
         return x
 
     x = fit(raw, raw_var)
@@ -215,7 +220,7 @@ def refine_merged(
     full_x = np.full((n, 3), np.nan)
     full_x[est] = x
     out = RefineResult(x=full_x, obs_px=_expand(res.obs_px, est, n), obs_var=_expand(res.obs_var, est, n),
-                       n_share=share, pred_px=_expand(res.pred_px, est, n),
+                       n_share=share, pred_px=_expand(res.pred_px, est, n), pos_var=_expand(pos_var, est, n),
                        x_rounds=[_expand(r, est, n) for r in res.x_rounds], info=res.info)
     return out
 

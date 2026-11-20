@@ -27,7 +27,7 @@ import synth_bench as sb  # noqa: E402
 OUT = Path(__file__).resolve().parent.parent / "bench" / "step23_joint_bounds_2026-11.json"
 
 
-def case_setup(case: str):
+def case_setup(case: str, require_blob: bool = True):
     from openptv2.storage import RunStore
 
     case_dir = sb.WORK / "cases" / case
@@ -35,7 +35,7 @@ def case_setup(case: str):
     exp = sb._experiment(case_dir, case_dir / "parameters_Run1.yaml", 1, info["n_out"])
     store = RunStore(case_dir / "res" / "run.zarr", mode="r")
     tr = np.load(case_dir / "truth.npz")
-    if "blob_tid" not in tr.files:
+    if require_blob and "blob_tid" not in tr.files:
         raise SystemExit(f"{case}: truth.npz has no blob_tid; rebuild the case")
     return case_dir, info, exp, store, tr
 
@@ -522,7 +522,7 @@ def h1(case: str, rounds: int = 3, window: int = 9, order: int = 2, var_c: float
     return out
 
 
-def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int = 2, iters: int = 0, tag: str = "",
+def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int = 1, iters: int = 0, tag: str = "",
        fill: bool = False, fill_radius: float = 1.5, fill_gap: int = 3, fill_growth: float = 0.0,
        fill_hermite: bool = False, mass: tuple | None = None, **opts) -> dict:
     """H2: merge-aware refinement of a REAL tracker run (no truth in the algorithm).
@@ -542,7 +542,7 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
     from openptv2.merge_refine import refine_merged, shared_blobs
     from openptv2.storage import RunStore
 
-    case_dir, info, exp, store0, tr = case_setup(case)
+    case_dir, info, exp, store0, tr = case_setup(case, require_blob=False)
     cpar, cals, vpar = exp.cpar, list(exp.cals), exp.vpar
     n_cams, n_out = len(cals), info["n_out"]
     os.environ["KEEP_STORE"] = "1"
@@ -577,11 +577,12 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
                 res = refine_merged(a["frame"], a["tid"], blob, centre, sumg, cpar, cals, vpar, **opts)
         return res, blob, n_att, a
 
-    def write_pred(label, a, pos):
+    def write_pred(label, a, pos, weights=None):
         keep = np.bincount(a["tid"])[a["tid"]] >= min_len
         d = sb.WORK / "runs" / case / f"{tracker}+{label}"
         d.mkdir(parents=True, exist_ok=True)
-        np.savez_compressed(d / "pred.npz", trajid=a["tid"][keep], frame=a["frame"][keep], pos=pos[keep])
+        extra = {} if weights is None else {"w": weights[keep]}
+        np.savez_compressed(d / "pred.npz", trajid=a["tid"][keep], frame=a["frame"][keep], pos=pos[keep], **extra)
         (d / "run.json").write_text(json.dumps({"tracker": f"{tracker}+{label}", "case": case, "time_s": 0.0,
                                                 "status": "ok"}))
         return int(keep.sum())
@@ -593,6 +594,11 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
     base_a = a0
     tracked = write_pred("h2base", base_a, base_a["pos"])
     write_pred(("h2fill" + tag) if fill else "h2", a, new_pos)
+    # the same with smoothing weights 1 / position variance (median 1): merged-episode points lean on clean ones
+    pv = res.pos_var
+    med = np.nanmedian(pv) if np.isfinite(pv).any() else 1.0
+    wts = np.where(np.isfinite(pv) & (pv > 0), med / np.where(np.isfinite(pv) & (pv > 0), pv, med), 1.0)
+    write_pred(("h2fill" + tag + "w") if fill else "h2w", a, new_pos, np.clip(wts, 0.01, 100.0))
     out = {"rows": int(len(a["frame"])), "tracked_rows": tracked, "attachments": int(n_att),
            "rows_with_a_shared_blob": float((shared_blobs(a["frame"], blob) >= 2).any(1).mean()),
            "info": res.info, "iterations": []}
@@ -648,7 +654,7 @@ def h3(case: str, tracker: str = "two_phase", tracker2: str | None = None, radiu
     from openptv2.merge_refine import refine_merged
     from openptv2.storage import RunStore
 
-    case_dir, info, exp, _s, tr = case_setup(case)
+    case_dir, info, exp, _s, tr = case_setup(case, require_blob=False)
     cpar, cals, vpar = exp.cpar, list(exp.cals), exp.vpar
     n_cams, n_out = len(cals), info["n_out"]
     os.environ["KEEP_STORE"] = "1"

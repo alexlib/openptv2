@@ -261,12 +261,13 @@ def fill_gaps(
     return {"frame": tf[ok], "tid": tt[ok], "pos": tp[ok], "blob": blob[ok], "centre": centre[ok], "sumg": sumg[ok]}
 
 
-def row_signatures(tid: np.ndarray, frame: np.ndarray, blob: np.ndarray, sumg: np.ndarray) -> np.ndarray:
+def row_signatures(tid: np.ndarray, frame: np.ndarray, blob: np.ndarray, sumg: np.ndarray,
+                   quantile: float = 0.5) -> np.ndarray:
     """(N, C) typical grey sum of each row's track in each camera (NaN if unknown); see :func:`track_signatures`."""
     from openptv2.merge_refine import _signatures, shared_blobs
 
     share = shared_blobs(frame, blob)
-    sig = _signatures(tid, (blob >= 0) & (share == 1), sumg)
+    sig = _signatures(tid, (blob >= 0) & (share == 1), sumg, quantile)
     out = np.full(blob.shape, np.nan)
     for c in range(blob.shape[1]):
         out[:, c] = [sig.get((int(t), c), np.nan) for t in tid]
@@ -495,3 +496,22 @@ def paired_births(
         return {"frame": np.zeros(0, int), "pos": np.zeros((0, 3)), "blob": np.zeros((0, n_cams), int),
                 "n_hidden": np.zeros(0, int)}
     return {"frame": np.array(fr_l), "pos": np.array(pos_l), "blob": np.array(blob_l), "n_hidden": np.array(nh_l)}
+
+
+def stamp_tnr(store: Any, frames, n_cams: int) -> None:
+    """Set every target's ``tnr`` to the first point (row) of its frame that uses it, -1 if none (as the image
+    pipeline does after matching; trackers read it to tell used from free blobs)."""
+    from openptv2.storage.run_store import _frame_key
+
+    for f in frames:
+        _, ids = store.read_correspondences(f)
+        ids = np.asarray(ids)
+        for c in range(n_cams):
+            key = f"targets/cam_{c}/{_frame_key(f)}"
+            t = np.asarray(store.root[key]).copy()
+            t[:, 7] = -1
+            col = ids[:, c] if ids.ndim == 2 and ids.shape[1] > c else np.zeros(0, int)
+            used = np.flatnonzero(col >= 0)
+            for r in used[::-1]:                         # reversed: the first user wins
+                t[int(col[r]), 7] = r
+            store.root[key] = t

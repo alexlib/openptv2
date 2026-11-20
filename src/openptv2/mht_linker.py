@@ -16,8 +16,6 @@ from typing import Any
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 
-from .temporal_smoothing import extract_trajectories
-
 
 def mht_relink(
     store: Any,

@@ -40,7 +40,6 @@ from openptv2.tracking_postprocess import (
     relink_trajectory_gaps,
 )
 
-
 # ---------------------------------------------------------------------------
 # K1 quality-layering primitives
 # ---------------------------------------------------------------------------

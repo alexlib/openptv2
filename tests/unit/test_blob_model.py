@@ -223,3 +223,21 @@ def test_duplicate_camera_slots_add_their_weights(rig):
     assert np.abs(a - b).max() < 1e-6                                          # same estimate, just more certain
     with pytest.raises(ValueError):
         triangulate_weighted(px, var, cpar, cals, pts, cam_index=[0, 1])
+
+
+def test_covariance_is_larger_with_fewer_or_noisier_cameras(rig):
+    cpar, cals, pts, px = rig
+    var = np.full(px.shape[:2], 0.01)
+    x, cov = triangulate_weighted(px, var, cpar, cals, pts, return_cov=True)
+    tr4 = np.trace(cov, axis1=1, axis2=2)
+    assert np.all(tr4 > 0)
+    p3 = px.copy()
+    p3[:, 3] = np.nan
+    _, cov3 = triangulate_weighted(p3, var, cpar, cals, pts, return_cov=True)
+    assert np.all(np.trace(cov3, axis1=1, axis2=2) > tr4)                  # one camera fewer: less certain
+    _, cov_n = triangulate_weighted(px, var * 4, cpar, cals, pts, return_cov=True)
+    assert np.trace(cov_n, axis1=1, axis2=2) == pytest.approx(4 * tr4, rel=1e-3)   # variance scales with pixel variance
+    p1 = px.copy()
+    p1[:3, 1:] = np.nan
+    _, c1 = triangulate_weighted(p1, var, cpar, cals, pts, return_cov=True)
+    assert np.all(np.isnan(c1[:3]))

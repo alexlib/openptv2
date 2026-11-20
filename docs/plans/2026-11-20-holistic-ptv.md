@@ -333,3 +333,51 @@ with peeling and stitch off.
 3. Births recall: ~58/frame against ~250 missed; residual placement degrades for dim hidden particles.
 4. Dense data (x4): cluster hypotheses (H4); the blob model alone closes only 39 % there.
 5. Speed: the loop is python (~0.6 s/frame per round against 0.1 matcher + 0.02 linker); vectorise / Cython after 1-2.
+
+## Progress after the synthesis (2026-11-20, second part)
+
+**Scoring correction (critical).** My H2/H3 drivers dropped single-point tracks (`min_len=2`); the benchmark's gap
+repair (postptv) attaches single points to tracks, so my baseline was weaker than `two_phase`'s real output. All
+numbers below are against `two_phase`'s real output (single points kept, `min_len=1`), common set scored at the
+smoothing window best for it. The earlier "-43 %" was inflated; the honest figure is -30 %.
+
+**Corrected results** (velocity error / common set / yield / long completeness):
+| case | `two_phase` | refinement only | births loop round 2 (`two_phase` output) |
+|---|---|---|---|
+| L1 default merge rate, 200 fr | 0.1825 / 0.1561 / 0.680 / 0.503 | 0.1729 / 0.1436 / 0.679 / 0.495 | **0.1481 / 0.1088 (-30 %) / 0.718 / 0.573** |
+| L2 image pipeline (rendered images, real detection), 200 fr | 0.1400 / 0.1223 / 0.691 / 0.544 | 0.1580 / 0.1336 (**worse**) | **0.1298 / 0.0938 (-23 %) / 0.726 / 0.614** |
+On real image blobs refinement alone is harmful; it works only together with the births (hidden partners explicit).
+Gap recovery (`fill_gaps`) raises long completeness further (L1 0.622, L2 0.632) but its extra points cost overall
+velocity error (L2 0.1564): off by default. A final refinement after the last relink is also harmful (L2 0.1298 ->
+0.155): a wrong birth (13 %) that is a member of a shared blob corrupts its partner's effective observation. Best
+pipeline now: rounds of (refine -> births -> relink), output = the last `two_phase` relink.
+
+**Real data, wp2, 300 frames** (`scripts/holistic_real.py`, scratch copy; truth-free): base `two_phase` 14,674 tracks,
+mean length 20.7, 1,533 tracks >= 50 frames, jitter x/y/z 0.0083/0.0077/0.039 mm, jump share 1.44 %; after two rounds
+10,860 tracks, mean 29.5 (+43 %), 1,856 >= 50 frames (+21 %), jitter 0.0054/0.0049/0.027 (the path prior smooths by
+construction, so jitter is not clean evidence), jump share 0.38 %. Births 11.1k (round 1), 4.3k (round 2). Leave-one-
+camera-out on 4-camera points with a shared blob: corrected observations agree better with the other cameras than the
+raw blob centres (median 0.52 -> 0.46 px, p90 1.18 -> 1.07): truth-free evidence that the correction is right on real
+data. `never4_share` is no longer meaningful (membership extension adds cameras).
+
+**Noise of the new points** (`scripts/joint_extra_points.py`, round 2): the added points are placed worse, not only on
+short tracks: position error median 0.099 / rms 0.162 mm against 0.026 / 0.065 for the common points; track length
+median 14-20 (common 91-111), 35 % on tracks < 5 frames; 64 % sit on tracks that also hold common points (merged
+stretches of good tracks). Position covariances now come out of the fit (`triangulate_weighted(return_cov=True)`,
+`RefineResult.pos_var`; test); smoothing with weights 1/variance helps only slightly (L2 0.1575 -> 0.1550).
+
+**Births recall** (`scripts/joint_birth_recall.py`, L1 default): of 109.6k hidden views of missed points, 63 % are lost
+because the blob's grey sum hardly exceeds the tracked member's signature (median residual = 0): the signature is
+contaminated, since a member's "alone" frames are judged by tracked points only and include frames where an untracked
+partner hid in its blob. With the 20th percentile instead of the median (`signature_from_history(quantile=)`) good
+residual targets rise 13.6 % -> 18.0 % of hidden views and missed points with >= 3 usable views 26.7 % -> 32.5 %. The
+remaining fix: estimate signatures and blob counts jointly (EM: counts given signatures, signatures from blobs counted
+as single), or from cameras where the particle is reliably alone in 3D terms.
+
+**Dense data (x4, 60 frames):** `two_phase` 0.433 / common 0.390 / yield 0.227; Clean-and-Claim peeling (`unified`)
+4.93 (ghost 29 %), without stitch 1.98 (ghost 24 %): exclusive claiming turns merged blobs into ghosts. The births loop
+barely helps (common 0.369 -> 0.362 over three rounds, yield unchanged 0.225): trusted predictions exist for only half
+the particles and signatures are contaminated in most frames. The matcher's cloud holds 26 % of the particles while
+the ideal-centre ceiling keeps 85 %. Dense data needs the mass accounting at the *matching* stage: a blob may serve as
+many points as its brightness says (capacity-aware matching from the full candidate pool), explaining brightness layer
+by layer from the most certain particles (a non-exclusive "mass peeling"), with cluster-level hypotheses in time (H4).

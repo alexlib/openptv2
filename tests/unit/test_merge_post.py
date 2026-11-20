@@ -247,3 +247,22 @@ def test_no_paired_birth_without_excess_mass(rig):
 
     cpar, cals, vpar, frame, blob, sig, blobs, counts, _ = _hidden_scene(rig, excess=5.0)
     assert len(paired_births(frame, blob, sig, blobs, counts, [1], cpar, cals, vpar)["frame"]) == 0
+
+
+def test_stamp_tnr_marks_the_first_user_of_each_blob(tmp_path):
+    from openptv2.merge_post import stamp_tnr
+    from openptv2.storage import RunStore
+
+    st = RunStore(tmp_path / "r.zarr", mode="w")
+    rows = np.zeros((3, 8))
+    rows[:, 0] = np.arange(3)
+    rows[:, 7] = 99
+    for c in range(2):
+        st.write_targets(c, 1, rows.copy())
+    ids = np.array([[0, 2], [0, -1], [-1, 1]])                 # blob 0 of camera 0 is shared by rows 0 and 1
+    st.write_correspondences(1, np.zeros((3, 3)), ids)
+    stamp_tnr(st, [1], 2)
+    t0 = np.asarray(st.root["targets/cam_0/frame_000001"])[:, 7]
+    t1 = np.asarray(st.root["targets/cam_1/frame_000001"])[:, 7]
+    assert t0.tolist() == [0, -1, -1]
+    assert t1.tolist() == [-1, 2, 0]

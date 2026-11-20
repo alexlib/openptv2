@@ -11,8 +11,6 @@ priority cascade's candidate cost for speed.
 
 from __future__ import annotations
 
-from typing import Any
-
 import numpy as np
 
 from .temporal_smoothing import extract_trajectories

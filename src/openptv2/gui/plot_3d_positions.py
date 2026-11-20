@@ -22,8 +22,6 @@ from traitsui.api import Item, View
 from traitsui.basic_editor_factory import BasicEditorFactory
 from traitsui.qt.editor import Editor
 
-from . import ptv
-
 
 class _MPLFigureEditor(Editor):
     """Embeds a matplotlib Figure as a Qt canvas inside a TraitsUI Item."""

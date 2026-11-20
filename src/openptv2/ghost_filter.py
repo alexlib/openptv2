@@ -102,7 +102,6 @@ def filter_ghosts_rcm(
     """
     # Lazy import; heavy.
     try:
-        from openptv2.plugins.two_phase_tracking import ghost_probabilities
         from openptv2.point_quality import (  # noqa: F401
             brightness_spread,
             fit_scale,

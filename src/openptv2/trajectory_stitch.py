@@ -14,7 +14,7 @@ rewriting the trackcorr backbone.
 
 from __future__ import annotations
 
-from typing import Any, Sequence
+from typing import Any
 
 import numpy as np
 

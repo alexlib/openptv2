@@ -392,7 +392,10 @@ class Tracking:
         )
         if do_probe and store is not None and first is not None and last is not None and last >= first:
             try:
-                from openptv2.tracking_probe import confirm_probe_selection, select_best_config
+                from openptv2.tracking_probe import (
+                    confirm_probe_selection,
+                    select_best_config,
+                )
 
                 wins = self.sample_probe_windows(
                     first,
@@ -466,7 +469,9 @@ class Tracking:
                 and hasattr(self.exp, "cals")
             ):
                 try:
-                    from openptv2.tracking_chunked import track_sequence_chunked_parallel
+                    from openptv2.tracking_chunked import (
+                        track_sequence_chunked_parallel,
+                    )
 
                     self._apply_v_max_to_tpar(self.exp, v_max)
                     track_sequence_chunked_parallel(
@@ -539,7 +544,9 @@ class Tracking:
                     and hasattr(self.exp, "cals")
                 ):
                     try:
-                        from openptv2.tracking_chunked import track_sequence_chunked_parallel
+                        from openptv2.tracking_chunked import (
+                            track_sequence_chunked_parallel,
+                        )
 
                         self._apply_v_max_to_tpar(self.exp, v_max)
                         track_sequence_chunked_parallel(
@@ -578,7 +585,10 @@ class Tracking:
 
             # Frame-quality awareness: interpolate low-quality frames.
             try:
-                from openptv2.frame_quality import interpolate_frame_correspondences, low_quality_frames
+                from openptv2.frame_quality import (
+                    interpolate_frame_correspondences,
+                    low_quality_frames,
+                )
 
                 if store is not None and first is not None and last is not None and last >= first:
                     lq = low_quality_frames(store, first, last, threshold=float(track_cfg.get("frame_quality_threshold", 0.5)))
@@ -651,8 +661,8 @@ class Tracking:
         # Trajectory-level ghost suppression (temporal coherence + target uniqueness).
         try:
             from openptv2.temporal_smoothing import (
-                trajectory_level_ghost_filter,
                 resolve_smoothing_config,
+                trajectory_level_ghost_filter,
             )
 
             _ctx = dict(regime)
@@ -1059,7 +1069,10 @@ class Tracking:
         try:
             import numpy as np
 
-            from openptv2.temporal_smoothing import resolve_smoothing_config, smooth_trajectories
+            from openptv2.temporal_smoothing import (
+                resolve_smoothing_config,
+                smooth_trajectories,
+            )
 
             ctx = dict(regime)
             ctx.update(self._resolved or {})

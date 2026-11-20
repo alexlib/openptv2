@@ -9,12 +9,12 @@ at most one selected point. This is the multi-dimensional assignment problem;
 
 from __future__ import annotations
 
-from typing import Any, Sequence
+from typing import Sequence
 
 import numpy as np
-from scipy.optimize import milp, LinearConstraint, Bounds, linear_sum_assignment
+from scipy.optimize import Bounds, LinearConstraint, milp
 
-from .ghost_components import conflict_components, classify_component
+from .ghost_components import classify_component, conflict_components
 
 
 def _confidences(pos: np.ndarray, cam_ids: np.ndarray, conf: np.ndarray | None) -> np.ndarray:

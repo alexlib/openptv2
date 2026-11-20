@@ -7,8 +7,6 @@ from centre), so thresholds are geometry-aware instead of global.
 
 from __future__ import annotations
 
-from typing import Any
-
 import numpy as np
 
 
