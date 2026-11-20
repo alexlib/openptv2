@@ -269,7 +269,7 @@ def _expand(a: np.ndarray, rows: np.ndarray, n: int) -> np.ndarray:
 
 
 def _joint_clusters(x, frame, est, pidx, blob, det, share, centre, obs_var, pred_px, good, var_c, prior_var, sig_of,
-                    cpar, cals, rows_of):
+                    cpar, cals, rows_of, max_move_mm: float = 1.0):
     """Replace the positions of every cluster of estimable rows that share blobs by a joint solve."""
     from openptv2.blob_model import brightness_shares, solve_cluster
 
@@ -324,5 +324,8 @@ def _joint_clusters(x, frame, est, pidx, blob, det, share, centre, obs_var, pred
             idx = np.array([pidx[r] for r in mem])
             if not np.all(np.isfinite(x[idx])):
                 continue
-            x[idx] = solve_cluster(x[idx], clean_obs, shared_obs, prior_obs, cpar, cals)
+            x_new, (c0, c1) = solve_cluster(x[idx], clean_obs, shared_obs, prior_obs, cpar, cals, return_info=True)
+            # keep the per-member result unless the joint solve clearly fits better and stays near it
+            if c1 < c0 and np.all(np.linalg.norm(x_new - x[idx], axis=1) < max_move_mm):
+                x[idx] = x_new
     return x

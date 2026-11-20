@@ -275,5 +275,23 @@ def test_joint_cluster_solve_places_a_particle_seen_only_inside_shared_blobs(rig
     shared = [((0, 1), w, c, 0.5 * pa[c] + 0.5 * pb[c], 0.01) for c in (2, 3)]
     clean += [(1, 0, pb[0], 0.01)]                             # b alone only in camera 0
     x0 = np.vstack([a, b]) + 0.05
-    x = solve_cluster(x0, clean, shared, [], cpar, cals)
+    x = solve_cluster(x0, clean, shared, [], cpar, cals, start_var_mm2=None)
     assert np.linalg.norm(x[1] - b) < 1e-3                     # b is placed from one clean view + two shared blobs
+    x_p = solve_cluster(x0, clean, shared, [], cpar, cals)      # with the weak start prior: a small pull only
+    assert np.linalg.norm(x_p[1] - b) < 0.02
+
+
+def test_joint_cluster_solve_does_not_run_away_when_a_member_is_underdetermined(rig):
+    from openptv2.blob_model import solve_cluster
+
+    cpar, cals, pts, px = rig
+    a, b = pts[2], pts[2] + np.array([0.1, 0.0, 0.05])
+    pa = np.stack([project_pixels(a[None], c, cpar)[0] for c in cals])
+    pb = np.stack([project_pixels(b[None], c, cpar)[0] for c in cals])
+    clean = [(0, c, pa[c], 0.01) for c in (1, 2, 3)]
+    shared = [((0, 1), (0.5, 0.5), 0, 0.5 * pa[0] + 0.5 * pb[0], 0.01)]       # b only appears in one shared blob
+    x0 = np.vstack([a, b]) + np.array([[0.02, 0, 0], [0.3, -0.2, 0.4]])
+    x, (c0, c1) = solve_cluster(x0, clean, shared, [], cpar, cals, return_info=True)
+    assert np.all(np.isfinite(x)) and c1 <= c0
+    assert np.linalg.norm(x[1] - x0[1]) < 1.0                               # anchored, no runaway
+    assert np.linalg.norm(x[0] - a) < 0.05

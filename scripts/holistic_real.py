@@ -96,78 +96,36 @@ def main() -> None:
         report[tag] = rm.metrics(ch, len(frames))
         print(tag, json.dumps(report[tag]))
 
+    from openptv2.holistic import run_holistic
+
+    st = RunStore(store_path, mode="a")
     report["track_time_s"] = [track()]
-    st = RunStore(store_path, mode="r")
     base = arrays_from_store(st, "ptv_is", first, a.last, n_cams)
     score("base_two_phase", base["tid"], base["frame"], base["pos"], base["blob"])
-    report["births"] = []
-    for rnd in range(1, a.rounds + 1):
-        st = RunStore(store_path, mode="r")
-        arr = arrays_from_store(st, "ptv_is", first, a.last, n_cams)
-        blob, centre, sumg, n_att = extend_membership(arr["frame"], arr["pos"], arr["blob"], arr["centre"],
-                                                      arr["sumg"], arr["blobs"], cpar, cals)
-        res = refine_merged(arr["frame"], arr["tid"], blob, centre, sumg, cpar, cals, vpar)
-        sig = row_signatures(arr["tid"], arr["frame"], blob, sumg)
-        counts = {(f, c): np.asarray(st.root[f"targets/cam_{c}/frame_{f:06d}"])[:, 3:6].astype(int)
-                  for f in frames for c in range(n_cams)}
-        fallback = np.full(res.pred_px.shape, np.nan)
-        okx = np.isfinite(res.x[:, 0])
-        for c in range(n_cams):
-            m = okx & (blob[:, c] >= 0)
-            fallback[m, c] = project_pixels(res.x[m], cals[c], cpar)
-        targets = birth_targets(arr["frame"], blob, res.pred_px, sig, arr["blobs"], counts,
-                                min_resid=a.min_resid, fallback_px=fallback)
-        births = birth_points(targets, frames, cpar, cals, vpar)
-        new_pos = np.where(np.isfinite(res.x[:, :1]), res.x, arr["pos"])
-        stw = RunStore(store_path, mode="a")
-        off = 0
-        for f in frames:
-            pos0, ids0 = stw.read_correspondences(f)
-            n = len(pos0)
-            assert (arr["frame"][off: off + n] == f).all(), "row alignment lost"
-            seg = new_pos[off: off + n]
-            off += n
-            b = births["frame"] == f
-            ids_b = np.full((int(b.sum()), np.asarray(ids0).shape[1]), -1, dtype=np.int64)
-            ids_b[:, :n_cams] = births["blob"][b]
-            stw.write_correspondences(f, np.vstack([seg, births["pos"][b]]),
-                                      np.vstack([np.asarray(ids0, dtype=np.int64), ids_b]))
-        stamp_tnr(stw, frames, n_cams)
-        report["births"].append({"round": rnd, "attachments": int(n_att), "births": int(len(births["frame"])),
-                                 "residual_targets": int(sum(int((t["kind"] == 1).sum()) for t in targets.values())),
-                                 "refine": res.info[-1]})
-        print("round", rnd, report["births"][-1])
-        report["track_time_s"].append(track())
-    # final: refine, rejoin pieces on the refined path, recover gaps (mass-checked), refine again
-    st = RunStore(store_path, mode="r")
-    arr = arrays_from_store(st, "ptv_is", first, a.last, n_cams)
-    score("loop_two_phase_raw", arr["tid"], arr["frame"], arr["pos"], arr["blob"])
-    blob, centre, sumg, _ = extend_membership(arr["frame"], arr["pos"], arr["blob"], arr["centre"], arr["sumg"],
-                                              arr["blobs"], cpar, cals)
-    res = refine_merged(arr["frame"], arr["tid"], blob, centre, sumg, cpar, cals, vpar)
-    path = np.where(np.isfinite(res.x[:, :1]), res.x, arr["pos"])
-    arr2 = {**arr, "tid": reconnect_pieces(arr["tid"], arr["frame"], path, max_gap=13, min_len=4)}
-    new = fill_gaps(arr2, path, cpar, cals, radius=1.5, max_gap=12, interp="hermite", radius_growth=0.25,
-                    mass_range=(0.7, 1.4))
-    keys = ("frame", "tid", "pos", "blob", "centre", "sumg")
-    arr3 = {**arr2, **{k: np.concatenate([arr2[k], new[k]]) for k in keys}}
-    b3, c3, s3, _ = extend_membership(arr3["frame"], arr3["pos"], arr3["blob"], arr3["centre"], arr3["sumg"],
-                                      arr3["blobs"], cpar, cals)
-    res3 = refine_merged(arr3["frame"], arr3["tid"], b3, c3, s3, cpar, cals, vpar)
-    fin = np.where(np.isfinite(res3.x[:, :1]), res3.x, arr3["pos"])
-    score("final", arr3["tid"], arr3["frame"], fin, b3)
-    report["gap_rows_added"] = int(len(new["frame"]))
-    # leave-one-camera-out: raw blob centres vs the observations the refinement used, on 4-camera points
-    four = (b3 >= 0).sum(1) == n_cams
-    shared = (res3.n_share >= 2).any(1) & four
-    raw_xy = np.where((b3 >= 0)[:, :, None], c3, np.nan)
-    cor_xy = res3.obs_px
-    both = four & np.all(np.isfinite(cor_xy[:, :, 0]), axis=1)
-    for name, m in (("all_4cam", both), ("with_shared_blob", both & shared)):
-        lr = loco_residuals(raw_xy[m], cpar, cals, vpar)
-        lc = loco_residuals(cor_xy[m], cpar, cals, vpar)
-        report[f"loco_{name}"] = {"raw": summarize(lr), "corrected": summarize(lc)}
-        print("LOCO", name, json.dumps(report[f"loco_{name}"]))
+    t0 = time.perf_counter()
+    stats = run_holistic(st, list(frames), cpar, cals, vpar, lambda: report["track_time_s"].append(track()),
+                         rounds=a.rounds, min_resid=a.min_resid, initial_link=False)
+    report["loop_time_s"] = round(time.perf_counter() - t0, 1)
+    report["births"] = stats["rounds"]
+    final = arrays_from_store(st, "ptv_is", first, a.last, n_cams)
+    score("final", final["tid"], final["frame"], final["pos"], final["blob"])
+    # leave-one-camera-out on 4-camera points with a shared blob: raw blob centres vs the observations the loop used
+    rows_obs = [st.read_observations(f) for f in frames]
+    obs = np.vstack([o for o in rows_obs if o is not None])
+    blob = final["blob"]
+    four = (blob >= 0).sum(1) == n_cams
+    if len(obs) == len(blob):
+        shared = (obs[:, :, 3] >= 2).any(1) & four
+        raw_xy = np.where((blob >= 0)[:, :, None], final["centre"], np.nan)
+        cor_xy = obs[:, :, :2].astype(float)
+        both = four & np.all(np.isfinite(cor_xy[:, :, 0]), axis=1)
+        for name, m in (("all_4cam", both), ("with_shared_blob", both & shared)):
+            lr = loco_residuals(raw_xy[m], cpar, cals, vpar)
+            lc = loco_residuals(cor_xy[m], cpar, cals, vpar)
+            report[f"loco_{name}"] = {"raw": summarize(lr), "corrected": summarize(lc)}
+            print("LOCO", name, json.dumps(report[f"loco_{name}"]))
+    fin = final["pos"]
+    arr3 = final
     np.savez_compressed(out / "final_pred.npz", trajid=arr3["tid"], frame=arr3["frame"], pos=fin)
     (out / "holistic_report.json").write_text(json.dumps(report, indent=1))
     print("REPORT", out / "holistic_report.json")

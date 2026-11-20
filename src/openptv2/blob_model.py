@@ -235,58 +235,103 @@ def solve_cluster(
     prior_obs: list,
     cpar: Any,
     cals: list,
-    n_iter: int = 4,
+    n_iter: int = 6,
     step_mm: float = 0.01,
-) -> np.ndarray:
-    """Joint Gauss-Newton for the 3D positions of particles that share blobs (one cluster of one frame).
+    start_var_mm2: float | None = 0.04,
+    max_step_mm: float = 0.5,
+    return_info: bool = False,
+):
+    """Joint damped Gauss-Newton (Levenberg-Marquardt) for the 3D positions of particles that share blobs.
 
     ``x0`` (m, 3) start positions. Observations, each with a pixel variance:
       ``clean_obs``  [(j, cam, xy (2,), var)]: particle j alone in a blob of camera ``cam``;
       ``shared_obs`` [(members (k,), weights (k,), cam, centre (2,), var)]: a blob holding several particles, whose
                      centre is the weighted mean of their projections (weights = brightness shares);
       ``prior_obs``  [(j, cam, xy (2,), var)]: projected path prediction of particle j (a temporal prior).
-    Returns the (m, 3) positions. Unlike the per-particle effective observation, no particle's estimate relies on a
-    partner's prediction: the partners are estimated together.
+    ``start_var_mm2``: a weak prior keeping each particle near its start (a particle constrained only through shared
+    blobs is otherwise underdetermined); ``max_step_mm`` caps every particle's step; a step is accepted only if the
+    total cost drops (the damping grows otherwise). No particle's estimate relies on a partner's prediction.
+    Returns the (m, 3) positions, with ``return_info`` also ``(cost_start, cost_end)``.
     """
     x = np.asarray(x0, float).copy()
+    xs = x.copy()
     m = len(x)
     n_par = 3 * m
-    for _ in range(n_iter):
+
+    def proj_and_jac(xx, j, cam):
+        base = project_pixels(xx[j][None], cals[cam], cpar)[0]
+        jac = np.zeros((2, 3))
+        for ax in range(3):
+            d = np.zeros(3)
+            d[ax] = step_mm
+            jac[:, ax] = (project_pixels((xx[j] + d)[None], cals[cam], cpar)[0]
+                          - project_pixels((xx[j] - d)[None], cals[cam], cpar)[0]) / (2 * step_mm)
+        return base, jac
+
+    def system(xx, need_jac=True):
         rows_j, rows_r, rows_w = [], [], []
-
-        def proj_and_jac(j, cam):
-            base = project_pixels(x[j][None], cals[cam], cpar)[0]
-            jac = np.zeros((2, 3))
-            for ax in range(3):
-                d = np.zeros(3)
-                d[ax] = step_mm
-                jac[:, ax] = (project_pixels((x[j] + d)[None], cals[cam], cpar)[0]
-                              - project_pixels((x[j] - d)[None], cals[cam], cpar)[0]) / (2 * step_mm)
-            return base, jac
-
         for j, cam, xy, var in list(clean_obs) + list(prior_obs):
-            base, jac = proj_and_jac(j, cam)
-            full = np.zeros((2, n_par))
-            full[:, 3 * j: 3 * j + 3] = jac
-            rows_j.append(full)
+            if need_jac:
+                base, jac = proj_and_jac(xx, j, cam)
+                full = np.zeros((2, n_par))
+                full[:, 3 * j: 3 * j + 3] = jac
+                rows_j.append(full)
+            else:
+                base = project_pixels(xx[j][None], cals[cam], cpar)[0]
             rows_r.append(np.asarray(xy, float) - base)
             rows_w.append(np.full(2, 1.0 / var))
         for members, weights, cam, centre, var in shared_obs:
             pred = np.zeros(2)
             full = np.zeros((2, n_par))
             for j, wj in zip(members, weights):
-                base, jac = proj_and_jac(j, cam)
+                if need_jac:
+                    base, jac = proj_and_jac(xx, j, cam)
+                    full[:, 3 * j: 3 * j + 3] += wj * jac
+                else:
+                    base = project_pixels(xx[j][None], cals[cam], cpar)[0]
                 pred += wj * base
-                full[:, 3 * j: 3 * j + 3] += wj * jac
-            rows_j.append(full)
+            if need_jac:
+                rows_j.append(full)
             rows_r.append(np.asarray(centre, float) - pred)
             rows_w.append(np.full(2, 1.0 / var))
-        if not rows_j:
-            return x
-        jm = np.vstack(rows_j)
-        r = np.concatenate(rows_r)
-        w = np.concatenate(rows_w)
-        a = jm.T @ (w[:, None] * jm) + 1e-9 * np.eye(n_par)
-        step = np.linalg.solve(a, jm.T @ (w * r))
-        x += step.reshape(m, 3)
-    return x
+        if start_var_mm2 is not None:                       # weak prior on the start positions, 3 rows per particle
+            for j in range(m):
+                if need_jac:
+                    full = np.zeros((3, n_par))
+                    full[:, 3 * j: 3 * j + 3] = np.eye(3)
+                    rows_j.append(full)
+                rows_r.append(xs[j] - xx[j])
+                rows_w.append(np.full(3, 1.0 / start_var_mm2))
+        r = np.concatenate(rows_r) if rows_r else np.zeros(0)
+        w = np.concatenate(rows_w) if rows_w else np.zeros(0)
+        jm = np.vstack(rows_j) if (need_jac and rows_j) else None
+        return r, w, jm
+
+    r, w, jm = system(x)
+    cost0 = float(np.sum(w * r**2))
+    cost = cost0
+    lam = 1e-3
+    if jm is None or len(r) == 0:
+        return (x, (cost0, cost0)) if return_info else x
+    for _ in range(n_iter):
+        a = jm.T @ (w[:, None] * jm)
+        g = jm.T @ (w * r)
+        improved = False
+        for _try in range(6):
+            step = np.linalg.solve(a + lam * np.diag(np.diag(a) + 1e-9), g).reshape(m, 3)
+            norm = np.linalg.norm(step, axis=1)
+            big = norm > max_step_mm
+            step[big] *= (max_step_mm / norm[big])[:, None]
+            x_new = x + step
+            r_new, w_new, _ = system(x_new, need_jac=False)
+            c_new = float(np.sum(w_new * r_new**2))
+            if c_new < cost:
+                x, cost = x_new, c_new
+                lam = max(lam / 3, 1e-6)
+                improved = True
+                break
+            lam *= 10
+        if not improved:
+            break
+        r, w, jm = system(x)
+    return (x, (cost0, cost)) if return_info else x
