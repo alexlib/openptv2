@@ -140,6 +140,10 @@ split of the merged centre) is required for vErr, not just Idea 11 (adding point
 
 Predictor-based two-pass (Idea 11 + 4, L1_d1): vel 19.65 → 19.35 (without Idea 9) / 19.63 (with Idea 9).
 blob_recovery.recover() now returns frame_merged; tracker applies noise inflation + no-velocity-update.
+
+Intensity-based membership added (brightness gate, default 1.3x median): splits reduced 141→47 on
+n=12, vErr 103→98 (still noisy; needs tuning). The brightness signal filters false merges but the
+remaining splits still need Idea 9 noise inflation to be effective.
 predicted track; split via merged_split. Integrated into src/openptv2/blob_recovery.py (recover()).
 predicted track; split via merged_split. First vErr gain achieved.
 
