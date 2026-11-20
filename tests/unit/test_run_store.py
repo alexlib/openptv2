@@ -406,3 +406,10 @@ def test_observations_reject_bad_shape(tmp_path):
         store.write_observations(1, np.zeros((3, 4)))
     with pytest.raises(RunStoreError):
         store.write_observations(1, np.zeros((3, 4, 3)))
+
+
+def test_point_sigma_round_trip(tmp_path):
+    store = RunStore(tmp_path / "run" / "res" / "run.zarr", mode="w")
+    assert store.read_point_sigma(3) is None
+    store.write_point_sigma(3, np.array([0.01, 0.05, 0.2]))
+    np.testing.assert_allclose(store.read_point_sigma(3), [0.01, 0.05, 0.2], rtol=1e-6)

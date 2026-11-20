@@ -533,3 +533,36 @@ on wp2 (mean 30.5, 1,863 tracks >= 50): more births, slightly fewer long tracks;
 3. Births precision on real data: no truth there; check births' track lengths and cross-camera consistency.
 4. Speed: vectorise the group loops of `refine_merged`, `estimate_signatures`, `birth_targets`; Cython later.
 5. Product: `holistic` as an option in `unified` / the GUI tracker list once 1-2 are done; docs page.
+
+## Next steps 2-3 (2026-11-20, fifth part): noise-aware confirmation, births on real data, cleanup
+
+**Library loop = benchmark driver.** `joint_bounds.py hol` runs `openptv2.holistic.run_holistic` (the plugin's code)
+on a copy of a case; with the same settings it reproduces the earlier driver's L2 result exactly (0.1195 / 0.0776).
+
+**Noise-aware link confirmation** (`tracking_postprocess.confirm_link_tuples(point_sigma=)`; `two_phase` reads
+`RunStore.read_point_sigma` per frame, YAML `noise_aware_confirm`, default on; `run_holistic` writes each point's
+position sigma: refined points from their fit covariance, births 3x the median). The kink tolerance of a link widens with
+its points' noise, never narrows. It is applied only where `two_phase`'s data-driven tolerance is valid (sparse,
+noise-dominated data: the `confirm_auto` guard); at x4 it let wrong links through (0.382 -> 0.447).
+
+**Births on real data (truth-free, `scripts/joint_births_real.py`)**, read against the L2 case with truth:
+| | births share | linked | on tracks >= 10 | median track | precision linked / unlinked (truth) |
+|---|---|---|---|---|---|
+| L2 (rendered images) | 8.7 % | 60 % | 54 % | 17 | **95.6 % / 53 %** |
+| real wp2 | 9.3 % | 57 % | 43 % | 5 | - |
+Linked births are almost all real; unlinked ones are a coin flip. So `run_holistic(drop_unlinked_births=True)`
+(default) removes births no track took after the last relink and links once more.
+
+**Results (velocity error / common set / yield / long completeness / ghost):**
+| case | `two_phase` | loop | + noise-aware | **+ noise-aware + drop unlinked births** |
+|---|---|---|---|---|
+| L2 image pipeline, 200 fr | 0.1400 / 0.1223 / 0.691 / 0.544 / 3.7 % | 0.1195 / 0.0776 / 0.745 / 0.653 / 3.5 % | 0.1183 / 0.0717 / 0.748 / 0.680 / 3.6 % | **0.1082 (-23 %) / 0.0733 (-40 %) / 0.741 / 0.670 / 3.6 %** |
+| x4, 60 fr | 0.4326 / 0.3897 / 0.227 / 0.182 / 6.8 % | 0.4082 / 0.2830 / 0.265 / 0.215 / 5.6 % | (off at this density) | **0.3821 (-12 %) / 0.2925 / 0.252 / 0.208 / 5.2 %** |
+New points: L2 6.9 % of the output with velocity error 0.188 (was 0.25). These are now the defaults of the
+`holistic` plugin.
+
+## Next steps (updated)
+1. Dense: cluster hypotheses in time (yield at x4 0.25 against the 0.85 ceiling).
+2. Rerun real wp2 with the defaults (noise-aware + cleanup).
+3. Speed: vectorise the group loops (`refine_merged`, `estimate_signatures`, `birth_targets`), then Cython.
+4. Product: `holistic` in the GUI tracker list and in `unified`; a docs page.

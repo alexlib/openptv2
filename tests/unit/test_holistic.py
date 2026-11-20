@@ -68,8 +68,14 @@ def test_hidden_particle_is_born_and_linked_through_the_overlap(tmp_path):
     def relink():
         return track_store(store, frames, cfg, cals, cpar)
 
+    n0 = {f: len(store.read_correspondences(f)[0]) for f in frames}
     stats = run_holistic(store, frames, cpar, cals, vpar, relink, rounds=1, partner_min_len=0, log=lambda s: None)
     assert stats["rounds"][0]["births"] >= len(MERGED)
+    for f in frames:                                   # no unlinked birth is left in the output
+        pos, _ = store.read_correspondences(f)
+        prev, nxt, _x = store.read_linkage(f, "ptv_is")
+        extra = np.arange(len(pos)) >= n0[f]
+        assert not np.any(extra & (prev < 0) & (nxt < 0))
     for f in MERGED:
         pos, _ = store.read_correspondences(f)
         d = np.linalg.norm(pos - truth[f][1], axis=1)

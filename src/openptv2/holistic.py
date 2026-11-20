@@ -38,6 +38,8 @@ def run_holistic(
     partner_min_len: int = 10,
     radius: float = 2.0,
     initial_link: bool = True,
+    birth_sigma_factor: float = 3.0,
+    drop_unlinked_births: bool = True,
     log: Callable[[str], Any] = print,
 ) -> dict:
     """Run the loop on ``store`` over the contiguous ``frames``; ``relink()`` links the store's current points.
@@ -73,6 +75,7 @@ def run_holistic(
     if initial_link:
         relink()
     store = fresh(store)
+    n_orig = {f: len(store.read_correspondences(f)[0]) for f in frames}
     for rnd in range(1, rounds + 1):
         arr = arrays_from_store(store, linkage_name, first, last, n_cams)
         blob, centre, sumg, n_att = extend_membership(arr["frame"], arr["pos"], arr["blob"], arr["centre"],
@@ -92,6 +95,9 @@ def run_holistic(
                                 fallback_px=fallback)
         births = birth_points(targets, frames, cpar, cals, vpar)
         new_pos = np.where(np.isfinite(res.x[:, :1]), res.x, arr["pos"])
+        sd = np.sqrt(res.pos_var) if res.pos_var is not None else np.full(len(new_pos), np.nan)
+        sd_med = float(np.nanmedian(sd)) if np.isfinite(sd).any() else 0.05
+        sd = np.where(np.isfinite(sd) & (sd > 0), sd, sd_med)
         off = 0
         for f in frames:
             pos0, ids0 = store.read_correspondences(f)
@@ -119,6 +125,9 @@ def run_holistic(
             share = shared_blobs(np.full(len(all_ids), f), all_ids[:, :n_cams])
             obs[:, :, 3] = share
             store.write_observations(f, obs)
+            # position uncertainty per point: refined points from their fit, births 3x the median (their placement
+            # error was measured about 4x the established points')
+            store.write_point_sigma(f, np.concatenate([sd[off: off + n], np.full(len(all_ids) - n, birth_sigma_factor * sd_med)]))
             off += n
         stamp_tnr(store, frames, n_cams)
         info = {"round": rnd, "rows": int(len(arr["frame"])), "attachments": int(n_att),
@@ -127,6 +136,36 @@ def run_holistic(
         log(f"holistic round {rnd}: {info['births']} births, {info['attachments']} attachments")
         relink()
         store = fresh(store)
+    if drop_unlinked_births and rounds > 0:
+        # births that no track took are about half wrong (benchmark: 53 % against 96 % for linked births): drop them
+        from openptv2.tracking_postprocess import read_linkage
+
+        n_drop = 0
+        for f in frames:
+            pos, ids = store.read_correspondences(f)
+            lk = read_linkage(linkage_name, f, store=store)
+            if lk is None:
+                continue
+            prev, nxt, _ = lk
+            rows = np.arange(len(pos))
+            drop = (rows >= n_orig[f]) & (np.asarray(prev) < 0) & (np.asarray(nxt) < 0)
+            if not drop.any():
+                continue
+            keep = ~drop
+            n_drop += int(drop.sum())
+            store.write_correspondences(f, pos[keep], np.asarray(ids)[keep])
+            obs = store.read_observations(f)
+            if obs is not None and len(obs) == len(keep):
+                store.write_observations(f, obs[keep])
+            sd = store.read_point_sigma(f)
+            if sd is not None and len(sd) == len(keep):
+                store.write_point_sigma(f, sd[keep])
+        stats["dropped_unlinked_births"] = n_drop
+        if n_drop:
+            stamp_tnr(store, frames, n_cams)
+            log(f"holistic: dropped {n_drop} unlinked births, linking again")
+            relink()
+            store = fresh(store)
     return stats
 
 

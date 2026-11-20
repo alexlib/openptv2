@@ -544,6 +544,24 @@ class RunStore:
     def has_observations(self, frame: int) -> bool:
         return "obs" in self.root and _frame_key(frame) in self.root["obs"]
 
+    def write_point_sigma(self, frame: int, sigma: np.ndarray) -> None:
+        """Position uncertainty (mm, shape (N,)) of every point of ``frame``, row-aligned with its correspondences."""
+        arr = np.asarray(sigma, dtype=np.float32).reshape(-1)
+        try:
+            self.root.require_group("psigma").create_array(_frame_key(frame), data=arr, overwrite=True)
+        except Exception as exc:
+            raise RunStoreError(f"Failed to write point sigma for frame {frame}: {exc}") from exc
+        self._mark_unsealed()
+
+    def read_point_sigma(self, frame: int) -> np.ndarray | None:
+        """Position uncertainty (mm) of the points of ``frame``, or None if never written."""
+        if "psigma" not in self.root:
+            return None
+        try:
+            return np.asarray(self.root["psigma"][_frame_key(frame)], dtype=np.float32)
+        except KeyError:
+            return None
+
     def read_seen(self, frame: int) -> np.ndarray:
         """(N, C) bool mask: 3D point really seen in camera (cam id >= 0).
 

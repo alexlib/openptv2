@@ -207,3 +207,21 @@ def test_confirm_links_ends_severs_dead_end_link(tmp_path):
     _chain(base, xyz, [True, True, True, True, False], store=store)  # track ends in frame 5
     assert confirm_links(base, 1, 6, tol=0.3, store=store)["severed"] == 0
     assert confirm_links(base, 1, 6, tol=0.3, ends=True, store=store)["severed"] == 1
+
+
+def test_confirmation_widens_the_tolerance_for_noisy_points_only():
+    import numpy as np
+
+    from openptv2.tracking_postprocess import confirm_link_tuples
+
+    # three frames, one point each; the middle point is 0.3 mm off the line: kink 0.6
+    P = [np.array([[0.0, 0, 0]]), np.array([[1.0, 0.3, 0]]), np.array([[2.0, 0, 0]]), np.array([[3.0, 0, 0]])]
+    links = [(0, 0, 1, 0), (1, 0, 2, 0), (2, 0, 3, 0)]
+    kept, _ = confirm_link_tuples(links, P, tol=0.2, ends=False)
+    assert (0, 0, 1, 0) not in kept                                       # plain rule cuts it
+    quiet = [np.array([0.01]), np.array([0.01]), np.array([0.01]), np.array([0.01])]
+    kept_q, _ = confirm_link_tuples(links, P, tol=0.2, ends=False, point_sigma=quiet)
+    assert (0, 0, 1, 0) not in kept_q                                     # uniform sigma: same as plain
+    noisy_mid = [np.array([0.01]), np.array([0.05]), np.array([0.01]), np.array([0.01])]
+    kept_n, _ = confirm_link_tuples(links, P, tol=0.2, ends=False, point_sigma=noisy_mid)
+    assert (0, 0, 1, 0) in kept_n                                         # the middle point is known to be noisy

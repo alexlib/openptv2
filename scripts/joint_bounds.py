@@ -816,6 +816,47 @@ def mass_match_inputs(case: str, cap_max: int = 3, min_cams: int = 3) -> dict:
             "capacity_share": {str(k): float(np.mean(c == k)) for k in (1, 2, 3)}}
 
 
+def hol(case: str, rounds: int = 2, tag: str = "", **cfg_over) -> dict:
+    """The library loop (:func:`openptv2.holistic.run_holistic`, as in the ``holistic`` plugin) on a copy of ``case``,
+    linker = ``two_phase`` ``track_store`` with the case's ``track`` section (+ ``cfg_over``). Writes
+    ``runs/<case>/holistic<tag>/pred.npz`` for ``synth_bench eval --ref two_phase``."""
+    import shutil
+    import time
+
+    import yaml
+
+    from openptv2.holistic import run_holistic
+    from openptv2.merge_post import arrays_from_store
+    from openptv2.plugins.two_phase_tracking import track_store
+    from openptv2.storage import RunStore
+
+    case_dir, info, exp, _s, tr = case_setup(case, require_blob=False)
+    cpar, cals, vpar = exp.cpar, list(exp.cals), exp.vpar
+    n_out = info["n_out"]
+    d = sb.WORK / "cases" / f"{case}_HOL{tag}"
+    if d.exists():
+        shutil.rmtree(d)
+    shutil.copytree(case_dir, d)
+    cfg = yaml.safe_load((d / "parameters_Run1.yaml").read_text())["track"]
+    cfg.update(cfg_over)
+    path = d / "res" / "run.zarr"
+    frames = list(range(1, n_out + 1))
+
+    def relink():
+        return track_store(RunStore(path, mode="a"), frames, cfg, cals, cpar)
+
+    t0 = time.perf_counter()
+    stats = run_holistic(RunStore(path, mode="a"), frames, cpar, cals, vpar, relink, rounds=rounds)
+    stats["time_s"] = round(time.perf_counter() - t0, 1)
+    a = arrays_from_store(RunStore(path, mode="r"), "ptv_is", 1, n_out, len(cals))
+    out = sb.WORK / "runs" / case / f"holistic{tag}"
+    out.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(out / "pred.npz", trajid=a["tid"], frame=a["frame"], pos=a["pos"])
+    (out / "run.json").write_text(json.dumps({"tracker": out.name, "case": case, "time_s": stats["time_s"],
+                                              "status": "ok"}))
+    return stats
+
+
 def shared_blobs_count(frame, blob):
     from openptv2.merge_refine import shared_blobs
 
@@ -981,6 +1022,11 @@ def main(argv=None) -> None:
     q9 = sub.add_parser("mm")
     q9.add_argument("--case", required=True)
     q9.add_argument("--cap-max", type=int, default=3)
+    q10 = sub.add_parser("hol")
+    q10.add_argument("--case", required=True)
+    q10.add_argument("--rounds", type=int, default=2)
+    q10.add_argument("--tag", default="")
+    q10.add_argument("--no-noise-aware", action="store_true")
     q5 = sub.add_parser("b3")
     q5.add_argument("--case", required=True)
     q5.add_argument("--order", type=int, default=3)
@@ -1000,6 +1046,11 @@ def main(argv=None) -> None:
         r = demerge_inputs(a.case, a.sigma)
         save("M2_inputs", f"{a.case}_sigma{a.sigma:g}", r)
         print(json.dumps(r))
+        return
+    if a.cmd == "hol":
+        r = hol(a.case, a.rounds, a.tag, noise_aware_confirm=not a.no_noise_aware)
+        save("HOL", f"{a.case}|{a.tag}", r)
+        print(json.dumps(r, indent=1))
         return
     if a.cmd == "mm":
         r = mass_match_inputs(a.case, a.cap_max)

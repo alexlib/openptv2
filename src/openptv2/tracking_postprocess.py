@@ -276,6 +276,7 @@ def confirm_link_tuples(
     frame_particles: list[np.ndarray],
     tol: float | None,
     ends: bool,
+    point_sigma: list[np.ndarray] | None = None,
 ) -> tuple[list[tuple[int, int, int, int]], set]:
     """Two-hop confirmation post-pass over consecutive links.
 
@@ -287,9 +288,25 @@ def confirm_link_tuples(
     severed -- a dying track grabbing a stranger. Severing fragments
     chains; rejoining them is gap-relink/repair's job, not assembly's.
 
+    With ``point_sigma`` (per frame, the position uncertainty of each point in mm) the tolerance of a link widens
+    with its points' noise: the kink ``|p0 - 2 p1 + p2|`` has variance ``s0^2 + 4 s1^2 + s2^2``, so the tolerance is
+    ``tol * max(1, sqrt((s0^2 + 4 s1^2 + s2^2) / (6 s_ref^2)))`` with ``s_ref`` the median sigma. Never stricter
+    than ``tol``: points known to be noisy (corrected merged blobs, births) are not cut for their own noise.
+
     Returns (kept_links, severed) with severed a set of node pairs.
     """
     last_t = len(frame_particles) - 1
+    sig_ref = None
+    if point_sigma is not None:
+        allv = np.concatenate([np.asarray(v, float) for v in point_sigma if v is not None and len(v)])
+        allv = allv[np.isfinite(allv) & (allv > 0)]
+        sig_ref = float(np.median(allv)) if len(allv) else None
+
+    def _sig(t, r):
+        if sig_ref is None or point_sigma[t] is None or r >= len(point_sigma[t]):
+            return sig_ref if sig_ref is not None else 0.0
+        v = float(point_sigma[t][r])
+        return v if np.isfinite(v) and v > 0 else sig_ref
     fwd: dict[tuple[int, int], list[tuple[int, int]]] = {}
     for t0, r0, t1, r1 in links:
         if t1 - t0 == 1:
@@ -313,7 +330,11 @@ def confirm_link_tuples(
                 if t2 - t1 != 1 or r2 >= len(P[t2]):
                     continue
                 kink = float(np.linalg.norm((P[t2][r2] - P[t1][r1]) - v))
-                if kink <= tol:
+                tol_eff = tol
+                if sig_ref:
+                    s2 = _sig(t0, r0) ** 2 + 4 * _sig(t1, r1) ** 2 + _sig(t2, r2) ** 2
+                    tol_eff = tol * max(1.0, float(np.sqrt(s2 / (6 * sig_ref**2))))
+                if kink <= tol_eff:
                     keep = True
                     break
             if not keep:
