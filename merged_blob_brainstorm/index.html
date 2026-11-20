@@ -2451,6 +2451,7 @@ not, because adding hidden partners at truth positions without correcting the ke
 centres (and without 2D-leaf consistency) does not help tracking. This confirms Idea 4 (mixture-centroid
 split of the merged centre) is required for vErr, not just Idea 11 (adding points).</p>
 <p>Predictor-based two-pass (Idea 11 + 4, L1_d1): vel 19.65 → 19.35 (improvement). Membership via nearest
+predicted track; split via merged_split. Integrated into src/openptv2/blob_recovery.py (recover()).
 predicted track; split via merged_split. First vErr gain achieved.</p>
 <p>Extended tuning (init-residual gate, exact-2 tracks, &lt;1mm): sparse cases improve (L1_d1 19.65→19.35,
 L1_d1 k8 3.23→3.19) but clustered/dense regress (L1_d2 12.20→12.55, L1_d4 92.80→94.31).
