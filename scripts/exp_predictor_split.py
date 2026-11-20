@@ -61,6 +61,7 @@ for tid, fmap in traj_of.items():
 
 # Pass 2: build split frames
 split_frames = []
+split_merged_masks = []
 n_split_attempted = 0
 n_split_accepted = 0
 # per-point brightness from store
@@ -100,17 +101,16 @@ for f in range(1, n_out + 1):
         tids_list = [tid for (tid, _) in tracks_here]
     else:
         tree = None
+    new_merged_frame = []
     for i, p in enumerate(pos):
         close_tracks = []
         if tree is not None:
             idxs = tree.query_ball_point(p, 0.6)
             close_tracks = [(tids_list[j], tpos[j]) for j in idxs]
         if len(close_tracks) >= 2:
-            # merged: split into constituents using their positions as predictions
             preds = np.array([tp for (_, tp) in close_tracks])
             intensities = np.ones(len(close_tracks))
-            # merged px: project p
-            mp_all = project_fn(p.reshape(1, 3)).reshape(-1)  # (n_cams*2,)
+            mp_all = project_fn(p.reshape(1, 3)).reshape(-1)
             n_cams = len(cals)
             merged_px = mp_all.reshape(n_cams, 2)
             seen = np.ones(n_cams, dtype=bool)
@@ -123,11 +123,15 @@ for f in range(1, n_out + 1):
             if split_pos is not None:
                 for sp in split_pos:
                     new_pts.append(sp)
+                    new_merged_frame.append(True)
             else:
                 new_pts.append(p)
+                new_merged_frame.append(False)
         else:
             new_pts.append(p)
+            new_merged_frame.append(False)
     split_frames.append(np.array(new_pts, dtype=float) if new_pts else np.zeros((0, 3)))
+    split_merged_masks.append(np.array(new_merged_frame, dtype=bool))
 
 # leaves for split frames via project_fn
 split_leaves = []
@@ -142,7 +146,7 @@ for P in split_frames:
 cfg = TwoPhaseTrackerConfig(v_max=float(raw["track"].get("dvxmax", 5.0)), leaf_weight=1.0, use_velocity=True, cost_mode="projected", max_gap=2)
 tracker = TwoPhaseTracker(cfg)
 t0 = time.time()
-links2 = tracker.track_frames(split_frames, split_leaves, project_fn=project_fn)
+links2 = tracker.track_frames(split_frames, split_leaves, project_fn=project_fn, frame_merged=split_merged_masks)
 print("pass2 time", round(time.time()-t0, 2), "links", len(links2))
 pf2, pp2, pt2 = links_to_pred(links2, split_frames)
 pred2 = {"trajid": pt2, "frame": pf2, "pos": pp2, "w": None}
