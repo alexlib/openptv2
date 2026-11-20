@@ -95,3 +95,21 @@ def test_prediction_is_only_trusted_where_clean_neighbours_exist(scene):
     one_blob += frame[:, None] * 0
     r2 = refine_merged(frame, pid, one_blob, centre, sumg, cpar, cals, vpar, rounds=1)
     assert not np.isfinite(r2.pred_px).any()
+
+
+def test_a_lone_blob_much_brighter_than_its_particle_is_down_weighted(scene):
+    cpar, vpar, cals, frame, pid, blob, centre, sumg, truth = scene
+    # particle 2 only, and in frames 7-13 its camera-0 blob hides an unseen particle: twice as bright, shifted
+    keep = pid == 2
+    f2, p2, b2, c2, s2, t2 = frame[keep], pid[keep], blob[keep].copy(), centre[keep].copy(), sumg[keep].copy(), truth[keep]
+    hid = np.isin(f2, list(MERGED))
+    c2[hid, 0] += [1.5, 0.0]
+    s2[hid, 0] *= 2.2
+    r_on = refine_merged(f2, p2, b2, c2, s2, cpar, cals, vpar, rounds=2, hidden_mass=1.4)
+    r_off = refine_merged(f2, p2, b2, c2, s2, cpar, cals, vpar, rounds=2, hidden_mass=None)
+    assert r_on.info[-1]["hidden_partner_obs"] == hid.sum()
+    assert r_off.info[-1]["hidden_partner_obs"] == 0
+    assert np.nanmin(r_on.obs_var[hid, 0]) > 10 * np.nanmax(r_on.obs_var[~hid, 0])
+    e_on = np.linalg.norm(r_on.x[hid] - t2[hid], axis=1).mean()
+    e_off = np.linalg.norm(r_off.x[hid] - t2[hid], axis=1).mean()
+    assert e_on < 0.5 * e_off

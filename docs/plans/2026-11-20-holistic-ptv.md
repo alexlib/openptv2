@@ -256,3 +256,30 @@ Targets are set from the measured ceilings; they are goals, not promises.
   points), (c) 3+-merged-camera particles (no clean camera, information-limited). Next: measure membership accuracy against
   truth (map rows to truth by position), test the alternatives (mass check on attachments, signatures before
   attaching), births from unexplained mass, noise-aware link confirmation (variances now exist in `obs`), then H4.
+- 2026-11-20, diagnosis and births (200-frame default-merge-rate case, `two_phase` tracks).
+  *Membership is not the loss* (`scripts/joint_h2_diag.py`): after `extend_membership` 98.4 % of observations use the
+  true particle's blob and 98.4 % of the blobs inferred as shared are truly shared; giving the refinement the *true*
+  membership is even slightly worse (0.1698 vs 0.1585). *The loss is hidden partners:* of 161k truly shared observations
+  only 79k are recognised, because the partner is not in the cloud at all, so the tracked particle takes the shifted
+  merged centre as a clean observation. Down-weighting such blobs by brightness (`refine_merged(hidden_mass=1.4)`, a
+  lone member whose blob is >= 1.4x its signature gets a phantom partner) flags 12.6k observations, small gain
+  (0.1461 -> 0.1423). Bound (`scripts/joint_birth_bound.py`): of the 50.6k missed eligible points only 5.6 % have >= 3
+  free views (leftover matching is useless), 88 % have >= 2 views hidden in blobs of tracked points.
+  *Births from residual brightness* (`merge_post.birth_targets`, `birth_points`; tests): a blob brighter than its tracked
+  members (G - sum S_m >= 0.25-0.5 of the camera's median signature) holds an unseen particle at
+  s = (G c - sum S_m p_m) / R; these residual targets plus free blobs go through the standard matcher. 6.5k births
+  (min_resid 0.5) / 9.1k (0.25 + refined-position fallback), precision 87.6 % / 86.4 % real particles missing from the old
+  cloud (`scripts/joint_birth_quality.py`). Then the augmented cloud is linked again and refined with recovery
+  (`joint_bounds.py h3`). Result, scored on the common set of the original `two_phase` run:
+  | variant | vErr all | **vErr common set** | yield | long completeness | pieces | extra points (vErr) |
+  |---|---|---|---|---|---|---|
+  | `two_phase` | 0.1725 | 0.1583 | 0.657 | 0.491 | 2.24 | - |
+  | + refinement | 0.1585 | 0.1357 (-14 %) | 0.658 | 0.493 | 2.23 | 0.4 % |
+  | + recovery + hidden-partner check | 0.1423 | 0.1191 (-25 %) | 0.673 | 0.565 | 1.75 | 2.9 % (0.25) |
+  | + births, relink, refine, recovery | 0.1470 | **0.1008 (-36 %)** | 0.691 | 0.596 | 1.58 | 5.5 % (0.29) |
+  | same, looser births | 0.1496 | **0.1004 (-37 %)** | 0.695 | 0.601 | 1.58 | 5.9 % (0.30) |
+  Births make the *existing* particles more accurate (their shared blobs are now explained): the H2/H3 accuracy gate
+  (-30 % on the common set) is passed. The new points are still noisy (0.30, short tracks without trusted predictions);
+  the overall mean does not improve because of them. Births recall is the bottleneck: ~45 per frame against ~250 missed
+  points per frame (residual targets need known signatures and predictions of every member, and the matcher's
+  epipolar band rejects residual targets whose placement error is amplified by G/R for dim hidden particles).

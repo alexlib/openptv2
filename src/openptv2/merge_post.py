@@ -259,3 +259,135 @@ def fill_gaps(
                 sumg[r, c] = sg[j]
     ok = (blob >= 0).sum(1) >= min_cams
     return {"frame": tf[ok], "tid": tt[ok], "pos": tp[ok], "blob": blob[ok], "centre": centre[ok], "sumg": sumg[ok]}
+
+
+def row_signatures(tid: np.ndarray, frame: np.ndarray, blob: np.ndarray, sumg: np.ndarray) -> np.ndarray:
+    """(N, C) typical grey sum of each row's track in each camera (NaN if unknown); see :func:`track_signatures`."""
+    from openptv2.merge_refine import _signatures, shared_blobs
+
+    share = shared_blobs(frame, blob)
+    sig = _signatures(tid, (blob >= 0) & (share == 1), sumg)
+    out = np.full(blob.shape, np.nan)
+    for c in range(blob.shape[1]):
+        out[:, c] = [sig.get((int(t), c), np.nan) for t in tid]
+    return out
+
+
+def birth_targets(
+    frame: np.ndarray,
+    blob: np.ndarray,
+    pred_px: np.ndarray,
+    sig: np.ndarray,
+    blobs: dict,
+    counts: dict,
+    min_resid: float = 0.5,
+    max_shift_px: float = 3.0,
+    fallback_px: np.ndarray | None = None,
+) -> dict:
+    """Virtual targets for births, per (frame, camera): the free blobs and the *residual targets*.
+
+    A blob used by tracked points whose typical grey sums (``sig``) and trusted predicted pixel positions
+    (``pred_px``) are known, and whose grey sum ``G`` exceeds the members' sum ``sum S_m`` by at least ``min_resid``
+    times the camera's median signature, holds an unseen particle of brightness ``R = G - sum S_m``. The blob centre
+    ``c`` is the brightness-weighted mean, so that particle sits at ``s = (G c - sum S_m p_m) / R``.
+    ``blobs[(f, c)] = (centres, grey sums)``, ``counts[(f, c)] = (n, nx, ny)`` per blob.
+    ``fallback_px`` (N, C, 2), if given, replaces a missing trusted prediction (e.g. the projection of the
+    member's refined position).
+    Returns ``{(f, c): dict(xy (k, 2), sumg (k,), npx (k, 3), src (k,), kind (k,))}`` with ``kind`` 0 = free blob,
+    1 = residual target; ``src`` is the blob index the target comes from.
+    """
+    if fallback_px is not None:
+        pred_px = np.where(np.isfinite(pred_px), pred_px, fallback_px)
+    out = {}
+    n_cams = blob.shape[1]
+    med_sig = [np.nanmedian(sig[:, c]) if np.isfinite(sig[:, c]).any() else np.nan for c in range(n_cams)]
+    for f in np.unique(frame):
+        rows = np.flatnonzero(frame == f)
+        for c in range(n_cams):
+            if (int(f), c) not in blobs:
+                continue
+            cent, sg = blobs[(int(f), c)]
+            npx = counts[(int(f), c)]
+            used = blob[rows, c]
+            members: dict = {}
+            for r, b in zip(rows, used):
+                if b >= 0:
+                    members.setdefault(int(b), []).append(r)
+            free = np.setdiff1d(np.arange(len(cent)), np.array(sorted(members), dtype=int))
+            xy, s_, n_, src, kind = [cent[free]], [sg[free]], [npx[free]], [free], [np.zeros(len(free), int)]
+            for b, mem in members.items():
+                s_m = sig[mem, c]
+                p_m = pred_px[mem, c]
+                if not (np.all(np.isfinite(s_m)) and np.all(np.isfinite(p_m))):
+                    continue
+                resid = sg[b] - s_m.sum()
+                if not (np.isfinite(med_sig[c]) and resid >= min_resid * med_sig[c]):
+                    continue
+                s = (sg[b] * cent[b] - (s_m[:, None] * p_m).sum(0)) / resid
+                if np.linalg.norm(s - cent[b]) > max_shift_px:
+                    continue
+                xy.append(s[None, :])
+                s_.append(np.array([resid]))
+                n_.append(npx[b][None, :])
+                src.append(np.array([b]))
+                kind.append(np.array([1]))
+            out[(int(f), c)] = {"xy": np.vstack(xy), "sumg": np.concatenate(s_), "npx": np.vstack(n_),
+                                "src": np.concatenate(src).astype(int), "kind": np.concatenate(kind)}
+    return out
+
+
+def birth_points(targets: dict, frames, cpar: Any, cals: list, vpar: Any, need_residual: bool = True,
+                 min_cams: int = 3) -> dict:
+    """Match the virtual targets of every frame with the standard matcher; keep points with >= ``min_cams``
+    cameras (and at least one residual target if ``need_residual``). Returns rows (``frame``, ``pos``, ``blob``
+    = source blob index per camera, -1 none, ``n_resid``)."""
+    from openptv2.correspondences import match_frame_correspondences
+    from openptv2.tracking_framebuf import TargetArray
+
+    n_cams = len(cals)
+    fr_l, pos_l, blob_l, nres_l = [], [], [], []
+    for f in frames:
+        dets, keys = [], []
+        for c in range(n_cams):
+            t = targets.get((int(f), c))
+            if t is None or len(t["xy"]) == 0:
+                dets.append(TargetArray(0))
+                keys.append(None)
+                continue
+            o = np.argsort(t["xy"][:, 1], kind="stable")          # the matcher wants y-sorted targets
+            ta = TargetArray(len(o))
+            for i, k in enumerate(o):
+                ta[i].set_pnr(i)
+                ta[i].set_pos((float(t["xy"][k, 0]), float(t["xy"][k, 1])))
+                ta[i].set_pixel_counts(int(t["npx"][k, 0]), int(t["npx"][k, 1]), int(t["npx"][k, 2]))
+                ta[i].set_sum_grey_value(int(max(t["sumg"][k], 1)))
+                ta[i].set_tnr(-1)
+            dets.append(ta)
+            keys.append(o)
+        if sum(len(d) for d in dets) == 0:
+            continue
+        pos, ids = match_frame_correspondences(dets, cpar, cals, vpar)
+        ids = np.asarray(ids)[:, :n_cams]
+        if len(pos) == 0:
+            continue
+        src = np.full(ids.shape, -1, int)
+        nres = np.zeros(len(ids), int)
+        for c in range(n_cams):
+            u = ids[:, c] >= 0
+            if not u.any():
+                continue
+            t = targets[(int(f), c)]
+            k = keys[c][ids[u, c]]
+            src[u, c] = t["src"][k]
+            nres[u] += t["kind"][k]
+        keep = ((src >= 0).sum(1) >= min_cams) & ((nres >= 1) if need_residual else True)
+        if keep.any():
+            fr_l.append(np.full(int(keep.sum()), f))
+            pos_l.append(np.asarray(pos, float)[keep])
+            blob_l.append(src[keep])
+            nres_l.append(nres[keep])
+    if not fr_l:
+        return {"frame": np.zeros(0, int), "pos": np.zeros((0, 3)), "blob": np.zeros((0, n_cams), int),
+                "n_resid": np.zeros(0, int)}
+    return {"frame": np.concatenate(fr_l), "pos": np.vstack(pos_l), "blob": np.vstack(blob_l),
+            "n_resid": np.concatenate(nres_l)}

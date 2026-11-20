@@ -167,3 +167,47 @@ def test_mass_check_rejects_a_blob_that_is_too_bright_or_too_dim(rig):
     assert len(fill_gaps(dim, a["pos"], cpar, cals, mass_range=(0.7, 1.3))["frame"]) == 0
     ok = fill_gaps(a, a["pos"], cpar, cals, mass_range=(0.7, 1.3))
     assert len(ok["frame"]) == 1
+
+
+def test_residual_target_recovers_a_hidden_particle_position():
+    from openptv2.merge_post import birth_targets
+
+    # camera 0, one blob holding a tracked particle (signature 100, predicted at (10, 10)) and an unseen one of
+    # brightness 50 at (13, 10): the blob centre is the brightness-weighted mean (11, 10), grey sum 150
+    frame = np.array([1])
+    blob = np.array([[0]])
+    pred = np.array([[[10.0, 10.0]]])
+    sig = np.array([[100.0]])
+    blobs = {(1, 0): (np.array([[11.0, 10.0], [40.0, 40.0]]), np.array([150.0, 90.0]))}
+    counts = {(1, 0): np.array([[9, 3, 3], [9, 3, 3]])}
+    t = birth_targets(frame, blob, pred, sig, blobs, counts, min_resid=0.3)[(1, 0)]
+    assert t["kind"].tolist() == [0, 1]                         # the free blob and one residual target
+    assert t["src"].tolist() == [1, 0]
+    assert t["xy"][1] == pytest.approx([13.0, 10.0])
+    assert t["sumg"][1] == pytest.approx(50.0)
+
+
+def test_no_residual_target_when_the_mass_is_explained_or_unknown():
+    from openptv2.merge_post import birth_targets
+
+    frame = np.array([1])
+    blob = np.array([[0]])
+    blobs = {(1, 0): (np.array([[11.0, 10.0]]), np.array([105.0]))}
+    counts = {(1, 0): np.array([[9, 3, 3]])}
+    t = birth_targets(frame, blob, np.array([[[10.0, 10.0]]]), np.array([[100.0]]), blobs, counts, min_resid=0.3)
+    assert len(t[(1, 0)]["xy"]) == 0                            # 105 vs 100: nothing hidden
+    t2 = birth_targets(frame, blob, np.array([[[np.nan, np.nan]]]), np.array([[100.0]]),
+                       {(1, 0): (np.array([[11.0, 10.0]]), np.array([200.0]))}, counts, min_resid=0.3)
+    assert len(t2[(1, 0)]["xy"]) == 0                           # no trusted prediction: cannot place it
+
+
+def test_fallback_position_places_a_hidden_particle_without_a_trusted_prediction():
+    from openptv2.merge_post import birth_targets
+
+    frame, blob = np.array([1]), np.array([[0]])
+    blobs = {(1, 0): (np.array([[11.0, 10.0]]), np.array([150.0]))}
+    counts = {(1, 0): np.array([[9, 3, 3]])}
+    no_pred = np.array([[[np.nan, np.nan]]])
+    t = birth_targets(frame, blob, no_pred, np.array([[100.0]]), blobs, counts, min_resid=0.3,
+                      fallback_px=np.array([[[10.0, 10.0]]]))[(1, 0)]
+    assert t["kind"].tolist() == [1] and t["xy"][0] == pytest.approx([13.0, 10.0])

@@ -16,6 +16,11 @@ Loop (the blob model of ``docs/plans/2026-11-20-holistic-ptv.md``, H1):
    observation inconsistent with the particle's own trusted prediction is dropped (gate);
 4. positions again by weighted Gauss-Newton, with the trusted path prediction as pseudo-observations (prior).
 Rounds repeat 2-3 times.
+
+Hidden partners: a blob used by one point only, whose grey sum is at least ``hidden_mass`` times that point's
+typical grey sum (signature), holds another particle that is not among the points (the matcher did not form it).
+Its centre is shifted by that particle, so it gets a phantom member of unknown position and the remaining
+brightness: the observation keeps its centre but its variance grows, i.e. the camera nearly drops out.
 """
 
 from __future__ import annotations
@@ -91,6 +96,7 @@ def refine_merged(
     prior: bool = True,
     prior_scale: float = 1.0,
     var_unknown: float = 1.0,
+    hidden_mass: float | None = 1.4,
 ) -> RefineResult:
     from openptv2.orientation import point_positions
 
@@ -149,7 +155,7 @@ def refine_merged(
         cl = clean[est] & np.isfinite(pred_px[:, :, 0])
         var_p = max(float(np.mean((raw - pred_px)[cl] ** 2)) - var_c, 0.01) if cl.any() else 0.25
         obs_px, obs_var = raw.copy(), raw_var.copy()
-        n_gated = 0
+        n_gated = n_hidden = 0
         for f in frames:
             sel = rows_of[f]
             for c in range(n_cams):
@@ -160,6 +166,20 @@ def refine_merged(
                 cuts = np.flatnonzero(np.r_[True, b[1:] != b[:-1], True])
                 for a, e in zip(cuts[:-1], cuts[1:]):
                     if e - a < 2:
+                        if hidden_mass is None:
+                            continue
+                        r0 = idx[a]
+                        s_own = sig.get((int(pid[r0]), c), np.nan)
+                        g = sumg[r0, c]
+                        if not (np.isfinite(s_own) and s_own > 0 and np.isfinite(g) and g >= hidden_mass * s_own):
+                            continue
+                        if pidx[r0] < 0:
+                            continue
+                        ctr = centre[r0, c]
+                        _s, v_h = split_blob_effective(ctr, np.vstack([ctr, ctr]), np.array([s_own, g - s_own]),
+                                                       var_c, np.array([var_p, var_unknown]))
+                        obs_var[pidx[r0], c] = v_h[0]
+                        n_hidden += 1
                         continue
                     mem = idx[a:e]
                     ctr = centre[mem[0], c]
@@ -189,7 +209,7 @@ def refine_merged(
         res.x_rounds.append(x.copy())
         res.obs_px, res.obs_var, res.pred_px = obs_px, obs_var, pred_px
         res.info.append({"round": rnd, "var_p_px2": var_p, "trusted_share": float(np.mean(good)),
-                         "gated_obs": n_gated})
+                         "gated_obs": n_gated, "hidden_partner_obs": n_hidden})
     res.x = x
     # back to the caller's rows
     full_x = np.full((n, 3), np.nan)

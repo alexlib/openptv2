@@ -623,6 +623,91 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
     return out
 
 
+def h3(case: str, tracker: str = "two_phase", tracker2: str | None = None, radius: float = 2.0,
+       min_resid: float = 0.5, need_residual: bool = True, use_fallback: bool = False, suffix: str = "",
+       **h2opts) -> dict:
+    """H3 births: bring the particles hidden in other particles' blobs into the point cloud.
+
+    1. ``tracker`` on the case, shared blobs from the tracks, refinement (as H2);
+    2. per frame and camera: free blobs + residual targets (a blob brighter than its tracked members hides an
+       unseen particle, placed by the brightness-weighted-mean algebra, :func:`openptv2.merge_post.birth_targets`);
+    3. the standard matcher on these targets (:func:`openptv2.merge_post.birth_points`);
+    4. new case ``<case>_H3``: the old points (refined positions) + the births (their blob indices, so shared blobs
+       are explicit); then ``tracker2`` (default ``tracker``) and H2 with recovery on it.
+    """
+    import os
+    import shutil
+
+    from openptv2.merge_post import (
+        arrays_from_store,
+        birth_points,
+        birth_targets,
+        extend_membership,
+        row_signatures,
+    )
+    from openptv2.merge_refine import refine_merged
+    from openptv2.storage import RunStore
+
+    case_dir, info, exp, _s, tr = case_setup(case)
+    cpar, cals, vpar = exp.cpar, list(exp.cals), exp.vpar
+    n_cams, n_out = len(cals), info["n_out"]
+    os.environ["KEEP_STORE"] = "1"
+    run_dir = sb.WORK / "runs" / case / tracker
+    if not (run_dir / "res" / "run.zarr").exists():
+        sb.track(case, tracker)
+    st = RunStore(run_dir / "res" / "run.zarr", mode="r")
+    a = arrays_from_store(st, "ptv_is", 1, n_out, n_cams)
+    blob, centre, sumg, _n = extend_membership(a["frame"], a["pos"], a["blob"], a["centre"], a["sumg"],
+                                               a["blobs"], cpar, cals, radius=radius)
+    res = refine_merged(a["frame"], a["tid"], blob, centre, sumg, cpar, cals, vpar)
+    sig = row_signatures(a["tid"], a["frame"], blob, sumg)
+    counts = {}
+    for f in range(1, n_out + 1):
+        for c in range(n_cams):
+            rows = np.asarray(st.root[f"targets/cam_{c}/frame_{f:06d}"])
+            counts[(f, c)] = rows[:, 3:6].astype(int)
+    fallback = None
+    if use_fallback:
+        from openptv2.loco import project_pixels
+
+        fallback = np.full(res.pred_px.shape, np.nan)
+        okx = np.isfinite(res.x[:, 0])
+        for c in range(n_cams):
+            m = okx & (blob[:, c] >= 0)
+            fallback[m, c] = project_pixels(res.x[m], cals[c], cpar)
+    targets = birth_targets(a["frame"], blob, res.pred_px, sig, a["blobs"], counts, min_resid=min_resid,
+                            fallback_px=fallback)
+    births = birth_points(targets, range(1, n_out + 1), cpar, cals, vpar, need_residual=need_residual)
+    new_pos = np.where(np.isfinite(res.x[:, :1]), res.x, a["pos"])
+    run_case = f"{case}_H3{suffix}"
+    d = sb.WORK / "cases" / run_case
+    if d.exists():
+        shutil.rmtree(d)
+    shutil.copytree(case_dir, d)
+    out_store = RunStore(d / "res" / "run.zarr", mode="a")
+    off = 0
+    for f in range(1, n_out + 1):
+        pos0, ids0 = out_store.read_correspondences(f)
+        n = len(pos0)
+        seg = new_pos[off: off + n]
+        assert (a["frame"][off: off + n] == f).all(), "row alignment lost"
+        off += n
+        bsel = births["frame"] == f
+        ids_b = np.full((int(bsel.sum()), np.asarray(ids0).shape[1]), -1, dtype=np.int64)
+        ids_b[:, :n_cams] = births["blob"][bsel]
+        out_store.write_correspondences(f, np.vstack([np.where(np.isfinite(seg[:, :1]), seg, pos0),
+                                                      births["pos"][bsel]]),
+                                        np.vstack([np.asarray(ids0, dtype=np.int64), ids_b]))
+    sb.stamp_tnr(d)
+    shutil.rmtree(sb.WORK / "runs" / run_case, ignore_errors=True)
+    n_res = sum(int((t["kind"] == 1).sum()) for t in targets.values())
+    stats = {"residual_targets": n_res, "births": int(len(births["frame"])),
+             "births_per_frame": float(len(births["frame"]) / n_out),
+             "births_with_2plus_residual_views": int((births["n_resid"] >= 2).sum())}
+    stats["h2_on_augmented"] = h2(run_case, tracker2 or tracker, radius=radius, **h2opts)
+    return stats
+
+
 def shared_blobs_count(frame, blob):
     from openptv2.merge_refine import shared_blobs
 
@@ -771,6 +856,14 @@ def main(argv=None) -> None:
     q7.add_argument("--hermite", action="store_true")
     q7.add_argument("--mass", type=float, nargs=2, default=None)
     q7.add_argument("--tag", default="")
+    q8 = sub.add_parser("h3")
+    q8.add_argument("--case", required=True)
+    q8.add_argument("--tracker", default="two_phase")
+    q8.add_argument("--tracker2", default=None)
+    q8.add_argument("--min-resid", type=float, default=0.5)
+    q8.add_argument("--any-births", action="store_true", help="also births from free blobs only")
+    q8.add_argument("--fallback", action="store_true")
+    q8.add_argument("--suffix", default="")
     q5 = sub.add_parser("b3")
     q5.add_argument("--case", required=True)
     q5.add_argument("--order", type=int, default=3)
@@ -790,6 +883,13 @@ def main(argv=None) -> None:
         r = demerge_inputs(a.case, a.sigma)
         save("M2_inputs", f"{a.case}_sigma{a.sigma:g}", r)
         print(json.dumps(r))
+        return
+    if a.cmd == "h3":
+        r = h3(a.case, a.tracker, a.tracker2, min_resid=a.min_resid, need_residual=not a.any_births,
+               use_fallback=a.fallback, suffix=a.suffix,
+               fill=True, fill_gap=12, fill_hermite=True, fill_growth=0.25, mass=(0.7, 1.4), tag="_long")
+        save("H3", f"{a.case}|{a.tracker}|{a.tracker2}|{a.suffix}", r)
+        print(json.dumps({k: v for k, v in r.items() if k != "h2_on_augmented"}, indent=1))
         return
     if a.cmd == "h2":
         r = h2(a.case, a.tracker, a.radius, iters=a.iters, tag=a.tag, fill=a.fill, fill_radius=a.fill_radius,
