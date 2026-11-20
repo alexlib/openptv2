@@ -482,3 +482,35 @@ dense data, then the `holistic` plugin.
 4. **`holistic` plugin**: the loop as a library function with an injectable linker and a tracking plugin, so it runs
    in the normal pipeline; tests.
 5. Later: noise-aware link confirmation in `two_phase` from the per-point variances; speed (vectorise, Cython).
+
+## Steps 1-4 of the next-steps list (2026-11-20, fourth part)
+
+**1. Joint cluster solve fixed** (`blob_model.solve_cluster`: Levenberg-Marquardt, step accepted only if the cost
+drops, step cap 0.5 mm per particle, weak prior sigma 0.2 mm on each member's start; `_joint_clusters` keeps the
+per-member result unless the joint cost drops and no member moves > 1 mm; tests incl. an underdetermined member).
+True association, L1 default, 60 frames, 3D error (mm) round 3, per-member -> joint: all 0.171 -> **0.168**, 1 merged
+camera 0.060 -> 0.058, 2: 0.161 -> 0.162, 3+: 0.506 -> 0.493. Stable, about 2 % better; particles merged in >= 3 cameras
+are information-limited either way. Kept as an option (`mode="joint"`), slow in python.
+
+**2. Real wp2 with the current loop**: first attempt failed (row alignment): the linker writes through its own store
+object and linkage blocks are cached per object, so the loop read a stale linkage next to fresh correspondences. Fixed:
+`run_holistic` reopens the store after every relink (regression test with a linker on a separate store object).
+Rerun: see the next entry.
+
+**3. Dense (x4, 60 frames), births loop with joint + cross-camera signatures and safe births, two rounds**:
+| | velocity error | common set | yield | long completeness | ghost |
+|---|---|---|---|---|---|
+| `two_phase` | 0.433 | 0.390 | 0.227 | 0.182 | 6.8 % |
+| loop, median signatures (before) | 0.421 | 0.362 | 0.226 | 0.182 | 6.3 % |
+| **loop, new signatures** | **0.408** | **0.283 (-27 %)** | **0.265** | **0.215** | **5.6 %** |
+Births 556 per frame in round 1 (was negligible). The added points are noisy (17 % of the output, velocity error
+0.58). Still far from the ideal-centre ceiling (yield 0.85); next for dense: cluster hypotheses in time and noise-aware
+use of the new points.
+
+**4. `holistic` plugin**: `src/openptv2/holistic.py` (`run_holistic(store, frames, cpar, cals, vpar, relink, rounds,
+...)`: the loop with an injectable linker; writes the refined points, the births and the observation table) and
+`src/openptv2/plugins/holistic_tracking.py` (registered as `holistic` in `plugins/loader.py`; linker = `two_phase`
+`track_store`; YAML `holistic_rounds`, `holistic_min_resid`, `holistic_partner_min_len`). End-to-end test
+(`tests/unit/test_holistic.py`): a particle the matcher dropped inside its neighbour's blob is born in every overlap
+frame, linked through the overlap, and its blob is marked shared in the observation table.
+`scripts/holistic_real.py` now runs the library loop.

@@ -87,3 +87,19 @@ def test_hidden_particle_is_born_and_linked_through_the_overlap(tmp_path):
     obs = store.read_observations(MERGED[0])
     assert obs is not None and obs.shape[1:] == (4, 4)
     assert (obs[:, 0, 3] >= 2).sum() >= 2             # the merged blob is marked as shared by two points
+
+
+def test_linker_writing_through_another_store_object_keeps_rows_aligned(tmp_path):
+    """The pipeline's linker opens its own store; the loop must not read a stale linkage afterwards."""
+    from openptv2.plugins.two_phase_tracking import track_store
+
+    cpar, vpar, cals, store, truth = _scene(tmp_path)
+    frames = list(range(1, N_FR + 1))
+    cfg = {"v_max": 0.5, "q_seed": None, "q_young": 0, "confirm_tol": None, "confirm_auto": None}
+
+    def relink_elsewhere():
+        return track_store(RunStore(store.store_path, mode="a"), frames, cfg, cals, cpar)
+
+    stats = run_holistic(store, frames, cpar, cals, vpar, relink_elsewhere, rounds=2, partner_min_len=0,
+                         log=lambda s: None)
+    assert len(stats["rounds"]) == 2

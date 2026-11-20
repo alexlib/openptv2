@@ -59,8 +59,20 @@ def run_holistic(
     first, last = frames[0], frames[-1]
     n_cams = len(cals)
     stats: dict = {"rounds": []}
+
+    def fresh(st):
+        # the linker may write through another store object; linkage blocks are cached per object, so read the
+        # store again after every relink (a stale linkage next to fresh correspondences breaks row alignment)
+        path = getattr(st, "store_path", None)
+        if path is None:
+            return st
+        from openptv2.storage import RunStore
+
+        return RunStore(path, mode="a")
+
     if initial_link:
         relink()
+    store = fresh(store)
     for rnd in range(1, rounds + 1):
         arr = arrays_from_store(store, linkage_name, first, last, n_cams)
         blob, centre, sumg, n_att = extend_membership(arr["frame"], arr["pos"], arr["blob"], arr["centre"],
@@ -114,6 +126,7 @@ def run_holistic(
         stats["rounds"].append(info)
         log(f"holistic round {rnd}: {info['births']} births, {info['attachments']} attachments")
         relink()
+        store = fresh(store)
     return stats
 
 
