@@ -46,6 +46,7 @@ def main() -> None:
     ap.add_argument("--rounds", type=int, default=2)
     ap.add_argument("--src", default=str(DEFAULT_SRC))
     ap.add_argument("--min-resid", type=float, default=0.25)
+    ap.add_argument("--score-only", action="store_true", help="score an existing run folder, do not rerun")
     a = ap.parse_args()
     from openptv2.loco import loco_residuals, project_pixels, summarize
     from openptv2.merge_post import (
@@ -64,12 +65,13 @@ def main() -> None:
 
     src = Path(a.src)
     out = Path("/private/tmp/claude-501/real_runs") / a.label
-    if out.exists():
-        shutil.rmtree(out)
-    (out / "res").mkdir(parents=True)
-    shutil.copytree(src / "cal", out / "cal")
-    shutil.copytree(src / "res" / "run.zarr", out / "res" / "run.zarr")
-    (out / "img").mkdir()
+    if not a.score_only:
+        if out.exists():
+            shutil.rmtree(out)
+        (out / "res").mkdir(parents=True)
+        shutil.copytree(src / "cal", out / "cal")
+        shutil.copytree(src / "res" / "run.zarr", out / "res" / "run.zarr")
+        (out / "img").mkdir()
     raw = yaml.safe_load(next(src.glob("parameters_*.yaml")).read_text())
     raw["sequence"]["last"] = a.last
     first = int(raw["sequence"].get("first", 1))
@@ -99,14 +101,17 @@ def main() -> None:
     from openptv2.holistic import run_holistic
 
     st = RunStore(store_path, mode="a")
-    report["track_time_s"] = [track()]
-    base = arrays_from_store(st, "ptv_is", first, a.last, n_cams)
-    score("base_two_phase", base["tid"], base["frame"], base["pos"], base["blob"])
-    t0 = time.perf_counter()
-    stats = run_holistic(st, list(frames), cpar, cals, vpar, lambda: report["track_time_s"].append(track()),
-                         rounds=a.rounds, min_resid=a.min_resid, initial_link=False)
-    report["loop_time_s"] = round(time.perf_counter() - t0, 1)
-    report["births"] = stats["rounds"]
+    if not a.score_only:
+        report["track_time_s"] = [track()]
+        st = RunStore(store_path, mode="a")
+        base = arrays_from_store(st, "ptv_is", first, a.last, n_cams)
+        score("base_two_phase", base["tid"], base["frame"], base["pos"], base["blob"])
+        t0 = time.perf_counter()
+        stats = run_holistic(st, list(frames), cpar, cals, vpar, lambda: report["track_time_s"].append(track()),
+                             rounds=a.rounds, min_resid=a.min_resid, initial_link=False)
+        report["loop_time_s"] = round(time.perf_counter() - t0, 1)
+        report["births"] = stats["rounds"]
+    st = RunStore(store_path, mode="a")          # the linker wrote through its own store object: read afresh
     final = arrays_from_store(st, "ptv_is", first, a.last, n_cams)
     score("final", final["tid"], final["frame"], final["pos"], final["blob"])
     # leave-one-camera-out on 4-camera points with a shared blob: raw blob centres vs the observations the loop used

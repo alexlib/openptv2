@@ -514,3 +514,22 @@ use of the new points.
 (`tests/unit/test_holistic.py`): a particle the matcher dropped inside its neighbour's blob is born in every overlap
 frame, linked through the overlap, and its blob is marked shared in the observation table.
 `scripts/holistic_real.py` now runs the library loop.
+
+**2 (result). Real wp2, 300 frames, current loop** (`holistic_real.py wp2_holistic2 300 --rounds 2`; the script also
+read a stale linkage for its final score, fixed: it reopens the store; `--score-only` scores an existing run):
+| | tracks | mean length | tracks >= 50 frames | jump share | jitter x / y / z (mm) |
+|---|---|---|---|---|---|
+| `two_phase` | 14,674 | 20.7 | 1,533 | 1.44 % | 0.0083 / 0.0077 / 0.039 |
+| holistic loop, 2 rounds | 11,742 | **28.2 (+36 %)** | **1,822 (+19 %)** | **0.47 %** | 0.0055 / 0.0051 / 0.029 |
+Births 26.8k (round 1) and 8.4k (round 2). Leave-one-camera-out on 4-camera points with a shared blob: corrected
+observations agree better with the other cameras than the raw blob centres (median 0.40 -> 0.37 px, p90 0.85 -> 0.80
+px); the 99th percentile is slightly worse (1.49 -> 1.52 px). Jitter falls but the path prior smooths by construction,
+so the track lengths, the jump share and the cross-camera consistency are the evidence. Compared with the older loop
+on wp2 (mean 30.5, 1,863 tracks >= 50): more births, slightly fewer long tracks; the difference is small.
+
+## Next steps (updated)
+1. Dense: cluster hypotheses in time; use the per-point variance for the many new points (17 % at x4, noisy).
+2. Noise-aware link confirmation in `two_phase` from the observation table (variance per point).
+3. Births precision on real data: no truth there; check births' track lengths and cross-camera consistency.
+4. Speed: vectorise the group loops of `refine_merged`, `estimate_signatures`, `birth_targets`; Cython later.
+5. Product: `holistic` as an option in `unified` / the GUI tracker list once 1-2 are done; docs page.
