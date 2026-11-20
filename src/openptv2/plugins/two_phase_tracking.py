@@ -923,6 +923,10 @@ class TwoPhaseTracker:
                         if frame_merged is not None
                         else False
                     )
+                    # Idea 9: merged/split points never seed new trajectories
+                    # (they are recovered partners, not fresh particles).
+                    if is_m:
+                        continue
                     tracks[next_tid] = {
                         "pos": pts1[det].copy(),
                         "vel": np.zeros(3),
@@ -1195,119 +1199,28 @@ def track_store(
     if cfg.split_merged:
         want_q = False
     if cfg.split_merged and project_fn is not None:
-        from collections import defaultdict
-        from scipy.spatial import cKDTree
-        # Pass 1 on baseline points
-        t1 = TwoPhaseTracker(cfg)
-        links1 = t1.track_frames(
-            [p.copy() for p in frame_particles],
-            [lf.copy() for lf in frame_leaves],
-            project_fn=project_fn,
-            frame_seen=frame_seen,
-            frame_ghost=None,
-            frame_logb=None,
-        )
-        # Build track positions
-        traj_of = defaultdict(dict)
-        # chain links into trajectories
-        nxt = defaultdict(list)
-        for (a, ra, b, rb) in links1:
-            nxt[(a, ra)].append((b, rb))
-        allpts = set()
-        for fi, P in enumerate(frame_particles):
-            for r in range(len(P)):
-                allpts.add((fi, r))
-        preds = defaultdict(dict)  # tid -> {frame_idx: pos}
-        # simple: assign each link chain a tid
-        tid = 0
-        visited = set()
-        for start in allpts:
-            if start in visited:
-                continue
-            # find if start has predecessor
-            if any((start[0], start[1]) == (b, rb) for (_, _, b, rb) in links1):
-                continue
-            cur = start
-            chain_pts = []
-            while cur in allpts and cur not in visited:
-                visited.add(cur)
-                chain_pts.append(cur)
-                cands = nxt.get(cur, [])
-                if not cands:
-                    break
-                cur = cands[0]
-                if cur in visited:
-                    break
-            for (fi, r) in chain_pts:
-                preds[tid][fi] = frame_particles[fi][r].copy()
-            tid += 1
-        # tracks by frame
-        tracks_by_frame = defaultdict(list)
-        for t, fmap in preds.items():
-            for fi, pos in fmap.items():
-                tracks_by_frame[fi].append((t, pos))
-        # Pass 2: split merged points
-        new_particles = []
-        new_leaves = []
-        new_seen_all = []
-        for fi, P in enumerate(frame_particles):
-            pos = np.asarray(P, dtype=float)
-            lf = frame_leaves[fi]
-            new_pts = []
-            new_seen_frame = []
-            tlist = tracks_by_frame.get(fi, [])
-            tpos = np.array([tp for (_, tp) in tlist]) if tlist else np.zeros((0, 3))
-            tree = cKDTree(tpos) if len(tpos) else None
-            tids_list = [t for (t, _) in tlist]
-            for i, p in enumerate(pos):
-                close = []
-                if tree is not None:
-                    for j in tree.query_ball_point(p, 0.6):
-                        close.append((tids_list[j], tpos[j]))
-                # Conservative membership: only split when exactly two tracks claim
-                # the blob and their predicted positions are close (real merge).
-                if (len(close) == 2
-                        and np.linalg.norm(close[0][1] - close[1][1]) < 1.0):
-                    preds_arr = np.array([tp for (_, tp) in close])
-                    intensities = np.ones(len(close))
-                    mp_all = project_fn(p.reshape(1, 3)).reshape(-1)
-                    n_cams = len(cals)
-                    merged_px = mp_all.reshape(n_cams, 2)
-                    seen_i = frame_seen[fi][i] if (fi < len(frame_seen) and i < len(frame_seen[fi])) else np.ones(n_cams, dtype=bool)
-                    try:
-                        from openptv2 import merged_split
+        # Compute per-point brightness from store for intensity-based membership
+        from openptv2.point_quality import read_frame_arrays as _raf
+        _fb = []
+        for _f in frames:
+            _pos, _cam_ids, _rows = _raf(store, _f, num_cams)
+            _n = len(_pos)
+            _bri = np.zeros(_n)
+            for _i in range(_n):
+                for _c in range(num_cams):
+                    if _rows[_c] is not None and _cam_ids[_i, _c] >= 0:
+                        _bri[_i] += _rows[_c][_cam_ids[_i, _c], 6]
+            _fb.append(_bri)
+        from openptv2.blob_recovery import recover
 
-                        split_pos, _ = merged_split.split_merged_blob(
-                            merged_px, seen_i, intensities, preds_arr, cals, cpar
-                        )
-                        # accept split only if constituents stay close to predictions
-                        if np.max([np.linalg.norm(split_pos[k] - preds_arr[k]) for k in range(len(preds_arr))]) < 0.5:
-                            for sp in split_pos:
-                                new_pts.append(sp)
-                                new_seen_frame.append(np.asarray(seen_i, dtype=bool).copy())
-                        else:
-                            new_pts.append(p)
-                            new_seen_frame.append(np.asarray(seen_i, dtype=bool).copy())
-                    except Exception:
-                        new_pts.append(p)
-                        new_seen_frame.append(np.asarray(seen_i, dtype=bool).copy())
-                else:
-                    new_pts.append(p)
-                    _s = frame_seen[fi][i] if (fi < len(frame_seen) and i < len(frame_seen[fi])) else np.ones(len(cals), dtype=bool)
-                    new_seen_frame.append(np.asarray(_s, dtype=bool).copy())
-            new_seen_all.append(np.array(new_seen_frame, dtype=bool) if new_seen_frame else np.zeros((0, len(cals)), dtype=bool))
-            new_particles.append(np.array(new_pts, dtype=float) if new_pts else np.zeros((0, 3)))
-            # leaves
-            if len(new_pts):
-                xy = project_fn(np.array(new_pts, dtype=float))
-                new_leaves.append(np.nan_to_num(np.asarray(xy).reshape(len(new_pts), -1)))
-            else:
-                new_leaves.append(np.zeros((0, 0)))
-        frame_particles = new_particles
-        frame_leaves = new_leaves
-        frame_seen = new_seen_all
+        frame_particles, frame_leaves, frame_merged, frame_seen = recover(
+            frames, frame_particles, frame_leaves, project_fn, cals, cpar,
+            frame_brightness=_fb, brightness_threshold=1.2,
+            frame_seen=frame_seen,
+        )
         frame_logb = None
     else:
+        frame_merged = None
         frame_logb = logb_list if blob_gate else None
     frame_ghost = None
     if want_q:
@@ -1324,6 +1237,7 @@ def track_store(
             frame_seen=frame_seen,
             frame_ghost=frame_ghost,
             frame_logb=frame_logb,
+            frame_merged=frame_merged,
         ),
     )
 
