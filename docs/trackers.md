@@ -45,6 +45,7 @@ page). The `name` column is the exact preset string.
 | `priority_segment_3d` (Fast 3D / 3MA) | Cheapest (smoothest) links first, globally | 3D only |
 | `4be` | Peek at frame n+2 before accepting; conflicts link to nobody | 3D only |
 | `two_phase` (Two-Phase) | 3D search for candidates, per-camera images for ranking | 3D + 2D |
+| `holistic` | `two_phase` + merged-blob correction + births, repeated; see [Holistic tracking](holistic-tracking.md) | 3D + 2D + blob model |
 | `hybrid_deltat_3d` (Hybrid) | Match every N-th frame where motion beats noise, fill between | 3D only |
 
 Details per tracker live in `src/openptv2/tracking_registry.py`

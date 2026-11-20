@@ -216,6 +216,7 @@ TRACKER_CHOICES = [
     ("4be", "OpenPTV 4BE (Four-Frame Best Estimate)"),
     ("trackcorr", "OpenPTV Epipolar (Multi-Camera 2D+3D)"),
     ("two_phase", "Two-Phase 3D+2D Leaf Ranking"),
+    ("holistic", "Holistic (merged-blob aware matching + tracking loop)"),
 ]
 
 DIRECTION_CHOICES = [
@@ -229,6 +230,7 @@ TRACKER_SUPPORTS_BACKWARD: Dict[str, bool] = {
     "4be": True,
     "trackcorr": True,
     "two_phase": False,
+    "holistic": False,
 }
 
 # Trackers whose do_tracking() supports post-processing (reciprocity + cold start + gap relinking).
