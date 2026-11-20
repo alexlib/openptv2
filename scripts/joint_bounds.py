@@ -625,7 +625,7 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
 
 def h3(case: str, tracker: str = "two_phase", tracker2: str | None = None, radius: float = 2.0,
        min_resid: float = 0.5, need_residual: bool = True, use_fallback: bool = False, suffix: str = "",
-       **h2opts) -> dict:
+       pairs: bool = False, **h2opts) -> dict:
     """H3 births: bring the particles hidden in other particles' blobs into the point cloud.
 
     1. ``tracker`` on the case, shared blobs from the tracks, refinement (as H2);
@@ -678,6 +678,18 @@ def h3(case: str, tracker: str = "two_phase", tracker2: str | None = None, radiu
     targets = birth_targets(a["frame"], blob, res.pred_px, sig, a["blobs"], counts, min_resid=min_resid,
                             fallback_px=fallback)
     births = birth_points(targets, range(1, n_out + 1), cpar, cals, vpar, need_residual=need_residual)
+    n_resid_births = len(births["frame"])
+    if pairs:
+        from openptv2.merge_post import paired_births
+
+        fb = np.concatenate([a["frame"], births["frame"]])
+        bb = np.vstack([blob, births["blob"]])
+        sb2 = np.vstack([sig, np.full((len(births["frame"]), n_cams), np.nan)])
+        pb = paired_births(fb, bb, sb2, a["blobs"], counts, range(1, n_out + 1), cpar, cals, vpar)
+        births = {"frame": np.concatenate([births["frame"], pb["frame"]]),
+                  "pos": np.vstack([births["pos"], pb["pos"]]),
+                  "blob": np.vstack([births["blob"], pb["blob"]]),
+                  "n_resid": np.concatenate([births["n_resid"], np.zeros(len(pb["frame"]), int)])}
     new_pos = np.where(np.isfinite(res.x[:, :1]), res.x, a["pos"])
     run_case = f"{case}_H3{suffix}"
     d = sb.WORK / "cases" / run_case
@@ -701,7 +713,7 @@ def h3(case: str, tracker: str = "two_phase", tracker2: str | None = None, radiu
     sb.stamp_tnr(d)
     shutil.rmtree(sb.WORK / "runs" / run_case, ignore_errors=True)
     n_res = sum(int((t["kind"] == 1).sum()) for t in targets.values())
-    stats = {"residual_targets": n_res, "births": int(len(births["frame"])),
+    stats = {"residual_targets": n_res, "births": int(len(births["frame"])), "residual_births": n_resid_births,
              "births_per_frame": float(len(births["frame"]) / n_out),
              "births_with_2plus_residual_views": int((births["n_resid"] >= 2).sum())}
     stats["h2_on_augmented"] = h2(run_case, tracker2 or tracker, radius=radius, **h2opts)
@@ -864,6 +876,7 @@ def main(argv=None) -> None:
     q8.add_argument("--any-births", action="store_true", help="also births from free blobs only")
     q8.add_argument("--fallback", action="store_true")
     q8.add_argument("--suffix", default="")
+    q8.add_argument("--pairs", action="store_true")
     q5 = sub.add_parser("b3")
     q5.add_argument("--case", required=True)
     q5.add_argument("--order", type=int, default=3)
@@ -886,7 +899,7 @@ def main(argv=None) -> None:
         return
     if a.cmd == "h3":
         r = h3(a.case, a.tracker, a.tracker2, min_resid=a.min_resid, need_residual=not a.any_births,
-               use_fallback=a.fallback, suffix=a.suffix,
+               use_fallback=a.fallback, suffix=a.suffix, pairs=a.pairs,
                fill=True, fill_gap=12, fill_hermite=True, fill_growth=0.25, mass=(0.7, 1.4), tag="_long")
         save("H3", f"{a.case}|{a.tracker}|{a.tracker2}|{a.suffix}", r)
         print(json.dumps({k: v for k, v in r.items() if k != "h2_on_augmented"}, indent=1))

@@ -283,3 +283,53 @@ Targets are set from the measured ceilings; they are goals, not promises.
   the overall mean does not improve because of them. Births recall is the bottleneck: ~45 per frame against ~250 missed
   points per frame (residual targets need known signatures and predictions of every member, and the matcher's
   epipolar band rejects residual targets whose placement error is amplified by G/R for dim hidden particles).
+- 2026-11-20, births loop round 2 and paired births. Running the whole births loop a second time on its own output:
+  common-set velocity error 0.1004 -> **0.0907 (-43 % against `two_phase`)**, yield 0.705, long completeness 0.617, pieces
+  per long track 1.51; extra points 7.2 % (velocity error 0.27). Paired births (`merge_post.paired_births`: 2-camera
+  match of free blobs, verified in the other cameras by a blob whose excess brightness matches the candidate's; tests)
+  add 2.6k births at the same precision (87 %) but no accuracy (common set 0.1039 vs 0.1004, yield 0.697 vs 0.695):
+  kept as an option, off by default.
+
+## Synthesis (2026-11-20): what the measurements say the best tracker is
+
+**The essential difficulty is not linking and not ghosts. It is that a blob is not a particle.** With exact data
+the chain is accurate to 0.0009; the linkers find 99 % of the reachable links; removing every ghost gains
+`two_phase` 0.5-2 %. What limits everything is that 27 % of blob observations (benchmark default; roughly half that on
+real wp2) hold several particles. The matcher, forced to give each blob to one point, then (a) builds the visible
+particle from a shifted centre and (b) leaves the other particle out of the cloud; the left-out particle in turn
+corrupts its partner, which takes the merged blob as its own. The biggest single finding of this work: **the loss is
+hidden partners, and bringing them back makes the particles we already had more accurate.**
+
+**What each existing piece contributes (measured on the truth benchmark):**
+| piece | where it lives | effect | keep? |
+|---|---|---|---|
+| greedy epipolar matcher | `algorithms/correspondences.py` | good first guess, fast (0.1 s/frame) | yes, as the seed |
+| `two_phase` linker + ghost marks (`q_seed`, `q_young`) | `plugins/two_phase_tracking.py` | best linker; marks give 0.5-2 % | yes, as the linking core |
+| `two_phase` confirmation (`confirm_auto`) | same | cuts true links of noisier points | yes, but per-point tolerance from variances |
+| hybrid `trackcorr` (3D cascade + epipolar) | `plugins/default_tracking.py` | best continuity, keeps 2x the ghosts | alternative core, not default |
+| peeling (Clean-and-Claim) | `layered_tracking.py` | worse than plain `trackcorr` everywhere | no (its idea is done better by membership + births) |
+| trajectory ILP, IRLS stitching | `ghost_ilp.py`, `temporal_smoothing.py` | no measured gain | optional |
+| `stitch_trajectories` | `trajectory_stitch.py` | 3x worse velocity error | no |
+| blob model: membership, effective observations, trusted LOO path prior | `blob_model.py`, `merge_refine.py`, `merge_post.py` | -14 % (common set) | yes |
+| hidden-partner mass check, long-gap recovery with mass check | same | -25 % cumulative | yes |
+| births from residual brightness, relink, 2 rounds | same + `joint_bounds.py h3` | **-43 % cumulative; +5 points yield; +13 points long completeness** | yes: the core of the new method |
+
+**Recommended architecture ("holistic" tracker = the order-free loop):**
+1. detect -> greedy matcher -> `two_phase` (seed tracks);
+2. measurement layer: infer shared blobs from tracks, effective observations, weighted fit with the trusted path prior;
+3. mass accounting per blob: hidden partners -> residual targets -> births (matcher on residual + free targets);
+4. relink on the corrected, augmented cloud; reconnect pieces; recover long gaps (Hermite path + mass check);
+5. repeat 2-4 (two rounds measured, still improving);
+6. output with a variance per point (the observation table), used by weighted smoothing and by the user.
+`unified` should become this loop on top of its existing infrastructure (estimator, `TrackingDecision`, probes),
+with peeling and stitch off.
+
+**Open, in order of value:**
+1. Real data: none of the loop has run on wp2 yet. Use leave-one-camera-out consistency, tracks >= 50 frames,
+   roughness, and the Eulerian statistics against the MATLAB reference. Merge rate there is about half, so expect a
+   smaller but real gain (the real-like benchmark cases predicted -27 % for perfect association).
+2. The new points are noisy (velocity error 0.27-0.30, 6-7 % of the output): use their variance in smoothing,
+   and noise-aware confirmation, before counting them as yield.
+3. Births recall: ~58/frame against ~250 missed; residual placement degrades for dim hidden particles.
+4. Dense data (x4): cluster hypotheses (H4); the blob model alone closes only 39 % there.
+5. Speed: the loop is python (~0.6 s/frame per round against 0.1 matcher + 0.02 linker); vectorise / Cython after 1-2.

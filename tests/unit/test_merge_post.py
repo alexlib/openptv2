@@ -211,3 +211,39 @@ def test_fallback_position_places_a_hidden_particle_without_a_trusted_prediction
     t = birth_targets(frame, blob, no_pred, np.array([[100.0]]), blobs, counts, min_resid=0.3,
                       fallback_px=np.array([[[10.0, 10.0]]]))[(1, 0)]
     assert t["kind"].tolist() == [1] and t["xy"][0] == pytest.approx([13.0, 10.0])
+
+
+def _hidden_scene(rig, excess):
+    cpar, cals, pts, px = rig
+    vpar = load_parameters(YAML)[1]
+    # particle H at pts[0]: free blobs in cameras 0 and 1; in cameras 2 and 3 its spot lies inside the blob of a
+    # tracked point (row 0) whose signature is 100; the blob's grey sum is 100 + excess
+    blobs, counts = {}, {}
+    hpx = px[0]
+    for c in range(4):
+        cent = np.vstack([hpx[c] + [0.3, 0.0], [5.0, 5.0]]) if c >= 2 else np.vstack([hpx[c], [5.0, 5.0]])
+        sg = np.array([100.0 + excess, 90.0]) if c >= 2 else np.array([80.0, 90.0])
+        blobs[(1, c)] = (cent, sg)
+        counts[(1, c)] = np.array([[9, 3, 3], [9, 3, 3]])
+    frame = np.array([1])
+    blob = np.array([[-1, -1, 0, 0]])                            # row 0 uses blob 0 in cameras 2 and 3
+    sig = np.array([[np.nan, np.nan, 100.0, 100.0]])
+    return cpar, cals, vpar, frame, blob, sig, blobs, counts, pts[0]
+
+
+def test_paired_birth_verified_by_excess_mass(rig):
+    from openptv2.merge_post import paired_births
+
+    cpar, cals, vpar, frame, blob, sig, blobs, counts, truth = _hidden_scene(rig, excess=80.0)
+    b = paired_births(frame, blob, sig, blobs, counts, [1], cpar, cals, vpar)
+    assert len(b["frame"]) == 1
+    assert b["blob"][0].tolist() == [0, 0, 0, 0] and b["n_hidden"][0] == 2
+    assert np.linalg.norm(b["pos"][0] - truth) < 0.05
+    assert getattr(cpar, "pair_flag", 0) == 0                    # restored
+
+
+def test_no_paired_birth_without_excess_mass(rig):
+    from openptv2.merge_post import paired_births
+
+    cpar, cals, vpar, frame, blob, sig, blobs, counts, _ = _hidden_scene(rig, excess=5.0)
+    assert len(paired_births(frame, blob, sig, blobs, counts, [1], cpar, cals, vpar)["frame"]) == 0

@@ -391,3 +391,107 @@ def birth_points(targets: dict, frames, cpar: Any, cals: list, vpar: Any, need_r
                 "n_resid": np.zeros(0, int)}
     return {"frame": np.concatenate(fr_l), "pos": np.vstack(pos_l), "blob": np.vstack(blob_l),
             "n_resid": np.concatenate(nres_l)}
+
+
+def paired_births(
+    frame: np.ndarray,
+    blob: np.ndarray,
+    sig: np.ndarray,
+    blobs: dict,
+    counts: dict,
+    frames,
+    cpar: Any,
+    cals: list,
+    vpar: Any,
+    radius: float = 2.0,
+    mass_lo: float = 0.4,
+    mass_hi: float = 2.5,
+    min_cams: int = 3,
+) -> dict:
+    """Births of particles that have only two free views: a 2-camera match of free blobs, *verified by mass* in the
+    other cameras.
+
+    The free blobs (used by no point) of every frame are matched with the standard matcher in pair mode (also
+    giving triplets and quads of free blobs). In each camera without a free blob in the candidate, its projection
+    must fall on a blob (within ``radius`` px) that is brighter than the signatures of the points using it by
+    ``mass_lo``..``mass_hi`` times the candidate's own brightness (the mean grey sum of its free blobs): that
+    camera then counts as a hidden view and the blob is shared. A candidate is kept with at least ``min_cams``
+    free + hidden views. Returns rows (``frame``, ``pos``, ``blob``, ``n_hidden``).
+    """
+    from openptv2.correspondences import match_frame_correspondences
+    from openptv2.tracking_framebuf import TargetArray
+
+    n_cams = len(cals)
+    old_flag = getattr(cpar, "pair_flag", 0)
+    cpar.pair_flag = 1
+    fr_l, pos_l, blob_l, nh_l = [], [], [], []
+    try:
+        for f in frames:
+            f = int(f)
+            rows = np.flatnonzero(frame == f)
+            owners: list[dict] = []
+            dets, free_of = [], []
+            for c in range(n_cams):
+                cent, sg = blobs[(f, c)]
+                own: dict = {}
+                for r in rows:
+                    b = blob[r, c]
+                    if b >= 0:
+                        own.setdefault(int(b), []).append(r)
+                owners.append(own)
+                free = np.setdiff1d(np.arange(len(cent)), np.array(sorted(own), dtype=int))
+                free = free[np.argsort(cent[free, 1], kind="stable")]       # y-sorted for the matcher
+                ta = TargetArray(len(free))
+                npx = counts[(f, c)]
+                for i, k in enumerate(free):
+                    ta[i].set_pnr(i)
+                    ta[i].set_pos((float(cent[k, 0]), float(cent[k, 1])))
+                    ta[i].set_pixel_counts(int(npx[k, 0]), int(npx[k, 1]), int(npx[k, 2]))
+                    ta[i].set_sum_grey_value(int(max(sg[k], 1)))
+                    ta[i].set_tnr(-1)
+                dets.append(ta)
+                free_of.append(free)
+            if sum(len(d) for d in dets) == 0:
+                continue
+            pos, ids = match_frame_correspondences(dets, cpar, cals, vpar)
+            ids = np.asarray(ids)[:, :n_cams]
+            for p, row in zip(np.asarray(pos, float), ids):
+                src = np.full(n_cams, -1, int)
+                bright = []
+                for c in range(n_cams):
+                    if row[c] >= 0:
+                        src[c] = free_of[c][row[c]]
+                        bright.append(blobs[(f, c)][1][src[c]])
+                if len(bright) == 0:
+                    continue
+                b_mean = float(np.mean(bright))
+                n_hidden = 0
+                for c in range(n_cams):
+                    if src[c] >= 0:
+                        continue
+                    cent, sg = blobs[(f, c)]
+                    if len(cent) == 0:
+                        continue
+                    px = project_pixels(p[None], cals[c], cpar)[0]
+                    d = np.linalg.norm(cent - px, axis=1)
+                    j = int(np.argmin(d))
+                    if d[j] > radius or j not in owners[c]:
+                        continue
+                    s_own = sig[owners[c][j], c]
+                    if not np.all(np.isfinite(s_own)):
+                        continue
+                    resid = sg[j] - float(np.sum(s_own))
+                    if mass_lo * b_mean <= resid <= mass_hi * b_mean:
+                        src[c] = j
+                        n_hidden += 1
+                if (src >= 0).sum() >= min_cams and n_hidden >= 1:
+                    fr_l.append(f)
+                    pos_l.append(p)
+                    blob_l.append(src)
+                    nh_l.append(n_hidden)
+    finally:
+        cpar.pair_flag = old_flag
+    if not fr_l:
+        return {"frame": np.zeros(0, int), "pos": np.zeros((0, 3)), "blob": np.zeros((0, n_cams), int),
+                "n_hidden": np.zeros(0, int)}
+    return {"frame": np.array(fr_l), "pos": np.array(pos_l), "blob": np.array(blob_l), "n_hidden": np.array(nh_l)}
