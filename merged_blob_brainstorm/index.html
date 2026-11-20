@@ -2452,7 +2452,11 @@ centres (and without 2D-leaf consistency) does not help tracking. This confirms 
 split of the merged centre) is required for vErr, not just Idea 11 (adding points).</p>
 <p>Predictor-based two-pass (Idea 11 + 4, L1_d1): vel 19.65 → 19.35 (improvement). Membership via nearest
 predicted track; split via merged_split. First vErr gain achieved.</p>
-<p>Plugin integration (split_merged flag, gated, default off): n=12 case shows no improvement
+<p>Extended tuning (init-residual gate, exact-2 tracks, &lt;1mm): sparse cases improve (L1_d1 19.65→19.35,
+L1_d1 k8 3.23→3.19) but clustered/dense regress (L1_d2 12.20→12.55, L1_d4 92.80→94.31).
+Root cause: predictor-based membership is too permissive on dense data (false merges); init-residual
+gate never rejects (all 1614 splits accepted). Next: add intensity/area-based membership (merged blob
+brightness &gt; single-particle budget) and a stricter spatial gate (point must lie between constituents).
 (vErr 0.308→0.339, ghost 0.036→0.068) despite conservative gating (exact-2 tracks, &lt;1mm apart,
 &lt;0.5mm residual). Root cause: split points are treated as clean (Idea 9 noise inflation not yet
 applied in tracker), and predictor-based membership is noisy. Tuning stopped per early-stop rule.
