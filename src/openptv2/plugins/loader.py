@@ -61,6 +61,8 @@ BUILTIN_TRACKING_PLUGINS = {
     "two_directional": "openptv2.plugins.cython_epipolar_tracking",
     "splitter_tracking": "openptv2.plugins.cython_3d_tracking",
     "two_phase": "openptv2.plugins.two_phase_tracking",
+    "blob_loop": "openptv2.plugins.blob_loop_tracking",
+    "two_phase_blob_loop": "openptv2.plugins.blob_loop_tracking",
 }
 
 LEGACY_ALIASES = {

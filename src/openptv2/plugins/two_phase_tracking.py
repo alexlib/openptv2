@@ -348,6 +348,8 @@ def _match_two_phase_frame(
     blob_gate: float | None = None,
     young0: np.ndarray | None = None,
     q_block: float = 1.0,
+    merged1: np.ndarray | None = None,
+    merged_noise_scale: float = 1.4,
 ) -> tuple[set[tuple[int, int]], set[tuple[int, int]]]:
     """Two-phase frame-to-frame matching: 3D search + 2D ranking.
 
@@ -453,6 +455,12 @@ def _match_two_phase_frame(
                 return set(), set()
     if ghost1 is not None and q_weight > 0:
         cost_arr = cost_arr * (1.0 + q_weight * np.asarray(ghost1)[col_arr])
+    if merged1 is not None and merged_noise_scale > 1.0:
+        # Idea 9: inflate measurement noise on split/merged detections so their
+        # residual is scaled by 1 / merged_noise_scale (softer gate, clean stays preferred).
+        is_m = np.asarray(merged1, dtype=bool)[col_arr]
+        if np.any(is_m):
+            cost_arr = np.where(is_m, cost_arr / merged_noise_scale, cost_arr)
 
     # Phase 2: Hungarian via connected components
     n_nodes = n_pred + n_cand
@@ -575,6 +583,8 @@ class TwoPhaseTracker:
         frame_seen: list[np.ndarray] | None = None,
         frame_ghost: list[np.ndarray] | None = None,
         frame_logb: list[np.ndarray] | None = None,
+        frame_merged: list[np.ndarray] | None = None,
+        merged_noise_scale: float = 1.4,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
@@ -629,6 +639,8 @@ class TwoPhaseTracker:
                 frame_seen=frame_seen,
                 frame_ghost=frame_ghost,
                 frame_logb=frame_logb,
+                frame_merged=frame_merged,
+                merged_noise_scale=merged_noise_scale,
             )
 
         # Bidirectional tracking: forward + backward on reversed frames.
@@ -645,6 +657,8 @@ class TwoPhaseTracker:
             frame_seen=frame_seen,
             frame_ghost=frame_ghost,
             frame_logb=frame_logb,
+            frame_merged=frame_merged,
+            merged_noise_scale=merged_noise_scale,
         )
         bwd_kw = dict(
             return_chains=False,
@@ -652,6 +666,8 @@ class TwoPhaseTracker:
             frame_seen=_rev(frame_seen),
             frame_ghost=_rev(frame_ghost),
             frame_logb=_rev(frame_logb),
+            frame_merged=_rev(frame_merged),
+            merged_noise_scale=merged_noise_scale,
         )
 
         def run_fwd():
@@ -715,6 +731,8 @@ class TwoPhaseTracker:
         frame_seen: list[np.ndarray] | None = None,
         frame_ghost: list[np.ndarray] | None = None,
         frame_logb: list[np.ndarray] | None = None,
+        frame_merged: list[np.ndarray] | None = None,
+        merged_noise_scale: float = 1.4,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
@@ -744,16 +762,20 @@ class TwoPhaseTracker:
         # (frame_idx, row) -> tid, for emitting row-based links
         loc2tid: dict[tuple[int, int], int] = {}
         for i, p in enumerate(frame_particles[0]):
+            is_m0 = bool(frame_merged[0][i]) if frame_merged is not None else False
+            p_arr = np.asarray(p, dtype=np.float64)
             tracks[next_tid] = {
-                "pos": np.asarray(p, dtype=np.float64),
+                "pos": p_arr,
                 "vel": np.zeros(3),
                 "last_t": 0,
                 "last_row": i,
+                "last_clean_pos": None if is_m0 else p_arr.copy(),
+                "last_clean_t": None if is_m0 else 0,
                 "misses": 0,
                 "shared_streak": 0,
             }
             loc2tid[(0, i)] = next_tid
-            hist[next_tid] = [(0, i, False)]
+            hist[next_tid] = [(0, i, is_m0)]
             next_tid += 1
 
         all_links = []
@@ -833,6 +855,8 @@ class TwoPhaseTracker:
                 ),
                 logb1=frame_logb[t + 1] if frame_logb is not None else None,
                 blob_gate=self.cfg.blob_gate,
+                merged1=frame_merged[t + 1] if frame_merged is not None else None,
+                merged_noise_scale=merged_noise_scale,
             )
             matched_det = set()
             for ai, det in got:
@@ -840,6 +864,9 @@ class TwoPhaseTracker:
                 tr = tracks[tid]
                 gap = t + 1 - tr["last_t"]
                 old_pos = tr["pos"]
+                is_merged_det = (
+                    bool(frame_merged[t + 1][det]) if frame_merged is not None else False
+                )
                 if (int(ai), int(det)) in got_shared and tr.get(
                     "shared_streak", 0
                 ) < self.cfg.max_shared:
@@ -847,9 +874,22 @@ class TwoPhaseTracker:
                     tr["pos"] = pts1[det].copy()
                     tr["shared_streak"] = tr.get("shared_streak", 0) + 1
                     is_shared = True
-                else:
-                    tr["vel"] = (pts1[det] - old_pos) / (gap * self.cfg.dt)
+                elif is_merged_det:
+                    # Idea 9: tagged merged/split point -- follow position,
+                    # NEVER update velocity from it.
                     tr["pos"] = pts1[det].copy()
+                    is_shared = True
+                else:
+                    if tr["last_clean_pos"] is not None:
+                        clean_gap = t + 1 - tr["last_clean_t"]
+                        tr["vel"] = (pts1[det] - tr["last_clean_pos"]) / (
+                            clean_gap * self.cfg.dt
+                        )
+                    else:
+                        tr["vel"] = (pts1[det] - old_pos) / (gap * self.cfg.dt)
+                    tr["pos"] = pts1[det].copy()
+                    tr["last_clean_pos"] = pts1[det].copy()
+                    tr["last_clean_t"] = t + 1
                     tr["shared_streak"] = 0
                     is_shared = False
                 all_links.append((tr["last_t"], tr["last_row"], t + 1, det))
@@ -877,16 +917,23 @@ class TwoPhaseTracker:
                         and frame_ghost[t + 1][det] > self.cfg.q_seed
                     ):
                         continue  # doubtful point: may not start a trajectory
+                    is_m = (
+                        bool(frame_merged[t + 1][det])
+                        if frame_merged is not None
+                        else False
+                    )
                     tracks[next_tid] = {
                         "pos": pts1[det].copy(),
                         "vel": np.zeros(3),
                         "last_t": t + 1,
                         "last_row": det,
+                        "last_clean_pos": None if is_m else pts1[det].copy(),
+                        "last_clean_t": None if is_m else t + 1,
                         "misses": 0,
                         "shared_streak": 0,
                     }
                     loc2tid[(t + 1, det)] = next_tid
-                    hist[next_tid] = [(t + 1, det, False)]
+                    hist[next_tid] = [(t + 1, det, is_m)]
                     next_tid += 1
 
         confirm_tol = self.cfg.confirm_tol
