@@ -620,3 +620,15 @@ of the prediction, ghosts not released; option `holistic_extend`): d1 vErr 0.129
 The unrestricted pass (radius 3 px, ghosts released) claims 65k points at x4 and makes 24 % ghosts. So extension helps
 a little where tracks already exist; at x4 the tracks that would carry it do not exist (only 25 % of particles
 are tracked), the start of tracks is the problem, which needs the 2-view ambiguity resolved *in time*.
+
+**Extension on real wp2 (300 frames, on top of the default run):** 6,519 points claimed (4,830 from two cameras), 87 s;
+mean track length 30.35 -> 30.96, tracks of 50+ frames 1,827 -> 1,844, jump share 0.46 -> 0.48 %, never-4-cameras share
+12.0 -> 13.2 %. A small gain, so `holistic_extend` stays **off by default**.
+
+## Where this leaves the plan
+- Done and measured: blob model, loop, births, noise-aware confirmation, cleanup, plugin, GUI/registry, `unified`
+  switch, first speed pass (186 -> 116 s per 200 frames), yield breakdown.
+- Dense (x4): the loss is the start of tracks (2-clean group 21 % of particles, matched 34 %; 1-/0-clean 53 %, almost
+  none recovered). Extension does not help there. Next idea, not started: candidate pairs from clean views only,
+  kept when they form smooth tracks of >= N frames (track-before-match, same filter that makes linked births 95 % real).
+- Speed: per-group loops (`refine_merged`, `split_blob_effective`, `birth_targets`), analytic Jacobian, then Cython.
