@@ -109,3 +109,19 @@ def test_linker_writing_through_another_store_object_keeps_rows_aligned(tmp_path
     stats = run_holistic(store, frames, cpar, cals, vpar, relink_elsewhere, rounds=2, partner_min_len=0,
                          log=lambda s: None)
     assert len(stats["rounds"]) == 2
+
+
+def test_unified_delegates_to_holistic_when_asked(monkeypatch):
+    from types import SimpleNamespace
+
+    from openptv2.plugins import holistic_tracking, unified_tracking
+
+    called = []
+    monkeypatch.setattr(holistic_tracking.Tracking, "do_tracking", lambda self: called.append(1))
+    t = unified_tracking.Tracking(exp=SimpleNamespace())
+    monkeypatch.setattr(t, "_track_cfg", lambda exp: {"holistic": True})
+    monkeypatch.setattr(t, "_auto_regime", lambda *a, **k: {})
+    monkeypatch.setattr(t, "_apply_conditioning_gate", lambda *a, **k: None)
+    monkeypatch.setattr(t, "_resolve_store_and_range", lambda exp: (None, None, 1, 2))
+    t.do_tracking()
+    assert called == [1]

@@ -48,3 +48,14 @@ observation table (`obs/`) and per-point sigma (`psigma/`). Cost: about 0.6 s pe
 - Dense data gains little: at x4 the yield is 0.25 against a ceiling of 0.85.
 - It rests on `two_phase` tracks; if those are poor the blob inference is poor.
 - Truth-free check on your own data: leave-one-camera-out (`openptv2.loco`) and `scripts/holistic_real.py`.
+
+## Using it from `unified`
+
+`unified` delegates to the holistic loop when its `track:` section has `holistic: true` (default off; the other
+`unified` post-passes are then not run, because the loop does its own linking and cleanup):
+
+```yaml
+track:
+  holistic: true
+  holistic_rounds: 2
+```

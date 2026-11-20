@@ -565,7 +565,7 @@ New points: L2 6.9 % of the output with velocity error 0.188 (was 0.25). These a
 1. Dense: cluster hypotheses in time (yield at x4 0.25 against the 0.85 ceiling).
 2. ~~Rerun real wp2 with the defaults~~ done, see below.
 3. Speed: vectorise the group loops (`refine_merged`, `estimate_signatures`, `birth_targets`), then Cython.
-4. Product: `holistic` in the GUI tracker list (done), docs page (done), `unified` integration (open).
+4. Product: `holistic` in the GUI tracker list (done), docs page (done), `unified` integration (done: `track.holistic: true`).
 
 ## Real wp2 with the new defaults (300 frames, scratch copy)
 | | `two_phase` | loop (before) | **noise-aware + cleanup** |

@@ -376,6 +376,12 @@ class Tracking:
         self._apply_conditioning_gate(regime, track_cfg)
 
         pm, store, first, last = self._resolve_store_and_range(self.exp)
+        if self._resolve_bool(track_cfg.get("holistic"), False):
+            # Opt-in: merged-blob aware matching + tracking loop (docs/holistic-tracking.md).
+            from openptv2.plugins import holistic_tracking
+
+            holistic_tracking.Tracking(ptv=self.ptv, exp=self.exp).do_tracking()
+            return
         probe_metrics: list[dict[str, Any]] = []
         grid_search_table: list[dict[str, Any]] = []
 
