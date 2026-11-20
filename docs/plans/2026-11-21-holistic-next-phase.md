@@ -85,3 +85,21 @@ the cause of the common gap to legacy (same frames: compare detections/positions
 then binning on both).
 Tooling: `scripts/eulerian_compare.py` (post-processing in the openptv-cloud tool environment, flowtracks 1.6.1; analysis
 stages from openptv-analysis with its flowtracks zarr reader disabled, `postprocess` stage skipped, no `legacy_root`).
+
+### N2 result: neighbour flow prior, feasibility on x4 (blob table, frame 30) - gate not met, stopped
+`scripts/joint_flow_prior.py`: full pool of 2-camera epipolar pairs (105,214 rows, 16 % of them real), each moved by the
+displacement of its 10 nearest tracked neighbours (final holistic tracks, within 3 mm), projected into all cameras at
+t+1 and t-1, confirmed where a blob lies within 1.5 px.
+- The prior itself is good: error against the true displacement median 0.026 mm, p90 0.066, p99 0.133 (true step 0.093 mm).
+- Separation is not: accepting rows with >= 3 cameras confirmed in both directions gives 6,232 rows, **72.5 % real**,
+  and 349 particles that the holistic output does not hold (**8.6 % of the 4,073 missing**); >= 2 cameras: 49.9 % real,
+  526 new. A 28 % ghost share on the added points breaks the gate (ghost share unchanged).
+- By clean cameras (missing particles with blobs in >= 2 cameras): 2+ clean 833, all reachable by a pair, 25 % confirmed
+  (>= 2 cameras, both directions); 1 clean 1,304, 17 %; 0 clean 1,357, 15 %.
+Why: (1) a ghost pair of two real blobs predicts into its own blobs in the forming cameras (smooth flow), so only the
+other cameras can discriminate, and there the blob must be clean at t-1, t and t+1: merging changes frame to frame
+(clean at t is not clean at t+1), so a true particle often fails a pixel-domain test; (2) the particles that are missing
+are exactly the merged ones. A pixel-domain confirmation cannot be right without the blob model (predicted blob centre =
+brightness-weighted mean of the members), i.e. it belongs inside the births acceptance, not next to it.
+Possible reuse: the prior as one more term in the births acceptance (cost already includes brightness and path); not a
+standalone stage. Not pursued; next is N4.
