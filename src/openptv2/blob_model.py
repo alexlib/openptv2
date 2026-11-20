@@ -90,6 +90,7 @@ def triangulate_weighted(
     step_mm: float = 0.01,
     cam_index: list[int] | None = None,
     return_cov: bool = False,
+    frozen_jacobian: bool = False,
 ):
     """Weighted least-squares position (mm) of points from pixel observations, by Gauss-Newton on the
     reprojection error (maximum likelihood for pixel noise with variance ``var_px``).
@@ -114,20 +115,28 @@ def triangulate_weighted(
         return (x, cov) if return_cov else x
     w_all = np.where(valid, 1.0 / np.where(valid, var_px, 1.0), 0.0)
     eye = np.eye(3)
-    for _ in range(n_iter):
+    jac_cache: dict[int, np.ndarray] = {}
+    for it in range(n_iter):
         a_mat = np.zeros((n, 3, 3))
         b_vec = np.zeros((n, 3))
         for c in range(n_cams):
             rows = np.flatnonzero(ok & valid[:, c])
             if len(rows) == 0:
                 continue
-            base = project_pixels(x[rows], cals[cam_of[c]], cpar)
-            jac = np.zeros((len(rows), 2, 3))
-            for ax in range(3):
-                d = np.zeros(3)
-                d[ax] = step_mm
-                jac[:, :, ax] = (project_pixels(x[rows] + d, cals[cam_of[c]], cpar)
-                                 - project_pixels(x[rows] - d, cals[cam_of[c]], cpar)) / (2 * step_mm)
+            if it == 0 or not frozen_jacobian:
+                steps = np.zeros((7, 3))
+                for ax in range(3):
+                    steps[1 + 2 * ax, ax] = step_mm
+                    steps[2 + 2 * ax, ax] = -step_mm
+                k = len(rows)
+                allp = (x[rows][None, :, :] + steps[:, None, :]).reshape(-1, 3)
+                px = project_pixels(allp, cals[cam_of[c]], cpar).reshape(7, k, 2)
+                base = px[0]
+                jac = np.stack([(px[1 + 2 * ax] - px[2 + 2 * ax]) / (2 * step_mm) for ax in range(3)], axis=2)
+                jac_cache[c] = jac
+            else:
+                base = project_pixels(x[rows], cals[cam_of[c]], cpar)
+                jac = jac_cache[c]
             r = pixel_xy[rows, c] - base                         # (k, 2)
             w = w_all[rows, c][:, None, None]
             a_mat[rows] += np.einsum("kij,kil->kjl", jac * np.sqrt(w), jac * np.sqrt(w))
@@ -258,17 +267,40 @@ def solve_cluster(
     m = len(x)
     n_par = 3 * m
 
+    needed: dict[int, list[int]] = {}
+    for j, cam, _xy, _v in list(clean_obs) + list(prior_obs):
+        needed.setdefault(cam, []).append(j)
+    for members, _w, cam, _c, _v in shared_obs:
+        needed.setdefault(cam, []).extend(int(j) for j in members)
+    needed = {cam: np.unique(np.asarray(js, int)) for cam, js in needed.items()}
+    table: dict = {}
+
+    def fill_table(xx, need_jac):
+        """Projection (and central-difference Jacobian) of every needed (particle, camera) in one batch per camera."""
+        table.clear()
+        for cam, js in needed.items():
+            pts = xx[js]
+            k = len(js)
+            if need_jac:
+                steps = np.zeros((7, 3))
+                for ax in range(3):
+                    steps[1 + 2 * ax, ax] = step_mm
+                    steps[2 + 2 * ax, ax] = -step_mm
+                allp = (pts[None, :, :] + steps[:, None, :]).reshape(-1, 3)
+                px = project_pixels(allp, cals[cam], cpar).reshape(7, k, 2)
+                jac = np.stack([(px[1 + 2 * ax] - px[2 + 2 * ax]) / (2 * step_mm) for ax in range(3)], axis=2)
+                for i, j in enumerate(js):
+                    table[(int(j), cam)] = (px[0, i], jac[i])
+            else:
+                px = project_pixels(pts, cals[cam], cpar)
+                for i, j in enumerate(js):
+                    table[(int(j), cam)] = (px[i], None)
+
     def proj_and_jac(xx, j, cam):
-        base = project_pixels(xx[j][None], cals[cam], cpar)[0]
-        jac = np.zeros((2, 3))
-        for ax in range(3):
-            d = np.zeros(3)
-            d[ax] = step_mm
-            jac[:, ax] = (project_pixels((xx[j] + d)[None], cals[cam], cpar)[0]
-                          - project_pixels((xx[j] - d)[None], cals[cam], cpar)[0]) / (2 * step_mm)
-        return base, jac
+        return table[(int(j), cam)]
 
     def system(xx, need_jac=True):
+        fill_table(xx, need_jac)
         rows_j, rows_r, rows_w = [], [], []
         for j, cam, xy, var in list(clean_obs) + list(prior_obs):
             if need_jac:
@@ -277,7 +309,7 @@ def solve_cluster(
                 full[:, 3 * j: 3 * j + 3] = jac
                 rows_j.append(full)
             else:
-                base = project_pixels(xx[j][None], cals[cam], cpar)[0]
+                base = table[(int(j), cam)][0]
             rows_r.append(np.asarray(xy, float) - base)
             rows_w.append(np.full(2, 1.0 / var))
         for members, weights, cam, centre, var in shared_obs:
@@ -288,7 +320,7 @@ def solve_cluster(
                     base, jac = proj_and_jac(xx, j, cam)
                     full[:, 3 * j: 3 * j + 3] += wj * jac
                 else:
-                    base = project_pixels(xx[j][None], cals[cam], cpar)[0]
+                    base = table[(int(j), cam)][0]
                 pred += wj * base
             if need_jac:
                 rows_j.append(full)

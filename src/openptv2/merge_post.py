@@ -548,46 +548,46 @@ def estimate_signatures(
     det = blob >= 0
     share = shared_blobs(frame, blob)
     sig_d = _signatures(tid, det & (share == 1), sumg, start_quantile)
-    sig = np.full((n, n_cams), np.nan)
+    ut, first, inv = np.unique(tid, return_index=True, return_inverse=True)
+    n_t = len(ut)
+    s_t = np.full((n_t, n_cams), np.nan)                                # signature per track and camera
     for c in range(n_cams):
-        sig[:, c] = [sig_d.get((int(t), c), np.nan) for t in tid]
+        s_t[:, c] = [sig_d.get((int(t), c), np.nan) for t in ut]
     for _ in range(n_iter):
-        new = sig.copy()
+        new = s_t.copy()
         for c in range(n_cams):
             rows = np.flatnonzero(det[:, c])
+            if len(rows) == 0:
+                continue
             key = frame[rows].astype(np.int64) * 10_000_000 + blob[rows, c]
             order = np.argsort(key, kind="stable")
             rows, key = rows[order], key[order]
-            cuts = np.flatnonzero(np.r_[True, key[1:] != key[:-1], True])
-            ex_rows, ex_share = [], []
-            for a, b in zip(cuts[:-1], cuts[1:]):
-                mem = rows[a:b]
-                s_m = sig[mem, c]
-                if not np.all(np.isfinite(s_m)) or s_m.sum() <= 0:
-                    continue
-                g = sumg[mem[0], c]
-                ratio = g / s_m.sum()
-                if lo <= ratio <= hi:
-                    ex_rows.append(mem)
-                    ex_share.append(g * s_m / s_m.sum())
-            if not ex_rows:
+            starts = np.flatnonzero(np.r_[True, key[1:] != key[:-1]])
+            s_row = s_t[inv[rows], c]
+            s_sum = np.add.reduceat(s_row, starts)                       # NaN if any member is unknown
+            g = sumg[rows[starts], c].astype(float)
+            with np.errstate(invalid="ignore", divide="ignore"):
+                ratio = g / s_sum
+            ok_grp = np.isfinite(s_sum) & (s_sum > 0) & (ratio >= lo) & (ratio <= hi)
+            if not ok_grp.any():
                 continue
-            er = np.concatenate(ex_rows)
-            es = np.concatenate(ex_share)
-            t_er = tid[er]
-            o = np.argsort(t_er, kind="stable")
+            grp_of = np.repeat(np.arange(len(starts)), np.diff(np.r_[starts, len(rows)]))
+            keep = ok_grp[grp_of]
+            er = rows[keep]
+            es = g[grp_of[keep]] * s_row[keep] / s_sum[grp_of[keep]]
+            t_er = inv[er]
+            o = np.lexsort((es, t_er))                                   # by track, then value
             t_s, v_s = t_er[o], es[o]
-            tc = np.flatnonzero(np.r_[True, t_s[1:] != t_s[:-1], True])
-            med = {}
-            for a, b in zip(tc[:-1], tc[1:]):
-                if b - a >= min_obs:
-                    med[int(t_s[a])] = float(np.median(v_s[a:b]))
-            for t, m in med.items():
-                new[tid == t, c] = m
-        sig = new
+            tstart = np.flatnonzero(np.r_[True, t_s[1:] != t_s[:-1]])
+            cnt = np.diff(np.r_[tstart, len(t_s)])
+            lo_i = tstart + (cnt - 1) // 2
+            hi_i = tstart + cnt // 2
+            med = 0.5 * (v_s[lo_i] + v_s[hi_i])
+            good = cnt >= min_obs
+            new[t_s[tstart][good], c] = med[good]
+        s_t = new
+    sig = s_t[inv]
     if cross_camera and n_cams > 1:
-        ut, first = np.unique(tid, return_index=True)
-        s_t = sig[first]                                               # (T, C) per track
         full = np.all(np.isfinite(s_t) & (s_t > 0), axis=1)
         if full.sum() >= 10:
             logs = np.log(s_t[full])
@@ -601,6 +601,5 @@ def estimate_signatures(
                     pred = gain[c] * float(np.median(others))
                     if not np.isfinite(s_t[k, c]) or s_t[k, c] > cross_ratio * pred:
                         s_t[k, c] = pred
-            inv = np.searchsorted(ut, tid)
             sig = s_t[inv]
     return sig

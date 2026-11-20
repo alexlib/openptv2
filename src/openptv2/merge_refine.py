@@ -159,7 +159,7 @@ def refine_merged(
                 x0 = np.asarray(point_positions(flat, cpar, cals, vpar, method="lsq")[0], float)
             else:
                 x0 = x_start[rr]
-            x[rr], cv = triangulate_weighted(obs_px[rr], obs_var[rr], cpar, cals, x0, n_iter=3, cam_index=cam_ix,
+            x[rr], cv = triangulate_weighted(obs_px[rr], obs_var[rr], cpar, cals, x0, n_iter=3, cam_index=cam_ix, frozen_jacobian=True,
                                              return_cov=True)
             pos_var[rr] = np.trace(cv, axis1=1, axis2=2) / 3.0
         return x
