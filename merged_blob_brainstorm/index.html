@@ -2465,7 +2465,10 @@ Next: apply per-point noise inflation in tracker (merged flag) before re-enablin
 predicted track; split via merged_split. First vErr gain achieved.</p>
 <p>Full outer loop (feat/blob-ownership-loop, "blob_loop" plugin): tested on L1_d1 (n=12 and n=200).
 Results much worse than two_phase (n=200: vErr 0.42 vs 0.16, ghost 0.07 vs 0.04, 80s vs 4s).
-Not recommended as-is; needs tuning before it can replace two_phase. The predictor-based split_merged
+Not recommended as-is; needs tuning before it can replace two_phase. The predictor-based split_merged</p>
+<p>Unified tracker (feat/unified+merged-blob merge): L1_d1 vErr 0.266 vs two_phase 0.160, 43s vs 4s.
+Pre-existing test failures (7+3) confirmed not caused by merge. Unified tracker not yet better
+than two_phase; merged-blob ideas integrated but not improving end-to-end yet.
 flag (gated, default off) is the more promising incremental step.
 predicted track; split via merged_split. First vErr gain achieved. Next: wire into plugin do_tracking.
 not, because adding hidden partners at truth positions without correcting the kept particles' shifted
