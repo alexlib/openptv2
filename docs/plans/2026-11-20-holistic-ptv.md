@@ -470,10 +470,12 @@ dense data, then the `holistic` plugin.
 | H2 refinement on real tracks | done; membership inference 98 % correct; alone it helps on synthetic blob tables, hurts on real image blobs |
 | H3 births, relink, rounds | done; best result (L2: -15 % velocity error, -37 % common set, +5.4 yield, +11 long completeness) |
 | H4 dense / cluster hypotheses | started: joint cluster solve (diverges), single-frame mass matcher (negative) |
-| H5 real data | wp2 run with an older loop: longer tracks, better cross-camera consistency; rerun pending |
-| speed | not started (python, ~0.6 s/frame per round) |
+| H5 real data | done: wp2 300 frames with the final defaults (mean length 30.4, jump 0.46 %); lv-multi wp4/wp5 |
+| speed | first pass done (116 s per 200 frames); see `2026-11-21-holistic-next-phase.md` |
 
-## Next steps (in order)
+> Current status and the next phase: `docs/plans/2026-11-21-holistic-next-phase.md`.
+
+## Next steps (in order, historical)
 1. **Fix the joint cluster solve**: damped steps with a cap, a weak prior on the start positions, accept a cluster only
    if its cost drops and positions stay near the start; compare with the per-member split under true association.
 2. **Rerun real wp2 with the current loop** (joint signatures, safe births, output = last relink); truth-free scores.
