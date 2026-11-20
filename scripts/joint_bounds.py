@@ -425,7 +425,7 @@ def b3(case: str, n_frames: int = 12, order: int = 3) -> dict:
 
 def h1(case: str, rounds: int = 3, window: int = 9, order: int = 2, var_c: float = 0.01,
        write: bool = False, trust: bool = True, gate: float = 4.0, trust_support: float = 3.0,
-       prior: bool = True, prior_scale: float = 1.0) -> dict:
+       prior: bool = True, prior_scale: float = 1.0, mode: str = "effective") -> dict:
     """H1 of docs/plans/2026-11-20-holistic-ptv.md: the blob model on PERFECTLY ASSOCIATED data.
 
     Every truth particle is a track with known blob membership (truth). The refinement itself is
@@ -461,7 +461,7 @@ def h1(case: str, rounds: int = 3, window: int = 9, order: int = 2, var_c: float
             sumg[sel[d], c] = rows[c][blob[sel[d], c], 6]
     res = refine_merged(fr, pid, blob, cx, sumg, cpar, cals, vpar, rounds=rounds, window=window, order=order,
                         var_c=var_c, trust=trust, trust_support=trust_support, gate=gate, prior=prior,
-                        prior_scale=prior_scale)
+                        prior_scale=prior_scale, mode=mode)
     ev = det.sum(1) >= 3                                       # the population the output is judged on
     nm = shared.sum(1)
 
@@ -524,7 +524,7 @@ def h1(case: str, rounds: int = 3, window: int = 9, order: int = 2, var_c: float
 
 def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int = 1, iters: int = 0, tag: str = "",
        fill: bool = False, fill_radius: float = 1.5, fill_gap: int = 3, fill_growth: float = 0.0,
-       fill_hermite: bool = False, mass: tuple | None = None, **opts) -> dict:
+       fill_hermite: bool = False, mass: tuple | None = None, joint_sig: bool = False, **opts) -> dict:
     """H2: merge-aware refinement of a REAL tracker run (no truth in the algorithm).
 
     Runs ``tracker`` on the case (keeping its store), finds shared blobs from the tracks
@@ -558,6 +558,10 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
     def refine_from(a):
         blob, centre, sumg, n_att = extend_membership(a["frame"], a["pos"], a["blob"], a["centre"], a["sumg"],
                                                       a["blobs"], cpar, cals, radius=radius)
+        if joint_sig:
+            from openptv2.merge_post import estimate_signatures
+
+            opts["signatures"] = estimate_signatures(a["tid"], a["frame"], blob, sumg)
         res = refine_merged(a["frame"], a["tid"], blob, centre, sumg, cpar, cals, vpar, **opts)
         if fill:
             from openptv2.reconnect import reconnect_pieces
@@ -574,6 +578,8 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
                 blob, centre, sumg, n2 = extend_membership(a["frame"], a["pos"], blob, centre, sumg, a["blobs"],
                                                            cpar, cals, radius=radius)
                 n_att += n2
+                if joint_sig:
+                    opts["signatures"] = estimate_signatures(a["tid"], a["frame"], blob, sumg)
                 res = refine_merged(a["frame"], a["tid"], blob, centre, sumg, cpar, cals, vpar, **opts)
         return res, blob, n_att, a
 
@@ -631,7 +637,7 @@ def h2(case: str, tracker: str = "two_phase", radius: float = 2.0, min_len: int 
 
 def h3(case: str, tracker: str = "two_phase", tracker2: str | None = None, radius: float = 2.0,
        min_resid: float = 0.5, need_residual: bool = True, use_fallback: bool = False, suffix: str = "",
-       pairs: bool = False, **h2opts) -> dict:
+       pairs: bool = False, joint_sig: bool = False, partner_min_len: int = 0, **h2opts) -> dict:
     """H3 births: bring the particles hidden in other particles' blobs into the point cloud.
 
     1. ``tracker`` on the case, shared blobs from the tracks, refinement (as H2);
@@ -665,8 +671,15 @@ def h3(case: str, tracker: str = "two_phase", tracker2: str | None = None, radiu
     a = arrays_from_store(st, "ptv_is", 1, n_out, n_cams)
     blob, centre, sumg, _n = extend_membership(a["frame"], a["pos"], a["blob"], a["centre"], a["sumg"],
                                                a["blobs"], cpar, cals, radius=radius)
-    res = refine_merged(a["frame"], a["tid"], blob, centre, sumg, cpar, cals, vpar)
-    sig = row_signatures(a["tid"], a["frame"], blob, sumg)
+    if joint_sig:
+        from openptv2.merge_post import estimate_signatures
+
+        sig = estimate_signatures(a["tid"], a["frame"], blob, sumg)
+        res = refine_merged(a["frame"], a["tid"], blob, centre, sumg, cpar, cals, vpar, signatures=sig,
+                            partner_min_len=partner_min_len)
+    else:
+        res = refine_merged(a["frame"], a["tid"], blob, centre, sumg, cpar, cals, vpar)
+        sig = row_signatures(a["tid"], a["frame"], blob, sumg)
     counts = {}
     for f in range(1, n_out + 1):
         for c in range(n_cams):
@@ -722,8 +735,85 @@ def h3(case: str, tracker: str = "two_phase", tracker2: str | None = None, radiu
     stats = {"residual_targets": n_res, "births": int(len(births["frame"])), "residual_births": n_resid_births,
              "births_per_frame": float(len(births["frame"]) / n_out),
              "births_with_2plus_residual_views": int((births["n_resid"] >= 2).sum())}
+    if joint_sig:
+        h2opts = {**h2opts, "joint_sig": True, "partner_min_len": partner_min_len}
     stats["h2_on_augmented"] = h2(run_case, tracker2 or tracker, radius=radius, **h2opts)
     return stats
+
+
+def mass_select(ids: np.ndarray, corr: np.ndarray, capacity: list, max_shared: int = 1) -> np.ndarray:
+    """Greedy selection from the candidate pool with blob capacities: 4-camera combinations first, then by score;
+    a combination is taken if each of its blobs has capacity left and it shares at most ``max_shared`` blobs with
+    every combination taken so far. Returns the indices of the taken rows."""
+    n_cams = ids.shape[1]
+    ncam = (ids >= 0).sum(1)
+    order = np.lexsort((-corr, -ncam))
+    left = [np.asarray(c, int).copy() for c in capacity]
+    users: dict = {}
+    taken = []
+    for r in order:
+        row = ids[r]
+        cams = np.flatnonzero(row >= 0)
+        if any(left[c][row[c]] <= 0 for c in cams):
+            continue
+        cnt: dict = {}
+        ok = True
+        for c in cams:
+            for t in users.get((c, int(row[c])), []):
+                cnt[t] = cnt.get(t, 0) + 1
+                if cnt[t] > max_shared:
+                    ok = False
+                    break
+            if not ok:
+                break
+        if not ok:
+            continue
+        for c in cams:
+            left[c][row[c]] -= 1
+            users.setdefault((c, int(row[c])), []).append(len(taken))
+        taken.append(r)
+    return np.array(taken, dtype=int)
+
+
+def mass_match_inputs(case: str, cap_max: int = 3, min_cams: int = 3) -> dict:
+    """Dense-aware matcher prototype: case ``<case>_MM`` whose cloud comes from the full candidate pool selected with
+    blob capacities from brightness (grey sum / typical single grey sum of the camera's smaller blobs)."""
+    import shutil
+
+    from openptv2.storage import RunStore
+
+    case_dir, info, exp, store, tr = case_setup(case, require_blob=False)
+    cpar, cals, vpar = exp.cpar, list(exp.cals), exp.vpar
+    n_cams, n_out = len(cals), info["n_out"]
+    d = sb.WORK / "cases" / f"{case}_MM"
+    if d.exists():
+        shutil.rmtree(d)
+    shutil.copytree(case_dir, d)
+    out = RunStore(d / "res" / "run.zarr", mode="a")
+    n_pts = n_greedy = 0
+    caps = []
+    for f in range(1, n_out + 1):
+        rows = raw_targets(store, f, n_cams)
+        capacity = []
+        for r in rows:
+            npx, g = r[:, 3], r[:, 6]
+            single = g[npx <= np.median(npx)] if len(npx) else g
+            m1 = float(np.median(single)) if len(single) else 1.0
+            capacity.append(np.clip(np.rint(g / max(m1, 1.0)), 1, cap_max).astype(int))
+        caps.append(np.concatenate(capacity))
+        ids, corr, _ = pool_frame(rows, cpar, cals, vpar)
+        keep = (ids >= 0).sum(1) >= min_cams
+        ids, corr = ids[keep], corr[keep]
+        sel = mass_select(ids, corr, capacity)
+        ids_s = ids[sel]
+        pos = triangulate(store, f, ids_s, cpar, cals, vpar) if len(sel) else np.empty((0, 3))
+        out.write_correspondences(f, pos, ids_s)
+        n_pts += len(sel)
+        n_greedy += len(store.read_correspondences(f)[0])
+    sb.stamp_tnr(d)
+    c = np.concatenate(caps)
+    return {"points_per_frame": n_pts / n_out, "greedy_points_per_frame": n_greedy / n_out,
+            "capacity_share": {str(k): float(np.mean(c == k)) for k in (1, 2, 3)}}
 
 
 def shared_blobs_count(frame, blob):
@@ -859,6 +949,7 @@ def main(argv=None) -> None:
     q6.add_argument("--gate", type=float, default=4.0)
     q6.add_argument("--support", type=float, default=3.0)
     q6.add_argument("--no-prior", action="store_true")
+    q6.add_argument("--mode", default="effective")
     q6.add_argument("--prior-scale", type=float, default=1.0)
     q6.add_argument("--tag", default="")
     q7 = sub.add_parser("h2")
@@ -874,6 +965,8 @@ def main(argv=None) -> None:
     q7.add_argument("--hermite", action="store_true")
     q7.add_argument("--mass", type=float, nargs=2, default=None)
     q7.add_argument("--tag", default="")
+    q7.add_argument("--joint-sig", action="store_true")
+    q7.add_argument("--partner-min-len", type=int, default=0)
     q8 = sub.add_parser("h3")
     q8.add_argument("--case", required=True)
     q8.add_argument("--tracker", default="two_phase")
@@ -883,6 +976,11 @@ def main(argv=None) -> None:
     q8.add_argument("--fallback", action="store_true")
     q8.add_argument("--suffix", default="")
     q8.add_argument("--pairs", action="store_true")
+    q8.add_argument("--joint-sig", action="store_true")
+    q8.add_argument("--partner-min-len", type=int, default=0)
+    q9 = sub.add_parser("mm")
+    q9.add_argument("--case", required=True)
+    q9.add_argument("--cap-max", type=int, default=3)
     q5 = sub.add_parser("b3")
     q5.add_argument("--case", required=True)
     q5.add_argument("--order", type=int, default=3)
@@ -903,9 +1001,15 @@ def main(argv=None) -> None:
         save("M2_inputs", f"{a.case}_sigma{a.sigma:g}", r)
         print(json.dumps(r))
         return
+    if a.cmd == "mm":
+        r = mass_match_inputs(a.case, a.cap_max)
+        save("MM_inputs", a.case, r)
+        print(json.dumps(r))
+        return
     if a.cmd == "h3":
         r = h3(a.case, a.tracker, a.tracker2, min_resid=a.min_resid, need_residual=not a.any_births,
                use_fallback=a.fallback, suffix=a.suffix, pairs=a.pairs,
+               joint_sig=a.joint_sig, partner_min_len=a.partner_min_len,
                fill=True, fill_gap=12, fill_hermite=True, fill_growth=0.25, mass=(0.7, 1.4), tag="_long")
         save("H3", f"{a.case}|{a.tracker}|{a.tracker2}|{a.suffix}", r)
         print(json.dumps({k: v for k, v in r.items() if k != "h2_on_augmented"}, indent=1))
@@ -913,12 +1017,14 @@ def main(argv=None) -> None:
     if a.cmd == "h2":
         r = h2(a.case, a.tracker, a.radius, iters=a.iters, tag=a.tag, fill=a.fill, fill_radius=a.fill_radius,
                fill_gap=a.fill_gap, fill_growth=a.growth, fill_hermite=a.hermite,
-               mass=tuple(a.mass) if a.mass else None, rounds=a.rounds)
+               mass=tuple(a.mass) if a.mass else None, rounds=a.rounds, joint_sig=a.joint_sig,
+               partner_min_len=a.partner_min_len)
         save("H2", f"{a.case}|{a.tracker}", r)
         print(json.dumps(r, indent=1))
         return
     if a.cmd == "h1":
-        r = h1(a.case, a.rounds, a.window, a.order, a.var_c, a.write, not a.no_trust, a.gate, a.support, not a.no_prior, a.prior_scale)
+        r = h1(a.case, a.rounds, a.window, a.order, a.var_c, a.write, not a.no_trust, a.gate, a.support, not a.no_prior, a.prior_scale,
+               a.mode)
         save("H1" + a.tag, a.case, r)
         print(json.dumps(r, indent=1))
         return

@@ -241,3 +241,39 @@ def test_covariance_is_larger_with_fewer_or_noisier_cameras(rig):
     p1[:3, 1:] = np.nan
     _, c1 = triangulate_weighted(p1, var, cpar, cals, pts, return_cov=True)
     assert np.all(np.isnan(c1[:3]))
+
+
+def test_joint_cluster_solve_recovers_two_particles_sharing_a_blob(rig):
+    from openptv2.blob_model import solve_cluster
+
+    cpar, cals, pts, px = rig
+    a, b = pts[0], pts[0] + np.array([0.15, 0.05, 0.0])
+    pa = np.stack([project_pixels(a[None], c, cpar)[0] for c in cals])
+    pb = np.stack([project_pixels(b[None], c, cpar)[0] for c in cals])
+    wa, wb = 2 / 3, 1 / 3                                     # a is twice as bright
+    clean = [(0, 1, pa[1], 0.01), (0, 2, pa[2], 0.01), (1, 2, pb[2], 0.01), (1, 3, pb[3], 0.01)]
+    shared = [((0, 1), (wa, wb), 0, wa * pa[0] + wb * pb[0], 0.01),
+              ((0, 1), (wa, wb), 3, None, 0.01)]
+    shared = [shared[0]]                                       # merged in camera 0 only
+    clean.append((0, 3, pa[3], 0.01))
+    clean.append((1, 1, pb[1], 0.01))
+    x0 = np.vstack([a, b]) + np.random.default_rng(0).normal(0, 0.05, (2, 3))
+    x = solve_cluster(x0, clean, shared, [], cpar, cals)
+    assert np.linalg.norm(x[0] - a) < 1e-3 and np.linalg.norm(x[1] - b) < 1e-3
+
+
+def test_joint_cluster_solve_places_a_particle_seen_only_inside_shared_blobs(rig):
+    from openptv2.blob_model import solve_cluster
+
+    cpar, cals, pts, px = rig
+    a, b = pts[1], pts[1] + np.array([0.1, -0.08, 0.05])
+    pa = np.stack([project_pixels(a[None], c, cpar)[0] for c in cals])
+    pb = np.stack([project_pixels(b[None], c, cpar)[0] for c in cals])
+    w = (0.5, 0.5)
+    clean = [(0, c, pa[c], 0.01) for c in range(4)]           # a is alone in a blob in every camera ...
+    clean = clean[:2]                                          # ... only in cameras 0 and 1
+    shared = [((0, 1), w, c, 0.5 * pa[c] + 0.5 * pb[c], 0.01) for c in (2, 3)]
+    clean += [(1, 0, pb[0], 0.01)]                             # b alone only in camera 0
+    x0 = np.vstack([a, b]) + 0.05
+    x = solve_cluster(x0, clean, shared, [], cpar, cals)
+    assert np.linalg.norm(x[1] - b) < 1e-3                     # b is placed from one clean view + two shared blobs

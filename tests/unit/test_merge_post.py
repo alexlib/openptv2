@@ -266,3 +266,64 @@ def test_stamp_tnr_marks_the_first_user_of_each_blob(tmp_path):
     t1 = np.asarray(st.root["targets/cam_1/frame_000001"])[:, 7]
     assert t0.tolist() == [0, -1, -1]
     assert t1.tolist() == [-1, 2, 0]
+
+
+def test_signature_estimate_resists_a_hidden_partner_in_most_frames():
+    from openptv2.merge_post import estimate_signatures, row_signatures
+
+    # one track, 20 frames, camera 0: alone (grey sum ~100) in 8 frames, an untracked partner hides in its blob in 12
+    # frames (grey sum ~170). Nothing else is tracked, so every frame looks "alone" to the simple estimate.
+    rng = np.random.default_rng(0)
+    n = 20
+    hidden = np.zeros(n, bool)
+    hidden[4:16] = True
+    sumg = np.where(hidden, 170.0, 100.0) + rng.normal(0, 3, n)
+    frame = np.arange(n)
+    tid = np.zeros(n, int)
+    blob = np.zeros((n, 1), int)
+    simple = row_signatures(tid, frame, blob, sumg[:, None])
+    joint = estimate_signatures(tid, frame, blob, sumg[:, None])
+    assert simple[0, 0] > 150                               # the median is taken over mostly merged frames
+    assert abs(joint[0, 0] - 100) < 8                         # the joint estimate finds the particle's own brightness
+
+
+def test_signature_estimate_shares_an_explained_blob_between_tracked_members():
+    from openptv2.merge_post import estimate_signatures
+
+    # tracks A (100) and B (50) alone for 6 frames each, then share one blob (150) for 6 frames
+    rows = []
+    for f in range(6):
+        rows += [(f, 0, f * 2, 100.0), (f, 1, f * 2 + 1, 50.0)]
+    for f in range(6, 12):
+        rows += [(f, 0, 999, 150.0), (f, 1, 999, 150.0)]
+    frame = np.array([r[0] for r in rows])
+    tid = np.array([r[1] for r in rows])
+    blob = np.array([[r[2]] for r in rows])
+    sumg = np.array([[r[3]] for r in rows])
+    sig = estimate_signatures(tid, frame, blob, sumg)
+    assert sig[tid == 0, 0][0] == pytest.approx(100.0, rel=0.02)
+    assert sig[tid == 1, 0][0] == pytest.approx(50.0, rel=0.02)
+
+
+def test_cross_camera_signature_fixes_a_camera_where_the_partner_never_leaves():
+    from openptv2.merge_post import estimate_signatures
+
+    # 30 tracks seen in two cameras with gains 1.0 and 0.5; track 0 has a hidden partner in camera 1 in EVERY frame
+    rng = np.random.default_rng(1)
+    rows = []
+    for t in range(30):
+        b = rng.uniform(80, 200)
+        for f in range(8):
+            g0 = b * 1.0 * np.exp(rng.normal(0, 0.03))
+            g1 = b * 0.5 * np.exp(rng.normal(0, 0.03)) * (1.8 if t == 0 else 1.0)
+            rows.append((t, f, t * 100 + f, g0, g1))
+    tid = np.array([r[0] for r in rows])
+    frame = np.array([r[1] for r in rows])
+    blob = np.array([[r[2], r[2]] for r in rows])
+    sumg = np.array([[r[3], r[4]] for r in rows])
+    plain = estimate_signatures(tid, frame, blob, sumg, cross_camera=False)
+    cross = estimate_signatures(tid, frame, blob, sumg, cross_camera=True)
+    true1 = sumg[tid == 0, 0].mean() * 0.5
+    assert plain[tid == 0, 1][0] > 1.6 * true1                      # camera 1 alone cannot see it
+    assert abs(cross[tid == 0, 1][0] / true1 - 1) < 0.1             # the other camera can
+    assert np.allclose(cross[tid == 5], plain[tid == 5], rtol=0.05)  # clean tracks are left as they are

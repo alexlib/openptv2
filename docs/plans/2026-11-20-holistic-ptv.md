@@ -381,3 +381,39 @@ the particles and signatures are contaminated in most frames. The matcher's clou
 the ideal-centre ceiling keeps 85 %. Dense data needs the mass accounting at the *matching* stage: a blob may serve as
 many points as its brightness says (capacity-aware matching from the full candidate pool), explaining brightness layer
 by layer from the most certain particles (a non-exclusive "mass peeling"), with cluster-level hypotheses in time (H4).
+
+## Signatures, safe births, joint split, dense matcher (2026-11-20, third part)
+
+**Signature estimation** (`merge_post.estimate_signatures`, tests): start from a low quantile, then alternate
+(observations whose blob grey sum is 0.75-1.3x the summed signatures of its tracked members are *explained*; each
+member's share of an explained blob gives its signature) and finally a **cross-camera** step (brightness per camera =
+camera gain x particle brightness; a camera whose signature is missing or > 1.35x what the other cameras predict takes
+the cross-camera value, since a partner may hide in that camera's blob in every frame). Births recall
+(`scripts/joint_birth_recall.py`, L1 default): good residual targets 13.6 % (median) -> 15.9 % (joint only) -> **32.1 %**
+(joint + cross-camera) of hidden views; unknown signatures 10.4 % -> 0 %; missed points with >= 3 usable views
+26.7 % -> 46.8 %.
+
+**Safe births as members** (`refine_merged(partner_min_len=10)`): a member whose track has < 10 rows does not lend its
+prediction to its partners (counts as unknown for them), so young and wrong births cannot corrupt established
+particles. `refine_merged(signatures=...)` takes the joint signatures.
+
+**Image-pipeline case (L2), two rounds, joint signatures + safe births** (`joint_bounds.py h3 --joint-sig
+--partner-min-len 10`): velocity error **0.1195** (`two_phase` 0.1400, -15 %), common set **0.0776** (0.1223, -37 %),
+yield **0.745** (0.691), long completeness **0.653** (0.544), pieces per long track 1.57 (2.03), ghost 3.5 % (3.7 %).
+Before this change the same loop gave 0.1298 / 0.0938 / 0.726 / 0.614. A final refinement after the last relink still
+hurts the overall error (0.2273): the pipeline ends at the relink.
+
+**Joint cluster split** (from the idea "membership + mixture-centroid split + flag"; `blob_model.solve_cluster`,
+`refine_merged(mode="joint")`, tests): every cluster of points sharing blobs in a frame is solved jointly by
+Gauss-Newton: clean blobs give each member's own equations, a shared blob one equation (centre = brightness-weighted
+mean of the members' projections), trusted path predictions pseudo-observations; no member relies on a partner's
+prediction. Python, slow (one small solve per cluster). Comparison with the per-member split under true association:
+see the next entry.
+
+**Dense-aware matcher, first prototype** (`joint_bounds.py mm`, `mass_select`, tests): candidate pool selected greedily
+with blob capacities from brightness (grey sum / typical single grey sum of the camera's smaller blobs, <= 3) and at
+most one shared blob between two taken points. x4: points per frame 2,597 -> 4,428, `two_phase` yield 0.227 -> 0.242,
+ghost 6.8 % -> **13.8 %**, common set 0.390 -> 0.357; default rate: yield 0.684 -> 0.691, ghost 3.9 % -> 5.3 %, common
+set unchanged. **Negative**: brightness capacity within one frame mostly creates ghosts. Capacity must be granted only
+where tracks back it (the births mechanism does that), i.e. the dense matcher has to be the births loop with
+cluster-level hypotheses in time, not a single-frame matcher.

@@ -17,6 +17,16 @@ Loop (the blob model of ``docs/plans/2026-11-20-holistic-ptv.md``, H1):
 4. positions again by weighted Gauss-Newton, with the trusted path prediction as pseudo-observations (prior).
 Rounds repeat 2-3 times.
 
+``signatures`` (N, C), if given, replaces the simple per-track signature (see
+:func:`openptv2.merge_post.estimate_signatures`). ``partner_min_len``: a member whose track has fewer rows does not
+lend its prediction to its partners (it counts as unknown for them): young tracks, most of them new births and some
+of them wrong, cannot corrupt the effective observations of established particles.
+
+``mode="joint"``: instead of per-member effective observations, every cluster of points that share blobs in a frame
+is solved jointly (:func:`openptv2.blob_model.solve_cluster`): clean blobs give each member's own equations, a shared
+blob one equation (centre = brightness-weighted mean of the members' projections), trusted path predictions
+pseudo-observations. No member relies on a partner's prediction.
+
 Hidden partners: a blob used by one point only, whose grey sum is at least ``hidden_mass`` times that point's
 typical grey sum (signature), holds another particle that is not among the points (the matcher did not form it).
 Its centre is shifted by that particle, so it gets a phantom member of unknown position and the remaining
@@ -98,6 +108,9 @@ def refine_merged(
     prior_scale: float = 1.0,
     var_unknown: float = 1.0,
     hidden_mass: float | None = 1.4,
+    signatures: np.ndarray | None = None,
+    partner_min_len: int = 0,
+    mode: str = "effective",
 ) -> RefineResult:
     from openptv2.orientation import point_positions
 
@@ -116,6 +129,12 @@ def refine_merged(
     rows_of = {f: np.flatnonzero(frame == f) for f in frames}
     est_rows_of = {f: np.flatnonzero(fr_e == f) for f in frames}
     sig = _signatures(pid, clean, sumg)
+    track_len = np.bincount(np.unique(pid, return_inverse=True)[1])[np.unique(pid, return_inverse=True)[1]]
+
+    def sig_of(rows, c):
+        if signatures is not None:
+            return np.asarray(signatures[rows, c], float)
+        return np.array([sig.get((int(pid[m]), c), np.nan) for m in rows])
     raw = centre[est]
     raw_var = np.where(np.isnan(raw[:, :, 0]), np.nan, var_c)
 
@@ -174,7 +193,7 @@ def refine_merged(
                         if hidden_mass is None:
                             continue
                         r0 = idx[a]
-                        s_own = sig.get((int(pid[r0]), c), np.nan)
+                        s_own = float(sig_of(np.array([r0]), c)[0])
                         g = sumg[r0, c]
                         if not (np.isfinite(s_own) and s_own > 0 and np.isfinite(g) and g >= hidden_mass * s_own):
                             continue
@@ -191,10 +210,25 @@ def refine_merged(
                     pm = pidx[mem]
                     pr = np.where((pm >= 0)[:, None], pred_px[np.maximum(pm, 0), c], np.nan)
                     unknown = ~np.isfinite(pr[:, 0])
+                    young = track_len[mem] < partner_min_len
                     pr[unknown] = ctr
                     vp = np.where(unknown, var_unknown, var_p)
-                    bright = np.array([sig.get((int(pid[m]), c), np.nan) for m in mem])
-                    s_eff, v_eff = split_blob_effective(ctr, pr, bright, var_c, vp)
+                    bright = sig_of(mem, c)
+                    if young.any():
+                        # a young member's own observation is computed normally, but for its partners it counts as
+                        # unknown: one split per member, with the others' predictions as trusted or not
+                        s_eff = np.zeros((len(mem), 2))
+                        v_eff = np.zeros(len(mem))
+                        for j in range(len(mem)):
+                            pr_j, vp_j = pr.copy(), vp.copy()
+                            others = np.arange(len(mem)) != j
+                            mask = others & young
+                            pr_j[mask] = ctr
+                            vp_j[mask] = var_unknown
+                            s_j, v_j = split_blob_effective(ctr, pr_j, bright, var_c, vp_j)
+                            s_eff[j], v_eff[j] = s_j[j], v_j[j]
+                    else:
+                        s_eff, v_eff = split_blob_effective(ctr, pr, bright, var_c, vp)
                     for j in range(len(mem)):
                         if pm[j] < 0:
                             continue
@@ -211,6 +245,9 @@ def refine_merged(
             x = fit(obs_px, obs_var, x_start=x, prior_px=pri, prior_var=prior_scale * var_p)
         else:
             x = fit(obs_px, obs_var, x_start=x)
+        if mode == "joint":
+            x = _joint_clusters(x, frame, est, pidx, blob, det, share, centre, obs_var, pred_px, good, var_c,
+                                prior_scale * var_p if prior else None, sig_of, cpar, cals, rows_of)
         res.x_rounds.append(x.copy())
         res.obs_px, res.obs_var, res.pred_px = obs_px, obs_var, pred_px
         res.info.append({"round": rnd, "var_p_px2": var_p, "trusted_share": float(np.mean(good)),
@@ -229,3 +266,63 @@ def _expand(a: np.ndarray, rows: np.ndarray, n: int) -> np.ndarray:
     out = np.full((n,) + a.shape[1:], np.nan)
     out[rows] = a
     return out
+
+
+def _joint_clusters(x, frame, est, pidx, blob, det, share, centre, obs_var, pred_px, good, var_c, prior_var, sig_of,
+                    cpar, cals, rows_of):
+    """Replace the positions of every cluster of estimable rows that share blobs by a joint solve."""
+    from openptv2.blob_model import brightness_shares, solve_cluster
+
+    x = x.copy()
+    n_cams = blob.shape[1]
+    for f, sel in rows_of.items():
+        rows = sel[pidx[sel] >= 0]
+        if len(rows) == 0:
+            continue
+        parent = {int(r): int(r) for r in rows}
+
+        def find(a):
+            while parent[a] != a:
+                parent[a] = parent[parent[a]]
+                a = parent[a]
+            return a
+
+        groups: dict = {}
+        for c in range(n_cams):
+            for r in rows:
+                if det[r, c] and share[r, c] >= 2:
+                    groups.setdefault((c, int(blob[r, c])), []).append(int(r))
+        for mem in groups.values():
+            for r in mem[1:]:
+                ra, rb = find(mem[0]), find(r)
+                if ra != rb:
+                    parent[rb] = ra
+        clusters: dict = {}
+        for r in rows:
+            clusters.setdefault(find(int(r)), []).append(int(r))
+        for mem in clusters.values():
+            if len(mem) < 2:
+                continue
+            loc = {r: k for k, r in enumerate(mem)}
+            clean_obs, prior_obs, shared_obs = [], [], []
+            for r in mem:
+                k = loc[r]
+                e = pidx[r]
+                for c in range(n_cams):
+                    if det[r, c] and share[r, c] == 1 and np.isfinite(obs_var[e, c]):
+                        clean_obs.append((k, c, centre[r, c], float(obs_var[e, c])))
+                    if prior_var is not None and good[e] and np.isfinite(pred_px[e, c, 0]):
+                        prior_obs.append((k, c, pred_px[e, c], float(prior_var)))
+            for (c, b), gm in groups.items():
+                if gm[0] not in loc:
+                    continue
+                allm = [r for r in sel if det[r, c] and blob[r, c] == b]
+                if any(r not in loc for r in allm):
+                    continue                      # a member outside the cluster (no 3D unknown): skip this equation
+                w = brightness_shares(sig_of(np.array(allm), c))
+                shared_obs.append((tuple(loc[r] for r in allm), tuple(w), c, centre[allm[0], c], var_c))
+            idx = np.array([pidx[r] for r in mem])
+            if not np.all(np.isfinite(x[idx])):
+                continue
+            x[idx] = solve_cluster(x[idx], clean_obs, shared_obs, prior_obs, cpar, cals)
+    return x

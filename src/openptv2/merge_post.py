@@ -515,3 +515,92 @@ def stamp_tnr(store: Any, frames, n_cams: int) -> None:
             for r in used[::-1]:                         # reversed: the first user wins
                 t[int(col[r]), 7] = r
             store.root[key] = t
+
+
+def estimate_signatures(
+    tid: np.ndarray,
+    frame: np.ndarray,
+    blob: np.ndarray,
+    sumg: np.ndarray,
+    n_iter: int = 3,
+    start_quantile: float = 0.2,
+    lo: float = 0.75,
+    hi: float = 1.3,
+    min_obs: int = 2,
+    cross_camera: bool = True,
+    cross_ratio: float = 1.35,
+) -> np.ndarray:
+    """Typical grey sum of every track in every camera, estimated jointly with how much each blob holds.
+
+    A track's frames where no other *tracked* point uses its blob are not all clean: an untracked particle may hide
+    in the blob and inflate it. Start from a low quantile of the track's grey sums; then repeat: an observation is
+    *explained* when its blob's grey sum is ``lo``..``hi`` times the sum of the signatures of the tracked points in it;
+    each member's share of an explained blob is ``G * S_m / sum S``; a track's signature is the median of its explained
+    shares (kept if it has at least ``min_obs`` of them).
+    With ``cross_camera``: a particle's brightness per camera is about a camera gain times its own brightness, so
+    where a camera's signature is missing, or more than ``cross_ratio`` times what the particle's other cameras predict
+    (a partner hid in that camera's blob in all its frames), the cross-camera value replaces it.
+    Returns ``(N, C)`` per row, NaN if unknown.
+    """
+    from openptv2.merge_refine import _signatures, shared_blobs
+
+    n, n_cams = blob.shape
+    det = blob >= 0
+    share = shared_blobs(frame, blob)
+    sig_d = _signatures(tid, det & (share == 1), sumg, start_quantile)
+    sig = np.full((n, n_cams), np.nan)
+    for c in range(n_cams):
+        sig[:, c] = [sig_d.get((int(t), c), np.nan) for t in tid]
+    for _ in range(n_iter):
+        new = sig.copy()
+        for c in range(n_cams):
+            rows = np.flatnonzero(det[:, c])
+            key = frame[rows].astype(np.int64) * 10_000_000 + blob[rows, c]
+            order = np.argsort(key, kind="stable")
+            rows, key = rows[order], key[order]
+            cuts = np.flatnonzero(np.r_[True, key[1:] != key[:-1], True])
+            ex_rows, ex_share = [], []
+            for a, b in zip(cuts[:-1], cuts[1:]):
+                mem = rows[a:b]
+                s_m = sig[mem, c]
+                if not np.all(np.isfinite(s_m)) or s_m.sum() <= 0:
+                    continue
+                g = sumg[mem[0], c]
+                ratio = g / s_m.sum()
+                if lo <= ratio <= hi:
+                    ex_rows.append(mem)
+                    ex_share.append(g * s_m / s_m.sum())
+            if not ex_rows:
+                continue
+            er = np.concatenate(ex_rows)
+            es = np.concatenate(ex_share)
+            t_er = tid[er]
+            o = np.argsort(t_er, kind="stable")
+            t_s, v_s = t_er[o], es[o]
+            tc = np.flatnonzero(np.r_[True, t_s[1:] != t_s[:-1], True])
+            med = {}
+            for a, b in zip(tc[:-1], tc[1:]):
+                if b - a >= min_obs:
+                    med[int(t_s[a])] = float(np.median(v_s[a:b]))
+            for t, m in med.items():
+                new[tid == t, c] = m
+        sig = new
+    if cross_camera and n_cams > 1:
+        ut, first = np.unique(tid, return_index=True)
+        s_t = sig[first]                                               # (T, C) per track
+        full = np.all(np.isfinite(s_t) & (s_t > 0), axis=1)
+        if full.sum() >= 10:
+            logs = np.log(s_t[full])
+            gain = np.exp(np.median(logs - logs.mean(1, keepdims=True), axis=0))   # relative camera gains
+            rel = s_t / gain[None, :]
+            for k in range(len(ut)):
+                for c in range(n_cams):
+                    others = [rel[k, o] for o in range(n_cams) if o != c and np.isfinite(rel[k, o]) and rel[k, o] > 0]
+                    if not others:
+                        continue
+                    pred = gain[c] * float(np.median(others))
+                    if not np.isfinite(s_t[k, c]) or s_t[k, c] > cross_ratio * pred:
+                        s_t[k, c] = pred
+            inv = np.searchsorted(ut, tid)
+            sig = s_t[inv]
+    return sig

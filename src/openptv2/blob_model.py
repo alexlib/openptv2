@@ -226,3 +226,67 @@ def local_poly_predict(
         out[idx] = coef[:, 0, :]
         support[idx] = wt.sum(1)
     return (out, support) if return_support else out
+
+
+def solve_cluster(
+    x0: np.ndarray,
+    clean_obs: list,
+    shared_obs: list,
+    prior_obs: list,
+    cpar: Any,
+    cals: list,
+    n_iter: int = 4,
+    step_mm: float = 0.01,
+) -> np.ndarray:
+    """Joint Gauss-Newton for the 3D positions of particles that share blobs (one cluster of one frame).
+
+    ``x0`` (m, 3) start positions. Observations, each with a pixel variance:
+      ``clean_obs``  [(j, cam, xy (2,), var)]: particle j alone in a blob of camera ``cam``;
+      ``shared_obs`` [(members (k,), weights (k,), cam, centre (2,), var)]: a blob holding several particles, whose
+                     centre is the weighted mean of their projections (weights = brightness shares);
+      ``prior_obs``  [(j, cam, xy (2,), var)]: projected path prediction of particle j (a temporal prior).
+    Returns the (m, 3) positions. Unlike the per-particle effective observation, no particle's estimate relies on a
+    partner's prediction: the partners are estimated together.
+    """
+    x = np.asarray(x0, float).copy()
+    m = len(x)
+    n_par = 3 * m
+    for _ in range(n_iter):
+        rows_j, rows_r, rows_w = [], [], []
+
+        def proj_and_jac(j, cam):
+            base = project_pixels(x[j][None], cals[cam], cpar)[0]
+            jac = np.zeros((2, 3))
+            for ax in range(3):
+                d = np.zeros(3)
+                d[ax] = step_mm
+                jac[:, ax] = (project_pixels((x[j] + d)[None], cals[cam], cpar)[0]
+                              - project_pixels((x[j] - d)[None], cals[cam], cpar)[0]) / (2 * step_mm)
+            return base, jac
+
+        for j, cam, xy, var in list(clean_obs) + list(prior_obs):
+            base, jac = proj_and_jac(j, cam)
+            full = np.zeros((2, n_par))
+            full[:, 3 * j: 3 * j + 3] = jac
+            rows_j.append(full)
+            rows_r.append(np.asarray(xy, float) - base)
+            rows_w.append(np.full(2, 1.0 / var))
+        for members, weights, cam, centre, var in shared_obs:
+            pred = np.zeros(2)
+            full = np.zeros((2, n_par))
+            for j, wj in zip(members, weights):
+                base, jac = proj_and_jac(j, cam)
+                pred += wj * base
+                full[:, 3 * j: 3 * j + 3] += wj * jac
+            rows_j.append(full)
+            rows_r.append(np.asarray(centre, float) - pred)
+            rows_w.append(np.full(2, 1.0 / var))
+        if not rows_j:
+            return x
+        jm = np.vstack(rows_j)
+        r = np.concatenate(rows_r)
+        w = np.concatenate(rows_w)
+        a = jm.T @ (w[:, None] * jm) + 1e-9 * np.eye(n_par)
+        step = np.linalg.solve(a, jm.T @ (w * r))
+        x += step.reshape(m, 3)
+    return x

@@ -22,9 +22,15 @@ def main() -> None:
     ap.add_argument("case")
     ap.add_argument("--min-resid", type=float, default=0.25)
     ap.add_argument("--sig-quantile", type=float, default=0.5)
+    ap.add_argument("--joint-sig", action="store_true")
     a_ = ap.parse_args()
     from openptv2.loco import project_pixels
-    from openptv2.merge_post import arrays_from_store, extend_membership, row_signatures
+    from openptv2.merge_post import (
+        arrays_from_store,
+        estimate_signatures,
+        extend_membership,
+        row_signatures,
+    )
     from openptv2.merge_refine import refine_merged
     from openptv2.storage import RunStore
 
@@ -36,7 +42,8 @@ def main() -> None:
     blob, centre, sumg, _ = extend_membership(a["frame"], a["pos"], a["blob"], a["centre"], a["sumg"], a["blobs"],
                                               cpar, cals)
     res = refine_merged(a["frame"], a["tid"], blob, centre, sumg, cpar, cals, vpar)
-    sig = row_signatures(a["tid"], a["frame"], blob, sumg, a_.sig_quantile)
+    sig = (estimate_signatures(a["tid"], a["frame"], blob, sumg) if a_.joint_sig
+           else row_signatures(a["tid"], a["frame"], blob, sumg, a_.sig_quantile))
     fb = np.full(res.pred_px.shape, np.nan)
     okx = np.isfinite(res.x[:, 0])
     for c in range(4):

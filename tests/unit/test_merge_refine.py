@@ -113,3 +113,15 @@ def test_a_lone_blob_much_brighter_than_its_particle_is_down_weighted(scene):
     e_on = np.linalg.norm(r_on.x[hid] - t2[hid], axis=1).mean()
     e_off = np.linalg.norm(r_off.x[hid] - t2[hid], axis=1).mean()
     assert e_on < 0.5 * e_off
+
+
+def test_joint_mode_solves_the_merged_frames_at_least_as_well(scene):
+    cpar, vpar, cals, frame, pid, blob, centre, sumg, truth = scene
+    merged_rows = np.isin(frame, list(MERGED))
+    eff = refine_merged(frame, pid, blob, centre, sumg, cpar, cals, vpar, rounds=3)
+    joint = refine_merged(frame, pid, blob, centre, sumg, cpar, cals, vpar, rounds=3, mode="joint")
+    raw = np.linalg.norm(joint.x_rounds[0] - truth, axis=1)[merged_rows].mean()
+    e_eff = np.linalg.norm(eff.x - truth, axis=1)[merged_rows].mean()
+    e_joint = np.linalg.norm(joint.x - truth, axis=1)[merged_rows].mean()
+    assert e_joint < 0.6 * raw
+    assert e_joint <= 1.1 * e_eff
