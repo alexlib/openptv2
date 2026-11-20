@@ -59,3 +59,9 @@ track:
   holistic: true
   holistic_rounds: 2
 ```
+
+## Viewing the tracks
+
+The loop writes the final tracks into `res/run.zarr/trajectories` (metres, velocity per frame), so openptv-cloud's
+`03_results` marimo notebook (3D tracks coloured by speed, length histogram) opens a holistic run directly. For
+runs made by another tracker, or edited afterwards: `uv run python scripts/export_trajectories.py <run folder>`.

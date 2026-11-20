@@ -66,3 +66,6 @@ class Tracking:
             run_corrective_pass(cpar, vpar, self.exp.track_par, spar, list(cals), store, max_passes=passes,
                                 forward=True, release_ghosts=False, radius_px=1.2, max_ray_miss_mm=0.15,
                                 max_pos_err_mm=0.3)
+            from openptv2.holistic import write_trajectories_cache
+
+            write_trajectories_cache(RunStore(store.store_path, mode="a"), frames, len(cals))

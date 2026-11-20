@@ -12,7 +12,8 @@ Starting from a run store with targets and correspondences, and a linker (by def
         births: particles hidden in other particles' blobs, from the residual brightness, matched in 3D
         write the refined points + the births back as the point cloud (and the observation table)
         link again
-    the output is the last linkage.
+    the output is the last linkage; the final tracks are also written to ``trajectories/`` (see
+    :func:`write_trajectories_cache`).
 
 Pure library code; :mod:`openptv2.plugins.holistic_tracking` runs it in the pipeline.
 """
@@ -166,7 +167,35 @@ def run_holistic(
             log(f"holistic: dropped {n_drop} unlinked births, linking again")
             relink()
             store = fresh(store)
+    write_trajectories_cache(fresh(store), frames, n_cams, linkage_name)
     return stats
+
+
+def write_trajectories_cache(store: Any, frames: list[int], n_cams: int, linkage_name: str = "ptv_is",
+                             min_len: int = 2) -> int:
+    """Write the final tracks into ``trajectories/`` (the flat cache that openptv-cloud's ``03_results`` notebook and
+    flowtracks read): positions in metres, velocity and acceleration per frame (central differences), sorted by
+    ``(trajid, time)``, tracks of at least ``min_len`` points. Returns the number of tracks."""
+    from openptv2.merge_post import arrays_from_store
+
+    a = arrays_from_store(store, linkage_name, int(min(frames)), int(max(frames)), n_cams)
+    tid, fr, pos = np.asarray(a["tid"]), np.asarray(a["frame"]), np.asarray(a["pos"], float)
+    _, inv, cnt = np.unique(tid, return_inverse=True, return_counts=True)
+    keep = cnt[inv] >= min_len
+    tid, fr, pos = tid[keep], fr[keep], pos[keep]
+    order = np.lexsort((fr, tid))
+    tid, fr, pos = tid[order], fr[order], pos[order]
+    _, tid = np.unique(tid, return_inverse=True)
+    tid = tid + 1
+    vel, acc = np.zeros_like(pos), np.zeros_like(pos)
+    cuts = np.flatnonzero(np.r_[True, tid[1:] != tid[:-1], True])
+    for lo, hi in zip(cuts[:-1], cuts[1:]):
+        if hi - lo >= 2:
+            vel[lo:hi] = np.gradient(pos[lo:hi], fr[lo:hi], axis=0)
+        if hi - lo >= 3:
+            acc[lo:hi] = np.gradient(vel[lo:hi], fr[lo:hi], axis=0)
+    store.write_trajectories(pos * 1e-3, vel * 1e-3, acc * 1e-3, fr, tid)
+    return int(tid.max()) if len(tid) else 0
 
 
 def store_blob_centres(arr: dict, frame: int, cam: int) -> np.ndarray:

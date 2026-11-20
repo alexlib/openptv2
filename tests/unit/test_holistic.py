@@ -125,3 +125,28 @@ def test_unified_delegates_to_holistic_when_asked(monkeypatch):
     monkeypatch.setattr(t, "_resolve_store_and_range", lambda exp: (None, None, 1, 2))
     t.do_tracking()
     assert called == [1]
+
+
+def test_trajectories_cache_round_trip(tmp_path):
+    import numpy as np
+
+    from openptv2.holistic import write_trajectories_cache
+    from openptv2.storage import RunStore
+    from openptv2.tracking_postprocess import write_linkage
+
+    st = RunStore(tmp_path / "run.zarr", mode="a")
+    frames = [1, 2, 3]
+    n_cams = 2
+    for f in frames:
+        pos = np.array([[0.0 + f, 0, 0], [10.0, 5.0 + 2 * f, 1.0]])
+        st.write_correspondences(f, pos, np.full((2, n_cams), 0, dtype=np.int64))
+        for c in range(n_cams):
+            st.write_targets(c, f, np.zeros((1, 8)))
+        prev = np.array([-1 if f == 1 else 0, -1 if f == 1 else 1])
+        nxt = np.array([-2 if f == 3 else 0, -2 if f == 3 else 1])
+        write_linkage("ptv_is", f, prev, nxt, np.zeros(2), store=st)
+    n = write_trajectories_cache(RunStore(tmp_path / "run.zarr", mode="a"), frames, n_cams)
+    g = RunStore(tmp_path / "run.zarr", mode="r").root["trajectories"]
+    assert n == 2 and g["pos"].shape == (6, 3)
+    vel = np.asarray(g["vel"][:])
+    assert np.isclose(np.abs(vel).max(), 2e-3)                    # the fast track: 2 mm per frame, in metres
