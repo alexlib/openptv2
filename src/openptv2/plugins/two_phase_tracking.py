@@ -195,6 +195,7 @@ class TwoPhaseTrackerConfig:
     use_velocity: bool = True
     cost_mode: str = "projected"
     allow_shared: bool = False
+    split_merged: bool = False
     max_shared: int = 2
     share_tol: float | None = 1.0
     max_group_size: int = 128
@@ -1129,6 +1130,7 @@ def track_store(
         cost_mode=cost_mode,
         max_gap=max_gap,
         allow_shared=allow_shared,
+        split_merged=bool(track_cfg.get("split_merged", False)),
         max_shared=max_shared,
         share_tol=share_tol,
         max_group_size=max_group_size,
@@ -1142,7 +1144,116 @@ def track_store(
     )
     tracker = TwoPhaseTracker(cfg)
     project_fn = build_project_fn(cals, cpar)
-    frame_logb = logb_list if blob_gate else None
+    # Optional predictor-based merged-blob split (Idea 4 + 11): two-pass recovery.
+    if cfg.split_merged:
+        want_q = False
+    if cfg.split_merged and project_fn is not None:
+        from collections import defaultdict
+        from scipy.spatial import cKDTree
+        # Pass 1 on baseline points
+        t1 = TwoPhaseTracker(cfg)
+        links1 = t1.track_frames(
+            [p.copy() for p in frame_particles],
+            [lf.copy() for lf in frame_leaves],
+            project_fn=project_fn,
+            frame_seen=frame_seen,
+            frame_ghost=None,
+            frame_logb=None,
+        )
+        # Build track positions
+        traj_of = defaultdict(dict)
+        # chain links into trajectories
+        nxt = defaultdict(list)
+        for (a, ra, b, rb) in links1:
+            nxt[(a, ra)].append((b, rb))
+        allpts = set()
+        for fi, P in enumerate(frame_particles):
+            for r in range(len(P)):
+                allpts.add((fi, r))
+        preds = defaultdict(dict)  # tid -> {frame_idx: pos}
+        # simple: assign each link chain a tid
+        tid = 0
+        visited = set()
+        for start in allpts:
+            if start in visited:
+                continue
+            # find if start has predecessor
+            if any((start[0], start[1]) == (b, rb) for (_, _, b, rb) in links1):
+                continue
+            cur = start
+            chain_pts = []
+            while cur in allpts and cur not in visited:
+                visited.add(cur)
+                chain_pts.append(cur)
+                cands = nxt.get(cur, [])
+                if not cands:
+                    break
+                cur = cands[0]
+                if cur in visited:
+                    break
+            for (fi, r) in chain_pts:
+                preds[tid][fi] = frame_particles[fi][r].copy()
+            tid += 1
+        # tracks by frame
+        tracks_by_frame = defaultdict(list)
+        for t, fmap in preds.items():
+            for fi, pos in fmap.items():
+                tracks_by_frame[fi].append((t, pos))
+        # Pass 2: split merged points
+        new_particles = []
+        new_leaves = []
+        new_seen_all = []
+        for fi, P in enumerate(frame_particles):
+            pos = np.asarray(P, dtype=float)
+            lf = frame_leaves[fi]
+            new_pts = []
+            new_seen_frame = []
+            tlist = tracks_by_frame.get(fi, [])
+            tpos = np.array([tp for (_, tp) in tlist]) if tlist else np.zeros((0, 3))
+            tree = cKDTree(tpos) if len(tpos) else None
+            tids_list = [t for (t, _) in tlist]
+            for i, p in enumerate(pos):
+                close = []
+                if tree is not None:
+                    for j in tree.query_ball_point(p, 0.6):
+                        close.append((tids_list[j], tpos[j]))
+                if len(close) >= 2:
+                    preds_arr = np.array([tp for (_, tp) in close])
+                    intensities = np.ones(len(close))
+                    mp_all = project_fn(p.reshape(1, 3)).reshape(-1)
+                    n_cams = len(cals)
+                    merged_px = mp_all.reshape(n_cams, 2)
+                    seen_i = frame_seen[fi][i] if (fi < len(frame_seen) and i < len(frame_seen[fi])) else np.ones(n_cams, dtype=bool)
+                    try:
+                        from openptv2 import merged_split
+
+                        split_pos, _ = merged_split.split_merged_blob(
+                            merged_px, seen_i, intensities, preds_arr, cals, cpar
+                        )
+                        for sp in split_pos:
+                            new_pts.append(sp)
+                            new_seen_frame.append(np.asarray(seen_i, dtype=bool).copy())
+                    except Exception:
+                        new_pts.append(p)
+                        new_seen_frame.append(np.asarray(seen_i, dtype=bool).copy())
+                else:
+                    new_pts.append(p)
+                    _s = frame_seen[fi][i] if (fi < len(frame_seen) and i < len(frame_seen[fi])) else np.ones(len(cals), dtype=bool)
+                    new_seen_frame.append(np.asarray(_s, dtype=bool).copy())
+            new_seen_all.append(np.array(new_seen_frame, dtype=bool) if new_seen_frame else np.zeros((0, len(cals)), dtype=bool))
+            new_particles.append(np.array(new_pts, dtype=float) if new_pts else np.zeros((0, 3)))
+            # leaves
+            if len(new_pts):
+                xy = project_fn(np.array(new_pts, dtype=float))
+                new_leaves.append(np.nan_to_num(np.asarray(xy).reshape(len(new_pts), -1)))
+            else:
+                new_leaves.append(np.zeros((0, 0)))
+        frame_particles = new_particles
+        frame_leaves = new_leaves
+        frame_seen = new_seen_all
+        frame_logb = None
+    else:
+        frame_logb = logb_list if blob_gate else None
     frame_ghost = None
     if want_q:
         frame_ghost = ghost_probabilities(
