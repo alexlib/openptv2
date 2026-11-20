@@ -417,3 +417,21 @@ ghost 6.8 % -> **13.8 %**, common set 0.390 -> 0.357; default rate: yield 0.684 
 set unchanged. **Negative**: brightness capacity within one frame mostly creates ghosts. Capacity must be granted only
 where tracks back it (the births mechanism does that), i.e. the dense matcher has to be the births loop with
 cluster-level hypotheses in time, not a single-frame matcher.
+
+**Joint cluster split, first comparison (true association, L1 default, 60 frames): diverges.** Median error is fine
+(0.041 mm against 0.032 for the per-member split), but the RMS explodes over the rounds (round 1 6e6 mm): clusters in
+which a member is constrained only through shared blobs (or one clean view) are underdetermined, the undamped
+Gauss-Newton step runs away, and the runaway positions then poison the path predictions (learned prediction variance
+65,000 px^2). Open bug, not usable yet. To fix next: Levenberg-Marquardt damping with a step limit, always include the
+member's previous position (or trusted path) as a weak prior, accept a cluster solution only if its reprojection cost
+drops and positions stay within a few blob radii of the start, else keep the per-member result. The x4 run of it was
+stopped (slow, 15 GB). Per-member split (`mode="effective"`) stays the default.
+
+**State at the end of this session.** Best pipeline (benchmark-verified): `two_phase` -> rounds of
+[extend membership -> joint + cross-camera signatures -> refine (effective split, trusted LOO prior, hidden-partner
+check, young members not lent to partners) -> births from residual brightness -> relink with `two_phase`], output =
+the last relink. L2 image-pipeline case: velocity error -15 %, common set -37 %, yield +5.4 points, long completeness
++11 points, ghost unchanged. Real wp2 (older version of the loop): tracks 43 % longer, 21 % more tracks >= 50 frames,
+better cross-camera consistency of corrected blobs. Not solved: dense (x4); speed (python, about 0.6 s/frame per
+round). Next: fix the joint solve (damping), rerun wp2 with the current loop, a births loop with cluster hypotheses for
+dense data, then the `holistic` plugin.
