@@ -63,15 +63,8 @@ NUM_CAMS = 4
 #: has smaller particle images and about half as many large blobs (scripts/joint_m0.py), so < 1 emulates it.
 MERGE_SCALE = float(os.environ.get("MERGE_SCALE", "1.0"))
 
-TRACKERS = [
-    "priority_segment_3d",
-    "4be",
-    "trackcorr",
-    "full_multipass",
-    "two_directional",
-    "hybrid_deltat_3d",
-    "two_phase",
-]
+#: the three kept trackers (docs/trackers.md); old names still run (translated, with a log line)
+TRACKERS = ["two_phase", "trackcorr", "fast_3d"]
 
 
 # --------------------------------------------------------------------------
@@ -570,7 +563,7 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
 # --------------------------------------------------------------------------
 
 _CORE_PRESETS = {
-    "priority_segment_3d", "trackcorr", "standard_forward", "two_directional",
+    "two_phase", "trackcorr", "fast_3d", "priority_segment_3d", "standard_forward", "two_directional",
     "full_multipass", "4be",
 }
 
@@ -703,7 +696,7 @@ def track(case: str, tracker: str) -> Path:
     raw = yaml.safe_load(yaml_path.read_text())
     n_out = int(raw["sequence"]["last"])
     if mod == "fwd":
-        raw["track"].update(run_backward=False, direction="forward", bidirectional=False)
+        raw["track"].update(direction="forward")
     for item in overrides:
         key, _, val = item.partition("=")
         raw["track"][key] = yaml.safe_load(val)
@@ -711,7 +704,7 @@ def track(case: str, tracker: str) -> Path:
         yaml_path.write_text(yaml.safe_dump(raw, sort_keys=False))
 
     exp = _experiment(run_dir, yaml_path, 1, n_out)
-    if tracker == "priority_segment_3d":
+    if tracker in ("fast_3d", "priority_segment_3d"):
         exp.track3d = True
     if tracker in _CORE_PRESETS:
         exp.pm.parameters.setdefault("plugins", {})["selected_tracking"] = tracker

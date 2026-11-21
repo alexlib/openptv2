@@ -1,3 +1,7 @@
+> **Naming note (2026-11).** The trackers are now `two_phase`, `trackcorr` and `fast_3d`, with `direction` and
+> `holistic_rounds` as switches; this page keeps the names used when the numbers were measured
+> (`priority_segment_3d` = `fast_3d`, `full_multipass` = `trackcorr` + `direction: both`). See [trackers.md](trackers.md).
+
 # Tracker Tutorials: What Each Engine Does, Which Parameters Matter, and How They Compare
 
 This is a from-scratch, verified reference for the three remaining 3D-linking tracker

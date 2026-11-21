@@ -82,7 +82,7 @@ def test_run_warmup_produces_sane_result(scene):
         max_cycles=2,
     )
 
-    assert result.tracker in ("priority_segment_3d", "full_multipass")
+    assert result.tracker in ("fast_3d", "trackcorr")
     assert 0.0 <= result.agreement_rate <= 1.0
     assert result.noise_estimate_mm >= 0.0
     assert result.cycles >= 1

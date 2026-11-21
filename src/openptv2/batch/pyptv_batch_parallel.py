@@ -250,6 +250,7 @@ def main(
     mode: str = "both",
     sequence_plugin: str | None = None,
     tracking_plugin: str | None = None,
+    track_overrides: dict | None = None,
 ) -> None:
     """Run PyPTV parallel batch processing with modular mode support.
 
@@ -380,6 +381,7 @@ def main(
                     seq_last,
                     mode="tracking",
                     tracking_plugin=tracking_plugin,
+                    track_overrides=track_overrides,
                 )
                 logger.info("Tracking step completed successfully.")
             except Exception as e:
@@ -425,14 +427,9 @@ def parse_command_line_args():
             "saved in the YAML (falling back to the core pipeline)."
         ),
     )
-    parser.add_argument(
-        "--tracking-plugin",
-        default=None,
-        help=(
-            "Tracking plugin name. Default: the plugins.selected_tracking "
-            "saved in the YAML (falling back to the core pipeline)."
-        ),
-    )
+    from openptv2.tracking_setup import add_tracker_arguments
+
+    add_tracker_arguments(parser)    # --tracker, --direction, --holistic-rounds (docs/trackers.md)
     parser.add_argument(
         "--debug-mode",
         action="store_true",
@@ -487,6 +484,8 @@ if __name__ == "__main__":
             sequence_plugin,
             tracking_plugin,
         ) = parse_command_line_args()
+        from openptv2.tracking_setup import tracker_overrides_from_argv
+
         main(
             yaml_file,
             first_frame,
@@ -495,6 +494,7 @@ if __name__ == "__main__":
             mode,
             sequence_plugin=sequence_plugin,
             tracking_plugin=tracking_plugin,
+            track_overrides=tracker_overrides_from_argv(),
         )
         logger.info("Parallel batch processing completed successfully")
     except (ValueError, ProcessingError) as e:

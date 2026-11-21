@@ -197,14 +197,14 @@ def test_retired_trackers_are_hidden_but_resolve():
         discover_available_plugins,
         resolve_plugin_module,
     )
-    from openptv2.tracking_presets import TRACKER_CHOICES, infer_tracker
+    from openptv2.tracking_setup import TRACKERS, resolve_tracking_setup
 
     shown = set(discover_available_plugins(None)["available_tracking"])
     assert not shown & {"unified", "4be", "four_be", "hybrid_deltat_3d", "holistic", "splitter_tracking"}
-    assert {"two_phase", "priority_segment_3d", "trackcorr"} <= shown
-    assert [k for k, _ in TRACKER_CHOICES] == ["priority_segment_3d", "trackcorr", "two_phase"]
-    assert infer_tracker({"selected_tracking": "unified"}) == "two_phase"
-    assert infer_tracker({"selected_tracking": "holistic"}) == "two_phase"
+    assert {"two_phase", "fast_3d", "trackcorr"} <= shown
+    assert TRACKERS == ("two_phase", "trackcorr", "fast_3d")
+    assert resolve_tracking_setup({}, {"selected_tracking": "unified"}).tracker == "two_phase"
+    assert resolve_tracking_setup({}, {"selected_tracking": "holistic"}).tracker == "two_phase"
     for name in ("unified", "4be", "hybrid_deltat_3d", "holistic"):          # old YAMLs keep running
         from openptv2.plugins.loader import BUILTIN_TRACKING_PLUGINS
 

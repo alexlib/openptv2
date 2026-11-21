@@ -13,18 +13,9 @@ from openptv2.tracking_registry import (
 )
 
 
-def test_registry_contains_all_trackers():
-    """Verify all expected tracker names are in the registry."""
-    expected = {
-        "full_multipass",
-        "fast_3d",
-        "standard_forward",
-        "two_directional",
-        "splitter_tracking",
-    }
-    registered = set(TRACKER_REGISTRY)
-    for name in expected:
-        assert name in registered, f"Missing tracker: {name}"
+def test_registry_has_exactly_the_three_trackers():
+    """Three trackers, default first; old names are translated, not listed."""
+    assert list(TRACKER_REGISTRY) == ["two_phase", "trackcorr", "fast_3d"]
 
 
 def test_registry_does_not_contain_hybrid():
@@ -44,11 +35,17 @@ def test_every_tracker_has_required_fields():
 
 
 def test_get_tracker_info():
-    """Verify lookup by name works for authoritative names and aliases."""
-    info = get_tracker_info("fast_3d")
-    assert info is not None
-    assert info.name == "priority_segment_3d"
-    assert "3D Segment-Priority" in info.display_name
+    """Lookup works for the three names and translates the old ones."""
+    assert get_tracker_info("fast_3d").name == "fast_3d"
+    for old, new in (
+        ("priority_segment_3d", "fast_3d"),
+        ("fast", "fast_3d"),
+        ("full_multipass", "trackcorr"),
+        ("standard_forward", "trackcorr"),
+        ("holistic", "two_phase"),
+        ("unified", "two_phase"),
+    ):
+        assert get_tracker_info(old).name == new, old
 
 
 def test_get_tracker_info_unknown():
@@ -97,23 +94,17 @@ def test_print_tracker_detail_unknown(capsys):
     assert "Unknown tracker" in result
 
 
-def test_fast_3d_capabilities():
-    """Verify fast_3d capabilities."""
-    info = get_tracker_info("fast_3d")
-    assert info is not None
-    assert info.supports_new_particles is False
-    assert info.supports_2d is False
-    assert info.supports_backward is False
-    assert info.supports_gap_relinking is False
+def test_every_tracker_supports_both_directions():
+    for info in list_trackers():
+        assert info.supports_backward is True, info.name
 
 
-def test_full_multipass_capabilities():
-    """Verify full_multipass has all post-processing."""
-    info = get_tracker_info("full_multipass")
-    assert info.supports_backward is True
-    assert info.supports_postprocessing is True
-    assert info.supports_gap_relinking is True
-    assert info.accuracy_ranking == "highest"
+def test_capabilities_that_differ():
+    assert get_tracker_info("fast_3d").supports_2d is False
+    assert get_tracker_info("two_phase").supports_2d is True
+    assert get_tracker_info("trackcorr").supports_postprocessing is True
+    assert get_tracker_info("fast_3d").speed_ranking == "fastest"
+    assert get_tracker_info("two_phase").accuracy_ranking == "highest"
 
 
 @pytest.mark.parametrize(

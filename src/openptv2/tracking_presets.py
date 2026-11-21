@@ -1,4 +1,9 @@
-"""Tracking preset definitions, configuration mapping, and preset resolution."""
+"""DEPRECATED (kept one release): the old preset system.
+
+The tracker setup is now ``openptv2.tracking_setup`` (three trackers, two switches, one add-on;
+see docs/trackers.md). This module stays only so old imports and retired plugins keep working;
+``infer_tracker`` and ``infer_direction`` delegate to the new resolver. Removal: plan stage 6.
+"""
 
 import logging
 from enum import Enum
@@ -265,28 +270,20 @@ _DIRECTION_BACKWARD_PRESETS = {"full_multipass", "two_directional", "trackcorr",
 
 
 def infer_tracker(plugins_params: Dict[str, Any] | None) -> str:
-    """Map any current or legacy ``selected_tracking`` value onto one of
-    the canonical tracker keys. An unrecognised name (a custom
-    experiment-local plugin) passes through unchanged."""
-    selected = (plugins_params or {}).get("selected_tracking", "default")
-    return str(_LEGACY_TRACKER_ALIASES.get(selected, selected))
+    """Deprecated: use ``openptv2.tracking_setup.resolve_tracking_setup``."""
+    from openptv2.tracking_setup import resolve_tracking_setup
+
+    return resolve_tracking_setup({}, plugins_params).tracker
 
 
 def infer_direction(
     track_params: Dict[str, Any], plugins_params: Dict[str, Any] | None = None
 ) -> str:
-    """Forward-only vs forward+backward, from ``track.run_backward``, ``track.backward``,
-    or ``track.direction``, falling back to legacy preset names for old saved YAMLs."""
-    if "run_backward" in track_params:
-        return "forward_backward" if track_params["run_backward"] else "forward"
-    if "backward" in track_params:
-        return "forward_backward" if track_params["backward"] else "forward"
-    if "direction" in track_params:
-        return str(track_params["direction"])
-    selected = (plugins_params or {}).get("selected_tracking", "default")
-    if selected in _DIRECTION_BACKWARD_PRESETS:
-        return "forward_backward"
-    return "forward"
+    """Deprecated: use ``resolve_tracking_setup(...).direction``. Returns the old spelling."""
+    from openptv2.tracking_setup import resolve_tracking_setup
+
+    setup = resolve_tracking_setup(track_params, plugins_params)
+    return "forward_backward" if setup.both_directions else "forward"
 
 
 def apply_tracker(

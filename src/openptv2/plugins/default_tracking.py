@@ -1,11 +1,20 @@
-"""Default tracking plugin: core tracking pipeline with preset support.
+"""Runner for the two image-or-3D trackers that work on the C-style tracker object.
 
-Not a "real" plugin so much as the baseline algorithm wrapped in the same
-Tracking contract as every other plugin, so callers never special-case
-"default" — running the algorithm *is* running the plugin named "default".
+``trackcorr``  the legacy algorithm: predict, project into every camera, search the 2D targets.
+``fast_3d``    links the triangulated 3D points only (optional soft epipolar penalty, ``epi_weight``).
+
+Both take ``direction`` (forward | both) and ``postprocess`` from the one tracker setup
+(``openptv2.tracking_setup``, documented in ``docs/trackers.md``). ``two_phase`` has its own plugin.
 """
 
-from openptv2.tracking_presets import infer_direction, infer_tracker
+from openptv2.tracking_setup import tracking_setup_for
+
+
+def _report(stats: dict) -> None:
+    print(
+        f"Post-process links: {stats.get('links_before', 0)} -> "
+        f"{stats.get('links_after', 0)}"
+    )
 
 
 class Tracking:
@@ -29,65 +38,28 @@ class Tracking:
         pm = getattr(self.exp, "pm", None)
         if pm is None and hasattr(self.exp, "exp1"):
             pm = getattr(self.exp.exp1, "pm", None)
-
         track_cfg = pm.parameters.get("track", {}) if pm else {}
-        plugins_cfg = pm.parameters.get("plugins", {}) if pm else {}
 
-        tracker_key = infer_tracker(plugins_cfg)
-        force_3d = getattr(self.exp, "track3d", False)
-        direction = infer_direction(track_cfg, plugins_cfg)
+        setup = tracking_setup_for(self.exp)
+        both = setup.both_directions
+        label = "forward + backward" if both else "forward"
 
-        if force_3d or tracker_key == "priority_segment_3d":
-            print(f"Running Fast 3D-Only Tracking (Segment Mode, {direction})...")
+        if setup.tracker == "fast_3d" or getattr(self.exp, "track3d", False):
+            print(f"Running fast_3d tracking ({label}, epi_weight {setup.epi_weight:g})...")
+            if tracker._run is not None:
+                tracker._run._w_epi = float(setup.epi_weight)
             tracker.full_forward_3d()
-            if direction == "forward_backward":
+            if both:
                 tracker.full_backward()
-            if track_cfg.get("postprocess", True):
-                stats = tracker.postprocess()
-                print(
-                    f"Post-process links: {stats.get('links_before', 0)} -> "
-                    f"{stats.get('links_after', 0)}"
-                )
+            if setup.postprocess:
+                _report(tracker.postprocess())
         else:
-            # Hybrid 3D+epipolar: use priority_segment_3d's 4-level cascade
-            # (more robust linking) with epipolar consistency as soft scoring.
-            # This combines trackcorr's precision with priority_segment_3d's
-            # recall — the best of both worlds.
-            use_hybrid = track_cfg.get("trackcorr_engine", "3d_hybrid") == "3d_hybrid"
-            if use_hybrid:
-                print("Running TrackCorr-Hybrid Tracking (3D cascade + epipolar scoring, Forward + Backward)...")
-                # Enable epipolar soft scoring in the kernel.
-                if tracker._run is not None:
-                    tracker._run._w_epi = float(track_cfg.get("epi_weight", 1.0))
-                tracker.full_forward_3d()
-                if direction == "forward_backward":
-                    tracker.full_backward()
-                if track_cfg.get("postprocess", True):
-                    stats = tracker.postprocess()
-                    print(
-                        f"Post-process links: {stats.get('links_before', 0)} -> "
-                        f"{stats.get('links_after', 0)}"
-                    )
-            else:
-                if direction == "forward_backward":
-                    print("Running TrackCorr Tracking (Forward + Backward)...")
-                    tracker.full_forward()
-                    tracker.full_backward()
-                    if track_cfg.get("postprocess", True):
-                        stats = tracker.postprocess()
-                        print(
-                            f"Post-process links: {stats.get('links_before', 0)} -> "
-                            f"{stats.get('links_after', 0)}"
-                        )
-                else:
-                    print("Running TrackCorr Tracking (Forward only)...")
-                    tracker.full_forward()
-                    if track_cfg.get("postprocess", True):
-                        stats = tracker.postprocess(reciprocity=False)
-                        print(
-                            f"Post-process links: {stats.get('links_before', 0)} -> "
-                            f"{stats.get('links_after', 0)}"
-                        )
+            print(f"Running trackcorr tracking, legacy algorithm ({label})...")
+            tracker.full_forward()
+            if both:
+                tracker.full_backward()
+            if setup.postprocess:
+                _report(tracker.postprocess(reciprocity=both))
 
         from openptv2.track_assisted import run_configured_corrective_pass
 

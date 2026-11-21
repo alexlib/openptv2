@@ -14,7 +14,7 @@ written back into the run's tracking YAML config; the production tracking
 run then just reads that config -- it never re-triggers warmup.
 
 Scope cut (deliberate): algorithm selection only compares
-priority_segment_3d (track3d) and full_multipass (trackcorr) -- the two
+fast_3d (3D points only) and trackcorr (legacy) -- the two
 engines directly reachable through Tracker without the full plugin/
 experiment machinery. The other TRACKER_REGISTRY entries are plugin-based
 and need a constructed experiment object (pm, target files, etc.), which is
@@ -35,7 +35,7 @@ from openptv2.tracker import Tracker
 from openptv2.tracking_postprocess import read_linkage
 from openptv2.tracking_recommender import compute_dataset_stats, recommend_tracker
 
-_CANDIDATE_ENGINES = ("priority_segment_3d", "full_multipass")
+_CANDIDATE_ENGINES = ("fast_3d", "trackcorr")
 
 
 @dataclass
@@ -247,7 +247,7 @@ def run_warmup(
         tracker = Tracker(
             cpar, vpar, cur_tpar, spar_window, cals, naming=naming, store=store
         )
-        if engine == "priority_segment_3d":
+        if engine == "fast_3d":
             tracker.full_forward_3d()
         else:
             tracker.full_forward()
@@ -306,8 +306,14 @@ def write_result_to_yaml(result: WarmupResult, yaml_path: str | Path) -> None:
     track["angle"] = result.track_par["dangle"]
     track["dacc"] = result.track_par["dacc"]
 
+    # one spelling for the choice (track.tracker, docs/trackers.md); the warm-up compares the 3D-only
+    # and the legacy engine, so its result is fast_3d or trackcorr
+    from openptv2.tracking_setup import canonical_tracker_name
+
     plugins = data.setdefault("plugins", {})
-    plugins["selected_tracking"] = result.tracker
+    tracker = canonical_tracker_name(result.tracker) or result.tracker
+    track["tracker"] = tracker
+    plugins["selected_tracking"] = tracker
 
     with open(path, "w", encoding="utf-8") as fh:
         yaml.safe_dump(data, fh, sort_keys=False)

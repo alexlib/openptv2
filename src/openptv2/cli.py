@@ -225,9 +225,11 @@ def main():
         if len(sys.argv) >= 3 and sys.argv[2] in ("--show", "-s"):
             name = sys.argv[3] if len(sys.argv) > 3 else ""
             if name:
-                info = TRACKER_REGISTRY.get(name)
+                from openptv2.tracking_registry import get_tracker_info
+
+                info = get_tracker_info(name)
                 if info:
-                    print(print_tracker_detail(name))
+                    print(print_tracker_detail(info.name))
                 else:
                     print(f"Unknown tracker: {name!r}")
                     print(f"Available: {', '.join(sorted(TRACKER_REGISTRY))}")

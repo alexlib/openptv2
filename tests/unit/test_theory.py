@@ -149,7 +149,7 @@ class TestSuggestParamsTrackabilityGuard:
         from openptv2.tracking_recommender import _suggest_params
         from openptv2.tracking_registry import TRACKER_REGISTRY
 
-        return _suggest_params(TRACKER_REGISTRY["priority_segment_3d"], stats)
+        return _suggest_params(TRACKER_REGISTRY["fast_3d"], stats)
 
     def test_guard_fires_when_displacement_exceeds_spacing(self):
         # rho = 4.0 / 2.0 = 2 > 1: dacc would be 0.6 * 3*4 = 7.2 (1.8x NN),

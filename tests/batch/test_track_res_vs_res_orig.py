@@ -73,6 +73,13 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
     yaml_name = yaml_path
     yaml_path = work_dir / yaml_name
 
+    # this test pins the 3D-only tracker, forward (the default is now two_phase, both directions)
+    with open(yaml_path, "r") as f:
+        _pinned = yaml.safe_load(f)
+    _pinned.setdefault("track", {}).update({"tracker": "fast_3d", "direction": "forward"})
+    with open(yaml_path, "w") as f:
+        yaml.safe_dump(_pinned, f)
+
     pm = ParameterManager()
     pm.from_yaml(yaml_path)
     # yaml_path = work_dir / param_yaml

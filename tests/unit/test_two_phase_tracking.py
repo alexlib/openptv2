@@ -460,3 +460,21 @@ def test_parallel_directions_matches_serial():
     ).track_frames(frames, leaves, ident)
     assert sorted(serial) == sorted(par)
     assert len(serial) > 0
+
+
+def test_track_store_survives_a_frame_without_particles(tmp_path):
+    """The default tracker must not crash when one frame has no particles (reshape(0, -1) is ambiguous)."""
+    from openptv2.plugins.two_phase_tracking import track_store
+    from openptv2.storage import RunStore
+
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    xyz = np.array([[1.0, 1.0, 0.0], [5.0, 5.0, 0.0]])
+    for frame, pts in ((1, xyz), (2, xyz[:0]), (3, xyz + 0.1)):
+        ids = np.arange(len(pts), dtype=np.int32).reshape(-1, 1).repeat(2, axis=1)
+        store.write_correspondences(frame, pts, ids)
+        for cam in range(2):
+            rows = np.zeros((len(pts), 8))
+            rows[:, 0] = np.arange(len(pts))
+            rows[:, 1:3] = pts[:, :2]
+            store.write_targets(cam, frame, rows)
+    track_store(store, [1, 2, 3], {"dvxmax": 2.0}, None, None)

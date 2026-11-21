@@ -11,11 +11,14 @@ from traitsui.api import (
     spring,
 )
 
-from openptv2.tracking_presets import (
-    TRACKER_CHOICES,
-    apply_tracker,
-    infer_direction,
-    infer_tracker,
+from openptv2.tracking_setup import (
+    DIRECTION_LABELS,
+    DIRECTIONS,
+    TRACKER_LABELS,
+    TRACKERS,
+    TrackingSetup,
+    apply_tracking_setup,
+    resolve_tracking_setup,
 )
 
 from .experiment import Experiment
@@ -378,15 +381,15 @@ class TrackHandler(Handler):
             if "plugins" not in experiment.pm.parameters:
                 experiment.pm.parameters["plugins"] = {}
 
-            direction = (
-                "forward_backward"
-                if getattr(track_params, "run_backward", False)
-                else "forward"
+            setup = TrackingSetup(
+                tracker=track_params.tracker,
+                direction=track_params.direction,
+                postprocess=bool(track_params.postprocess),
+                holistic_rounds=int(track_params.holistic_rounds),
+                epi_weight=float(track_params.epi_weight),
             )
-            t_dict, p_dict = apply_tracker(
-                track_params.tracker,
-                direction,
-                bool(track_params.postprocess),
+            t_dict, p_dict = apply_tracking_setup(
+                setup,
                 {
                     "dvxmin": track_params.dvxmin,
                     "dvxmax": track_params.dvxmax,
@@ -401,7 +404,6 @@ class TrackHandler(Handler):
             )
 
             t_dict["leaf_weight"] = float(track_params.leaf_weight)
-            t_dict["holistic_rounds"] = int(track_params.holistic_rounds)
             experiment.pm.parameters["track"].update(t_dict)
             experiment.pm.parameters["plugins"].update(p_dict)
 
@@ -422,8 +424,9 @@ class TrackHandler(Handler):
 
 
 class Tracking_Params(HasTraits):
-    tracker = Enum(*[key for key, label in TRACKER_CHOICES])
-    run_backward = Bool(False)
+    tracker = Enum(*TRACKERS)
+    direction = Enum(*DIRECTIONS)
+    epi_weight = Float(0.0)
     postprocess = Bool(True)
     dvxmin = Float()
     dvxmax = Float()
@@ -453,29 +456,30 @@ class Tracking_Params(HasTraits):
         self.postprocess = bool(tracking_params.get("postprocess", True))
         self.leaf_weight = float(tracking_params.get("leaf_weight", 1.0))
 
-        self.tracker = infer_tracker(plugins_params)
-        # the retired 'holistic' name meant two_phase with 2 rounds
-        default_rounds = 2 if plugins_params.get("selected_tracking") == "holistic" else 0
-        self.holistic_rounds = int(tracking_params.get("holistic_rounds", default_rounds))
-        dir_val = infer_direction(tracking_params, plugins_params)
-        self.run_backward = dir_val == "forward_backward"
+        # one resolver for new and old YAMLs (docs/trackers.md); a custom plugin shows as the default
+        setup = resolve_tracking_setup(tracking_params, plugins_params)
+        self.tracker = setup.tracker if setup.tracker in TRACKERS else TRACKERS[0]
+        self.direction = setup.direction
+        self.postprocess = setup.postprocess
+        self.holistic_rounds = setup.holistic_rounds
+        self.epi_weight = setup.epi_weight
 
     Tracking_Params_View = View(
         VGroup(
             Item(
                 name="tracker",
                 label="Tracker:",
-                editor=EnumEditor(
-                    values={key: label for key, label in TRACKER_CHOICES}
-                ),
+                editor=EnumEditor(values=dict(TRACKER_LABELS)),
             ),
             Item(
-                name="run_backward",
-                label="Run backward pass (accumulate tracks, fill gaps & filter):",
+                name="direction",
+                label="Direction:",
+                editor=EnumEditor(values=dict(DIRECTION_LABELS)),
             ),
             Item(
                 name="postprocess",
-                label="Post-process (reciprocity + cold-start + gap-relink):",
+                label="Post-process (trackcorr, fast_3d: reciprocity + gap bridging):",
+                enabled_when="tracker != 'two_phase'",
             ),
             show_border=True,
             label="Pipeline",
@@ -498,8 +502,12 @@ class Tracking_Params(HasTraits):
                 Item(name="dacc", label="dacc (mm/frame2):"),
             ),
             HGroup(
-                Item(name="leaf_weight", label="2D leaf weight (0=off):"),
-                Item(name="holistic_rounds", label="Merged-blob loop rounds (two_phase; 0=off):"),
+                Item(name="leaf_weight", label="two_phase: 2D leaf weight (0=off):",
+                     enabled_when="tracker == 'two_phase'"),
+                Item(name="epi_weight", label="fast_3d: epipolar penalty (0=off):",
+                     enabled_when="tracker == 'fast_3d'"),
+                Item(name="holistic_rounds", label="Merged-blob loop rounds (two_phase; 0=off):",
+                     enabled_when="tracker == 'two_phase'"),
             ),
             show_border=True,
             label="Search Box & Kinematic Limits",

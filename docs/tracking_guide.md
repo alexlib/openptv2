@@ -56,7 +56,9 @@ Tracking in OpenPTV2 links 3D particle positions across consecutive frames to re
 
 ```yaml
 track:
-  preset: "full_multipass"
+  tracker: two_phase  # two_phase | trackcorr | fast_3d (default two_phase)
+  direction: both     # forward | both (default both)
+  holistic_rounds: 0  # two_phase add-on: merged-blob loop, 0 = off
   dvxmin: -10.0
   dvxmax: 10.0
   dvymin: -10.0
@@ -72,17 +74,20 @@ track:
   min_trajectory_length: 5  # seal filter: drop <5-frame traj
 
 plugins:
-  selected_tracking: default  # default, two_phase, hybrid_deltat_3d, ...
+  selected_tracking: default  # default = track.tracker; or a custom plugin name
 ```
 
-### Presets
+### Trackers and switches
 
-| Preset | Passes | Recommended |
+| Setting | Values | Default |
 | :--- | :--- | :--- |
-| `standard_forward` | Forward only | Fast preview |
-| `full_multipass` | Forward→Backward→Postprocess | **Recommended** |
+| `tracker` | `two_phase`, `trackcorr` (legacy algorithm), `fast_3d` (3D only) | `two_phase` |
+| `direction` | `forward`, `both` (forward + backward) | `both` |
+| `postprocess` | reciprocity + gap bridging, for `trackcorr` and `fast_3d` | `true` |
+| `holistic_rounds` | merged-blob loop, `two_phase` only; 0 = off | `0` |
 
-> `priority_segment_3d` was removed. Use `default` or `two_phase`.
+The old presets (`full_multipass`, `standard_forward`, `priority_segment_3d`, ...) are translated and logged; see
+[Particle trackers](trackers.md) for the table of old names and for how to choose.
 
 ### Detailed Parameters
 

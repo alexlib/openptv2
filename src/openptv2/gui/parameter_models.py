@@ -162,7 +162,10 @@ class TargRecParams(SectionModel):
 
 
 class TrackParams(SectionModel):
-    preset: str = "full_multipass"
+    # the tracker setup (docs/trackers.md)
+    tracker: str = "two_phase"      # two_phase | trackcorr | fast_3d
+    direction: str = "both"         # forward | both
+    holistic_rounds: int = 0        # merged-blob loop (two_phase); 0 = off
     angle: float = 120.0
     dacc: float = 5.5
     dvxmax: float = 15.5
@@ -172,7 +175,7 @@ class TrackParams(SectionModel):
     dvzmax: float = 15.5
     dvzmin: float = -15.5
     flagNewParticles: bool = True
-    track_mode: int = 0
+    track_mode: int = 1
     postprocess: bool = True
     leaf_weight: float = 1.0
 

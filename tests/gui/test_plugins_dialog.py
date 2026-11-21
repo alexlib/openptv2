@@ -138,6 +138,8 @@ class TestDefaultTrackingSetsTracker:
             exp.plugins = PluginsDouble()
 
             assert not hasattr(exp, "tracker")
+            # trackcorr / fast_3d hand the GUI a tracker object; two_phase (the default) does not
+            exp.pm.parameters.setdefault("track", {}).update({"tracker": "fast_3d"})
             ptv.run_tracking_plugin(exp)
 
             assert getattr(exp, "tracker", None) is not None

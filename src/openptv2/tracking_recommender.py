@@ -252,7 +252,7 @@ def recommend_tracker(
     scored.sort(key=lambda x: (-x[0], x[1].speed_ranking))
     if not scored:
         return Recommendation(
-            tracker_name="unified",
+            tracker_name="two_phase",
             confidence=0.0,
             rationale=["No suitable tracker found, falling back to default."],
         )
@@ -328,9 +328,9 @@ def _score_tracker(info: TrackerInfo, stats: DatasetStats, priority: str) -> flo
     elif priority == "accuracy":
         accuracy_scores = {"highest": 5, "high": 4, "standard": 2, "draft": 0}
         score += accuracy_scores.get(info.accuracy_ranking, 2)
-        if info.name == "unified":
+        if info.name == "two_phase":
             score += 1.0
-    elif info.name == "unified":
+    elif info.name == "two_phase":
         score += 1.0
 
     return score

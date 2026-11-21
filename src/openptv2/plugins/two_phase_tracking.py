@@ -1116,7 +1116,7 @@ def track_store(
             if rows[c] is not None:
                 valid = cam_ids[:, c] >= 0
                 xy[valid, c] = rows[c][cam_ids[valid, c], 1:3]
-        frame_leaves.append(np.nan_to_num(xy.reshape(n, -1)))
+        frame_leaves.append(np.nan_to_num(xy.reshape(n, num_cams * 2)))
         # Bug 2 fix: the seen-mask is authoritative; NaN no longer marks
         # "missing" (any nan_to_num would silently un-mark it). Single
         # definition: run_store.seen_mask -- do not re-derive per reader.
@@ -1242,7 +1242,12 @@ class Tracking:
         if pm is None and hasattr(self.exp, "exp1"):
             pm = getattr(self.exp.exp1, "pm", None)
 
-        track_cfg = pm.parameters.get("track", {}) if pm else {}
+        from openptv2.tracking_setup import tracking_setup_for
+
+        setup = tracking_setup_for(self.exp)
+        # direction and the holistic add-on come from the one tracker setup (docs/trackers.md)
+        track_cfg = dict(pm.parameters.get("track", {})) if pm else {}
+        track_cfg["bidirectional"] = setup.both_directions
         self.q_model = q_model_of(track_cfg)
 
         store = getattr(self.exp, "_store", None)
@@ -1304,7 +1309,10 @@ class Tracking:
             tracker.full_forward()
             return
 
-        rounds = int(track_cfg.get("holistic_rounds", self.default_holistic_rounds))
+        if "holistic_rounds" in track_cfg:
+            rounds = setup.holistic_rounds
+        else:
+            rounds = setup.holistic_rounds or self.default_holistic_rounds
         if rounds > 0:
             # Optional merged-blob inference loop around this linker (docs/holistic-tracking.md).
             from openptv2.holistic import run_holistic_experiment

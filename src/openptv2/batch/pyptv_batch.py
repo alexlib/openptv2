@@ -162,6 +162,7 @@ def run_batch(
     sequence_plugin: str | None = None,
     tracking_plugin: str | None = None,
     output: str | None = None,
+    track_overrides: dict | None = None,
 ) -> None:
     """Run batch processing for a sequence of frames.
 
@@ -177,6 +178,8 @@ def run_batch(
             YAML ``plugins.selected_tracking`` selection
         output: Output zarr store name under res/ (e.g. "run_two_phase.zarr").
             None (default) uses "run.zarr".
+        track_overrides: ``direction`` / ``holistic_rounds`` that win over the YAML's
+            ``track`` section (command line ``--direction``, ``--holistic-rounds``).
 
     Raises:
         ProcessingError: If processing fails
@@ -203,6 +206,8 @@ def run_batch(
 
         if track3d:
             proc_exp.track3d = True
+        if track_overrides:
+            proc_exp.pm.parameters.setdefault("track", {}).update(track_overrides)
 
         # default_naming (res/rt_is, res/ptv_is, res/added) is relative to
         # cwd and used by every sequence/tracking plugin, so the output
@@ -275,6 +280,7 @@ def main(
     sequence_plugin: str | None = None,
     tracking_plugin: str | None = None,
     output: str | None = None,
+    track_overrides: dict | None = None,
 ) -> None:
     """Run PyPTV batch processing.
 
@@ -341,6 +347,7 @@ def main(
                 sequence_plugin=sequence_plugin,
                 tracking_plugin=tracking_plugin,
                 output=output,
+                track_overrides=track_overrides,
             )
         elapsed_time = time.time() - start_time
         print(f"Total processing time: {elapsed_time:.2f} seconds")
@@ -413,14 +420,9 @@ def parse_command_line_args(
             "saved in the YAML (falling back to the core pipeline)."
         ),
     )
-    parser.add_argument(
-        "--tracking-plugin",
-        default=None,
-        help=(
-            "Tracking plugin name. Default: the plugins.selected_tracking "
-            "saved in the YAML (falling back to the core pipeline)."
-        ),
-    )
+    from openptv2.tracking_setup import add_tracker_arguments
+
+    add_tracker_arguments(parser)    # --tracker, --direction, --holistic-rounds (docs/trackers.md)
     parser.add_argument(
         "--output",
         "-o",
@@ -518,6 +520,8 @@ def main_cli() -> None:
             tracking_plugin,
             output,
         ) = parse_command_line_args()
+        from openptv2.tracking_setup import tracker_overrides_from_argv
+
         main(
             yaml_file,
             first_frame,
@@ -527,6 +531,7 @@ def main_cli() -> None:
             sequence_plugin=sequence_plugin,
             tracking_plugin=tracking_plugin,
             output=output,
+            track_overrides=tracker_overrides_from_argv(),
         )
 
         print("Batch processing completed successfully")

@@ -1,11 +1,10 @@
-"""Tracker capability descriptors and registry.
+"""The three trackers, described once.
 
-Every tracker plugin is described by a ``TrackerInfo`` dataclass that
-documents its algorithm, input requirements, performance characteristics,
-recommended use cases, and parameter guidance.  The ``TRACKER_REGISTRY``
-dict maps plugin name → ``TrackerInfo`` and is the single source of truth
-for the CLI list-trackers command, the recommender, and the GUI plugin
-selector.
+``TRACKER_REGISTRY`` has exactly three entries, ``two_phase`` (default), ``trackcorr`` and
+``fast_3d``; it is the single source of truth for ``openptv list-trackers``, the recommender and
+the GUI help text. Old tracker names (``priority_segment_3d``, ``full_multipass`` ...) are not
+entries: ``get_tracker_info`` translates them (see ``openptv2.tracking_setup``) and the user guide is
+``docs/trackers.md``.
 """
 
 from __future__ import annotations
@@ -78,633 +77,208 @@ class TrackerInfo:
 
 TRACKER_REGISTRY: dict[str, TrackerInfo] = {}
 
-FULL_MULTIPASS_INFO = TrackerInfo(
-    name="full_multipass",
-    display_name="Full Multi-Pass (Highest Accuracy)",
-    short_description="Three-pass pipeline: forward → backward → reciprocity post-processing",
-    algorithm_summary=(
-        "Pass 1 runs the full multi-camera 2D+3D epipolar tracking forward.  "
-        "Pass 2 scans the sequence backward to recover particles that were missed because "
-        "their velocity history was insufficient on the first pass.  "
-        "Pass 3 enforces link reciprocity (every forward link must have a matching backward link), "
-        "seeds cold starts for the first frame transition using the established velocity field, "
-        "and bridges gaps up to a configurable number of frames."
+_BOUNDS = (
+    ParameterGuide(
+        name="dvxmin / dvxmax, dvymin / dvymax, dvzmin / dvzmax",
+        type="float",
+        default="-10 / 10",
+        description="Velocity search box per axis. Same name, unit and meaning for every tracker.",
+        how_to_choose="Just above the largest displacement between frames (95th percentile of a probe run).",
+        typical_range="1 – 100",
+        unit="mm/frame",
     ),
-    algorithm_detail=(
-        "Uses the Cython trackcorr_c_loop (multi-camera projection search), trackback_c for the "
-        "reverse pass, and the Python tracking_postprocess module for disk-level pruning and gap "
-        "relinking.  The postprocessor reads ptv_is.# directly, so it is tracker-agnostic and can "
-        "be applied after any tracker that writes compatible files."
+    ParameterGuide(
+        name="dacc",
+        type="float",
+        default="5.0",
+        description="Largest acceleration (change of velocity between frames).",
+        how_to_choose="From a probe run's acceleration statistics; too tight breaks fast turns, too loose admits wrong links.",
+        typical_range="0.5 – 50",
+        unit="mm/frame²",
     ),
-    supports_backward=True,
-    supports_new_particles=True,
-    supports_2d=True,
-    supports_postprocessing=True,
-    supports_gap_relinking=True,
-    supports_multimedia=False,
-    supports_splitter=False,
-    supports_cost_weights=False,
-    speed_ranking="moderate",
-    density_ranking="low_to_moderate",
-    accuracy_ranking="highest",
-    parameters=(
-        ParameterGuide(
-            name="dvxmin / dvxmax",
-            type="float",
-            default="±10.0",
-            description="Velocity search window in X (mm/frame).",
-            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data) — compute from probe data.",
-            typical_range="1 – 100",
-            unit="mm/frame",
-        ),
-        ParameterGuide(
-            name="dacc",
-            type="float",
-            default="5.0",
-            description="Maximum acceleration (mm/frame²).",
-            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data) — compute from probe data.",
-            typical_range="0.5 – 50",
-            unit="mm/frame²",
-        ),
-        ParameterGuide(
-            name="angle",
-            type="float",
-            default="120",
-            description="Maximum angular deviation (gon).",
-            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
-            typical_range="20 – 200",
-            unit="gon",
-        ),
-        ParameterGuide(
-            name="postprocess",
-            type="bool",
-            default="true",
-            description="Run reciprocity, cold-start, and gap-relinking after backward pass.",
-            how_to_choose="Keep true unless you want raw forward+backward links only.",
-            typical_range="",
-            unit="",
-        ),
+    ParameterGuide(
+        name="angle",
+        type="float",
+        default="120",
+        description="Largest change of direction between frames.",
+        how_to_choose="Leave at the default unless the flow turns sharply.",
+        typical_range="20 – 200",
+        unit="gon",
     ),
-    default_preset="full_multipass",
-    best_for="Datasets where trajectory accuracy is paramount and processing time is secondary. Best recovery of long trajectories.",
-    avoid_when="Very high particle density where the multi-camera projection becomes the bottleneck, or real-time applications.",
-    typical_datasets="Scientific studies requiring publication-quality trajectories, benchmark validation.",
 )
 
-PRIORITY_SEGMENT_3D_INFO = TrackerInfo(
-    name="priority_segment_3d",
-    display_name="3D Segment-Priority (Cython Engine - Default)",
-    short_description="Single-pass 3D tracking using 4-level acceleration-priority segment linking",
-    algorithm_summary=(
-        "Links 3D particles using a 4-level cascade: Level 1 claims high-confidence particles "
-        "meeting an acceleration threshold (dacc) globally across all tracks in ascending cost order. "
-        "Level 2 uses local neighbor velocity averaging. Level 3 handles static/unseeded displacement. "
-        "Executed in single-pass compiled Cython for maximum throughput."
-    ),
-    algorithm_detail=(
-        "Calls track3d_loop_fast in track_kernels_track3d.py (compiled Cython). "
-        "Global cost-ordered claiming within each level prevents index-order claim bias. "
-        "This is the authoritative default 3D tracking engine in OpenPTV2."
-    ),
-    supports_backward=False,
-    supports_new_particles=False,
-    supports_2d=False,
-    supports_postprocessing=False,
-    supports_gap_relinking=False,
-    supports_multimedia=False,
-    supports_splitter=False,
-    supports_cost_weights=False,
-    speed_ranking="fastest",
-    density_ranking="low_to_moderate",
-    accuracy_ranking="high",
-    parameters=(
-        ParameterGuide(
-            name="dvxmin / dvxmax",
-            type="float",
-            default="±15.5",
-            description="Velocity search window in X (mm/frame).",
-            how_to_choose="Set just above max observed displacement.",
-            typical_range="1 – 100",
-            unit="mm/frame",
-        ),
-        ParameterGuide(
-            name="dacc",
-            type="float",
-            default="5.5",
-            description=(
-                "Seeded-step search box (mm): the radius searched around the "
-                "velocity-extrapolated prediction for a particle that is "
-                "already being tracked. Named for an acceleration bound, but "
-                "it is used as a position tolerance."
-            ),
-            how_to_choose=(
-                "About 0.6 x dvxmax -- NOT 'just above max observed "
-                "acceleration', and not equal to dvxmax. This is the knob "
-                "that controls tracking of particles that already have a "
-                "velocity; dvxmax only widens the cold search for particles "
-                "that do not. Setting dacc = dvxmax makes the tracker "
-                "bit-identical to the C original and measures worst of every "
-                "value tried at high seeding density. Lower it further "
-                "(~0.4 x) when densely seeded, raise it (~0.8 x) when sparse."
-            ),
-            typical_range="0.5 – 50",
-            unit="mm (position tolerance, despite the name)",
-        ),
-    ),
-    default_preset="priority_segment_3d",
-    best_for="Primary 3D particle tracking on sparse to moderate density flows.",
-    avoid_when="Particles appear/disappear frequently mid-sequence or extreme optical occlusions require multi-frame gap bridging.",
-    typical_datasets="3D PTV benchmark sequences, turbulent flow sequences.",
+_DIRECTION = ParameterGuide(
+    name="direction",
+    type="choice",
+    default="both",
+    description="forward = frames in order. both = also run the same tracker on the reversed frame order and keep the links both agree on or that fill gaps.",
+    how_to_choose="Keep both for quality; forward when speed matters more (about half the time).",
+    typical_range="forward | both",
 )
-
-FOUR_BE_INFO = TrackerInfo(
-    name="4be",
-    display_name="4BE (Four-frame Best Estimate, Cython Engine)",
-    short_description="Pure 3D linking scored by how well a candidate predicts a real particle two frames ahead",
-    algorithm_summary=(
-        "Ouellette, Xu & Bodenschatz (2006)'s four-frame best-estimate cost: for each "
-        "frame n -> n+1 candidate found within the velocity search box, extrapolate a "
-        "further constant-velocity estimate into frame n+2 and score the candidate by "
-        "how close a REAL particle sits to that n+2 estimate (support distance). Cost is "
-        "that support distance plus how well the candidate itself matched the frame n+1 "
-        "prediction -- summed, not support-distance-alone, since a candidate can no "
-        "longer win purely because a coincidental real particle happens to sit near its "
-        "own bad n+2 extrapolation while grossly failing the n+1 match (see "
-        "docs/holistic-3d-ptv-systems-research-program.md's 2026-08-18 case study)."
-    ),
-    algorithm_detail=(
-        "Calls track4be_loop_fast in track_kernels_track3d.py (compiled Cython). Give-up "
-        "on conflict (the paper's rule, greedy_conflicts=0) by default; an unsupported "
-        "candidate (nothing real near its n+2 estimate) falls back to the 3MA "
-        "acceleration residual rather than being rejected outright (strict_support=0), "
-        "which recovers yield lost to genuine 1-frame detection gaps. strict_support and "
-        "greedy_conflicts are module-level constants in track4be.py, not exposed via "
-        "track.par -- editing the source is currently the only way to change them."
-    ),
-    supports_backward=False,
-    supports_new_particles=False,
-    supports_2d=False,
-    supports_postprocessing=False,
-    supports_gap_relinking=False,
-    supports_multimedia=False,
-    supports_splitter=False,
-    supports_cost_weights=False,
-    speed_ranking="fastest",
-    density_ranking="low_to_moderate",
-    accuracy_ranking="standard",
-    parameters=(
-        ParameterGuide(
-            name="dvxmin / dvxmax (and dvy../dvz..)",
-            type="float",
-            default="±15.5",
-            description="Velocity search window, per axis (mm/frame) -- same track.par "
-            "fields priority_segment_3d/trackcorr use.",
-            how_to_choose="Set just above max observed displacement, same guidance as "
-            "priority_segment_3d -- there is no 4BE-specific tuning here.",
-            typical_range="1 - 100",
-            unit="mm/frame",
-        ),
-        ParameterGuide(
-            name="dacc",
-            type="float",
-            default="5.5",
-            description="Unused directly by 4BE's own cost (which is a distance sum, not "
-            "an acceleration bound) -- retained for API parity with "
-            "priority_segment_3d/trackcorr; the candidate search box itself "
-            "is dvxmax/dvymax/dvzmax.",
-            how_to_choose="Leave at the same value used for priority_segment_3d on this "
-            "dataset; it does not change 4BE's own linking decisions.",
-            typical_range="0.5 - 50",
-            unit="mm",
-        ),
-    ),
-    default_preset="4be",
-    best_for="Sparse-to-moderate density flows where a real particle usually exists two "
-    "frames ahead to disambiguate close candidates.",
-    avoid_when="High density or high-noise data (see the case study above) -- more "
-    "candidates means more chances for a coincidental n+2 match to compete "
-    "with the correct one, even with the summed cost.",
-    typical_datasets="3D PTV benchmark sequences, turbulent flow sequences.",
-)
-
-STANDARD_FORWARD_INFO = TrackerInfo(
-    name="standard_forward",
-    display_name="Standard Forward (2D+3D)",
-    short_description="Single forward pass using full multi-camera 2D+3D epipolar tracking with new-particle seeding",
-    algorithm_summary=(
-        "Runs the full multi-camera 2D+3D epipolar tracking forward across all frames. "
-        "Projects a 3D search volume onto each camera image, finds candidate 2D targets, "
-        "sorts by cross-camera frequency, and links using an angle + acceleration metric. "
-        "New particles can seed tracks mid-sequence."
-    ),
-    algorithm_detail=(
-        "Calls Tracker.full_forward() which loops over trackcorr_c_loop per frame. "
-        "The 4-frame buffer maintains velocity and acceleration history for smooth prediction. "
-        "No backward pass or post-processing is performed."
-    ),
-    supports_backward=False,
-    supports_new_particles=True,
-    supports_2d=True,
-    supports_postprocessing=False,
-    supports_gap_relinking=False,
-    supports_multimedia=True,
-    supports_splitter=False,
-    supports_cost_weights=False,
-    speed_ranking="fast",
-    density_ranking="moderate",
-    accuracy_ranking="standard",
-    parameters=(
-        ParameterGuide(
-            name="dvxmin / dvxmax",
-            type="float",
-            default="±10.0",
-            description="Velocity search window in X (mm/frame).",
-            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
-            typical_range="1 – 100",
-            unit="mm/frame",
-        ),
-        ParameterGuide(
-            name="dacc",
-            type="float",
-            default="5.0",
-            description="Maximum acceleration (mm/frame²).",
-            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
-            typical_range="0.5 – 50",
-            unit="mm/frame²",
-        ),
-        ParameterGuide(
-            name="angle",
-            type="float",
-            default="120",
-            description="Maximum angular deviation (gon).",
-            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
-            typical_range="20 – 200",
-            unit="gon",
-        ),
-    ),
-    default_preset="standard_forward",
-    best_for="Quick runs with new-particle capture when backward tracking is unnecessary.",
-    avoid_when="Accuracy-critical applications — use full_multipass instead.",
-    typical_datasets="Preview runs, quick parameter scans.",
-)
-
-TWO_DIRECTIONAL_INFO = TrackerInfo(
-    name="two_directional",
-    display_name="Two-Directional (Forward + Backward)",
-    short_description="Forward pass followed by backward pass without reciprocity post-processing",
-    algorithm_summary=(
-        "Runs the full forward multi-camera 2D+3D epipolar tracking, then a backward pass "
-        "to recover tracks that were missed on the first pass.  Unlike full_multipass, no "
-        "reciprocity pruning, cold-start seeding, or gap relinking is performed."
-    ),
-    algorithm_detail=(
-        "Calls Tracker.full_forward() then Tracker.full_backward().  The backward pass uses "
-        "trackback_c which reads the forward linkage files and re-links from the end of the sequence."
-    ),
-    supports_backward=True,
-    supports_new_particles=True,
-    supports_2d=True,
-    supports_postprocessing=False,
-    supports_gap_relinking=False,
-    supports_multimedia=True,
-    supports_splitter=False,
-    supports_cost_weights=False,
-    speed_ranking="moderate",
-    density_ranking="moderate",
-    accuracy_ranking="standard",
-    parameters=(
-        ParameterGuide(
-            name="dvxmin / dvxmax",
-            type="float",
-            default="±10.0",
-            description="Velocity search window in X (mm/frame).",
-            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
-            typical_range="1 – 100",
-            unit="mm/frame",
-        ),
-        ParameterGuide(
-            name="dacc",
-            type="float",
-            default="5.0",
-            description="Maximum acceleration (mm/frame²).",
-            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
-            typical_range="0.5 – 50",
-            unit="mm/frame²",
-        ),
-        ParameterGuide(
-            name="angle",
-            type="float",
-            default="120",
-            description="Maximum angular deviation (gon).",
-            how_to_choose="Same parameter guidance as priority_segment_3d (from probe data).",
-            typical_range="20 – 200",
-            unit="gon",
-        ),
-    ),
-    default_preset="two_directional",
-    best_for="When backward tracking helps but you want to skip post-processing for speed.",
-    avoid_when="Raw forward+backward links contain many non-reciprocal connections.",
-    typical_datasets="Parameter-tuning runs to compare forward-only vs forward+backward.",
-)
-
-SPLITTER_INFO = TrackerInfo(
-    name="splitter_tracking",
-    display_name="Splitter Quad-View Tracker",
-    short_description="Forward tracking pipeline optimised for four-view image-splitter cameras",
-    algorithm_summary=(
-        "Runs the standard forward tracker with settings tuned for splitter-camera setups "
-        "where a single sensor captures four quadrant views of the measurement volume."
-    ),
-    algorithm_detail=(
-        "Same internal algorithm as standard_forward but with default parameters and data paths "
-        "configured for splitter-frame sequences (4 cameras multiplexed into one image)."
-    ),
-    supports_backward=False,
-    supports_new_particles=True,
-    supports_2d=True,
-    supports_postprocessing=False,
-    supports_gap_relinking=False,
-    supports_multimedia=False,
-    supports_splitter=True,
-    supports_cost_weights=False,
-    speed_ranking="fast",
-    density_ranking="moderate",
-    accuracy_ranking="standard",
-    parameters=(),
-    default_preset="",
-    best_for="Datasets acquired with four-view image splitters on a single camera sensor.",
-    avoid_when="Standard multi-camera setups — use priority_segment_3d or full_multipass instead.",
-    typical_datasets="Splitter-based tomo-PTV experiments.",
-)
-
-HYBRID_DELTAT_3D_INFO = TrackerInfo(
-    name="hybrid_deltat_3d",
-    display_name="Hybrid Multi-Delta-t (Python)",
-    short_description=(
-        "Coarse-to-fine tracking for slow flows: link every N-th frame first, "
-        "then refine through the intermediate frames"
-    ),
-    algorithm_summary=(
-        "For datasets where per-frame displacement is smaller than the 3D "
-        "reconstruction noise (poorly-conditioned), links particle clouds "
-        "across a larger time step N first -- displacement grows N-fold while "
-        "the noise floor stays put -- then re-walks the intermediate frames, "
-        "attaching detections that lie within refine_gate_mm of a cubic-Hermite "
-        "prediction built from the coarse segment's endpoints."
-    ),
-    algorithm_detail=(
-        "Coarse pass uses the predictive Hungarian tracker (NearestHungarian3DTracker) on "
-        "the strided clouds with stride-scaled search radii; the refine pass "
-        "chains consecutive-frame detections along each segment. Chains break "
-        "where no intermediate detection fits the prediction; postptv "
-        "stitching can re-glue those small gaps downstream."
-    ),
-    citation=(
-        "Concept: multi-step / variable-Delta-t Lagrangian PTV for slow flows "
-        "(cf. Cierpka et al., volumetric PTV via multi-frame tracking)."
-    ),
-    supports_backward=False,
-    supports_new_particles=True,
-    supports_2d=False,
-    supports_postprocessing=False,
-    supports_gap_relinking=True,
-    supports_multimedia=False,
-    supports_splitter=False,
-    supports_cost_weights=False,
-    speed_ranking="moderate",
-    density_ranking="low_to_moderate",
-    accuracy_ranking="high",
-    parameters=(
-        ParameterGuide(
-            name="stride",
-            type="int",
-            default="5",
-            description="Coarse-pass step N: link frames i and i+N before refining.",
-            how_to_choose=(
-                "Pick N so displacement over N frames exceeds the z-noise floor "
-                "reported by the tracking-conditioning diagnostic (ratio < ~1): "
-                "N >= z_noise_mm / per_frame_displacement_mm. Cap N at roughly "
-                "half the median inter-particle spacing divided by the "
-                "per-frame displacement so the coarse search stays unambiguous."
-            ),
-            typical_range="2 – 20",
-            unit="frames",
-        ),
-        ParameterGuide(
-            name="refine_gate_mm",
-            type="float",
-            default="0.8",
-            description=(
-                "Maximum distance between a Hermite-predicted intermediate "
-                "position and a detection for attachment."
-            ),
-            how_to_choose=(
-                "About 1-2x the reconstruction noise floor from the conditioning "
-                "report. Too small: chains fragment at every noisy frame. Too "
-                "large: wrong particles get attached in dense regions."
-            ),
-            typical_range="0.1 – 5",
-            unit="mm",
-        ),
-    ),
-    default_preset="",
-    best_for=(
-        "High-frame-rate recordings of slow flow (z-noise/motion ratio > 1) "
-        "where standard trackers produce only 2-6 frame fragments."
-    ),
-    avoid_when=(
-        "Well-conditioned data -- use priority_segment_3d or the Cython default; "
-        "very high particle density where coarse-step ambiguity is high."
-    ),
-    typical_datasets="High-speed camera PTV of slow physiological / micro flows.",
-)
-
 
 TWO_PHASE_INFO = TrackerInfo(
     name="two_phase",
-    display_name="Two-Phase 3D+2D Leaf Ranking",
-    short_description="3D KD-tree candidate search refined by 2D per-camera leaf-distance Hungarian assignment",
+    display_name="Two-phase (default)",
+    short_description="3D candidates, image-based cost, optimal assignment, two-hop confirmation",
     algorithm_summary=(
-        "Phase 1: a 3D KD-tree finds every frame-(t+1) particle within a velocity-derived "
-        "search radius of each frame-t particle. Phase 2: within each connected component of "
-        "candidates, per-camera 2D pixel distances ('leaf' positions) become a cost matrix and "
-        "Hungarian assignment picks the globally best match. Exploits the tree-forest storage "
-        "layout: 3D positions are the structural 'trunk', 2D leaf positions the disambiguating "
-        "'signature' when 3D candidates are ambiguous or noisy."
+        "Phase 1: a 3D KD-tree finds every next-frame point within the velocity radius of each track's "
+        "predicted position. Phase 2: inside each connected group of candidates, the distance in the camera "
+        "images between the prediction and each candidate (the 2D 'leaf' positions) becomes a cost, and the "
+        "Hungarian algorithm picks the best assignment. A link is kept only if the next link continues "
+        "smoothly (two-hop confirmation). Tracks carry their velocity and coast through short gaps; "
+        "ghost-like and brightness-jump candidates are refused."
     ),
     algorithm_detail=(
-        "Pure Python/NumPy/SciPy (cKDTree + scipy.sparse.csgraph.connected_components + "
-        "linear_sum_assignment). Implemented in plugins/two_phase_tracking.py "
-        "(TwoPhaseTracker/TwoPhaseTrackerConfig). Falls back to pure 3D matching if no leaf "
-        "features are supplied (leaf_weight=0)."
+        "Pure Python/NumPy/SciPy (plugins/two_phase_tracking.py). Needs the run store with per-camera "
+        "targets. direction both runs the backward pass on reversed frames and merges (Forward-First). "
+        "Add-on: holistic_rounds > 0 re-estimates merged-blob centres from the tracks and relinks."
     ),
-    supports_backward=False,
+    supports_backward=True,
     supports_new_particles=True,
     supports_2d=True,
     supports_postprocessing=False,
     supports_gap_relinking=True,
-    supports_multimedia=False,
-    supports_splitter=False,
     supports_cost_weights=True,
     speed_ranking="fast",
     density_ranking="moderate",
-    accuracy_ranking="standard",
+    accuracy_ranking="highest",
     parameters=(
+        _DIRECTION,
+        *_BOUNDS[:1],
         ParameterGuide(
             name="holistic_rounds",
             type="int",
             default="0",
-            description="0 = plain two_phase. N > 0 wraps the linker in the merged-blob loop: N rounds of refine, birth and re-link; the last round's link is the output.",
-            how_to_choose="Off by default (slower). 2 gets most of the gain; a third round changed little on the benchmarks.",
-            typical_range="1 - 3",
-            unit="",
-        ),
-        ParameterGuide(
-            name="holistic_min_resid",
-            type="float",
-            default="0.25",
-            description="Smallest unexplained brightness (in units of a typical particle) that creates a birth.",
-            how_to_choose="Lower finds more hidden particles but more false ones; unlinked births are dropped anyway.",
-            typical_range="0.15 - 0.5",
-            unit="",
-        ),
-        ParameterGuide(
-            name="holistic_partner_min_len",
-            type="int",
-            default="10",
-            description="Tracks shorter than this do not lend their predicted position to a blob partner.",
-            how_to_choose="Keeps young, possibly wrong tracks from corrupting their neighbours.",
-            typical_range="5 - 20",
-            unit="frames",
-        ),
-        ParameterGuide(
-            name="holistic_extend",
-            type="int",
-            default="0",
-            description="Passes of strict track-assisted extension after the loop (needs holistic_rounds > 0).",
-            how_to_choose="Helps at moderate density; not at very dense data.",
-            typical_range="0 - 2",
-            unit="passes",
-        ),
-        ParameterGuide(
-            name="v_max",
-            type="float",
-            default="5.0",
-            description="Maximum velocity (mm/frame); 3D KD-tree search radius for phase 1.",
-            how_to_choose="Set just above max observed displacement, same guidance as other trackers' velocity bound.",
-            typical_range="1 – 100",
-            unit="mm/frame",
+            description="0 = off. N > 0 adds the merged-blob loop: N rounds of refine, birth and relink.",
+            how_to_choose="Off by default (slower). 2 gets most of the gain; a third round changed little.",
+            typical_range="0 – 3",
         ),
         ParameterGuide(
             name="leaf_weight",
             type="float",
             default="1.0",
-            description="Weight of 2D per-camera leaf distances in the phase-2 cost matrix. 0 falls back to pure 3D matching.",
-            how_to_choose="Raise when 3D positions are noisy/ambiguous (e.g. weak calibration) but 2D detections are clean; 0 to disable.",
+            description="Weight of the 2D image distance in the cost. 0 falls back to pure 3D matching.",
+            how_to_choose="Raise when 3D positions are noisy but detections are clean; 0 to disable.",
             typical_range="0 – 2",
-            unit="",
         ),
         ParameterGuide(
             name="max_gap",
             type="int",
             default="2",
-            description="Number of frames a track can go unmatched before being terminated.",
-            how_to_choose="Match expected occlusion length in the experiment.",
+            description="Frames a track may go unmatched before it ends.",
+            how_to_choose="Match the expected occlusion length.",
             typical_range="1 – 5",
             unit="frames",
         ),
-        ParameterGuide(
-            name="dt",
-            type="float",
-            default="1.0",
-            description="Time step between frames, used for velocity computation.",
-            how_to_choose="Leave at 1.0 unless frames are unevenly spaced.",
-            typical_range="",
-            unit="",
-        ),
     ),
-    default_preset="",
-    best_for="Datasets where 3D triangulation is ambiguous or noisy (weak calibration, dense scenes) but per-camera 2D detections are clean enough to disambiguate.",
-    avoid_when="Well-conditioned 3D data where the extra 2D leaf-ranking pass adds cost without improving on 3D-only trackers, or when a backward pass / post-processing is required.",
-    typical_datasets="Tree-forest-storage experiments with per-camera leaf/2D data retained alongside 3D positions.",
+    best_for="Quality: the most accurate tracker on the benchmark, and the one the merged-blob loop works with.",
+    avoid_when="You need the legacy algorithm's exact behaviour (use trackcorr) or the lowest run time (use fast_3d).",
+    typical_datasets="Any run with a run store (the standard pipeline).",
+    plugin_module="openptv2.plugins.two_phase_tracking",
 )
 
-
-HOLISTIC_INFO = TrackerInfo(
-    name="holistic",
-    display_name="Holistic (retired name: two_phase with holistic_rounds)",
-    short_description="Alias of two_phase with track.holistic_rounds defaulting to 2 (merged-blob inference loop)",
-    algorithm_summary="See two_phase; set track.holistic_rounds > 0 there. Implemented in holistic.py.",
-    supports_new_particles=True,
-    supports_2d=True,
-    supports_gap_relinking=True,
-    speed_ranking="slow",
-    density_ranking="moderate",
-    accuracy_ranking="high",
-    parameters=(),
-    best_for="Existing YAMLs that select 'holistic'.",
-    avoid_when="New experiments: select two_phase and set holistic_rounds.",
-)
-
-
-UNIFIED_INFO = TrackerInfo(
-    name="unified",
-    display_name="Unified Tracker (Robust / Correct / Fast)",
-    short_description="Single tracker combining Cython speed, bidirectional reciprocity, 2D disambiguation, slow-flow handling",
+TRACKCORR_INFO = TrackerInfo(
+    name="trackcorr",
+    display_name="Trackcorr (legacy algorithm)",
+    short_description="The legacy trackcorr: predict, project into each camera, search the 2D targets",
     algorithm_summary=(
-        "One adaptive tracker: trackcorr (multi-camera epipolar) backbone, optional "
-        "bidirectional passes + reciprocity, optional 2D leaf re-ranking, coarse-to-fine "
-        "delta-t for slow flows, new-particle seeding, gap relinking, two-hop confirm link."
+        "For each particle it predicts the next 3D position from its history, projects the prediction into "
+        "every camera, searches the detected 2D targets inside a window there, and confirms candidates by "
+        "epipolar matching. Faithful port of the C trackcorr (compiled Cython kernel); it reproduces the "
+        "legacy results at the same search bounds. Nothing else is added."
+    ),
+    algorithm_detail=(
+        "Tracker.full_forward() / full_backward() over trackcorr_c_loop. direction both = forward, "
+        "backward, reciprocity check and gap bridging (postprocess)."
     ),
     supports_backward=True,
     supports_new_particles=True,
     supports_2d=True,
     supports_postprocessing=True,
     supports_gap_relinking=True,
-    supports_cost_weights=True,
-    speed_ranking="fast",
+    speed_ranking="moderate",
+    density_ranking="low_to_moderate",
+    accuracy_ranking="standard",
+    parameters=(
+        _DIRECTION,
+        *_BOUNDS,
+        ParameterGuide(
+            name="postprocess",
+            type="bool",
+            default="true",
+            description="After the passes: reciprocity check and gap bridging.",
+            how_to_choose="Keep true unless you want the raw links.",
+        ),
+    ),
+    best_for="Comparison with the legacy software and old results; compatibility.",
+    avoid_when="You want the best quality (two_phase) or the lowest run time (fast_3d).",
+    typical_datasets="Any; sparse to moderate seeding.",
+    plugin_module="openptv2.plugins.default_tracking",
+)
+
+FAST_3D_INFO = TrackerInfo(
+    name="fast_3d",
+    display_name="Fast 3D (3D points only)",
+    short_description="Links the triangulated 3D points only; never searches the images",
+    algorithm_summary=(
+        "Three cheapest-first passes over the 3D points of consecutive frames: first points that already have "
+        "a previous link (cost = change of velocity), then points that borrow their neighbours' velocity, then "
+        "isolated points. Each pass takes the cheapest links first and never uses an end twice. Optional "
+        "epi_weight adds a soft penalty from how well each point's camera rays met (the old '3d_hybrid')."
+    ),
+    algorithm_detail=(
+        "Compiled kernel track3d_loop_fast (algorithms/track_kernels_track3d.py), Tracker.full_forward_3d(). "
+        "Greedy per pass (not optimal), no image information beyond epi_weight, no link confirmation."
+    ),
+    supports_backward=True,
+    supports_new_particles=False,
+    supports_2d=False,
+    supports_postprocessing=True,
+    supports_gap_relinking=True,
+    speed_ranking="fastest",
     density_ranking="moderate",
-    accuracy_ranking="highest",
-    plugin_module="openptv2.plugins.unified_tracking",
+    accuracy_ranking="high",
+    parameters=(
+        _DIRECTION,
+        *_BOUNDS,
+        ParameterGuide(
+            name="epi_weight",
+            type="float",
+            default="0",
+            description="0 = pure 3D. Above 0, adds weight × (1 − epipolar score) to each link cost.",
+            how_to_choose="1.0 reproduces the old '3d_hybrid'; benchmark before relying on it.",
+            typical_range="0 – 2",
+        ),
+        ParameterGuide(
+            name="postprocess",
+            type="bool",
+            default="true",
+            description="After the passes: reciprocity check and gap bridging.",
+            how_to_choose="Keep true unless you want the raw links.",
+        ),
+    ),
+    best_for="Speed: large runs, quick looks, and a base for tuning the search bounds.",
+    avoid_when="Dense seeding or noisy depth, where the image information of two_phase pays off.",
+    typical_datasets="Any with triangulated points.",
+    plugin_module="openptv2.plugins.default_tracking",
 )
 
 
 def _build_registry() -> None:
-    entries: list[TrackerInfo] = [
-        PRIORITY_SEGMENT_3D_INFO,
-        FOUR_BE_INFO,
-        FULL_MULTIPASS_INFO,
-        STANDARD_FORWARD_INFO,
-        TWO_DIRECTIONAL_INFO,
-        SPLITTER_INFO,
-        HYBRID_DELTAT_3D_INFO,
-        TWO_PHASE_INFO,
-        HOLISTIC_INFO,
-        UNIFIED_INFO,
-    ]
-    for info in entries:
+    for info in (TWO_PHASE_INFO, TRACKCORR_INFO, FAST_3D_INFO):
         TRACKER_REGISTRY[info.name] = info
-
-    # Register legacy aliases
-    TRACKER_REGISTRY["fast_3d"] = PRIORITY_SEGMENT_3D_INFO
-    TRACKER_REGISTRY["fast"] = PRIORITY_SEGMENT_3D_INFO
-    TRACKER_REGISTRY["trackcorr"] = FULL_MULTIPASS_INFO
-    TRACKER_REGISTRY["multi_deltat_3d"] = HYBRID_DELTAT_3D_INFO
-    TRACKER_REGISTRY["unified_tracking"] = UNIFIED_INFO
 
 
 _build_registry()
 
 
 def get_tracker_info(name: str) -> TrackerInfo | None:
-    # Handle alias lookups
-    alias_map = {
-        "fast_3d": "priority_segment_3d",
-        "fast": "priority_segment_3d",
-        "multi_deltat_3d": "hybrid_deltat_3d",
-    }
-    key = alias_map.get(name, name)
-    return TRACKER_REGISTRY.get(key)
+    """The info for a tracker name. Old names (``priority_segment_3d``, ``full_multipass``,
+    ``holistic`` ...) are translated to the tracker they became."""
+    from openptv2.tracking_setup import canonical_tracker_name
+
+    key = canonical_tracker_name(name)
+    return TRACKER_REGISTRY.get(key) if key else None
 
 
 def list_trackers() -> list[TrackerInfo]:

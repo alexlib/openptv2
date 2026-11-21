@@ -213,6 +213,8 @@ def test_track_no_disp_action_runs_and_sets_tracker(cavity_gui):
 
     handler.init_action(info)
     handler.sequence_action(info)
+    # trackcorr / fast_3d hand the GUI a tracker object; two_phase (the default) does not
+    cavity_gui.exp1.pm.parameters.setdefault("track", {})["tracker"] = "fast_3d"
     handler.track_no_disp_action(info)
 
     assert getattr(cavity_gui, "tracker", None) is not None

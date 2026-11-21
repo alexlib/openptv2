@@ -1,4 +1,6 @@
-# Holistic tracking (`two_phase` with `holistic_rounds`)
+# Holistic tracking (the add-on: `holistic_rounds` with `two_phase`)
+
+Switch: `track.holistic_rounds: 2` (default 0 = off). See [Particle trackers](trackers.md) for the whole setup.
 
 Detection, stereo matching and tracking normally run once each, in that order. The weak point is the **merged blob**:
 two or more particles in one detected blob. The matcher gives the blob to one point, so the kept particle gets a

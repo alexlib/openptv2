@@ -139,7 +139,7 @@ def test_suggest_params_margin_not_clamped_back_to_raw_p95():
     stats.max_displacement = 1.858
     stats.mean_interparticle_distance = 2.788  # also like synthetic_turbulent
 
-    params = _suggest_params(TRACKER_REGISTRY["priority_segment_3d"], stats)
+    params = _suggest_params(TRACKER_REGISTRY["fast_3d"], stats)
 
     # Old formula: 1.858 * 1.2 = 2.23, then clamped to 2.788 * 0.8 = 2.23
     # (both land at ~2.23 -- the clamp masked the margin entirely).

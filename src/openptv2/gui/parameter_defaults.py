@@ -65,7 +65,10 @@ DEFAULT_CRITERIA_OPTIONAL = {
 }
 
 DEFAULT_TRACK = {
-    "preset": "full_multipass",
+    # the tracker setup (docs/trackers.md): three trackers, two switches, one add-on
+    "tracker": "two_phase",     # two_phase | trackcorr | fast_3d
+    "direction": "both",        # forward | both
+    "holistic_rounds": 0,       # merged-blob loop (two_phase); 0 = off
     "dvxmin": -20,
     "dvxmax": 20,
     "dvymin": -20,
@@ -81,7 +84,7 @@ DEFAULT_TRACK = {
     "dny": 0,
     "angle": 10,
     "flagNewParticles": True,
-    "track_mode": 0,
+    "track_mode": 1,
     "postprocess": True,
 }
 

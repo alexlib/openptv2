@@ -53,7 +53,7 @@ def test_trackcorr_forward_only_does_not_run_backward_pass(monkeypatch):
     )
 
     yaml_path = _tiny_yaml(Path(tempfile.mkdtemp()))
-    bm.run_tracker(yaml_path, "trackcorr")
+    bm.run_tracker(yaml_path, "trackcorr", track_overrides={"direction": "forward"})
     assert calls == []
 
 

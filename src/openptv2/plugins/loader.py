@@ -46,7 +46,7 @@ _DEPRECATED_TRACKING_PLUGINS = frozenset({
 })
 
 # Still resolvable by name (saved YAMLs, scripts), but not offered in pickers: use the kept trackers
-# ``priority_segment_3d`` (default), ``trackcorr`` and ``two_phase`` (``holistic_rounds`` > 0 for the merged-blob loop).
+# ``two_phase`` (default), ``trackcorr`` and ``fast_3d``; ``holistic_rounds`` > 0 adds the merged-blob loop.
 RETIRED_TRACKING_PLUGINS = frozenset({
     "4be", "four_be", "hybrid_deltat_3d", "multi_deltat_3d", "splitter_tracking",
     "unified", "unified_tracking", "holistic",
@@ -154,7 +154,7 @@ def resolve_plugin_module(
     if registry is BUILTIN_TRACKING_PLUGINS and name in RETIRED_TRACKING_PLUGINS:
         _log.warning(
             "Tracking plugin %r is retired; use 'two_phase' (optionally with track.holistic_rounds), "
-            "'priority_segment_3d' or 'trackcorr'.",
+            "'fast_3d' or 'trackcorr'.",
             name,
         )
     elif registry is BUILTIN_TRACKING_PLUGINS and (
@@ -200,12 +200,47 @@ def run_sequence_plugin(name: str, exp: Any, plugins_dir: Path | None = None) ->
     plugin.do_sequence()
 
 
+# The three kept trackers and the module that runs each (docs/trackers.md).
+TRACKER_MODULES = {
+    "two_phase": "openptv2.plugins.two_phase_tracking",
+    "trackcorr": "openptv2.plugins.default_tracking",
+    "fast_3d": "openptv2.plugins.default_tracking",
+}
+
+
+def _experiment_params(exp: Any) -> dict:
+    pm = getattr(exp, "pm", None)
+    if pm is None and hasattr(exp, "exp1"):
+        pm = getattr(exp.exp1, "pm", None)
+    params = getattr(pm, "parameters", None)
+    return params if isinstance(params, dict) else {}
+
+
 def run_tracking_plugin(name: str, exp: Any, plugins_dir: Path | None = None) -> None:
-    """Instantiate and run a tracking plugin's ``Tracking.do_tracking()``."""
+    """Run the tracker for this experiment.
+
+    ``name`` is "default" (the YAML decides: ``track.tracker``, default ``two_phase``), one of
+    ``two_phase`` / ``trackcorr`` / ``fast_3d``, an old tracker name (translated, with a
+    warning), or the name of a custom plugin. See ``openptv2.tracking_setup``.
+    """
+    from openptv2.tracking_setup import resolve_tracking_setup
+
     if plugins_dir is None:
         plugins_dir = Path.cwd() / "plugins"
 
-    module = resolve_plugin_module(name, BUILTIN_TRACKING_PLUGINS, plugins_dir)
+    params = _experiment_params(exp)
+    setup = resolve_tracking_setup(params.get("track", {}), params.get("plugins", {}), name=name)
+
+    if not setup.custom:
+        for note in setup.notes:
+            _log.warning("Tracking setup: %s", note)
+        try:
+            exp.tracking_setup = setup
+        except AttributeError:
+            pass
+        module = importlib.import_module(TRACKER_MODULES[setup.tracker])
+    else:
+        module = resolve_plugin_module(name, BUILTIN_TRACKING_PLUGINS, plugins_dir)
     if not hasattr(module, "Tracking"):
         raise PluginError(f"Tracking plugin {name!r} has no Tracking class")
 
@@ -220,7 +255,8 @@ def discover_available_plugins(plugins_dir: Path | str | None = None) -> dict:
     extra scripts sit in an experiment-local ``plugins/`` directory.
     """
     available_sequence = set(BUILTIN_SEQUENCE_PLUGINS)
-    available_tracking = set(BUILTIN_TRACKING_PLUGINS) - RETIRED_TRACKING_PLUGINS
+    # "default" = the YAML's `track.tracker`; then the three kept trackers; then custom plugins.
+    available_tracking = {"default", *TRACKER_MODULES}
 
     if plugins_dir is not None:
         plugins_dir = Path(plugins_dir)

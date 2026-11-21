@@ -159,10 +159,11 @@ def run_tracker(
     yaml_path : str | Path
         The ``parameters_Run1.yaml`` written by :func:`write_experiment`.
     tracker : str
-        Tracker plugin name / preset (e.g. ``"priority_segment_3d"``, ``"full_multipass"``).
+        ``"two_phase"``, ``"trackcorr"`` or ``"fast_3d"`` (old names are translated; see docs/trackers.md).
     track_overrides : dict, optional
         ``dvxmin``..``dvzmax``, ``dacc``, ``angle``/``dangle``,
-        ``flagNewParticles``/``add`` overrides applied before running.
+        ``flagNewParticles``/``add`` overrides applied before running, plus the tracker
+        setup switches ``direction`` (forward | both), ``holistic_rounds``, ``epi_weight``.
     postprocess : bool, optional
         Force the postprocess flag (for ``full_multipass`` presets).
     cwd : str | Path, optional
@@ -229,6 +230,9 @@ def run_tracker(
                     "angle",
                     "flagNewParticles",
                     "postprocess",
+                    "direction",
+                    "holistic_rounds",
+                    "epi_weight",
                 ):
                     pm_track[key] = val
         except Exception:

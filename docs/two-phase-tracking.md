@@ -1,8 +1,10 @@
 # The two_phase tracker
 
 Source: `src/openptv2/plugins/two_phase_tracking.py`.
-Select it with `selected_tracking: two_phase` (GUI: Plugins page, tracking plugin).
-All parameters are in the `track` section of the YAML file.
+Select it with `track.tracker: two_phase` (the default; GUI: Tracking Parameters, Tracker). Direction and the
+add-on are the shared switches `track.direction` (`forward` | `both`, default `both`) and `track.holistic_rounds`
+(default 0); see [Particle trackers](trackers.md). All parameters are in the `track` section of the YAML file.
+`bidirectional` is now the switch `direction: both`.
 This document uses the ASD-STE100 style (Simplified Technical English).
 
 ## 1. Purpose

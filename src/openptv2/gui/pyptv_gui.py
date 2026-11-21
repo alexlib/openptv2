@@ -896,7 +896,11 @@ class TreeMenuHandler(Handler):
                     f"{stats['links_after']} ({stats})"
                 )
         else:
-            print("No tracker initialized. Please run forward tracking first.")
+            print(
+                "No trackcorr / fast_3d tracker to run backward. two_phase already ran "
+                "the direction set in Tracking Parameters (forward | both); run "
+                "trackcorr or fast_3d first to use Track back."
+            )
 
     def track_debug_with_display_action(self, info):
         """tracking with display - debugging visualization"""

@@ -1,3 +1,5 @@
+> **Retired (2026-11).** `unified` is no longer offered; it is translated to `two_phase` (see [trackers.md](trackers.md)). Kept as a record.
+
 # Unified Tracker (`track.*` Configuration & Architecture)
 
 The `unified` tracker (`selected_tracking: unified`) replaces the legacy single-mode presets with one self-configuring, auditable pipeline (`Estimator -> Engine -> Refiner`) over `RunStore`.
