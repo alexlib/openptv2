@@ -277,6 +277,22 @@ tracker works; acceleration bound 0.712 and angle 100 as in the case):
 | 0.2 | 0.172 | 0.49 | 2.72 | 0.71 | 0.80 |
 | 0.12 | 0.266 | 0.32 | 3.04 | 0.56 | 0.58 |
 
+Joint sweep of the velocity bound and `dacc` (position noise 0.09 mm makes a loose `dacc` necessary; the true largest step
+is 0.3 mm per frame per axis and true accelerations are below 0.03):
+
+| dv | dacc | velocity error | link recall | long-track completeness | pieces per track | yield |
+|---|---:|---:|---:|---:|---:|---:|
+| 0.3 | 0.2 | 0.161 | 0.82 | 0.46 | 3.50 | 0.75 |
+| 0.3 | **0.4** | **0.155** | 0.86 | 0.53 | 2.86 | 0.76 |
+| 0.3 | 1.5 | 0.198 | 0.93 | 0.62 | 1.86 | 0.77 |
+| 0.3 | 3 | 0.237 | 0.98 | 0.68 | 1.45 | 0.78 |
+| 0.3 | **6** | 0.305 | 0.995 | **0.71** | **1.29** | 0.78 |
+| 0.5 | 6 | 0.468 | 0.99 | 0.72 | 1.34 | 0.79 |
+
+A loose `dacc` keeps legacy tracks whole (1.3 pieces per track, completeness 0.71, close to holistic's 0.74) but admits
+wrong links, so velocity error doubles. No setting gives legacy both: `two_phase` has 0.105 and 1.68, holistic 0.084 and
+1.16. Raising `dv` above 0.3 only hurts. (Angle not tuned.)
+
 Tuned legacy is about as accurate as our port of `trackcorr` (0.167) and takes 8 s, but still cuts tracks into
 about 2.5 pieces each. Acceleration bound and angle were not tuned.
 
