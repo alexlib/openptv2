@@ -147,3 +147,12 @@ def test_picker_offers_default_plus_the_three_trackers():
     from openptv2.plugins.loader import discover_available_plugins
 
     assert set(discover_available_plugins(None)["available_tracking"]) == {"default", *TRACKERS}
+
+
+def test_fast_3d_extra_settings_are_read_flat_or_under_the_tracker_key():
+    flat = resolve_tracking_setup({"tracker": "fast_3d", "epi_weight": 0.5, "accel_gate": True})
+    nested = resolve_tracking_setup({"tracker": "fast_3d", "fast_3d": {"epi_weight": 0.5, "accel_gate": True}})
+    assert (flat.epi_weight, flat.accel_gate) == (nested.epi_weight, nested.accel_gate) == (0.5, True)
+    assert resolve_tracking_setup({"tracker": "fast_3d"}).accel_gate is False
+    # not a setting of the other trackers
+    assert resolve_tracking_setup({"tracker": "two_phase", "accel_gate": True}).accel_gate is False

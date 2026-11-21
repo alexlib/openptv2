@@ -75,3 +75,20 @@ def test_cython_epipolar_tracking_runs_trackcorr_not_track3d(monkeypatch):
     yaml_path = _tiny_yaml(Path(tempfile.mkdtemp()))
     bm.run_tracker(yaml_path, "cython_epipolar_tracking")
     assert calls == []
+
+
+def test_fast_3d_settings_reach_the_kernel_run(monkeypatch):
+    """epi_weight and accel_gate were set on a run object that full_forward_3d() then replaced, so
+    they never applied (the old '3d_hybrid' was plain 3D tracking). They live on the Tracker now."""
+    yaml_path = _tiny_yaml(Path(tempfile.mkdtemp()))
+    seen = {}
+    original = Tracker.full_forward_3d
+
+    def spy(self, *a, **kw):
+        out = original(self, *a, **kw)
+        seen["w_epi"], seen["gate"] = self._run._w_epi, self._run._gate_dacc
+        return out
+
+    monkeypatch.setattr(Tracker, "full_forward_3d", spy)
+    bm.run_tracker(yaml_path, "fast_3d", track_overrides={"direction": "forward", "epi_weight": 0.7})
+    assert seen["w_epi"] == 0.7 and seen["gate"] is False

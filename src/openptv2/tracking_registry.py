@@ -139,7 +139,7 @@ TWO_PHASE_INFO = TrackerInfo(
     supports_postprocessing=False,
     supports_gap_relinking=True,
     supports_cost_weights=True,
-    speed_ranking="fast",
+    speed_ranking="fastest",
     density_ranking="moderate",
     accuracy_ranking="highest",
     parameters=(
@@ -196,7 +196,7 @@ TRACKCORR_INFO = TrackerInfo(
     supports_2d=True,
     supports_postprocessing=True,
     supports_gap_relinking=True,
-    speed_ranking="moderate",
+    speed_ranking="slow",
     density_ranking="low_to_moderate",
     accuracy_ranking="standard",
     parameters=(
@@ -235,7 +235,7 @@ FAST_3D_INFO = TrackerInfo(
     supports_2d=False,
     supports_postprocessing=True,
     supports_gap_relinking=True,
-    speed_ranking="fastest",
+    speed_ranking="moderate",
     density_ranking="moderate",
     accuracy_ranking="high",
     parameters=(
@@ -246,8 +246,17 @@ FAST_3D_INFO = TrackerInfo(
             type="float",
             default="0",
             description="0 = pure 3D. Above 0, adds weight × (1 − epipolar score) to each link cost.",
-            how_to_choose="1.0 reproduces the old '3d_hybrid'; benchmark before relying on it.",
+            how_to_choose="1.0 is what the old '3d_hybrid' meant. Measured gain on the benchmark: negligible "
+                          "(velocity error 0.1665 -> 0.1661), so the default is 0.",
             typical_range="0 – 2",
+        ),
+        ParameterGuide(
+            name="accel_gate",
+            type="bool",
+            default="false",
+            description="Also refuse links whose acceleration exceeds dacc or whose direction change exceeds angle.",
+            how_to_choose="With a loose dacc (6) it gave velocity error 0.1595 against 0.1665; a tight dacc (0.4) lost links "
+                          "(link recall 0.887). Needs dacc from a probe run.",
         ),
         ParameterGuide(
             name="postprocess",
@@ -257,8 +266,9 @@ FAST_3D_INFO = TrackerInfo(
             how_to_choose="Keep true unless you want the raw links.",
         ),
     ),
-    best_for="Speed: large runs, quick looks, and a base for tuning the search bounds.",
-    avoid_when="Dense seeding or noisy depth, where the image information of two_phase pays off.",
+    best_for="Runs where only triangulated points are available, and as a 3D-only baseline. The linking kernel is fast, "
+             "but writing the results to the run store dominates its run time today (see docs/trackers.md, speed).",
+    avoid_when="You want the best quality or the shortest run time on the standard pipeline (two_phase).",
     typical_datasets="Any with triangulated points.",
     plugin_module="openptv2.plugins.default_tracking",
 )

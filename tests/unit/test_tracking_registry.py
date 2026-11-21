@@ -103,7 +103,9 @@ def test_capabilities_that_differ():
     assert get_tracker_info("fast_3d").supports_2d is False
     assert get_tracker_info("two_phase").supports_2d is True
     assert get_tracker_info("trackcorr").supports_postprocessing is True
-    assert get_tracker_info("fast_3d").speed_ranking == "fastest"
+    # measured on the benchmark (docs/trackers.md): two_phase 4 s, fast_3d 23 s, trackcorr 35 s
+    assert get_tracker_info("two_phase").speed_ranking == "fastest"
+    assert get_tracker_info("trackcorr").speed_ranking == "slow"
     assert get_tracker_info("two_phase").accuracy_ranking == "highest"
 
 

@@ -69,12 +69,34 @@ mid-volume is almost always an occlusion or a dropout, not a real exit.
 | Picks links | best total pairing per group of conflicting candidates (Hungarian) | per particle, in the legacy order | cheapest link first, per pass (greedy) |
 | Checks | a link must be continued smoothly by the next one (two-hop) | epipolar match in all cameras, acceleration and angle limits | acceleration limit |
 | Gaps | carried inside the loop (`max_gap`) | bridged in post-processing | bridged in post-processing |
-| Choose it for | quality; the only one the add-on works with | comparison with the legacy software, old results | speed, quick looks, tuning the bounds |
+| Choose it for | quality and speed on the standard pipeline; the only one the add-on works with | comparison with the legacy software, old results | runs with triangulated points only; a 3D-only baseline |
 | Needs | the run store (the standard pipeline) | the targets of every camera | triangulated points |
 
-**How to choose.** Start with the default. Use `fast_3d` for a quick first look at a new run or when run time
-matters most. Use `trackcorr` when you must reproduce the legacy software. Do not mix their settings: each tracker
-has its own few extra settings, listed below.
+**How to choose.** Start with the default. Use `trackcorr` when you must reproduce the legacy software. Use `fast_3d`
+when you have only triangulated points, or want a baseline that ignores the images. Each tracker has its own few extra
+settings, listed below; do not carry them from one tracker to another.
+
+### What we measured
+
+One synthetic case with truth (1,220 particles per frame, 200 frames, real-like merge rate and brightness scatter;
+`scripts/synth_bench.py`, case `L1_d1_c0_k1_n200_s0.08_a0.18_f0.05_m0.75`), same search bounds for all, run time on one
+machine with nothing else running. Velocity error = RMS of the smoothed velocity error against the true flow, relative to
+the rms speed (lower is better); link precision = share of links that are true.
+
+| Tracker, direction | velocity error | link precision | long-track completeness | time |
+|---|---|---|---|---|
+| `two_phase`, both (default) | **0.105** | **0.971** | 0.62 | **4.0 s** |
+| `two_phase`, forward | 0.116 | 0.973 | 0.59 | 4.2 s |
+| `fast_3d`, both | 0.167 | 0.940 | 0.67 | 22.6 s |
+| `fast_3d`, forward | 0.157 | 0.941 | 0.67 | 11.3 s |
+| `trackcorr`, both | 0.220 | 0.940 | 0.54 | 34.6 s |
+| `trackcorr`, forward | n/a | n/a | n/a | 23.1 s |
+
+Two honest notes. (1) `fast_3d` is not fast today: its linking kernel takes about 2 s, and writing the results to the run
+store (one array per frame and camera, plus the links) takes about 12 s of the 15 s; `two_phase` writes only the links.
+Faster output is a follow-up (stage 3 of `docs/plans/2026-11-21-tracker-setup.md`). (2) `fast_3d` forward scored better than
+`fast_3d` both here; the backward pass of `fast_3d` is not helping on this case, so `direction: forward`
+is worth a try for it. The default stays `both` because it helps `two_phase`.
 
 ### Settings: shared, and per tracker
 
@@ -85,10 +107,12 @@ has its own few extra settings, listed below.
 | `direction`, `postprocess` | `direction` yes; `postprocess` not used (it carries gaps and confirms inside the loop) | both | both |
 | `holistic_rounds` | **yes (the add-on)** | not yet | not yet |
 | `leaf_weight`, `max_gap`, `confirm_*`, `q_*`, `blob_gate` | yes | no | no |
-| `epi_weight` | no | no | yes (0 = pure 3D; 1.0 is what the old "hybrid" used) |
+| `epi_weight`, `accel_gate` | no | no | yes (defaults 0 and off) |
 
-`dacc` and `angle` on `fast_3d` are read by the kernel only when its acceleration gate is switched on; this is
-tracked in the plan (stage 2) and until then `fast_3d` limits links by the velocity box and its cost.
+`fast_3d` reads `dacc` and `angle` only when `accel_gate: true` is set. Measured: with a loose `dacc` (6) the velocity error
+fell from 0.1665 to 0.1595 and link recall stayed at 0.999; with a tight `dacc` (0.4) link recall fell to 0.887, so
+take `dacc` from a probe run. `epi_weight` (the old "hybrid" penalty) changed the velocity error by 0.0004 (0.1665 to
+0.1661); the old "hybrid" never applied it at all (a bug, fixed), so its measured results were plain `fast_3d`.
 
 ## The two switches
 

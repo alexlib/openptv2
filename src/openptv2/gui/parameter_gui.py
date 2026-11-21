@@ -387,6 +387,7 @@ class TrackHandler(Handler):
                 postprocess=bool(track_params.postprocess),
                 holistic_rounds=int(track_params.holistic_rounds),
                 epi_weight=float(track_params.epi_weight),
+                accel_gate=bool(track_params.accel_gate),
             )
             t_dict, p_dict = apply_tracking_setup(
                 setup,
@@ -427,6 +428,7 @@ class Tracking_Params(HasTraits):
     tracker = Enum(*TRACKERS)
     direction = Enum(*DIRECTIONS)
     epi_weight = Float(0.0)
+    accel_gate = Bool(False)
     postprocess = Bool(True)
     dvxmin = Float()
     dvxmax = Float()
@@ -463,6 +465,7 @@ class Tracking_Params(HasTraits):
         self.postprocess = setup.postprocess
         self.holistic_rounds = setup.holistic_rounds
         self.epi_weight = setup.epi_weight
+        self.accel_gate = setup.accel_gate
 
     Tracking_Params_View = View(
         VGroup(
@@ -505,6 +508,8 @@ class Tracking_Params(HasTraits):
                 Item(name="leaf_weight", label="two_phase: 2D leaf weight (0=off):",
                      enabled_when="tracker == 'two_phase'"),
                 Item(name="epi_weight", label="fast_3d: epipolar penalty (0=off):",
+                     enabled_when="tracker == 'fast_3d'"),
+                Item(name="accel_gate", label="fast_3d: limit by dacc/angle:",
                      enabled_when="tracker == 'fast_3d'"),
                 Item(name="holistic_rounds", label="Merged-blob loop rounds (two_phase; 0=off):",
                      enabled_when="tracker == 'two_phase'"),

@@ -45,9 +45,12 @@ class Tracking:
         label = "forward + backward" if both else "forward"
 
         if setup.tracker == "fast_3d" or getattr(self.exp, "track3d", False):
-            print(f"Running fast_3d tracking ({label}, epi_weight {setup.epi_weight:g})...")
-            if tracker._run is not None:
-                tracker._run._w_epi = float(setup.epi_weight)
+            print(
+                f"Running fast_3d tracking ({label}, epi_weight {setup.epi_weight:g}, "
+                f"accel_gate {setup.accel_gate})..."
+            )
+            tracker.w_epi = float(setup.epi_weight)
+            tracker.gate_dacc = bool(setup.accel_gate)
             tracker.full_forward_3d()
             if both:
                 tracker.full_backward()

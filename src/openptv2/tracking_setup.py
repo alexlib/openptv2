@@ -84,6 +84,7 @@ class TrackingSetup:
     postprocess: bool = True
     holistic_rounds: int = 0
     epi_weight: float = 0.0           # fast_3d only: soft epipolar penalty, 0 = pure 3D
+    accel_gate: bool = False          # fast_3d only: also refuse links beyond dacc / angle
     custom: bool = False
     notes: tuple[str, ...] = field(default_factory=tuple)
 
@@ -153,6 +154,7 @@ def resolve_tracking_setup(
             break
 
     legacy_direction: str | None = None
+    accel_gate = False
     epi_weight = 0.0
     legacy_rounds = 0
 
@@ -192,6 +194,7 @@ def resolve_tracking_setup(
     if tracker == "fast_3d":
         sub = track.get("fast_3d") if isinstance(track.get("fast_3d"), Mapping) else {}
         epi_weight = float(track.get("epi_weight", sub.get("epi_weight", epi_weight)))
+        accel_gate = bool(track.get("accel_gate", sub.get("accel_gate", False)))
 
     # direction: the new key, then the old keys, then what an old name implied, then the default
     direction = _old_direction_key(track) or legacy_direction or DEFAULT_DIRECTION
@@ -216,6 +219,7 @@ def resolve_tracking_setup(
         postprocess=postprocess,
         holistic_rounds=rounds,
         epi_weight=epi_weight,
+        accel_gate=accel_gate,
         notes=tuple(notes),
     )
 
@@ -250,6 +254,7 @@ def apply_tracking_setup(
     track["holistic_rounds"] = int(setup.holistic_rounds)
     if setup.tracker == "fast_3d":
         track["epi_weight"] = float(setup.epi_weight)
+        track["accel_gate"] = bool(setup.accel_gate)
     # keep the plugin selection in step with the tracker (older readers look at it)
     plugins["selected_tracking"] = setup.tracker
     # the engine flags the kernels still read

@@ -126,6 +126,9 @@ class Tracker:
         self._run: TrackingRun | None = None
         self._current_step: int | None = None
         self._is_initialized = False
+        # fast_3d settings; restart() builds a new TrackingRun, so they live here and are copied in
+        self.w_epi = 0.0          # soft epipolar penalty weight, 0 = pure 3D
+        self.gate_dacc = False    # also refuse links beyond dacc / dangle
 
     def restart(self) -> None:
         """
@@ -155,6 +158,8 @@ class Tracker:
             app_weight=self._app_weight,
             use_grid=self._use_grid,
         )
+        self._run._w_epi = float(self.w_epi)
+        self._run._gate_dacc = bool(self.gate_dacc)
 
         # Initialize forward tracking
         track_forward_start(self._run)

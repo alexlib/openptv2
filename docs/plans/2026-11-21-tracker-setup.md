@@ -4,6 +4,12 @@ Date: 2026-11-21. Branch `plan/what-we-missed`. Follows the comparison of `3d_hy
 (they are near-twins under different names) and the legacy comparison in
 `2026-11-21-detection-hypotheses-and-events.md` section 9.
 
+## 0. Status (2026-11-22)
+
+Decisions A, B, C taken as recommended. **Stage 1 done** (commit f715c77e): `tracking_setup.py`, loader, plugins, GUI, batch
+(`--tracker`, `--direction`, `--holistic-rounds`), registry, warm-up, docs (`docs/trackers.md`), tests. **Stage 2 done**: see
+section 8. Stages 3 to 5: see section 8 for what the measurements say. Stage 6 waits one release (decision C).
+
 ## 1. The problem today
 
 One idea, many names, and the same setting spelled several ways.
@@ -131,3 +137,44 @@ The last full test run on this branch had three failures:
 `trackcorr`, not `track3d`) and `test_sequence_triangulation_method.py::test_lsq_triangulation_reprojects_better_than_pairs`.
 The first two test exactly the direction logic this plan rewrites, so stage 1 must start by finding out whether they
 fail on `main` too or only on this branch.
+
+## 8. Results of stages 1 and 2 (2026-11-22)
+
+Case `L1_d1_c0_k1_n200_s0.08_a0.18_f0.05_m0.75` (`scripts/synth_bench.py track` / `eval`), same bounds, run time with nothing
+else running. Table in `docs/trackers.md`.
+
+| Tracker, direction | velocity error | link precision | time |
+|---|---|---|---|
+| two_phase, both (new default) | 0.105 | 0.971 | 4.0 s |
+| two_phase, forward | 0.116 | 0.973 | 4.2 s |
+| fast_3d, both | 0.167 | 0.940 | 22.6 s |
+| fast_3d, forward | 0.157 | 0.941 | 11.3 s |
+| trackcorr (legacy port), both | 0.220 | 0.940 | 34.6 s |
+| trackcorr, forward | not scored | | 23.1 s |
+
+Findings that change the plan:
+
+1. **The old "3d_hybrid" never applied its epipolar penalty.** `full_forward_3d()` builds a new run object, and the flags
+   were set on the old one. Its "gain over fast 3D" was zero by construction; the earlier 0.124 against 0.155 comparison
+   was bounds and direction, not the penalty. Fixed (flags live on the `Tracker`; test added). With the penalty really on,
+   `epi_weight` 1.0 changes velocity error 0.1665 to 0.1661: negligible, default 0.
+2. **`accel_gate`** (honouring `dacc`/`dangle` in `fast_3d`) is now a setting. Loose `dacc` 6: velocity error 0.1595 (4 %
+   better), link recall 0.999. Tight `dacc` 0.4: link recall 0.887. Default off; needs `dacc` from a probe run.
+3. **`fast_3d` is not fast.** Kernel about 2 s of 15 s; the rest is zarr output (per frame and camera: `write_targets` 800
+   calls, 4.9 s; `create_array` 7.3 s; `write_linkage` 200 calls, 3.9 s). `two_phase` writes only links and takes 4 s.
+   So the registry no longer calls `fast_3d` the fastest.
+4. **Backward does not help `fast_3d` here** (0.157 forward against 0.167 both). It does help `two_phase` (0.116 to 0.105).
+5. **Pre-existing, found on the way:** `two_phase` crashed on a frame with zero particles (`reshape(0, -1)`); fixed with a test.
+   `tests/unit/test_sequence_triangulation_method.py::test_lsq_triangulation_reprojects_better_than_pairs` fails before and
+   after (run store missing), unrelated.
+
+## 9. What is left
+
+- **Stage 3, speed of `fast_3d` and `trackcorr`.** The target is the output path, not the kernel: write targets and links
+  once per run (or per block) instead of one zarr array per frame and camera. Touches `algorithms/tracking_frame_buf.py`
+  (Cython; needs the rebuild and the pure-Python fallback tests). Expected: `fast_3d` from 22 s toward the 4 s of `two_phase`.
+- **Stage 4, one direction mechanism.** Now each tracker keeps its own backward pass (two_phase: reversed frames + merge;
+  trackcorr, fast_3d: `full_backward` + reciprocity). Finding 4 says a common merge is worth testing only after stage 3.
+- **Stage 5, holistic for `fast_3d`.** Its motivation (a cheap relink) is gone until stage 3 lands.
+- **Stage 6, deletion** of `unified`, `4be`, `hybrid_deltat_3d`, the splitter alias and `tracking_presets.py` after one
+  release of warnings.
