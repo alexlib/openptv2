@@ -150,3 +150,59 @@ def test_trajectories_cache_round_trip(tmp_path):
     assert n == 2 and g["pos"].shape == (6, 3)
     vel = np.asarray(g["vel"][:])
     assert np.isclose(np.abs(vel).max(), 2e-3)                    # the fast track: 2 mm per frame, in metres
+
+
+def _stub_two_phase(monkeypatch, cfg):
+    """A two_phase plugin on a stub experiment whose store has frames 1..3; records which path ran."""
+    from types import SimpleNamespace
+
+    from openptv2.plugins import two_phase_tracking as tp
+
+    store = SimpleNamespace(frames=lambda: [1, 2, 3])
+    exp = SimpleNamespace(pm=SimpleNamespace(parameters={"track": cfg}), _store=store, cals=[], cpar=None,
+                          spar=None)
+    ran = []
+    monkeypatch.setattr(tp, "track_store", lambda *a, **k: ran.append("linker"))
+    import openptv2.holistic as hol
+
+    monkeypatch.setattr(hol, "run_holistic_experiment", lambda e, s, f, c, rounds: ran.append(("holistic", rounds)))
+    return tp, exp, ran
+
+
+def test_two_phase_is_plain_by_default(monkeypatch):
+    tp, exp, ran = _stub_two_phase(monkeypatch, {})
+    tp.Tracking(exp=exp).do_tracking()
+    assert ran == ["linker"]
+
+
+def test_two_phase_runs_the_loop_when_rounds_are_set(monkeypatch):
+    tp, exp, ran = _stub_two_phase(monkeypatch, {"holistic_rounds": 3})
+    tp.Tracking(exp=exp).do_tracking()
+    assert ran == [("holistic", 3)]
+
+
+def test_holistic_name_is_two_phase_with_two_rounds(monkeypatch):
+    from openptv2.plugins import holistic_tracking
+
+    tp, exp, ran = _stub_two_phase(monkeypatch, {})
+    holistic_tracking.Tracking(exp=exp).do_tracking()
+    assert ran == [("holistic", 2)]
+    tp, exp, ran = _stub_two_phase(monkeypatch, {"holistic_rounds": 0})
+    holistic_tracking.Tracking(exp=exp).do_tracking()
+    assert ran == ["linker"]
+
+
+def test_retired_trackers_are_hidden_but_resolve():
+    from openptv2.plugins.loader import discover_available_plugins, resolve_plugin_module
+    from openptv2.tracking_presets import TRACKER_CHOICES, infer_tracker
+
+    shown = set(discover_available_plugins(None)["available_tracking"])
+    assert not shown & {"unified", "4be", "four_be", "hybrid_deltat_3d", "holistic", "splitter_tracking"}
+    assert {"two_phase", "priority_segment_3d", "trackcorr"} <= shown
+    assert [k for k, _ in TRACKER_CHOICES] == ["priority_segment_3d", "trackcorr", "two_phase"]
+    assert infer_tracker({"selected_tracking": "unified"}) == "two_phase"
+    assert infer_tracker({"selected_tracking": "holistic"}) == "two_phase"
+    for name in ("unified", "4be", "hybrid_deltat_3d", "holistic"):          # old YAMLs keep running
+        from openptv2.plugins.loader import BUILTIN_TRACKING_PLUGINS
+
+        assert resolve_plugin_module(name, BUILTIN_TRACKING_PLUGINS) is not None

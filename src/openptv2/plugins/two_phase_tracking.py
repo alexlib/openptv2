@@ -1215,8 +1215,10 @@ class Tracking:
     Reads ``leaf_weight`` and ``dvxmax`` (as v_max) from the experiment's
     ``track`` parameter section, loads 3D positions + 2D leaves from the
     RunStore, runs two-phase matching, and writes links back
-    (:func:`track_store`).
+    (:func:`track_store`). With ``holistic_rounds`` > 0 the linker runs inside the holistic loop.
     """
+
+    default_holistic_rounds = 0
 
     q_model = DEFAULT_Q_MODEL
 
@@ -1300,6 +1302,14 @@ class Tracking:
             tracker = self.ptv.py_trackcorr_init(self.exp)
             self.exp.tracker = tracker
             tracker.full_forward()
+            return
+
+        rounds = int(track_cfg.get("holistic_rounds", self.default_holistic_rounds))
+        if rounds > 0:
+            # Optional merged-blob inference loop around this linker (docs/holistic-tracking.md).
+            from openptv2.holistic import run_holistic_experiment
+
+            run_holistic_experiment(self.exp, store, frames, track_cfg, rounds)
             return
 
         track_store(

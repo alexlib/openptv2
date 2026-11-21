@@ -124,3 +124,16 @@ directly if you need them. Both are permissively MIT-licensed.
 
 If you publish with these methods, please cite the original authors above
 in addition to openptv2.
+
+## Which trackers to use (2026-11 simplification)
+
+Three trackers are offered in the GUI and in `plugins.available_tracking`:
+
+| Tracker | Use it for |
+|---|---|
+| `priority_segment_3d` (default) | fast 3D linking; existing runs |
+| `trackcorr` | classic OpenPTV epipolar tracking (forward/backward/post-process are settings, not separate trackers) |
+| `two_phase` | best linker on the truth benchmark; `track.holistic_rounds: 2` adds the merged-blob loop (`docs/holistic-tracking.md`) |
+
+`unified`, `4be`, `hybrid_deltat_3d`, `splitter_tracking` and `holistic` are retired from the pickers. Saved YAMLs
+that name them still run (with a log warning); `holistic` means `two_phase` with `holistic_rounds: 2`.

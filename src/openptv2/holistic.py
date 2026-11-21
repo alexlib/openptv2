@@ -201,3 +201,33 @@ def write_trajectories_cache(store: Any, frames: list[int], n_cams: int, linkage
 def store_blob_centres(arr: dict, frame: int, cam: int) -> np.ndarray:
     """Blob centres (px) of ``frame`` and ``cam`` from :func:`openptv2.merge_post.arrays_from_store` output."""
     return arr["blobs"][(int(frame), cam)][0]
+
+
+def run_holistic_experiment(exp: Any, store: Any, frames: list[int], track_cfg: dict, rounds: int) -> None:
+    """Run the holistic loop for an experiment object, linking with ``two_phase``.
+
+    Called by the ``two_phase`` plugin when ``track.holistic_rounds`` > 0 (YAML keys: ``holistic_rounds``,
+    ``holistic_min_resid``, ``holistic_partner_min_len``, ``holistic_extend``).
+    """
+    from openptv2.plugins.two_phase_tracking import track_store
+
+    cals, cpar, vpar = getattr(exp, "cals", None), getattr(exp, "cpar", None), getattr(exp, "vpar", None)
+
+    def relink():
+        return track_store(store, frames, track_cfg, cals, cpar)
+
+    run_holistic(store, frames, cpar, list(cals), vpar, relink, rounds=rounds,
+                 min_resid=float(track_cfg.get("holistic_min_resid", 0.25)),
+                 partner_min_len=int(track_cfg.get("holistic_partner_min_len", 10)))
+    passes = int(track_cfg.get("holistic_extend", 0))
+    if passes > 0:                                        # strict track-assisted extension on the final tracks
+        from openptv2.storage import RunStore
+        from openptv2.track_assisted import run_corrective_pass
+
+        store = RunStore(store.store_path, mode="a")          # fresh object: no cached linkage
+        spar = exp.spar
+        spar.first, spar.last = frames[0], frames[-1]
+        run_corrective_pass(cpar, vpar, exp.track_par, spar, list(cals), store, max_passes=passes,
+                            forward=True, release_ghosts=False, radius_px=1.2, max_ray_miss_mm=0.15,
+                            max_pos_err_mm=0.3)
+        write_trajectories_cache(RunStore(store.store_path, mode="a"), frames, len(cals))

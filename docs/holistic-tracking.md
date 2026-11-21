@@ -1,4 +1,4 @@
-# Holistic tracking (`holistic`)
+# Holistic tracking (`two_phase` with `holistic_rounds`)
 
 Detection, stereo matching and tracking normally run once each, in that order. The weak point is the **merged blob**:
 two or more particles in one detected blob. The matcher gives the blob to one point, so the kept particle gets a
@@ -6,7 +6,7 @@ shifted centre, its partner is dropped, and the partner's light corrupts the kep
 benchmark about 27 % of blob observations are merged (about half that on real wp2); with exact data the chain is
 accurate to 0.0009, so this is the main loss.
 
-`holistic` lets tracks and blobs resolve each other. Per round:
+The holistic loop (an option of `two_phase`, not a separate tracker) lets tracks and blobs resolve each other. Per round:
 
 1. link with `two_phase`;
 2. infer from the tracks which blobs hold several particles;
@@ -23,20 +23,23 @@ real on the benchmark) and the points are linked once more.
 
 ```yaml
 plugins:
-  selected_tracking: holistic   # GUI: Plugins page, tracking plugin
+  selected_tracking: two_phase  # GUI: Tracking Parameters -> Tracker
 track:
-  holistic_rounds: 2          # default
+  holistic_rounds: 2          # 0 (default) = plain two_phase; GUI: "Merged-blob loop rounds"
   holistic_min_resid: 0.25    # smallest unexplained brightness that makes a birth
   holistic_partner_min_len: 10
+  holistic_extend: 0          # passes of strict track-assisted extension after the loop
   noise_aware_confirm: true   # two_phase link confirmation widens for noisy points (sparse data only)
 ```
+
+The old name `selected_tracking: holistic` still works: it is `two_phase` with `holistic_rounds` defaulting to 2.
 
 Needs a zarr run store with correspondences. Output is the usual `ptv_is` linkage; the store also gets an
 observation table (`obs/`) and per-point sigma (`psigma/`). Cost: about 0.6 s per frame per round (Python).
 
 ## Measured (details: `docs/plans/2026-11-20-holistic-ptv.md`)
 
-| | `two_phase` | `holistic` |
+| | `two_phase` | with `holistic_rounds: 2` |
 |---|---|---|
 | Rendered images, 200 frames: velocity error | 0.140 | 0.108 |
 | Same: yield / long-track completeness | 0.691 / 0.544 | 0.741 / 0.670 |
@@ -48,17 +51,6 @@ observation table (`obs/`) and per-point sigma (`psigma/`). Cost: about 0.6 s pe
 - Dense data gains little: at x4 the yield is 0.25 against a ceiling of 0.85.
 - It rests on `two_phase` tracks; if those are poor the blob inference is poor.
 - Truth-free check on your own data: leave-one-camera-out (`openptv2.loco`) and `scripts/holistic_real.py`.
-
-## Using it from `unified`
-
-`unified` delegates to the holistic loop when its `track:` section has `holistic: true` (default off; the other
-`unified` post-passes are then not run, because the loop does its own linking and cleanup):
-
-```yaml
-track:
-  holistic: true
-  holistic_rounds: 2
-```
 
 ## Viewing the tracks
 

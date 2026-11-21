@@ -213,10 +213,8 @@ def apply_preset(
 
 TRACKER_CHOICES = [
     ("priority_segment_3d", "OpenPTV Fast 3D (Default - Cython)"),
-    ("4be", "OpenPTV 4BE (Four-Frame Best Estimate)"),
     ("trackcorr", "OpenPTV Epipolar (Multi-Camera 2D+3D)"),
-    ("two_phase", "Two-Phase 3D+2D Leaf Ranking"),
-    ("holistic", "Holistic (merged-blob aware matching + tracking loop)"),
+    ("two_phase", "Two-Phase 3D+2D Leaf Ranking (optional merged-blob loop)"),
 ]
 
 DIRECTION_CHOICES = [
@@ -227,10 +225,8 @@ DIRECTION_CHOICES = [
 # Trackers whose engine supports a backward / bidirectional pass and accumulation.
 TRACKER_SUPPORTS_BACKWARD: Dict[str, bool] = {
     "priority_segment_3d": True,
-    "4be": True,
     "trackcorr": True,
     "two_phase": False,
-    "holistic": False,
 }
 
 # Trackers whose do_tracking() supports post-processing (reciprocity + cold start + gap relinking).
@@ -253,6 +249,14 @@ _LEGACY_TRACKER_ALIASES = {
     "standard_forward": "trackcorr",
     "two_directional": "trackcorr",
     "splitter_tracking": "trackcorr",
+    # Retired from the picker (still resolvable by name, with a warning): shown as the nearest kept tracker.
+    "4be": "priority_segment_3d",
+    "four_be": "priority_segment_3d",
+    "hybrid_deltat_3d": "priority_segment_3d",
+    "multi_deltat_3d": "priority_segment_3d",
+    "unified": "two_phase",
+    "unified_tracking": "two_phase",
+    "holistic": "two_phase",     # two_phase with holistic_rounds (default 2 when the alias is used)
 }
 
 # Legacy preset names that ran forward+backward (used only when a saved

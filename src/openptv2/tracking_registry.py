@@ -551,6 +551,42 @@ TWO_PHASE_INFO = TrackerInfo(
     accuracy_ranking="standard",
     parameters=(
         ParameterGuide(
+            name="holistic_rounds",
+            type="int",
+            default="0",
+            description="0 = plain two_phase. N > 0 wraps the linker in the merged-blob loop: N rounds of refine, birth and re-link; the last round's link is the output.",
+            how_to_choose="Off by default (slower). 2 gets most of the gain; a third round changed little on the benchmarks.",
+            typical_range="1 - 3",
+            unit="",
+        ),
+        ParameterGuide(
+            name="holistic_min_resid",
+            type="float",
+            default="0.25",
+            description="Smallest unexplained brightness (in units of a typical particle) that creates a birth.",
+            how_to_choose="Lower finds more hidden particles but more false ones; unlinked births are dropped anyway.",
+            typical_range="0.15 - 0.5",
+            unit="",
+        ),
+        ParameterGuide(
+            name="holistic_partner_min_len",
+            type="int",
+            default="10",
+            description="Tracks shorter than this do not lend their predicted position to a blob partner.",
+            how_to_choose="Keeps young, possibly wrong tracks from corrupting their neighbours.",
+            typical_range="5 - 20",
+            unit="frames",
+        ),
+        ParameterGuide(
+            name="holistic_extend",
+            type="int",
+            default="0",
+            description="Passes of strict track-assisted extension after the loop (needs holistic_rounds > 0).",
+            how_to_choose="Helps at moderate density; not at very dense data.",
+            typical_range="0 - 2",
+            unit="passes",
+        ),
+        ParameterGuide(
             name="v_max",
             type="float",
             default="5.0",
@@ -596,69 +632,18 @@ TWO_PHASE_INFO = TrackerInfo(
 
 HOLISTIC_INFO = TrackerInfo(
     name="holistic",
-    display_name="Holistic (merged-blob aware matching + tracking loop)",
-    short_description="Two-Phase tracking repeated with merged-blob correction and births of particles hidden in other blobs",
-    algorithm_summary=(
-        "Rounds of: link with two_phase; infer which blobs hold several particles (from the tracks); estimate "
-        "each particle's brightness per camera; give each particle its own effective pixel observation in a shared "
-        "blob and re-triangulate; add particles hidden in other particles' blobs from the unexplained brightness; "
-        "link again. Positions and tracks resolve each other's ambiguities instead of being decided once in sequence."
-    ),
-    algorithm_detail=(
-        "Implemented in holistic.py (run_holistic), blob_model.py, merge_refine.py, merge_post.py and "
-        "plugins/holistic_tracking.py. Uses two_phase as the linker (track_store); needs the run store (zarr). "
-        "Writes an observation table and per-point sigma to the store; two_phase then widens its link-confirmation "
-        "tolerance for noisy points (sparse data only). About 0.6 s per frame per round in Python."
-    ),
-    supports_backward=False,
+    display_name="Holistic (retired name: two_phase with holistic_rounds)",
+    short_description="Alias of two_phase with track.holistic_rounds defaulting to 2 (merged-blob inference loop)",
+    algorithm_summary="See two_phase; set track.holistic_rounds > 0 there. Implemented in holistic.py.",
     supports_new_particles=True,
     supports_2d=True,
-    supports_postprocessing=False,
     supports_gap_relinking=True,
-    supports_multimedia=False,
-    supports_splitter=False,
-    supports_cost_weights=False,
     speed_ranking="slow",
     density_ranking="moderate",
     accuracy_ranking="high",
-    parameters=(
-        ParameterGuide(
-            name="holistic_rounds",
-            type="int",
-            default="2",
-            description="Rounds of refine, birth and re-link; the last round's link is the output.",
-            how_to_choose="2 gets most of the gain; a third round changed little on the benchmarks.",
-            typical_range="1 - 3",
-            unit="",
-        ),
-        ParameterGuide(
-            name="holistic_min_resid",
-            type="float",
-            default="0.25",
-            description="Smallest unexplained brightness (in units of a typical particle) that creates a birth.",
-            how_to_choose="Lower finds more hidden particles but more false ones; unlinked births are dropped anyway.",
-            typical_range="0.15 - 0.5",
-            unit="",
-        ),
-        ParameterGuide(
-            name="holistic_partner_min_len",
-            type="int",
-            default="10",
-            description="Tracks shorter than this do not lend their predicted position to a blob partner.",
-            how_to_choose="Keeps young, possibly wrong tracks from corrupting their neighbours.",
-            typical_range="5 - 20",
-            unit="frames",
-        ),
-    ),
-    best_for=(
-        "Data where many blobs hold several particles (moderate to high density) and the two_phase tracks are "
-        "good enough to bootstrap from; wants longer, smoother tracks and fewer lost particles."
-    ),
-    avoid_when=(
-        "Very dense data (x4 of the benchmark: gain is modest) or when speed matters more than yield; "
-        "needs a zarr run store."
-    ),
-    typical_datasets="Particle-laden flows imaged with several cameras at moderate seeding density.",
+    parameters=(),
+    best_for="Existing YAMLs that select 'holistic'.",
+    avoid_when="New experiments: select two_phase and set holistic_rounds.",
 )
 
 

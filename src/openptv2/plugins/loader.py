@@ -45,6 +45,13 @@ _DEPRECATED_TRACKING_PLUGINS = frozenset({
     "openptv_epipolar",
 })
 
+# Still resolvable by name (saved YAMLs, scripts), but not offered in pickers: use the kept trackers
+# ``priority_segment_3d`` (default), ``trackcorr`` and ``two_phase`` (``holistic_rounds`` > 0 for the merged-blob loop).
+RETIRED_TRACKING_PLUGINS = frozenset({
+    "4be", "four_be", "hybrid_deltat_3d", "multi_deltat_3d", "splitter_tracking",
+    "unified", "unified_tracking", "holistic",
+})
+
 BUILTIN_SEQUENCE_PLUGINS = {
     # "default" is the core algorithm wrapped in the plugin contract, so
     # every caller (GUI, batch) can always go through the same code path
@@ -144,12 +151,18 @@ def resolve_plugin_module(
 ) -> ModuleType:
     """Resolve a plugin name to its module, built-ins first."""
     canonical = _canonical_name(name)
-    if registry is BUILTIN_TRACKING_PLUGINS and (
+    if registry is BUILTIN_TRACKING_PLUGINS and name in RETIRED_TRACKING_PLUGINS:
+        _log.warning(
+            "Tracking plugin %r is retired; use 'two_phase' (optionally with track.holistic_rounds), "
+            "'priority_segment_3d' or 'trackcorr'.",
+            name,
+        )
+    elif registry is BUILTIN_TRACKING_PLUGINS and (
         name in _DEPRECATED_TRACKING_PLUGINS
         or canonical in _DEPRECATED_TRACKING_PLUGINS
     ):
         _log.info(
-            "Tracking plugin %r is deprecated; consider migrating to 'unified'.",
+            "Tracking plugin %r is deprecated; consider migrating to 'two_phase'.",
             name,
         )
 
@@ -207,7 +220,7 @@ def discover_available_plugins(plugins_dir: Path | str | None = None) -> dict:
     extra scripts sit in an experiment-local ``plugins/`` directory.
     """
     available_sequence = set(BUILTIN_SEQUENCE_PLUGINS)
-    available_tracking = set(BUILTIN_TRACKING_PLUGINS)
+    available_tracking = set(BUILTIN_TRACKING_PLUGINS) - RETIRED_TRACKING_PLUGINS
 
     if plugins_dir is not None:
         plugins_dir = Path(plugins_dir)
