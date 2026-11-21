@@ -322,3 +322,22 @@ Pixel count and the fits depend on the threshold and the particle image size, so
 
 **Decision.** Go on to D2 with the split as an extra, weighted measurement at conflict sites and faint candidates only
 where a prediction asks for them; D2's gate decides whether it stays.
+
+### Where the holistic loop spends its time (profile, 2026-11-21)
+
+`two_phase` + `holistic_rounds=2` on the D0 case, 200 frames, cProfile (172 s under the profiler, 157 s without):
+
+| part | seconds | what it is |
+|---|---:|---|
+| `refine_merged` (2 rounds) | 82 | per-observation merged-blob refinement; 836,664 calls of `split_blob_effective` (28 s), `project_pixels` (22 s), 5.6 million `sig_of` calls, the rest is Python loop overhead |
+| `triangulate_weighted` | 29 | 1,600 calls (frame by camera set), each a weighted least squares |
+| `relink` | 28 | `two_phase` run again, 4 times, about 7 s each: the same cost as the base tracker |
+| `birth_targets` | 11 | particles hidden in other particles' blobs |
+| base `two_phase` and setup | about 58 | the 8 s tracker, store I/O and the rest |
+
+Nearly all of the loop is scalar Python called once per observation (250,000 per round), where each observation is
+independent of the others. That is the shape that vectorises, and compiles, well. A first estimate is that batching
+`split_blob_effective`, the projection and the weighted triangulation over a frame at a time in NumPy brings the 82 + 29 s
+to a few seconds, and Cython kernels for the three hot functions to about one. The four relinks cost what four
+`two_phase` runs cost and shrink only if the rounds are made incremental (relink only the tracks that changed).
+Target: whole loop at most 2x `two_phase` before D2 builds on it.
