@@ -152,3 +152,39 @@ held, soft priors; scored by leave-one-camera-out on the 104,067 clean points of
 Decision: tool and evidence, not a default step. Gate (depth jitter -20 %) not met; the held-out consistency gain is real.
 Next if wanted: add the known-length constraint (dumbbell or plate points) to the adjustment, then apply to the run and
 recompute the downstream statistics.
+
+## What we learned, end to end (2026-11-21)
+Pipeline: images -> detection -> calibration -> stereo matching -> tracking -> smoothing -> binned statistics.
+
+**Detection (images -> blobs).** The blob table is the information bottleneck. 27 % of benchmark observations (about half of
+that on real wp2) sit in merged blobs with a shifted centre; 14.6 % of particles have no blob in two cameras. The ceiling when
+every particle gets its own centre (velocity error 0.063 against 0.106 achieved) says the pixel level is the largest unused
+source of information. Blob attributes (brightness, count, path) recover a lot of it, not all.
+
+**Calibration.** The leave-one-camera-out floor of 0.30 px is about half systematic (smooth in image position and depth) and half
+detection noise. Joint self-calibration finds it (known-answer synthetic: exact recovery; real wp2: -17 % held-out) but does not
+change track jitter, moves absolute positions by 0.09 mm and cannot fix the scale (tracers constrain consistency, not length).
+Even the "true" processing calibration of the synthetic data carries a hidden mismatch.
+
+**Stereo matching.** The decision is taken once, without time. At x4 the matcher cloud holds 26-40 % of the particles; the 2-clean
+group (21 % of particles) is matched 34 % of the time; 16 % of the 2-camera pair candidates are real. Using time afterwards
+recovers part (births: 49 -> 72 % at default density). A pixel-domain flow prior cannot confirm candidates cleanly (72 %
+precision) because merging changes frame to frame.
+
+**Tracking.** The chain is accurate with exact data (0.0009). Noise-aware confirmation, births from residual brightness and
+dropping unlinked births give longer, cleaner tracks: real wp2/wp1 (1,072 frames) mean length +42 %, jump share /3.5, jitter
+-30 %; benchmark velocity error -24 %. Temporal persistence is the best ghost filter: linked births 95 % real, unlinked 53 %.
+
+**Statistics.** Phase-averaged velocity, MKE, VSS and eps do not move (< 2 %) with any of this. The apparent gap to the legacy
+table was a pipeline asymmetry (a 2.5 m/s cap applied to ours, not to legacy): with the same cap velocity -1.6 %, MKE -2 %,
+VSS +12 %, eps +24 % (legacy noise). Reconnect, repair, Savitzky-Golay and voxel averaging already absorb random noise.
+
+**The pattern.** Downstream outputs are insensitive to *noise* (smoothed and averaged away) and sensitive to *bias* and
+*selection*: scale and calibration, which particles are kept (yield 0.74 is not random: fast, dense, merged regions lose more),
+filters and masks. We optimised noise and yield; the leverage left is bias and selection, and detection upstream.
+
+**Next, in this order.** (1) Known-length constraint (dumbbell/plate) in the self-calibration, then apply and recompute the
+statistics: settles scale and absolute accuracy. (2) Selection audit: yield and velocity bias by speed, depth, voxel, jet region
+against what a uniform seeding would give. (3) Pixel-level fit for merged and missing blobs (joint two-Gaussian), the root of
+matching and tracking losses. (4) Calibration as one more latent variable inside the holistic loop (match -> calibrate ->
+match). Housekeeping: merge PR #44, update docs, speed work.
