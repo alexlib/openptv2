@@ -79,6 +79,11 @@ def main() -> None:
     ap.add_argument("--nfev", type=int, default=25)
     ap.add_argument("--ext-sigma-scale", type=float, default=1.0,
                     help="scale of the soft prior on the exterior parameters (smaller = the cameras move less)")
+    ap.add_argument("--body", action="store_true",
+                    help="anchor the fit to the regular calibration's target body (known 3D calblock points seen in the "
+                         "calibration images): fixes the metric scale and the world frame")
+    ap.add_argument("--body-sigma-mm", type=float, default=0.05, help="position prior of the known body points")
+    ap.add_argument("--free-all", action="store_true", help="hold no camera (use with --body, which fixes the frame)")
     ap.add_argument("--tracks", action="store_true",
                     help="re-triangulate every observation of the run with the old and with the new calibration of "
                          "the last variant and compare the track metrics (jitter, jump share)")
@@ -86,7 +91,7 @@ def main() -> None:
     a = ap.parse_args()
 
     from openptv2.merge_post import arrays_from_store
-    from openptv2.selfcal import joint_self_calibrate
+    from openptv2.selfcal import joint_self_calibrate, known_body_from_calibration
     from openptv2.storage import RunStore
 
     run = Path(a.run)
@@ -104,6 +109,10 @@ def main() -> None:
     fit_idx = rng.choice(np.flatnonzero(odd), min(a.n_fit, odd.sum()), replace=False)
     test = ~odd
     print(f"clean 4-camera points {clean.sum()}; fit on {len(fit_idx)} (odd frames), test on {test.sum()} (even frames)")
+    body = known_body_from_calibration(run, cals, cpar) if a.body else None
+    if body is not None:
+        print(f"known body: {len(body.xyz)} calibration-target points, seen per camera "
+              f"{np.isfinite(body.obs_px[:, :, 0]).sum(axis=0).tolist()}")
     base = loco_rms(xy[test], cals, cpar, vpar)
     print("baseline LOCO rms per camera (px, held-out):", np.round(base, 4).tolist(), "mean", round(float(np.mean(base)), 4))
     kinds = {
@@ -119,11 +128,14 @@ def main() -> None:
     }
     for name in a.variants:
         t0 = time.time()
-        res = joint_self_calibrate(xy[fit_idx], pos0[fit_idx], cals, cpar, max_nfev=a.nfev, ext_sigma_scale=a.ext_sigma_scale, **kinds[name])
+        res = joint_self_calibrate(xy[fit_idx], pos0[fit_idx], cals, cpar, max_nfev=a.nfev, ext_sigma_scale=a.ext_sigma_scale,
+                                  body=body, body_sigma_mm=a.body_sigma_mm, hold_cam=-1 if a.free_all else 0, **kinds[name])
         after = loco_rms(xy[test], res.cals, cpar, vpar)
         print(f"{name:10s} params {res.n_params:3d}  fit rms {res.rms_before_px:.4f} -> {res.rms_after_px:.4f} px | "
               f"nfev {res.nfev} ok={res.success} | held-out LOCO per camera {np.round(after, 4).tolist()} mean {np.mean(after):.4f} "
               f"({100 * (np.mean(after) / np.mean(base) - 1):+.1f} %)  [{time.time() - t0:.0f} s]")
+        if body is not None:
+            print(f"           known-body misfit after the fit: {res.body_rms_mm_after:.3f} mm (3D, rms)")
         if name == a.variants[-1]:
             for c, ch in res.change.items():
                 print("  camera", c, "parameter changes:", ch)

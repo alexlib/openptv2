@@ -188,3 +188,19 @@ statistics: settles scale and absolute accuracy. (2) Selection audit: yield and 
 against what a uniform seeding would give. (3) Pixel-level fit for merged and missing blobs (joint two-Gaussian), the root of
 matching and tracking losses. (4) Calibration as one more latent variable inside the holistic loop (match -> calibrate ->
 match). Housekeeping: merge PR #44, update docs, speed work.
+
+
+## Self-calibration anchored to a known object (2026-11-21, after merging PR #44)
+
+Decision: self-calibration is a tuning step that always comes after the regular calibration, and is anchored to metric
+units by a known 3D body (calibration target) and/or a dumbbell (known length). Implemented in `selfcal.py`
+(`KnownBody`, `Dumbbell`, `known_body_from_calibration`, `dumbbell_from_store`), `scripts/selfcal_real.py --body`.
+
+- Synthetic known answer: cameras stretched by 2 % about camera 1; tracers alone keep the wrong scale, a dumbbell restores
+  the camera positions to 0.1-0.2 mm (from up to 23 mm); a 40-point body recovers a 0.3 % error to within 0.6 mm.
+- Real wp2: scale factor of the target body 1.00021 -> 1.00005, held-out LOCO -2.8 %, global linear drift of the new cameras
+  < 0.12 % (unanchored: 0.5 %). The regular calibration already had the right scale. Only 10 usable body points; no dumbbell
+  frames exist in these datasets, so the dumbbell path is tested on synthetic data only.
+- Exterior priors (0.5 mm) hold the cameras near the regular calibration; a big scale error needs `ext_sigma_scale` raised.
+- Next: a dumbbell recording (or a moved calibration plate) through the volume would be the strong anchor; then apply the
+  anchored cameras to the full run and recompute velocities and the Eulerian statistics.

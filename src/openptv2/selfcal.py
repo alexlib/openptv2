@@ -10,6 +10,12 @@ corrected twice for the same error.
 The residual of tracer particles is a smooth, repeatable function of image position and depth (see
 ``scripts/loco_map.py``): a calibration error. A plate calibration constrains the depth direction weakly; tracers fill
 the whole volume.
+
+Tracers constrain consistency, not scale: a uniform stretch of the volume reprojects equally well. Self-calibration is
+therefore a tuning step that comes *after* the regular calibration (plate / target body), which supplies the starting
+cameras, and it is anchored to metric units by a known object seen by the same cameras: a ``KnownBody`` (points with known
+world coordinates, e.g. the calibration target) and/or a ``Dumbbell`` (two points a known distance apart, moved through
+the volume). Both enter the same fit; with neither, the result is only defined up to a scale.
 """
 
 from __future__ import annotations
@@ -56,6 +62,116 @@ def _add_set(c, v, names):
 
 
 @dataclass
+class KnownBody:
+    """Points with known world coordinates (mm) and their pixel observations: ``xyz`` ``(M, 3)``, ``obs_px`` ``(M, C, 2)``."""
+
+    xyz: np.ndarray
+    obs_px: np.ndarray
+
+
+@dataclass
+class Dumbbell:
+    """Pairs of points a known distance apart: ``obs_px`` ``(K, 2, C, 2)`` pixels (NaN where a camera has no blob),
+    ``length_mm``; ``xyz0`` ``(K, 2, 3)`` optional starting positions (else triangulated from the cameras)."""
+
+    obs_px: np.ndarray
+    length_mm: float
+    xyz0: np.ndarray | None = None
+
+
+def triangulate_pixels(obs_px: np.ndarray, cals: list, cpar: Any, vpar: Any) -> np.ndarray:
+    """Least-squares 3D positions (mm) from pixel observations ``(N, C, 2)`` (NaN = camera unused)."""
+    from openptv2.loco import pixels_to_flat
+    from openptv2.orientation import point_positions
+
+    flat = np.stack([pixels_to_flat(obs_px[:, c], cals[c], cpar) for c in range(len(cals))], axis=1)
+    return np.asarray(point_positions(flat, cpar, cals, vpar, method="lsq")[0], float)
+
+
+def _detect_calibration_targets(base: Any, cam: int, cpar: Any) -> list:
+    """Targets detected in camera ``cam``'s calibration image. A calibration image that already has the camera's size is
+    used as it is; a larger (multiplexed splitter) frame is split first."""
+    from imageio.v3 import imread
+    from skimage.color import rgb2gray
+    from skimage.util import img_as_ubyte
+
+    from openptv2.autocalibration import _cam_view, _tpar_from_dataset, cam_files
+    from openptv2.image_processing import preprocess_image
+    from openptv2.segmentation import target_recognition
+
+    img_path, _ori, _addpar = cam_files(base, cam)
+    tpar = _tpar_from_dataset(base)
+    if tpar is None or not img_path.exists():
+        return []
+    raw = imread(img_path)
+    if raw.shape[:2] != (cpar.imy, cpar.imx):
+        raw = _cam_view(base, cam, raw)
+    if raw.ndim == 3:
+        raw = rgb2gray(raw)
+    hp = preprocess_image(img_as_ubyte(raw), cpar.hp_flag or 1, cpar, 25)
+    found = target_recognition(hp, tpar, cam, cpar)
+    if not found:
+        return []
+    if hasattr(found, "sort_y"):
+        found.sort_y()
+    return list(found)
+
+
+def known_body_from_calibration(base: Any, cals: list, cpar: Any, *, eps: int = 15, min_cams: int = 2,
+                                max_px: float = 3.0) -> KnownBody:
+    """The regular calibration's target body as a scale anchor: the calblock's known 3D points matched (with ``sortgrid``
+    and the current cameras) to the targets detected in each camera's calibration image. ``base`` is the experiment folder
+    holding ``cal/`` and the parameter YAML. Points seen by fewer than ``min_cams`` cameras are dropped."""
+    from pathlib import Path
+
+    from openptv2.algorithms.sortgrid import read_calblock, sortgrid
+    from openptv2.autocalibration import resolve_calblock
+
+    base = Path(base)
+    fix, nfix = read_calblock(str(resolve_calblock(base)))
+    fix = np.asarray(fix, float)
+    obs = np.full((nfix, len(cals), 2), np.nan)
+    for c, cal in enumerate(cals):
+        pix = _detect_calibration_targets(base, c, cpar)
+        if not pix:
+            continue
+        sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), max(15, eps), pix)
+        for i, t in enumerate(sorted_pix):
+            if t.pnr >= 0:
+                obs[i, c] = (t.x, t.y)
+    for c, cal in enumerate(cals):
+        seen = np.isfinite(obs[:, c, 0])
+        if seen.any():
+            err = np.linalg.norm(project_pixels(fix[:nfix][seen], cal, cpar) - obs[seen, c], axis=1)
+            idx = np.flatnonzero(seen)[err > max_px]
+            obs[idx, c] = np.nan
+    keep = np.isfinite(obs[:, :, 0]).sum(axis=1) >= min_cams
+    return KnownBody(fix[:nfix][keep], obs[keep])
+
+
+def dumbbell_from_store(store: Any, num_cams: int, length_mm: float, *, first: int, last: int, step: int = 1) -> Dumbbell:
+    """Dumbbell frames from a run store: every frame with exactly two targets in each camera gives one pair. As in the
+    standalone dumbbell calibration, the two targets are assumed to be listed in the same order (end A, end B) in every
+    camera."""
+    rows = []
+    for frame in range(first, last + 1, step):
+        per_cam = []
+        for cam in range(num_cams):
+            try:
+                targs = list(store.read_targets(cam, frame))
+            except Exception:
+                targs = []
+            if len(targs) != 2:
+                break
+            per_cam.append([t.pos() for t in targs])
+        else:
+            rows.append(np.asarray(per_cam, float).transpose(1, 0, 2))          # (2, C, 2)
+    if not rows:
+        raise ValueError("no frame with exactly 2 targets in every camera")
+    return Dumbbell(np.asarray(rows), float(length_mm))
+
+
+@dataclass
 class SelfCalResult:
     cals: list
     rms_before_px: float
@@ -66,6 +182,9 @@ class SelfCalResult:
     change: dict
     success: bool
     nfev: int = 0
+    length_rms_mm_before: float | None = None      # dumbbell length error, if a Dumbbell was given
+    length_rms_mm_after: float | None = None
+    body_rms_mm_after: float | None = None         # known-body 3D misfit (triangulated vs known), if a KnownBody was given
 
 
 def joint_self_calibrate(
@@ -88,11 +207,43 @@ def joint_self_calibrate(
     huber_px: float = 0.7,
     max_nfev: int = 25,
     verbose: int = 0,
+    body: KnownBody | None = None,
+    dumbbell: Dumbbell | None = None,
+    vpar: Any = None,
+    body_sigma_mm: float = 0.02,
+    length_sigma_mm: float = 0.05,
 ) -> SelfCalResult:
     """Fit camera parameters and 3D positions to ``obs_px`` ``(N, C, 2)`` (NaN where a camera has no blob), starting from
-    positions ``x0`` ``(N, 3)`` mm. Returns new calibrations (the inputs are not modified)."""
+    positions ``x0`` ``(N, 3)`` mm. ``body`` / ``dumbbell`` anchor the scale (see the module docstring; ``vpar`` is needed to
+    triangulate dumbbell starts when ``Dumbbell.xyz0`` is None). Returns new calibrations (the inputs are not modified)."""
     obs_px = np.asarray(obs_px, float)
-    n, n_cams, _ = obs_px.shape
+    x0 = np.asarray(x0, float)
+    n_tr = len(obs_px)
+    n_cams = obs_px.shape[1]
+    body_idx = db_a = db_b = None
+    extra_obs, extra_x0 = [], []
+    if body is not None:
+        body_idx = n_tr + np.arange(len(body.xyz))
+        extra_obs.append(np.asarray(body.obs_px, float))
+        extra_x0.append(np.asarray(body.xyz, float))
+    if dumbbell is not None:
+        d_obs = np.asarray(dumbbell.obs_px, float)                      # (K, 2, C, 2)
+        k = len(d_obs)
+        flat_obs = d_obs.reshape(2 * k, n_cams, 2)
+        xyz0 = dumbbell.xyz0
+        if xyz0 is None:
+            if vpar is None:
+                raise ValueError("vpar is required to triangulate dumbbell starting positions")
+            xyz0 = triangulate_pixels(flat_obs, cals, cpar, vpar)
+        start = n_tr + (0 if body is None else len(body.xyz))
+        db_a = start + 2 * np.arange(k)
+        db_b = db_a + 1
+        extra_obs.append(flat_obs)
+        extra_x0.append(np.asarray(xyz0, float).reshape(2 * k, 3))
+    if extra_obs:
+        obs_px = np.concatenate([obs_px] + extra_obs)
+        x0 = np.concatenate([x0] + extra_x0)
+    n = len(obs_px)
     cur = [copy.deepcopy(c) for c in cals]
     valid = np.isfinite(obs_px[:, :, 0])
 
@@ -146,6 +297,10 @@ def joint_self_calibrate(
             if len(r):
                 out.append((project_pixels(pts[r], cur[c], cpar) - obs_px[r, c]).ravel())
         out.append((x[:n_par] - x_cam0) / sig_all)
+        if body_idx is not None:
+            out.append(((pts[body_idx] - body.xyz) / body_sigma_mm).ravel())
+        if db_a is not None:
+            out.append((np.linalg.norm(pts[db_a] - pts[db_b], axis=1) - dumbbell.length_mm) / length_sigma_mm)
         return np.nan_to_num(np.concatenate(out), nan=1e3, posinf=1e3, neginf=-1e3)
 
     # sparsity: an observation row depends on its camera's parameters and its own point
@@ -162,8 +317,26 @@ def joint_self_calibrate(
         base += 2 * len(r)
     ri.extend((n_res_obs + np.arange(n_par)).tolist())
     ci.extend(np.arange(n_par).tolist())
-    sp = sparse.coo_matrix((np.ones(len(ri), np.int8), (ri, ci)), shape=(n_res_obs + n_par, n_par + 3 * n)).tocsr()
+    row = n_res_obs + n_par
+    if body_idx is not None:
+        for pt in body_idx:
+            for d in range(3):
+                ri.append(row)
+                ci.append(n_par + 3 * int(pt) + d)
+                row += 1
+    if db_a is not None:
+        for a_, b_ in zip(db_a, db_b):
+            for d in range(3):
+                ri.extend([row, row])
+                ci.extend([n_par + 3 * int(a_) + d, n_par + 3 * int(b_) + d])
+            row += 1
+    sp = sparse.coo_matrix((np.ones(len(ri), np.int8), (ri, ci)), shape=(row, n_par + 3 * n)).tocsr()
 
+    def length_rms(x):
+        pts_ = x[n_par:].reshape(n, 3)
+        return float(np.sqrt(np.mean((np.linalg.norm(pts_[db_a] - pts_[db_b], axis=1) - dumbbell.length_mm) ** 2)))
+
+    len0 = length_rms(x_start) if db_a is not None else None
     r0 = resid(x_start)[:n_res_obs]
     sol = least_squares(resid, x_start, jac_sparsity=sp, method="trf", x_scale="jac", loss="huber", f_scale=huber_px,
                         max_nfev=max_nfev, tr_solver="lsmr", verbose=verbose)
@@ -175,5 +348,10 @@ def joint_self_calibrate(
         for sl, _g, _s, _sg in layout[c]:
             change.setdefault(c + 1, []).append(np.round(sol.x[sl] - x_cam0[sl], 5).tolist())
     del names
-    return SelfCalResult(cur, float(np.sqrt(np.mean(r0**2))), float(np.sqrt(np.mean(r1**2))), n, int(valid.sum()),
-                         n_par, change, bool(sol.success), int(sol.nfev))
+    len1 = length_rms(sol.x) if db_a is not None else None
+    body_rms = None
+    if body_idx is not None:
+        pts_ = sol.x[n_par:].reshape(n, 3)
+        body_rms = float(np.sqrt(np.mean(np.sum((pts_[body_idx] - body.xyz) ** 2, axis=1))))
+    return SelfCalResult(cur, float(np.sqrt(np.mean(r0**2))), float(np.sqrt(np.mean(r1**2))), n_tr, int(valid.sum()),
+                         n_par, change, bool(sol.success), int(sol.nfev), len0, len1, body_rms)
