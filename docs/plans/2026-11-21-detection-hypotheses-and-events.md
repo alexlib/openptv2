@@ -266,3 +266,59 @@ What it says:
 
 D0 also restored the legacy comparator: `scripts/legacy_export.py` now holds the ASCII exporter and trajectory reader
 that the zarr-only change removed, so `synth_bench.py track --tracker optv_c` works again.
+
+### D1. The hypothesis detector, scored against rendered truth (measured 2026-11-21; first pass)
+
+Code: `src/openptv2/blob_hypotheses.py` (cues from each blob's own pixels, one- and two-Gaussian fits, a small
+logistic regression), `scripts/d1_features.py`, `d1_split.py`, `d1_classify.py`, `d1_faint.py`. Tests in
+`tests/unit/test_blob_hypotheses.py`. The reference segmentation (`segmentation._vectorized_targ_rec`) gained an optional
+`pixels_out` to hand out each blob's pixels; it finds exactly the blobs of the production detector (1298 against 1298
+in the check frame). The production Cython detector is not changed yet. Rendered `syn1`, 4 cameras, frames 1/5 for
+training and 9/13 for testing; blobs are labelled by how many true tracers fall inside them.
+
+**Which cue says "more than one tracer"** (single cues, area under the ROC curve; 0.5 = nothing): major-axis variance
+0.82, eccentricity 0.77, pixel count 0.75, summed grey value 0.71, **mean intensity 0.63**, internal maxima 0.62, third
+moment 0.52. So mean intensity is a weak cue for overlap, as expected: overlap shows in size and shape, and the
+signature of a tracer should stay `sumg / n` only as a *brightness* identity, not as the overlap detector.
+Combined with the gain of the two-Gaussian fit over the one-Gaussian fit, the logistic model reaches **0.87**.
+
+**Calibration of `p_single`** on the test frames: predicted against actual share of "two or more" in six bins agrees
+to within 0.05 in five of them; the top bin (predicted 0.94, 113 blobs) has 0.79 actually, 0.15 off. At p above 0.3
+the model catches 67 % of two-tracer blobs with 9 % false alarms among single-tracer blobs; at p above 0.5, 48 % with
+3.6 %.
+
+**Centre of the split** (two-tracer blobs, true count given, single-tracer variance 0.4 px² from the fit on clean
+blobs, where the Gaussian fit gives a 0.06 px centre error):
+
+| true separation | blob centroid error (px, median) | fitted centre error | fitted within 0.5 px |
+|---|---:|---:|---:|
+| under 1 px | 0.28 | 0.35 | 0.67 |
+| 1-2 px | 0.75 | **0.24** | 0.71 |
+| 2-3 px | 1.17 | **0.42** | 0.54 |
+| over 3 px | 1.68 | 0.69 | 0.42 |
+| all (600 blobs) | 0.67 | **0.33** | **0.62** |
+
+**Faint candidates** (peaks at a lower threshold that are not within 3 px of a standard blob; 1114 true tracers had no
+standard blob in the test frames): threshold 3 recovers 35 % of them with 1.5 false candidates per recovered one;
+threshold 5 recovers 27 % with 1.2; threshold 7 recovers 17 % with 1.0.
+
+**Against the gate**
+- Split centres within 0.5 px for at least half of the two-tracer blobs: **met** (0.62), with the true count given.
+- `p_single` calibrated within 0.1: **met in five of six bins**, not in the top bin.
+- Faint candidates: at least a third of the missing tracers with fewer than 2 false per recovered: **met at threshold 3**
+  (0.35 and 1.5), narrowly. A faint candidate by itself is not trustworthy; it is only used where a prediction or
+  an epipolar line asks for one (section 3), which removes most of the false ones.
+- Split centre error better than the 0.27 px track prediction: **not met on its own** (median 0.33; better only for
+  separations of 1-2 px). The split is an independent measurement, so combined with the prediction the error falls to
+  about 0.2 px if the two errors are independent, and the blob centroid it replaces is off by 0.67 px. D2 is the real
+  test of that, and its stop rule applies.
+
+**Caveats.** All of this is on rendered images in which the tracer is a Gaussian of known width, so it is optimistic for
+real data, where the tracer image is smaller (0.25-0.28 px², D0) and its shape is less regular. The classifier trained on
+rendered data cannot be transferred as it is; on a real run the cue weights have to come from that run (the
+tracks themselves give labels: a blob a good track passes through while a second track also predicts into it).
+Pixel count and the fits depend on the threshold and the particle image size, so they are re-estimated per camera and run
+(`scripts/psf_estimate.py`).
+
+**Decision.** Go on to D2 with the split as an extra, weighted measurement at conflict sites and faint candidates only
+where a prediction asks for them; D2's gate decides whether it stays.

@@ -29,7 +29,10 @@ def _vectorized_targ_rec(
     xmax,
     ymin,
     ymax,
+    pixels_out=None,
 ):
+    """Reference (pure NumPy/Python) target recognition. With ``pixels_out`` (a list) the pixel coordinates and
+    grey values of every accepted blob are appended as an ``(n, 3)`` array ``(x, y, grey)``, in target order."""
     img_u8 = np.asarray(img, dtype=np.uint8)
     imy, imx = img_u8.shape
 
@@ -79,6 +82,7 @@ def _vectorized_targ_rec(
         y_weighted = float(i) * float(gv - gvthres)
         numpix = 1
         waitlist = deque([(j, i)])
+        blob_px = [(j, i, gv)] if pixels_out is not None else None
 
         while waitlist:
             wx, wy = waitlist.popleft()
@@ -106,6 +110,8 @@ def _vectorized_targ_rec(
                     x_weighted += float(xn) * float(gv4 - gvthres)
                     y_weighted += float(yn) * float(gv4 - gvthres)
                     numpix += 1
+                    if blob_px is not None:
+                        blob_px.append((xn, yn, gv4))
                     if numpix <= nnmax:
                         waitlist.append((xn, yn))
 
@@ -128,6 +134,8 @@ def _vectorized_targ_rec(
                 x = float(j) + 0.5
                 y = float(i) + 0.5
 
+            if pixels_out is not None:
+                pixels_out.append(np.asarray(blob_px, dtype=float))
             targets.append(
                 Target(
                     pnr=len(targets),
