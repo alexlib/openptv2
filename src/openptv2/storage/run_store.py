@@ -478,8 +478,87 @@ class RunStore:
             cols = bs.read(frame)
             if cols is not None:
                 return cols["ghost"]
+        key = f"quality/{_frame_key(frame)}"
+        if key in self.root:
+            return np.asarray(self.root[key], dtype=np.float32)
+        return None
+
+    def write_rcm(self, frame: int, rcm: np.ndarray) -> None:
+        """Per-point ray-miss residual ``rcm`` (mm, shape (N,)), row-aligned
+        with the correspondences of ``frame``."""
+        rcm_arr = np.asarray(rcm, dtype=np.float32).reshape(-1)
+        try:
+            self.root.require_group("rcm").create_array(
+                _frame_key(frame), data=rcm_arr, overwrite=True
+            )
+        except Exception as exc:
+            raise RunStoreError(
+                f"Failed to write rcm for frame {frame}: {exc}"
+            ) from exc
+        self._mark_unsealed()
+
+    def read_rcm(self, frame: int) -> np.ndarray | None:
+        """Per-point ray-miss residual (mm) for ``frame``, or None if absent."""
+        if "rcm" not in self.root:
+            return None
+        try:
+            return np.asarray(self.root["rcm"][_frame_key(frame)], dtype=np.float32)
+        except KeyError:
+            return None
         try:
             return np.asarray(self.root["quality"][_frame_key(frame)])
+        except KeyError:
+            return None
+
+    def write_observations(self, frame: int, obs: np.ndarray) -> None:
+        """Per-point, per-camera observation actually used to place the points of ``frame``.
+
+        ``obs`` has shape (N, C, 4), row-aligned with the correspondences of ``frame``:
+        ``[x_px, y_px, var_px2, n_share]``. ``(x_px, y_px)`` is the pixel position the point used in
+        that camera (the blob centre, or a corrected centre when a blob is shared), ``var_px2`` the
+        variance of that position in px^2 (NaN = camera not used), ``n_share`` the number of
+        particles in the blob (1 = alone, 0 = camera not used).
+        """
+        arr = np.asarray(obs, dtype=np.float32)
+        if arr.ndim != 3 or arr.shape[2] != 4:
+            raise RunStoreError(f"observations must have shape (N, C, 4), got {arr.shape}")
+        try:
+            self.root.require_group("obs").create_array(
+                _frame_key(frame), data=arr, overwrite=True
+            )
+        except Exception as exc:
+            raise RunStoreError(
+                f"Failed to write observations for frame {frame}: {exc}"
+            ) from exc
+        self._mark_unsealed()
+
+    def read_observations(self, frame: int) -> np.ndarray | None:
+        """(N, C, 4) observations of ``frame`` (see :meth:`write_observations`), or None."""
+        if "obs" not in self.root:
+            return None
+        try:
+            return np.asarray(self.root["obs"][_frame_key(frame)], dtype=np.float32)
+        except KeyError:
+            return None
+
+    def has_observations(self, frame: int) -> bool:
+        return "obs" in self.root and _frame_key(frame) in self.root["obs"]
+
+    def write_point_sigma(self, frame: int, sigma: np.ndarray) -> None:
+        """Position uncertainty (mm, shape (N,)) of every point of ``frame``, row-aligned with its correspondences."""
+        arr = np.asarray(sigma, dtype=np.float32).reshape(-1)
+        try:
+            self.root.require_group("psigma").create_array(_frame_key(frame), data=arr, overwrite=True)
+        except Exception as exc:
+            raise RunStoreError(f"Failed to write point sigma for frame {frame}: {exc}") from exc
+        self._mark_unsealed()
+
+    def read_point_sigma(self, frame: int) -> np.ndarray | None:
+        """Position uncertainty (mm) of the points of ``frame``, or None if never written."""
+        if "psigma" not in self.root:
+            return None
+        try:
+            return np.asarray(self.root["psigma"][_frame_key(frame)], dtype=np.float32)
         except KeyError:
             return None
 

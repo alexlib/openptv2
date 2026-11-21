@@ -16,7 +16,6 @@ import pytest
 
 from openptv2.algorithms.parameters import ControlPar, SequencePar, TrackPar, VolumePar
 from openptv2.storage import RunStore
-from openptv2.storage.legacy import export_run
 from tests.helpers.synthetic_scene import load_cavity_calibration, make_cavity_scene
 
 pytestmark = [pytest.mark.ci]
@@ -43,8 +42,7 @@ def test_track_cavity_synthetic_forward_tracking(tmp_path: Path):
         pixel_noise=0.5,
         seed=8,
     )
-    store = RunStore(scene / "res" / "run.zarr", mode="r")
-    export_run(store, scene)
+    store = RunStore(scene / "res" / "run.zarr", mode="a")
 
     cpar = ControlPar.from_yaml(CAVITY_YAML)
     vpar = VolumePar.from_yaml(CAVITY_YAML)
@@ -60,7 +58,7 @@ def test_track_cavity_synthetic_forward_tracking(tmp_path: Path):
     original = os.getcwd()
     try:
         os.chdir(scene)
-        tracker = Tracker(cpar, vpar, tpar, spar, cals)
+        tracker = Tracker(cpar, vpar, tpar, spar, cals, store=store)
         tracker.full_forward_3d()
 
         assert tracker.npart > 0

@@ -52,11 +52,20 @@ def test_read_calblock():
     assert fix.shape == (5, 3)
 
 
+def _sample_targets():
+    from openptv2.algorithms.tracking_frame_buf import Target
+
+    return [
+        Target(pnr=0, x=1127.0, y=796.0, n=13320, nx=111, ny=120, sumg=828903, tnr=1),
+        Target(pnr=1, x=796.0, y=809.0, n=13108, nx=113, ny=116, sumg=658928, tnr=0),
+    ]
+
+
 def test_sortgrid():
     eps = read_sortgrid_par("test_data/parameters/sortgrid.par")
     assert eps == 25
 
-    pix = read_targets("test_data/sample_", 42)
+    pix = _sample_targets()
     assert len(pix) == 2
 
     cal = Calibration.from_file(
@@ -72,7 +81,7 @@ def test_sortgrid():
     assert sorted_pix[0].pnr == -999
     assert sorted_pix[1].pnr == -999
 
-    pix2 = read_targets("test_data/sample_", 42)
+    pix2 = _sample_targets()
     sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix2), 120, pix2)
     assert sorted_pix[1].pnr == 1
     assert sorted_pix[1].x == 796
@@ -80,7 +89,7 @@ def test_sortgrid():
 
 def test_sortgrid_does_not_mutate_input():
     """Ensure sortgrid doesn't modify the input target list."""
-    pix = read_targets("test_data/sample_", 42)
+    pix = _sample_targets()
     original_pnrs = [t.pnr for t in pix]
     original_xs = [t.x for t in pix]
 

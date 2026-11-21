@@ -3,11 +3,10 @@
 Builds the on-disk layout expected by the batch pipeline / plugin runner::
 
     <dir>/cal/   camN.tif.ori, camN.tif.addpar
-    <dir>/res/   rt_is.#, ptv_is.#, added.#, origin_#.txt
-    <dir>/img/   camN<frame>_targets
+    <dir>/res/   run.zarr
     <dir>/parameters_Run1.yaml
 
-The YAML points at these calibration and target files so that
+The YAML points at these calibration and store paths so that
 ``build_processing_experiment`` + ``run_tracking_plugin`` can process the
 dataset headlessly.
 """
@@ -20,7 +19,8 @@ import numpy as np
 import yaml
 
 from openptv2.benchmarking.camera_rig import CameraRig
-from openptv2.benchmarking.datawriter import DatasetSpec, write_dataset
+from openptv2.benchmarking.datawriter import DatasetSpec, write_dataset_store
+from openptv2.storage import RunStore
 
 # Realistic refractive indices (YAML convention: n2 = water, n3 = glass).
 _N1 = 1.0
@@ -66,8 +66,11 @@ def write_experiment(
             str(cal_dir / f"cam{i + 1}.tif.addpar"),
         )
 
-    # Write the dataset (rt_is / ptv_is / added / targets / origin).
-    write_dataset(
+    # Write the dataset into <out_dir>/res/run.zarr.
+    res_dir = out_dir / "res"
+    res_dir.mkdir(parents=True, exist_ok=True)
+    store = RunStore(res_dir / "run.zarr", mode="w")
+    write_dataset_store(
         rig,
         frame_gt,
         DatasetSpec(
@@ -77,6 +80,7 @@ def write_experiment(
             first_frame=first_frame,
             num_cams=len(rig.cals),
         ),
+        store=store,
     )
 
     num_cams = len(rig.cals)

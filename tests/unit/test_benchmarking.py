@@ -97,7 +97,9 @@ def test_scenario_turbulent_flow():
 
 
 def test_write_dataset_readable_by_frame():
-    """Written rt_is/targets must be readable by the Frame class."""
+    """Written RunStore targets/correspondences must be readable by the Frame class."""
+    from openptv2.storage import RunStore
+
     spec = bm.ScenarioSpec(num_particles=15, num_frames=10, velocity=1.0, seed=3)
     tt, fg = bm.generate_scenario(spec)
     rig = bm.make_standard_rig(refract=False)
@@ -105,15 +107,9 @@ def test_write_dataset_readable_by_frame():
     yaml = bm.write_experiment(rig, fg, d, first_frame=10001)
     assert yaml.exists()
 
-    res = str(d / "res" / "rt_is")
+    store = RunStore(d / "res" / "run.zarr", mode="r")
     f = Frame(num_cams=4, max_targets=30000)
-    ok = f.read(
-        res,
-        "",
-        prio_file_base=str(d / "res" / "added"),
-        target_file_base=[str(d / "img" / f"cam{i + 1}") for i in range(4)],
-        frame_num=10001,
-    )
+    ok = f.read("", "", frame_num=10001, store=store)
     assert ok
     assert f.num_parts == len(fg[0])
 
@@ -298,47 +294,36 @@ def test_compute_physics_metrics_bundles_both():
     }
 
 
-def test_write_dataset_store_matches_ascii_writer():
-    """The native store writer must produce exactly what the ASCII writer
-    writes, parsed (zarr is the database of record; ASCII is interchange)."""
+def test_write_dataset_store_roundtrip(tmp_path):
+    """write_dataset_store must write correspondences and targets directly to RunStore."""
     from openptv2.storage import RunStore
-    from openptv2.storage.legacy import _load_rt_is
 
     spec = bm.ScenarioSpec(num_particles=12, num_frames=5, velocity=1.0, seed=7)
     _tt, fg = bm.generate_scenario(spec)
     rig = bm.make_standard_rig(refract=False)
 
-    d_ascii = Path(tempfile.mkdtemp()) / "ascii"
-    bm.write_dataset(rig, fg, bm.DatasetSpec(dir=d_ascii))
-
-    d_store = Path(tempfile.mkdtemp()) / "store"
+    d_store = tmp_path / "store"
     bm.write_dataset_store(rig, fg, bm.DatasetSpec(dir=d_store))
 
     store = RunStore(d_store / "run.zarr", mode="r")
     for rel_f in sorted(fg):
         fnum = 10001 + rel_f
-        apos, aids = _load_rt_is(d_ascii / "res" / f"rt_is.{fnum}")
         spos, sids = store.read_correspondences(fnum)
-        # the ascii writer quantizes positions to %9.3f
-        assert np.allclose(apos, spos, atol=1e-3), f"pos mismatch frame {fnum}"
-        assert np.array_equal(aids, sids), f"cam-id mismatch frame {fnum}"
-
+        expected_pos = np.array([(x, y, z) for _, x, y, z in fg[rel_f]], dtype=np.float64)
+        assert len(spos) == len(fg[rel_f])
+        assert np.allclose(spos, expected_pos, atol=1e-4)
+        assert sids.shape == (len(fg[rel_f]), 4)
         for cam in range(4):
-            ascii_targs = np.loadtxt(
-                d_ascii / "img" / f"cam{cam + 1}.{fnum}_targets", skiprows=1, ndmin=2
-            )
             stargs = store.read_targets(cam, fnum)
-            assert len(stargs) == len(ascii_targs)
-            for i, row in enumerate(ascii_targs):
+            assert len(stargs) == len(fg[rel_f])
+            for i in range(len(stargs)):
                 t = stargs[i]
-                assert int(t.pnr()) == int(row[0])
-                assert abs(float(t.x()) - row[1]) < 1e-4
-                assert abs(float(t.y()) - row[2]) < 1e-4
-                assert int(t.tnr()) == int(row[7])
+                assert int(t.pnr()) == i
+                assert int(sids[int(t.tnr()), cam]) == i
 
         prev, nxt, lpos = store.read_linkage(fnum, "ptv_is")
         assert (prev == -1).all() and (nxt == -2).all()
-        assert np.allclose(lpos, apos, atol=1e-3)
+        assert np.allclose(lpos, expected_pos, atol=1e-4)
 
         assert not store.read_prio(fnum, "ptv_is")
         prio_added = store.read_prio(fnum, "added")

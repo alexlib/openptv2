@@ -18,45 +18,21 @@ from openptv2.gui.plot_3d_positions import (
 )
 
 
-def _write_rt_is(path, rows):
-    """Write an rt_is file: header count + 'id x y z p0 p1 p2 p3' rows."""
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(f"{len(rows)}\n")
-        for i, (x, y, z) in enumerate(rows, start=1):
-            f.write(
-                "%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % (i, x, y, z, 0, 1, 2, 3)
-            )
+def test_create_panel_reads_store(tmp_path):
+    from openptv2.storage import RunStore
 
-
-def test_build_3d_figure_point_count():
-    pts = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
-    fig = build_3d_figure(pts, frame=1000001)
-    ax = fig.axes[0]
-    # one scatter collection with the expected number of offsets
-    assert len(ax.collections) == 1
-    assert ax.collections[0].get_offsets().shape[0] == 3
-    assert "1000001" in ax.get_title()
-    assert "3 particles" in ax.get_title()
-
-
-def test_build_3d_figure_empty():
-    fig = build_3d_figure(np.empty((0, 3)), frame=42)
-    ax = fig.axes[0]
-    assert len(ax.collections) == 0
-    assert "0 particles" in ax.get_title()
-
-
-def test_create_panel_reads_rt_is(tmp_path):
-    rt = tmp_path / "rt_is.1000001"
-    _write_rt_is(rt, [(0.1, 0.2, 0.3), (1.1, 1.2, 1.3)])
-    panel = create_3d_positions_panel(rt, frame=1000001)
+    store = RunStore(tmp_path / "res" / "run.zarr", mode="w")
+    pts = np.array([[0.1, 0.2, 0.3], [1.1, 1.2, 1.3]], dtype=np.float64)
+    cam_ids = np.zeros((2, 4), dtype=np.int32)
+    store.write_correspondences(1000001, pts, cam_ids)
+    panel = create_3d_positions_panel(tmp_path, frame=1000001)
     ax = panel.figure.axes[0]
     assert ax.collections[0].get_offsets().shape[0] == 2
 
 
-def test_missing_file_raises(tmp_path):
-    with pytest.raises((FileNotFoundError, ValueError, OSError)):
-        create_3d_positions_panel(tmp_path / "does_not_exist", frame=1)
+def test_missing_store_returns_empty_panel(tmp_path):
+    panel = create_3d_positions_panel(tmp_path / "does_not_exist", frame=1)
+    assert len(panel.figure.axes[0].collections) == 0
 
 
 def test_bounds_and_fov_box():

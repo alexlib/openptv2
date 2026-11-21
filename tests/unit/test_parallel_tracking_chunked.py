@@ -84,6 +84,21 @@ def test_partition_tracking_chunks_math():
         assert chunks[i][1] >= chunks[i][3] + 4
 
 
+def _seed_cavity_store(store: RunStore, res_dir: Path) -> None:
+    for rt_file in sorted(res_dir.glob("rt_is.*")):
+        frame = int(rt_file.suffix.lstrip("."))
+        lines = [ln.strip() for ln in rt_file.read_text().splitlines() if ln.strip()]
+        n = int(lines[0]) if lines else 0
+        if n > 0:
+            rows = np.loadtxt(lines[1 : n + 1], dtype=np.float64).reshape(n, 8)
+            pos_3d = rows[:, 1:4]
+            cam_ids = rows[:, 4:8].astype(np.int32)
+        else:
+            pos_3d = np.empty((0, 3), dtype=np.float64)
+            cam_ids = np.empty((0, 4), dtype=np.int32)
+        store.write_correspondences(frame=frame, pos_3d=pos_3d, cam_target_ids=cam_ids)
+
+
 def test_chunked_tracking_cavity_parity_store(cavity_test_env):
     """Test chunked parallel tracking against serial baseline with RunStore."""
     cpar = ControlPar.from_yaml("parameters.yaml")
@@ -94,6 +109,7 @@ def test_chunked_tracking_cavity_parity_store(cavity_test_env):
 
     # 1. Serial Baseline Tracking
     serial_store = RunStore("res/serial_run.zarr", mode="w")
+    _seed_cavity_store(serial_store, Path("res"))
     serial_tracker = Tracker(
         cpar,
         vpar,
@@ -153,6 +169,7 @@ def test_chunked_tracking_4be_and_corr_modes(cavity_test_env):
     cals = _load_cavity_cals(cpar, cavity_test_env)
 
     store_4be = RunStore("res/run_4be.zarr", mode="w")
+    _seed_cavity_store(store_4be, Path("res"))
     npart_4be, nlinks_4be = track_sequence_chunked_parallel(
         cpar=cpar,
         vpar=vpar,
@@ -261,7 +278,7 @@ def test_chunked_tracking_with_postprocessing(cavity_test_env):
     cals = _load_cavity_cals(cpar, cavity_test_env)
 
     store = RunStore("res/run_post.zarr", mode="w")
-    # Copy correspondences from ASCII fixture
+    _seed_cavity_store(store, Path("res"))
     tracker_base = Tracker(cpar, vpar, tpar, spar, cals, store=store)
     npart, nlinks = tracker_base.full_forward_chunked_parallel(
         n_workers=2, overlap=2, mode="3d", postprocess=True
@@ -270,3 +287,56 @@ def test_chunked_tracking_with_postprocessing(cavity_test_env):
     assert nlinks > 0
     assert store.sealed
     assert len(store.traj_index()["trajid"]) > 0
+
+
+def test_unified_parallel_workers_saves_decision_and_links(cavity_test_env):
+    """Unified plugin with parallel_workers > 1 delegates to chunked parallel and saves TrackingDecision."""
+    from types import SimpleNamespace
+
+    from openptv2.plugins.unified_tracking import Tracking
+    from openptv2.tracking_decision import TrackingDecision
+    from tests.helpers.synthetic_scene import make_cavity_scene
+
+    cpar = ControlPar.from_yaml("parameters.yaml")
+    vpar = VolumePar.from_yaml("parameters.yaml")
+    tpar = TrackPar.from_yaml("parameters.yaml")
+    cals = _load_cavity_cals(cpar, cavity_test_env)
+
+    scene = make_cavity_scene(cavity_test_env / "scene", n_frames=5, n_particles=40, seed=7)
+    store = RunStore(scene / "res" / "run.zarr", mode="a")
+    spar = SequencePar(
+        num_cams=cpar.num_cams,
+        img_base_name=["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."],
+        first=10001,
+        last=10005,
+    )
+
+
+    pm = SimpleNamespace(
+        parameters={
+            "track": {
+                "parallel_workers": 2,
+                "use_2d": False,
+                "postprocess": True,
+                "slow_flow": False,
+            },
+            "plugins": {"selected_tracking": "unified"},
+        }
+    )
+    exp = SimpleNamespace(
+        cpar=cpar,
+        vpar=vpar,
+        track_par=tpar,
+        spar=spar,
+        cals=cals,
+        store=store,
+        pm=pm,
+    )
+    plugin = Tracking(exp=exp)
+    plugin.do_tracking()
+
+    assert store.sealed
+    assert len(store.traj_index()["trajid"]) > 0
+    loaded = TrackingDecision.load(store)
+    assert loaded.chosen_config["use_2d"] is False
+    assert loaded.report_metrics["total_particles"] > 0

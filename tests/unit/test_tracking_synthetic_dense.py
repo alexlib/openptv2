@@ -72,6 +72,8 @@ def _load(scene_dir):
 def _score_trackcorr_or_track3d(
     tmp_path, scene_dir, mode, first, last, **tpar_overrides
 ):
+    from openptv2.storage import RunStore
+
     cpar, vpar, spar, cals = _load(scene_dir)
     tpar = TrackPar.from_yaml(str(scene_dir / "parameters_Run1.yaml"))
     for k, v in tpar_overrides.items():
@@ -79,27 +81,49 @@ def _score_trackcorr_or_track3d(
 
     res = tmp_path / f"res_{mode}"
     res.mkdir(parents=True, exist_ok=True)
+    store = RunStore(res / "run.zarr", mode="w")
     for f in range(first, last + 1):
-        shutil.copy(scene_dir / "res_orig" / f"rt_is.{f}", res / f"rt_is.{f}")
+        rt_file = scene_dir / "res_orig" / f"rt_is.{f}"
+        lines = [ln.strip() for ln in rt_file.read_text().splitlines() if ln.strip()]
+        n = int(lines[0]) if lines else 0
+        if n > 0:
+            rows = np.loadtxt(lines[1 : n + 1], dtype=np.float64).reshape(n, 8)
+            pos_3d = rows[:, 1:4]
+            cam_ids = rows[:, 4:8].astype(np.int32)
+        else:
+            pos_3d = np.empty((0, 3), dtype=np.float64)
+            cam_ids = np.empty((0, 4), dtype=np.int32)
+        store.write_correspondences(frame=f, pos_3d=pos_3d, cam_target_ids=cam_ids)
+        for cam in range(cpar.num_cams):
+            tfile = scene_dir / "img" / f"cam{cam + 1}.{f}_targets"
+            if tfile.exists():
+                tlines = [ln.strip() for ln in tfile.read_text().splitlines() if ln.strip()]
+                tn = int(tlines[0]) if tlines else 0
+                arr = (
+                    np.loadtxt(tlines[1 : tn + 1], dtype=np.float64).reshape(tn, 8)
+                    if tn > 0
+                    else np.empty((0, 8), dtype=np.float64)
+                )
+                store.write_targets(cam, f, arr)
+
     naming = {
         "corres": str(res / "rt_is"),
         "linkage": str(res / "ptv_is"),
         "prio": str(res / "added"),
     }
-    tr = Tracker(cpar, vpar, tpar, spar, cals, naming)
+    tr = Tracker(cpar, vpar, tpar, spar, cals, naming, store=store)
     if mode == "track3d":
         tr.full_forward_3d()
     else:
         tr.full_forward()
-    return _count_links(naming["linkage"], first, last)
+    return _count_links(store, first, last)
 
 
-def _count_links(linkage_base, first, last):
+def _count_links(store, first, last):
     correct = wrong = 0
     lost = set()
     for f in range(first, last):
-        d = np.loadtxt(f"{linkage_base}.{f}", skiprows=1, ndmin=2)
-        nxt = d[:, 1].astype(int)
+        _prev, nxt, _pos = store.read_linkage(f, "ptv_is")
         for p in range(len(nxt)):
             if nxt[p] < 0:
                 lost.add(p)

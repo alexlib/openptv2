@@ -12,7 +12,6 @@ the effect.
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any
 
@@ -51,36 +50,15 @@ def _path(base: str, frame: int) -> str:
 def read_linkage(
     linkage_base: str, frame: int, store: Any = None
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
-    """Return (prev, next, xyz) arrays for a frame, or None if the file/store
-    entry is absent or empty. ``prev``/``next`` are int32; ``xyz`` is (n, 3)
-    float64.
-
-    ``store``: an ``openptv2.storage.RunStore``, or None. When given, reads
-    through it (its own frame-key convention) instead of guessing a
-    ``run.zarr`` path with a hand-built, differently-padded key -- the two
-    conventions collided silently before this (see
-    docs/plans/2026-08-14-storage-formats-as-built.md).
-    """
-    base_path = Path(linkage_base)
-    if store is not None:
-        name = base_path.name
-        if store.has_linkage(frame, name):
-            prev, nxt, xyz = store.read_linkage(frame, name)
-            return prev, nxt, xyz
-
-    p = _path(linkage_base, frame)
-    if not os.path.exists(p) or os.path.getsize(p) == 0:
+    """Return (prev, next, xyz) arrays for a frame from ``RunStore``, or None
+    if ``store`` is None or the entry is absent/empty."""
+    if store is None:
         return None
-    try:
-        data = np.loadtxt(p, skiprows=1, ndmin=2)
-    except Exception:
-        return None
-    if data.size == 0:
-        return None
-    prev = data[:, 0].astype(np.int32)
-    nxt = data[:, 1].astype(np.int32)
-    xyz = np.ascontiguousarray(data[:, 2:5], dtype=np.float64)
-    return prev, nxt, xyz
+    name = Path(linkage_base).name
+    if store.has_linkage(frame, name):
+        prev, nxt, xyz = store.read_linkage(frame, name)
+        return prev, nxt, xyz
+    return None
 
 
 def write_linkage(
@@ -91,27 +69,11 @@ def write_linkage(
     xyz: np.ndarray,
     store: Any = None,
 ) -> None:
-    """Write a frame's linkage to the unified RunStore when ``store`` is
-    given, otherwise to ASCII (store-backed runs no longer write ASCII --
-    see docs/plans/2026-08-15-zarr-only-transition-plan.md and
-    ``write_path_frame``'s identical store-vs-ASCII split). ``linkage_base``
-    may be a store-only namespace (e.g. warmup's ``"warmup/cycle1"`` scratch
-    group) with no real on-disk directory, so falling through to ASCII when
-    a store is given would raise FileNotFoundError."""
+    """Write a frame's linkage to the unified RunStore."""
+    if store is None:
+        raise ValueError("write_linkage requires a RunStore (ASCII linkage is removed)")
     base_path = Path(linkage_base)
-    if store is not None:
-        store.write_linkage(frame, prev, nxt, xyz, name=base_path.name)
-        return
-
-    p = _path(linkage_base, frame)
-    n = len(prev)
-    with open(p, "w", encoding="utf-8") as f:
-        f.write(f"{n}\n")
-        for i in range(n):
-            f.write(
-                f"{int(prev[i]):4d} {int(nxt[i]):4d} "
-                f"{xyz[i, 0]:10.3f} {xyz[i, 1]:10.3f} {xyz[i, 2]:10.3f}\n"
-            )
+    store.write_linkage(frame, prev, nxt, xyz, name=base_path.name)
 
 
 def write_linkage_frames(
@@ -311,6 +273,7 @@ def confirm_link_tuples(
     frame_particles: list[np.ndarray],
     tol: float | None,
     ends: bool,
+    point_sigma: list[np.ndarray] | None = None,
 ) -> tuple[list[tuple[int, int, int, int]], set]:
     """Two-hop confirmation post-pass over consecutive links.
 
@@ -322,9 +285,25 @@ def confirm_link_tuples(
     severed -- a dying track grabbing a stranger. Severing fragments
     chains; rejoining them is gap-relink/repair's job, not assembly's.
 
+    With ``point_sigma`` (per frame, the position uncertainty of each point in mm) the tolerance of a link widens
+    with its points' noise: the kink ``|p0 - 2 p1 + p2|`` has variance ``s0^2 + 4 s1^2 + s2^2``, so the tolerance is
+    ``tol * max(1, sqrt((s0^2 + 4 s1^2 + s2^2) / (6 s_ref^2)))`` with ``s_ref`` the median sigma. Never stricter
+    than ``tol``: points known to be noisy (corrected merged blobs, births) are not cut for their own noise.
+
     Returns (kept_links, severed) with severed a set of node pairs.
     """
     last_t = len(frame_particles) - 1
+    sig_ref = None
+    if point_sigma is not None:
+        allv = np.concatenate([np.asarray(v, float) for v in point_sigma if v is not None and len(v)])
+        allv = allv[np.isfinite(allv) & (allv > 0)]
+        sig_ref = float(np.median(allv)) if len(allv) else None
+
+    def _sig(t, r):
+        if sig_ref is None or point_sigma[t] is None or r >= len(point_sigma[t]):
+            return sig_ref if sig_ref is not None else 0.0
+        v = float(point_sigma[t][r])
+        return v if np.isfinite(v) and v > 0 else sig_ref
     fwd: dict[tuple[int, int], list[tuple[int, int]]] = {}
     for t0, r0, t1, r1 in links:
         if t1 - t0 == 1:
@@ -348,7 +327,11 @@ def confirm_link_tuples(
                 if t2 - t1 != 1 or r2 >= len(P[t2]):
                     continue
                 kink = float(np.linalg.norm((P[t2][r2] - P[t1][r1]) - v))
-                if kink <= tol:
+                tol_eff = tol
+                if sig_ref:
+                    s2 = _sig(t0, r0) ** 2 + 4 * _sig(t1, r1) ** 2 + _sig(t2, r2) ** 2
+                    tol_eff = tol * max(1.0, float(np.sqrt(s2 / (6 * sig_ref**2))))
+                if kink <= tol_eff:
                     keep = True
                     break
             if not keep:
@@ -490,6 +473,9 @@ def relink_trajectory_gaps(
     max_gap: int = 2,
     max_accel_err: float = 5.0,
     store: Any = None,
+    *,
+    require_bidir_vel: bool = False,
+    uniqueness_ratio: float = 0.0,
 ) -> dict[str, int]:
     """
     Multi-pass post-processing gap relinking across linkage files.
@@ -550,6 +536,9 @@ def relink_trajectory_gaps(
     def next_of(m):
         return frames[m][1] if m in frames else None
 
+    def prev_of(m):
+        return frames[m][0] if m in frames else None
+
     for gap in range(1, max_gap + 1):
         # Kinematic residual over dt = gap+1 frames is a*dt^2/2. ``dacc`` gates
         # the *maximum* acceleration, so the effective residual scale is about
@@ -591,13 +580,31 @@ def relink_trajectory_gaps(
 
                 cand_xyz = xyz_target[starts_target]
                 dists = np.linalg.norm(cand_xyz - pred_pos, axis=1)
-                best_cand = np.argmin(dists)
-
-                if dists[best_cand] > tol:
-                    continue
+                if uniqueness_ratio > 1.0 and len(dists) >= 2:
+                    order = np.argsort(dists)
+                    best_cand = int(order[0])
+                    if dists[best_cand] > tol:
+                        continue
+                    if dists[int(order[1])] < uniqueness_ratio * max(float(dists[best_cand]), 1e-9):
+                        continue
+                else:
+                    best_cand = int(np.argmin(dists))
+                    if dists[best_cand] > tol:
+                        continue
                 target_idx = starts_target[best_cand]
                 if prev_target[target_idx] >= 0:
                     continue  # claimed by an earlier end this pass
+
+                if require_bidir_vel and next_target[target_idx] >= 0:
+                    t_next_idx = int(next_target[target_idx])
+                    fwd = link_step(prev_of, k + gap + 1, int(target_idx), t_next_idx)
+                    if fwd == 0:
+                        fwd = 1
+                    f_next = k + gap + 1 + fwd
+                    if f_next in frames and t_next_idx < len(frames[f_next][2]):
+                        v_out = (frames[f_next][2][t_next_idx] - xyz_target[target_idx]) / fwd
+                        if float(np.linalg.norm(v_out - v_est)) > max_accel_err * (gap + 1):
+                            continue
 
                 next_k[end_idx] = target_idx
                 prev_target[target_idx] = end_idx
@@ -608,3 +615,85 @@ def relink_trajectory_gaps(
     write_linkage_frames(linkage_base, frames, dirty, store=store)
 
     return {"bridged_gaps": bridged}
+
+
+def prune_kinky_links(
+    linkage_base: str,
+    first: int,
+    last: int,
+    *,
+    max_accel_err: float,
+    max_angle_deg: float = 0.0,
+    store: Any = None,
+) -> dict[str, int]:
+    """Break reciprocal links at kinematic velocity-jump kinks."""
+    if max_accel_err <= 0.0:
+        return {"broken_kinks": 0}
+
+    frames: dict[int, tuple[np.ndarray, np.ndarray, np.ndarray]] = {}
+    for k in range(first, last + 1):
+        r = read_linkage(linkage_base, k, store=store)
+        if r is not None:
+            prv, nxt, xyz = r
+            frames[k] = (prv.copy(), nxt.copy(), xyz)
+
+    def next_of(m: int):
+        return frames[m][1] if m in frames else None
+
+    def prev_of(m: int):
+        return frames[m][0] if m in frames else None
+
+    cos_thr = float(np.cos(np.radians(max_angle_deg))) if max_angle_deg > 0.0 else 0.0
+    dirty: set[int] = set()
+    broken = 0
+
+    for f1 in range(first + 1, last):
+        if f1 not in frames:
+            continue
+        prv1, nxt1, xyz1 = frames[f1]
+        for i1 in range(len(xyz1)):
+            i0 = int(prv1[i1])
+            i2 = int(nxt1[i1])
+            if i0 < 0 or i2 < 0:
+                continue
+            dt1 = back_link_step(next_of, f1, i1, i0)
+            dt2 = link_step(prev_of, f1, i1, i2)
+            if dt1 == 0 or dt2 == 0:
+                continue
+            f0 = f1 - dt1
+            f2 = f1 + dt2
+            if f0 not in frames or f2 not in frames:
+                continue
+            if i0 >= len(frames[f0][2]) or i2 >= len(frames[f2][2]):
+                continue
+
+            v1 = (xyz1[i1] - frames[f0][2][i0]) / float(dt1)
+            v2 = (frames[f2][2][i2] - xyz1[i1]) / float(dt2)
+            acc = float(np.linalg.norm(v2 - v1))
+            if acc <= max_accel_err:
+                continue
+
+            n1 = float(np.linalg.norm(v1))
+            n2 = float(np.linalg.norm(v2))
+            ang_bad = True
+            if n1 > 1e-9 and n2 > 1e-9 and max_angle_deg > 0.0:
+                cos_a = float(np.dot(v1, v2) / (n1 * n2))
+                ang_bad = cos_a < cos_thr
+
+            if not (ang_bad or acc > 1.5 * max_accel_err):
+                continue
+
+            # Break the trailing edge by default, or the leading edge if f0 is
+            # a 1-step track head jumping onto an established continuation.
+            if frames[f0][0][i0] < 0 and frames[f2][1][i2] >= 0 and n1 > 1.5 * max(n2, 1e-9):
+                prv1[i1] = PREV_NONE
+                frames[f0][1][i0] = NEXT_NONE
+                dirty.update((f0, f1))
+            else:
+                nxt1[i1] = NEXT_NONE
+                frames[f2][0][i2] = PREV_NONE
+                dirty.update((f1, f2))
+            broken += 1
+
+    write_linkage_frames(linkage_base, frames, dirty, store=store)
+    return {"broken_kinks": broken}

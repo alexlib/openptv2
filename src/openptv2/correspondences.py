@@ -275,7 +275,7 @@ def single_cam_correspondence(img_pts, flat_coords, cals):
     return sorted_pos, sorted_corresp, num_targs
 
 
-def match_frame_correspondences(detections, cpar, cals, vpar, method="lsq"):
+def match_frame_correspondences(detections, cpar, cals, vpar, method="lsq", return_rcm: bool = False):
     """Compute multi-camera stereo correspondences and triangulated 3D positions
     for a single frame.
 
@@ -313,9 +313,11 @@ def match_frame_correspondences(detections, cpar, cals, vpar, method="lsq"):
 
     total_matches = sum(s.shape[1] for s in sorted_pos)
     if total_matches == 0:
-        return np.empty((0, 3), dtype=np.float64), np.empty(
-            (0, max(4, num_cams)), dtype=np.int32
-        )
+        empty_pos = np.empty((0, 3), dtype=np.float64)
+        empty_ids = np.empty((0, max(4, num_cams)), dtype=np.int32)
+        if return_rcm:
+            return empty_pos, empty_ids, np.empty(0, dtype=np.float64)
+        return empty_pos, empty_ids
 
     sorted_pos = np.concatenate(sorted_pos, axis=1)
     sorted_corresp = np.concatenate(sorted_corresp, axis=1)
@@ -324,7 +326,7 @@ def match_frame_correspondences(detections, cpar, cals, vpar, method="lsq"):
         [corr.get_by_pnrs(corresp) for corr, corresp in zip(corrected, sorted_corresp)]
     )
 
-    pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar, method=method)
+    pos, rcm = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar, method=method)
 
     if num_cams < 4:
         print_corresp = -1 * np.ones((4, sorted_corresp.shape[1]), dtype=np.int32)
@@ -332,6 +334,8 @@ def match_frame_correspondences(detections, cpar, cals, vpar, method="lsq"):
     else:
         print_corresp = sorted_corresp.astype(np.int32)
 
+    if return_rcm:
+        return pos, print_corresp.T, rcm
     return pos, print_corresp.T
 
 

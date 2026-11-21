@@ -400,6 +400,8 @@ class TrackHandler(Handler):
                 experiment.pm.parameters.get("plugins", {}),
             )
 
+            t_dict["leaf_weight"] = float(track_params.leaf_weight)
+            t_dict["holistic_rounds"] = int(track_params.holistic_rounds)
             experiment.pm.parameters["track"].update(t_dict)
             experiment.pm.parameters["plugins"].update(p_dict)
 
@@ -432,6 +434,7 @@ class Tracking_Params(HasTraits):
     angle = Float()
     dacc = Float()
     leaf_weight = Float()
+    holistic_rounds = Int(0)
 
     def __init__(self, experiment: Experiment):
         super(Tracking_Params, self).__init__()
@@ -451,6 +454,9 @@ class Tracking_Params(HasTraits):
         self.leaf_weight = float(tracking_params.get("leaf_weight", 1.0))
 
         self.tracker = infer_tracker(plugins_params)
+        # the retired 'holistic' name meant two_phase with 2 rounds
+        default_rounds = 2 if plugins_params.get("selected_tracking") == "holistic" else 0
+        self.holistic_rounds = int(tracking_params.get("holistic_rounds", default_rounds))
         dir_val = infer_direction(tracking_params, plugins_params)
         self.run_backward = dir_val == "forward_backward"
 
@@ -493,6 +499,7 @@ class Tracking_Params(HasTraits):
             ),
             HGroup(
                 Item(name="leaf_weight", label="2D leaf weight (0=off):"),
+                Item(name="holistic_rounds", label="Merged-blob loop rounds (two_phase; 0=off):"),
             ),
             show_border=True,
             label="Search Box & Kinematic Limits",

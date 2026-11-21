@@ -1,7 +1,21 @@
 """Tracking preset definitions, configuration mapping, and preset resolution."""
 
+import logging
 from enum import Enum
 from typing import Any, Dict
+
+_log = logging.getLogger(__name__)
+
+_LEGACY_PRESETS = frozenset({
+    "fast",
+    "fast_3d",
+    "priority_segment_3d",
+    "standard_forward",
+    "two_directional",
+    "full_multipass",
+    "4be",
+    "four_be",
+})
 
 
 class TrackingPreset(str, Enum):
@@ -34,6 +48,7 @@ PRESET_CHOICES = [
     ("two_directional", "Two-Directional (Forward + Backward)"),
     ("standard_forward", "Standard Forward (2D + 3D)"),
     ("custom_plugin", "Custom / Plugin Algorithm"),
+    ("unified", "Unified Tracker (Robust / Correct / Fast)"),
 ]
 
 PRESET_MAP = dict(PRESET_CHOICES)
@@ -96,6 +111,24 @@ PRESET_CONFIGS: Dict[str, Dict[str, Any]] = {
         "postprocess": False,
         "selected_tracking": "standard_forward",
     },
+    "unified": {
+        "track_mode": 1,
+        "flagNewParticles": True,
+        "postprocess": True,
+        "bidirectional": "auto",  # auto -> True unless extreme density (>5000)
+        "use_2d": "auto",         # auto -> True unless sparse (<500) with strong 3D
+        "delta_t": "auto",        # auto -> 5 if slow_flow (disp < noise_floor), else 1
+        "confirm_link": "auto",   # auto -> None (reciprocity guards precision; set mm tol explicitly if desired)
+        "lookahead": True,
+        "new_particles": True,
+        "quality_post": False,
+        "probe": False,           # set True or "auto" (>=60 frames) for multi-window probe
+        "peeling": False,         # set True or "auto" (ghost_rate > 0.25) for 2-Pass Clean-and-Claim
+        "ghost_filter": "auto",   # auto -> drop low-support (<3 cam) correspondences when cals allow
+        "parallel_workers": 0,    # 0 sequential; >1 or "auto" (>=24 frames) for chunked parallel
+        "selected_tracking": "unified",
+    },
+
 }
 
 
@@ -139,6 +172,11 @@ def apply_preset(
     custom_plugin_name: str | None = None,
 ) -> tuple[Dict[str, Any], Dict[str, Any]]:
     """Apply tracking pipeline choice to track and plugins dicts while strictly preserving velocity search bounds."""
+    if preset_name in _LEGACY_PRESETS:
+        _log.info(
+            "Tracking preset %r is deprecated; prefer 'unified' for new experiments.",
+            preset_name,
+        )
     track_params = dict(track_params)
     plugins_params = dict(plugins_params) if plugins_params else {}
 
@@ -175,9 +213,8 @@ def apply_preset(
 
 TRACKER_CHOICES = [
     ("priority_segment_3d", "OpenPTV Fast 3D (Default - Cython)"),
-    ("4be", "OpenPTV 4BE (Four-Frame Best Estimate)"),
     ("trackcorr", "OpenPTV Epipolar (Multi-Camera 2D+3D)"),
-    ("two_phase", "Two-Phase 3D+2D Leaf Ranking"),
+    ("two_phase", "Two-Phase 3D+2D Leaf Ranking (optional merged-blob loop)"),
 ]
 
 DIRECTION_CHOICES = [
@@ -188,7 +225,6 @@ DIRECTION_CHOICES = [
 # Trackers whose engine supports a backward / bidirectional pass and accumulation.
 TRACKER_SUPPORTS_BACKWARD: Dict[str, bool] = {
     "priority_segment_3d": True,
-    "4be": True,
     "trackcorr": True,
     "two_phase": False,
 }
@@ -213,11 +249,19 @@ _LEGACY_TRACKER_ALIASES = {
     "standard_forward": "trackcorr",
     "two_directional": "trackcorr",
     "splitter_tracking": "trackcorr",
+    # Retired from the picker (still resolvable by name, with a warning): shown as the nearest kept tracker.
+    "4be": "priority_segment_3d",
+    "four_be": "priority_segment_3d",
+    "hybrid_deltat_3d": "priority_segment_3d",
+    "multi_deltat_3d": "priority_segment_3d",
+    "unified": "two_phase",
+    "unified_tracking": "two_phase",
+    "holistic": "two_phase",     # two_phase with holistic_rounds (default 2 when the alias is used)
 }
 
 # Legacy preset names that ran forward+backward (used only when a saved
 # track section has no explicit "direction" key yet).
-_DIRECTION_BACKWARD_PRESETS = {"full_multipass", "two_directional"}
+_DIRECTION_BACKWARD_PRESETS = {"full_multipass", "two_directional", "trackcorr", "cython_epipolar_tracking"}
 
 
 def infer_tracker(plugins_params: Dict[str, Any] | None) -> str:

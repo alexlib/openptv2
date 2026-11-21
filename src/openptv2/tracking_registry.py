@@ -551,6 +551,42 @@ TWO_PHASE_INFO = TrackerInfo(
     accuracy_ranking="standard",
     parameters=(
         ParameterGuide(
+            name="holistic_rounds",
+            type="int",
+            default="0",
+            description="0 = plain two_phase. N > 0 wraps the linker in the merged-blob loop: N rounds of refine, birth and re-link; the last round's link is the output.",
+            how_to_choose="Off by default (slower). 2 gets most of the gain; a third round changed little on the benchmarks.",
+            typical_range="1 - 3",
+            unit="",
+        ),
+        ParameterGuide(
+            name="holistic_min_resid",
+            type="float",
+            default="0.25",
+            description="Smallest unexplained brightness (in units of a typical particle) that creates a birth.",
+            how_to_choose="Lower finds more hidden particles but more false ones; unlinked births are dropped anyway.",
+            typical_range="0.15 - 0.5",
+            unit="",
+        ),
+        ParameterGuide(
+            name="holistic_partner_min_len",
+            type="int",
+            default="10",
+            description="Tracks shorter than this do not lend their predicted position to a blob partner.",
+            how_to_choose="Keeps young, possibly wrong tracks from corrupting their neighbours.",
+            typical_range="5 - 20",
+            unit="frames",
+        ),
+        ParameterGuide(
+            name="holistic_extend",
+            type="int",
+            default="0",
+            description="Passes of strict track-assisted extension after the loop (needs holistic_rounds > 0).",
+            how_to_choose="Helps at moderate density; not at very dense data.",
+            typical_range="0 - 2",
+            unit="passes",
+        ),
+        ParameterGuide(
             name="v_max",
             type="float",
             default="5.0",
@@ -594,6 +630,45 @@ TWO_PHASE_INFO = TrackerInfo(
 )
 
 
+HOLISTIC_INFO = TrackerInfo(
+    name="holistic",
+    display_name="Holistic (retired name: two_phase with holistic_rounds)",
+    short_description="Alias of two_phase with track.holistic_rounds defaulting to 2 (merged-blob inference loop)",
+    algorithm_summary="See two_phase; set track.holistic_rounds > 0 there. Implemented in holistic.py.",
+    supports_new_particles=True,
+    supports_2d=True,
+    supports_gap_relinking=True,
+    speed_ranking="slow",
+    density_ranking="moderate",
+    accuracy_ranking="high",
+    parameters=(),
+    best_for="Existing YAMLs that select 'holistic'.",
+    avoid_when="New experiments: select two_phase and set holistic_rounds.",
+)
+
+
+UNIFIED_INFO = TrackerInfo(
+    name="unified",
+    display_name="Unified Tracker (Robust / Correct / Fast)",
+    short_description="Single tracker combining Cython speed, bidirectional reciprocity, 2D disambiguation, slow-flow handling",
+    algorithm_summary=(
+        "One adaptive tracker: trackcorr (multi-camera epipolar) backbone, optional "
+        "bidirectional passes + reciprocity, optional 2D leaf re-ranking, coarse-to-fine "
+        "delta-t for slow flows, new-particle seeding, gap relinking, two-hop confirm link."
+    ),
+    supports_backward=True,
+    supports_new_particles=True,
+    supports_2d=True,
+    supports_postprocessing=True,
+    supports_gap_relinking=True,
+    supports_cost_weights=True,
+    speed_ranking="fast",
+    density_ranking="moderate",
+    accuracy_ranking="highest",
+    plugin_module="openptv2.plugins.unified_tracking",
+)
+
+
 def _build_registry() -> None:
     entries: list[TrackerInfo] = [
         PRIORITY_SEGMENT_3D_INFO,
@@ -604,6 +679,8 @@ def _build_registry() -> None:
         SPLITTER_INFO,
         HYBRID_DELTAT_3D_INFO,
         TWO_PHASE_INFO,
+        HOLISTIC_INFO,
+        UNIFIED_INFO,
     ]
     for info in entries:
         TRACKER_REGISTRY[info.name] = info
@@ -613,6 +690,7 @@ def _build_registry() -> None:
     TRACKER_REGISTRY["fast"] = PRIORITY_SEGMENT_3D_INFO
     TRACKER_REGISTRY["trackcorr"] = FULL_MULTIPASS_INFO
     TRACKER_REGISTRY["multi_deltat_3d"] = HYBRID_DELTAT_3D_INFO
+    TRACKER_REGISTRY["unified_tracking"] = UNIFIED_INFO
 
 
 _build_registry()

@@ -129,12 +129,16 @@ class TargetArray(list):
     def sort_y(self) -> None:
         self.sort(key=lambda t: t.y)
 
-    def write(self, file_base: str, frame_num: int) -> bool:
-        return write_targets(self, len(self), file_base, frame_num)
+    def write(self, file_base: str, frame_num: int, store=None, cam_idx=None) -> bool:
+        return write_targets(
+            self, len(self), file_base, frame_num, store=store, cam_idx=cam_idx
+        )
 
     @staticmethod
-    def read_targets(base_name: str, frame_num: int, cpar=None) -> "TargetArray":
-        targets = read_targets(base_name, frame_num)
+    def read_targets(
+        base_name: str, frame_num: int, cpar=None, store=None, cam_idx=None
+    ) -> "TargetArray":
+        targets = read_targets(base_name, frame_num, cam_idx=cam_idx, store=store)
         return TargetArray(targets)
 
 
@@ -152,15 +156,6 @@ def compare_targets(t1, t2):
     )
 
 
-def _resolve_file_base(file_base, frame_num):
-    file_base_str = str(file_base)
-    if "%d" in file_base_str:
-        return (file_base_str % frame_num) + "_targets"
-    if frame_num > 0:
-        return f"{file_base_str}{frame_num:04d}_targets"
-    return f"{file_base_str}_targets"
-
-
 def _guess_cam_idx(fname) -> int:
     """Best-effort camera index from a target filename, for callers that
     don't know which camera they're on. Prefer passing cam_idx explicitly."""
@@ -168,78 +163,31 @@ def _guess_cam_idx(fname) -> int:
 
     name = Path(fname).name
     cam_match = re.search(
-        r"(?:cam|_c|c)(\d+)(?:\d{4})?_targets$", name, re.IGNORECASE
+        r"(?:cam|_c|c)(\d+)(?:\d{4})?(?:_targets)?$", name, re.IGNORECASE
     ) or re.search(r"(?:cam|_c|c)(\d+)", name, re.IGNORECASE)
     return int(cam_match.group(1)) - 1 if cam_match else 0
 
 
 @cython.ccall
 def read_targets(file_base, frame_num, cam_idx=None, store=None):
-    """Read one camera/frame's 2D targets. When ``store`` is given and contains
-    the targets, reads from store directly; otherwise falls back to ASCII.
-    """
-    fname = _resolve_file_base(file_base, frame_num)
-
-    if store is not None:
-        if cam_idx is None:
-            cam_idx = _guess_cam_idx(fname)
-        if store.has_targets(cam_idx, frame_num):
-            return list(store.read_targets(cam_idx, frame_num))
-
-    try:
-        with open(fname, "r") as f:
-            num_targets = int(f.readline().strip())
-            targets = []
-            for _ in range(num_targets):
-                parts = f.readline().split()
-                if len(parts) < 8:
-                    return []
-                targets.append(
-                    Target(
-                        pnr=int(parts[0]),
-                        x=float(parts[1]),
-                        y=float(parts[2]),
-                        n=int(parts[3]),
-                        nx=int(parts[4]),
-                        ny=int(parts[5]),
-                        sumg=int(parts[6]),
-                        tnr=int(parts[7]),
-                    )
-                )
-            return targets
-    except FileNotFoundError:
+    """Read one camera/frame's 2D targets from RunStore."""
+    if store is None:
         return []
+    if cam_idx is None:
+        cam_idx = _guess_cam_idx(str(file_base))
+    if store.has_targets(cam_idx, frame_num):
+        return list(store.read_targets(cam_idx, frame_num))
+    return []
 
 
 @cython.ccall
 def write_targets(tbuf, num_targets, file_base, frame_num, store=None, cam_idx=None):
-    """Write one camera/frame's 2D targets: to the unified RunStore when
-    ``store`` is given, otherwise to ASCII (``_targets`` files are no longer
-    written for store-backed runs; see
-    docs/plans/2026-08-15-zarr-only-transition-plan.md). A store-write
-    failure raises rather than being swallowed: a partially-written store
-    must not report success.
-    """
-    fname = _resolve_file_base(file_base, frame_num)
-
-    if store is not None:
-        if cam_idx is None:
-            cam_idx = _guess_cam_idx(fname)
-        store.write_targets(cam_idx, frame_num, tbuf[:num_targets])
-        return True
-
-    try:
-        with open(fname, "w") as f:
-            f.write(f"{num_targets}\n")
-            for i in range(num_targets):
-                t = tbuf[i]
-                f.write(
-                    f"{t.pnr:4d} {t.x:9.4f} {t.y:9.4f} "
-                    f"{t.n:5d} {t.nx:5d} {t.ny:5d} {t.sumg:5d} {t.tnr:5d}\n"
-                )
-    except IOError:
-        return False
-
+    """Write one camera/frame's 2D targets to the unified RunStore."""
+    if store is None:
+        raise ValueError("write_targets requires a RunStore (ASCII _targets files are removed)")
+    if cam_idx is None:
+        cam_idx = _guess_cam_idx(str(file_base))
+    store.write_targets(cam_idx, frame_num, tbuf[:num_targets])
     return True
 
 
@@ -368,175 +316,43 @@ def reset_links(path):
 
 @cython.ccall
 def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_num, store=None):
-    """Read one frame's correspondences + tracking linkage (+ prio).
-
-    ``store``: an ``openptv2.storage.RunStore``, or ``None``. zarr is the
-    database of record now -- there is no more ASCII-only tracking (see
-    docs/plans/2026-08-15-zarr-only-transition-plan.md) -- so whenever the
-    STORE ITSELF has correspondences for this frame, it wins. ASCII is used
-    when the store has nothing for this frame yet (e.g. a prior sequence
-    step wrote ascii rt_is and this is the first store-backed read of it --
-    see tests/unit/test_tracker_run_store.py's
-    ``test_tracker_full_forward_3d_writes_through_store``, which relies on
-    exactly this: ascii input, store output) or when no store is given.
-
-    This used to gate the store read on the CORRESPONDENCE ascii FILE's
-    existence (``corres_file_base.frame_num``) rather than on whether the
-    STORE has data, on the theory that the file's absence meant "nothing
-    written yet, fall back to store". That is wrong whenever a
-    correspondence ascii file exists for some OTHER reason (e.g. committed
-    fixture input) while the LINKAGE ascii file does not -- store-backed
-    tracking writes linkage ONLY to the store, never ascii. The
-    correspondence-FILE check then incorrectly skipped the store branch even
-    though the store legitimately held this frame's (already-tracked)
-    linkage, the subsequent ascii linkage open hit FileNotFoundError, and
-    the frame silently read back as fully unlinked -- which a caller that
-    then re-writes the frame (trackback_c's buffer priming does exactly
-    this) persists as real data, wiping out already-tracked links.
-    Reproduced directly: full_forward() correctly links a store-backed run,
-    full_backward() immediately afterward reads every frame back as
-    unlinked and overwrites the store with zeros. Checking the store's OWN
-    data (``store.has_correspondences``) instead of the unrelated ascii
-    file fixes that case while preserving the ascii-input/store-output one.
-    """
-    if store is not None and store.has_correspondences(frame_num):
-        pos_3d, cam_ids = store.read_correspondences(frame_num)
-
-        # An empty linkage/prio base means the caller asked NOT to read links
-        # (Framebuf.read_frame_at_end(read_links=False) passes "" -- this is
-        # how a fresh forward pass primes its buffers). The store branch must
-        # honour that exactly like the ascii branch does, instead of falling
-        # back to the default "ptv_is" name and reading back stale linkage
-        # (from a previous tracking run baked into the store) as
-        # already-linked state.
-        link_name = Path(linkage_file_base).name if linkage_file_base else ""
-        if link_name and store.has_linkage(frame_num, link_name):
-            prevs, nexts, _ = store.read_linkage(frame_num, link_name)
-            prio_arr = store.read_prio(frame_num, link_name)
-            # Legacy-ingested stores keep the prio column under the "added"
-            # linkage name (import_run), while pipeline-written stores embed
-            # it directly in the ptv_is group -- accept both conventions.
-            if prio_arr is None and len(pos_3d) > 0:
-                added_prio = (
-                    store.read_prio(frame_num, "added")
-                    if store.has_linkage(frame_num, "added")
-                    else None
-                )
-                if added_prio is not None and len(added_prio) == len(pos_3d):
-                    prio_arr = added_prio
-        else:
-            prevs = np.full(len(pos_3d), PREV_NONE, dtype=np.int32)
-            nexts = np.full(len(pos_3d), NEXT_NONE, dtype=np.int32)
-            prio_arr = None
-
-        cor_buf = []
-        path_buf = []
-        for idx, (pt, c, pr, nx) in enumerate(zip(pos_3d, cam_ids, prevs, nexts)):
-            cor = Corres(nr=idx + 1, p=np.array(c, dtype=np.int32))
-            path = Pathinfo(
-                x=np.array(pt, dtype=np.float64),
-                prev=int(pr),
-                next_idx=int(nx),
-                prio=int(prio_arr[idx]) if prio_arr is not None else 4,
-                finaldecis=1000000.0,
-                inlist=0,
-            )
-            cor_buf.append(cor)
-            path_buf.append(path)
-        return cor_buf, path_buf
-
-    fname = f"{corres_file_base}.{frame_num}"
-    try:
-        corres_file = open(fname, "r")
-    except FileNotFoundError:
+    """Read one frame's correspondences + tracking linkage (+ prio) from RunStore."""
+    if store is None or not store.has_correspondences(frame_num):
         return [], []
 
-    corres_file.readline()  # number of points (read but use EOF)
+    pos_3d, cam_ids = store.read_correspondences(frame_num)
 
-    linkage_file = None
-    if linkage_file_base:
-        lfname = f"{linkage_file_base}.{frame_num}"
-        try:
-            linkage_file = open(lfname, "r")
-            linkage_file.readline()  # skip header
-        except FileNotFoundError:
-            linkage_file = None
-
-    prio_file = None
-    if prio_file_base:
-        pfname = f"{prio_file_base}.{frame_num}"
-        try:
-            prio_file = open(pfname, "r")
-            prio_file.readline()  # skip header
-        except FileNotFoundError:
-            prio_file = None
+    link_name = Path(linkage_file_base).name if linkage_file_base else ""
+    if link_name and store.has_linkage(frame_num, link_name):
+        prevs, nexts, _ = store.read_linkage(frame_num, link_name)
+        prio_arr = store.read_prio(frame_num, link_name)
+        if prio_arr is None and len(pos_3d) > 0:
+            added_prio = (
+                store.read_prio(frame_num, "added")
+                if store.has_linkage(frame_num, "added")
+                else None
+            )
+            if added_prio is not None and len(added_prio) == len(pos_3d):
+                prio_arr = added_prio
+    else:
+        prevs = np.full(len(pos_3d), PREV_NONE, dtype=np.int32)
+        nexts = np.full(len(pos_3d), NEXT_NONE, dtype=np.int32)
+        prio_arr = None
 
     cor_buf = []
     path_buf = []
-    targets = 0
-
-    for line in corres_file:
-        line = line.strip()
-        if not line:
-            continue
-
-        # Read linkage data if available
-        if linkage_file is not None:
-            link_line = linkage_file.readline().strip()
-            if link_line:
-                link_parts = link_line.split()
-                prev_val = int(link_parts[0])
-                next_val = int(link_parts[1])
-            else:
-                prev_val = PREV_NONE
-                next_val = NEXT_NONE
-        else:
-            prev_val = PREV_NONE
-            next_val = NEXT_NONE
-
-        # Read prio data if available
-        if prio_file is not None:
-            prio_line = prio_file.readline().strip()
-            if prio_line:
-                prio_parts = prio_line.split()
-                prio_val = int(prio_parts[5])
-            else:
-                prio_val = 4
-        else:
-            prio_val = 4
-
-        # Parse corres line: nr x y z p[0] p[1] p[2] p[3]
-        parts = line.split()
-        if len(parts) < 8:
-            break
-
+    for idx, (pt, c, pr, nx) in enumerate(zip(pos_3d, cam_ids, prevs, nexts)):
+        cor = Corres(nr=idx + 1, p=np.array(c, dtype=np.int32))
         path = Pathinfo(
-            x=np.array([float(parts[1]), float(parts[2]), float(parts[3])]),
-            prev=prev_val,
-            next_idx=next_val,
-            prio=prio_val,
+            x=np.array(pt, dtype=np.float64),
+            prev=int(pr),
+            next_idx=int(nx),
+            prio=int(prio_arr[idx]) if prio_arr is not None else 4,
             finaldecis=1000000.0,
             inlist=0,
         )
-
-        targets += 1
-        cor = Corres(
-            nr=targets,
-            p=np.array(
-                [int(parts[4]), int(parts[5]), int(parts[6]), int(parts[7])],
-                dtype=np.int32,
-            ),
-        )
-
         cor_buf.append(cor)
         path_buf.append(path)
-
-    corres_file.close()
-    if linkage_file is not None:
-        linkage_file.close()
-    if prio_file is not None:
-        prio_file.close()
-
     return cor_buf, path_buf
 
 
@@ -554,28 +370,6 @@ def _corres_p_at(cor_buf, pix):
     return cor_buf[pix].p if hasattr(cor_buf[pix], "p") else np.zeros(4, dtype=np.int32)
 
 
-def _format_rt_is_line(idx, x, y, z, c0, c1, c2, c3) -> str:
-    # Cam ids arrive as float when a caller pads with np.ones() (float64
-    # dtype) for num_cams < 4; %d-style formatting used to truncate that
-    # silently, f-string :d does not accept float, so cast explicitly.
-    return (
-        f"{idx:4d} {x:9.3f} {y:9.3f} {z:9.3f} "
-        f"{int(c0):4d} {int(c1):4d} {int(c2):4d} {int(c3):4d}\n"
-    )
-
-
-def write_rt_is(path, pos, cam_ids) -> None:
-    """Write a res/rt_is.<frame> file: count, then one line per 3D point with
-    its per-camera 2D target ids. The single implementation shared by
-    write_path_frame's inline corres write and every other rt_is writer in
-    the codebase (previously duplicated independently in gui/ptv.py, three
-    sequence plugins, and storage/legacy.py)."""
-    with open(path, "w") as f:
-        f.write(f"{len(pos)}\n")
-        for i, (p, ids) in enumerate(zip(pos, cam_ids)):
-            f.write(_format_rt_is_line(i + 1, p[0], p[1], p[2], ids[0], ids[1], ids[2], ids[3]))
-
-
 @cython.ccall
 def write_path_frame(
     cor_buf,
@@ -587,99 +381,35 @@ def write_path_frame(
     frame_num,
     store=None,
 ):
-    """Write one frame's correspondences (rt_is) + tracking linkage (ptv_is)
-    + prio (added): to the unified RunStore when ``store`` is given,
-    otherwise to ASCII (rt_is/ptv_is/added are no longer written for
-    store-backed runs; see
-    docs/plans/2026-08-15-zarr-only-transition-plan.md). A store-write
-    failure raises rather than being swallowed: a partially-written store
-    must not report success.
-    """
-    if store is not None:
-        prevs = np.array([path_buf[pix].prev for pix in range(num_parts)], dtype=np.int32)
-        nexts = np.array([path_buf[pix].next_idx for pix in range(num_parts)], dtype=np.int32)
-        pos_3d = np.array([path_buf[pix].x for pix in range(num_parts)], dtype=np.float64)
-        cam_ids = np.array(
-            [_corres_p_at(cor_buf, pix) for pix in range(num_parts)], dtype=np.int32
+    """Write one frame's correspondences + tracking linkage (+ prio) to RunStore."""
+    if store is None:
+        raise ValueError(
+            "write_path_frame requires a RunStore (ASCII rt_is/ptv_is/added files are removed)"
         )
+    prevs = np.array([path_buf[pix].prev for pix in range(num_parts)], dtype=np.int32)
+    nexts = np.array([path_buf[pix].next_idx for pix in range(num_parts)], dtype=np.int32)
+    pos_3d = np.array([path_buf[pix].x for pix in range(num_parts)], dtype=np.float64)
+    cam_ids = np.array(
+        [_corres_p_at(cor_buf, pix) for pix in range(num_parts)], dtype=np.int32
+    )
 
-        store.write_correspondences(frame=frame_num, pos_3d=pos_3d, cam_target_ids=cam_ids)
+    store.write_correspondences(frame=frame_num, pos_3d=pos_3d, cam_target_ids=cam_ids)
 
-        if linkage_file_base:
-            link_name = Path(linkage_file_base).name
-            prio_arr = (
-                np.array([path_buf[pix].prio for pix in range(num_parts)], dtype=np.int32)
-                if prio_file_base
-                else None
-            )
-            store.write_linkage(
-                frame=frame_num,
-                prev_ids=prevs,
-                next_ids=nexts,
-                pos_3d=pos_3d,
-                name=link_name,
-                prio=prio_arr,
-            )
-
-        return True
-
-    corres_fname = f"{corres_file_base}.{frame_num}"
-    linkage_fname = f"{linkage_file_base}.{frame_num}" if linkage_file_base else None
-
-    try:
-        corres_file = open(corres_fname, "w")
-    except IOError:
-        return False
-
-    linkage_file = None
-    if linkage_fname:
-        try:
-            linkage_file = open(linkage_fname, "w")
-        except IOError:
-            corres_file.close()
-            return False
-
-    prio_file = None
-    if prio_file_base:
-        prio_fname = f"{prio_file_base}.{frame_num}"
-        try:
-            prio_file = open(prio_fname, "w")
-        except IOError:
-            corres_file.close()
-            if linkage_file:
-                linkage_file.close()
-            return False
-
-    corres_file.write(f"{num_parts}\n")
-    if linkage_file:
-        linkage_file.write(f"{num_parts}\n")
-    if prio_file:
-        prio_file.write(f"{num_parts}\n")
-
-    for pix in range(num_parts):
-        p = path_buf[pix]
-
-        c_p = _corres_p_at(cor_buf, pix)
-
-        if linkage_file:
-            linkage_file.write(
-                f"{p.prev:4d} {p.next_idx:4d} {p.x[0]:10.3f} {p.x[1]:10.3f} {p.x[2]:10.3f}\n"
-            )
-
-        corres_file.write(
-            _format_rt_is_line(pix + 1, p.x[0], p.x[1], p.x[2], c_p[0], c_p[1], c_p[2], c_p[3])
+    if linkage_file_base:
+        link_name = Path(linkage_file_base).name
+        prio_arr = (
+            np.array([path_buf[pix].prio for pix in range(num_parts)], dtype=np.int32)
+            if prio_file_base
+            else None
         )
-
-        if prio_file:
-            prio_file.write(
-                f"{p.prev:4d} {p.next_idx:4d} {p.x[0]:10.3f} {p.x[1]:10.3f} {p.x[2]:10.3f} {p.prio:d}\n"
-            )
-
-    corres_file.close()
-    if linkage_file:
-        linkage_file.close()
-    if prio_file:
-        prio_file.close()
+        store.write_linkage(
+            frame=frame_num,
+            prev_ids=prevs,
+            next_ids=nexts,
+            pos_3d=pos_3d,
+            name=link_name,
+            prio=prio_arr,
+        )
 
     return True
 
@@ -906,8 +636,7 @@ class Frame:
 
         # Execute read using resolved parameters
         store = kwargs.get("store")
-        fname = f"{corres_file_base}.{frame_num}"
-        if store is None and not Path(fname).exists():
+        if store is None or not store.has_correspondences(frame_num):
             return False
 
         cor_list, path_list = read_path_frame(

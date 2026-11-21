@@ -59,6 +59,9 @@ SRC_RUN = SRC / "syn1" / "test"
 WORK = Path("/Users/alex/Downloads/HiDImaging/tracker-bench-2026-09-29")
 FPS = 5000.0
 NUM_CAMS = 4
+#: scale of the blob-merge radius (1.0 = the calibration against the rendered synthetic run). Real wp2
+#: has smaller particle images and about half as many large blobs (scripts/joint_m0.py), so < 1 emulates it.
+MERGE_SCALE = float(os.environ.get("MERGE_SCALE", "1.0"))
 
 TRACKERS = [
     "priority_segment_3d",
@@ -284,6 +287,7 @@ def case_name(
     tag = "" if sigma_px == DEFAULT_SIGMA_PX else f"_s{sigma_px:g}"
     tag += f"_a{amp_jitter:g}" if amp_jitter else ""
     tag += f"_f{amp_flicker:g}" if amp_flicker is not None else ""
+    tag += f"_m{MERGE_SCALE:g}" if MERGE_SCALE != 1.0 else ""
     return f"{level}_d{mult:g}_c{cluster:g}_k{k}_n{n_out}{tag}"
 
 
@@ -347,7 +351,7 @@ def _target_rows(xy, amp, merge, sigma_px, rng, extra=None, amp_min=0.0):
     n = len(xy)
     parent = np.arange(n)
     if merge and n > 1:
-        rad = 0.72 * np.sqrt(2 * np.log(np.maximum(amp / 40.0, 1.0)))
+        rad = MERGE_SCALE * 0.72 * np.sqrt(2 * np.log(np.maximum(amp / 40.0, 1.0)))
         pairs = cKDTree(xy).query_pairs(2 * rad.max(), output_type="ndarray")
         d = np.linalg.norm(xy[pairs[:, 0]] - xy[pairs[:, 1]], axis=1)
         pairs = pairs[d < rad[pairs[:, 0]] + rad[pairs[:, 1]]]
@@ -494,6 +498,9 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
         lost = []
         persist: dict = {}
         ndet_list: list = []
+        # truth point -> stored target index per camera (-1 = not detected);
+        # the joint-tracker bounds (scripts/joint_bounds.py) need it
+        blob_tid = np.full((len(fr), NUM_CAMS), -1, np.int32)
         for fo in range(1, n_out + 1):
             sel = np.flatnonzero(fr == fo)
             tid = np.full((len(sel), NUM_CAMS), -1, np.int32)
@@ -527,6 +534,7 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
                 store.write_targets(cam, fo, rows)
                 lost.append(1 - (t_of >= 0).sum() / max(len(sel), 1))
             ndet_list.append((sel, ndet_frame))
+            blob_tid[sel] = tid
             if level == "L0":
                 seen = (tid >= 0).sum(1) >= 2
                 store.write_correspondences(fo, pos[sel][seen], tid[seen])
@@ -545,6 +553,7 @@ def build_case(level: str, mult: float, cluster: float, k: int, n_out: int,
         for sel_, nd_ in ndet_list:
             nd[sel_] = nd_
         truth["ndet"] = nd  # cameras that detected each truth point (for recovery bounds)
+        truth["blob_tid"] = blob_tid  # target index per truth point and camera
     np.savez_compressed(case_dir / "truth.npz", **truth)
     (case_dir / "case.json").write_text(json.dumps(stats, indent=2))
     if level != "L2":  # L2's targets already carry the pipeline's tnr
@@ -606,9 +615,9 @@ def _track_optv_c(case: str, label: str, overrides: list[str]) -> Path:
     import tempfile
 
     import benchmark_utils as bu  # scripts/
+    from openptv2.storage.legacy import export_run
 
     from openptv2.storage import RunStore
-    from openptv2.storage.legacy import export_run
 
     case_dir = WORK / "cases" / case
     run_dir = WORK / "runs" / case / label
@@ -739,8 +748,9 @@ def track(case: str, tracker: str) -> Path:
         np.savez_compressed(run_dir / "pred.npz", trajid=tid, frame=arr[:, 0].astype(int),
                             pos=arr[:, 1:4])
     (run_dir / "run.json").write_text(json.dumps(out, indent=2))
-    # the copied store is large and fully reproducible
-    shutil.rmtree(run_dir / "res")
+    # the copied store is large and fully reproducible (KEEP_STORE=1 keeps it, e.g. for scripts/joint_bounds.py h2)
+    if not os.environ.get("KEEP_STORE"):
+        shutil.rmtree(run_dir / "res")
     print(json.dumps(out))
     return run_dir
 
@@ -797,8 +807,22 @@ def _smooth(trajid, frame, pos, fps, window=9, order=3, min_window=5):
     )
 
 
+def common_set_errors(keys: np.ndarray, ev: np.ndarray, ref_keys: np.ndarray, u_rms: float) -> dict:
+    """Velocity error split into the points a reference tracker also found (``common``) and the rest
+    (``extra``). ``keys`` are int64 truth keys (particle * 100000 + frame) of the output points that
+    matched a truth point, ``ev`` their velocity error (same units as ``u_rms``), ``ref_keys`` the keys
+    the reference tracker matched. Fairer than the plain mean when a tracker keeps more, harder points."""
+    in_ref = np.isin(keys, ref_keys)
+    out: dict = {"n_common": int(in_ref.sum()), "n_extra": int((~in_ref).sum()),
+                 "extra_share": float((~in_ref).mean()) if len(keys) else 0.0}
+    for name, m in (("common", in_ref), ("extra", ~in_ref)):
+        out[f"vel_err_{name}"] = float(np.sqrt(np.mean(ev[m] ** 2)) / u_rms) if m.any() else float("nan")
+    return out
+
+
 def evaluate_pred(case_dir: Path, pred: dict, flow: Flow, eps: float = 0.4,
-                  max_gap: int = 3, windows=(9, 21, 41, 81), min_len: int = 5) -> dict:
+                  max_gap: int = 3, windows=(9, 21, 41, 81), min_len: int = 5,
+                  ref_keys: np.ndarray | None = None) -> dict:
     from flowtracks.repair import repair_arrays
 
     info = json.loads((case_dir / "case.json").read_text())
@@ -860,6 +884,7 @@ def evaluate_pred(case_dir: Path, pred: dict, flow: Flow, eps: float = 0.4,
     # the true field is evaluated at the smoothed (bias-corrected) positions,
     # so ghost points count against the flow like everything else.
     r["by_window"] = {}
+    per_window = {}
     for w in windows:
         if pred.get("w") is not None:
             # per-point quality weights (A10 after tracking): weighted
@@ -886,6 +911,7 @@ def evaluate_pred(case_dir: Path, pred: dict, flow: Flow, eps: float = 0.4,
         ev = np.linalg.norm(s_vel - u_true, axis=1)
         ea = np.linalg.norm(s_acc - a_true, axis=1)
         u_rms = float(np.sqrt(np.mean(np.sum(u_true**2, 1))))
+        per_window[w] = (s_fr, s_pos, ev, u_rms)
         a_rms = float(np.sqrt(np.mean(np.sum(a_true**2, 1))))
         r["by_window"][w] = {
             "vel": float(np.sqrt(np.mean(ev**2)) / u_rms),
@@ -901,6 +927,23 @@ def evaluate_pred(case_dir: Path, pred: dict, flow: Flow, eps: float = 0.4,
         wa = min(bw, key=lambda w: bw[w]["acc"])
         r.update(vel_err_rel=bw[wv]["vel"], vel_err_rel_p95=bw[wv]["vel_p95"], vel_win=wv,
                  acc_err_rel=bw[wa]["acc"], acc_win=wa)
+        # truth keys and velocity errors of the output points at the best window (for the common-set score)
+        w_fr, w_pos, w_ev, w_urms = per_window[wv]
+        w_gid = _match(by_frame, w_fr, w_pos, eps)[0]
+        okm = w_gid >= 0
+        r["_keys"] = w_gid[okm].astype(np.int64) * 100000 + w_fr[okm]
+        if ref_keys is not None:
+            # each variant at the smoothing window that is best ON THE COMMON SET (the overall best window
+            # depends on which extra points a variant outputs, which would bias the comparison)
+            best = None
+            for w, (f_w, p_w, e_w, u_w) in per_window.items():
+                g_w = _match(by_frame, f_w, p_w, eps)[0]
+                o_w = g_w >= 0
+                cs = common_set_errors(g_w[o_w].astype(np.int64) * 100000 + f_w[o_w], e_w[o_w], ref_keys, u_w)
+                if best is None or (np.isfinite(cs["vel_err_common"]) and cs["vel_err_common"] < best[1]["vel_err_common"]):
+                    best = (w, cs)
+            r.update(best[1])
+            r["vel_win_common"] = best[0]
     else:
         keep = (np.zeros(0, int), np.zeros(0, int), np.zeros((0, 3)))
         r.update(vel_err_rel=1.0, vel_err_rel_p95=1.0, vel_win=0, acc_err_rel=1.0, acc_win=0)
@@ -955,10 +998,18 @@ def evaluate_pred(case_dir: Path, pred: dict, flow: Flow, eps: float = 0.4,
     return r
 
 
-def evaluate(case: str, trackers: list[str] | None = None) -> list[dict]:
+def evaluate(case: str, trackers: list[str] | None = None, ref: str | None = None) -> list[dict]:
+    """Score the runs of ``case``. With ``ref`` (a tracker label, e.g. ``two_phase``) every row also
+    gets ``vel_err_common`` / ``vel_err_extra``: velocity error on the truth points the reference
+    also found and on the others (see :func:`common_set_errors`)."""
     case_dir = WORK / "cases" / case
     flow = Flow()
     rows = []
+    ref_keys = None
+    if ref:
+        rp = WORK / "runs" / case / ref / "pred.npz"
+        rr = evaluate_pred(case_dir, dict(np.load(rp)), flow)
+        ref_keys = rr["_keys"]
     for run_dir in sorted((WORK / "runs" / case).iterdir()):
         if trackers and run_dir.name not in trackers:
             continue
@@ -970,7 +1021,8 @@ def evaluate(case: str, trackers: list[str] | None = None) -> list[dict]:
                "status": meta["status"]}
         if (run_dir / "pred.npz").exists():
             pred = dict(np.load(run_dir / "pred.npz"))
-            row.update(evaluate_pred(case_dir, pred, flow))
+            row.update(evaluate_pred(case_dir, pred, flow, ref_keys=ref_keys))
+        row.pop("_keys", None)
         (run_dir / "eval.json").write_text(json.dumps(row, indent=2))
         rows.append(row)
     _print_table(rows)
@@ -986,6 +1038,9 @@ def _print_table(rows: list[dict]) -> None:
         ("long_fragments", "{:>6.2f}", 6), ("yield", "{:>6.3f}", 6),
     ]
     hdr = ["tracker", "time", "lnkP", "lnkR*", "vErr", "aErr", "ghost", "longC", "frag", "yield"]
+    if any("vel_err_common" in r for r in rows):
+        cols += [("vel_err_common", "{:>7.4f}", 7), ("vel_err_extra", "{:>7.4f}", 7), ("extra_share", "{:>6.3f}", 6)]
+        hdr += ["vErrC", "vErrX", "xShare"]
     print(" ".join(f"{h:>{w}}" if i else f"{h:<{w}}" for i, (h, (_, _, w)) in enumerate(zip(hdr, cols))))
     for r in sorted(rows, key=lambda r: r.get("vel_err_rel", 9)):
         if "vel_err_rel" not in r:
@@ -1096,6 +1151,8 @@ def main(argv=None) -> None:
     e = sub.add_parser("eval")
     e.add_argument("--case", required=True)
     e.add_argument("--trackers", nargs="*")
+    e.add_argument("--ref", default=None, help="reference tracker label: also report the velocity "
+                   "error on the points it found (common) and on the others (extra)")
     s = sub.add_parser("sweep")
     s.add_argument("--cases", nargs="+", required=True)
     s.add_argument("--trackers", nargs="*", default=TRACKERS)
@@ -1115,7 +1172,7 @@ def main(argv=None) -> None:
             stamp_tnr(WORK / "cases" / c)
             print("stamped", c)
     elif args.cmd == "eval":
-        evaluate(args.case, args.trackers)
+        evaluate(args.case, args.trackers, args.ref)
     elif args.cmd == "sweep":
         sweep(args.cases, args.trackers, args.jobs, args.timeout)
         if not args.no_eval:

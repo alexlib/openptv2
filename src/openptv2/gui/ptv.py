@@ -246,10 +246,11 @@ def _process_frame_worker(args: Tuple) -> int:
             else:
                 targs.sort(key=lambda t: t.y)
 
-        if store is not None:
-            store.write_targets(i_cam, frame, targs)
-        else:
-            write_targets(targs, short_file_bases[i_cam], frame)
+        if store is None:
+            raise ValueError(
+                "RunStore is required (ASCII _targets files are removed)"
+            )
+        store.write_targets(i_cam, frame, targs)
 
     return frame
 
@@ -786,7 +787,7 @@ def py_determination_proc_c(
         ]
     )
 
-    pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
+    pos, rcm = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
 
     if num_cams < 4:
         print_corresp = -1 * np.ones((4, concatenated_corresp.shape[1]))
@@ -794,19 +795,13 @@ def py_determination_proc_c(
     else:
         print_corresp = concatenated_corresp
 
-    if store is not None:
-        store.write_correspondences(
-            frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
-        )
-        print(f"Saved 3D correspondences for frame {frame} to {store.store_path}")
-        return
-
-    output_path = _prepare_output_path(
-        f"{_safe_decode(default_naming['corres'])}.{frame}"
+    if store is None:
+        raise ValueError("RunStore is required (ASCII rt_is files are removed)")
+    store.write_correspondences(
+        frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
     )
-
-    print(f"Prepared {output_path} to write positions")
-    _write_rt_is_file(output_path, pos, print_corresp)
+    store.write_rcm(frame=frame, rcm=rcm)
+    print(f"Saved 3D correspondences for frame {frame} to {store.store_path}")
 
 
 def run_sequence_plugin(exp) -> None:
@@ -1012,20 +1007,6 @@ def read_frame_images(pm, img_base_names, num_cams, frame) -> List[np.ndarray]:
     return images
 
 
-def _write_rt_is_file(output_path: Path, pos, print_corresp) -> None:
-    """Write the rt_is.<frame> 3D-position + correspondence-index file.
-
-    ``print_corresp`` is (4, N) cam-major, matching the callers here; the
-    canonical writer wants (N, 4) particle-major.
-    """
-    from openptv2.algorithms.tracking_frame_buf import write_rt_is as _write_rt_is
-
-    try:
-        _write_rt_is(output_path, pos, print_corresp.T)
-    except OSError as exc:
-        _raise_output_write_error(output_path, exc)
-
-
 def _resolve_experiment_params(exp):
     """Resolve (pm, num_cams, cpar, spar, vpar, tpar, cals) from either a plain
     Experiment object (exp.pm) or a MainGUI object (exp.exp1.pm)."""
@@ -1177,7 +1158,7 @@ def py_sequence_loop(exp) -> None:
                 for corr, corresp in zip(corrected, sorted_corresp)
             ]
         )
-        pos, _ = point_positions(
+        pos, rcm = point_positions(
             flat.transpose(1, 0, 2), exp.cpar, exp.cals, exp.vpar, method=tri_method
         )
         if len(exp.cals) < 4:
@@ -1189,6 +1170,7 @@ def py_sequence_loop(exp) -> None:
         store.write_correspondences(
             frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
         )
+        store.write_rcm(frame=frame, rcm=rcm)
 
 
 def _convert_optv_params_for_python_engine(cpar, vpar, tpar, cals, num_cams):
@@ -1555,11 +1537,12 @@ def py_sequence_loop_python(exp) -> None:
                     for corr, corresp in zip(corrected, concatenated_corresp)
                 ]
             )
-            pos, _ = alg_point_positions(
+            pos, rcm = alg_point_positions(
                 flat.transpose(1, 0, 2), cpar_py, [c._cal for c in cals_py], vpar_py
             )
         else:
             pos = np.zeros((0, 3))
+            rcm = np.zeros((0,), dtype=np.float64)
 
         if num_cams < 4:
             print_corresp = -1 * np.ones((4, concatenated_corresp.shape[1]), dtype=int)
@@ -1570,6 +1553,7 @@ def py_sequence_loop_python(exp) -> None:
         store.write_correspondences(
             frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
         )
+        store.write_rcm(frame=frame, rcm=rcm)
 
         print(
             "Frame "
@@ -1672,102 +1656,33 @@ def py_calibration(selection, exp):
 def write_targets(
     targets: TargetArray, short_file_base: str, frame: int, store=None, cam_idx=None
 ) -> bool:
-    """Write targets: to the unified RunStore when ``store`` is given,
-    otherwise to ASCII (``_targets`` files are no longer written for
-    store-backed runs; see
-    docs/plans/2026-08-15-zarr-only-transition-plan.md). This keeps its own
-    ASCII implementation (byte-identical to, but structurally separate from,
-    algorithms.tracking_frame_buf.write_targets) because
-    tests/gui/test_ptv_file_io.py mocks ``np.savetxt`` directly to exercise
-    the write-failure paths; unifying the two would break that contract for
-    no behavioral gain, since the two are already provably byte-identical
-    (see docs/plans/2026-08-14-storage-formats-as-built.md).
-    """
-    output_path = _prepare_output_path(f"{short_file_base}.{frame:04d}_targets")
-    num_targets = len(targets)
+    """Write targets to the unified RunStore."""
+    if store is None:
+        raise ValueError("write_targets requires a RunStore (ASCII _targets files are removed)")
+    from openptv2.algorithms.tracking_frame_buf import _guess_cam_idx
 
-    if store is not None:
-        from openptv2.algorithms.tracking_frame_buf import _guess_cam_idx
-
-        store.write_targets(
-            cam_idx if cam_idx is not None else _guess_cam_idx(output_path),
-            frame,
-            targets,
-        )
-        return True
-
-    if num_targets == 0:
-        try:
-            with open(output_path, "w", encoding="utf-8") as file:
-                file.write("0\n")
-        except OSError as exc:
-            _raise_output_write_error(output_path, exc)
-        return True  # No targets to write, but file created successfully
-
-    try:
-        target_arr = np.array(
-            [
-                ([t.pnr(), *t.pos(), *t.count_pixels(), t.sum_grey_value(), t.tnr()])
-                for t in targets
-            ]
-        )
-        np.savetxt(
-            output_path,
-            target_arr,
-            fmt="%4d %9.4f %9.4f %5d %5d %5d %5d %5d",
-            header=f"{num_targets}",
-            comments="",
-        )
-    except OSError as exc:
-        _raise_output_write_error(output_path, exc)
-        return False
-
+    store.write_targets(
+        cam_idx if cam_idx is not None else _guess_cam_idx(str(short_file_base)),
+        frame,
+        targets,
+    )
     return True
 
 
 def read_targets(
     short_file_base: str, frame: int, store=None, cam_idx=None
 ) -> TargetArray:
-    """Read targets: from the unified RunStore when ``store`` is given and has targets,
-    otherwise falls back to ASCII file."""
-    filename = f"{short_file_base}.{frame:04d}_targets"
+    """Read targets from the unified RunStore."""
+    if store is None:
+        raise FileNotFoundError(
+            f"read_targets requires a RunStore (ASCII _targets files are removed): {short_file_base}"
+        )
+    from openptv2.algorithms.tracking_frame_buf import _guess_cam_idx
 
-    if store is not None:
-        from openptv2.algorithms.tracking_frame_buf import _guess_cam_idx
-
-        idx = cam_idx if cam_idx is not None else _guess_cam_idx(filename)
-        if store.has_targets(idx, frame):
-            print(f" Reading targets from: store (cam={idx}, frame={frame})")
-            return store.read_targets(idx, frame)
-
-    if not os.path.exists(filename):
-        raise FileNotFoundError(f"Targets file does not exist: {filename}")
-
-    print(f" Reading targets from: filename: {filename}")
-
-    try:
-        with open(filename, "r", encoding="utf-8") as file:
-            num_targets = int(file.readline().strip())
-            targs = TargetArray(num_targets)
-
-            for tix in range(num_targets):
-                line = file.readline().strip().split()
-
-                if len(line) != 8:
-                    raise ValueError(f"Bad format for file: {filename}")
-
-                targ = targs[tix]
-                targ.set_pnr(int(line[0]))
-                targ.set_pos([float(line[1]), float(line[2])])
-                targ.set_pixel_counts(int(line[3]), int(line[4]), int(line[5]))
-                targ.set_sum_grey_value(int(line[6]))
-                targ.set_tnr(int(line[7]))
-
-    except IOError as err:
-        print(f"Can't open targets file: {filename}")
-        raise err
-
-    return targs
+    idx = cam_idx if cam_idx is not None else _guess_cam_idx(str(short_file_base))
+    if store.has_targets(idx, frame):
+        return store.read_targets(idx, frame)
+    raise FileNotFoundError(f"Targets not found in RunStore (cam={idx}, frame={frame})")
 
 
 def _number_position_candidates(all_matches):
@@ -1945,49 +1860,12 @@ def _read_correspondences_from_zarr_fallback(p: Path, frame: int):
 
 
 def read_rt_is_file(filename) -> List[List[float]]:
-    """Read data from an rt_is file or Zarr store and return the parsed values.
-
-    Zarr is the database of record — the store is checked first when the
-    frame can be parsed from the filename. ASCII is only for pre-zarr runs.
-    """
+    """Read 3D correspondences for a frame from the Zarr store."""
     p = Path(filename)
     frame_match = re.search(r"\.(\d+)$", p.name)
     if frame_match:
-        try:
-            frame = int(frame_match.group(1))
-            data = _read_correspondences_from_zarr_fallback(p, frame)
-            if data is not None:
-                return data
-        except Exception:
-            pass
-    try:
-        with open(filename, "r", encoding="utf-8") as file:
-            num_rows = int(file.readline().strip())
-            if num_rows == 0:
-                raise ValueError("Failed to read the number of rows")
-
-            data = []
-            for _ in range(num_rows):
-                line = file.readline().strip()
-                if not line:
-                    break
-
-                values = line.split()
-                if len(values) != 8:
-                    raise ValueError("Incorrect number of values in line")
-
-                x = float(values[1])
-                y = float(values[2])
-                z = float(values[3])
-                p1 = int(values[4])
-                p2 = int(values[5])
-                p3 = int(values[6])
-                p4 = int(values[7])
-
-                data.append([x, y, z, p1, p2, p3, p4])
-
+        frame = int(frame_match.group(1))
+        data = _read_correspondences_from_zarr_fallback(p, frame)
+        if data is not None:
             return data
-
-    except IOError as e:
-        print(f"Can't open ascii file: {filename}")
-        raise e
+    raise FileNotFoundError(f"No Zarr correspondences found for {filename}")

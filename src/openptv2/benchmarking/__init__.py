@@ -12,8 +12,8 @@ scenario
     Define configurable ground-truth trajectories (velocities, crossings,
     entering/leaving particles, density, noise, gaps).
 datawriter
-    Project trajectories to per-camera pixels and write rt_is / targets /
-    origin ground-truth files, or the same dataset into a Zarr RunStore.
+    Project trajectories to per-camera pixels and write targets,
+    correspondences, and initial linkage into a Zarr RunStore.
 metrics
     Compute proPTV-style identity metrics (F, C, Cr, pmt) plus the standard
     yield/precision/RMS set.
@@ -29,7 +29,7 @@ from .camera_rig import (
     make_standard_rig,
     project_to_pixels,
 )
-from .datawriter import DatasetSpec, write_dataset, write_dataset_store
+from .datawriter import DatasetSpec, write_dataset_store
 from .experiment import write_experiment
 from .metrics import (
     IdentityMetrics,
@@ -54,7 +54,6 @@ __all__ = [
     "CrossingSpec",
     "generate_scenario",
     "DatasetSpec",
-    "write_dataset",
     "write_dataset_store",
     "write_experiment",
     "run_tracker",

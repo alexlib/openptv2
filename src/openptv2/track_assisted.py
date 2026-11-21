@@ -42,8 +42,10 @@ from openptv2.algorithms.constants import COORD_UNUSED
 from openptv2.algorithms.orientation import point_position
 from openptv2.algorithms.track import point_to_pixel
 from openptv2.tracking_postprocess import (
+    back_link_step,
     count_links,
     enforce_reciprocity,
+    link_step,
     read_linkage,
     relink_trajectory_gaps,
     write_linkage,
@@ -60,6 +62,8 @@ class CorrectiveStats:
     passes_run: int = 0
     claimed_total: int = 0
     claimed_2cam: int = 0
+    claimed_3cam: int = 0
+    claimed_shared: int = 0
     ghosts_removed: int = 0
     links_before: int = 0
     links_after: int = 0
@@ -70,7 +74,14 @@ class CorrectiveStats:
 class _Frame:
     """One frame's particles, links and targets, held in memory for a pass."""
 
-    def __init__(self, store: Any, linkage_name: str, frame: int, num_cams: int):
+    def __init__(
+        self,
+        store: Any,
+        linkage_name: str,
+        frame: int,
+        num_cams: int,
+        target_cache: dict[int, tuple[list[np.ndarray], list[Any]]] | None = None,
+    ):
         from scipy.spatial import cKDTree
 
         self.frame = frame
@@ -101,17 +112,23 @@ class _Frame:
         self.next = list(nxt)
         self.xyz = list(np.asarray(xyz, dtype=np.float64))
         self.ids = list(np.asarray(ids, dtype=np.int32).reshape(-1, num_cams))
-        self.targets = []
-        self.trees = []
-        for cam in range(num_cams):
-            if store.has_targets(cam, frame):
-                ta = store.read_targets(cam, frame)
-                xy = np.array([ta[i].pos() for i in range(len(ta))]).reshape(-1, 2)
-            else:
-                xy = np.empty((0, 2))
-            self.targets.append(xy)
-            self.trees.append(cKDTree(xy) if len(xy) else None)
+        if target_cache is not None and frame in target_cache:
+            self.targets, self.trees = target_cache[frame]
+        else:
+            self.targets = []
+            self.trees = []
+            for cam in range(num_cams):
+                if store.has_targets(cam, frame):
+                    ta = store.read_targets(cam, frame)
+                    xy = np.array([ta[i].pos() for i in range(len(ta))]).reshape(-1, 2)
+                else:
+                    xy = np.empty((0, 2))
+                self.targets.append(xy)
+                self.trees.append(cKDTree(xy) if len(xy) else None)
+            if target_cache is not None:
+                target_cache[frame] = (self.targets, self.trees)
         self.dirty = False
+        self.ids_dirty = False
 
     def unlinked(self) -> np.ndarray:
         prev = np.asarray(self.prev[: self.n_initial])
@@ -134,39 +151,158 @@ class _Frame:
         for col in self.prio.values():
             col.append(PRIO_ADDED)
         self.dirty = True
+        self.ids_dirty = True
         return len(self.xyz) - 1
 
 
-def _claim_particle(predicted_pos, fr: _Frame, claimed, cals, cpar, radius_px):
+def _collect_history(
+    frames: dict[int, _Frame],
+    start_frame: int,
+    start_idx: int,
+    backward: bool,
+    max_points: int = 4,
+) -> list[np.ndarray]:
+    """Collect up to ``max_points`` consecutive 3D positions along a track,
+    starting at ``(start_frame, start_idx)`` and stepping away from the target
+    frame."""
+    history: list[np.ndarray] = []
+    f = start_frame
+    idx = start_idx
+    step = 1 if backward else -1
+    while len(history) < max_points and f in frames:
+        fr = frames[f]
+        if idx < 0 or idx >= len(fr.xyz):
+            break
+        history.append(fr.xyz[idx])
+        idx = fr.next[idx] if backward else fr.prev[idx]
+        f += step
+    return history
+
+
+def _predict_position(history: list[np.ndarray], predictor: str = "poly") -> np.ndarray:
+    """Predict the next 3D position one step before ``history[0]``.
+
+    ``predictor="poly"`` uses a quadratic fit when >= 3 points are available
+    (3-point exact quadratic Lagrange extrapolation; 4-point quadratic
+    least-squares fit for noise smoothing) and falls back to 2-point linear
+    extrapolation when only 2 points exist. ``predictor="linear"`` always uses
+    2-point linear extrapolation.
+    """
+    if predictor not in ("poly", "linear"):
+        raise ValueError(f"Unknown predictor {predictor!r}; expected 'poly' or 'linear'")
+    if predictor == "linear" or len(history) == 2:
+        return 2.0 * history[0] - history[1]
+    if len(history) == 3:
+        return 3.0 * history[0] - 3.0 * history[1] + history[2]
+    p0, p1, p2, p3 = history[0], history[1], history[2], history[3]
+    return 0.25 * (9.0 * p0 - 3.0 * p1 - 5.0 * p2 + 3.0 * p3)
+
+
+def _triangulate_weighted_lsq(
+    targets_metric: np.ndarray,
+    is_shared: np.ndarray,
+    cals: Any,
+    mm: Any,
+    shared_weight: float = 0.25,
+) -> np.ndarray:
+    """Least-squares 3D triangulation with lower weight on shared 2D targets."""
+    from openptv2.algorithms.ray_tracing import ray_tracing_batch
+
+    A = np.zeros((3, 3), dtype=np.float64)
+    b = np.zeros(3, dtype=np.float64)
+    eye3 = np.eye(3, dtype=np.float64)
+    for cam in range(len(cals)):
+        if targets_metric[cam, 0] == COORD_UNUSED:
+            continue
+        pos, u = ray_tracing_batch(targets_metric[cam : cam + 1], cals[cam], mm)
+        c = pos[0]
+        d = u[0]
+        w = shared_weight if is_shared[cam] else 1.0
+        P = eye3 - np.outer(d, d)
+        A += w * P
+        b += w * (P @ c)
+    try:
+        return np.linalg.solve(A, b)
+    except np.linalg.LinAlgError:
+        return np.linalg.lstsq(A, b, rcond=None)[0]
+
+
+def _claim_particle(
+    predicted_pos,
+    fr: _Frame,
+    claimed,
+    cals,
+    cpar,
+    radius_px,
+    *,
+    allow_shared_targets: bool = False,
+    shared_weight: float = 0.25,
+    max_ray_miss_mm: float | None = None,
+    max_pos_err_mm: float | None = None,
+):
     """Nearest free target within ``radius_px`` of the projected prediction in
-    every camera; triangulate when >= 2 cameras hit. Returns (pos, ids, n) or
-    None. Marks the used targets as claimed."""
+    every camera; triangulate when >= 2 cameras hit.
+
+    When ``allow_shared_targets=True``, cameras with no free target within
+    ``radius_px`` fall back to the nearest already-claimed target within
+    ``radius_px`` as a lower-weight observation.
+
+    Returns ``(pos, ids, n_hits, n_shared)`` or ``None``. Marks newly used
+    targets as claimed.
+    """
     from openptv2.transforms import convert_arr_pixel_to_metric, distorted_to_flat
 
     num_cams = cpar.num_cams
     targets_metric = np.full((num_cams, 2), COORD_UNUSED)
     cam_ids = np.full(num_cams, -1, dtype=np.int32)
+    is_shared = np.zeros(num_cams, dtype=bool)
     for cam in range(num_cams):
         tree = fr.trees[cam]
         if tree is None:
             continue
         px = point_to_pixel(predicted_pos, cals[cam], cpar)
+        if not np.all(np.isfinite(px)):
+            continue
         k = min(4, len(fr.targets[cam]))
         dist, idx = tree.query(px, k=k, distance_upper_bound=radius_px)
-        for d, j in zip(np.atleast_1d(dist), np.atleast_1d(idx)):
+        dists = np.atleast_1d(dist)
+        idxs = np.atleast_1d(idx)
+        chosen = -1
+        chosen_shared = False
+        for d, j in zip(dists, idxs):
             if np.isfinite(d) and int(j) not in claimed[cam]:
-                metric = convert_arr_pixel_to_metric(fr.targets[cam][j][None], cpar)
-                targets_metric[cam] = distorted_to_flat(metric, cals[cam])[0]
-                cam_ids[cam] = int(j)
+                chosen = int(j)
                 break
+        if chosen < 0 and allow_shared_targets:
+            for d, j in zip(dists, idxs):
+                if np.isfinite(d):
+                    chosen = int(j)
+                    chosen_shared = True
+                    break
+        if chosen >= 0:
+            metric = convert_arr_pixel_to_metric(fr.targets[cam][chosen][None], cpar)
+            targets_metric[cam] = distorted_to_flat(metric, cals[cam])[0]
+            cam_ids[cam] = chosen
+            is_shared[cam] = chosen_shared
+
     n_hits = int((cam_ids >= 0).sum())
     if n_hits < 2:
         return None
-    pos, _dist = point_position(targets_metric, num_cams, cpar.mm, cals, method="lsq")
+    n_shared = int(is_shared.sum())
+    if n_shared > 0:
+        pos = _triangulate_weighted_lsq(
+            targets_metric, is_shared, cals, cpar.mm, shared_weight=shared_weight
+        )
+    else:
+        pos, _dist = point_position(targets_metric, num_cams, cpar.mm, cals, method="lsq")
+        if max_ray_miss_mm is not None and np.isfinite(_dist) and float(_dist) > float(max_ray_miss_mm):
+            return None
+    if max_pos_err_mm is not None and float(np.linalg.norm(pos - predicted_pos)) > float(max_pos_err_mm):
+        return None
     for cam in range(num_cams):
         if cam_ids[cam] >= 0:
             claimed[cam].add(int(cam_ids[cam]))
-    return pos, cam_ids, n_hits
+    return pos, cam_ids, n_hits, n_shared
 
 
 def _extend_tracks(
@@ -180,29 +316,50 @@ def _extend_tracks(
     release_ghosts: bool = True,
     forward: bool = True,
     radius_px: float = ADD_RADIUS_PX,
-) -> tuple[int, int, int]:
+    predictor: str = "poly",
+    allow_shared_targets: bool = False,
+    shared_weight: float = 0.25,
+    max_ray_miss_mm: float | None = None,
+    max_pos_err_mm: float | None = None,
+    target_cache: dict[int, tuple[list[np.ndarray], list[Any]]] | None = None,
+) -> tuple[int, int, int, int, int]:
     """One backward (and optionally forward) sweep. Returns
-    (claimed_total, claimed_2cam, ghosts_removed)."""
+    (claimed_total, claimed_2cam, claimed_3cam, claimed_shared, ghosts_removed)."""
     num_cams = cpar.num_cams
     frames = {
-        f: _Frame(store, linkage_name, f, num_cams) for f in range(first, last + 1)
+        f: _Frame(store, linkage_name, f, num_cams, target_cache=target_cache)
+        for f in range(first, last + 1)
     }
     claimed = {f: fr.claimed_sets(release_ghosts) for f, fr in frames.items()}
-    claimed_total = claimed_2cam = 0
+    claimed_total = claimed_2cam = claimed_3cam = claimed_shared = 0
 
-    def extend(t: int, here: _Frame, beyond: _Frame, backward: bool) -> None:
-        nonlocal claimed_total, claimed_2cam
+    def extend(t: int, start_frame: int, backward: bool) -> None:
+        nonlocal claimed_total, claimed_2cam, claimed_3cam, claimed_shared
+        here = frames[start_frame]
         target = frames[t]
         for i in range(len(here.xyz)):
             has_new_side = here.prev[i] >= 0 if backward else here.next[i] >= 0
-            j = here.next[i] if backward else here.prev[i]
-            if has_new_side or j < 0 or j >= len(beyond.xyz):
+            if has_new_side:
                 continue
-            predicted = 2.0 * here.xyz[i] - beyond.xyz[j]
-            got = _claim_particle(predicted, target, claimed[t], cals, cpar, radius_px)
+            history = _collect_history(frames, start_frame, i, backward=backward, max_points=4)
+            if len(history) < 2:
+                continue
+            predicted = _predict_position(history, predictor=predictor)
+            got = _claim_particle(
+                predicted,
+                target,
+                claimed[t],
+                cals,
+                cpar,
+                radius_px,
+                allow_shared_targets=allow_shared_targets,
+                shared_weight=shared_weight,
+                max_ray_miss_mm=max_ray_miss_mm,
+                max_pos_err_mm=max_pos_err_mm,
+            )
             if got is None:
                 continue
-            pos, ids, n_hits = got
+            pos, ids, n_hits, n_shared = got
             if backward:
                 row = target.append(pos, ids, PREV_NONE, i)
                 here.prev[i] = row
@@ -212,12 +369,14 @@ def _extend_tracks(
             here.dirty = True
             claimed_total += 1
             claimed_2cam += n_hits == 2
+            claimed_3cam += n_hits == 3
+            claimed_shared += n_shared > 0
 
-    for t in range(last - 2, first - 1, -1):  # heads at t+1, velocity from t+2
-        extend(t, frames[t + 1], frames[t + 2], backward=True)
+    for t in range(last - 2, first - 1, -1):  # heads at t+1, history from t+1..t+4
+        extend(t, t + 1, backward=True)
     if forward:
-        for t in range(first + 2, last + 1):  # tails at t-1, velocity from t-2
-            extend(t, frames[t - 1], frames[t - 2], backward=False)
+        for t in range(first + 2, last + 1):  # tails at t-1, history from t-1..t-4
+            extend(t, t - 1, backward=False)
 
     ghosts_removed = _drop_reclaimed_ghosts(frames, num_cams) if release_ghosts else 0
 
@@ -225,15 +384,17 @@ def _extend_tracks(
         if not fr.dirty:
             continue
         xyz = np.asarray(fr.xyz, dtype=np.float64).reshape(-1, 3)
-        ids = np.asarray(fr.ids, dtype=np.int32).reshape(-1, num_cams)
-        store.write_correspondences(f, xyz, ids)
+        if fr.ids_dirty:
+            ids = np.asarray(fr.ids, dtype=np.int32).reshape(-1, num_cams)
+            store.write_correspondences(f, xyz, ids)
         prev = np.asarray(fr.prev, np.int32)
         nxt = np.asarray(fr.next, np.int32)
         write_linkage(linkage_name, f, prev, nxt, xyz, store=store)
         for name, col in fr.prio.items():
             store.write_linkage(f, prev, nxt, xyz, name=name, prio=np.asarray(col))
-        _write_target_rows(store, f, ids)
-    return claimed_total, claimed_2cam, ghosts_removed
+        if fr.ids_dirty:
+            _write_target_rows(store, f, ids)
+    return claimed_total, claimed_2cam, claimed_3cam, claimed_shared, ghosts_removed
 
 
 def _drop_reclaimed_ghosts(frames: dict[int, _Frame], num_cams: int) -> int:
@@ -255,22 +416,52 @@ def _drop_reclaimed_ghosts(frames: dict[int, _Frame], num_cams: int) -> int:
         removed += int(drop.sum())
     if removed == 0:
         return 0
+    new_index_by_frame = {
+        f: np.cumsum(keep) - 1
+        for f, keep in keep_by_frame.items()
+        if not keep.all()
+    }
+
+    def next_of(m: int):
+        return frames[m].next if m in frames else None
+
+    def prev_of(m: int):
+        return frames[m].prev if m in frames else None
+
+    # Resolve each link's actual target frame (accounting for gap-bridged links
+    # with step > 1) BEFORE mutating any frame's prev/next lists.
+    updates: list[tuple[int, str, int, int]] = []
+    for g, fr_g in frames.items():
+        for k, v in enumerate(fr_g.prev):
+            if v >= 0:
+                step = back_link_step(next_of, g, k, v)
+                if step == 0:
+                    step = 1
+                target_f = g - step
+                if target_f in new_index_by_frame and v < len(new_index_by_frame[target_f]):
+                    updates.append((g, "prev", k, int(new_index_by_frame[target_f][v])))
+        for k, v in enumerate(fr_g.next):
+            if v >= 0:
+                step = link_step(prev_of, g, k, v)
+                if step == 0:
+                    step = 1
+                target_f = g + step
+                if target_f in new_index_by_frame and v < len(new_index_by_frame[target_f]):
+                    updates.append((g, "next", k, int(new_index_by_frame[target_f][v])))
+
+    for g, attr, k, new_v in updates:
+        getattr(frames[g], attr)[k] = new_v
+        frames[g].dirty = True
+
     for f, keep in keep_by_frame.items():
         if keep.all():
             continue
-        new_index = np.cumsum(keep) - 1
-        for g, attr in ((f - 1, "next"), (f + 1, "prev")):
-            if g in frames:
-                links = getattr(frames[g], attr)
-                for k, v in enumerate(links):
-                    if v >= 0:
-                        links[k] = int(new_index[v])
-                frames[g].dirty = True
         fr = frames[f]
         for attr in ("xyz", "ids", "prev", "next"):
             setattr(fr, attr, [v for v, k in zip(getattr(fr, attr), keep) if k])
         fr.prio = {n: [v for v, k in zip(c, keep) if k] for n, c in fr.prio.items()}
         fr.dirty = True
+        fr.ids_dirty = True
     return removed
 
 
@@ -301,6 +492,15 @@ def run_corrective_pass(
     min_change_frac: float = 0.01,
     release_ghosts: bool = True,
     forward: bool = True,
+    predictor: str = "poly",
+    allow_shared_targets: bool = False,
+    radius_px: float = ADD_RADIUS_PX,
+    shared_weight: float = 0.25,
+    max_ray_miss_mm: float | None = None,
+    max_pos_err_mm: float | None = None,
+    gap_accel_err: float | None = None,
+    require_bidir_vel: bool = False,
+    uniqueness_ratio: float = 0.0,
 ) -> CorrectiveStats:
     """The Stage-2 corrective pass. Iterates track extension + gap-bridging +
     reciprocity while the sequence's total link count keeps changing by more
@@ -308,12 +508,13 @@ def run_corrective_pass(
     stats = CorrectiveStats()
     first, last = spar.first, spar.last
     stats.links_before = count_links(linkage_name, first, last, store=store)
+    target_cache: dict[int, tuple[list[np.ndarray], list[Any]]] = {}
 
     for p in range(1, max_passes + 1):
         stats.passes_run = p
         links_before_pass = count_links(linkage_name, first, last, store=store)
 
-        claimed, claimed_2cam, ghosts = _extend_tracks(
+        claimed, claimed_2cam, claimed_3cam, claimed_shared, ghosts = _extend_tracks(
             cpar,
             cals,
             store,
@@ -322,9 +523,18 @@ def run_corrective_pass(
             last,
             release_ghosts=release_ghosts,
             forward=forward,
+            radius_px=radius_px,
+            predictor=predictor,
+            allow_shared_targets=allow_shared_targets,
+            shared_weight=shared_weight,
+            max_ray_miss_mm=max_ray_miss_mm,
+            max_pos_err_mm=max_pos_err_mm,
+            target_cache=target_cache,
         )
         stats.claimed_total += claimed
         stats.claimed_2cam += claimed_2cam
+        stats.claimed_3cam += claimed_3cam
+        stats.claimed_shared += claimed_shared
         stats.ghosts_removed += ghosts
 
         stats.gaps_bridged[f"pass{p}"] = relink_trajectory_gaps(
@@ -332,8 +542,10 @@ def run_corrective_pass(
             first,
             last,
             max_gap=2,
-            max_accel_err=float(tpar.dacc),
+            max_accel_err=float(gap_accel_err) if gap_accel_err is not None else float(tpar.dacc),
             store=store,
+            require_bidir_vel=require_bidir_vel,
+            uniqueness_ratio=uniqueness_ratio,
         )
         stats.reciprocity[f"pass{p}"] = enforce_reciprocity(
             linkage_name,
@@ -354,7 +566,10 @@ def run_corrective_pass(
 def run_configured_corrective_pass(exp: Any, tracker: Any, track_cfg: dict) -> None:
     """Run ``track.corrective_passes`` passes after a tracking plugin's own run
     (0 = off), on the RunStore the tracker wrote to. ``track.corrective_release_ghosts``
-    and ``track.corrective_forward`` (both default true) select the options."""
+    and ``track.corrective_forward`` (both default true) select the options;
+    ``track.corrective_predictor`` (``"poly"`` or ``"linear"``),
+    ``track.corrective_allow_shared_targets`` (default false), and
+    ``track.corrective_radius_px`` tune extension."""
     corrective_passes = int(track_cfg.get("corrective_passes", 0))
     if corrective_passes <= 0:
         return
@@ -378,10 +593,16 @@ def run_configured_corrective_pass(exp: Any, tracker: Any, track_cfg: dict) -> N
         max_passes=corrective_passes,
         release_ghosts=bool(track_cfg.get("corrective_release_ghosts", True)),
         forward=bool(track_cfg.get("corrective_forward", True)),
+        predictor=str(track_cfg.get("corrective_predictor", "poly")),
+        allow_shared_targets=bool(
+            track_cfg.get("corrective_allow_shared_targets", False)
+        ),
+        radius_px=float(track_cfg.get("corrective_radius_px", ADD_RADIUS_PX)),
     )
     print(
         f"Corrective pass: claimed {stats.claimed_total} particle(s) "
-        f"({stats.claimed_2cam} 2-camera-only), removed {stats.ghosts_removed} "
+        f"({stats.claimed_2cam} 2-cam, {stats.claimed_3cam} 3-cam, "
+        f"{stats.claimed_shared} shared), removed {stats.ghosts_removed} "
         f"ghost(s) over {stats.passes_run} pass(es); links "
         f"{stats.links_before} -> {stats.links_after}"
     )

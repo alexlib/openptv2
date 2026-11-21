@@ -97,16 +97,18 @@ def test_vertical_velocity_coolwarm_sign():
 
 
 def test_create_3d_trajectories_panel_clamping(tmp_path):
-    res_dir = tmp_path / "res"
-    res_dir.mkdir()
+    from openptv2.storage import RunStore
 
-    with patch("flowtracks.io.trajectories_ptvis") as mock_ptvis:
-        mock_ptvis.return_value = []
+    RunStore(tmp_path / "res" / "run.zarr", mode="w")
+
+    with patch.object(
+        RunStore, "to_flowtracks_trajectories", return_value=[]
+    ) as mock_to_ft:
         # Requesting 100 frames (1 to 100)
         create_3d_trajectories_panel(tmp_path, first_frame=1, last_frame=100)
         # Should clamp last_frame to 1 + 49 = 50
-        mock_ptvis.assert_called_once()
-        _, kwargs = mock_ptvis.call_args
+        mock_to_ft.assert_called_once()
+        _, kwargs = mock_to_ft.call_args
         assert kwargs["first"] == 1
         assert kwargs["last"] == 50
 
@@ -125,9 +127,9 @@ def test_visualize_3d_trajectories_no_files(tmp_path):
 
 
 def test_visualize_3d_trajectories_success(tmp_path):
-    res_dir = tmp_path / "res"
-    res_dir.mkdir()
-    (res_dir / "ptv_is.10000").touch()
+    from openptv2.storage import RunStore
+
+    RunStore(tmp_path / "res" / "run.zarr", mode="w")
 
     handler = TreeMenuHandler()
     mock_info = MagicMock()
@@ -141,7 +143,7 @@ def test_visualize_3d_trajectories_success(tmp_path):
     )
 
     with (
-        patch("flowtracks.io.trajectories_ptvis", return_value=[traj]),
+        patch.object(RunStore, "to_flowtracks_trajectories", return_value=[traj]),
         patch(
             "openptv2.gui.plot_3d_trajectories.Plot3DTrajectories.configure_traits"
         ) as mock_config,

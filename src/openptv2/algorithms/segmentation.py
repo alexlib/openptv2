@@ -107,6 +107,224 @@ def check_touch(tpeak: Peak, p1: cython.int, p2: cython.int):
         tpeak.n_touch = 3
 
 
+def _merge_weak_basins(
+    ws: np.ndarray,
+    surface: np.ndarray,
+    peak_vals: dict[int, float],
+    gvthres: int,
+    min_prominence: float,
+    rel_prominence: float,
+) -> np.ndarray:
+    """Merge watershed basins whose saddle-to-peak prominence is below threshold."""
+    if min_prominence <= 0.0 and rel_prominence <= 0.0:
+        return ws
+
+    # Build 4-connected boundary saddle heights between adjacent basins.
+    saddles: dict[tuple[int, int], float] = {}
+    for axis_slices in (
+        ((slice(None), slice(None, -1)), (slice(None), slice(1, None))),
+        ((slice(None, -1), slice(None)), (slice(1, None), slice(None))),
+    ):
+        s0, s1 = axis_slices
+        l0 = ws[s0]
+        l1 = ws[s1]
+        diff = (l0 > 0) & (l1 > 0) & (l0 != l1)
+        if not np.any(diff):
+            continue
+        v0 = surface[s0][diff]
+        v1 = surface[s1][diff]
+        bridge = np.minimum(v0, v1)
+        a_arr = l0[diff]
+        b_arr = l1[diff]
+        for a_val, b_val, h in zip(a_arr.tolist(), b_arr.tolist(), bridge.tolist()):
+            key = (a_val, b_val) if a_val < b_val else (b_val, a_val)
+            prev = saddles.get(key, -1e30)
+            if h > prev:
+                saddles[key] = h
+
+    while saddles:
+        best_pair = None
+        best_prom = float("inf")
+        best_weak = 0
+        best_strong = 0
+        for (a, b), saddle_h in saddles.items():
+            if peak_vals[a] <= peak_vals[b]:
+                weak, strong = a, b
+            else:
+                weak, strong = b, a
+            prom = peak_vals[weak] - saddle_h
+            if prom < best_prom:
+                best_prom = prom
+                best_pair = (a, b)
+                best_weak = weak
+                best_strong = strong
+
+        if best_pair is None:
+            break
+
+        thresh = max(
+            min_prominence,
+            rel_prominence * max(0.0, peak_vals[best_weak] - float(gvthres)),
+        )
+        if best_prom >= thresh:
+            break
+
+        # Merge weak basin into strong basin and remap saddle adjacency.
+        ws[ws == best_weak] = best_strong
+        new_saddles: dict[tuple[int, int], float] = {}
+        for (a, b), h in saddles.items():
+            if (a, b) == best_pair:
+                continue
+            na = best_strong if a == best_weak else a
+            nb = best_strong if b == best_weak else b
+            if na == nb:
+                continue
+            key = (na, nb) if na < nb else (nb, na)
+            prev = new_saddles.get(key)
+            if prev is None or h > prev:
+                new_saddles[key] = h
+        saddles = new_saddles
+
+    return ws
+
+
+def _targ_rec_multipeak_arrays(
+    img_u8: np.ndarray,
+    gvthres: int,
+    nnmin: int,
+    nnmax: int,
+    nxmin: int,
+    nxmax: int,
+    nymin: int,
+    nymax: int,
+    sumg_min: int,
+    xmin: int,
+    ymin: int,
+    xmax: int,
+    ymax: int,
+    max_targets: int,
+    min_peak_distance: int = 1,
+    min_prominence: float = 2.0,
+    rel_prominence: float = 0.02,
+    smooth_sigma: float = 0.5,
+):
+    """Multi-peak 2D target detection using connected components + watershed splitting.
+
+    Splits touching/overlapping particles at local maxima without an OTF model,
+    using prominence-based basin merging to avoid spurious splitting on noise.
+    Returns the same ``(n_found, ox, oy, on, onx, ony, osumg)`` tuple as
+    ``_targ_rec_fast``.
+    """
+    from scipy.ndimage import find_objects, gaussian_filter, label as nd_label
+    from skimage.feature import peak_local_max
+    from skimage.segmentation import watershed
+
+    out_x = np.empty(max_targets, dtype=np.float64)
+    out_y = np.empty(max_targets, dtype=np.float64)
+    out_n = np.empty(max_targets, dtype=np.int64)
+    out_nx = np.empty(max_targets, dtype=np.int64)
+    out_ny = np.empty(max_targets, dtype=np.int64)
+    out_sumg = np.empty(max_targets, dtype=np.int64)
+
+    if xmin >= xmax or ymin >= ymax or max_targets <= 0:
+        return 0, out_x, out_y, out_n, out_nx, out_ny, out_sumg
+
+    region = img_u8[ymin:ymax, xmin:xmax]
+    fg = region > gvthres
+    if not np.any(fg):
+        return 0, out_x, out_y, out_n, out_nx, out_ny, out_sumg
+
+    labels, n_comp = nd_label(fg)
+    slices = find_objects(labels)
+
+    n_found = 0
+    for comp_idx, sl in enumerate(slices, start=1):
+        if sl is None or n_found >= max_targets:
+            continue
+        sy, sx = sl
+        sub_mask = labels[sy, sx] == comp_idx
+        sub_raw = region[sy, sx]
+        y_off = ymin + sy.start
+        x_off = xmin + sx.start
+
+        n_pix_comp = int(np.count_nonzero(sub_mask))
+        if n_pix_comp <= 2 or (sub_raw.shape[0] < 3 and sub_raw.shape[1] < 3):
+            basin_masks = [sub_mask]
+        else:
+            sub_f = sub_raw.astype(np.float64)
+            sub_surface = (
+                gaussian_filter(sub_f, sigma=smooth_sigma)
+                if smooth_sigma > 0.0
+                else sub_f
+            )
+            peaks = peak_local_max(
+                sub_surface,
+                min_distance=max(1, int(min_peak_distance)),
+                labels=sub_mask.astype(np.uint8),
+                exclude_border=False,
+            )
+            if len(peaks) <= 1:
+                basin_masks = [sub_mask]
+            else:
+                markers = np.zeros(sub_raw.shape, dtype=np.int32)
+                peak_vals: dict[int, float] = {}
+                for k, (pr, pc) in enumerate(peaks, start=1):
+                    markers[pr, pc] = k
+                    peak_vals[k] = float(sub_surface[pr, pc])
+
+                ws = watershed(-sub_surface, markers=markers, mask=sub_mask)
+                ws = _merge_weak_basins(
+                    ws,
+                    sub_surface,
+                    peak_vals,
+                    gvthres,
+                    float(min_prominence),
+                    float(rel_prominence),
+                )
+                basin_ids = np.unique(ws)
+                basin_masks = [ws == bid for bid in basin_ids if bid > 0]
+
+        for bmask in basin_masks:
+            if n_found >= max_targets:
+                break
+            ys, xs = np.nonzero(bmask)
+            numpix = int(ys.size)
+            if numpix == 0:
+                continue
+            nx = int(xs.max() - xs.min() + 1)
+            ny = int(ys.max() - ys.min() + 1)
+            if not (
+                nnmin <= numpix <= nnmax
+                and nxmin <= nx <= nxmax
+                and nymin <= ny <= nymax
+            ):
+                continue
+
+            vals = sub_raw[ys, xs].astype(np.int64)
+            sumg = int(vals.sum())
+            if sumg <= sumg_min:
+                continue
+
+            weights = (vals - gvthres).astype(np.float64)
+            sumg_adj = float(weights.sum())
+            if sumg_adj > 0.0:
+                cx = float(((xs + x_off) * weights).sum() / sumg_adj) + 0.5
+                cy = float(((ys + y_off) * weights).sum() / sumg_adj) + 0.5
+            else:
+                cx = float(xs[0] + x_off) + 0.5
+                cy = float(ys[0] + y_off) + 0.5
+
+            out_x[n_found] = cx
+            out_y[n_found] = cy
+            out_n[n_found] = numpix
+            out_nx[n_found] = nx
+            out_ny[n_found] = ny
+            out_sumg[n_found] = sumg
+            n_found += 1
+
+    return n_found, out_x, out_y, out_n, out_nx, out_ny, out_sumg
+
+
 @cython.ccall
 def targ_rec(
     img: cython.uchar[:, ::1],
@@ -123,10 +341,17 @@ def targ_rec(
     xmax: cython.int = -1,
     ymin: cython.int = 1,
     ymax: cython.int = -1,
+    multipeak: cython.bint = False,
+    min_peak_distance: cython.int = 1,
+    min_prominence: cython.double = 2.0,
+    rel_prominence: cython.double = 0.02,
+    smooth_sigma: cython.double = 0.5,
 ) -> list:
     """Thresholding and center-of-gravity with peak fitting (C targ_rec translation).
 
-    Delegates to the compiled BFS in track_kernels._targ_rec_fast.
+    Delegates to the compiled BFS in track_kernels._targ_rec_fast when
+    ``multipeak`` is False (default). When ``multipeak`` is True, splits
+    touching blobs via connected-component local-maxima watershed.
 
     Args:
         img: input image (2D uint8, shape (imy, imx)).
@@ -137,6 +362,11 @@ def targ_rec(
         nymin, nymax: min/max extent in y.
         sumg_min: minimum sum of grey values.
         xmin, xmax, ymin, ymax: search area (defaults to image bounds).
+        multipeak: if True, enable watershed multi-peak splitting (default False).
+        min_peak_distance: minimum pixel distance between local maxima.
+        min_prominence: minimum absolute saddle-to-peak prominence for splitting.
+        rel_prominence: minimum relative prominence above ``gvthres``.
+        smooth_sigma: Gaussian smoothing sigma for peak/watershed surface.
 
     Returns:
         List of detected targets.
@@ -161,27 +391,49 @@ def targ_rec(
             "openptv2.image_scaling.to_uint8, or call targ_rec_scaled. "
             "See docs/plans/2026-08-31-16bit-image-handling.md")
     img_u8 = np.ascontiguousarray(_a, dtype=np.uint8)
-    img0 = img_u8.copy()
     max_targets = (xmax - xmin) * (ymax - ymin)
 
-    n_found, ox, oy, on, onx, ony, osumg = _targ_rec_fast(
-        img_u8,
-        img0,
-        gvthres,
-        discont,
-        nnmin,
-        nnmax,
-        nxmin,
-        nxmax,
-        nymin,
-        nymax,
-        sumg_min,
-        xmin,
-        ymin,
-        xmax,
-        ymax,
-        max_targets,
-    )
+    if multipeak:
+        n_found, ox, oy, on, onx, ony, osumg = _targ_rec_multipeak_arrays(
+            img_u8,
+            gvthres,
+            nnmin,
+            nnmax,
+            nxmin,
+            nxmax,
+            nymin,
+            nymax,
+            sumg_min,
+            xmin,
+            ymin,
+            xmax,
+            ymax,
+            max_targets,
+            min_peak_distance=min_peak_distance,
+            min_prominence=min_prominence,
+            rel_prominence=rel_prominence,
+            smooth_sigma=smooth_sigma,
+        )
+    else:
+        img0 = img_u8.copy()
+        n_found, ox, oy, on, onx, ony, osumg = _targ_rec_fast(
+            img_u8,
+            img0,
+            gvthres,
+            discont,
+            nnmin,
+            nnmax,
+            nxmin,
+            nxmax,
+            nymin,
+            nymax,
+            sumg_min,
+            xmin,
+            ymin,
+            xmax,
+            ymax,
+            max_targets,
+        )
     if n_found == 0:
         return [Target(pnr=1, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE)]
     return [

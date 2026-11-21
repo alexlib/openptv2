@@ -1,5 +1,4 @@
 import numpy as np
-from flowtracks.io import trajectories_ptvis  # Expose for testing/monkeypatching
 
 from openptv2.imgcoord import image_coordinates
 from openptv2.transforms import convert_arr_metric_to_pixel
@@ -85,9 +84,6 @@ def export_ptv_is_to_paraview(
             dataset = store.to_flowtracks_trajectories()
         except Exception:
             dataset = []
-
-    if not dataset:
-        dataset = trajectories_ptvis(ptv_is_pattern, xuap=xuap)
 
     dataframes = []
     for traj in dataset:

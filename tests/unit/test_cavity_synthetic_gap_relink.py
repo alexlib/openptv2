@@ -47,26 +47,21 @@ def test_cavity_synthetic_gap_relink_bridges_gaps(tmp_path: Path):
 
     from openptv2.tracking_postprocess import write_linkage as wl
 
-    # Minimal 5-frame gap example using the helper's store: reuse the
-    # known-good 5-frame gap test from test_tracking_postprocess.py but
-    # driven by our synthetic scene's coordinates (so it is not pinhole-perfect)
-    # Instead, just verify relink does not crash on the synthetic store's frames
-    # and that it reports bridged_gaps >=0
-    # We create a tiny synthetic gap linkage on disk and verify bridging
-    tmp_base = str(tmp_path / "ptv_is_gap")
+    gap_store = RunStore(tmp_path / "gap_run.zarr", mode="w")
+    tmp_base = "ptv_is_gap"
     # Minimal 5-frame gap example with linear motion (so relink's accel check passes)
     # Mirrors test_tracking_postprocess.test_relink_trajectory_gaps_bridges_missing_frame
     pos0 = np.array([[0, 0, 0]], float)
     pos1 = np.array([[2, 0, 0]], float)
     pos3 = np.array([[6, 0, 0]], float)
     pos4 = np.array([[8, 0, 0]], float)
-    wl(tmp_base, 0, np.array([-1]), np.array([0]), pos0)
-    wl(tmp_base, 1, np.array([0]), np.array([-2]), pos1)
-    wl(tmp_base, 2, np.array([]), np.array([]), np.zeros((0, 3)))
-    wl(tmp_base, 3, np.array([-1]), np.array([0]), pos3)
-    wl(tmp_base, 4, np.array([0]), np.array([-2]), pos4)
+    wl(tmp_base, 0, np.array([-1]), np.array([0]), pos0, store=gap_store)
+    wl(tmp_base, 1, np.array([0]), np.array([-2]), pos1, store=gap_store)
+    wl(tmp_base, 2, np.array([]), np.array([]), np.zeros((0, 3)), store=gap_store)
+    wl(tmp_base, 3, np.array([-1]), np.array([0]), pos3, store=gap_store)
+    wl(tmp_base, 4, np.array([0]), np.array([-2]), pos4, store=gap_store)
     stats = relink_trajectory_gaps(
-        tmp_base, first=0, last=4, max_gap=2, max_accel_err=1.0
+        tmp_base, first=0, last=4, max_gap=2, max_accel_err=1.0, store=gap_store
     )
     assert stats["bridged_gaps"] == 1
 

@@ -265,3 +265,59 @@ def test_released_ghost_gives_its_targets_back_and_is_removed(scene):
     targets = store.read_targets(0, DROPPED_FRAME)
     assert targets[DROPPED_PID].tnr() == row
     assert ids[row, 0] == DROPPED_PID
+
+
+def test_drop_reclaimed_ghosts_preserves_gap_bridged_links() -> None:
+    """Gap-bridged links (step > 1) must not be indexed into adjacent frames'
+    compacted remapping tables when _drop_reclaimed_ghosts drops rows."""
+    import types
+
+    from openptv2.track_assisted import NEXT_NONE, PREV_NONE, _drop_reclaimed_ghosts
+
+    def make_frame(xyz, ids, prev, nxt, n_initial):
+        return types.SimpleNamespace(
+            xyz=[np.asarray(p, dtype=np.float64) for p in xyz],
+            ids=[np.asarray(i, dtype=np.int32) for i in ids],
+            prev=list(prev),
+            next=list(nxt),
+            n_initial=n_initial,
+            prio={},
+            dirty=False,
+            unlinked=lambda: np.array(
+                [p < 0 and n < 0 for p, n in zip(prev, nxt)], dtype=bool
+            ),
+        )
+
+    # Frame 10 has 3 rows; row 2 has a gap-1 bridge directly to Frame 12 row 0.
+    # Frame 11 has only 2 rows (row 0 unlinked ghost sharing target 5 with
+    # newly appended row 1), so row 2 on Frame 10 is >= len(Frame 11).
+    frames = {
+        10: make_frame(
+            [[0, 0, 0], [1, 0, 0], [2, 0, 0]],
+            [[0, 0], [1, 1], [2, 2]],
+            [PREV_NONE, PREV_NONE, PREV_NONE],
+            [NEXT_NONE, NEXT_NONE, 0],
+            n_initial=3,
+        ),
+        11: make_frame(
+            [[5, 5, 5], [6, 6, 6]],
+            [[5, 5], [5, 6]],
+            [PREV_NONE, 0],
+            [NEXT_NONE, NEXT_NONE],
+            n_initial=1,
+        ),
+        12: make_frame(
+            [[2, 0, 1]],
+            [[7, 7]],
+            [2],
+            [NEXT_NONE],
+            n_initial=1,
+        ),
+    }
+
+    removed = _drop_reclaimed_ghosts(frames, num_cams=2)
+    assert removed == 1
+    assert len(frames[11].xyz) == 1
+    # Gap-bridged link Frame 12[0] -> Frame 10[2] must remain intact.
+    assert frames[12].prev[0] == 2
+    assert frames[10].next[2] == 0

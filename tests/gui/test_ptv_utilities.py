@@ -206,14 +206,16 @@ class TestPyDeterminationProcC:
         cals = [Calibration()]
         mock_point_positions.return_value = (np.array([[1.0, 2.0, 3.0]]), None)
 
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "res" / "run.zarr", mode="w")
         py_determination_proc_c(
-            num_cams, sorted_pos, sorted_corresp, corrected, cpar, vpar, cals
+            num_cams, sorted_pos, sorted_corresp, corrected, cpar, vpar, cals, store=store
         )
 
-        output_path = tmp_path / "res" / "rt_is.123456789"
-        assert output_path.exists()
-        lines = output_path.read_text(encoding="utf-8").splitlines()
-        assert lines[0] == "1"
+        assert store.has_correspondences(123456789)
+        pos_3d, _ = store.read_correspondences(123456789)
+        assert len(pos_3d) == 1
 
     def test_py_determination_proc_c_real_data(self, test_cavity_exp):
         """Test determination processing rejects empty real-data inputs cleanly."""

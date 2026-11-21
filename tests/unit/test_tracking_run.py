@@ -203,10 +203,44 @@ class TestTrackingRunInit:
             os.chdir(original)
 
 
+def _seed_track_store(tmp_path):
+    from pathlib import Path
+
+    from openptv2.storage import RunStore
+
+    track_dir = Path("test_data/track")
+    store = RunStore(tmp_path / "run.zarr", mode="w")
+    for rt_file in sorted((track_dir / "res_orig").glob("rt_is.*")):
+        frame = int(rt_file.suffix.lstrip("."))
+        lines = [ln.strip() for ln in rt_file.read_text().splitlines() if ln.strip()]
+        n = int(lines[0]) if lines else 0
+        if n > 0:
+            rows = np.loadtxt(lines[1 : n + 1], dtype=np.float64).reshape(n, 8)
+            pos_3d = rows[:, 1:4]
+            cam_ids = rows[:, 4:8].astype(np.int32)
+        else:
+            pos_3d = np.empty((0, 3), dtype=np.float64)
+            cam_ids = np.empty((0, 4), dtype=np.int32)
+        store.write_correspondences(frame=frame, pos_3d=pos_3d, cam_target_ids=cam_ids)
+
+    for cam in range(2):
+        for tfile in sorted((track_dir / "img_orig").glob(f"cam{cam + 1}.*_targets")):
+            frame = int(tfile.name.split(".")[1].split("_")[0])
+            lines = [ln.strip() for ln in tfile.read_text().splitlines() if ln.strip()]
+            n = int(lines[0]) if lines else 0
+            if n > 0:
+                arr = np.loadtxt(lines[1 : n + 1], dtype=np.float64).reshape(n, 8)
+            else:
+                arr = np.empty((0, 8), dtype=np.float64)
+            store.write_targets(cam, frame, arr)
+    return store
+
+
 class TestFrameReading:
-    def test_read_targets(self):
-        """read_targets should parse target files correctly."""
-        targets = read_targets("test_data/track/img_orig/cam1.", 10095)
+    def test_read_targets(self, tmp_path):
+        """read_targets should load targets from RunStore."""
+        store = _seed_track_store(tmp_path)
+        targets = read_targets("cam1.", 10095, cam_idx=0, store=store)
         assert len(targets) > 0
         t = targets[0]
         assert isinstance(t, Target)
@@ -214,11 +248,10 @@ class TestFrameReading:
         assert abs(t.x - 1053.3689) < 0.001
         assert abs(t.y - 696.799) < 0.001
 
-    def test_read_path_frame(self):
-        """read_path_frame should parse correspondence files."""
-        cor_list, path_list = read_path_frame(
-            "test_data/track/res_orig/rt_is", "", "", 10095
-        )
+    def test_read_path_frame(self, tmp_path):
+        """read_path_frame should load correspondence data from RunStore."""
+        store = _seed_track_store(tmp_path)
+        cor_list, path_list = read_path_frame("rt_is", "", "", 10095, store=store)
         assert len(cor_list) > 0
         assert len(path_list) > 0
         assert len(cor_list) == len(path_list)
@@ -239,128 +272,123 @@ class TestFrameReading:
         assert all(d == 0.0 for d in p.decis)
         assert all(ld == PT_UNUSED for ld in p.linkdecis)
 
-    def test_frame_read(self):
-        """Frame.read should load both correspondence and target data."""
-        original = os.getcwd()
-        try:
-            os.chdir("test_data/track")
-            cpar = ControlPar.from_yaml("parameters.yaml")
-            frm = Frame(cpar.num_cams, 20000)
-            ok = frm.read(
-                "res_orig/rt_is",
-                "res_orig/ptv_is",
-                "res_orig/added",
-                ["img_orig/cam1.", "img_orig/cam2."],
-                10095,
-            )
+    def test_frame_read(self, tmp_path, monkeypatch):
+        """Frame.read should load both correspondence and target data from RunStore."""
+        store = _seed_track_store(tmp_path)
+        monkeypatch.chdir("test_data/track")
+        cpar = ControlPar.from_yaml("parameters.yaml")
+        frm = Frame(cpar.num_cams, 20000)
+        ok = frm.read(
+            "res_orig/rt_is",
+            "res_orig/ptv_is",
+            "res_orig/added",
+            ["img_orig/cam1.", "img_orig/cam2."],
+            10095,
+            store=store,
+        )
 
-            assert ok is True
-            assert frm.num_parts > 0
+        assert ok is True
+        assert frm.num_parts > 0
 
-            for cam in range(cpar.num_cams):
-                assert frm.num_targets[cam] > 0
-                t = frm.targets[cam][0]
-                assert isinstance(t, Target)
-                assert t.pnr >= 0
-        finally:
-            os.chdir(original)
+        for cam in range(cpar.num_cams):
+            assert frm.num_targets[cam] > 0
+            t = frm.targets[cam][0]
+            assert isinstance(t, Target)
+            assert t.pnr >= 0
 
-    def test_framebuf_read_frame_at_end(self):
+    def test_framebuf_read_frame_at_end(self, tmp_path, monkeypatch):
         """FrameBuf.read_frame_at_end should read a frame into the last buffer slot."""
-        original = os.getcwd()
-        try:
-            os.chdir("test_data/track")
-            cpar = ControlPar.from_yaml("parameters.yaml")
-            seq_par = SequencePar.from_yaml("parameters.yaml", cpar.num_cams)
+        store = _seed_track_store(tmp_path)
+        monkeypatch.chdir("test_data/track")
+        cpar = ControlPar.from_yaml("parameters.yaml")
+        seq_par = SequencePar.from_yaml("parameters.yaml", cpar.num_cams)
 
-            fb = FrameBuf(
-                4,
-                cpar.num_cams,
-                20000,
-                "res_orig/rt_is",
-                "res_orig/ptv_is",
-                "res_orig/added",
-                seq_par.img_base_name,
-            )
+        fb = FrameBuf(
+            4,
+            cpar.num_cams,
+            20000,
+            "res_orig/rt_is",
+            "res_orig/ptv_is",
+            "res_orig/added",
+            seq_par.img_base_name,
+            store=store,
+        )
 
-            ok = fb.read_frame_at_end(10095, read_links=True)
-            assert ok is True
+        ok = fb.read_frame_at_end(10095, read_links=True)
+        assert ok is True
 
-            last_frame = fb.buf[fb.buf_len - 1]
-            assert last_frame.num_parts > 0
-            for cam in range(cpar.num_cams):
-                assert last_frame.num_targets[cam] > 0
-        finally:
-            os.chdir(original)
+        last_frame = fb.buf[fb.buf_len - 1]
+        assert last_frame.num_parts > 0
+        for cam in range(cpar.num_cams):
+            assert last_frame.num_targets[cam] > 0
 
-    def test_framebuf_fb_next_rotates(self):
+    def test_framebuf_fb_next_rotates(self, tmp_path, monkeypatch):
         """fb_next should rotate the ring buffer."""
-        original = os.getcwd()
-        try:
-            os.chdir("test_data/track")
-            cpar = ControlPar.from_yaml("parameters.yaml")
-            seq_par = SequencePar.from_yaml("parameters.yaml", cpar.num_cams)
+        store = _seed_track_store(tmp_path)
+        monkeypatch.chdir("test_data/track")
+        cpar = ControlPar.from_yaml("parameters.yaml")
+        seq_par = SequencePar.from_yaml("parameters.yaml", cpar.num_cams)
 
-            fb = FrameBuf(
-                4,
-                cpar.num_cams,
-                20000,
-                "res_orig/rt_is",
-                "res_orig/ptv_is",
-                "res_orig/added",
-                seq_par.img_base_name,
-            )
+        fb = FrameBuf(
+            4,
+            cpar.num_cams,
+            20000,
+            "res_orig/rt_is",
+            "res_orig/ptv_is",
+            "res_orig/added",
+            seq_par.img_base_name,
+            store=store,
+        )
 
-            fb.read_frame_at_end(10095, read_links=True)
-            last_before = fb.buf[3]
+        fb.read_frame_at_end(10095, read_links=True)
+        last_before = fb.buf[3]
 
-            fb.fb_next()
+        fb.fb_next()
 
-            # fb_next moves buf[0] to end; old buf[3] shifts to buf[2]
-            assert fb.buf[2] is last_before
-        finally:
-            os.chdir(original)
+        # fb_next moves buf[0] to end; old buf[3] shifts to buf[2]
+        assert fb.buf[2] is last_before
 
-    def test_framebuf_fill_buffer(self):
+    def test_framebuf_fill_buffer(self, tmp_path, monkeypatch):
         """Should be able to fill the entire buffer with consecutive frames."""
-        original = os.getcwd()
-        try:
-            os.chdir("test_data/track")
-            cpar = ControlPar.from_yaml("parameters.yaml")
-            seq_par = SequencePar.from_yaml("parameters.yaml", cpar.num_cams)
+        store = _seed_track_store(tmp_path)
+        monkeypatch.chdir("test_data/track")
+        cpar = ControlPar.from_yaml("parameters.yaml")
+        seq_par = SequencePar.from_yaml("parameters.yaml", cpar.num_cams)
 
-            fb = FrameBuf(
-                4,
-                cpar.num_cams,
-                20000,
-                "res_orig/rt_is",
-                "res_orig/ptv_is",
-                "res_orig/added",
-                seq_par.img_base_name,
-            )
+        fb = FrameBuf(
+            4,
+            cpar.num_cams,
+            20000,
+            "res_orig/rt_is",
+            "res_orig/ptv_is",
+            "res_orig/added",
+            seq_par.img_base_name,
+            store=store,
+        )
 
-            for i in range(4):
-                ok = fb.read_frame_at_end(seq_par.first + i, read_links=True)
-                assert ok is True, f"Failed to read frame {seq_par.first + i}"
-                if i < 3:
-                    fb.fb_next()
+        for i in range(4):
+            ok = fb.read_frame_at_end(seq_par.first + i, read_links=True)
+            assert ok is True, f"Failed to read frame {seq_par.first + i}"
+            if i < 3:
+                fb.fb_next()
 
-            for i in range(4):
-                assert fb.buf[i].num_parts > 0
-        finally:
-            os.chdir(original)
+        for i in range(4):
+            assert fb.buf[i].num_parts > 0
 
 
 class TestTargetIO:
     def test_write_read_roundtrip(self, tmp_path):
         """Targets written and read back should match."""
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
         targets = [
             Target(pnr=0, x=100.5, y=200.3, n=50, nx=5, ny=5, sumg=1000, tnr=1),
             Target(pnr=1, x=300.2, y=400.1, n=30, nx=3, ny=4, sumg=800, tnr=2),
         ]
-        base = str(tmp_path / "test_cam.")
-        write_targets(targets, 2, base, 42)
-        read_back = read_targets(base, 42)
+        base = "test_cam."
+        write_targets(targets, 2, base, 42, store=store, cam_idx=0)
+        read_back = read_targets(base, 42, store=store, cam_idx=0)
 
         assert len(read_back) == 2
         for orig, rb in zip(targets, read_back):
@@ -375,6 +403,9 @@ class TestTargetIO:
 
     def test_write_read_path_frame_roundtrip(self, tmp_path):
         """Path frame written and read back should match."""
+        from openptv2.storage import RunStore
+
+        store = RunStore(tmp_path / "run.zarr", mode="w")
         cor_buf = [
             Corres(nr=1, p=np.array([0, 1, -1, -1], dtype=np.int32)),
             Corres(nr=2, p=np.array([1, 0, 2, -1], dtype=np.int32)),
@@ -383,12 +414,16 @@ class TestTargetIO:
             Pathinfo(x=np.array([10.0, 20.0, 30.0]), prev=-1, next_idx=-2),
             Pathinfo(x=np.array([40.0, 50.0, 60.0]), prev=0, next_idx=1),
         ]
-        base_corres = str(tmp_path / "rt_is")
-        base_linkage = str(tmp_path / "ptv_is")
+        base_corres = "rt_is"
+        base_linkage = "ptv_is"
 
-        write_path_frame(cor_buf, path_buf, 2, base_corres, base_linkage, None, 100)
+        write_path_frame(
+            cor_buf, path_buf, 2, base_corres, base_linkage, None, 100, store=store
+        )
 
-        cor_read, path_read = read_path_frame(base_corres, base_linkage, "", 100)
+        cor_read, path_read = read_path_frame(
+            base_corres, base_linkage, "", 100, store=store
+        )
         assert len(cor_read) == 2
         assert len(path_read) == 2
 

@@ -252,7 +252,7 @@ def recommend_tracker(
     scored.sort(key=lambda x: (-x[0], x[1].speed_ranking))
     if not scored:
         return Recommendation(
-            tracker_name="priority_segment_3d",
+            tracker_name="unified",
             confidence=0.0,
             rationale=["No suitable tracker found, falling back to default."],
         )
@@ -328,6 +328,10 @@ def _score_tracker(info: TrackerInfo, stats: DatasetStats, priority: str) -> flo
     elif priority == "accuracy":
         accuracy_scores = {"highest": 5, "high": 4, "standard": 2, "draft": 0}
         score += accuracy_scores.get(info.accuracy_ranking, 2)
+        if info.name == "unified":
+            score += 1.0
+    elif info.name == "unified":
+        score += 1.0
 
     return score
 
@@ -442,6 +446,25 @@ def _suggest_params(info: TrackerInfo, stats: DatasetStats) -> dict[str, Any]:
             params["dvzmin"] = -extreme_cap
             params["dacc"] = min(params["dacc"], extreme_cap)
 
+    # Trackability guard (Raghunathan, Vradman & Shnapp 2026, "Time-marching
+    # stereo-matching for 3D-PTV", Eq. 2 and Sec. 2.1): prediction-seeded
+    # linking only picks the right nearest candidate while the search radius
+    # stays below the inter-particle separation. rho = p95_displacement /
+    # mean_interparticle_distance is the physical-space analogue of their
+    # trackability parameter Tr. For rho <= 1 the empirical factors above
+    # (0.8/0.6/0.4 sweep) already sit in the viable regime and are left
+    # untouched. For rho > 1 the displacement itself exceeds the mean
+    # spacing, the seeded-step box (1.8x spacing at factor 0.6) lands
+    # squarely in the ambiguous regime the paper identifies as ghost- and
+    # mismatch-producing, so the box is capped at the mean spacing -- the
+    # largest radius the nearest-candidate assumption still justifies.
+    if "dacc" in params and stats.mean_interparticle_distance > 0:
+        rho = p95_displacement / stats.mean_interparticle_distance
+        if rho > 1.0:
+            params["dacc"] = min(
+                params["dacc"], stats.mean_interparticle_distance
+            )
+
     # Tracker-specific params
     return params
 
@@ -452,17 +475,13 @@ def recommend_from_files(
     last: int,
     user_preferences: dict[str, Any] | None = None,
 ) -> Recommendation:
-    """Analyse tracked 3D positions and recommend a tracker.
-
-    Positions come from the experiment's RunStore when one exists under
-    ``rt_is_dir`` or its parent (zarr is the database of record); the
-    ``rt_is.#`` ASCII files remain the fallback for legacy runs.
+    """Analyse 3D positions from the experiment's RunStore and recommend a tracker.
 
     Parameters
     ----------
     rt_is_dir : str or Path
-        Directory containing ``rt_is.#`` files (e.g. ``"res"``), or the
-        experiment root / store path -- resolved via ``find_existing_store``.
+        Experiment root, ``res`` directory, or ``run.zarr`` store path --
+        resolved via ``find_existing_store``.
     first, last : int
         Frame range.
     user_preferences : dict, optional
@@ -472,11 +491,9 @@ def recommend_from_files(
     -------
     Recommendation
     """
-    from openptv2.algorithms.tracking_frame_buf import Frame
     from openptv2.storage import RunStore, find_existing_store
 
     rt_is_dir = Path(rt_is_dir)
-    corres_base = str(rt_is_dir / "rt_is")
 
     store = None
     for candidate_root in (rt_is_dir, rt_is_dir.parent):
@@ -497,13 +514,7 @@ def recommend_from_files(
             pos, _ids = store.read_correspondences(fn)
             frame_particles.append(np.asarray(pos, dtype=float))
     else:
-        for fn in range(first, last + 1):
-            if not (rt_is_dir / f"rt_is.{fn}").exists():
-                frame_particles.append(np.empty((0, 3)))
-                continue
-            frame = Frame(num_cams=4, max_targets=10000)
-            frame.read(corres_base, "", target_file_base="", frame_num=fn)
-            frame_particles.append(frame.positions())
+        frame_particles = [np.empty((0, 3)) for _ in range(first, last + 1)]
 
     stats = compute_dataset_stats(frame_particles)
     return recommend_tracker(stats, user_preferences)

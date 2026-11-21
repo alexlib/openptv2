@@ -121,14 +121,18 @@ def _make_frame(positions, prev_links):
 
 
 def _make_run(tmp_path, prev, curr, nextf, first, last):
+    from openptv2.storage import RunStore
+
+    store = RunStore(tmp_path / "run.zarr", mode="w")
     fb = FrameBuf(
         buf_len=3,
         num_cams=1,
         max_targets=16,
-        corres_file_base=str(tmp_path / "rt_is"),
-        linkage_file_base=str(tmp_path / "ptv_is"),
-        prio_file_base=str(tmp_path / "added"),
-        target_file_base=[str(tmp_path / "cam1.")],
+        corres_file_base="rt_is",
+        linkage_file_base="ptv_is",
+        prio_file_base="added",
+        target_file_base=["cam1."],
+        store=store,
     )
     fb.buf[0] = prev
     fb.buf[1] = curr
@@ -153,8 +157,8 @@ def test_track3d_loop_no_read_branch(tmp_path):
     # Accounting invariants (no magic values)
     assert run.npart == curr_parts
     assert run.nlinks >= 0
-    # write_frame_from_start wrote the current-frame linkage file for step 1
-    assert (tmp_path / "ptv_is.1").exists()
+    # write_frame_from_start wrote the current-frame linkage for step 1 into RunStore
+    assert run.fb.store.has_linkage(1, "ptv_is")
 
 
 def test_track3d_loop_empty_frames(tmp_path):
@@ -170,4 +174,4 @@ def test_track3d_loop_empty_frames(tmp_path):
 
     assert run.npart == 0
     assert run.nlinks == 0
-    assert (tmp_path / "ptv_is.1").exists()
+    assert run.fb.store.has_linkage(1, "ptv_is")

@@ -575,6 +575,7 @@ class TwoPhaseTracker:
         frame_seen: list[np.ndarray] | None = None,
         frame_ghost: list[np.ndarray] | None = None,
         frame_logb: list[np.ndarray] | None = None,
+        frame_sigma: list[np.ndarray] | None = None,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
@@ -629,6 +630,7 @@ class TwoPhaseTracker:
                 frame_seen=frame_seen,
                 frame_ghost=frame_ghost,
                 frame_logb=frame_logb,
+                frame_sigma=frame_sigma,
             )
 
         # Bidirectional tracking: forward + backward on reversed frames.
@@ -645,6 +647,7 @@ class TwoPhaseTracker:
             frame_seen=frame_seen,
             frame_ghost=frame_ghost,
             frame_logb=frame_logb,
+            frame_sigma=frame_sigma,
         )
         bwd_kw = dict(
             return_chains=False,
@@ -652,6 +655,7 @@ class TwoPhaseTracker:
             frame_seen=_rev(frame_seen),
             frame_ghost=_rev(frame_ghost),
             frame_logb=_rev(frame_logb),
+            frame_sigma=_rev(frame_sigma),
         )
 
         def run_fwd():
@@ -715,6 +719,7 @@ class TwoPhaseTracker:
         frame_seen: list[np.ndarray] | None = None,
         frame_ghost: list[np.ndarray] | None = None,
         frame_logb: list[np.ndarray] | None = None,
+        frame_sigma: list[np.ndarray] | None = None,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
@@ -903,6 +908,10 @@ class TwoPhaseTracker:
             if ok:
                 confirm_tol = self.cfg.confirm_auto * st["median_kink"]
         self.last_confirm_tol = confirm_tol
+        # noise-aware confirmation only where the data-driven tolerance is valid (sparse, noise-dominated data); at
+        # high density a wider tolerance lets wrong links through (x4 benchmark: 0.382 -> 0.447 velocity error)
+        if frame_sigma is not None and not (self.cfg.confirm_auto and self.last_confirm_info.get("auto")):
+            frame_sigma = None
         if not return_chains:
             if confirm_tol is not None:
                 all_links, _ = _confirm_links(
@@ -910,11 +919,12 @@ class TwoPhaseTracker:
                     frame_particles,
                     confirm_tol,
                     self.cfg.confirm_ends,
+                    point_sigma=frame_sigma,
                 )
             return all_links
         if confirm_tol is not None:
             all_links, _sev = _confirm_links(
-                all_links, frame_particles, confirm_tol, self.cfg.confirm_ends
+                all_links, frame_particles, confirm_tol, self.cfg.confirm_ends, point_sigma=frame_sigma
             )
             hist = _split_hist(hist, _sev)
         chains = []
@@ -1149,6 +1159,12 @@ def track_store(
             frame_particles, rcm_list, nseen_list, logb_list or None, q_model
         )
         store.write_point_quality_many(frames, frame_ghost)
+    # per-point position uncertainty written by the holistic loop: noise-aware confirmation (never stricter)
+    frame_sigma = None
+    if bool(track_cfg.get("noise_aware_confirm", True)) and hasattr(store, "read_point_sigma"):
+        sig = [store.read_point_sigma(f) for f in frames]
+        if all(s is not None and len(s) == len(p) for s, p in zip(sig, frame_particles)):
+            frame_sigma = sig
     links = cast(
         list[tuple[int, int, int, int]],
         tracker.track_frames(
@@ -1158,6 +1174,7 @@ def track_store(
             frame_seen=frame_seen,
             frame_ghost=frame_ghost,
             frame_logb=frame_logb,
+            frame_sigma=frame_sigma,
         ),
     )
 
@@ -1198,8 +1215,10 @@ class Tracking:
     Reads ``leaf_weight`` and ``dvxmax`` (as v_max) from the experiment's
     ``track`` parameter section, loads 3D positions + 2D leaves from the
     RunStore, runs two-phase matching, and writes links back
-    (:func:`track_store`).
+    (:func:`track_store`). With ``holistic_rounds`` > 0 the linker runs inside the holistic loop.
     """
+
+    default_holistic_rounds = 0
 
     q_model = DEFAULT_Q_MODEL
 
@@ -1283,6 +1302,14 @@ class Tracking:
             tracker = self.ptv.py_trackcorr_init(self.exp)
             self.exp.tracker = tracker
             tracker.full_forward()
+            return
+
+        rounds = int(track_cfg.get("holistic_rounds", self.default_holistic_rounds))
+        if rounds > 0:
+            # Optional merged-blob inference loop around this linker (docs/holistic-tracking.md).
+            from openptv2.holistic import run_holistic_experiment
+
+            run_holistic_experiment(self.exp, store, frames, track_cfg, rounds)
             return
 
         track_store(

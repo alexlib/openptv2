@@ -947,13 +947,12 @@ class TreeMenuHandler(Handler):
 
         from openptv2.storage import find_existing_store
 
-        rt_is_path = Path(mainGui.exp_path) / "res" / f"rt_is.{frame}"
         zarr_store = find_existing_store(mainGui.exp_path)
-        if not rt_is_path.exists() and zarr_store is None:
+        if zarr_store is None:
             warning(
                 info.ui.control,
                 f"No 3D positions found for frame {frame}.\n\n"
-                f"Run '3D Positions -> 3D positions' first to generate\n{rt_is_path}.",
+                f"Run '3D Positions -> 3D positions' first to populate the RunStore.",
             )
             return
 
@@ -966,11 +965,11 @@ class TreeMenuHandler(Handler):
         except Exception:
             bounds = None
 
-        panel = create_3d_positions_panel(rt_is_path, frame, bounds=bounds)
+        panel = create_3d_positions_panel(zarr_store, frame, bounds=bounds)
         if panel.figure.axes and not panel.figure.axes[0].collections:
             information(
                 info.ui.control,
-                f"{rt_is_path} contains no 3D positions to plot.",
+                f"{zarr_store} contains no 3D positions to plot for frame {frame}.",
             )
             return
         panel.configure_traits()
@@ -989,13 +988,11 @@ class TreeMenuHandler(Handler):
 
         from openptv2.storage import find_existing_store
 
-        res_dir = Path(mainGui.exp_path) / "res"
-        ptv_is_files = list(res_dir.glob("ptv_is.*"))
         zarr_store = find_existing_store(mainGui.exp_path)
-        if not ptv_is_files and zarr_store is None:
+        if zarr_store is None:
             warning(
                 info.ui.control,
-                f"No 3D trajectory files (ptv_is.* or run.zarr) found in {res_dir}.\n\n"
+                f"No RunStore (run.zarr) found in {mainGui.exp_path}.\n\n"
                 f"Run tracking first to generate trajectories.",
             )
             return

@@ -21,9 +21,10 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 TEST_DATA = REPO / "test_data"
 
+from openptv2.storage.legacy import _load_linkage, _load_rt_is
+
 from openptv2.algorithms.tracking_frame_buf import read_targets as read_targets_ascii
 from openptv2.storage import RunStore, find_existing_store
-from openptv2.storage.legacy import _load_linkage, _load_rt_is
 
 
 def ingest_dataset(root: Path) -> str:

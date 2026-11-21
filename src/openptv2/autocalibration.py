@@ -437,6 +437,40 @@ def _refine_and_select(
     return CamResult(cam, n_matched, nfix, r, flags, cal_best, ref, det, rep)
 
 
+def _load_or_detect_cal_targets(base: Path, cam: int, cpar) -> list:
+    """Load calibration targets for ``cam`` (frame 0) from RunStore if present,
+    otherwise detect them directly from the calibration image."""
+    from openptv2.storage import RunStore, find_existing_store
+
+    store_path = find_existing_store(base)
+    if store_path is not None and store_path.exists():
+        store = RunStore(store_path, mode="r")
+        if store.has_targets(cam, 0):
+            return list(store.read_targets(cam, 0))
+
+    img, _ori, _addpar = cam_files(base, cam)
+    tpar = _tpar_from_dataset(base)
+    if tpar is not None and img.exists():
+        from imageio.v3 import imread
+        from skimage.color import rgb2gray
+        from skimage.util import img_as_ubyte
+
+        from openptv2.image_processing import preprocess_image
+        from openptv2.segmentation import target_recognition
+
+        raw_img = _cam_view(base, cam, imread(img))
+        if raw_img.ndim == 3:
+            raw_img = rgb2gray(raw_img)
+        raw_img = img_as_ubyte(raw_img)
+        hp_img = preprocess_image(raw_img, cpar.hp_flag or 1, cpar, 25)
+        detected = target_recognition(hp_img, tpar, cam, cpar)
+        if detected:
+            if hasattr(detected, "sort_y"):
+                detected.sort_y()
+            return list(detected)
+    return []
+
+
 def calibrate_camera(
     cam: int,
     base: Path,
@@ -459,29 +493,7 @@ def calibrate_camera(
     if pix4.shape[0] < 4 or fix4.shape[0] < 4:
         raise RuntimeError(f"cam{cam + 1}: need 4 seed points, got {pix4.shape[0]}")
 
-    pix = read_targets(str(target_base(base, cam)), 0)
-    if not pix:
-        # Auto-detect targets from the calibration image if _targets file is missing
-        tpar = _tpar_from_dataset(base)
-        if tpar is not None and img.exists():
-            from imageio.v3 import imread
-            from skimage.color import rgb2gray
-            from skimage.util import img_as_ubyte
-
-            from openptv2.algorithms.tracking_frame_buf import write_targets
-            from openptv2.segmentation import target_recognition
-
-            raw_img = _cam_view(base, cam, imread(img))
-            if raw_img.ndim == 3:
-                raw_img = rgb2gray(raw_img)
-            raw_img = img_as_ubyte(raw_img)
-            from openptv2.image_processing import preprocess_image
-
-            hp_img = preprocess_image(raw_img, cpar.hp_flag or 1, cpar, 25)
-            detected = target_recognition(hp_img, tpar, cam, cpar)
-            if detected:
-                write_targets(detected, len(detected), str(target_base(base, cam)), 0)
-                pix = read_targets(str(target_base(base, cam)), 0)
+    pix = _load_or_detect_cal_targets(base, cam, cpar)
 
     if not pix:
         raise RuntimeError(f"cam{cam + 1}: no detected targets found")
@@ -1021,7 +1033,7 @@ def suggest_eps0(base, cpar, cals, *, sweep=None, gt_radius=3.0):
     """
     from openptv2.algorithms.correspondences import correct_frame, correspondences
     from openptv2.algorithms.parameters import VolumePar
-    from openptv2.algorithms.tracking_frame_buf import Frame, read_targets
+    from openptv2.algorithms.tracking_frame_buf import Frame
 
     if cpar.num_cams != 4:
         return None
@@ -1039,7 +1051,7 @@ def suggest_eps0(base, cpar, cals, *, sweep=None, gt_radius=3.0):
     gt = []  # per-camera: detected-target-index -> calblock id (1-based) or -1
     for c in range(4):
         proj = np.array([_reproject_px(cals[c], cpar.mm, p, cpar) for p in fix])
-        pix = read_targets(str(target_base(base, c)), 0)
+        pix = _load_or_detect_cal_targets(base, c, cpar)
         ids = np.full(len(pix), -1, dtype=int)
         for k, t in enumerate(pix):
             d = np.hypot(proj[:, 0] - t.x, proj[:, 1] - t.y)
@@ -1139,15 +1151,8 @@ def _tracer_rcm_median(obs_list, cals, cpar):
 
 def _load_tracer_frame_data(base: Path, cpar: Any, frames: Any) -> Any:
     """Load the sequence YAML, list tracked-linkage frames, and read each
-    frame's tracked 3D points + per-camera detections for
-    tracer_self_calibrate.
-
-    Reads ``res/ptv_is.*`` ASCII when present, or -- for a store-backed run
-    (linkage/targets are written only to ``res/run.zarr`` now, see
-    ``tracking_frame_buf.write_path_frame``/``write_targets``) -- the
-    RunStore directly. A normal sequence+tracking run through the GUI or
-    batch pipeline is store-backed, so this is the common case, not a
-    fallback.
+    frame's tracked 3D points + per-camera detections from RunStore
+    (``res/run.zarr``) for tracer_self_calibrate.
 
     Returns (frame_data, skip_reason): frame_data is a list of (pts, det)
     tuples on success; skip_reason is None on success, else the reason
@@ -1164,9 +1169,6 @@ def _load_tracer_frame_data(base: Path, cpar: Any, frames: Any) -> Any:
 
     n_cams = cpar.num_cams
 
-    # Zarr is the database of record: prefer a run store that actually holds
-    # tracked linkage (a bare res/run.zarr created by an unrelated writer does
-    # not count); ASCII ptv_is.* remains the fallback for legacy runs.
     store = None
     from openptv2.storage import RunStore, find_existing_store
 
@@ -1176,32 +1178,20 @@ def _load_tracer_frame_data(base: Path, cpar: Any, frames: Any) -> Any:
         if any(candidate.has_linkage(f, "ptv_is") for f in candidate.frames()):
             store = candidate
 
-    if store is not None:
-        frame_nums = [f for f in store.frames() if store.has_linkage(f, "ptv_is")]
-    else:
-        ascii_ptv_files = sorted(
-            (base / "res").glob("ptv_is.*"), key=lambda p: int(p.suffix.lstrip("."))
-        )
-        frame_nums = [int(p.suffix.lstrip(".")) for p in ascii_ptv_files]
+    if store is None:
+        return None, "no tracked-linkage frames in RunStore"
+
+    frame_nums = [f for f in store.frames() if store.has_linkage(f, "ptv_is")]
     if frames is not None:
         wanted = set(frames)
         frame_nums = [f for f in frame_nums if f in wanted]
     if not frame_nums:
-        return None, "no tracked-linkage frames (store or res/ptv_is.*)"
+        return None, "no tracked-linkage frames in RunStore"
 
     frame_data = []
     for frame in frame_nums:
-        if store is not None:
-            _prev, _next, pos = store.read_linkage(frame, "ptv_is")
-            pts = [list(row) for row in pos]
-        else:
-            lines = (base / "res" / f"ptv_is.{frame}").read_text().splitlines()
-            nn = int(lines[0])
-            pts = []
-            for line in lines[1 : nn + 1]:
-                parts = line.split()
-                if len(parts) >= 5:
-                    pts.append([float(parts[2]), float(parts[3]), float(parts[4])])
+        _prev, _next, pos = store.read_linkage(frame, "ptv_is")
+        pts = [list(row) for row in pos]
         if not pts:
             continue
         det = []
