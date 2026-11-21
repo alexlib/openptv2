@@ -22,6 +22,10 @@ ends have hardly been measured. That is what this plan is about.
 
 ### M1. Score the detectors against the rendered truth (first)
 
+Superseded by stage D1 of `2026-11-21-detection-hypotheses-and-events.md`: the detector keeps its alternatives
+(two-particle splits, faint candidates) with probabilities, and is scored against the same truth. That plan also
+corrects the density framing: we are sparse (about 0.005 ppp), and the synthetic benchmark overweights merging.
+
 - **Why.** The 27 % merge rate and the 14.6 % of particles with no blob are properties of the detector and its settings,
   not of the scene. `feat/detection-prototypes-dask-trackpy-skimage-proptv` (2026-09) prototyped dask-image, trackpy,
   skimage and proPTV detectors, but compared them only with `targ_rec`, never with the truth.
