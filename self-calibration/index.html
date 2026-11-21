@@ -2207,6 +2207,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#order-of-work-regular-calibration-first-self-calibration-as-the-tuning-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order of work: regular calibration first, self-calibration as the tuning step
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2235,6 +2254,39 @@ centres. The gauge is fixed by holding one camera's exterior and by soft priors,
 uv run python scripts/loco_map.py &lt;run folder&gt;          # is the leave-one-camera-out floor systematic?
 uv run python scripts/selfcal_synthetic.py --scale 0.3  # known answer on the rendered synthetic recording
 </code></pre></div>
+<h2 id="order-of-work-regular-calibration-first-self-calibration-as-the-tuning-step">Order of work: regular calibration first, self-calibration as the tuning step<a class="headerlink" href="#order-of-work-regular-calibration-first-self-calibration-as-the-tuning-step" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Regular calibration</strong> (plate / calibration target, or dumbbell calibration) gives the starting cameras and the metric
+   scale and frame.</li>
+<li><strong>Self-calibration</strong> then tunes those cameras on tracers, because tracers see the whole volume. Tracers constrain
+   consistency between cameras, <strong>not scale</strong>: a uniform stretch of the volume reprojects equally well. So the fit is
+   anchored to a known object seen by the same cameras, one or both of:</li>
+<li><code>KnownBody(xyz, obs_px)</code>: points with known world coordinates (the calibration target). Fixes scale and frame.
+     <code>known_body_from_calibration(experiment_folder, cals, cpar)</code> builds it from the calblock and the calibration images
+     (matched with <code>sortgrid</code> and the current cameras; observations farther than 3 px from their projection are dropped).</li>
+<li><code>Dumbbell(obs_px, length_mm)</code>: two points a known distance apart moved through the volume (<code>dumbbell_scale</code> in the
+     YAML). Fixes scale only. <code>dumbbell_from_store(store, num_cams, length_mm, first=, last=)</code> reads frames with exactly two
+     targets per camera.</li>
+</ol>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">res</span> <span class="o">=</span> <span class="n">joint_self_calibrate</span><span class="p">(</span><span class="n">obs_px</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">cals</span><span class="p">,</span> <span class="n">cpar</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">known_body_from_calibration</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">cals</span><span class="p">,</span> <span class="n">cpar</span><span class="p">),</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                           <span class="n">dumbbell</span><span class="o">=</span><span class="n">dumbbell_from_store</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span> <span class="n">vpar</span><span class="o">=</span><span class="n">vpar</span><span class="p">)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">res</span><span class="o">.</span><span class="n">length_rms_mm_before</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">length_rms_mm_after</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">body_rms_mm_after</span>   <span class="c1"># how well the anchors are met</span>
+</span></code></pre></div>
+<p>Without an anchor the result is defined only up to a scale: use it for consistency (leave-one-camera-out), not for
+absolute velocities. The exterior priors (<code>ext_sigma_scale</code>, 0.5 mm by default) keep the cameras near the regular
+calibration; a large scale error needs them loosened (the unit tests use 200).</p>
+<p>Known-answer tests (<code>tests/unit/test_selfcal.py</code>): with the cameras stretched by 2 % about camera 1, tracers alone keep the
+wrong scale, a dumbbell of known length brings the camera positions back to within 0.1-0.2 mm (from up to 23 mm) and
+the pixel residual to 0.0004 px; a 40-point known body recovers the cameras from a 0.3 % scale error to within 0.6 mm.</p>
+<p>Real wp2, anchored (300 frames, 6,000 tracer points, 70 calibration-target points seen by 44-56 cameras each, all cameras
+free, short fit of 60 iterations, not converged): held-out leave-one-camera-out 0.306 -&gt; 0.298 px (-2.8 %; tracers alone
+-2.7 %), known-body misfit after the fit 0.021 mm; the new cameras change positions by 0.04 mm (median) of which all but
+0.0007 mm is a global affine map with linear coefficient below 0.12 %. Triangulating the 10 body points seen by three or
+more cameras (after dropping mismatched targets): scale factor 1.00021 with the regular calibration, 1.00005 after
+self-calibration, 3D error median 0.19 mm -&gt; 0.18 mm. So here the regular calibration already has the right scale, and the
+anchored fit keeps it (the unanchored full-run fit below let a 0.5 % linear drift in). Caveats: 10 usable body points, one
+dataset, and 1-2 px median reprojection of the target points under the regular calibration (the calibration images of this
+dataset are old, so the body is a modest anchor; a dumbbell moved through the volume would be a stronger one).</p>
 <p>What it can and cannot show (2026-11-21):
 - Synthetic with a known perturbation (leave-one-camera-out 0.67 px): the fit recovers the true state, position error against
   truth after removing the gauge equals that of the true calibration (0.018 mm), leave-one-camera-out 0.10 px.
