@@ -129,3 +129,26 @@ Same analysis (phases 5-10, global), the legacy tracks with the same 2.5 m/s cap
 The cap removes most of the difference (velocity -11 % -> -1.6 %, MKE -26 % -> -2 %, VSS -24 % -> -11 %, eps -45 % -> -19 %).
 What remains, VSS +12 % and eps +24 % in legacy, is the sign noise gives (gradient statistics grow with position noise).
 Conclusion: the apparent gap says nothing against the new trackers; compare with identical filtering. Both trackers agree to 0.3 %.
+
+### N4 result, part 3: joint self-calibration (`src/openptv2/selfcal.py`, `scripts/selfcal_real.py`, `scripts/selfcal_synthetic.py`)
+Bundle adjustment over 15,000 clean 4-camera tracers (odd frames), camera parameters and 3D positions free, camera 1 exterior
+held, soft priors; scored by leave-one-camera-out on the 104,067 clean points of the even frames. Docs: `docs/self-calibration.md`.
+- **Mechanism verified with a known answer** (rendered synthetic recording `syn1`, calibration perturbed by a known amount,
+  leave-one-camera-out 0.67 px): extrinsics alone do nothing (0.50 px); with principal point, radial and decentering
+  distortion the position error against truth after removing the gauge returns to that of the true calibration (median
+  0.0183 mm, p90 0.0754), leave-one-camera-out 0.099 px, which is *below* the true calibration's 0.210 px (the render and the
+  processing calibration of the synthetic data differ: raw position error against truth 0.168 -> 0.121 mm).
+- **Real wp2:** held-out leave-one-camera-out 0.3036 -> 0.2488 px (-18 % with 1,500 iterations; -17.5 % at 800; -16 % at
+  300; not fully converged). What helps: decentering p1, p2 (-12 %), with principal point and radial (-16 %); exteriors alone -2.6 %.
+  Cubic image-field fit explained 45-54 % of the variance, so about a third of the floor is still unexplained by this model
+  (refraction/glass terms are not in the parameter set).
+- **Effect on tracks: none.** Re-triangulating all observations with the new calibration: depth jitter 0.0393 -> 0.0390 mm
+  (-1 %), jump share 4.79 -> 4.64 %. As expected for a smooth error.
+- **Absolute positions move**: median 0.090 mm (p99 0.37), non-affine part 0.067 mm; a global linear part of about 0.5 %
+  (max coefficient 5e-3) that does not depend on the parametrisation (same with tight exterior priors, with radial terms
+  frozen, with intrinsics only). Tracers constrain consistency between cameras, not the scale. Without a known length in the
+  volume (dumbbell, plate) the accuracy gain on real data cannot be confirmed, and a scale change of 0.5 % would change every
+  velocity by 0.5 %.
+Decision: tool and evidence, not a default step. Gate (depth jitter -20 %) not met; the held-out consistency gain is real.
+Next if wanted: add the known-length constraint (dumbbell or plate points) to the adjustment, then apply to the run and
+recompute the downstream statistics.
