@@ -1,0 +1,3424 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+      
+        <title>Holistic 3D-PTV: one inference over cameras, space and time - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#holistic-3d-ptv-one-inference-over-cameras-space-and-time" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Holistic 3D-PTV: one inference over cameras, space and time
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../plate-calibration-howto/" class="md-tabs__link">
+          
+  
+  
+  Calibration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../benchmarking_guide/" class="md-tabs__link">
+          
+  
+  
+  Benchmarks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
+          
+  
+  
+  Decisions
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Your First Tracking (GUI)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/cavity_flow_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lid-Driven Cavity Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aorta_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aorta Flow (cloud-native)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/four_view_splitter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4-View Image Splitter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sequence & Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_parameters_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Parameters (what to measure, how to set)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_advice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tracking_advice (measure your data, get the values)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Point Quality and Ghost Marks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracker-tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracker Engines & Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lagrangian_turbulence_quality_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lagrangian Turbulence Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-batch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud-like Batch Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multi-folder-runs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Folder Experiments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Calibration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plate-calibration-howto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plate Calibration How-To
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../illmenau-4cam-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illmenau 4-Camera Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../illmenau-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illmenau Processing Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/particle_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle-Based Refinement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/dumbbell_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dumbbell Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/warmup_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auto-Calibration (warmup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-rms-vs-rcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reprojection RMS vs Ray Convergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-bundle-adjustment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bundle Adjustment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracer-self-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracer Self-Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Benchmarks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarking & Tracker Selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking-benchmark-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Engine Benchmark Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/custom_tracking_plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../software_map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Map (Trackers & Strategy)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correspondence eps0 Semantics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Decisions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Cython Optimization Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-idea-in-plain-words" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The idea in plain words
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stages-each-measured-stop-rules-are-part-of-the-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stages (each measured; stop rules are part of the plan)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-counts-as-the-breakthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What counts as the breakthrough
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#progress-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Progress log
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#synthesis-2026-11-20-what-the-measurements-say-the-best-tracker-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Synthesis (2026-11-20): what the measurements say the best tracker is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#progress-after-the-synthesis-2026-11-20-second-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Progress after the synthesis (2026-11-20, second part)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signatures-safe-births-joint-split-dense-matcher-2026-11-20-third-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signatures, safe births, joint split, dense matcher (2026-11-20, third part)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-summary-as-of-2026-11-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation summary (as of 2026-11-20)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation summary (as of 2026-11-20)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#library-srcopenptv2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Library (src/openptv2/)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-and-analysis-scripts-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark and analysis scripts (scripts/)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-testsunit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests (tests/unit/)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-per-stage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status per stage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps-in-order-historical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next steps (in order, historical)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#steps-1-4-of-the-next-steps-list-2026-11-20-fourth-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps 1-4 of the next-steps list (2026-11-20, fourth part)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps-updated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next steps (updated)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps-2-3-2026-11-20-fifth-part-noise-aware-confirmation-births-on-real-data-cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next steps 2-3 (2026-11-20, fifth part): noise-aware confirmation, births on real data, cleanup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps-updated_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next steps (updated)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-wp2-with-the-new-defaults-300-frames-scratch-copy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Real wp2 with the new defaults (300 frames, scratch copy)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#speed-first-pass-l2-image-pipeline-200-frames-2-rounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Speed, first pass (L2 image pipeline, 200 frames, 2 rounds)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-yield-is-lost-breakdown-by-clean-cameras-scriptsjoint_yield_breakdownpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where yield is lost (breakdown by clean cameras, scripts/joint_yield_breakdown.py)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-this-leaves-the-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where this leaves the plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="holistic-3d-ptv-one-inference-over-cameras-space-and-time">Holistic 3D-PTV: one inference over cameras, space and time<a class="headerlink" href="#holistic-3d-ptv-one-inference-over-cameras-space-and-time" title="Permanent link">&para;</a></h1>
+<p>Date: 2026-11-20. Branch: <code>feat/zarr-only-remove-legacy</code>. Status: approved; implementation follows the stages below
+(progress log at the end).
+The measurements it rests on are in <code>docs/plans/2026-11-19-joint-tracker.md</code>, sections 10-16 (lab record: bounds,
+error-budget ladder, merged-branch baselines, cue measurements, M0 gate).
+Scripts: <code>scripts/joint_bounds.py</code>, <code>joint_info_coverage.py</code>, <code>joint_blob_context.py</code>, <code>joint_blob_shape.py</code>,
+<code>joint_m0.py</code>, <code>synth_bench.py</code> (<code>MERGE_SCALE</code>). Numbers: <code>bench/step23_joint_bounds_2026-11.json</code>.
+Work in the worktree <code>/Users/alex/Documents/Github/openptv2-joint</code> (own environment, Python 3.13, Cython built).</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>openptv2 runs detection → stereo matching → tracking, each decided once, each blind to the
+others. We measured where that loses (truth benchmark, 2026-11-19):</p>
+<ul>
+<li><strong>The chain itself is fine:</strong> with exact data it is accurate to 0.0009 (velocity error).</li>
+<li><strong>The limit is the measurement, and the measurement problem is merged blobs:</strong> two or
+  more particles in one detected blob with a shifted centre. 27 % of blob observations on
+  the benchmark, 66 % at 4× density; on real wp2 roughly half to equal the benchmark's rate.</li>
+<li><strong>Ceiling if each particle in a merged blob gets its own centre to 0.3 px:</strong> velocity
+  error 0.063 against 0.183 for the best tracker today (<code>two_phase</code>), 82 % of particles
+  kept against 68 %, long-track completeness 0.82 against 0.50. At real-like merge rates
+  still 2× lower error, +4–7 points of particles, +8–12 points of completeness.</li>
+<li><strong>The information to do it exists, but only jointly:</strong> per-camera history resolves 31 %
+  of merged observations, other cameras 64 %, cameras + nearby frames in 3D 76 %. A blob's
+  brightness against its particle's own typical brightness tells merged from single with
+  AUC 0.95 (weaker on real data); shape change is a weak cue; a track predicts a blob
+  centre to 0.27 px (linear; quadratic is worse).</li>
+<li><strong>Association is the other half</strong> at real-like merge rates, and 11 % of true particles
+  have no blob at all (too faint): the yield ceiling in blob space is about 0.82–0.86.</li>
+<li>Ruled out: candidate pool, image-space trajectory fit as such (3–8 %), ghost removal
+  for <code>two_phase</code>, cost weights, <code>stitch_trajectories</code> (harmful), peeling as default.</li>
+</ul>
+<p><strong>Goal:</strong> a breakthrough against the sequential baselines, not an increment: one
+procedure in which detection evidence, stereo geometry and motion resolve each other's
+ambiguities. Decision already taken: blob attributes first; pixel patches only if the
+split of merged centres is shown to be the shortfall.</p>
+<h2 id="the-idea-in-plain-words">The idea in plain words<a class="headerlink" href="#the-idea-in-plain-words" title="Permanent link">&para;</a></h2>
+<p>Stop asking "which blobs match?" and then "which points link?". Ask one question:
+<strong>which set of moving particles explains every blob in every camera in every frame?</strong></p>
+<ul>
+<li>A particle is a smooth 3D path plus a brightness in each camera (stable in time).</li>
+<li>A blob is explained by the particles that project into it: its brightness is the sum of
+  theirs, its centre their brightness-weighted mean.</li>
+<li>Everything is scored in one currency (a cost):</li>
+<li>distance between each blob centre and what its particles predict;</li>
+<li>brightness of each blob against the sum of its particles' brightness;</li>
+<li>smoothness of each path (acceleration);</li>
+<li>a price for a blob nobody explains (false target), and a price for a particle that
+     should be visible in a camera but has no blob (cheap when the particle is faint).</li>
+<li>Matching, linking, counting particles in a blob, starting and ending tracks are all the
+  same kind of move: accept it if the total cost goes down. A ghost dies by itself: it
+  claims brightness that real particles already account for. An overlap is not a failure:
+  both particles keep their paths and share the blob.</li>
+<li>Order is free: the existing matcher and tracker give the first guess; then the loop
+  runs forward and backward in time until nothing improves.</li>
+</ul>
+<p>This is the Shake-the-Box principle (predict, then resolve the image) moved to blob space
+with brightness accounting, so it stays fast and works without an optical model.</p>
+<h2 id="stages-each-measured-stop-rules-are-part-of-the-plan">Stages (each measured; stop rules are part of the plan)<a class="headerlink" href="#stages-each-measured-stop-rules-are-part-of-the-plan" title="Permanent link">&para;</a></h2>
+<p>Benchmark cases for every stage: sparse, ×2, ×4 at the default merge rate and sparse at
+real-like rates (<code>MERGE_SCALE=0.75</code>, <code>0.6</code>; build 150–200-frame versions). Baselines:
+<code>two_phase</code>, hybrid <code>trackcorr</code>, <code>unified+stitch=false</code>. Score on the common set of points
+(below) plus yield, long-track completeness, pieces per long track, ghost share.</p>
+<p><strong>H0. Foundations (small, first)</strong>
+- Observation table: per 3D point and camera the pixel position actually used, its <strong>variance</strong> and
+  the number of particles sharing the blob. New optional arrays in <code>RunStore</code> (<code>storage/run_store.py</code>),
+  written next to <code>correspondences/</code>. Consumers: link confirmation and ghost marks use the per-point
+  variance (below), <code>point_quality.rcm_from_arrays</code> the corrected pixels.
+  <em>Reviewed assumption (2026-11-20):</em> the first guess was that later steps recompute ray miss from the
+  uncorrected blob centres, so corrected points look like ghosts. Measured: switching the ghost rules
+  off changes <code>two_phase</code> on the corrected points from 0.138 to 0.141 (no effect); switching off
+  its <strong>link confirmation</strong> as well gives 0.076 (perfect linker 0.060). So the cause is the
+  confirmation tolerance (8x the median kink of the run), which cuts true links of the noisier
+  corrected points. Fix to build in H2: confirmation tolerance per link from the points' own
+  variances instead of one run-wide value.
+- Scoring in <code>scripts/synth_bench.py::evaluate_pred</code>: <code>subset</code> (truth keys matched by
+  plain <code>two_phase</code>) → velocity and position error on the common set and on the extra
+  points separately.
+- Truth-free score for real data: <strong>leave-one-camera-out</strong>. Reconstruct each particle
+  from three cameras, project into the fourth, compare with the blob there
+  (<code>scripts/joint_m0.py</code> grows this). Works on real wp2 and on the benchmark, so the two
+  can be compared directly.</p>
+<p><strong>H1. The blob model with perfect association (isolates the estimation)</strong>
+New module <code>src/openptv2/blob_model.py</code>; driver in <code>scripts/joint_bounds.py</code>. Input: truth
+identities, merged blobs as detected (the <code>E1b</code> input). Implement:
+- brightness signature per particle and camera (median grey sum over frames where it is
+  alone in its blob; updated in the loop);
+- membership and count per blob from projected paths and brightness accounting;
+- centre split: for blob centre <code>c</code>, predictions <code>p_j</code>, brightness shares <code>w_j</code>:
+  <code>δ_j = w_j·r / Σw_k²</code>, <code>r = c − Σ w_j p_j</code>; each particle gets <code>p_j + δ_j</code> with a
+  larger variance than a clean blob;
+- camera choice: clean cameras only when ≥ 2 exist, else weighted
+  (<code>track_assisted._triangulate_weighted_lsq</code>);
+- path refinement and repeat (2–3 rounds).
+Gate: closes at least 60 % of the gap between "merged blobs as they are" and the ceiling
+(sparse 0.230 → 0.063, ×4 0.868 → 0.131; real-like 0.106 → 0.060). If it falls short,
+compare the centre error after the split with the 0.27 px prediction error: if equal, the
+split is at its limit and the patch option opens (user decision of 2026-11-19); if not,
+fix the model.</p>
+<p><strong>H2. The same on real tracks, as a post-step (no link changes)</strong>
+<code>merge_aware_refine(store, linkage_name)</code> on finished <code>two_phase</code> and hybrid <code>trackcorr</code>
+runs; pick the better linker as the core for H3. Gate: common-set velocity error −30 % at
+the default merge rate and −20 % at <code>MERGE_SCALE=0.75</code>; under −15 %: stop and find where
+association loses it.</p>
+<p><strong>H3. Births, deaths and links by the same cost</strong>
+- Through an overlap: a track whose prediction lands on a shared blob keeps going
+  (<code>track_assisted._claim_particle</code> with shared blobs), instead of ending.
+- Cross-camera completion: a particle seen cleanly by 2–3 cameras takes its share of the
+  blob in the remaining camera.
+- Births from unexplained brightness and from leftover blobs (existing
+  <code>match_frame_correspondences</code> on the reduced target lists; no change to
+  <code>algorithms/correspondences.py</code>); newborns on probation (smooth for N frames,
+  dead-end rule).
+- Links: join two pieces when the joint path lowers the cost (<code>reconnect.reconnect_pieces</code>
+  as the candidate generator; not <code>trajectory_stitch.stitch_trajectories</code>).
+Gate: yield +10 points at the default rate and +5 at 0.75; extra points' position error
+below 2× the common set's; ghost share not higher.</p>
+<p><strong>H4. The full loop</strong>
+Sliding window in time, forward and backward, all moves under one cost, until stable.
+For dense data (more than half of merged observations have no clean 3D moment within
+±6 frames at 4×): hypotheses over a whole cluster of overlapping particles and frames
+(small exact search per cluster, <code>ghost_ilp.solve_component_ilp</code> style). Plugin <code>holistic</code>
+(<code>plugins/loader.py</code>, <code>tracking_registry.py</code>); hot loops to Cython only now.</p>
+<p><strong>H5. Proof on images and real data</strong>
+- Rendered images, not only synthetic blob tables: the native-density render exists
+  (<code>Synthetic-CompleteTest/syn1</code>); render ×2 with openptv-analysis
+  <code>synthetic_experiment</code> for a dense image-level case.
+- Real wp2 (300 frames, then all 1072) and lv_multi on scratch copies: leave-one-camera-out
+  error, tracks ≥ 50 frames, roughness, and the Eulerian statistics against the MATLAB
+  reference (<code>comparison_vs_legacy.json</code>).</p>
+<h2 id="what-counts-as-the-breakthrough">What counts as the breakthrough<a class="headerlink" href="#what-counts-as-the-breakthrough" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>two_phase</code> today</th>
+<th>Target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sparse, default merge rate: velocity error (common set)</td>
+<td>0.183</td>
+<td>≤ 0.09</td>
+</tr>
+<tr>
+<td>Sparse: particles kept / long-track completeness</td>
+<td>0.68 / 0.50</td>
+<td>≥ 0.78 / ≥ 0.75</td>
+</tr>
+<tr>
+<td>Real-like merge rate (0.75): velocity error</td>
+<td>0.122</td>
+<td>≤ 0.075</td>
+</tr>
+<tr>
+<td>4× density: particles kept, at velocity error not above today's 0.41</td>
+<td>0.22</td>
+<td>≥ 0.50</td>
+</tr>
+<tr>
+<td>Real wp2: leave-one-camera-out error; tracks ≥ 50 frames</td>
+<td>measured in H0</td>
+<td>clearly lower; more</td>
+</tr>
+<tr>
+<td>Time per frame</td>
+<td>matcher 0.10 s + linker 0.02 s</td>
+<td>≤ 3× that</td>
+</tr>
+</tbody>
+</table>
+<p>Targets are set from the measured ceilings; they are goals, not promises.</p>
+<h2 id="open-points">Open points<a class="headerlink" href="#open-points" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>unified</code> defaults (<code>stitch</code> on, <code>peeling</code> on) hurt on the truth benchmark; changing
+  them is a separate decision for the user.</li>
+<li>The 11 % of particles with no blob need the images (track-guided detection with a lower
+  local threshold). Outside this plan unless the user opens the image option.</li>
+<li>Real-data brightness is less stable than synthetic (linked pairs: 95 % within ×1.3
+  against ×1.16), so thresholds come from each run's own spread.</li>
+</ul>
+<h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Unit tests for <code>blob_model</code> (two crossing particles: counts, split, shared blob;
+  brightness signature), run-store round trip of the observation table.</li>
+<li><code>uv run pytest tests/unit -q -m "not slow and not gui"</code>; pure-Python fallback tests and
+  a Cython rebuild if <code>algorithms/</code> is touched (H4).</li>
+<li>Per stage: <code>scripts/synth_bench.py track/eval</code> on the cases above; numbers appended to
+  the repo plan and <code>bench/</code>; a stage that gains only by dropping true points is reverted.</li>
+<li><code>uv run ruff check src scripts</code>.</li>
+</ul>
+<h2 id="progress-log">Progress log<a class="headerlink" href="#progress-log" title="Permanent link">&para;</a></h2>
+<ul>
+<li>2026-11-20, H0a: cause of "two_phase worse on corrected points" found: link confirmation, not ghost marks
+  (sparse <code>_m0.75_E1c0.3</code>: default 0.138; ghost rules off 0.141; ghost rules and confirmation off 0.076; perfect linker 0.060).</li>
+<li>2026-11-20, H0 done: <code>RunStore.write/read/has_observations</code> (group <code>obs</code>, shape (N, C, 4) = x_px, y_px, var_px2,
+  n_share; tests in <code>tests/unit/test_run_store.py</code>); common-set scoring <code>synth_bench eval --ref two_phase</code>
+  (<code>common_set_errors</code>, tests <code>test_synth_bench_common_set.py</code>); <code>src/openptv2/loco.py</code> (leave-one-camera-out residual,
+  tests <code>test_loco.py</code>). LOCO baseline on 4-camera points, 20 frames: real wp2 median 0.34 px / p90 0.68 / rms 0.44;
+  rendered synthetic 0.31 / 0.54 / 0.37 (<code>scripts/joint_m0.py</code>). Caveat: LOCO only sees points the matcher accepted, so
+  strongly merged blobs (rejected by the epipolar band) are under-represented; it is a consistency check, not a
+  full measure.</li>
+<li>2026-11-20, H1 first result (<code>scripts/joint_bounds.py h1</code>, module <code>src/openptv2/blob_model.py</code>, tests <code>test_blob_model.py</code>):
+  blob model on perfectly associated data = leave-one-out path prediction + per-particle <em>effective observation</em>
+  of a shared blob (blob centre minus the other members' predictions, over its brightness share; the particle's own
+  prediction never enters) + Gauss-Newton triangulation with weights 1/variance, 2 rounds. Case <code>_m0.75</code> (60 frames),
+  3D error vs truth (mm), raw blob centres -&gt; H1: all 0.143 -&gt; 0.074; 1 merged camera 0.178 -&gt; 0.067; 2: 0.243 -&gt; 0.096;
+  3+: 0.321 -&gt; 0.236; clean particles unchanged (0.050). Velocity error with the perfect linker 0.0603 against 0.1061
+  (merged blobs as they are, E1b) and 0.0595 (ideal centres, E1c): the gap is closed to 98 % (gate was 60 %).
+  <code>two_phase</code> on the H1 input: 0.0918 (greedy cloud 0.1219), link precision 0.990, long completeness 0.775 (0.699).
+  Reviewed: the variance claimed for corrected observations is about 1.8x too small (z^2 = 1.76), and the pixel
+  error of the corrected centres has a heavy tail (median 0.29 px, rms 0.91 px; raw merged centre rms 0.87 px,
+  prediction rms 0.36 px) coming from dim members whose weight is small. Assumptions that make this an upper
+  bound: truth association, brightness signature from truth "alone" frames, centre noise var_c = 0.01 px^2 set to the
+  benchmark's. Next: other cases, then H2 (real tracks).</li>
+<li>2026-11-20, H1 completed and reviewed. Module <code>src/openptv2/merge_refine.py</code> (truth-free <code>refine_merged</code>), tests
+  <code>test_merge_refine.py</code>, <code>test_blob_model.py</code>; benchmark driver <code>scripts/joint_bounds.py h1</code> is a thin wrapper.
+  <em>Review finding:</em> the first version (all predictions trusted, fixed variance) diverged: particles merged in &gt;= 3
+  cameras got worse each round (sparse: 0.52 -&gt; 0.92 -&gt; 1.13 mm; x4: 0.85 -&gt; 1.8 -&gt; 13.7 mm) and the variance was
+  2-3x too small (z^2 5-8), because poor positions gave bad predictions, which spoiled the partners' effective
+  observations. The velocity-error numbers had hidden it (medians improved). <em>Fix:</em> predictions are made from frames
+  with &gt;= 2 clean cameras only and trusted only with &gt;= 3 such frames in the window; an effective observation more
+  than 4 sigma from the particle's own trusted prediction is dropped; the trusted path prediction enters the
+  position fit as pseudo-observations. Now stable (rounds 2 and 3 agree), calibrated (z^2 1.1-1.2).
+  Gate (perfect linker, velocity error; gap closed = (E1b - H1) / (E1b - E1c)):
+  | case (60-frame dev cases) | greedy | E1b raw merged | <strong>H1</strong> | E1c ceiling | gap closed |
+  |---|---|---|---|---|---|
+  | real-like <code>_m0.6</code> | 0.061 | 0.067 | 0.050 | 0.051 | ~100 % |
+  | real-like <code>_m0.75</code> | 0.095 | 0.106 | 0.060 | 0.060 | ~100 % (earlier version) |
+  | default merge rate | 0.166 | 0.245 | 0.092 | 0.065 | <strong>85 %</strong> |
+  | x4 density | 0.581 | 0.834 | 0.562 | 0.134 | <strong>39 %</strong> (gate 60 % not met) |
+  <code>two_phase</code> on the H1 input: default rate 0.202 -&gt; 0.105 (common set 0.175 -&gt; 0.083), yield 0.684 -&gt; 0.773, long
+  completeness 0.60 -&gt; 0.76, ghost 3.9 % -&gt; 1.6 %; x4: yield 0.227 -&gt; 0.590, long completeness 0.18 -&gt; 0.48, but
+  velocity error 0.433 -&gt; 0.670 and link precision 0.929 -&gt; 0.876 (the noisier extra points). By number of merged
+  cameras (3D error mm, default rate, round 3): clean 0.052 -&gt; 0.035; 1 merged camera 0.250 -&gt; 0.060; 2: 0.353 -&gt;
+  0.161; 3+: 0.498 -&gt; 0.506 (not helped). At x4 the 3+ group is 57 % of the particles and 49 % of predictions are
+  trusted: information-limited, which is what the coverage analysis said (H4: cluster hypotheses).
+  Consequences for the plan: (1) H2 must give the linkers noise-aware gating (per-link tolerance from the points'
+  variances); (2) x4 targets move to H4; (3) particles with no clean camera and no trusted path should carry a
+  large variance, not a confident wrong position.</li>
+<li>2026-11-20, H2 first results (<code>scripts/joint_bounds.py h2</code>, <code>src/openptv2/merge_post.py</code>, tests <code>test_merge_post.py</code>):
+  merge-aware refinement of real <code>two_phase</code> tracks (60-frame default-merge-rate case; membership inferred from the
+  tracks: a point without a view in a camera attaches to the blob its projection falls on, radius 2 px; links
+  unchanged). Velocity error 0.1909 -&gt; 0.1608 (-16 %; common set 0.172 -&gt; 0.143); attachment radius 1.2 / 2 / 3 px
+  gives 0.164 / 0.161 / 0.167 (insensitive). Alternating loop (link on the corrected positions, then correct again
+  from the new tracks): 0.1566 after one and 0.1526 after two rounds (-20 %; common set 0.1294, -25 %). Link recall
+  was already 0.991 -&gt; 0.997: linking is not the bottleneck at this merge rate; the missing yield is (0.66 against
+  0.80 with perfect association): particles absent from the cloud. Plan gate for H2 (-30 %) not met by the post-step
+  alone, above the stop line (-15 %); proceeding to H3 (recovery). Cost: 11 s for 69k rows (0.18 s/frame), python
+  loops; to be vectorised later (matcher 0.10 s/frame).</li>
+<li>2026-11-20, H3 first look. Gap filling inside tracks (<code>merge_post.fill_gaps</code>, tests) after refinement and
+  re-joining pieces (<code>reconnect_pieces</code> on the refined path) adds only +0.5 points of yield (0.662 -&gt; 0.667) and
+  makes the velocity error slightly worse (0.1608 -&gt; 0.1685, noisy extra points). Reason (<code>scripts/joint_missing_points.py</code>,
+  60-frame default-rate case): the tracker output holds 80 % of the eligible true points (seen by &gt;= 3 cameras);
+  of the missing 20 % only 34 % belong to a particle found within +-3 frames (9 % on both sides), 48 % within +-6
+  frames, and 19 % to particles never found at all. The gaps are long (merged episodes: median 5, 90th percentile 19
+  frames) and <code>two_phase</code> links only consecutive frames, so holes appear as separate fragments. Recovery therefore needs
+  (a) bridging of long gaps with interpolation on the refined path and a mass/brightness check on the claimed blob,
+  (b) births for particles never tracked (unexplained blob mass, leftover blobs), (c) the 60-frame cases have edge
+  effects; use the 150-200-frame cases for H3 gates. Not done yet.</li>
+<li>2026-11-20, H3 long-gap recovery (<code>merge_post.fill_gaps</code> with cubic Hermite interpolation, radius growing 0.25 px per
+  frame from the nearer known point, brightness-mass check <code>0.7 &lt;= blob grey sum / (owner signatures + claimer
+  signature) &lt;= 1.4</code>; pieces re-joined with <code>reconnect_pieces</code> on the refined path first; tests <code>test_merge_post.py</code>).
+  200-frame default-merge-rate case, <code>two_phase</code> tracks (velocity error, common set, yield, long completeness,
+  ghost share): raw 0.1725 / 0.1583 / 0.657 / 0.491 / 3.6 %; refinement only 0.1585 / 0.1357 / 0.658 / 0.493 / 3.4 %;
+  <strong>refinement + recovery with mass check 0.1461 / 0.1225 / 0.672 / 0.564 / 3.4 %</strong> (-15 % velocity error, -23 % on the
+  common set, +7 points long-track completeness, pieces per long track 2.24 -&gt; 1.73); same without the mass check:
+  0.1992 / 0.1109 / 0.691 / 0.591 / 4.6 %, link precision 0.963 -&gt; 0.943: more particles are recovered but the wrong
+  claims cost accuracy. So the brightness-mass accounting is what makes recovery safe (the strong cue of section 15).
+  Extra (recovered) points: 2.8 % of the output, velocity error 0.234 (3x the common set's 0.12: noisy but few).
+  Gates: H3 asked yield +10 points (default rate); reached +1.5. Perfect-association H1 inputs reach yield 0.80 and
+  velocity error 0.092, so most of the potential is still open. Where the loss is, not yet measured: (a) accuracy of
+  the inferred membership (attachments are 17k of 69k rows on the 60-frame case, a third of rows end up with a shared
+  blob, the truth share is ~27 %; false attachments are likely), (b) particles never in the cloud (19 % of the missed
+  points), (c) 3+-merged-camera particles (no clean camera, information-limited). Next: measure membership accuracy against
+  truth (map rows to truth by position), test the alternatives (mass check on attachments, signatures before
+  attaching), births from unexplained mass, noise-aware link confirmation (variances now exist in <code>obs</code>), then H4.</li>
+<li>2026-11-20, diagnosis and births (200-frame default-merge-rate case, <code>two_phase</code> tracks).
+  <em>Membership is not the loss</em> (<code>scripts/joint_h2_diag.py</code>): after <code>extend_membership</code> 98.4 % of observations use the
+  true particle's blob and 98.4 % of the blobs inferred as shared are truly shared; giving the refinement the <em>true</em>
+  membership is even slightly worse (0.1698 vs 0.1585). <em>The loss is hidden partners:</em> of 161k truly shared observations
+  only 79k are recognised, because the partner is not in the cloud at all, so the tracked particle takes the shifted
+  merged centre as a clean observation. Down-weighting such blobs by brightness (<code>refine_merged(hidden_mass=1.4)</code>, a
+  lone member whose blob is &gt;= 1.4x its signature gets a phantom partner) flags 12.6k observations, small gain
+  (0.1461 -&gt; 0.1423). Bound (<code>scripts/joint_birth_bound.py</code>): of the 50.6k missed eligible points only 5.6 % have &gt;= 3
+  free views (leftover matching is useless), 88 % have &gt;= 2 views hidden in blobs of tracked points.
+  <em>Births from residual brightness</em> (<code>merge_post.birth_targets</code>, <code>birth_points</code>; tests): a blob brighter than its tracked
+  members (G - sum S_m &gt;= 0.25-0.5 of the camera's median signature) holds an unseen particle at
+  s = (G c - sum S_m p_m) / R; these residual targets plus free blobs go through the standard matcher. 6.5k births
+  (min_resid 0.5) / 9.1k (0.25 + refined-position fallback), precision 87.6 % / 86.4 % real particles missing from the old
+  cloud (<code>scripts/joint_birth_quality.py</code>). Then the augmented cloud is linked again and refined with recovery
+  (<code>joint_bounds.py h3</code>). Result, scored on the common set of the original <code>two_phase</code> run:
+  | variant | vErr all | <strong>vErr common set</strong> | yield | long completeness | pieces | extra points (vErr) |
+  |---|---|---|---|---|---|---|
+  | <code>two_phase</code> | 0.1725 | 0.1583 | 0.657 | 0.491 | 2.24 | - |
+  | + refinement | 0.1585 | 0.1357 (-14 %) | 0.658 | 0.493 | 2.23 | 0.4 % |
+  | + recovery + hidden-partner check | 0.1423 | 0.1191 (-25 %) | 0.673 | 0.565 | 1.75 | 2.9 % (0.25) |
+  | + births, relink, refine, recovery | 0.1470 | <strong>0.1008 (-36 %)</strong> | 0.691 | 0.596 | 1.58 | 5.5 % (0.29) |
+  | same, looser births | 0.1496 | <strong>0.1004 (-37 %)</strong> | 0.695 | 0.601 | 1.58 | 5.9 % (0.30) |
+  Births make the <em>existing</em> particles more accurate (their shared blobs are now explained): the H2/H3 accuracy gate
+  (-30 % on the common set) is passed. The new points are still noisy (0.30, short tracks without trusted predictions);
+  the overall mean does not improve because of them. Births recall is the bottleneck: ~45 per frame against ~250 missed
+  points per frame (residual targets need known signatures and predictions of every member, and the matcher's
+  epipolar band rejects residual targets whose placement error is amplified by G/R for dim hidden particles).</li>
+<li>2026-11-20, births loop round 2 and paired births. Running the whole births loop a second time on its own output:
+  common-set velocity error 0.1004 -&gt; <strong>0.0907 (-43 % against <code>two_phase</code>)</strong>, yield 0.705, long completeness 0.617, pieces
+  per long track 1.51; extra points 7.2 % (velocity error 0.27). Paired births (<code>merge_post.paired_births</code>: 2-camera
+  match of free blobs, verified in the other cameras by a blob whose excess brightness matches the candidate's; tests)
+  add 2.6k births at the same precision (87 %) but no accuracy (common set 0.1039 vs 0.1004, yield 0.697 vs 0.695):
+  kept as an option, off by default.</li>
+</ul>
+<h2 id="synthesis-2026-11-20-what-the-measurements-say-the-best-tracker-is">Synthesis (2026-11-20): what the measurements say the best tracker is<a class="headerlink" href="#synthesis-2026-11-20-what-the-measurements-say-the-best-tracker-is" title="Permanent link">&para;</a></h2>
+<p><strong>The essential difficulty is not linking and not ghosts. It is that a blob is not a particle.</strong> With exact data
+the chain is accurate to 0.0009; the linkers find 99 % of the reachable links; removing every ghost gains
+<code>two_phase</code> 0.5-2 %. What limits everything is that 27 % of blob observations (benchmark default; roughly half that on
+real wp2) hold several particles. The matcher, forced to give each blob to one point, then (a) builds the visible
+particle from a shifted centre and (b) leaves the other particle out of the cloud; the left-out particle in turn
+corrupts its partner, which takes the merged blob as its own. The biggest single finding of this work: <strong>the loss is
+hidden partners, and bringing them back makes the particles we already had more accurate.</strong></p>
+<p><strong>What each existing piece contributes (measured on the truth benchmark):</strong>
+| piece | where it lives | effect | keep? |
+|---|---|---|---|
+| greedy epipolar matcher | <code>algorithms/correspondences.py</code> | good first guess, fast (0.1 s/frame) | yes, as the seed |
+| <code>two_phase</code> linker + ghost marks (<code>q_seed</code>, <code>q_young</code>) | <code>plugins/two_phase_tracking.py</code> | best linker; marks give 0.5-2 % | yes, as the linking core |
+| <code>two_phase</code> confirmation (<code>confirm_auto</code>) | same | cuts true links of noisier points | yes, but per-point tolerance from variances |
+| hybrid <code>trackcorr</code> (3D cascade + epipolar) | <code>plugins/default_tracking.py</code> | best continuity, keeps 2x the ghosts | alternative core, not default |
+| peeling (Clean-and-Claim) | <code>layered_tracking.py</code> | worse than plain <code>trackcorr</code> everywhere | no (its idea is done better by membership + births) |
+| trajectory ILP, IRLS stitching | <code>ghost_ilp.py</code>, <code>temporal_smoothing.py</code> | no measured gain | optional |
+| <code>stitch_trajectories</code> | <code>trajectory_stitch.py</code> | 3x worse velocity error | no |
+| blob model: membership, effective observations, trusted LOO path prior | <code>blob_model.py</code>, <code>merge_refine.py</code>, <code>merge_post.py</code> | -14 % (common set) | yes |
+| hidden-partner mass check, long-gap recovery with mass check | same | -25 % cumulative | yes |
+| births from residual brightness, relink, 2 rounds | same + <code>joint_bounds.py h3</code> | <strong>-43 % cumulative; +5 points yield; +13 points long completeness</strong> | yes: the core of the new method |</p>
+<p><strong>Recommended architecture ("holistic" tracker = the order-free loop):</strong>
+1. detect -&gt; greedy matcher -&gt; <code>two_phase</code> (seed tracks);
+2. measurement layer: infer shared blobs from tracks, effective observations, weighted fit with the trusted path prior;
+3. mass accounting per blob: hidden partners -&gt; residual targets -&gt; births (matcher on residual + free targets);
+4. relink on the corrected, augmented cloud; reconnect pieces; recover long gaps (Hermite path + mass check);
+5. repeat 2-4 (two rounds measured, still improving);
+6. output with a variance per point (the observation table), used by weighted smoothing and by the user.
+<code>unified</code> should become this loop on top of its existing infrastructure (estimator, <code>TrackingDecision</code>, probes),
+with peeling and stitch off.</p>
+<p><strong>Open, in order of value:</strong>
+1. Real data: none of the loop has run on wp2 yet. Use leave-one-camera-out consistency, tracks &gt;= 50 frames,
+   roughness, and the Eulerian statistics against the MATLAB reference. Merge rate there is about half, so expect a
+   smaller but real gain (the real-like benchmark cases predicted -27 % for perfect association).
+2. The new points are noisy (velocity error 0.27-0.30, 6-7 % of the output): use their variance in smoothing,
+   and noise-aware confirmation, before counting them as yield.
+3. Births recall: ~58/frame against ~250 missed; residual placement degrades for dim hidden particles.
+4. Dense data (x4): cluster hypotheses (H4); the blob model alone closes only 39 % there.
+5. Speed: the loop is python (~0.6 s/frame per round against 0.1 matcher + 0.02 linker); vectorise / Cython after 1-2.</p>
+<h2 id="progress-after-the-synthesis-2026-11-20-second-part">Progress after the synthesis (2026-11-20, second part)<a class="headerlink" href="#progress-after-the-synthesis-2026-11-20-second-part" title="Permanent link">&para;</a></h2>
+<p><strong>Scoring correction (critical).</strong> My H2/H3 drivers dropped single-point tracks (<code>min_len=2</code>); the benchmark's gap
+repair (postptv) attaches single points to tracks, so my baseline was weaker than <code>two_phase</code>'s real output. All
+numbers below are against <code>two_phase</code>'s real output (single points kept, <code>min_len=1</code>), common set scored at the
+smoothing window best for it. The earlier "-43 %" was inflated; the honest figure is -30 %.</p>
+<p><strong>Corrected results</strong> (velocity error / common set / yield / long completeness):
+| case | <code>two_phase</code> | refinement only | births loop round 2 (<code>two_phase</code> output) |
+|---|---|---|---|
+| L1 default merge rate, 200 fr | 0.1825 / 0.1561 / 0.680 / 0.503 | 0.1729 / 0.1436 / 0.679 / 0.495 | <strong>0.1481 / 0.1088 (-30 %) / 0.718 / 0.573</strong> |
+| L2 image pipeline (rendered images, real detection), 200 fr | 0.1400 / 0.1223 / 0.691 / 0.544 | 0.1580 / 0.1336 (<strong>worse</strong>) | <strong>0.1298 / 0.0938 (-23 %) / 0.726 / 0.614</strong> |
+On real image blobs refinement alone is harmful; it works only together with the births (hidden partners explicit).
+Gap recovery (<code>fill_gaps</code>) raises long completeness further (L1 0.622, L2 0.632) but its extra points cost overall
+velocity error (L2 0.1564): off by default. A final refinement after the last relink is also harmful (L2 0.1298 -&gt;
+0.155): a wrong birth (13 %) that is a member of a shared blob corrupts its partner's effective observation. Best
+pipeline now: rounds of (refine -&gt; births -&gt; relink), output = the last <code>two_phase</code> relink.</p>
+<p><strong>Real data, wp2, 300 frames</strong> (<code>scripts/holistic_real.py</code>, scratch copy; truth-free): base <code>two_phase</code> 14,674 tracks,
+mean length 20.7, 1,533 tracks &gt;= 50 frames, jitter x/y/z 0.0083/0.0077/0.039 mm, jump share 1.44 %; after two rounds
+10,860 tracks, mean 29.5 (+43 %), 1,856 &gt;= 50 frames (+21 %), jitter 0.0054/0.0049/0.027 (the path prior smooths by
+construction, so jitter is not clean evidence), jump share 0.38 %. Births 11.1k (round 1), 4.3k (round 2). Leave-one-
+camera-out on 4-camera points with a shared blob: corrected observations agree better with the other cameras than the
+raw blob centres (median 0.52 -&gt; 0.46 px, p90 1.18 -&gt; 1.07): truth-free evidence that the correction is right on real
+data. <code>never4_share</code> is no longer meaningful (membership extension adds cameras).</p>
+<p><strong>Noise of the new points</strong> (<code>scripts/joint_extra_points.py</code>, round 2): the added points are placed worse, not only on
+short tracks: position error median 0.099 / rms 0.162 mm against 0.026 / 0.065 for the common points; track length
+median 14-20 (common 91-111), 35 % on tracks &lt; 5 frames; 64 % sit on tracks that also hold common points (merged
+stretches of good tracks). Position covariances now come out of the fit (<code>triangulate_weighted(return_cov=True)</code>,
+<code>RefineResult.pos_var</code>; test); smoothing with weights 1/variance helps only slightly (L2 0.1575 -&gt; 0.1550).</p>
+<p><strong>Births recall</strong> (<code>scripts/joint_birth_recall.py</code>, L1 default): of 109.6k hidden views of missed points, 63 % are lost
+because the blob's grey sum hardly exceeds the tracked member's signature (median residual = 0): the signature is
+contaminated, since a member's "alone" frames are judged by tracked points only and include frames where an untracked
+partner hid in its blob. With the 20th percentile instead of the median (<code>signature_from_history(quantile=)</code>) good
+residual targets rise 13.6 % -&gt; 18.0 % of hidden views and missed points with &gt;= 3 usable views 26.7 % -&gt; 32.5 %. The
+remaining fix: estimate signatures and blob counts jointly (EM: counts given signatures, signatures from blobs counted
+as single), or from cameras where the particle is reliably alone in 3D terms.</p>
+<p><strong>Dense data (x4, 60 frames):</strong> <code>two_phase</code> 0.433 / common 0.390 / yield 0.227; Clean-and-Claim peeling (<code>unified</code>)
+4.93 (ghost 29 %), without stitch 1.98 (ghost 24 %): exclusive claiming turns merged blobs into ghosts. The births loop
+barely helps (common 0.369 -&gt; 0.362 over three rounds, yield unchanged 0.225): trusted predictions exist for only half
+the particles and signatures are contaminated in most frames. The matcher's cloud holds 26 % of the particles while
+the ideal-centre ceiling keeps 85 %. Dense data needs the mass accounting at the <em>matching</em> stage: a blob may serve as
+many points as its brightness says (capacity-aware matching from the full candidate pool), explaining brightness layer
+by layer from the most certain particles (a non-exclusive "mass peeling"), with cluster-level hypotheses in time (H4).</p>
+<h2 id="signatures-safe-births-joint-split-dense-matcher-2026-11-20-third-part">Signatures, safe births, joint split, dense matcher (2026-11-20, third part)<a class="headerlink" href="#signatures-safe-births-joint-split-dense-matcher-2026-11-20-third-part" title="Permanent link">&para;</a></h2>
+<p><strong>Signature estimation</strong> (<code>merge_post.estimate_signatures</code>, tests): start from a low quantile, then alternate
+(observations whose blob grey sum is 0.75-1.3x the summed signatures of its tracked members are <em>explained</em>; each
+member's share of an explained blob gives its signature) and finally a <strong>cross-camera</strong> step (brightness per camera =
+camera gain x particle brightness; a camera whose signature is missing or &gt; 1.35x what the other cameras predict takes
+the cross-camera value, since a partner may hide in that camera's blob in every frame). Births recall
+(<code>scripts/joint_birth_recall.py</code>, L1 default): good residual targets 13.6 % (median) -&gt; 15.9 % (joint only) -&gt; <strong>32.1 %</strong>
+(joint + cross-camera) of hidden views; unknown signatures 10.4 % -&gt; 0 %; missed points with &gt;= 3 usable views
+26.7 % -&gt; 46.8 %.</p>
+<p><strong>Safe births as members</strong> (<code>refine_merged(partner_min_len=10)</code>): a member whose track has &lt; 10 rows does not lend its
+prediction to its partners (counts as unknown for them), so young and wrong births cannot corrupt established
+particles. <code>refine_merged(signatures=...)</code> takes the joint signatures.</p>
+<p><strong>Image-pipeline case (L2), two rounds, joint signatures + safe births</strong> (<code>joint_bounds.py h3 --joint-sig
+--partner-min-len 10</code>): velocity error <strong>0.1195</strong> (<code>two_phase</code> 0.1400, -15 %), common set <strong>0.0776</strong> (0.1223, -37 %),
+yield <strong>0.745</strong> (0.691), long completeness <strong>0.653</strong> (0.544), pieces per long track 1.57 (2.03), ghost 3.5 % (3.7 %).
+Before this change the same loop gave 0.1298 / 0.0938 / 0.726 / 0.614. A final refinement after the last relink still
+hurts the overall error (0.2273): the pipeline ends at the relink.</p>
+<p><strong>Joint cluster split</strong> (from the idea "membership + mixture-centroid split + flag"; <code>blob_model.solve_cluster</code>,
+<code>refine_merged(mode="joint")</code>, tests): every cluster of points sharing blobs in a frame is solved jointly by
+Gauss-Newton: clean blobs give each member's own equations, a shared blob one equation (centre = brightness-weighted
+mean of the members' projections), trusted path predictions pseudo-observations; no member relies on a partner's
+prediction. Python, slow (one small solve per cluster). Comparison with the per-member split under true association:
+see the next entry.</p>
+<p><strong>Dense-aware matcher, first prototype</strong> (<code>joint_bounds.py mm</code>, <code>mass_select</code>, tests): candidate pool selected greedily
+with blob capacities from brightness (grey sum / typical single grey sum of the camera's smaller blobs, &lt;= 3) and at
+most one shared blob between two taken points. x4: points per frame 2,597 -&gt; 4,428, <code>two_phase</code> yield 0.227 -&gt; 0.242,
+ghost 6.8 % -&gt; <strong>13.8 %</strong>, common set 0.390 -&gt; 0.357; default rate: yield 0.684 -&gt; 0.691, ghost 3.9 % -&gt; 5.3 %, common
+set unchanged. <strong>Negative</strong>: brightness capacity within one frame mostly creates ghosts. Capacity must be granted only
+where tracks back it (the births mechanism does that), i.e. the dense matcher has to be the births loop with
+cluster-level hypotheses in time, not a single-frame matcher.</p>
+<p><strong>Joint cluster split, first comparison (true association, L1 default, 60 frames): diverges.</strong> Median error is fine
+(0.041 mm against 0.032 for the per-member split), but the RMS explodes over the rounds (round 1 6e6 mm): clusters in
+which a member is constrained only through shared blobs (or one clean view) are underdetermined, the undamped
+Gauss-Newton step runs away, and the runaway positions then poison the path predictions (learned prediction variance
+65,000 px^2). Open bug, not usable yet. To fix next: Levenberg-Marquardt damping with a step limit, always include the
+member's previous position (or trusted path) as a weak prior, accept a cluster solution only if its reprojection cost
+drops and positions stay within a few blob radii of the start, else keep the per-member result. The x4 run of it was
+stopped (slow, 15 GB). Per-member split (<code>mode="effective"</code>) stays the default.</p>
+<p><strong>State at the end of this session.</strong> Best pipeline (benchmark-verified): <code>two_phase</code> -&gt; rounds of
+[extend membership -&gt; joint + cross-camera signatures -&gt; refine (effective split, trusted LOO prior, hidden-partner
+check, young members not lent to partners) -&gt; births from residual brightness -&gt; relink with <code>two_phase</code>], output =
+the last relink. L2 image-pipeline case: velocity error -15 %, common set -37 %, yield +5.4 points, long completeness
++11 points, ghost unchanged. Real wp2 (older version of the loop): tracks 43 % longer, 21 % more tracks &gt;= 50 frames,
+better cross-camera consistency of corrected blobs. Not solved: dense (x4); speed (python, about 0.6 s/frame per
+round). Next: fix the joint solve (damping), rerun wp2 with the current loop, a births loop with cluster hypotheses for
+dense data, then the <code>holistic</code> plugin.</p>
+<h2 id="implementation-summary-as-of-2026-11-20">Implementation summary (as of 2026-11-20)<a class="headerlink" href="#implementation-summary-as-of-2026-11-20" title="Permanent link">&para;</a></h2>
+<h3 id="library-srcopenptv2">Library (<code>src/openptv2/</code>)<a class="headerlink" href="#library-srcopenptv2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>module</th>
+<th>what it does</th>
+<th>key functions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>storage/run_store.py</code></td>
+<td>observation table next to correspondences: pixel used, variance, particles in the blob</td>
+<td><code>write_observations</code>, <code>read_observations</code>, <code>has_observations</code></td>
+</tr>
+<tr>
+<td><code>loco.py</code></td>
+<td>truth-free leave-one-camera-out consistency (px)</td>
+<td><code>project_pixels</code>, <code>pixels_to_flat</code>, <code>loco_residuals</code>, <code>summarize</code></td>
+</tr>
+<tr>
+<td><code>blob_model.py</code></td>
+<td>the blob model: split of a shared blob, prediction, weighted triangulation, joint cluster solve</td>
+<td><code>brightness_shares</code>, <code>split_blob</code> (Kalman), <code>split_blob_effective</code> (own prediction never used), <code>signature_from_history</code> (quantile), <code>local_poly_predict</code> (leave-one-out, support), <code>triangulate_weighted</code> (slots per camera, path prior slots, covariance), <code>solve_cluster</code> (joint Gauss-Newton; diverged, being fixed)</td>
+</tr>
+<tr>
+<td><code>merge_refine.py</code></td>
+<td>refinement loop on tracks (truth-free)</td>
+<td><code>refine_merged</code> (trusted predictions, 4-sigma gate, path prior, hidden-partner check, <code>signatures=</code>, <code>partner_min_len=</code>, <code>mode="effective"/"joint"</code>), <code>shared_blobs</code>; result has positions, used pixels, variances, shares, predictions, position variance</td>
+</tr>
+<tr>
+<td><code>merge_post.py</code></td>
+<td>everything that works on a tracker run</td>
+<td><code>arrays_from_store</code>, <code>chains_from_linkage</code>, <code>extend_membership</code> (98 % correct), <code>fill_gaps</code> (Hermite, growing radius, mass check), <code>track_signatures</code>, <code>row_signatures</code>, <code>estimate_signatures</code> (joint + cross-camera), <code>birth_targets</code> (residual brightness), <code>birth_points</code>, <code>paired_births</code>, <code>stamp_tnr</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="benchmark-and-analysis-scripts-scripts">Benchmark and analysis scripts (<code>scripts/</code>)<a class="headerlink" href="#benchmark-and-analysis-scripts-scripts" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>synth_bench.py</code>: <code>blob_tid</code> in truth, <code>MERGE_SCALE</code> (real-like merge rates), <code>KEEP_STORE</code>, <code>eval --ref</code> (common set at
+  its own best window), <code>common_set_errors</code>.</li>
+<li><code>joint_bounds.py</code>: bounds and drivers: <code>b1</code> (pool coverage), <code>b2</code>, <code>ladder</code> (E1a/E1b), <code>demerge</code> (E1c ceiling), <code>m3</code>
+  (estimator), <code>b3</code> (prediction error), <code>h1</code> (blob model with true association), <code>h2</code> (refinement of a tracker run,
+  recovery), <code>h3</code> (births loop), <code>mm</code> (mass-aware matcher), <code>mass_select</code>.</li>
+<li>Diagnostics: <code>joint_m0.py</code> (real vs benchmark), <code>joint_info_coverage.py</code>, <code>joint_blob_context.py</code>,
+  <code>joint_blob_shape.py</code>, <code>joint_missing_points.py</code>, <code>joint_h2_diag.py</code> (membership accuracy, oracle ablation),
+  <code>joint_birth_bound.py</code>, <code>joint_birth_quality.py</code>, <code>joint_birth_recall.py</code>, <code>joint_extra_points.py</code>.</li>
+<li>Real data: <code>holistic_real.py</code> (the loop on a scratch copy of a real run, truth-free scores).</li>
+</ul>
+<h3 id="tests-testsunit">Tests (<code>tests/unit/</code>)<a class="headerlink" href="#tests-testsunit" title="Permanent link">&para;</a></h3>
+<p><code>test_blob_model.py</code>, <code>test_merge_refine.py</code>, <code>test_merge_post.py</code>, <code>test_loco.py</code>, <code>test_run_store.py</code> (observations),
+<code>test_synth_bench_common_set.py</code>, <code>test_mass_select.py</code>: 80 tests.</p>
+<h3 id="status-per-stage">Status per stage<a class="headerlink" href="#status-per-stage" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>stage</th>
+<th>status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H0 foundations</td>
+<td>done</td>
+</tr>
+<tr>
+<td>H1 blob model, true association</td>
+<td>done; closes 85-100 % of the gap at sparse/real-like rates, 39 % at x4</td>
+</tr>
+<tr>
+<td>H2 refinement on real tracks</td>
+<td>done; membership inference 98 % correct; alone it helps on synthetic blob tables, hurts on real image blobs</td>
+</tr>
+<tr>
+<td>H3 births, relink, rounds</td>
+<td>done; best result (L2: -15 % velocity error, -37 % common set, +5.4 yield, +11 long completeness)</td>
+</tr>
+<tr>
+<td>H4 dense / cluster hypotheses</td>
+<td>started: joint cluster solve (diverges), single-frame mass matcher (negative)</td>
+</tr>
+<tr>
+<td>H5 real data</td>
+<td>done: wp2 300 frames with the final defaults (mean length 30.4, jump 0.46 %); lv-multi wp4/wp5</td>
+</tr>
+<tr>
+<td>speed</td>
+<td>first pass done (116 s per 200 frames); see <code>2026-11-21-holistic-next-phase.md</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Current status and the next phase: <code>docs/plans/2026-11-21-holistic-next-phase.md</code>.</p>
+</blockquote>
+<h2 id="next-steps-in-order-historical">Next steps (in order, historical)<a class="headerlink" href="#next-steps-in-order-historical" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Fix the joint cluster solve</strong>: damped steps with a cap, a weak prior on the start positions, accept a cluster only
+   if its cost drops and positions stay near the start; compare with the per-member split under true association.</li>
+<li><strong>Rerun real wp2 with the current loop</strong> (joint signatures, safe births, output = last relink); truth-free scores.</li>
+<li><strong>Dense data</strong>: the births loop at x4 with the new signatures; then cluster hypotheses in time (joint solve over a
+   cluster of overlapping particles across frames, births only where tracks back the brightness).</li>
+<li><strong><code>holistic</code> plugin</strong>: the loop as a library function with an injectable linker and a tracking plugin, so it runs
+   in the normal pipeline; tests.</li>
+<li>Later: noise-aware link confirmation in <code>two_phase</code> from the per-point variances; speed (vectorise, Cython).</li>
+</ol>
+<h2 id="steps-1-4-of-the-next-steps-list-2026-11-20-fourth-part">Steps 1-4 of the next-steps list (2026-11-20, fourth part)<a class="headerlink" href="#steps-1-4-of-the-next-steps-list-2026-11-20-fourth-part" title="Permanent link">&para;</a></h2>
+<p><strong>1. Joint cluster solve fixed</strong> (<code>blob_model.solve_cluster</code>: Levenberg-Marquardt, step accepted only if the cost
+drops, step cap 0.5 mm per particle, weak prior sigma 0.2 mm on each member's start; <code>_joint_clusters</code> keeps the
+per-member result unless the joint cost drops and no member moves &gt; 1 mm; tests incl. an underdetermined member).
+True association, L1 default, 60 frames, 3D error (mm) round 3, per-member -&gt; joint: all 0.171 -&gt; <strong>0.168</strong>, 1 merged
+camera 0.060 -&gt; 0.058, 2: 0.161 -&gt; 0.162, 3+: 0.506 -&gt; 0.493. Stable, about 2 % better; particles merged in &gt;= 3 cameras
+are information-limited either way. Kept as an option (<code>mode="joint"</code>), slow in python.</p>
+<p><strong>2. Real wp2 with the current loop</strong>: first attempt failed (row alignment): the linker writes through its own store
+object and linkage blocks are cached per object, so the loop read a stale linkage next to fresh correspondences. Fixed:
+<code>run_holistic</code> reopens the store after every relink (regression test with a linker on a separate store object).
+Rerun: see the next entry.</p>
+<p><strong>3. Dense (x4, 60 frames), births loop with joint + cross-camera signatures and safe births, two rounds</strong>:
+| | velocity error | common set | yield | long completeness | ghost |
+|---|---|---|---|---|---|
+| <code>two_phase</code> | 0.433 | 0.390 | 0.227 | 0.182 | 6.8 % |
+| loop, median signatures (before) | 0.421 | 0.362 | 0.226 | 0.182 | 6.3 % |
+| <strong>loop, new signatures</strong> | <strong>0.408</strong> | <strong>0.283 (-27 %)</strong> | <strong>0.265</strong> | <strong>0.215</strong> | <strong>5.6 %</strong> |
+Births 556 per frame in round 1 (was negligible). The added points are noisy (17 % of the output, velocity error
+0.58). Still far from the ideal-centre ceiling (yield 0.85); next for dense: cluster hypotheses in time and noise-aware
+use of the new points.</p>
+<p><strong>4. <code>holistic</code> plugin</strong>: <code>src/openptv2/holistic.py</code> (<code>run_holistic(store, frames, cpar, cals, vpar, relink, rounds,
+...)</code>: the loop with an injectable linker; writes the refined points, the births and the observation table) and
+<code>src/openptv2/plugins/holistic_tracking.py</code> (registered as <code>holistic</code> in <code>plugins/loader.py</code>; linker = <code>two_phase</code>
+<code>track_store</code>; YAML <code>holistic_rounds</code>, <code>holistic_min_resid</code>, <code>holistic_partner_min_len</code>). End-to-end test
+(<code>tests/unit/test_holistic.py</code>): a particle the matcher dropped inside its neighbour's blob is born in every overlap
+frame, linked through the overlap, and its blob is marked shared in the observation table.
+<code>scripts/holistic_real.py</code> now runs the library loop.</p>
+<p><strong>2 (result). Real wp2, 300 frames, current loop</strong> (<code>holistic_real.py wp2_holistic2 300 --rounds 2</code>; the script also
+read a stale linkage for its final score, fixed: it reopens the store; <code>--score-only</code> scores an existing run):
+| | tracks | mean length | tracks &gt;= 50 frames | jump share | jitter x / y / z (mm) |
+|---|---|---|---|---|---|
+| <code>two_phase</code> | 14,674 | 20.7 | 1,533 | 1.44 % | 0.0083 / 0.0077 / 0.039 |
+| holistic loop, 2 rounds | 11,742 | <strong>28.2 (+36 %)</strong> | <strong>1,822 (+19 %)</strong> | <strong>0.47 %</strong> | 0.0055 / 0.0051 / 0.029 |
+Births 26.8k (round 1) and 8.4k (round 2). Leave-one-camera-out on 4-camera points with a shared blob: corrected
+observations agree better with the other cameras than the raw blob centres (median 0.40 -&gt; 0.37 px, p90 0.85 -&gt; 0.80
+px); the 99th percentile is slightly worse (1.49 -&gt; 1.52 px). Jitter falls but the path prior smooths by construction,
+so the track lengths, the jump share and the cross-camera consistency are the evidence. Compared with the older loop
+on wp2 (mean 30.5, 1,863 tracks &gt;= 50): more births, slightly fewer long tracks; the difference is small.</p>
+<h2 id="next-steps-updated">Next steps (updated)<a class="headerlink" href="#next-steps-updated" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Dense: cluster hypotheses in time; use the per-point variance for the many new points (17 % at x4, noisy).</li>
+<li>Noise-aware link confirmation in <code>two_phase</code> from the observation table (variance per point).</li>
+<li>Births precision on real data: no truth there; check births' track lengths and cross-camera consistency.</li>
+<li>Speed: vectorise the group loops of <code>refine_merged</code>, <code>estimate_signatures</code>, <code>birth_targets</code>; Cython later.</li>
+<li>Product: <code>holistic</code> as an option in <code>unified</code> / the GUI tracker list once 1-2 are done; docs page.</li>
+</ol>
+<h2 id="next-steps-2-3-2026-11-20-fifth-part-noise-aware-confirmation-births-on-real-data-cleanup">Next steps 2-3 (2026-11-20, fifth part): noise-aware confirmation, births on real data, cleanup<a class="headerlink" href="#next-steps-2-3-2026-11-20-fifth-part-noise-aware-confirmation-births-on-real-data-cleanup" title="Permanent link">&para;</a></h2>
+<p><strong>Library loop = benchmark driver.</strong> <code>joint_bounds.py hol</code> runs <code>openptv2.holistic.run_holistic</code> (the plugin's code)
+on a copy of a case; with the same settings it reproduces the earlier driver's L2 result exactly (0.1195 / 0.0776).</p>
+<p><strong>Noise-aware link confirmation</strong> (<code>tracking_postprocess.confirm_link_tuples(point_sigma=)</code>; <code>two_phase</code> reads
+<code>RunStore.read_point_sigma</code> per frame, YAML <code>noise_aware_confirm</code>, default on; <code>run_holistic</code> writes each point's
+position sigma: refined points from their fit covariance, births 3x the median). The kink tolerance of a link widens with
+its points' noise, never narrows. It is applied only where <code>two_phase</code>'s data-driven tolerance is valid (sparse,
+noise-dominated data: the <code>confirm_auto</code> guard); at x4 it let wrong links through (0.382 -&gt; 0.447).</p>
+<p><strong>Births on real data (truth-free, <code>scripts/joint_births_real.py</code>)</strong>, read against the L2 case with truth:
+| | births share | linked | on tracks &gt;= 10 | median track | precision linked / unlinked (truth) |
+|---|---|---|---|---|---|
+| L2 (rendered images) | 8.7 % | 60 % | 54 % | 17 | <strong>95.6 % / 53 %</strong> |
+| real wp2 | 9.3 % | 57 % | 43 % | 5 | - |
+Linked births are almost all real; unlinked ones are a coin flip. So <code>run_holistic(drop_unlinked_births=True)</code>
+(default) removes births no track took after the last relink and links once more.</p>
+<p><strong>Results (velocity error / common set / yield / long completeness / ghost):</strong>
+| case | <code>two_phase</code> | loop | + noise-aware | <strong>+ noise-aware + drop unlinked births</strong> |
+|---|---|---|---|---|
+| L2 image pipeline, 200 fr | 0.1400 / 0.1223 / 0.691 / 0.544 / 3.7 % | 0.1195 / 0.0776 / 0.745 / 0.653 / 3.5 % | 0.1183 / 0.0717 / 0.748 / 0.680 / 3.6 % | <strong>0.1082 (-23 %) / 0.0733 (-40 %) / 0.741 / 0.670 / 3.6 %</strong> |
+| x4, 60 fr | 0.4326 / 0.3897 / 0.227 / 0.182 / 6.8 % | 0.4082 / 0.2830 / 0.265 / 0.215 / 5.6 % | (off at this density) | <strong>0.3821 (-12 %) / 0.2925 / 0.252 / 0.208 / 5.2 %</strong> |
+New points: L2 6.9 % of the output with velocity error 0.188 (was 0.25). These are now the defaults of the
+<code>holistic</code> plugin.</p>
+<h2 id="next-steps-updated_1">Next steps (updated)<a class="headerlink" href="#next-steps-updated_1" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Dense: cluster hypotheses in time (yield at x4 0.25 against the 0.85 ceiling).</li>
+<li>~~Rerun real wp2 with the defaults~~ done, see below.</li>
+<li>Speed: vectorise the group loops (<code>refine_merged</code>, <code>estimate_signatures</code>, <code>birth_targets</code>), then Cython.</li>
+<li>Product: <code>holistic</code> in the GUI tracker list (done), docs page (done), <code>unified</code> integration (done: <code>track.holistic: true</code>).</li>
+</ol>
+<h2 id="real-wp2-with-the-new-defaults-300-frames-scratch-copy">Real wp2 with the new defaults (300 frames, scratch copy)<a class="headerlink" href="#real-wp2-with-the-new-defaults-300-frames-scratch-copy" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>two_phase</code></th>
+<th>loop (before)</th>
+<th><strong>noise-aware + cleanup</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tracks</td>
+<td>14,674</td>
+<td>11,742</td>
+<td><strong>10,828</strong></td>
+</tr>
+<tr>
+<td>mean length</td>
+<td>20.7</td>
+<td>28.2</td>
+<td><strong>30.4</strong></td>
+</tr>
+<tr>
+<td>tracks of 50+ frames</td>
+<td>1,533</td>
+<td>1,822</td>
+<td><strong>1,827</strong></td>
+</tr>
+<tr>
+<td>jump share</td>
+<td>1.44 %</td>
+<td>0.47 %</td>
+<td><strong>0.46 %</strong></td>
+</tr>
+<tr>
+<td>LOCO, shared blobs, median (corrected)</td>
+<td>0.40 px</td>
+<td>0.37 px</td>
+<td><strong>0.369 px</strong></td>
+</tr>
+<tr>
+<td>LOCO, all 4-camera, median</td>
+<td></td>
+<td></td>
+<td>0.343 px (raw 0.349)</td>
+</tr>
+</tbody>
+</table>
+<p>Births: 5.5 % of points; 91.6 % are on tracks of 2+ points (was 57 % before the cleanup), 72.6 % on tracks of
+10+, median track 30; 83 % of births sit on tracks that also hold established points. The cleanup works on real
+data as on the benchmark: fewer, longer tracks, no loss of long tracks, births now almost all linked.</p>
+<h2 id="speed-first-pass-l2-image-pipeline-200-frames-2-rounds">Speed, first pass (L2 image pipeline, 200 frames, 2 rounds)<a class="headerlink" href="#speed-first-pass-l2-image-pipeline-200-frames-2-rounds" title="Permanent link">&para;</a></h2>
+<p>Profile of the loop (186 s): <code>project_pixels</code> 45 s (236k single calls from the weighted triangulation and the joint
+solver), <code>estimate_signatures</code> 43 s (a per-track mask over all rows), group loops in <code>refine_merged</code>,
+<code>birth_targets</code>, <code>split_blob_effective</code>. Done, all with identical output (checked against HEAD, same scores):
+- the finite-difference Jacobian is projected in one stacked call per camera instead of seven; the joint solver
+  projects all needed (particle, camera) pairs per iteration in one batch;
+- the weighted triangulation keeps the Jacobian of its first iteration (<code>frozen_jacobian</code>): same quality
+  (0.1061 vs 0.1063 velocity error, yield 0.736, long completeness 0.649);
+- <code>estimate_signatures</code> works in track space with grouped reductions (equal to the old function on random data).
+Result: <strong>186 s -&gt; 116 s</strong> (0.58 s per frame). Left: per-group Python loops in <code>refine_merged</code> (10 s own time),
+<code>split_blob_effective</code>/<code>brightness_shares</code> (25 s cumulative, 752k calls), <code>birth_targets</code> (6 s), and the
+projection itself (20 s, analytic Jacobian would remove 6 of 7 evaluations). Then Cython if still needed.
+Note: HEAD gives 0.1063 / 0.0769 / 0.736 / 0.649 on this case (my earlier table said 0.1082 / 0.0733 / 0.741 /
+0.670; the case files were rebuilt in between), still -24 % against <code>two_phase</code>.</p>
+<h2 id="where-yield-is-lost-breakdown-by-clean-cameras-scriptsjoint_yield_breakdownpy">Where yield is lost (breakdown by clean cameras, <code>scripts/joint_yield_breakdown.py</code>)<a class="headerlink" href="#where-yield-is-lost-breakdown-by-clean-cameras-scriptsjoint_yield_breakdownpy" title="Permanent link">&para;</a></h2>
+<p>Truth points grouped by the number of cameras in which the particle sits alone in its blob. "cloud" = found in the
+matcher's 3D points, "final" = found in the holistic output (0.4 mm).</p>
+<table>
+<thead>
+<tr>
+<th>group (share of truth)</th>
+<th>d1 cloud</th>
+<th>d1 final</th>
+<th>x4 share</th>
+<th>x4 cloud</th>
+<th>x4 final</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>no blob in &gt;= 2 cameras</td>
+<td>14.6 %</td>
+<td>0</td>
+<td>9.7 %</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>4 clean</td>
+<td>29.5 %</td>
+<td>100 %</td>
+<td>4.7 %</td>
+<td>99.6 %</td>
+<td></td>
+</tr>
+<tr>
+<td>3 clean</td>
+<td>28.7 %</td>
+<td>99.5 %</td>
+<td>11.3 %</td>
+<td>86.7 %</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>2 clean</strong></td>
+<td>17.3 %</td>
+<td>49 % -&gt; <strong>72 %</strong></td>
+<td>21.3 %</td>
+<td><strong>34 %</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>1 clean</td>
+<td>6.4 %</td>
+<td>31 % -&gt; 49 %</td>
+<td>26.7 %</td>
+<td>16 % -&gt; 19 %</td>
+<td></td>
+</tr>
+<tr>
+<td>0 clean (all merged)</td>
+<td>3.6 %</td>
+<td>30 % -&gt; 35 %</td>
+<td>26.3 %</td>
+<td>11 % -&gt; 12 %</td>
+<td></td>
+</tr>
+<tr>
+<td>(x4 final over all &gt;= 2-clean points 62.6 %, 1 clean 19 %, 0 clean 12 %; yield 0.265.)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Reading: at the default density the loop already brings the 2-clean group from 49 % to 72 %; what is left is ~4 points</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>of all particles in the 2-clean group, ~3 in 1-clean, ~2 in 0-clean, and 14.6 % that have no blob at all (the ceiling is</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>near 0.85). At x4 the 2-clean group (21 % of all particles) is the main loss: two views are ambiguous in a cloud of</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6,000 particles, so the matcher keeps 34 % of them, and 1-clean / 0-clean (53 %) are not recovered.</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Strict track-assisted extension</strong> (<code>run_corrective_pass</code>, radius 1.2 px, ray miss 0.15 mm, position within 0.3 mm</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>of the prediction, ghosts not released; option <code>holistic_extend</code>): d1 vErr 0.1295 -&gt; 0.1255, common set 0.0856 -&gt;</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>0.0765, long completeness 0.627 -&gt; 0.651, yield 0.737 -&gt; 0.746, ghost unchanged; 2-clean 72 % -&gt; 76.5 %. x4: yield</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>0.252 -&gt; 0.267 but velocity error 0.382 -&gt; 0.436 (new points are noisy, ghost 5.1 -&gt; 5.6 %): not useful there.</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>The unrestricted pass (radius 3 px, ghosts released) claims 65k points at x4 and makes 24 % ghosts. So extension helps</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>a little where tracks already exist; at x4 the tracks that would carry it do not exist (only 25 % of particles</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>are tracked), the start of tracks is the problem, which needs the 2-view ambiguity resolved <em>in time</em>.</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Extension on real wp2 (300 frames, on top of the default run):</strong> 6,519 points claimed (4,830 from two cameras), 87 s;
+mean track length 30.35 -&gt; 30.96, tracks of 50+ frames 1,827 -&gt; 1,844, jump share 0.46 -&gt; 0.48 %, never-4-cameras share
+12.0 -&gt; 13.2 %. A small gain, so <code>holistic_extend</code> stays <strong>off by default</strong>.</p>
+<h2 id="where-this-leaves-the-plan">Where this leaves the plan<a class="headerlink" href="#where-this-leaves-the-plan" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Done and measured: blob model, loop, births, noise-aware confirmation, cleanup, plugin, GUI/registry, <code>unified</code>
+  switch, first speed pass (186 -&gt; 116 s per 200 frames), yield breakdown.</li>
+<li>Dense (x4): the loss is the start of tracks (2-clean group 21 % of particles, matched 34 %; 1-/0-clean 53 %, almost
+  none recovered). Extension does not help there. Next idea, not started: candidate pairs from clean views only,
+  kept when they form smooth tracks of &gt;= N frames (track-before-match, same filter that makes linked births 95 % real).</li>
+<li>Speed: per-group loops (<code>refine_merged</code>, <code>split_blob_effective</code>, <code>birth_targets</code>), analytic Jacobian, then Cython.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

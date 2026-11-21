@@ -2014,6 +2014,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../software_map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Map (Trackers & Strategy)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
         
   
@@ -2290,6 +2318,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#which-trackers-to-use-2026-11-simplification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which trackers to use (2026-11 simplification)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2374,6 +2413,11 @@ page). The <code>name</code> column is the exact preset string.</p>
 <td>3D + 2D</td>
 </tr>
 <tr>
+<td><code>holistic</code></td>
+<td><code>two_phase</code> + merged-blob correction + births, repeated; see <a href="../holistic-tracking/">Holistic tracking</a></td>
+<td>3D + 2D + blob model</td>
+</tr>
+<tr>
 <td><code>hybrid_deltat_3d</code> (Hybrid)</td>
 <td>Match every N-th frame where motion beats noise, fill between</td>
 <td>3D only</td>
@@ -2448,6 +2492,32 @@ directly if you need them. Both are permissively MIT-licensed.</p>
 </ul>
 <p>If you publish with these methods, please cite the original authors above
 in addition to openptv2.</p>
+<h2 id="which-trackers-to-use-2026-11-simplification">Which trackers to use (2026-11 simplification)<a class="headerlink" href="#which-trackers-to-use-2026-11-simplification" title="Permanent link">&para;</a></h2>
+<p>Three trackers are offered in the GUI and in <code>plugins.available_tracking</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Tracker</th>
+<th>Use it for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>priority_segment_3d</code> (default)</td>
+<td>fast 3D linking; existing runs</td>
+</tr>
+<tr>
+<td><code>trackcorr</code></td>
+<td>classic OpenPTV epipolar tracking (forward/backward/post-process are settings, not separate trackers)</td>
+</tr>
+<tr>
+<td><code>two_phase</code></td>
+<td>best linker on the truth benchmark; <code>track.holistic_rounds: 2</code> adds the merged-blob loop (<code>docs/holistic-tracking.md</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><code>unified</code>, <code>4be</code>, <code>hybrid_deltat_3d</code>, <code>splitter_tracking</code> and <code>holistic</code> are retired from the pickers. Saved YAMLs
+that name them still run (with a log warning); <code>holistic</code> means <code>two_phase</code> with <code>holistic_rounds: 2</code>.</p>
 
 
 

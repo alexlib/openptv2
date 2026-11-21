@@ -1,0 +1,4208 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+      
+        <title>Unified Tracker — Implementation Plan - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#unified-tracker-implementation-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Unified Tracker — Implementation Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../plate-calibration-howto/" class="md-tabs__link">
+          
+  
+  
+  Calibration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../benchmarking_guide/" class="md-tabs__link">
+          
+  
+  
+  Benchmarks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
+          
+  
+  
+  Decisions
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Your First Tracking (GUI)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/cavity_flow_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lid-Driven Cavity Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aorta_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aorta Flow (cloud-native)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/four_view_splitter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4-View Image Splitter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sequence & Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_parameters_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Parameters (what to measure, how to set)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_advice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tracking_advice (measure your data, get the values)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Point Quality and Ghost Marks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracker-tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracker Engines & Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lagrangian_turbulence_quality_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lagrangian Turbulence Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-batch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud-like Batch Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multi-folder-runs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Folder Experiments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Calibration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plate-calibration-howto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plate Calibration How-To
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../illmenau-4cam-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illmenau 4-Camera Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../illmenau-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illmenau Processing Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/particle_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle-Based Refinement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/dumbbell_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dumbbell Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/warmup_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auto-Calibration (warmup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-rms-vs-rcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reprojection RMS vs Ray Convergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-bundle-adjustment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bundle Adjustment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracer-self-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracer Self-Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Benchmarks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarking & Tracker Selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking-benchmark-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Engine Benchmark Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/custom_tracking_plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../software_map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Map (Trackers & Strategy)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correspondence eps0 Semantics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Decisions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Cython Optimization Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-principles-read-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Principles (read first)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-current-state-done" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Current state (done)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-execution-roadmap-multi-agent-parallel-sessions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5. Execution Roadmap (Multi-Agent / Parallel Sessions)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.5. Execution Roadmap (Multi-Agent / Parallel Sessions)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wave-0-unblock-baseline-run-first-can-be-2-parallel-sessions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wave 0 — Unblock &amp; Baseline (run first, can be 2 parallel sessions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wave-1-foundation-contracts-3-parallel-sessions-disjoint-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wave 1 — Foundation Contracts (3 parallel sessions, disjoint files)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wave-2-core-unified-pipeline-estimator-engine-refiner-3-parallel-sessions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wave 2 — Core Unified Pipeline (Estimator → Engine → Refiner) (3 parallel sessions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wave-3-probing-high-density-clean-and-claim-2-parallel-sessions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wave 3 — Probing &amp; High-Density Clean-and-Claim (2 parallel sessions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wave-4-parallelism-docs-full-validation-3-parallel-sessions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wave 4 — Parallelism, Docs &amp; Full Validation (3 parallel sessions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wave-5-cleanup-v2-after-wave-4-passes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wave 5 — Cleanup &amp; v2 (after Wave 4 passes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wave-6-ghost-elimination-hardening-after-wave-5-passes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wave 6 — Ghost Elimination Hardening (after Wave 5 passes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-milestone-a-auto-parameter-estimation-highest-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Milestone A — Auto-parameter estimation (highest impact)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Milestone A — Auto-parameter estimation (highest impact)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a1-estimate_params-in-unified-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A1. estimate_params() in unified plugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a2-wire-into-_auto_regime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A2. Wire into _auto_regime
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a3-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A3. Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acceptance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acceptance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-milestone-b-conditioning-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Milestone B — Conditioning gate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Milestone B — Conditioning gate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#b1-feasibility-check-before-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B1. Feasibility check before tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b2-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B2. Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-milestone-c-probe-run-grid-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Milestone C — Probe run + grid search
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Milestone C — Probe run + grid search">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c1-probe-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C1. probe() method
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c2-coordinate-descent-search-when-probe-is-poor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C2. Coordinate-descent search when probe is poor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c3-interactive-confirm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C3. Interactive confirm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4. Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-milestone-d-post-run-self-consistency-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Milestone D — Post-run self-consistency report
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Milestone D — Post-run self-consistency report">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#d1-report-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D1. report() method
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d2-store-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D2. Store metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-milestone-e-per-trajectory-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Milestone E — Per-trajectory quality
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Milestone E — Per-trajectory quality">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e1-quality-score-per-trajectory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E1. Quality score per trajectory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2-downstream-weighting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E2. Downstream weighting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-milestone-f-auditable-decision-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Milestone F — Auditable decision record
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Milestone F — Auditable decision record">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#f1-trackingdecision-dataclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F1. TrackingDecision dataclass
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f2-wire-into-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F2. Wire into plugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-milestone-g-parallel-as-first-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Milestone G — Parallel as first-class
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Milestone G — Parallel as first-class">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#g1-auto-chunk-count" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G1. Auto chunk count
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#g2-probe-on-1-worker-full-run-parallel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G2. Probe on 1 worker, full run parallel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#g3-cloud-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G3. Cloud sharding
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-milestone-h-validation-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Milestone H — Validation harness
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Milestone H — Validation harness">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h1-synthetic-gt-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H1. Synthetic GT comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h2-ci-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H2. CI gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-milestone-i-yaml-surface-docs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Milestone I — YAML surface &amp; docs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Milestone I — YAML surface &amp; docs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#i1-document-every-track-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        I1. Document every track.* key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#i2-legacy-alias-deprecation-notices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        I2. Legacy alias deprecation notices
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#105-features-at-risk-when-dropping-trackers-must-preserve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.5. Features at risk when dropping trackers (must preserve)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-milestone-j-cleanup-dropping-trackers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Milestone J — Cleanup / dropping trackers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Milestone J — Cleanup / dropping trackers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#j1-convert-dropped-trackers-to-deprecated-aliases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        J1. Convert dropped trackers to deprecated aliases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#j2-update-guirecommender-to-default-to-unified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        J2. Update GUI/recommender to default to unified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#j3-update-openptv-cloud-notebooks-to-use-unified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        J3. Update openptv-cloud notebooks to use unified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#j4-remove-dropped-trackers-from-preset_choices-user-facing-list-keep-aliases-resolving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        J4. Remove dropped trackers from PRESET_CHOICES user-facing list (keep aliases resolving).
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-cross-cutting-concerns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Cross-cutting concerns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#124-backbone-improvements-trackcorr-v2-high-density-target-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.4. Backbone improvements (trackcorr v2 — high-density target space)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12.4. Backbone improvements (trackcorr v2 — high-density target space)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#milestone-l-backbone-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Milestone L — Backbone improvements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#125-2-pass-clean-and-claim-tight-core-2d-target-pruning-track_assisted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.5. 2-Pass "Clean-and-Claim" (Tight-Core + 2D-Target Pruning + track_assisted)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12.5. 2-Pass &#34;Clean-and-Claim&#34; (Tight-Core + 2D-Target Pruning + track_assisted)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#milestone-k-2-pass-clean-and-claim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Milestone K — 2-Pass Clean-and-Claim
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#126-anti-ghost-strategy-consolidated-critical-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.6 Anti-Ghost Strategy (consolidated) — critical review
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12.6 Anti-Ghost Strategy (consolidated) — critical review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#idea-1-two-pass-clean-and-claim-tight-core-deterministic-2d-target-pruning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Idea 1 — Two-Pass "Clean-and-Claim" (Tight-Core + deterministic 2D-target pruning)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#idea-2-early-ghost-filter-pre-pass-rcm-rcm_blob-scoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Idea 2 — Early Ghost-Filter Pre-Pass (rcm / rcm_blob scoring)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#idea-3-conflict-component-hungarian-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Idea 3 — Conflict-Component Hungarian Resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-this-works-root-cause-not-just-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this works (root cause, not just mechanism)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#critical-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Critical review
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1261-reshuffled-alternatives-out-of-the-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.6.1 Reshuffled alternatives (out-of-the-box)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1262-calibration-aware-and-multi-cycle-epipolar-ideas-out-of-the-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.6.2 Calibration-aware and multi-cycle epipolar ideas (out-of-the-box)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1264-detailed-implementation-plan-ilp-uniqueness-temporal-joint-smoothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.6.4 Detailed implementation plan — ILP uniqueness + temporal joint smoothing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12.6.4 Detailed implementation plan — ILP uniqueness + temporal joint smoothing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-building-blocks-verified-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available building blocks (verified present)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stage-a-component-decomposition-cheap-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stage A — Component decomposition (cheap, O(N))
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stage-b-spatial-uniqueness-via-ilp-per-component-bounded-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stage B — Spatial uniqueness via ILP (per component, bounded size)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stage-c-temporal-joint-smoothing-sliding-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stage C — Temporal joint smoothing (sliding window)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stage-d-wiring-into-unified-tracker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stage D — Wiring into unified tracker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stage-e-estimator-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stage E — Estimator integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stage-f-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stage F — Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#speed-budget-fast-path-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Speed budget &amp; fast-path rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#waves-parallelizable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Waves (parallelizable)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1263-deeper-algorithmic-ideas-from-other-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.6.3 Deeper algorithmic ideas from other fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Open questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-progress-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Progress log
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-critical-review-self-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Critical review (self-assessment)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="15. Critical review (self-assessment)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strengths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strengths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#weaknesses-and-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Weaknesses and risks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-reordering-v1-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended reordering (v1 first)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#open-questions-to-resolve-before-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open questions to resolve before implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="unified-tracker-implementation-plan">Unified Tracker — Implementation Plan<a class="headerlink" href="#unified-tracker-implementation-plan" title="Permanent link">&para;</a></h1>
+<p>Branch: <code>feat/unified-tracker</code> (openptv2) + <code>feat/unified-tracker</code> (openptv-cloud).
+Goal: replace the 8 trackers with one self-configuring, adaptive, auditable tracker that maximizes accuracy, with speed coming from parallelism rather than dropped accuracy.</p>
+<p>This document is the contract for multi-session implementation by multiple coding agents. Each task is scoped to be independently implementable and testable. Check off tasks as completed; update "Status" lines.</p>
+<hr />
+<h2 id="0-principles-read-first">0. Principles (read first)<a class="headerlink" href="#0-principles-read-first" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Accuracy is the top priority.</strong> Speed is achieved via parallel runs, not by skipping passes.</li>
+<li><strong>One code path.</strong> Legacy tracker names remain as aliases mapping to <code>unified</code> with fixed config bundles; no duplicate implementations.</li>
+<li><strong>Auto-configuration from data.</strong> Every <code>track.*</code> option defaults to <code>"auto"</code> and resolves to a concrete value before the run; resolved values are logged and stored.</li>
+<li><strong>Probe before full run.</strong> Short, multi-window probes select parameters; full run uses the chosen config.</li>
+<li><strong>Fail fast and honestly.</strong> Conditioning gate prints feasibility and refuses to silently produce garbage.</li>
+<li><strong>Auditable.</strong> Every run stores a <code>TrackingDecision</code> record.</li>
+<li><strong>Backward compatible.</strong> Existing YAMLs keep working; outputs (Zarr <code>ptv_is</code>) unchanged.</li>
+<li><strong>Target-space boundary (no OTF / image subtraction).</strong> Stay in <code>detect → correspond → track</code> target space so tracking remains fast and robust for non-spherical, polydisperse, and bubble tracers. Handle high density via multi-peak 2D splitting, tight-core + 2D-target pruning, non-exclusive target sharing in <code>track_assisted</code>, and conflict-component matching.</li>
+</ol>
+<hr />
+<h2 id="1-current-state-done">1. Current state (done)<a class="headerlink" href="#1-current-state-done" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[x] <code>src/openptv2/plugins/unified_tracking.py</code> — <code>Tracking</code> plugin, auto-regime, backbone = trackcorr <code>full_forward()</code>.</li>
+<li>[x] Registered <code>unified</code> / <code>unified_tracking</code> in <code>plugins/loader.py</code> and <code>tracking_registry.py</code>.</li>
+<li>[x] <code>unified</code> preset + config bundle in <code>tracking_presets.py</code>.</li>
+<li>[x] <code>sample_probe_windows()</code> + <code>aggregate_probe_metrics()</code> static helpers.</li>
+<li>[x] openptv-cloud <code>pipeline.py</code> parallel gate allows <code>unified</code>.</li>
+<li>[x] Branches created and committed.</li>
+</ul>
+<hr />
+<h2 id="15-execution-roadmap-multi-agent-parallel-sessions">1.5. Execution Roadmap (Multi-Agent / Parallel Sessions)<a class="headerlink" href="#15-execution-roadmap-multi-agent-parallel-sessions" title="Permanent link">&para;</a></h2>
+<p>Use this table to claim work in parallel sessions. <strong>Rules for parallel agents:</strong>
+1. Only pick a step whose <strong>Depends on</strong> column is <code>[x]</code> done.
+2. Steps in the same <strong>Wave</strong> touch <strong>disjoint files</strong> and can run in parallel sessions without merge conflicts.
+3. When finished: run the <strong>Verify</strong> command (<code>uv run pytest ...</code>), check <code>[x]</code> on the step, and append a line to <strong>§14 Progress log</strong>.</p>
+<h3 id="wave-0-unblock-baseline-run-first-can-be-2-parallel-sessions">Wave 0 — Unblock &amp; Baseline (run first, can be 2 parallel sessions)<a class="headerlink" href="#wave-0-unblock-baseline-run-first-can-be-2-parallel-sessions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] <strong>Step 0a — Fix <code>_auto_regime</code> &amp; registry summary</strong></li>
+<li><strong>Files:</strong> <code>src/openptv2/plugins/unified_tracking.py</code>, <code>src/openptv2/tracking_registry.py</code>, <code>tests/unit/test_unified_tracking.py</code> (new)</li>
+<li><strong>Scope:</strong> Move <code>sample_probe_windows()</code> / <code>aggregate_probe_metrics()</code> out of <code>_auto_regime()</code>, restore <code>_auto_regime()</code> return dict, update <code>UNIFIED_INFO.algorithm_summary</code> to <code>trackcorr</code>, and add unit tests for <code>_auto_regime</code>, <code>sample_probe_windows</code>, and <code>aggregate_probe_metrics</code>.</li>
+<li><strong>Depends on:</strong> none</li>
+<li>
+<p><strong>Verify:</strong> <code>uv run pytest tests/unit/test_unified_tracking.py -v</code></p>
+</li>
+<li>
+<p>[x] <strong>Step 0b — Minimal Synthetic GT Scorecard (<code>H0</code>)</strong></p>
+</li>
+<li><strong>Files:</strong> <code>tests/benchmarks/test_unified_gt_scorecard.py</code> (new)</li>
+<li><strong>Scope:</strong> 1-command synthetic GT harness (clean, slow-flow/noisy, and dense-ghost cases) reporting yield, precision, median track length, and jump-step rate. Used to calibrate thresholds in Waves 1–3.</li>
+<li><strong>Depends on:</strong> none</li>
+<li><strong>Verify:</strong> <code>uv run pytest tests/benchmarks/test_unified_gt_scorecard.py -v</code></li>
+</ul>
+<h3 id="wave-1-foundation-contracts-3-parallel-sessions-disjoint-files">Wave 1 — Foundation Contracts (3 parallel sessions, disjoint files)<a class="headerlink" href="#wave-1-foundation-contracts-3-parallel-sessions-disjoint-files" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] <strong>Step 1a — Lightweight <code>TrackingDecision</code> (<code>F0</code> / Milestone F)</strong></li>
+<li><strong>Files:</strong> <code>src/openptv2/tracking_decision.py</code> (new), <code>tests/unit/test_tracking_decision.py</code> (new)</li>
+<li><strong>Scope:</strong> <code>TrackingDecision</code> dataclass + JSON serialization (<code>tracking_decision.json</code> + <code>RunStore</code> attribute helpers).</li>
+<li><strong>Depends on:</strong> none</li>
+<li>
+<p><strong>Verify:</strong> <code>uv run pytest tests/unit/test_tracking_decision.py -v</code></p>
+</li>
+<li>
+<p>[x] <strong>Step 1b — Auto-Parameter Estimator (<code>A1</code> + <code>tracking_recommender</code> reuse)</strong></p>
+</li>
+<li><strong>Files:</strong> <code>src/openptv2/tracking_estimator.py</code> (new), <code>tests/unit/test_tracking_estimator.py</code> (new)</li>
+<li><strong>Scope:</strong> Pure read-only <code>estimate_params(exp, track_cfg)</code> using <code>tracking_feasibility</code> + <code>tracking_recommender</code> trackability guard (<code>rho &lt;= 1</code>), sampling via <code>sample_probe_windows</code>. Also computes conditioning ratio (<code>B1</code>).</li>
+<li><strong>Depends on:</strong> Step 0a</li>
+<li>
+<p><strong>Verify:</strong> <code>uv run pytest tests/unit/test_tracking_estimator.py -v</code></p>
+</li>
+<li>
+<p>[x] <strong>Step 1c — Multi-Peak 2D Detection Splitting (<code>B0</code> / <code>L2</code>)</strong></p>
+</li>
+<li><strong>Files:</strong> target detection module (<code>detect_targets</code>), <code>tests/unit/</code> detection tests</li>
+<li><strong>Scope:</strong> Optional local-maxima / watershed splitting on touching 2D blobs (no OTF).</li>
+<li><strong>Depends on:</strong> none</li>
+<li><strong>Verify:</strong> <code>uv run pytest tests/unit/ -k "detect_targets or target" -v</code></li>
+</ul>
+<h3 id="wave-2-core-unified-pipeline-estimator-engine-refiner-3-parallel-sessions">Wave 2 — Core Unified Pipeline (<code>Estimator → Engine → Refiner</code>) (3 parallel sessions)<a class="headerlink" href="#wave-2-core-unified-pipeline-estimator-engine-refiner-3-parallel-sessions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] <strong>Step 2a — Wire <code>Estimator</code> + Conditioning Gate + <code>TrackingDecision</code> (<code>A2</code>, <code>B1</code>, <code>F2</code>)</strong></li>
+<li><strong>Files:</strong> <code>src/openptv2/plugins/unified_tracking.py</code>, <code>tests/unit/test_unified_tracking.py</code></li>
+<li><strong>Scope:</strong> Wire <code>estimate_params()</code> + conditioning warnings (<code>&lt; 0.5</code>, <code>&lt; 0.2</code>) + <code>TrackingDecision</code> writing into <code>Tracking.do_tracking()</code>. Ensure resolved flags (<code>use_2d</code>, <code>confirm_link</code>, <code>v_max</code>, <code>delta_t</code>) are actually applied to <code>trackcorr</code> / <code>hybrid_deltat_3d</code> without mutating user YAML.</li>
+<li><strong>Depends on:</strong> Step 0a, Step 1a, Step 1b</li>
+<li>
+<p><strong>Verify:</strong> <code>uv run pytest tests/unit/test_unified_tracking.py -v</code></p>
+</li>
+<li>
+<p>[x] <strong>Step 2b — Post-Run Self-Consistency Report (<code>D1</code>–<code>D2</code>)</strong></p>
+</li>
+<li><strong>Files:</strong> <code>src/openptv2/tracking_report.py</code> (new), <code>tests/unit/test_tracking_report.py</code> (new)</li>
+<li><strong>Scope:</strong> Compute reciprocity rate, track-length distribution, jump-step rate, gap distribution, ghost estimate, and anomaly flags from <code>RunStore</code> linkage; return dict for <code>TrackingDecision</code>.</li>
+<li><strong>Depends on:</strong> Step 1a</li>
+<li>
+<p><strong>Verify:</strong> <code>uv run pytest tests/unit/test_tracking_report.py -v</code></p>
+</li>
+<li>
+<p>[x] <strong>Step 2c — Upgrade <code>track_assisted</code> (<code>K3</code> / <code>B8</code>)</strong></p>
+</li>
+<li><strong>Files:</strong> <code>src/openptv2/track_assisted.py</code>, <code>tests/unit/test_track_assisted.py</code> (or existing track_assisted tests)</li>
+<li><strong>Scope:</strong> Replace 2-point linear extrapolation with 3–4 point polynomial predictor; add 2-of-4 / 3-of-4 camera-subset triangulation and optional non-exclusive (shared) 2D target fallback (down-weighted in least-squares).</li>
+<li><strong>Depends on:</strong> Step 0b</li>
+<li><strong>Verify:</strong> <code>uv run pytest tests/ -k "track_assisted" -v</code></li>
+</ul>
+<h3 id="wave-3-probing-high-density-clean-and-claim-2-parallel-sessions">Wave 3 — Probing &amp; High-Density Clean-and-Claim (2 parallel sessions)<a class="headerlink" href="#wave-3-probing-high-density-clean-and-claim-2-parallel-sessions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] <strong>Step 3a — Multi-Window Probe + Coordinate Descent (<code>C1</code>–<code>C4</code>)</strong></li>
+<li><strong>Files:</strong> <code>src/openptv2/tracking_probe.py</code> (new), <code>src/openptv2/plugins/unified_tracking.py</code>, <code>tests/unit/test_tracking_probe.py</code> (new)</li>
+<li><strong>Scope:</strong> Isolated sub-window <code>probe()</code> (temp/in-memory <code>RunStore</code>), coordinate-descent search capped by <code>probe_budget_seconds</code>, non-TTY-safe <code>probe_confirm</code>, calibrated against Step 0b GT scorecard.</li>
+<li><strong>Depends on:</strong> Step 0b, Step 2a, Step 2b</li>
+<li>
+<p><strong>Verify:</strong> <code>uv run pytest tests/unit/test_tracking_probe.py -v</code></p>
+</li>
+<li>
+<p>[x] <strong>Step 3b — 2-Pass Clean-and-Claim + Conflict-Component Matching (<code>K2</code>, <code>K4</code>, <code>K5</code>, <code>B7</code>)</strong></p>
+</li>
+<li><strong>Files:</strong> <code>src/openptv2/layered_tracking.py</code> (new/evolved), <code>tests/unit/test_layered_tracking.py</code> (new)</li>
+<li><strong>Scope:</strong> Tight-Core Pass 1 → deterministic 2D-target pruning mask → Pass 2 residual + upgraded <code>track_assisted</code> (<code>Step 2c</code>); conflict-component <code>linear_sum_assignment</code> for ambiguous links (<code>B7</code>). Validate on dense GT (<code>Step 0b</code>).</li>
+<li><strong>Depends on:</strong> Step 0b, Step 2c</li>
+<li><strong>Verify:</strong> <code>uv run pytest tests/unit/test_layered_tracking.py tests/benchmarks/test_unified_gt_scorecard.py -v</code></li>
+</ul>
+<h3 id="wave-4-parallelism-docs-full-validation-3-parallel-sessions">Wave 4 — Parallelism, Docs &amp; Full Validation (3 parallel sessions)<a class="headerlink" href="#wave-4-parallelism-docs-full-validation-3-parallel-sessions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] <strong>Step 4a — Parallel &amp; Chunked Tracking (<code>G1</code>–<code>G2</code>)</strong> <em>(openptv-cloud <code>G3</code> sharding is in the separate <code>openptv-cloud</code> repo)</em></li>
+<li><strong>Files:</strong> <code>src/openptv2/plugins/unified_tracking.py</code>, <code>src/openptv2/tracking_chunked.py</code>, <code>tests/unit/test_parallel_tracking_chunked.py</code></li>
+<li><strong>Scope:</strong> Sequential probe/estimation → parallel full run (<code>track_sequence_chunked_parallel</code>); share <code>TrackingDecision</code> across chunks.</li>
+<li><strong>Depends on:</strong> Step 2a, Step 3a</li>
+<li>
+<p><strong>Verify:</strong> <code>uv run pytest tests/unit/test_parallel_tracking_chunked.py -v</code></p>
+</li>
+<li>
+<p>[x] <strong>Step 4b — YAML Surface &amp; Docs (<code>I1</code>–<code>I2</code>)</strong></p>
+</li>
+<li><strong>Files:</strong> <code>src/openptv2/tracking_presets.py</code>, <code>docs/tracking.md</code> (new)</li>
+<li><strong>Scope:</strong> Document all <code>track.*</code> keys, auto defaults, derivations, and deprecation notices for legacy aliases.</li>
+<li><strong>Depends on:</strong> Step 2a, Step 3a, Step 3b</li>
+<li>
+<p><strong>Verify:</strong> <code>uv run pytest tests/unit/ -k "preset" -v</code></p>
+</li>
+<li>
+<p>[x] <strong>Step 4c — Full GT Scorecard (<code>H1</code>)</strong> <em>(openptv-cloud <code>H2</code> compare gate is in <code>openptv-cloud</code>)</em></p>
+</li>
+<li><strong>Files:</strong> <code>tests/benchmarks/test_unified_gt_scorecard.py</code></li>
+<li><strong>Scope:</strong> Compare <code>unified</code> vs. legacy (<code>trackcorr</code>, <code>priority_segment_3d</code>) on <code>clean</code>, <code>slow_noisy</code>, and <code>dense_ghost</code> synthetic GT.</li>
+<li><strong>Depends on:</strong> Step 3a, Step 3b, Step 4a</li>
+<li><strong>Verify:</strong> <code>uv run pytest tests/benchmarks/test_unified_gt_scorecard.py -v</code></li>
+</ul>
+<h3 id="wave-5-cleanup-v2-after-wave-4-passes">Wave 5 — Cleanup &amp; v2 (after Wave 4 passes)<a class="headerlink" href="#wave-5-cleanup-v2-after-wave-4-passes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] <strong>Step 5a — Deprecate Legacy Presets &amp; Default GUI/Cloud to <code>unified</code> (<code>J1</code>–<code>J4</code>)</strong> <em>(openptv2 preset/recommender/plugin loader done; <code>openptv-cloud</code> lives in separate repo)</em></li>
+<li><strong>Depends on:</strong> Step 4b, Step 4c</li>
+<li>[x] <strong>Step 5b — Per-Trajectory Quality Score &amp; Downstream Weighting (<code>E1</code>–<code>E2</code>, v2)</strong></li>
+<li><strong>Depends on:</strong> Step 4c</li>
+</ul>
+<h3 id="wave-6-ghost-elimination-hardening-after-wave-5-passes">Wave 6 — Ghost Elimination Hardening (after Wave 5 passes)<a class="headerlink" href="#wave-6-ghost-elimination-hardening-after-wave-5-passes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[x] <strong>Step 6a — Core Purity, Kinematic Splitting &amp; Multi-Tier Peeling (<code>layered_tracking.py</code>)</strong></li>
+<li>Raise <code>peel_and_track</code> default <code>min_core_length</code> from <code>2</code> to <code>3</code> (clamped to <code>min(min_core_length, len(frames))</code> for 2-frame runs).</li>
+<li>Add kinematic smoothness splitting/trimming inside <code>_extract_verified_core</code> (rejecting/splitting triplets failing both <code>_is_velocity_jump</code> and <code>||Δv|| &gt; max_accel_err</code>) before populating <code>claimed_by_frame</code>.</li>
+<li>Add post-Pass-2 pruning of Pass-2 claimed 2D targets from unlinked residual rows before <code>run_corrective_pass</code>.</li>
+<li>Add 3-tier progressive peeling (<code>tiers=3</code> option: <code>N_cams</code> strict core → <code>N_cams - 1</code> medium core → residual <code>&gt;= 2</code> cams + gated <code>track_assisted</code>, gracefully collapsing on <code>&lt;= 2</code>-cam rigs).</li>
+<li>[x] <strong>Step 6b — Gate <code>track_assisted</code> &amp; <code>relink_trajectory_gaps</code> (<code>track_assisted.py</code>, <code>tracking_postprocess.py</code>)</strong></li>
+<li>Capture 3D ray-miss <code>_dist</code> in <code>_claim_particle</code> and reject when <code>_dist &gt; max_ray_miss_mm</code>; check <code>||pos - predicted|| &lt;= accel_tol</code> in <code>_extend_tracks</code>.</li>
+<li>Pass <code>gap_accel_err</code> into <code>run_corrective_pass</code> so <code>0.25 * tpar.dacc</code> is respected.</li>
+<li>Add optional <code>require_bidir_vel</code> and <code>uniqueness_ratio</code> gates to <code>relink_trajectory_gaps</code>.</li>
+<li>[x] <strong>Step 6c — Persist <code>rcm</code> at Correspondence Time (<code>run_store.py</code>, <code>correspondences.py</code>, <code>gui/ptv.py</code>, <code>*_sequence.py</code>)</strong></li>
+<li>Persist the <code>rcm</code> (mm) already returned by <code>point_positions(...)</code> via <code>RunStore.write_rcm</code> / <code>read_rcm</code> (<code>quality</code> BlockSet <code>"rcm"</code> column) and wire <code>read_rcm</code> into <code>peel_and_track</code>'s <code>rcm_threshold</code> filter.</li>
+<li><strong>Verify:</strong> <code>uv run pytest tests/unit/test_layered_tracking.py tests/unit/test_track_assisted_poly.py tests/unit/test_unified_tracking.py tests/benchmarks/test_unified_gt_scorecard.py -v</code> and before/after ghost benchmark (<code>N60_ghost50</code>, <code>N200_ghost50</code>, <code>N200_ghost70</code>).</li>
+</ul>
+<hr />
+<h2 id="2-milestone-a-auto-parameter-estimation-highest-impact">2. Milestone A — Auto-parameter estimation (highest impact)<a class="headerlink" href="#2-milestone-a-auto-parameter-estimation-highest-impact" title="Permanent link">&para;</a></h2>
+<p><strong>Owner:</strong> agent A. <strong>Effort:</strong> 2–3 sessions.</p>
+<h3 id="a1-estimate_params-in-unified-plugin">A1. <code>estimate_params()</code> in unified plugin<a class="headerlink" href="#a1-estimate_params-in-unified-plugin" title="Permanent link">&para;</a></h3>
+<p>File: <code>src/openptv2/plugins/unified_tracking.py</code>
+- Add method that, given <code>exp</code>, computes:
+  - <code>v_max</code> from <code>tracking_feasibility.measure_motion_scale</code> on a sample of correspondences (frames 1/2), × safety factor 1.5 (configurable <code>v_max_safety</code>).
+  - <code>density</code> from correspondence counts.
+  - <code>noise_floor_z</code> from <code>tracking_feasibility.z_noise_floor_mm</code>.
+  - <code>slow_flow</code> flag: displacement/noise &lt; 1.0.
+  - <code>ghost_rate</code> estimate (correspondences with no successor).
+- Return dict of resolved values; merge with explicit user overrides (user wins).
+- Store resolved params on <code>self._resolved</code>.</p>
+<h3 id="a2-wire-into-_auto_regime">A2. Wire into <code>_auto_regime</code><a class="headerlink" href="#a2-wire-into-_auto_regime" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Replace heuristic defaults with calls to <code>estimate_params()</code> when <code>auto</code>.</li>
+<li>Keep explicit overrides winning.</li>
+</ul>
+<h3 id="a3-tests">A3. Tests<a class="headerlink" href="#a3-tests" title="Permanent link">&para;</a></h3>
+<p>File: <code>tests/unit/test_unified_tracking.py</code> (new)
+- Unit tests for <code>estimate_params</code> on a small synthetic store.
+- Test that explicit overrides win over auto.</p>
+<h3 id="acceptance">Acceptance<a class="headerlink" href="#acceptance" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Running unified on an existing dataset with all <code>auto</code> produces a valid run; resolved values logged.</li>
+</ul>
+<hr />
+<h2 id="3-milestone-b-conditioning-gate">3. Milestone B — Conditioning gate<a class="headerlink" href="#3-milestone-b-conditioning-gate" title="Permanent link">&para;</a></h2>
+<p><strong>Owner:</strong> agent B. <strong>Effort:</strong> 1 session.</p>
+<h3 id="b1-feasibility-check-before-tracking">B1. Feasibility check before tracking<a class="headerlink" href="#b1-feasibility-check-before-tracking" title="Permanent link">&para;</a></h3>
+<p>File: <code>src/openptv2/plugins/unified_tracking.py</code> (<code>do_tracking</code>)
+- Before init, compute displacement/noise ratio.
+- If ratio &lt; 0.5: print WARNING with ratio + recommendation; auto-enable coarse-to-fine (<code>slow_flow=True</code>) and 2D re-ranking.
+- If ratio &lt; 0.2: print STRONG WARNING; recommend calibration improvements; still proceed.
+- Store ratio in <code>TrackingDecision</code>.</p>
+<h3 id="b2-tests">B2. Tests<a class="headerlink" href="#b2-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Mock store; assert warning printed and flags set.</li>
+</ul>
+<hr />
+<h2 id="4-milestone-c-probe-run-grid-search">4. Milestone C — Probe run + grid search<a class="headerlink" href="#4-milestone-c-probe-run-grid-search" title="Permanent link">&para;</a></h2>
+<p><strong>Owner:</strong> agent C. <strong>Effort:</strong> 3–4 sessions.</p>
+<h3 id="c1-probe-method">C1. <code>probe()</code> method<a class="headerlink" href="#c1-probe-method" title="Permanent link">&para;</a></h3>
+<ul>
+<li>For each window from <code>sample_probe_windows</code>, run tracking on that window with the auto config, compute metrics:</li>
+<li>yield (links / particles)</li>
+<li>median track length</li>
+<li>reciprocity rate</li>
+<li>jump-step rate (kink &gt; threshold)</li>
+<li>gap count</li>
+<li>Aggregate across windows via <code>aggregate_probe_metrics</code>.</li>
+</ul>
+<h3 id="c2-coordinate-descent-search-when-probe-is-poor">C2. Coordinate-descent search when probe is poor<a class="headerlink" href="#c2-coordinate-descent-search-when-probe-is-poor" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Define thresholds: if median track length &lt; <code>min_acceptable_length</code> (default 5) OR jump_rate &gt; 0.1, run coordinate descent (instead of full Cartesian grid, capped by <code>probe_budget_seconds</code>):</li>
+<li>Sweep <code>v_max × {1.0, 1.5, 2.0}</code> first.</li>
+<li>Sweep <code>delta_t ∈ {1, 3, 5}</code> only if <code>slow_flow</code> is true.</li>
+<li>Toggle <code>use_2d</code> / <code>bidirectional</code> only if ambiguity/reciprocity remains poor.</li>
+<li>Score = median_length × yield − λ·jump_rate (λ=0.5 default).</li>
+<li>Pick best; log comparison table.</li>
+</ul>
+<h3 id="c3-interactive-confirm">C3. Interactive confirm<a class="headerlink" href="#c3-interactive-confirm" title="Permanent link">&para;</a></h3>
+<ul>
+<li>If <code>track.probe_confirm: true</code> (default in interactive, false in batch), print report and prompt user (Y/n/override). In batch, auto-pick best.</li>
+<li>Config: <code>probe: true|false</code>, <code>probe_windows: 5</code>, <code>probe_window_frames: 30</code>, <code>probe_confirm: auto</code>.</li>
+</ul>
+<h3 id="c4-tests">C4. Tests<a class="headerlink" href="#c4-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Probe on synthetic data; assert best config chosen.</li>
+</ul>
+<hr />
+<h2 id="5-milestone-d-post-run-self-consistency-report">5. Milestone D — Post-run self-consistency report<a class="headerlink" href="#5-milestone-d-post-run-self-consistency-report" title="Permanent link">&para;</a></h2>
+<p><strong>Owner:</strong> agent D. <strong>Effort:</strong> 1–2 sessions.</p>
+<h3 id="d1-report-method">D1. <code>report()</code> method<a class="headerlink" href="#d1-report-method" title="Permanent link">&para;</a></h3>
+<p>After tracking, compute and print:
+- reciprocity rate
+- track-length distribution (median, p10, p90, max)
+- jump-step rate
+- gap distribution
+- estimated ghost rate
+- anomaly flags with suggested fixes.</p>
+<h3 id="d2-store-metrics">D2. Store metrics<a class="headerlink" href="#d2-store-metrics" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Write metrics to run store attributes / <code>tracking_decision.json</code>.</li>
+</ul>
+<hr />
+<h2 id="6-milestone-e-per-trajectory-quality">6. Milestone E — Per-trajectory quality<a class="headerlink" href="#6-milestone-e-per-trajectory-quality" title="Permanent link">&para;</a></h2>
+<p><strong>Owner:</strong> agent E. <strong>Effort:</strong> 2 sessions.</p>
+<h3 id="e1-quality-score-per-trajectory">E1. Quality score per trajectory<a class="headerlink" href="#e1-quality-score-per-trajectory" title="Permanent link">&para;</a></h3>
+<ul>
+<li>In <code>tracking_postprocess.py</code> / <code>quality_post.py</code>, compute score from: length, reciprocity, smoothness, gap count, kink.</li>
+<li>Store in linkage (quantized <code>prio</code> or sidecar/new field) — coordinate with <code>storage/linkage_blocks.py</code> and <code>storage/run_store.py</code> (<code>prio</code> is <code>int32</code>).</li>
+<li>Propagate through <code>flowtracks</code>/export as weight.</li>
+</ul>
+<h3 id="e2-downstream-weighting">E2. Downstream weighting<a class="headerlink" href="#e2-downstream-weighting" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Export and ensemble binning optionally weight by quality.</li>
+</ul>
+<hr />
+<h2 id="7-milestone-f-auditable-decision-record">7. Milestone F — Auditable decision record<a class="headerlink" href="#7-milestone-f-auditable-decision-record" title="Permanent link">&para;</a></h2>
+<p><strong>Owner:</strong> agent F. <strong>Effort:</strong> 1 session.</p>
+<h3 id="f1-trackingdecision-dataclass">F1. <code>TrackingDecision</code> dataclass<a class="headerlink" href="#f1-trackingdecision-dataclass" title="Permanent link">&para;</a></h3>
+<p>File: new <code>src/openptv2/tracking_decision.py</code>
+- Fields: resolved config, regime flags, probe metrics per window, chosen config, grid-search table, conditioning ratio, git version, timestamp, data hashes.
+- Serialize to JSON; write to store path as <code>tracking_decision.json</code> and as run-store attribute.</p>
+<h3 id="f2-wire-into-plugin">F2. Wire into plugin<a class="headerlink" href="#f2-wire-into-plugin" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Populate throughout <code>do_tracking</code>; write at end.</li>
+</ul>
+<hr />
+<h2 id="8-milestone-g-parallel-as-first-class">8. Milestone G — Parallel as first-class<a class="headerlink" href="#8-milestone-g-parallel-as-first-class" title="Permanent link">&para;</a></h2>
+<p><strong>Owner:</strong> agent G. <strong>Effort:</strong> 1–2 sessions.</p>
+<h3 id="g1-auto-chunk-count">G1. Auto chunk count<a class="headerlink" href="#g1-auto-chunk-count" title="Permanent link">&para;</a></h3>
+<ul>
+<li>In <code>openptv-cloud/pipeline.py</code> and <code>src/openptv2/batch/pyptv_batch_parallel.py</code>, compute <code>workers = min(requested, total//(overlap+2), cpu_count)</code>; already in openptv2 formula; ensure used.</li>
+</ul>
+<h3 id="g2-probe-on-1-worker-full-run-parallel">G2. Probe on 1 worker, full run parallel<a class="headerlink" href="#g2-probe-on-1-worker-full-run-parallel" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Probe sequentially; full run uses <code>parallel_workers</code>.</li>
+</ul>
+<h3 id="g3-cloud-sharding">G3. Cloud sharding<a class="headerlink" href="#g3-cloud-sharding" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Ensure <code>run_shard</code>/<code>stitch_shards</code> use the same <code>TrackingDecision</code> and resolved config.</li>
+</ul>
+<hr />
+<h2 id="9-milestone-h-validation-harness">9. Milestone H — Validation harness<a class="headerlink" href="#9-milestone-h-validation-harness" title="Permanent link">&para;</a></h2>
+<p><strong>Owner:</strong> agent H. <strong>Effort:</strong> 2 sessions.</p>
+<h3 id="h1-synthetic-gt-comparison">H1. Synthetic GT comparison<a class="headerlink" href="#h1-synthetic-gt-comparison" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Extend <code>tests/unit/test_parallel_tracking_chunked.py</code> / <code>tests/batch/test_synthetic_tracker.py</code> style to compare unified vs. legacy on synthetic cases (including dense ghost cases); report yield/precision/jump-rate.</li>
+</ul>
+<h3 id="h2-ci-gate">H2. CI gate<a class="headerlink" href="#h2-ci-gate" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add <code>openptv-cloud compare</code> (sharded vs. unsharded) to CI.</li>
+</ul>
+<hr />
+<h2 id="10-milestone-i-yaml-surface-docs">10. Milestone I — YAML surface &amp; docs<a class="headerlink" href="#10-milestone-i-yaml-surface-docs" title="Permanent link">&para;</a></h2>
+<p><strong>Owner:</strong> agent I. <strong>Effort:</strong> 1 session.</p>
+<h3 id="i1-document-every-track-key">I1. Document every <code>track.*</code> key<a class="headerlink" href="#i1-document-every-track-key" title="Permanent link">&para;</a></h3>
+<ul>
+<li>In <code>tracking_presets.py</code> comments and a new <code>docs/tracking.md</code>.</li>
+<li>Include: control, auto default, derivation, when to override, accuracy/speed impact.</li>
+</ul>
+<h3 id="i2-legacy-alias-deprecation-notices">I2. Legacy alias deprecation notices<a class="headerlink" href="#i2-legacy-alias-deprecation-notices" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Print one-line notice recommending <code>unified</code> when a legacy preset is used.</li>
+</ul>
+<hr />
+<h2 id="105-features-at-risk-when-dropping-trackers-must-preserve">10.5. Features at risk when dropping trackers (must preserve)<a class="headerlink" href="#105-features-at-risk-when-dropping-trackers-must-preserve" title="Permanent link">&para;</a></h2>
+<p>Dropping trackers risks losing capabilities that trackcorr backbone does not
+natively provide. The unified tracker must explicitly preserve these:</p>
+<ol>
+<li>
+<p><strong>3D-only mode (no calibration / no 2D targets).</strong>
+   <code>priority_segment_3d</code> and <code>4be</code> operate on 3D correspondence clouds alone.
+   trackcorr requires calibration for epipolar search. Unified needs a
+   <code>mode: 3d_only</code> branch using <code>full_forward_3d()</code> + <code>track3d_loop_fast</code>,
+   selected when cals/2D targets are unavailable.</p>
+</li>
+<li>
+<p><strong>New-particle seeding in 3D-only mode.</strong>
+   <code>priority_segment_3d</code> does not seed new particles mid-sequence. Unified's
+   <code>new_particles</code> option must have a 3D cold-start seeding heuristic for the
+   3D-only branch (or delegate to the epipolar path when 2D is available).</p>
+</li>
+<li>
+<p><strong>Configurable cost weights.</strong>
+   Only <code>two_phase</code> exposes cost weights. The 2D leaf-ranking module must
+   accept weight parameters (<code>app_weight</code>, etc.) for advanced users.</p>
+</li>
+<li>
+<p><strong>Splitter hardware path.</strong>
+   Keep <code>splitter_tracking</code> as a standalone (hardware niche), not dropped.</p>
+</li>
+<li>
+<p><strong>Fast 3D speed path.</strong>
+   <code>priority_segment_3d</code> is the fastest. Keep an internal fast-3D option
+   (<code>fast_3d_mode: true</code>) for speed-critical 3D-only runs, even though the
+   default backbone is trackcorr.</p>
+</li>
+<li>
+<p><strong>Bidirectional in 3D-only mode.</strong>
+   Verified: <code>full_backward()</code> works after <code>full_forward_3d()</code>, so unified
+   can offer bidirectional + reciprocity in both modes.</p>
+</li>
+</ol>
+<p><strong>Architecture note (avoiding a god-plugin):</strong>
+Keep <code>unified_tracking.py</code> as a thin orchestrator over 3 composable stages sharing <code>RunStore</code>:
+1. <code>Estimator</code> (read-only): <code>estimate_params()</code> + conditioning gate + probe → <code>TrackingDecision</code>.
+2. <code>Engine</code> (strictly 2 backends): Epipolar <code>trackcorr</code> (when cals + 2D targets exist) or 3D-only <code>track3d</code> (when they don't, or <code>fast_3d_mode: true</code>).
+3. <code>Refiner</code> (optional, composable): Clean-and-Claim residual pass → <code>tracking_postprocess</code> → <code>quality_post</code> → <code>report()</code>.</p>
+<h2 id="11-milestone-j-cleanup-dropping-trackers">11. Milestone J — Cleanup / dropping trackers<a class="headerlink" href="#11-milestone-j-cleanup-dropping-trackers" title="Permanent link">&para;</a></h2>
+<p><strong>Owner:</strong> agent J. <strong>Effort:</strong> 1 session.</p>
+<p>Decision: drop the following as user-facing trackers (they become aliases → <code>unified</code>);
+their <em>techniques</em> are absorbed into the unified adaptive modules:</p>
+<ul>
+<li><code>priority_segment_3d</code> / <code>fast</code> / <code>fast_3d</code> — speed-only 3D tradeoff; unified uses trackcorr backbone + optional fast 3D path.</li>
+<li><code>standard_forward</code> — forward-only tradeoff; covered by unified with <code>bidirectional: false</code>.</li>
+<li><code>two_directional</code> — forward+backward without reciprocity; covered by unified <code>bidirectional: true, postprocess: false</code>.</li>
+<li><code>4be</code> — absorbed as the <code>lookahead</code> tie-breaker module.</li>
+<li><code>full_multipass</code> / <code>trackcorr</code> — this IS the unified backbone.</li>
+</ul>
+<p>Kept as advanced standalone (hardware/regime niches), not dropped:
+- <code>hybrid_deltat_3d</code> — slow high-FPS flows (also a unified module).
+- <code>two_phase</code> — 2D leaf ranking for ambiguous 3D (also a unified module).
+- <code>splitter_tracking</code> — 4-view splitter hardware.</p>
+<h3 id="j1-convert-dropped-trackers-to-deprecated-aliases">J1. Convert dropped trackers to deprecated aliases<a class="headerlink" href="#j1-convert-dropped-trackers-to-deprecated-aliases" title="Permanent link">&para;</a></h3>
+<ul>
+<li>In <code>plugins/loader.py</code>: map dropped names → <code>unified</code> with fixed config bundles.</li>
+<li>Print a one-line deprecation notice recommending <code>unified</code>.</li>
+</ul>
+<h3 id="j2-update-guirecommender-to-default-to-unified">J2. Update GUI/recommender to default to <code>unified</code><a class="headerlink" href="#j2-update-guirecommender-to-default-to-unified" title="Permanent link">&para;</a></h3>
+<h3 id="j3-update-openptv-cloud-notebooks-to-use-unified">J3. Update openptv-cloud notebooks to use <code>unified</code><a class="headerlink" href="#j3-update-openptv-cloud-notebooks-to-use-unified" title="Permanent link">&para;</a></h3>
+<h3 id="j4-remove-dropped-trackers-from-preset_choices-user-facing-list-keep-aliases-resolving">J4. Remove dropped trackers from <code>PRESET_CHOICES</code> user-facing list (keep aliases resolving).<a class="headerlink" href="#j4-remove-dropped-trackers-from-preset_choices-user-facing-list-keep-aliases-resolving" title="Permanent link">&para;</a></h3>
+<hr />
+<h2 id="12-cross-cutting-concerns">12. Cross-cutting concerns<a class="headerlink" href="#12-cross-cutting-concerns" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Tests must pass</strong> on <code>feat/unified-tracker</code> before merge: <code>pytest tests/</code> in openptv2; openptv-cloud test suite.</li>
+<li><strong>Cython is allowed for hot paths.</strong> Reuse existing kernels by default, and add targeted Cython (e.g., <code>B5–B8</code> solver/predictor loops, inner-loop 2D re-ranking, or <code>track_assisted</code> / Clean-and-Claim hot paths) whenever profiling shows Python/NumPy is a bottleneck.</li>
+<li><strong>I/O contract unchanged.</strong> Zarr <code>ptv_is</code> linkage group.</li>
+<li><strong>Each task PR should be small and focused</strong>, referencing this plan's milestone/task IDs.</li>
+</ul>
+<hr />
+<h2 id="124-backbone-improvements-trackcorr-v2-high-density-target-space">12.4. Backbone improvements (trackcorr v2 — high-density target space)<a class="headerlink" href="#124-backbone-improvements-trackcorr-v2-high-density-target-space" title="Permanent link">&para;</a></h2>
+<p>Before unifying, make the backbone itself competitive in high-density regimes without leaving target space (no OTF / image subtraction). Improvements are split into Python/pre-pass (low risk, do first) and Cython-level (higher risk, later).</p>
+<p>Python / pre-pass level:
+- B0. Multi-peak 2D detection (<code>detect_targets</code>): optional local-maxima / watershed splitting on connected components so touching particles split at detection time without an OTF model.
+- B1. Early ghost filtering pre-pass: compute ghost probabilities (rcm/rcm_blob) per correspondence; keep originals as backup (prefer Tight-Core + 2D-target pruning in §12.5 over hard-dropping high-rcm points).
+- B2. Adaptive search radii from <code>measure_motion_scale</code> (1.5x measured displacement) capped by the <code>tracking_recommender.py</code> trackability guard (<code>rho = p95_displacement / mean_interparticle_distance &lt;= 1</code>).
+- B3. Frame-quality awareness: skip/interpolate frames with far fewer correspondences.
+- B4. Kink-based link rejection + gap relink repair (<code>max_gap=2..3</code> bridges brief all-camera overlaps).</p>
+<p>Cython / solver level (later):
+- B5. 4BE n+2 lookahead as tie-breaker in epipolar scoring (only when <code>&gt;= 2</code> candidates fall in search box).
+- B6. 2D leaf re-ranking inside epipolar candidate selection (ambiguous frames/candidates only).
+- B7. Conflict-component Hungarian resolution: keep fast greedy path for unambiguous 1-to-1 links; group competing candidates (<code>&gt;= 2</code> tracks vs <code>&gt;= 2</code> candidates) into connected components and solve optimal bipartite assignment (<code>linear_sum_assignment</code>).
+- B8. Smooth 3–4 point polynomial predictor in <code>trackcorr</code> and <code>track_assisted</code> (cuts prediction error vs. 2-point linear extrapolation, enabling tighter search boxes).</p>
+<h3 id="milestone-l-backbone-improvements">Milestone L — Backbone improvements<a class="headerlink" href="#milestone-l-backbone-improvements" title="Permanent link">&para;</a></h3>
+<p><strong>Owner:</strong> agent L. <strong>Effort:</strong> 2–4 sessions.
+- L1. Implement B1 ghost filtering pre-pass + tests on synthetic data.
+- L2. B2 adaptive radii (with trackability cap) + B0 multi-peak 2D splitting option.
+- L3. B4 link rejection + gap relinking.
+- L4. B3 frame quality.
+- L5. Validate B0–B4 vs. baseline on synthetic GT (expect precision up at high density).
+- L6 (later). B5–B8 solver &amp; predictor upgrades (4BE lookahead, 2D re-ranking, conflict-component Hungarian, 3–4 pt polynomial predictor).</p>
+<h2 id="125-2-pass-clean-and-claim-tight-core-2d-target-pruning-track_assisted">12.5. 2-Pass "Clean-and-Claim" (Tight-Core + 2D-Target Pruning + <code>track_assisted</code>)<a class="headerlink" href="#125-2-pass-clean-and-claim-tight-core-2d-target-pruning-track_assisted" title="Permanent link">&para;</a></h2>
+<p>High-density strategy to collapse combinatorial ghosts without image subtraction or arbitrary <code>N</code>-layer quantile tuning:</p>
+<ol>
+<li><strong>Pass 1 — Tight-Core:</strong> Track only high-purity correspondences (tighter epipolar tolerance e.g. <code>0.5 * eps0</code>, or low-<code>rcm</code> / 4-cam quadruplets) with <code>full_forward</code> + <code>full_backward</code> + strict <code>enforce_reciprocity</code>. Keep only verified core tracks (length ≥ 4, smooth).</li>
+<li><strong>Deterministic 2D-target prune:</strong> Mark all 2D target IDs claimed by Pass-1 tracks. Drop any remaining 3D correspondence in the cloud that references a claimed 2D target ($O(N)$ mask, no re-triangulation). Ghosts that stole a 2D target from a real particle vanish deterministically.</li>
+<li><strong>Pass 2 — Residual + <code>track_assisted</code> expansion:</strong></li>
+<li>Run <code>trackcorr</code> on the sparser, ghost-depleted residual cloud.</li>
+<li>Run <code>track_assisted</code> (<code>run_configured_corrective_pass</code> with <code>release_ghosts=True</code>), upgraded with:<ul>
+<li><strong>3–4 point polynomial predictor</strong> (replacing 2-point linear extrapolation).</li>
+<li><strong>Camera-subset triangulation (2-of-4 / 3-of-4)</strong> when 1–2 cameras are merged/occluded.</li>
+<li><strong>Non-exclusive (shared) 2D target fallback:</strong> allow two predicted tracks whose 2D projections land on the same merged blob to reference that target (down-weighted in least-squares triangulation) instead of losing a track.</li>
+</ul>
+</li>
+<li><strong>Final postprocess:</strong> Gap relink + reciprocity + confirm on the accumulated set.</li>
+</ol>
+<p>Implementation notes:
+- Module <code>src/openptv2/layered_tracking.py</code> (evolving K1 primitives into 2-pass Clean-and-Claim) + upgrades to <code>src/openptv2/track_assisted.py</code>.
+- Config: <code>peeling: auto|true|false</code> (<code>auto</code> enables Tight-Core + Clean-and-Claim when <code>ghost_rate</code> or <code>density</code> is high).
+- Cost: 2 passes instead of <code>N</code> quantile layers; mitigated by tight Pass-1 cloud and pruned Pass-2 cloud.</p>
+<h3 id="milestone-k-2-pass-clean-and-claim">Milestone K — 2-Pass Clean-and-Claim<a class="headerlink" href="#milestone-k-2-pass-clean-and-claim" title="Permanent link">&para;</a></h3>
+<p><strong>Owner:</strong> agent K. <strong>Effort:</strong> 3–4 sessions.
+- K1. Prototype single-layer quality-filtered subset tracking → verify index remapping works. (Done)
+- K2. Deterministic 2D-target pruning mask + Pass-2 residual tracking &amp; merge into <code>RunStore</code>.
+- K3. Upgrade <code>track_assisted.py</code> with 3–4 pt polynomial predictor, 2-of-4/3-of-4 subset triangulation, and optional non-exclusive shared-target mode.
+- K4. Final postprocess + tests vs. synthetic dense GT (expect higher precision and yield at high density without OTF).
+- K5. Wire into unified as <code>peeling</code> option (<code>auto</code> when <code>ghost_rate</code> / <code>density</code> is high).</p>
+<h2 id="126-anti-ghost-strategy-consolidated-critical-review">12.6 Anti-Ghost Strategy (consolidated) — critical review<a class="headerlink" href="#126-anti-ghost-strategy-consolidated-critical-review" title="Permanent link">&para;</a></h2>
+<p>Three complementary levers, ordered from pipeline-level to solver-level. Each is
+already scoped in the milestones above (K, L, B7); this section collects them as
+one coherent strategy and records the critical review.</p>
+<h3 id="idea-1-two-pass-clean-and-claim-tight-core-deterministic-2d-target-pruning">Idea 1 — Two-Pass "Clean-and-Claim" (Tight-Core + deterministic 2D-target pruning)<a class="headerlink" href="#idea-1-two-pass-clean-and-claim-tight-core-deterministic-2d-target-pruning" title="Permanent link">&para;</a></h3>
+<p><strong>Where:</strong> <code>src/openptv2/layered_tracking.py</code> (Milestone K: K2, K4, K5).
+<strong>Mechanism:</strong> Pass 1 tracks only high-purity correspondences (tighter epipolar
+tolerance, low-rcm / 4-cam quadruplets) with <code>full_forward</code> + <code>full_backward</code> +
+strict reciprocity, keeping only verified core tracks (length ≥ 4, smooth). Then
+mark every 2D target ID claimed by those tracks and drop any remaining 3D
+correspondence referencing a claimed target (O(N) mask, no re-triangulation).
+Pass 2 runs <code>trackcorr</code> on the ghost-depleted residual cloud, then <code>track_assisted</code>
+with polynomial predictor / subset triangulation / shared-target fallback.
+<strong>Config:</strong> <code>peeling: auto|true|false</code> (auto when <code>ghost_rate</code> or <code>density</code> high).</p>
+<h3 id="idea-2-early-ghost-filter-pre-pass-rcm-rcm_blob-scoring">Idea 2 — Early Ghost-Filter Pre-Pass (rcm / rcm_blob scoring)<a class="headerlink" href="#idea-2-early-ghost-filter-pre-pass-rcm-rcm_blob-scoring" title="Permanent link">&para;</a></h3>
+<p><strong>Where:</strong> <code>src/openptv2/ghost_filter.py</code> (Milestone L: L1).
+<strong>Mechanism:</strong> Compute per-correspondence ghost probability from reconstruction-
+consistency (<code>rcm</code>) and blob-consistency (<code>rcm_blob</code>) before tracking; down-weight
+or quarantine high-probability correspondences. Keep originals as backup rather
+than hard-dropping, so real particles are not silently lost.</p>
+<h3 id="idea-3-conflict-component-hungarian-resolution">Idea 3 — Conflict-Component Hungarian Resolution<a class="headerlink" href="#idea-3-conflict-component-hungarian-resolution" title="Permanent link">&para;</a></h3>
+<p><strong>Where:</strong> backbone solver (Milestone L: L6 / B7).
+<strong>Mechanism:</strong> Keep the fast greedy 1-to-1 path for unambiguous links; for
+components with ≥2 competing tracks vs. ≥2 candidates, solve the optimal bipartite
+assignment with <code>scipy.optimize.linear_sum_assignment</code>. Cost is paid only where
+ambiguity exists.</p>
+<hr />
+<h3 id="why-this-works-root-cause-not-just-mechanism">Why this works (root cause, not just mechanism)<a class="headerlink" href="#why-this-works-root-cause-not-just-mechanism" title="Permanent link">&para;</a></h3>
+<p>Ghosts are not a detection bug or a tracking bug in isolation — they are a <strong>combinatorial
+correspondence</strong> phenomenon. Given N 2D targets per camera, the number of candidate 3D
+points is ~N^k; real particles produce consistent multi-camera matches, while ghosts are
+accidental alignments of targets from <em>different</em> particles. Each idea attacks a different
+manifestation of that root cause, which is why they compose rather than duplicate:</p>
+<ul>
+<li><strong>Idea 2 (rcm) — geometric inconsistency.</strong> A 3D point is only as real as the
+  agreement of its constituent 2D targets: back-project the rays and a real particle's
+  rays meet, while a ghost's rays miss. rcm measures that miss <em>before</em> any temporal
+  tracking, so it is a pure, tracking-independent ghost signal. It must be <em>soft</em>
+  because rcm has a distance dependence (volume centre vs. edges) and real particles
+  near edges overlap the ghost distribution — hard thresholds delete real data.</li>
+<li><strong>Idea 1 (Clean-and-Claim) — 2D-target ownership.</strong> A single 2D target in one
+  camera at one instant can belong to at most one physical particle. Ghosts are
+  <em>parasitic</em>: they almost always reuse 2D targets that belong to real particles,
+  because the combinatorics of forming a ghost from entirely unused targets are far
+  less likely. Once a verified (reciprocal, smooth, long) track has claimed its 2D
+  targets, any other correspondence reusing one of them is by necessity a ghost (or a
+  duplicate). Pruning by ownership removes the <em>substrate</em> ghosts need, deterministically
+  and without re-triangulation. This is why it is safe where hard deletion is not:
+  it only removes correspondences that conflict with an already-verified reality.</li>
+<li><strong>Idea 3 (Hungarian) — assignment-level suboptimality.</strong> Ghost links are created not
+  only at detection but at the <em>linking</em> step, when greedy nearest-neighbour assignment
+  makes locally optimal choices inside a dense ambiguous region and those errors cascade.
+  Solving the optimal bipartite matching over the whole ambiguous component (tracks vs.
+  candidates) breaks the cascade. It is restricted to ambiguous components because for
+  unambiguous 1-to-1 links greedy is already optimal and cheaper.</li>
+</ul>
+<p><strong>Why "soft, not hard" is the cross-cutting principle:</strong> ghosts and real particles overlap
+in every single-feature space (rcm, displacement, smoothness) near decision boundaries.
+Threshold-based deletion therefore trades recall for precision unpredictably. The safe
+operations are <em>claim-based</em> (a verified reality overrules a candidate) and <em>global-
+assignment</em> (optimal over a component), which never delete a real particle merely because
+it looks ghost-like.</p>
+<h3 id="critical-review">Critical review<a class="headerlink" href="#critical-review" title="Permanent link">&para;</a></h3>
+<p><strong>Strengths</strong>
+- <em>Determinism over deletion.</em> Clean-and-Claim removes ghosts by <em>claiming</em> 2D
+  targets rather than by deleting points, so it cannot accidentally drop real
+  particles the way a hard rcm threshold can. This matches the empirical finding
+  in <code>docs/plans/2026-09-30-tracker-plan.md</code> that soft use works and hard
+  deletion does not.
+- <em>Complementary, not redundant.</em> Idea 1 is a pipeline-level prune, Idea 2 a
+  scoring pre-filter, Idea 3 a solver-level assignment fix — they operate at
+  different stages and compose.
+- <em>Bounded cost.</em> Idea 1 is 2 passes on a shrinking cloud; Idea 3 only pays the
+  Hungarian cost on ambiguous components.</p>
+<p><strong>Risks / weaknesses</strong>
+- <strong>W1 — Pass-1 purity is the linchpin.</strong> If the tight core is too loose,
+  pruning deletes real residual correspondences; if too tight, too little is
+  pruned and Pass 2 re-creates ghosts. The <code>0.5 * eps0</code> tolerance and
+  length ≥ 4 thresholds are uncalibrated guesses (see W3 of §15). Needs
+  calibration against the synthetic GT scorecard (H0/H1) before shipping.
+- <strong>W2 — 2D-target identity assumption.</strong> Clean-and-Claim assumes a stable 2D
+  target ID across frames and that a real particle "owns" its 2D target. With
+  merged/occluded blobs or camera dropouts, one real particle can legitimately
+  share a target, which is exactly why <code>track_assisted</code> needs the non-exclusive
+  shared-target fallback — but that fallback re-opens the door to ghost survival.
+  The two mechanisms must be reconciled (shared targets allowed only in Pass 2,
+  never in Pass 1).
+- <strong>W3 — rcm distance dependence.</strong> rcm scales with distance from the volume
+  centre, so Idea 2 requires the per-run straight-line fit normalization already
+  identified in <code>2026-09-30-tracker-plan.md</code> (A10). Using raw rcm will bias
+  pruning toward the volume edges.
+- <strong>W4 — Hungarian on large components.</strong> <code>linear_sum_assignment</code> is cubic in
+  component size; at very high density an ambiguous component can grow large.
+  Need a component-size cap (fall back to greedy above N) and profiling.
+- <strong>W5 — Interaction / ordering.</strong> Running Idea 2 before Idea 1 could prune
+  correspondences that Pass 1 would have used to build the tight core; running
+  Idea 1 first makes Idea 2's input already depleted. The intended order is
+  Idea 2 (soft scoring) → Idea 1 (hard claim) → Idea 3 (solver), but this
+  ordering is not yet enforced in code and must be documented in the
+  <code>Estimator → Engine → Refiner</code> stages.
+- <strong>W6 — No byte-identity guarantee.</strong> Unified with these levers enabled will
+  not reproduce legacy tracker outputs (W4 of §15). A regression test
+  comparing unified (fixed bundle) vs. legacy on a reference dataset is required
+  before deprecation (J1).</p>
+<p><strong>Verdict:</strong> Proceed, but gate shipping on (a) calibration of the Pass-1
+tolerance/length thresholds against synthetic GT, (b) enforcing the
+Idea 2 → 1 → 3 ordering, and (c) a component-size cap for the Hungarian solver.</p>
+<h3 id="1261-reshuffled-alternatives-out-of-the-box">12.6.1 Reshuffled alternatives (out-of-the-box)<a class="headerlink" href="#1261-reshuffled-alternatives-out-of-the-box" title="Permanent link">&para;</a></h3>
+<p>The staged design (rcm → Clean-and-Claim → Hungarian) is not the only
+factorization. Three reshuffles worth considering, with critical notes:</p>
+<p><strong>Reshuffle A — Merge Clean-and-Claim and Hungarian into one "Hungarian Claim
+Resolution" step.</strong> Instead of (1) verify core tracks, (2) greedily claim their
+2D targets, (3) separately solve ambiguous links, treat the whole thing as one
+assignment: Pass-1 candidate tracks are the "left" set, 2D targets are the
+"right" set, and a residual correspondence is a ghost iff assigning it would
+conflict with a higher-weight verified track. <code>linear_sum_assignment</code> over the
+target-overlap cost matrix picks the globally optimal non-overlapping subset of
+tracks in one shot. This <em>is</em> Milestone K's conflict-component Hungarian (B7)
+applied to claim resolution — i.e. Ideas 1 and 3 collapse into a single stage.
+- <em>Pro:</em> removes the purity-threshold risk of Pass 1 (no separate "tight core"
+  tolerance to calibrate); global optimum instead of greedy claim; one less
+  pipeline stage.
+- <em>Con:</em> Hungarian is cubic in component size and needs a component-size cap;
+  and it loses the <em>interpretability</em> of "these targets are claimed by track X",
+  which is valuable for the audit record (<code>TrackingDecision</code>) and for debugging.
+  Also, a single assignment pass cannot express "keep the core, then expand" —
+  the two-pass intent (conservative core first, aggressive expansion second)
+  has to be encoded as weights/costs, which re-introduces tuning.</p>
+<p><strong>Reshuffle B — One composite "realness" score, single pass.</strong> Fuse all three
+signals into one scalar per 3D correspondence / trajectory:
+  <code>realness = w1·(1 - rcm_norm) + w2·claim_status + w3·(1 - assign_cost_norm)</code>,
+then sort and (softly) gate seeding (<code>q_seed</code>) and continuation (<code>q_young</code>) —
+exactly the mechanism that already worked in <code>2026-09-30-tracker-plan.md</code>
+(−0.008…−0.013 velocity error, −0.038 at 4× density). No multi-pass, no
+pruning, no Hungarian at runtime.
+- <em>Pro:</em> simplest possible implementation; single tunable surface; reuses a
+  <em>proven</em> mechanism (soft gating) instead of an unproven one (deterministic
+  pruning); audit record is just one number per trajectory.
+- <em>Con:</em> the tracker plan explicitly found that <strong>link-cost weighting alone has
+  no effect</strong> — a pure score only works when it gates <em>seeding/continuation</em>,
+  not when it re-weights links. So this reshuffle is only viable if the score
+  feeds q_seed/q_young, not the link cost. Also, conflating geometric (rcm),
+  ownership (claim), and assignment (cost) failure modes into one number makes
+  it hard to know <em>why</em> a particle was dropped, defeating the auditability
+  principle (§0.6). And it forgoes the deterministic pruning that is the
+  <em>largest</em> potential gain (ghosts cause ~60% of two_phase's error).</p>
+<p><strong>Reshuffle C — Hungarian-first, then rcm refines (invert the order).</strong> Run
+Hungarian on the raw correspondence cloud first to find the globally optimal
+link set; treat high-cost unmatched correspondences as ghost candidates; then
+apply rcm (Idea 2) as a refinement/weight on the survivors; claim targets last.
+- <em>Pro:</em> attacks the assignment problem at its largest (whole cloud), where
+  greedy errors are most damaging.
+- <em>Con:</em> Hungarian on the <em>whole</em> cloud is O(N^3) and N is the full 3D
+  correspondence count — infeasible at high density without the component
+  decomposition, which is exactly what Clean-and-Claim's pruning provides. So
+  this ordering is only viable <em>after</em> pruning, i.e. it is the staged order
+  with the stages renamed. Not actually a reshuffle.</p>
+<p><strong>Recommendation (12.6.1).</strong> Do not pick one. Use a <strong>two-tier</strong> design:
+  - <strong>Tier 1 (deterministic, cheap, auditable):</strong> Reshuffle A's Hungarian Claim
+    Resolution on a <em>pre-filtered</em> cloud (rcm soft-weighted, not hard-pruned)
+    to produce a high-confidence core set + an explicit claimed-target mask.
+    This keeps the interpretable claim record and the conservative-then-expansive
+    intent, while removing the fragile Pass-1 tolerance threshold.
+  - <strong>Tier 2 (soft):</strong> the composite realness score from Reshuffle B, but used
+    <em>only</em> to gate q_seed/q_young in <code>track_assisted</code> (Pass 2 expansion), never
+    as a link weight — honouring the tracker plan's finding.</p>
+<p>Net effect: three ideas → two stages, with Hungarian doing double duty (claim
+  resolution + conflict links) and the realness score confined to its one proven
+  use. The single-score heuristic is rejected as the <em>primary</em> mechanism but
+  retained as a <em>secondary</em> gating signal.</p>
+<h3 id="1262-calibration-aware-and-multi-cycle-epipolar-ideas-out-of-the-box">12.6.2 Calibration-aware and multi-cycle epipolar ideas (out-of-the-box)<a class="headerlink" href="#1262-calibration-aware-and-multi-cycle-epipolar-ideas-out-of-the-box" title="Permanent link">&para;</a></h3>
+<p>Two further reshuffles that attack the same root cause from the geometry side.</p>
+<p><strong>Idea 4 — Calibration-aware ghost thresholds.</strong> rcm has a distance dependence
+(volume centre vs. edges) and, more fundamentally, the <em>number of cameras seeing a
+point</em> varies across the volume. With 2 cameras two rays always have a closest
+point, so rcm≈0 even for ghosts; with 4 cameras ghosts have large rcm. So ghost-
+ness is spatially heterogeneous and camera-coverage dependent. Instead of one
+global rcm threshold (or a crude per-run straight-line fit), use the calibration
+maps (camera poses, distortion, coverage) to compute an expected rcm floor and a
+threshold <em>per region / per point</em>, keyed on camera count and distance from the
+volume centre.
+- <em>Pro:</em> fixes the rcm distance-dependence issue (W3 of §12.6) at its source;
+  better recall near boundaries where real particles are hardest to track and
+  where ghosts are hardest to distinguish; naturally explains why a global
+  threshold misbehaves.
+- <em>Con:</em> requires a calibration-quality / coverage field that may not exist for
+  all rigs; couples ghost logic to calibration correctness (a bad calibration
+  gives bad thresholds); adds a per-point computation; must be validated that
+  the region keying doesn't just re-learn the global fit.</p>
+<p><strong>Idea 5 — Multi-cycle epipolar consistency (1-2-3-4, 2-3-4-1, …).</strong> Instead
+of one fixed camera ordering for epipolar search/triangulation, run several
+cyclic orderings and require cross-consistency. A ghost that happens to satisfy
+epipolar constraints in ordering 1-2-3-4 (because its targets accidentally align
+along that reference) frequently fails in 2-3-4-1 (different reference camera →
+different epipolar lines). The disagreement across cycles is itself a ghost
+signal, analogous to rcm but measured across <em>reference frames</em> rather than rays.
+- <em>Pro:</em> stronger geometric filter than single-ordering epipolar search; the
+  cross-cycle variance can feed the realness score (Idea B) as an additional
+  feature; generalizes the existing 2-of-4/3-of-4 subset triangulation (K3) to
+  the correspondence stage.
+- <em>Pro (compounding):</em> combined with Idea 4, a point seen by ≥3 cameras in
+  multiple cycles is high-confidence real; a 2-camera point surviving only one
+  cycle is suspect.
+- <em>Con:</em> cost is N_cycles × correspondence cost — needs a cap (2 cycles likely
+  enough; diminishing returns beyond); some persistent ghosts agree across cycles
+  (not a silver bullet); aggregation rule (intersection = strict, union = loose)
+  must be chosen and calibrated; risks over-filtering real particles in sparse
+  regions where only one cycle yields a match.</p>
+<p><strong>How these connect to the existing plan.</strong> Idea 4 feeds Idea 2 (rcm pre-pass)
+by replacing the global threshold with a calibration-keyed one. Idea 5 feeds
+either Idea 2 (as an extra realness feature) or Idea 1 (as an extra pruning
+criterion: drop correspondences that fail cross-cycle consistency). Both also
+belong in the realness score's feature set if Reshuffle B is adopted. Neither
+requires new Cython; both are pre-pass / correspondence-stage logic.</p>
+<p><strong>Recommendation (updated two-tier).</strong>
+  - <strong>Tier 1:</strong> Reshuffle A (Hungarian Claim Resolution) on an rcm-soft-
+    weighted, <strong>calibration-keyed</strong> cloud (Idea 4), with cross-cycle consistency
+    (Idea 5) as an additional pruning criterion. This replaces the fragile
+    Pass-1 tolerance with a per-point, geometry-aware confidence.
+  - <strong>Tier 2:</strong> composite realness score (Idea B) for q_seed/q_young gating,
+    now including rcm_norm, claim_status, assign_cost_norm, camera_count, and
+    cross_cycle_agreement as features.</p>
+<h3 id="1264-detailed-implementation-plan-ilp-uniqueness-temporal-joint-smoothing">12.6.4 Detailed implementation plan — ILP uniqueness + temporal joint smoothing<a class="headerlink" href="#1264-detailed-implementation-plan-ilp-uniqueness-temporal-joint-smoothing" title="Permanent link">&para;</a></h3>
+<p><strong>Goal:</strong> suppress ghosts by combining (1) ILP/assignment for spatial uniqueness
+with (5) temporal joint smoothing, while keeping tracking fast (target: no more
+than ~2× the current trackcorr runtime on the dense benchmark).</p>
+<p><strong>Principle:</strong> both levers are <em>opt-in via <code>auto</code></em> and only escalate when the
+estimator reports high density/ghost_rate. The common case stays on the fast
+trackcorr path. Parallelism (G1) absorbs the rest.</p>
+<h4 id="available-building-blocks-verified-present">Available building blocks (verified present)<a class="headerlink" href="#available-building-blocks-verified-present" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>scipy.optimize.milp</code> (scipy 1.18) — MILP solver, no new dependency.</li>
+<li><code>scipy.optimize.linear_sum_assignment</code> — bipartite Hungarian, already used.</li>
+<li><code>networkx</code> 3.7 — connected components on conflict graphs.</li>
+<li>Existing: <code>ghost_filter.py</code>, <code>layered_tracking.py</code>, <code>track_assisted.py</code>,
+  <code>tracking_estimator.py</code>, <code>tracking_probe.py</code>, <code>RunStore</code>/linkage blocks.</li>
+</ul>
+<h4 id="stage-a-component-decomposition-cheap-on">Stage A — Component decomposition (cheap, O(N))<a class="headerlink" href="#stage-a-component-decomposition-cheap-on" title="Permanent link">&para;</a></h4>
+<p>File: <code>src/openptv2/ghost_components.py</code> (new)
+- Build conflict graph per frame: node = candidate 3D point; edge = two points
+  share at least one 2D target.
+- <code>connected_components()</code> via networkx (or union-find for speed) → list of
+  component (list of point indices).
+- Classify each component: size 1 (trivial, keep), size 2 (bipartite →
+  Hungarian), size ≥3 (ILP or greedy fallback).
+- Store component sizes in <code>TrackingDecision</code> for audit.</p>
+<h4 id="stage-b-spatial-uniqueness-via-ilp-per-component-bounded-size">Stage B — Spatial uniqueness via ILP (per component, bounded size)<a class="headerlink" href="#stage-b-spatial-uniqueness-via-ilp-per-component-bounded-size" title="Permanent link">&para;</a></h4>
+<p>File: <code>src/openptv2/ghost_ilp.py</code> (new)
+- For each component of size ≥3 (and optionally size 2 via Hungarian):
+  - Variables x_i ∈ {0,1}.
+  - Objective: maximize Σ conf_i · x_i
+    (conf_i = rcm-based confidence, calibration-keyed, + cross-cycle agreement
+    from Idea 4/5).
+  - Constraints: for each 2D target t in the component:
+      Σ_{i: t∈point_i} x_i ≤ 1.
+  - Solve with <code>scipy.optimize.milp</code>. Cap component size at <code>ilp_max_size</code>
+    (default 20); larger components fall back to greedy + log a warning.
+- For 2-camera components use <code>linear_sum_assignment</code> (cheaper, exact for
+  bipartite) instead of MILP.
+- Output: selected point indices per frame → feeds Pass 2 / trackcorr.
+- Config: <code>ilp_uniqueness: auto|true|false</code>, <code>ilp_max_size</code>, <code>ilp_time_limit_s</code>.</p>
+<h4 id="stage-c-temporal-joint-smoothing-sliding-window">Stage C — Temporal joint smoothing (sliding window)<a class="headerlink" href="#stage-c-temporal-joint-smoothing-sliding-window" title="Permanent link">&para;</a></h4>
+<p>File: <code>src/openptv2/temporal_smoothing.py</code> (new)
+- Sliding window of W frames (default 5, config <code>smooth_window</code>).
+- Within a window, link selected 3D points across frames using the existing
+  trackcorr nearest-neighbour + motion model (constant velocity seeded from
+  last 2 frames), producing candidate trajectories.
+- Jointly optimize over the window: minimize
+    Σ_traj [ Σ_frame reprojection_residual² + λ·acceleration² ]
+  subject to point uniqueness (each 3D point used by at most one trajectory)
+  and trajectory continuity.
+- Implementation: iterative re-weighted least squares (IRLS) — cheap, no solver:
+  1. Link points greedily to form trajectories.
+  2. Fit a smooth (e.g. cubic) model per trajectory; compute residuals.
+  3. Down-weight / drop points with residual &gt; threshold (ghosts have high
+     residual because they don't follow a smooth motion).
+  4. Re-link and repeat 2–3 times (config <code>smooth_iterations</code>, default 3).
+- Drop trajectories whose final residual exceeds <code>smooth_residual_threshold</code>
+  (calibration-keyed, like rcm).
+- Config: <code>temporal_smoothing: auto|true|false</code>, <code>smooth_window</code>,
+  <code>smooth_iterations</code>, <code>smooth_residual_threshold</code>.</p>
+<h4 id="stage-d-wiring-into-unified-tracker">Stage D — Wiring into unified tracker<a class="headerlink" href="#stage-d-wiring-into-unified-tracker" title="Permanent link">&para;</a></h4>
+<p>File: <code>src/openptv2/plugins/unified_tracking.py</code>
+- In <code>do_tracking()</code>, after estimation/conditioning gate:
+  - If <code>ilp_uniqueness</code> resolves true: run Stage A+B per frame (parallel over
+    frames via the existing chunked runner) → produce cleaned 3D point sets.
+  - Feed cleaned sets into trackcorr (existing backbone).
+  - If <code>temporal_smoothing</code> resolves true: run Stage C on the resulting
+    trajectories before postprocess.
+- Apply resolved config to <code>trackcorr</code>/<code>hybrid_deltat_3d</code> without mutating
+  user YAML (existing pattern).
+- Write ILP component stats + smoothing residual stats into <code>TrackingDecision</code>.</p>
+<h4 id="stage-e-estimator-integration">Stage E — Estimator integration<a class="headerlink" href="#stage-e-estimator-integration" title="Permanent link">&para;</a></h4>
+<p>File: <code>src/openptv2/tracking_estimator.py</code>
+- Add <code>ghost_rate</code> already computed; add <code>ilp_recommended</code> flag (true when
+  <code>ghost_rate &gt; 0.15</code> or <code>density</code> high) and <code>smoothing_recommended</code> flag
+  (true when flow is non-stationary / probe shows high jump_rate).
+- <code>auto</code> resolves these flags; explicit user override wins.</p>
+<h4 id="stage-f-tests">Stage F — Tests<a class="headerlink" href="#stage-f-tests" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>tests/unit/test_ghost_components.py</code> (new): component decomposition on
+  synthetic conflict graphs; size classification.</li>
+<li><code>tests/unit/test_ghost_ilp.py</code> (new): ILP on small components; uniqueness
+  constraint holds; fallback on oversized components.</li>
+<li><code>tests/unit/test_temporal_smoothing.py</code> (new): smoothing drops high-residual
+  ghost trajectories; real smooth trajectories survive.</li>
+<li><code>tests/benchmarks/test_unified_gt_scorecard.py</code>: add a "ghost-heavy" case;
+  assert ILP+smoothing improves precision without hurting yield beyond 2%.</li>
+</ul>
+<h4 id="speed-budget-fast-path-rules">Speed budget &amp; fast-path rules<a class="headerlink" href="#speed-budget-fast-path-rules" title="Permanent link">&para;</a></h4>
+<ul>
+<li>MILP only on components of size 3–<code>ilp_max_size</code> (default 20); size 1–2 use
+  Hungarian or trivial keep; nothing runs on the whole cloud.</li>
+<li>Temporal smoothing runs only when <code>auto</code> recommends it (or user forces); IRLS
+  with 3 iterations is O(window × points) and vectorizable.</li>
+<li>Both stages run in the existing parallel chunked runner (G1) — no new
+  parallelism code.</li>
+<li>Hard cap: <code>ilp_time_limit_s</code> (default 1.0s per component) → fall back to
+  greedy on timeout; log in <code>TrackingDecision</code>.</li>
+<li>Fast path (low density, low ghost_rate): both stages skipped entirely →
+  identical to current trackcorr runtime.</li>
+</ul>
+<h4 id="waves-parallelizable">Waves (parallelizable)<a class="headerlink" href="#waves-parallelizable" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Wave 0: Stage A (components) + Stage E (estimator flags) — disjoint files.</li>
+<li>Wave 1: Stage B (ILP) depends on A; Stage C (smoothing) independent.</li>
+<li>Wave 2: Stage D (wiring) depends on A/B/C/E; Stage F (tests) depends on D.</li>
+<li>Wave 3: benchmark (F scorecard) depends on all.</li>
+</ul>
+<h4 id="risks">Risks<a class="headerlink" href="#risks" title="Permanent link">&para;</a></h4>
+<ul>
+<li>R1: MILP latency on large components → cap + timeout + greedy fallback.</li>
+<li>R2: over-smoothing deletes real but erratic particles (turbulence) → residual
+  threshold must be calibration-keyed and conservative; IRLS down-weights rather
+  than hard-drops first.</li>
+<li>R3: interaction with Clean-and-Claim (Tier 1) → ILP replaces the greedy
+  claim step; keep both behind the same <code>peeling</code>/<code>ilp_uniqueness</code> flags to
+  avoid double-pruning. Recommendation: ILP subsumes Clean-and-Claim's claim
+  step when enabled; Clean-and-Claim remains the fallback when MILP is off.</li>
+</ul>
+<h3 id="1263-deeper-algorithmic-ideas-from-other-fields">12.6.3 Deeper algorithmic ideas from other fields<a class="headerlink" href="#1263-deeper-algorithmic-ideas-from-other-fields" title="Permanent link">&para;</a></h3>
+<p>Ghosts are a special case of a general problem: <strong>combinatorial false
+positives from nonlinear projections</strong> — many fields face it. Analogies and
+candidate algorithms, with critical notes:</p>
+<ol>
+<li><strong>Multi-dimensional assignment / ILP</strong> (data association, sensor fusion).
+   Formulate "select a subset of 3D points maximizing total confidence, subject
+   to each 2D target used at most once" as an integer program. Hungarian is the
+   bipartite (2-camera) special case; ILP solvers handle the k-camera case and
+   give a principled optimum instead of a greedy/heuristic one.</li>
+<li><em>Pro:</em> exact-ish, principled, directly encodes the uniqueness constraint.</li>
+<li>
+<p><em>Con:</em> NP-hard in general; needs LP-relaxation or branch-and-bound; may
+     be too slow at high density without the Clean-and-Claim pruning first.</p>
+</li>
+<li>
+<p><strong>Factor graphs / belief propagation</strong> (SLAM, probabilistic data association).
+   Model 2D targets and 3D points as a bipartite factor graph with factors for
+   geometric consistency and uniqueness; run loopy BP / message passing to
+   compute marginals (probability each point is real). Handles combinatorics
+   probabilistically and scales better than ILP.</p>
+</li>
+<li><em>Pro:</em> soft, principled, naturally produces the "realness" probability
+     that Reshuffle B wants; handles uncertainty.</li>
+<li>
+<p><em>Con:</em> approximate; convergence not guaranteed; more machinery than the
+     current codebase.</p>
+</li>
+<li>
+<p><strong>Sparse recovery / L1 regularization</strong> (compressed sensing, tomographic
+   reconstruction). The 3D point cloud is a sparse source; camera images are
+   nonlinear projections. Recover the sparse source via convex L1 minimization
+   (basis pursuit) instead of combinatorial search — ghosts are the dense
+   "noise" that sparsity penalizes.</p>
+</li>
+<li><em>Pro:</em> convex (fast, global optimum), principled, directly attacks the
+     combinatorial explosion.</li>
+<li>
+<p><em>Con:</em> requires a discretized 3D grid / basis; nonlinearity of projection
+     makes the sensing matrix expensive; may blur point positions.</p>
+</li>
+<li>
+<p><strong>Consensus voting / Hough transform</strong> (robust fitting, RANSAC family).
+   Each 2D target votes for 3D points along its ray; real points accumulate
+   votes from all cameras, ghosts get fewer. Accumulate in a 3D voting space.
+   rcm is a continuous version of this; voting makes the threshold explicit
+   and robust.</p>
+</li>
+<li><em>Pro:</em> simple, robust, geometrically intuitive, handles outliers.</li>
+<li>
+<p><em>Con:</em> voting-space resolution vs. memory trade-off; ghosts that happen
+     to get many votes survive.</p>
+</li>
+<li>
+<p><strong>Temporal joint smoothing / sliding-window MHT</strong> (multi-hypothesis
+   tracking). Ghosts don't persist as smooth trajectories. Instead of frame-pair
+   greedy linking, optimize a whole window (N frames) jointly with a motion
+   model; ghosts have high residual and are pruned by the smoother. This
+   exploits the one thing ghosts lack: temporal coherence.</p>
+</li>
+<li><em>Pro:</em> attacks ghosts at their weakest point (no persistent motion);
+     leverages data we already have.</li>
+<li>
+<p><em>Con:</em> window size vs. cost; ghosts that persist a few frames survive;
+     needs a motion model (constant velocity etc.).</p>
+</li>
+<li>
+<p><strong>Graph spectral methods</strong> (community detection). Build an affinity graph
+   between candidate 3D points (edge weight = shared 2D targets / geometric
+   consistency); ghosts form a different spectral cluster than real points.
+   Spectral clustering separates them without per-point thresholds.</p>
+</li>
+<li><em>Pro:</em> principled, no thresholds, captures global structure.</li>
+<li><em>Con:</em> graph can be huge; spectral decomposition is O(N^3); cluster count
+     must be chosen.</li>
+</ol>
+<p><strong>Recommended deeper direction:</strong> combine <strong>(1) ILP/assignment for the
+uniqueness constraint</strong> (it is exactly what Clean-and-Claim approximates, and
+the codebase already uses <code>linear_sum_assignment</code>) with <strong>(5) temporal joint
+smoothing</strong> (ghosts lack temporal coherence, and we already track through time).
+Together they attack both the spatial (combinatorial) and temporal (persistence)
+dimensions of ghosts, which is stronger than any single idea above. Sparse
+recovery (3) is the most "out-of-the-box" but the grid/basis cost is high;
+keep it as a research option.</p>
+<p><strong>Verdict:</strong> Proceed, but gate shipping on (a) calibration of the Pass-1
+tolerance/length thresholds against synthetic GT, (b) enforcing the
+Idea 2 → 1 → 3 ordering, and (c) a component-size cap for the Hungarian solver.
+tolerance/length thresholds against synthetic GT, (b) enforcing the
+Idea 2 → 1 → 3 ordering, and (c) a component-size cap for the Hungarian solver.
+  - <strong>Tier 1 (deterministic, cheap, auditable):</strong> Reshuffle A's Hungarian Claim
+    Resolution on a <em>pre-filtered</em> cloud (rcm soft-weighted, not hard-pruned)
+    to produce a high-confidence core set + an explicit claimed-target mask.
+    This keeps the interpretable claim record and the conservative-then-expansive
+    intent, while removing the fragile Pass-1 tolerance threshold.
+  - <strong>Tier 2 (soft):</strong> the composite realness score from Reshuffle B, but used
+    <em>only</em> to gate q_seed/q_young in <code>track_assisted</code> (Pass 2 expansion), never
+    as a link weight — honouring the tracker plan's finding.</p>
+<p>Net effect: three ideas → two stages, with Hungarian doing double duty (claim
+  resolution + conflict links) and the realness score confined to its one proven
+  use. The single-score heuristic is rejected as the <em>primary</em> mechanism but
+  retained as a <em>secondary</em> gating signal.</p>
+<h2 id="13-open-questions">13. Open questions<a class="headerlink" href="#13-open-questions" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Should probe run be on by default in cloud/batch mode? (Proposed: on, with auto-pick; disable via <code>probe: false</code>.)</li>
+<li>Quality score storage: reuse <code>prio</code> array or new block group? (Needs coordination with <code>storage/linkage_blocks.py</code>.)</li>
+<li>Should <code>unified</code> fully remove legacy plugins or keep them for 1 release? (Proposed: keep as aliases for 1 release, then remove.)</li>
+</ol>
+<hr />
+<h2 id="14-progress-log">14. Progress log<a class="headerlink" href="#14-progress-log" title="Permanent link">&para;</a></h2>
+<ul>
+<li>2026-11-14: Branch created; scaffold + auto-heuristic + multi-window probing committed.</li>
+<li>2026-11-14: L1 (ghost filter pre-pass) implemented + tests; wired into unified.</li>
+<li>2026-11-14: K1 (layered peeling primitives) implemented + tests.</li>
+<li>2026-11-15: Waves 0–4 completed and verified (50/50 tests passing).</li>
+<li>2026-11-15: Wave 5 completed in openptv2: legacy preset/plugin deprecation notices + <code>unified</code> recommender default (<code>tracking_presets.py</code>, <code>tracking_recommender.py</code>, <code>plugins/loader.py</code>), and <code>compute_trajectory_quality_scores(..., write_prio=...)</code> with quantized <code>int32</code> <code>prio</code> persistence (<code>tracking_report.py</code>, <code>test_tracking_report.py</code>). Verified: 51 passed (unified suite) + 48 passed, 1 skipped (preset/recommender/plugin suite).</li>
+<li>2026-11-15: Wave 6 (Ghost Elimination Hardening) completed: <code>min_core_length=3</code>, <code>_split_kinky_chain</code>, post-Pass-2 pruning, <code>tiers=3</code> progressive peeling (<code>layered_tracking.py</code>), ray-miss/3D-residual/bidir-vel/uniqueness gates (<code>track_assisted.py</code>, <code>tracking_postprocess.py</code>), and <code>RunStore.write_rcm</code>/<code>read_rcm</code> persistence (<code>run_store.py</code>, <code>correspondences.py</code>, <code>gui/ptv.py</code>). Verified: 23 passed; <code>N200_ghost50</code> <code>tiers=3</code> eliminated 100% of Pass-1 ghost leaks (<code>3000/3000</code> verified, <code>200/200</code> tracks, <code>1.000</code> yield, <code>0.999</code> precision, <code>0.000</code> jump rate).</li>
+<li>(append as work proceeds)</li>
+</ul>
+<hr />
+<h2 id="15-critical-review-self-assessment">15. Critical review (self-assessment)<a class="headerlink" href="#15-critical-review-self-assessment" title="Permanent link">&para;</a></h2>
+<h3 id="strengths">Strengths<a class="headerlink" href="#strengths" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Unifies code paths; removes the "preset ran forward-only" class of bug.</li>
+<li>Reuses existing, tested kernels; no new Cython.</li>
+<li>Multi-window probing addresses non-stationarity.</li>
+<li>Backward-compatible aliases.</li>
+</ul>
+<h3 id="weaknesses-and-risks">Weaknesses and risks<a class="headerlink" href="#weaknesses-and-risks" title="Permanent link">&para;</a></h3>
+<p><strong>W1. Probe cost.</strong> A full grid search (v_max×delta_t×use_2d×bidirectional) on 5 windows is ~36 short runs. On large frames this is not cheap. Mitigation: limit grid to the most impactful axis first (v_max), then conditionally try delta_t/use_2d only if probe is poor. Add a <code>probe_budget_seconds</code> cap.</p>
+<p><strong>W2. Proxy metrics.</strong> Median track length / jump rate are proxies, not ground truth. Optimizing them can overfit. Mitigation: validate the composite score against synthetic GT early (move milestone H to before C ships); keep GT comparison in CI.</p>
+<p><strong>W3. Auto thresholds are uncalibrated.</strong> Ratios 0.5/0.2 and density 500/5000 are guesses. Mitigation: derive from the existing synthetic test cases; document the calibration dataset used.</p>
+<p><strong>W4. "Zero behavior change" claim is false as stated.</strong> Unified backbone is trackcorr; e.g. <code>standard_forward</code> originally forward-only. Fixed bundles must be verified to reproduce original outputs byte-for-byte. Mitigation: add a regression test comparing unified (fixed bundle) vs. legacy on a reference dataset before deprecating.</p>
+<p><strong>W5. Per-trajectory quality (E) touches storage schema.</strong> Risk of breaking <code>flowtracks</code>, <code>tracking_postprocess.py</code>, <code>quality_post.py</code>, and readers. Mitigation: reuse the existing <code>prio</code> array (quantized to <code>int32</code>) or a parallel sidecar file; avoid new block groups until validated. Consider deferring E to a later release.</p>
+<p><strong>W6. Interactive prompts in batch/cloud.</strong> <code>probe_confirm</code> prompting is unusable in CI and cloud. Mitigation: default <code>probe_confirm: false</code> in non-TTY; auto-pick best; allow <code>--probe-confirm</code> CLI flag.</p>
+<p><strong>W7. Non-stationarity beyond probing.</strong> A single config cannot be optimal everywhere. Mitigation (advanced, later): allow per-chunk config in <code>pyptv_batch_parallel.py</code> (each shard runs <code>Estimator → Engine → Refiner</code> on its slice). Out of scope for v1 but enabled by the 3-stage architecture.</p>
+<p><strong>W8. Scope creep.</strong> 10 milestones with 8 agents is a lot. Mitigation: ship A+B+C (auto-params + gate + probe) as v1; everything else is v2. Reorder: D (report) before E/F/G/H.</p>
+<p><strong>W9. Dependency on unaudited primitives.</strong> <code>tracking_feasibility</code>, <code>quality_post</code>, <code>run_postprocess_passes</code> may have latent bugs. Mitigation: add targeted unit tests for each primitive before relying on them.</p>
+<p><strong>W10. Transparency.</strong> Users must see what auto chose and why. Mitigation: always print resolved config + rationale + probe table; store in <code>TrackingDecision</code>.</p>
+<h3 id="recommended-reordering-v1-first">Recommended reordering (v1 first)<a class="headerlink" href="#recommended-reordering-v1-first" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>H0 (minimal synthetic GT scorecard)</strong> — 1-command baseline (clean + noisy + dense ghost cases) so every threshold/heuristic in A, C, K, L is calibrated against GT from day 1.</li>
+<li><strong>A (auto-params)</strong> — wired into <code>_auto_regime</code> (fix <code>_auto_regime</code> / <code>sample_probe_windows</code> layout bug first) + tests against synthetic data.</li>
+<li><strong>B (conditioning gate)</strong> + <strong>F0 (lightweight <code>TrackingDecision</code> JSON/dict)</strong> — needed before parallel/sharding.</li>
+<li><strong>C (probe)</strong> — coordinate-descent search, budget-capped (<code>probe_budget_seconds</code>).</li>
+<li><strong>D (post-run report)</strong>.</li>
+<li><strong>L + K (high-density <code>trackcorr v2</code> + 2-Pass Clean-and-Claim)</strong> — Tight-Core + 2D-target pruning + polynomial/shared-target <code>track_assisted</code> + conflict-component Hungarian.</li>
+<li><strong>I (docs/YAML)</strong>.</li>
+<li><strong>G (parallel)</strong> — shares <code>TrackingDecision</code> from F0 across shards.</li>
+<li><strong>H (full CI validation)</strong>.</li>
+<li><strong>E (per-traj quality)</strong> — defer to v2.</li>
+<li><strong>J (cleanup)</strong> — after validation.</li>
+</ol>
+<h3 id="open-questions-to-resolve-before-implementation">Open questions to resolve before implementation<a class="headerlink" href="#open-questions-to-resolve-before-implementation" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Is there a canonical synthetic GT dataset available for calibration of thresholds? (Check <code>tests/test_data</code>.)</li>
+<li>Should probe be on by default in cloud? (Recommend: on, auto-pick, budget-capped.)</li>
+<li>Confirm backward-compat byte-identity is achievable for all legacy presets.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>
