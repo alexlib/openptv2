@@ -1215,9 +1215,13 @@ def track_store(
 
         frame_particles, frame_leaves, frame_merged, frame_seen = recover(
             frames, frame_particles, frame_leaves, project_fn, cals, cpar,
-            frame_brightness=_fb, brightness_threshold=1.2,
+            frame_brightness=_fb, brightness_threshold=1.3,
             frame_seen=frame_seen,
         )
+        # Standalone experiment (vErr 19.35) used legacy NaN handling (no seen
+        # mask) for split points; mirror that here to avoid over-trusting
+        # inferred points in the 2D leaf cost.
+        frame_seen = None
         frame_logb = None
     else:
         frame_merged = None
