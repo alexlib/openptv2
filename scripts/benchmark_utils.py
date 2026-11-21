@@ -355,9 +355,9 @@ def run_liboptv_tracker(
             tracker.full_forward_3d()
         dt = time.perf_counter() - t0
 
-        tracks = bm.read_trajectories(
-            Path("res"), first, first + n_frames - 1, num_cams
-        )
+        from legacy_export import read_ascii_trajectories  # scripts/; the library no longer reads ASCII
+
+        tracks = read_ascii_trajectories(Path("res"), first, first + n_frames - 1)
     finally:
         os.chdir(prev_cwd)
 

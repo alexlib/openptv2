@@ -230,3 +230,39 @@ stage that gains only by dropping true points is reverted.
 Detection at most +20 % (moments in the existing loop, fits on doubtful blobs only). Matching and tracking at most
 +50 %, since alternatives are consulted only at conflict sites. Whole pipeline at most 1.5x today at 0.005 ppp,
 measured at every rung of the density ladder.
+
+## 9. Results
+
+### D0. Truth cases and baselines (done 2026-11-21)
+
+Case `L1_d1_c0_k1_n200_s0.08_a0.18_f0.05_m0.75`, 200 frames, built with `MERGE_SCALE=0.75`. Data in
+`bench/d0_baselines_real_merge_rate_2026-11-21.json`.
+
+- **Merge rate.** Share of particle views inside a merged blob: 22.6 % at the default scale (1.0), 13.4 % at 0.75,
+  9.3 % at 0.6. The real wp2 rate is about 13 %, so **0.75 is the real-like case** and is the main benchmark from
+  here on. The share with no blob is about 16 % in all of them.
+- **Particle image size.** `scripts/psf_estimate.py` (isolated blobs, median grey-weighted second moment): rendered
+  `syn1` 0.35-0.38 px² and 7-9 pixels per blob; real wp2 0.25-0.28 px² and 5-6 pixels. Real tracers are smaller than the
+  rendered ones, which is why the real merge rate is lower, and it agrees with the scale 0.75. The rendered images
+  therefore overstate the overlap problem, and `D1` thresholds must come from each run's own estimate.
+
+| tracker | velocity error | acceleration error | ghosts | long-track completeness | pieces per track | yield | time (s) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| oracle (perfect linking of the input) | 0.078 | 5.1 | 0.001 | 0.67 | 1.37 | 0.76 | 10 |
+| `two_phase` + holistic rounds=2 | **0.084** | **5.1** | 0.027 | **0.74** | **1.16** | **0.79** | 157 |
+| `two_phase` | 0.105 | 5.8 | 0.029 | 0.62 | 1.68 | 0.75 | 8 |
+| `trackcorr` (our port) | 0.167 | 13.2 | 0.060 | 0.67 | 1.41 | 0.76 | 42 |
+| legacy C `trackcorr` (`optv`, forward only) | 0.393 | 27.5 | 0.065 | 0.57 | 2.45 | 0.77 | 19 |
+
+What it says:
+- **We are already far better than legacy `trackcorr`:** velocity error 0.105 against 0.393 (3.7x lower), and
+  0.084 with the holistic loop (4.7x), with fewer pieces per track and fewer ghosts.
+- **The oracle is not a ceiling for the holistic loop.** The oracle links the input points perfectly but keeps the
+  merged-blob positions as they are. The holistic loop corrects those positions, so it ends below the oracle in
+  acceleration error and above it in long-track completeness. The room left is in the *input*, which is what D1-D3 target.
+- **Cost of the holistic loop is 20x** (157 s against 8 s for the same 200 frames), far outside the speed budget of
+  section 8. Any gain from D2/D3 has to be got without that cost, or by making the loop cheaper first.
+- The yield is 0.75-0.79 in every method: the 16 % of particle views with no blob cap it, as the plan said.
+
+D0 also restored the legacy comparator: `scripts/legacy_export.py` now holds the ASCII exporter and trajectory reader
+that the zarr-only change removed, so `synth_bench.py track --tracker optv_c` works again.

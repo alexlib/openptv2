@@ -615,7 +615,7 @@ def _track_optv_c(case: str, label: str, overrides: list[str]) -> Path:
     import tempfile
 
     import benchmark_utils as bu  # scripts/
-    from openptv2.storage.legacy import export_run
+    from legacy_export import export_run  # scripts/
 
     from openptv2.storage import RunStore
 
