@@ -3,9 +3,9 @@
 import numpy as np
 
 from openptv2.ghost_components import (
-    conflict_components,
-    component_sizes,
     classify_component,
+    component_sizes,
+    conflict_components,
 )
 
 

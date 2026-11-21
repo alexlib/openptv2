@@ -185,12 +185,13 @@ def generate_dumbbell_target_files(
 
     # Mirror generated targets into the experiment's RunStore when one exists
     # at the output root (created by a prior sequence step or shipped fixture).
-    store = None
     store_root = Path(out_root) if out_root is not None else yaml_path.parent
     store_path = find_existing_store(store_root)
     if store_path is not None:
         store = RunStore(store_path, mode="a")
-        print(f"Mirroring dumbbell targets into RunStore: {store_path}")
+        print(f"Writing dumbbell targets into RunStore: {store_path}")
+    else:
+        store = RunStore.open(store_root, mode="a")   # zarr is the only target format: create it
 
     rng = np.random.default_rng(spec.seed)
 

@@ -178,9 +178,6 @@ def enforce_reciprocity(
     def next_of(m):
         return frames[m][1] if m in frames else None
 
-    def prev_of(m):
-        return frames[m][0] if m in frames else None
-
     for k in range(first, last + 1):
         if k not in frames:
             continue

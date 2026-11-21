@@ -7,8 +7,11 @@ For every merged observation (particle, frame, camera: its blob is shared with a
 it reports whether the same particle has >= 2 clean cameras in the same frame, a clean blob in the same
 camera within +-T frames, or >= 2 clean cameras (a 3D position) at a nearby frame.
 """
-import sys, numpy as np
+import sys
 from pathlib import Path
+
+import numpy as np
+
 W = Path.home() / "Downloads/HiDImaging/tracker-bench-2026-09-29/cases"
 def run(case):
     tr = np.load(W / case / "truth.npz")

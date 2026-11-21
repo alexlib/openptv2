@@ -68,13 +68,15 @@ def test_suggest_eps0_on_test_splitter(tmp_path):
     the recommended eps0 must be a real spurious-free knee, and widening the
     band must eventually introduce spurious quadruplets."""
     import shutil
+
     import numpy as np
+
     from openptv2.algorithms.calibration import Calibration
-    from openptv2.imgcoord import image_coordinates
-    from openptv2.transforms import convert_arr_metric_to_pixel
     from openptv2.autocalibration import read_calblock
+    from openptv2.imgcoord import image_coordinates
     from openptv2.storage import RunStore
     from openptv2.tracking_framebuf import TargetArray
+    from openptv2.transforms import convert_arr_metric_to_pixel
 
     dst = tmp_path / "splitter"
     shutil.copytree(

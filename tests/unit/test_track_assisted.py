@@ -271,6 +271,7 @@ def test_drop_reclaimed_ghosts_preserves_gap_bridged_links() -> None:
     """Gap-bridged links (step > 1) must not be indexed into adjacent frames'
     compacted remapping tables when _drop_reclaimed_ghosts drops rows."""
     import types
+
     from openptv2.track_assisted import NEXT_NONE, PREV_NONE, _drop_reclaimed_ghosts
 
     def make_frame(xyz, ids, prev, nxt, n_initial):

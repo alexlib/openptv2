@@ -551,7 +551,6 @@ def test_determination_3d_cloud_is_physically_bounded():
     # cibuildwheel test env); skip cleanly there instead of erroring.
     pytest.importorskip("skimage")
     from openptv2.gui.ptv import read_targets
-
     from openptv2.storage import RunStore, find_existing_store
 
     ds = Path(__file__).resolve().parents[2] / "test_data" / "test_cavity"

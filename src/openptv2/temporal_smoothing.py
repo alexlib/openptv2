@@ -138,7 +138,8 @@ def trajectory_positions_from_store(store, traj, linkage_name="ptv_is"):
         try:
             _, _, pos = store.read_linkage(f, name=linkage_name)
         except Exception:
-            pts.append([np.nan, np.nan, np.nan]); continue
+            pts.append([np.nan, np.nan, np.nan])
+            continue
         pos = np.asarray(pos)
         if idx < len(pos):
             pts.append(np.asarray(pos[idx]).ravel()[:3])
@@ -192,7 +193,8 @@ def trajectory_level_ghost_filter(store, first, last, residual_threshold=2.0, li
         for f, idx in traj:
             ld = frame_linkage.get(f)
             if ld is None:
-                pts.append([np.nan, np.nan, np.nan]); continue
+                pts.append([np.nan, np.nan, np.nan])
+                continue
             _, _, pos = ld
             pos = np.asarray(pos)
             if idx < len(pos):
@@ -281,7 +283,8 @@ def trajectory_level_ghost_filter(store, first, last, residual_threshold=2.0, li
             for f, idx in traj:
                 ld = frame_linkage.get(f)
                 if ld is None:
-                    pts_pos.append([np.nan, np.nan, np.nan]); continue
+                    pts_pos.append([np.nan, np.nan, np.nan])
+                    continue
                 _, _, p = ld
                 p = np.asarray(p)
                 if idx < len(p):

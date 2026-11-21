@@ -3,11 +3,11 @@
 import numpy as np
 
 from openptv2.temporal_smoothing import (
-    trajectory_acceleration_residual,
-    smoothness_keep,
     irls_weights,
-    smooth_trajectories,
     resolve_smoothing_config,
+    smooth_trajectories,
+    smoothness_keep,
+    trajectory_acceleration_residual,
 )
 
 

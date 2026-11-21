@@ -69,7 +69,7 @@ def test_ilp_runtime_scaling():
         pos, cam, truth = _make_scenario(n, n // 2, n_targets_per_cam=max(64, n), seed=7)
         conf = np.where(truth, 1.0, 0.3)
         t0 = time.time()
-        keep = ilp_uniqueness_frame(pos, cam, conf=conf)
+        _keep = ilp_uniqueness_frame(pos, cam, conf=conf)
         dt = time.time() - t0
         # Should scale sub-quadratically and stay fast.
         assert dt < 5.0, f"n={n} took {dt:.2f}s (>5s)"

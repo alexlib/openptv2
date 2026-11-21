@@ -3,9 +3,9 @@
 import numpy as np
 
 from openptv2.calibration_aware import (
-    normalize_rcm,
-    multi_cycle_consistency,
     calibration_aware_threshold,
+    multi_cycle_consistency,
+    normalize_rcm,
 )
 
 

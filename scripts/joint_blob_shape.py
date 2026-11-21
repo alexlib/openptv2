@@ -1,14 +1,22 @@
 """Shape cue: intensity-weighted second moments of a blob's pixels (high-passed render), static, with context and over lags of 1/3/6 frames, single vs merged. docs/plans/2026-11-19-joint-tracker.md section 15.2."""
 import os
 from pathlib import Path
+
 import numpy as np
 from scipy.spatial import cKDTree
+
 SYN = Path.home() / "Downloads/HiDImaging/Synthetic-CompleteTest"
 RUN = SYN / "syn1" / "test"
 os.chdir(RUN)
 from openptv2.gui.parameter_manager import ParameterManager
-from openptv2.gui.ptv import (DEFAULT_HIGHPASS_FILTER_SIZE, py_start_proc_c, read_frame_images, simple_highpass)
+from openptv2.gui.ptv import (
+    DEFAULT_HIGHPASS_FILTER_SIZE,
+    py_start_proc_c,
+    read_frame_images,
+    simple_highpass,
+)
 from openptv2.storage import RunStore
+
 pm = ParameterManager(); pm.from_yaml(RUN / "parameters_Run1.yaml")
 cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(pm)
 base = pm.get_parameter("sequence")["base_name"]; ptv = pm.get_parameter("ptv") or {}
@@ -72,6 +80,7 @@ for L in (1, 3, 6):
         print("   %-18s %.3f / %.3f   AUC %.3f" % (nm, np.median(S[:, k]), np.median(M[:, k]), auc(np.r_[S[:, k], M[:, k]], yy)))
 # context: relative to the particle's own typical shape (median over its single-particle frames)
 from collections import defaultdict
+
 typ = defaultdict(list)
 for (f, cam, p), (v, c, sg) in obs.items():
     if c == 1: typ[(cam, p)].append(v[:4])

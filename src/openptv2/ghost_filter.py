@@ -50,7 +50,6 @@ def filter_low_support(
             dropped[f] = 0
             continue
         # backup originals once
-        backup_key = f"{backup_group}/{_key(f)}"
         try:
             grp = store.root[backup_group]
         except KeyError:

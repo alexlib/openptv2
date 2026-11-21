@@ -1,6 +1,7 @@
 """Tests for frame_quality module."""
 
 import numpy as np
+
 from openptv2.frame_quality import frame_quality_scores, low_quality_frames
 
 

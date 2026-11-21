@@ -295,7 +295,6 @@ def test_unified_parallel_workers_saves_decision_and_links(cavity_test_env):
 
     from openptv2.plugins.unified_tracking import Tracking
     from openptv2.tracking_decision import TrackingDecision
-
     from tests.helpers.synthetic_scene import make_cavity_scene
 
     cpar = ControlPar.from_yaml("parameters.yaml")
@@ -311,7 +310,7 @@ def test_unified_parallel_workers_saves_decision_and_links(cavity_test_env):
         first=10001,
         last=10005,
     )
-    
+
 
     pm = SimpleNamespace(
         parameters={

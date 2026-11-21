@@ -171,7 +171,8 @@ def stitch_trajectories(
             vb = ib["vel"]
             vel_ok = True
             if va is not None and vb is not None:
-                na = np.linalg.norm(va); nb = np.linalg.norm(vb)
+                na = np.linalg.norm(va)
+                nb = np.linalg.norm(vb)
                 if na > 1e-9 and nb > 1e-9:
                     cos = float(np.dot(va, vb) / (na * nb))
                     vel_ok = cos >= velocity_cos_tol
@@ -241,7 +242,8 @@ def stitch_trajectories(
                 continue
             v1 = p_cur - p_prev
             v2 = p_next - p_cur
-            n1 = np.linalg.norm(v1); n2 = np.linalg.norm(v2)
+            n1 = np.linalg.norm(v1)
+            n2 = np.linalg.norm(v2)
             if n1 < 1e-9 or n2 < 1e-9:
                 continue
             cos = float(np.dot(v1, v2) / (n1 * n2))

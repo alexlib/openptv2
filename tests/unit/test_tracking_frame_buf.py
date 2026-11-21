@@ -19,7 +19,6 @@ from openptv2.algorithms.tracking_frame_buf import (
     write_path_frame,
     write_targets,
 )
-
 from openptv2.storage import RunStore
 
 TEST_DATA = os.path.join(os.path.dirname(__file__), "..", "..", "test_data")

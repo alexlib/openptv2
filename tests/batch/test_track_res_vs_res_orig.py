@@ -90,8 +90,9 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
 
         # First run: no new particle — need sequence+tracking ("both")
         # Seed RunStore from newpart/*_targets since Existing_Target=1
-        from openptv2.storage import RunStore
         import numpy as np
+
+        from openptv2.storage import RunStore
 
         seed_store = RunStore(res_dir / "run.zarr", mode="w")
         for frame in range(first, last + 1):

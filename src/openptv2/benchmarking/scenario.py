@@ -108,13 +108,12 @@ def generate_scenario(
         z0 = rng.uniform(-half[2] * 0.7, half[2] * 0.7)
         # Velocity magnitude ~ N(velocity, velocity_jitter), direction random unit
         # vector (avoids the cos(th) degeneracy that could zero out a component).
-        mag = max(0.0, float(rng.normal(spec.velocity, spec.velocity_jitter)))
+        rng.normal(spec.velocity, spec.velocity_jitter)  # drawn only to keep the random stream unchanged
         direction = rng.normal(0.0, 1.0, 3)
         dn = float(np.linalg.norm(direction))
         if dn < 1e-12:
             direction = np.array([1.0, 0.0, 0.0])
             dn = 1.0
-        v = (mag / dn) * direction
         acc = rng.normal(0.0, spec.acceleration, 3)
 
         vel = np.zeros(3)

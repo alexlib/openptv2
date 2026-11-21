@@ -193,7 +193,10 @@ def test_holistic_name_is_two_phase_with_two_rounds(monkeypatch):
 
 
 def test_retired_trackers_are_hidden_but_resolve():
-    from openptv2.plugins.loader import discover_available_plugins, resolve_plugin_module
+    from openptv2.plugins.loader import (
+        discover_available_plugins,
+        resolve_plugin_module,
+    )
     from openptv2.tracking_presets import TRACKER_CHOICES, infer_tracker
 
     shown = set(discover_available_plugins(None)["available_tracking"])

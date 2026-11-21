@@ -4,8 +4,8 @@ import numpy as np
 
 from openptv2.ghost_ilp import (
     ilp_uniqueness_frame,
-    solve_component_ilp,
     resolve_ilp_config,
+    solve_component_ilp,
 )
 
 

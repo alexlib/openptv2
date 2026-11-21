@@ -1,9 +1,12 @@
 """Appearance cue: grey sum / pixel count of a blob relative to the particle's own typical value (rendered Synthetic-CompleteTest frames, openptv2 detections, truth from the render). docs/plans/2026-11-19-joint-tracker.md section 15.2."""
-import numpy as np
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+
+import numpy as np
 from scipy.spatial import cKDTree
+
 from openptv2.storage import RunStore
+
 SYN = Path.home() / "Downloads/HiDImaging/Synthetic-CompleteTest"
 st = RunStore.open(SYN / "syn1" / "test", mode="r")
 tr = np.load(SYN / "truth/truth.npz")

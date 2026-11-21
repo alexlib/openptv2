@@ -43,11 +43,11 @@ def interpolate_frame_correspondences(
 ) -> int:
     """If a frame has no correspondences, interpolate from neighbors. Returns count written."""
     try:
-        pos, cam = store.read_correspondences(frame)
+        pos, _cam = store.read_correspondences(frame)
         if len(pos) > 0:
             return 0
     except Exception:
-        pos, cam = None, None
+        pos = None
     # find nearest non-empty neighbor
     for delta in range(1, 5):
         for cand in (frame - delta, frame + delta):

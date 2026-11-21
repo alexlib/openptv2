@@ -1109,7 +1109,6 @@ class Tracking:
         # Reuse the priority-segment engine via the existing plugin.
         from openptv2.plugins.cython_3d_tracking import Cython3DTracker
 
-        t = Cython3DTracker(ptv=self.ptv, exp=self.exp)
         # Build a minimal tracker instance is not possible without ptv/exp;
         # fall back to the array-level Cython3DTracker.track_frames.
         return Cython3DTracker().track_frames(frame_particles)
