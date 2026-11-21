@@ -2,16 +2,94 @@
   "case": "L1_d1_c0_k1_n200_s0.08_a0.18_f0.05_m0.75",
   "build": "MERGE_SCALE=0.75 scripts/synth_bench.py build --level L1 --mult 1 --n-out 200 --sigma-px 0.08 --amp-jitter 0.18 --amp-flicker 0.05",
   "eval": "scripts/synth_bench.py eval --case <case> --ref two_phase",
-  "share_of_particle_views": {"in_merged_blob": 0.134, "no_blob": 0.162, "note": "n60 case of the same settings; default scale 1.0 gives 0.226 / 0.156"},
+  "share_of_particle_views": {
+    "in_merged_blob": 0.134,
+    "no_blob": 0.162,
+    "note": "n60 case of the same settings; default scale 1.0 gives 0.226 / 0.156"
+  },
   "results": {
-    "oracle":                       {"time_s": 10.3,  "vErr": 0.0775, "aErr": 5.12,  "ghost": 0.0007, "longC": 0.673, "frag": 1.37, "yield": 0.759},
-    "two_phase+holistic_rounds=2":  {"time_s": 156.7, "vErr": 0.0843, "aErr": 5.06,  "ghost": 0.0274, "longC": 0.738, "frag": 1.16, "yield": 0.790, "vErrC": 0.0599, "vErrX": 0.1609},
-    "two_phase":                    {"time_s": 7.8,   "vErr": 0.1046, "aErr": 5.80,  "ghost": 0.0286, "longC": 0.623, "frag": 1.68, "yield": 0.754, "vErrC": 0.0905},
-    "trackcorr (ours)":             {"time_s": 41.9,  "vErr": 0.1665, "aErr": 13.2,  "ghost": 0.0600, "longC": 0.666, "frag": 1.41, "yield": 0.760, "vErrC": 0.0809},
-    "optv_c (legacy C trackcorr)":  {"time_s": 19.1,  "vErr": 0.3925, "aErr": 27.5,  "ghost": 0.0651, "longC": 0.565, "frag": 2.45, "yield": 0.766, "vErrC": 0.1774}
+    "oracle": {
+      "time_s": 10.3,
+      "vErr": 0.0775,
+      "aErr": 5.12,
+      "ghost": 0.0007,
+      "longC": 0.673,
+      "frag": 1.37,
+      "yield": 0.759
+    },
+    "two_phase+holistic_rounds=2": {
+      "time_s": 156.7,
+      "vErr": 0.0843,
+      "aErr": 5.06,
+      "ghost": 0.0274,
+      "longC": 0.738,
+      "frag": 1.16,
+      "yield": 0.79,
+      "vErrC": 0.0599,
+      "vErrX": 0.1609
+    },
+    "two_phase": {
+      "time_s": 7.8,
+      "vErr": 0.1046,
+      "aErr": 5.8,
+      "ghost": 0.0286,
+      "longC": 0.623,
+      "frag": 1.68,
+      "yield": 0.754,
+      "vErrC": 0.0905
+    },
+    "trackcorr (ours)": {
+      "time_s": 41.9,
+      "vErr": 0.1665,
+      "aErr": 13.2,
+      "ghost": 0.06,
+      "longC": 0.666,
+      "frag": 1.41,
+      "yield": 0.76,
+      "vErrC": 0.0809
+    },
+    "optv_c (legacy C trackcorr)": {
+      "time_s": 19.1,
+      "vErr": 0.3925,
+      "aErr": 27.5,
+      "ghost": 0.0651,
+      "longC": 0.565,
+      "frag": 2.45,
+      "yield": 0.766,
+      "vErrC": 0.1774
+    },
+    "optv_c tuned (dv +-0.3)": {
+      "time_s": 7.7,
+      "vErr": 0.1621,
+      "aErr": 10.2,
+      "ghost": 0.0599,
+      "longC": 0.559,
+      "frag": 2.47,
+      "yield": 0.764,
+      "vErrC": 0.1197
+    },
+    "optv_c dv sweep (vErr)": {
+      "0.84": 0.393,
+      "0.5": 0.247,
+      "0.3": 0.162,
+      "0.2": 0.172,
+      "0.12": 0.266
+    }
   },
   "psf_second_moment_px2_median": {
-    "syn1_rendered": {"cam1": 0.35, "cam2": 0.38, "cam3": 0.35, "cam4": 0.38, "n_pix": "7-9"},
-    "wp2_real": {"cam1": 0.28, "cam2": 0.25, "cam3": 0.25, "cam4": 0.25, "n_pix": "5-6"}
+    "syn1_rendered": {
+      "cam1": 0.35,
+      "cam2": 0.38,
+      "cam3": 0.35,
+      "cam4": 0.38,
+      "n_pix": "7-9"
+    },
+    "wp2_real": {
+      "cam1": 0.28,
+      "cam2": 0.25,
+      "cam3": 0.25,
+      "cam4": 0.25,
+      "n_pix": "5-6"
+    }
   }
 }

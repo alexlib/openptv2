@@ -255,14 +255,30 @@ Case `L1_d1_c0_k1_n200_s0.08_a0.18_f0.05_m0.75`, 200 frames, built with `MERGE_S
 | legacy C `trackcorr` (`optv`, forward only) | 0.393 | 27.5 | 0.065 | 0.57 | 2.45 | 0.77 | 19 |
 
 What it says:
-- **We are already far better than legacy `trackcorr`:** velocity error 0.105 against 0.393 (3.7x lower), and
-  0.084 with the holistic loop (4.7x), with fewer pieces per track and fewer ghosts.
+- **Legacy `trackcorr` needs tuned bounds; see the sweep below.** With the case's own generous bounds (velocity
+  +-0.84 per axis, about 9x the real step) the legacy tracker mislinks heavily (velocity error 0.393). That is not a fair
+  comparison. The fair one is against its best bounds (+-0.3: 0.162), and against that `two_phase` is 1.5x lower (0.105)
+  and `two_phase` + holistic 1.9x lower (0.084), with fewer pieces per track (1.68 and 1.16 against 2.47) and fewer ghosts.
 - **The oracle is not a ceiling for the holistic loop.** The oracle links the input points perfectly but keeps the
   merged-blob positions as they are. The holistic loop corrects those positions, so it ends below the oracle in
   acceleration error and above it in long-track completeness. The room left is in the *input*, which is what D1-D3 target.
 - **Cost of the holistic loop is 20x** (157 s against 8 s for the same 200 frames), far outside the speed budget of
   section 8. Any gain from D2/D3 has to be got without that cost, or by making the loop cheaper first.
 - The yield is 0.75-0.79 in every method: the 16 % of particle views with no blob cap it, as the plan said.
+
+**Legacy `trackcorr` with tuned velocity bounds** (same case; forward only, no post-processing, which is how the C
+tracker works; acceleration bound 0.712 and angle 100 as in the case):
+
+| bound per axis | velocity error | long-track completeness | pieces per track | yield | link recall |
+|---|---:|---:|---:|---:|---:|
+| 0.84 (case default) | 0.393 | 0.57 | 2.45 | 0.77 | 0.89 |
+| 0.5 | 0.247 | 0.57 | 2.44 | 0.77 | 0.89 |
+| **0.3** | **0.162** | 0.56 | 2.47 | 0.76 | 0.88 |
+| 0.2 | 0.172 | 0.49 | 2.72 | 0.71 | 0.80 |
+| 0.12 | 0.266 | 0.32 | 3.04 | 0.56 | 0.58 |
+
+Tuned legacy is about as accurate as our port of `trackcorr` (0.167) and takes 8 s, but still cuts tracks into
+about 2.5 pieces each. Acceleration bound and angle were not tuned.
 
 D0 also restored the legacy comparator: `scripts/legacy_export.py` now holds the ASCII exporter and trajectory reader
 that the zarr-only change removed, so `synth_bench.py track --tracker optv_c` works again.
