@@ -139,6 +139,30 @@ def seen_mask(cam_ids: np.ndarray) -> np.ndarray:
     return np.asarray(cam_ids) >= 0
 
 
+def _digest(arr: np.ndarray) -> bytes:
+    """Cheap content digest of an array (shape and dtype included)."""
+    import hashlib
+
+    a = np.ascontiguousarray(arr)
+    h = hashlib.blake2b(a.tobytes(), digest_size=16)
+    h.update(repr((a.shape, str(a.dtype))).encode())
+    return h.digest()
+
+
+def _put_array(group: Any, name: str, data: np.ndarray) -> None:
+    """Write ``data`` as array ``name``. An existing array of the same shape and dtype is overwritten in
+    place (one chunk write); creating it anew deletes and recreates its files, which costs several times more."""
+    if data.size:
+        try:
+            arr = group[name]
+        except KeyError:
+            arr = None
+        if arr is not None and arr.shape == data.shape and arr.dtype == data.dtype:
+            arr[...] = data
+            return
+    group.create_array(name, data=data, overwrite=True)
+
+
 class RunStoreError(RuntimeError):
     """A RunStore operation failed.
 
@@ -180,6 +204,11 @@ class RunStore:
         # through one re-entrant lock makes each operation atomic; the lock
         # granularity is per-frame-array, so throughput stays I/O-bound.
         self._lock = threading.RLock()
+        # digest of the last targets/correspondences array this process read or wrote, per key: tracking
+        # re-saves every frame's targets and points unchanged, and an identical write is skipped
+        self._clean: dict[tuple, bytes] = {}
+        # linkage held in memory during a tracking pass (see deferred_linkage): name -> frame -> columns
+        self._pending_links: Optional[dict[str, dict[int, dict[str, np.ndarray]]]] = None
         self._bs: dict[str, BlockSet] = {}  # linkage name -> blocks ('' = quality)
         self.root: Any
         try:
@@ -325,9 +354,14 @@ class RunStore:
         ndarray of ``[pnr, x, y, n, nx, ny, sumg, tnr]``.
         """
         arr = self._targets_to_array(targets)
+        key = ("t", cam, frame)
+        digest = _digest(arr)
+        if self._clean.get(key) == digest:
+            return
         cam_group = _require_group(self.root["targets"], f"cam_{cam}")
         try:
-            cam_group.create_array(_frame_key(frame), data=arr, overwrite=True)
+            _put_array(cam_group, _frame_key(frame), arr)
+            self._clean[key] = digest
         except Exception as exc:
             raise RunStoreError(
                 f"Failed to write targets for cam={cam} frame={frame}: {exc}"
@@ -342,6 +376,7 @@ class RunStore:
             raise RunStoreError(
                 f"No targets stored for cam={cam} frame={frame}"
             ) from None
+        self._clean[("t", cam, frame)] = _digest(raw)
         tarr = TargetArray(len(raw))
         for i, row in enumerate(raw):
             tarr[i].set_pnr(int(row[0]))
@@ -374,10 +409,13 @@ class RunStore:
                 f"pos has {pos_3d.shape[0]}, cam_target_ids has {cam_target_ids.shape[0]}"
             )
         combined = np.hstack([pos_3d, cam_target_ids.astype(np.float64)])
+        key = ("c", frame)
+        digest = _digest(combined)
+        if self._clean.get(key) == digest:
+            return
         try:
-            self.root["correspondences"].create_array(
-                _frame_key(frame), data=combined, overwrite=True
-            )
+            _put_array(self.root["correspondences"], _frame_key(frame), combined)
+            self._clean[key] = digest
         except Exception as exc:
             raise RunStoreError(
                 f"Failed to write correspondences for frame {frame}: {exc}"
@@ -392,6 +430,7 @@ class RunStore:
             raise RunStoreError(
                 f"No correspondences stored for frame {frame}"
             ) from None
+        self._clean[("c", frame)] = _digest(data)
         if data.ndim == 1:
             # A zero-particle frame stored as a flat (0,) array (e.g. by a
             # caller that wrote np.empty(0) instead of np.empty((0, 3 + C)) --
@@ -584,6 +623,44 @@ class RunStore:
 
     # -- linkage --------------------------------------------------------
 
+    def deferred_linkage(self):
+        """Context manager: linkage writes inside it are held in memory and written once, as blocks, when it
+        ends. A tracking pass writes one frame at a time, and every write costs several array operations in
+        zarr; one block write per run replaces them. Reads inside the context see the held frames first.
+        Nested use joins the outer context."""
+        from contextlib import contextmanager
+
+        @contextmanager
+        def _ctx():
+            if self._pending_links is not None:
+                yield self
+                return
+            self._pending_links = {}
+            try:
+                yield self
+            finally:
+                pending, self._pending_links = self._pending_links, None
+                for name, frames in pending.items():
+                    self._flush_pending(name, frames)
+
+        return _ctx()
+
+    def _flush_pending(self, name: str, frames: dict[int, dict[str, np.ndarray]]) -> None:
+        order = sorted(frames)
+        with_prio = [f for f in order if "prio" in frames[f]]
+        if len(with_prio) not in (0, len(order)):      # mixed: keep the plain per-frame path
+            for f in order:
+                c = frames[f]
+                self.write_linkage(f, c["prev"], c["next"], c["pos"], name=name, prio=c.get("prio"))
+            return
+        self.write_linkage_many(
+            order,
+            [(frames[f]["prev"], frames[f]["next"]) for f in order],
+            [frames[f]["pos"] for f in order],
+            name=name,
+            prio=[frames[f]["prio"] for f in order] if with_prio else None,
+        )
+
     def write_linkage(
         self,
         frame: int,
@@ -608,6 +685,13 @@ class RunStore:
                 f"linkage row-count mismatch for frame {frame} ({name}): "
                 f"prev={prev_ids.shape[0]} next={next_ids.shape[0]} pos={n}"
             )
+        if self._pending_links is not None:
+            held = {"prev": prev_ids.copy(), "next": next_ids.copy(), "pos": pos_3d.copy()}
+            if prio is not None:
+                held["prio"] = np.array(prio, dtype=np.int32)
+            self._pending_links.setdefault(name, {})[int(frame)] = held
+            self._mark_unsealed()
+            return
         try:
             bs = self._block_mode(f"linkage/{name}")
             if bs is not None:
@@ -620,13 +704,11 @@ class RunStore:
             fg = _require_group(
                 _require_group(self.root["linkage"], name), _frame_key(frame)
             )
-            fg.create_array("prev", data=prev_ids, overwrite=True)
-            fg.create_array("next", data=next_ids, overwrite=True)
-            fg.create_array("pos", data=pos_3d, overwrite=True)
+            _put_array(fg, "prev", prev_ids)
+            _put_array(fg, "next", next_ids)
+            _put_array(fg, "pos", pos_3d)
             if prio is not None:
-                fg.create_array(
-                    "prio", data=np.asarray(prio, dtype=np.int32), overwrite=True
-                )
+                _put_array(fg, "prio", np.asarray(prio, dtype=np.int32))
         except Exception as exc:
             raise RunStoreError(
                 f"Failed to write linkage '{name}' for frame {frame}: {exc}"
@@ -672,6 +754,9 @@ class RunStore:
     def read_linkage(
         self, frame: int, name: str = "ptv_is"
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        held = self._held(name, frame)
+        if held is not None:
+            return held["prev"], held["next"], held["pos"]
         bs = self._blocks(f"linkage/{name}")
         if bs is not None:
             cols = bs.read(frame)
@@ -686,7 +771,15 @@ class RunStore:
                 f"No linkage '{name}' stored for frame {frame}"
             ) from None
 
+    def _held(self, name: str, frame: int) -> Optional[dict[str, np.ndarray]]:
+        if self._pending_links is None:
+            return None
+        return self._pending_links.get(name, {}).get(int(frame))
+
     def read_prio(self, frame: int, name: str = "ptv_is") -> Optional[np.ndarray]:
+        held = self._held(name, frame)
+        if held is not None:
+            return held.get("prio")
         bs = self._blocks(f"linkage/{name}")
         if bs is not None:
             cols = bs.read(frame)
@@ -699,6 +792,8 @@ class RunStore:
             return None
 
     def has_linkage(self, frame: int, name: str = "ptv_is") -> bool:
+        if self._held(name, frame) is not None:
+            return True
         bs = self._blocks(f"linkage/{name}")
         if bs is not None and frame in bs:
             return True
@@ -707,9 +802,10 @@ class RunStore:
     def linkage_frames(self, name: str = "ptv_is") -> list[int]:
         """Sorted frame numbers of one linkage stream (blocks and per-frame)."""
         key = f"linkage/{name}"
+        held = set(self._pending_links.get(name, {})) if self._pending_links is not None else set()
         if key not in self.root:
-            return []
-        found = {
+            return sorted(held)
+        found = held | {
             _frame_num(k) for k in self.root[key].keys() if k.startswith("frame_")
         }
         bs = self._blocks(key)
@@ -755,6 +851,8 @@ class RunStore:
         """
         key = f"linkage/{name}"
         self._bs.pop(key, None)
+        if self._pending_links is not None:
+            self._pending_links.pop(name, None)
         if key in self.root:
             del self.root[key]
             self._mark_unsealed()

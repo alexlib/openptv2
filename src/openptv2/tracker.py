@@ -203,18 +203,26 @@ class Tracker:
         # many steps ran.
         trackcorr_c_finish(self._run, self._spar.get_last())
 
+    def _linkage_held(self):
+        """Hold this pass's linkage writes in memory and write them once at the end (RunStore.deferred_linkage)."""
+        from contextlib import nullcontext
+
+        store = self._store
+        return store.deferred_linkage() if store is not None and hasattr(store, "deferred_linkage") else nullcontext()
+
     def full_forward(self) -> None:
         """
         Run complete forward tracking (restart + loop + finalize).
         """
-        self.restart()
+        with self._linkage_held():
+            self.restart()
 
-        # Process all frames
-        while self.step_forward():
-            pass
+            # Process all frames
+            while self.step_forward():
+                pass
 
-        # Finalize
-        self.finalize()
+            # Finalize
+            self.finalize()
 
     def full_backward(self) -> None:
         """
@@ -225,7 +233,8 @@ class Tracker:
         if not self._is_initialized:
             raise RuntimeError("Tracker not initialized. Run full_forward() first.")
 
-        trackback_c(self._run)
+        with self._linkage_held():
+            trackback_c(self._run)
 
     def postprocess(
         self,
@@ -321,14 +330,15 @@ class Tracker:
         """
         Run complete 3D forward tracking.
         """
-        self.restart()
+        with self._linkage_held():
+            self.restart()
 
-        # Process all frames
-        while self.step_forward_3d():
-            pass
+            # Process all frames
+            while self.step_forward_3d():
+                pass
 
-        # Write final frame (mirrors trackcorr_c_finish at seq_par.last)
-        trackcorr_c_finish(self._run, self._spar.get_last())
+            # Write final frame (mirrors trackcorr_c_finish at seq_par.last)
+            trackcorr_c_finish(self._run, self._spar.get_last())
 
     def full_forward_chunked_parallel(
         self,

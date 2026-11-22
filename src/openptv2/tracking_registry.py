@@ -235,7 +235,7 @@ FAST_3D_INFO = TrackerInfo(
     supports_2d=False,
     supports_postprocessing=True,
     supports_gap_relinking=True,
-    speed_ranking="moderate",
+    speed_ranking="fast",
     density_ranking="moderate",
     accuracy_ranking="high",
     parameters=(
@@ -266,8 +266,8 @@ FAST_3D_INFO = TrackerInfo(
             how_to_choose="Keep true unless you want the raw links.",
         ),
     ),
-    best_for="Runs where only triangulated points are available, and as a 3D-only baseline. The linking kernel is fast, "
-             "but writing the results to the run store dominates its run time today (see docs/trackers.md, speed).",
+    best_for="Runs where only triangulated points are available, and as a 3D-only baseline; "
+             "about as fast as two_phase forward (4.9 s against 4.2 s on the benchmark, docs/trackers.md).",
     avoid_when="You want the best quality or the shortest run time on the standard pipeline (two_phase).",
     typical_datasets="Any with triangulated points.",
     plugin_module="openptv2.plugins.default_tracking",

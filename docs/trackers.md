@@ -87,16 +87,17 @@ the rms speed (lower is better); link precision = share of links that are true.
 |---|---|---|---|---|
 | `two_phase`, both (default) | **0.105** | **0.971** | 0.62 | **4.0 s** |
 | `two_phase`, forward | 0.116 | 0.973 | 0.59 | 4.2 s |
-| `fast_3d`, both | 0.167 | 0.940 | 0.67 | 22.6 s |
-| `fast_3d`, forward | 0.157 | 0.941 | 0.67 | 11.3 s |
-| `trackcorr`, both | 0.220 | 0.940 | 0.54 | 34.6 s |
-| `trackcorr`, forward | n/a | n/a | n/a | 23.1 s |
+| `fast_3d`, both | 0.167 | 0.940 | 0.67 | 11.3 s |
+| `fast_3d`, forward | 0.157 | 0.941 | 0.67 | 4.9 s |
+| `trackcorr`, both | 0.220 | 0.940 | 0.54 | 24.2 s |
+| `trackcorr`, forward | n/a | n/a | n/a | 18.2 s |
 
-Two honest notes. (1) `fast_3d` is not fast today: its linking kernel takes about 2 s, and writing the results to the run
-store (one array per frame and camera, plus the links) takes about 12 s of the 15 s; `two_phase` writes only the links.
-Faster output is a follow-up (stage 3 of `docs/plans/2026-11-21-tracker-setup.md`). (2) `fast_3d` forward scored better than
-`fast_3d` both here; the backward pass of `fast_3d` is not helping on this case, so `direction: forward`
-is worth a try for it. The default stays `both` because it helps `two_phase`.
+Notes. (1) Writing the results to the run store used to dominate `fast_3d` and `trackcorr` (every frame wrote several
+zarr arrays; `fast_3d` took 22.6 s and `trackcorr` 34.6 s, with the kernel itself about 2 s for `fast_3d`). Tracking now
+holds the linkage in memory and writes it once per pass, rewrites in place, and skips identical re-writes: `fast_3d` forward
+11.3 s to 4.9 s, `trackcorr` both 34.6 s to 24.2 s, with identical link quality. What remains for `trackcorr` is its 2D
+search itself. (2) `fast_3d` forward scored better than `fast_3d` both here; the backward pass of `fast_3d` is not helping
+on this case, so `direction: forward` is worth a try for it. The default stays `both` because it helps `two_phase`.
 
 ### Settings: shared, and per tracker
 
