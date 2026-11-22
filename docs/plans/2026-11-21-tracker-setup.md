@@ -193,9 +193,30 @@ itself costs about 100 s of the 109, whatever the linker; that is the cost to cu
 for the others; the ghost rules `q_seed`/`q_young` cause it (off: 99.6 %). With ghosts they win (link precision 0.971
 against 0.944), so they stay on and the guide says when to switch them off.
 
-## 10. What is left
+## 10. Where the holistic loop spends its time (2026-11-23)
 
-- **Holistic loop speed** (about 100 s on the benchmark; `two_phase` itself 4.9 s). Vectorise the per-observation Python in
-  `merge_refine`/`merge_post`, then Cython if needed. This decides whether holistic can ever be a default.
+The loop now logs seconds per phase. Benchmark case m0.75, `two_phase` + 2 rounds (the run took 110 to 159 s depending on
+machine load; `two_phase` alone 4.9 s), per round 1 / round 2:
+
+| Phase | seconds |
+|---|---|
+| membership + signatures | 18.3 / 3.4 |
+| **refine (per-blob Python loop around `split_blob_effective`, 3 inner rounds)** | **37.0 / 32.5** |
+| births (`birth_targets`, `birth_points`) | 7.1 / 5.7 |
+| write back to the store | 6.3 / 5.5 |
+| relink (`two_phase`) | 4.7 / 4.2 |
+
+Refine is over half of the loop. A cProfile run shows why: 384,000 calls of `split_blob_effective` (each a few array
+operations on 2 to 3 members) plus 17,600 calls of `project_pixels` on tiny arrays. A grouped rewrite of
+`birth_targets` was tried first and proved equivalent to the old loop, but changed the run time by about 3 %, so it was
+not kept: the per-call overhead is spread over many functions and needs a batched design, not one function at a time.
+
+## 11. What is left
+
+- **Holistic loop speed.** Batch the refine step: group the blobs of a frame and camera by member count (2, 3, 4), run
+  `split_blob_effective`, the gate test and the projections on whole groups at once (young members and hidden partners as
+  masks), and project all points of a frame and camera in one call. Prove each step equal to the current loop on the
+  benchmark before replacing it. Target: the loop at most 2 to 3 times the `two_phase` time (about 15 s), from about 110 s.
+  This decides whether holistic can ever be a default.
 - **Stage 6, deletion** of `unified`, `4be`, `hybrid_deltat_3d`, the splitter alias and `tracking_presets.py` after one
   release of warnings (decision C). Not before.

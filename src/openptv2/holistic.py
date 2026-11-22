@@ -20,6 +20,7 @@ Pure library code; :mod:`openptv2.plugins.holistic_tracking` runs it in the pipe
 
 from __future__ import annotations
 
+import time
 from typing import Any, Callable
 
 import numpy as np
@@ -78,12 +79,15 @@ def run_holistic(
     store = fresh(store)
     n_orig = {f: len(store.read_correspondences(f)[0]) for f in frames}
     for rnd in range(1, rounds + 1):
+        t_round = time.perf_counter()
         arr = arrays_from_store(store, linkage_name, first, last, n_cams)
         blob, centre, sumg, n_att = extend_membership(arr["frame"], arr["pos"], arr["blob"], arr["centre"],
                                                       arr["sumg"], arr["blobs"], cpar, cals, radius=radius)
         sig = estimate_signatures(arr["tid"], arr["frame"], blob, sumg)
+        t_refine = time.perf_counter()
         res = refine_merged(arr["frame"], arr["tid"], blob, centre, sumg, cpar, cals, vpar, signatures=sig,
                             partner_min_len=partner_min_len)
+        t_births = time.perf_counter()
         counts = {(f, c): np.asarray(store.root[f"targets/cam_{c}/frame_{f:06d}"])[:, 3:6].astype(int)
                   for f in frames for c in range(n_cams)}
         fallback = np.full(res.pred_px.shape, np.nan)
@@ -95,6 +99,7 @@ def run_holistic(
         targets = birth_targets(arr["frame"], blob, res.pred_px, sig, arr["blobs"], counts, min_resid=min_resid,
                                 fallback_px=fallback)
         births = birth_points(targets, frames, cpar, cals, vpar)
+        t_write = time.perf_counter()
         new_pos = np.where(np.isfinite(res.x[:, :1]), res.x, arr["pos"])
         sd = np.sqrt(res.pos_var) if res.pos_var is not None else np.full(len(new_pos), np.nan)
         sd_med = float(np.nanmedian(sd)) if np.isfinite(sd).any() else 0.05
@@ -134,9 +139,12 @@ def run_holistic(
         info = {"round": rnd, "rows": int(len(arr["frame"])), "attachments": int(n_att),
                 "births": int(len(births["frame"])), "refine": res.info[-1] if res.info else {}}
         stats["rounds"].append(info)
-        log(f"holistic round {rnd}: {info['births']} births, {info['attachments']} attachments")
+        t_link = time.perf_counter()
         relink()
         store = fresh(store)
+        log(f"holistic round {rnd}: {info['births']} births, {info['attachments']} attachments; seconds: "
+            f"membership+signatures {t_refine - t_round:.1f}, refine {t_births - t_refine:.1f}, "
+            f"births {t_write - t_births:.1f}, write {t_link - t_write:.1f}, relink {time.perf_counter() - t_link:.1f}")
     if drop_unlinked_births and rounds > 0:
         # births that no track took are about half wrong (benchmark: 53 % against 96 % for linked births): drop them
         from openptv2.tracking_postprocess import read_linkage
