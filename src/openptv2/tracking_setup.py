@@ -37,8 +37,8 @@ DIRECTION_LABELS: dict[str, str] = {
     "both": "Forward + backward",
 }
 
-# Trackers that can run the merged-blob loop today. fast_3d and trackcorr follow in
-# stage 5 of docs/plans/2026-11-21-tracker-setup.md.
+# Trackers that can run the merged-blob loop. Tried with fast_3d and rejected: it made the velocity error worse
+# (0.1665 -> 0.1986) while the loop cost 100 s; trackcorr works on 2D targets (docs/plans/2026-11-21-tracker-setup.md).
 HOLISTIC_TRACKERS: frozenset[str] = frozenset({"two_phase"})
 # Trackers whose ``postprocess`` switch does something (two_phase carries gaps and
 # confirms links inside its loop).

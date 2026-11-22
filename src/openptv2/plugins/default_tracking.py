@@ -26,6 +26,26 @@ class Tracking:
         self.ptv = ptv
         self.exp = exp
 
+    @staticmethod
+    def _reversed_pass(tracker) -> None:
+        """Backward half of ``direction: both`` for fast_3d: the same tracker on mirrored frame numbers,
+        merged with the forward links (Forward-First), as two_phase does. Measured better than the C-style
+        backward on all three benchmark cases (docs/trackers.md). trackcorr keeps the legacy backward."""
+        from openptv2.reversed_pass import merge_reversed_pass
+
+        store = getattr(tracker, "_store", None)
+        if store is None:
+            tracker.full_backward()
+            return
+        first, last = tracker._spar.get_first(), tracker._spar.get_last()
+        stats = merge_reversed_pass(
+            store, first, last, lambda rev: tracker.clone_for_store(rev).full_forward_3d()
+        )
+        print(
+            f"Reversed pass links: forward {stats['forward']}, backward {stats['backward']}, "
+            f"merged {stats['merged']}"
+        )
+
     def do_tracking(self) -> None:
         if self.exp is None:
             raise ValueError("No experiment object provided")
@@ -53,7 +73,7 @@ class Tracking:
             tracker.gate_dacc = bool(setup.accel_gate)
             tracker.full_forward_3d()
             if both:
-                tracker.full_backward()
+                self._reversed_pass(tracker)
             if setup.postprocess:
                 _report(tracker.postprocess())
         else:

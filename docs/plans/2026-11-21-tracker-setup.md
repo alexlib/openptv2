@@ -168,13 +168,34 @@ Findings that change the plan:
    `tests/unit/test_sequence_triangulation_method.py::test_lsq_triangulation_reprojects_better_than_pairs` fails before and
    after (run store missing), unrelated.
 
-## 9. What is left
+## 9. Results of stages 3 to 5 (2026-11-23)
 
-- **Stage 3, speed of `fast_3d` and `trackcorr`.** The target is the output path, not the kernel: write targets and links
-  once per run (or per block) instead of one zarr array per frame and camera. Touches `algorithms/tracking_frame_buf.py`
-  (Cython; needs the rebuild and the pure-Python fallback tests). Expected: `fast_3d` from 22 s toward the 4 s of `two_phase`.
-- **Stage 4, one direction mechanism.** Now each tracker keeps its own backward pass (two_phase: reversed frames + merge;
-  trackcorr, fast_3d: `full_backward` + reciprocity). Finding 4 says a common merge is worth testing only after stage 3.
-- **Stage 5, holistic for `fast_3d`.** Its motivation (a cheap relink) is gone until stage 3 lands.
+**Stage 3, output speed (done).** The cost of `fast_3d` and `trackcorr` was zarr output, not the kernel: every frame wrote
+four target arrays, the points and the linkage, each write several array operations. Changes, all in `storage/run_store.py`
+and `tracker.py` (pure Python, no Cython rebuild): the linkage of a pass is held in memory and written once as blocks
+(`RunStore.deferred_linkage`); a write over an array of the same shape is done in place; an identical re-write is skipped.
+`fast_3d` forward 11.3 s to 4.9 s, `fast_3d` both 22.6 s to about 10 s, `trackcorr` both 34.6 s to 24.2 s; link quality
+identical (tests in `tests/unit/test_run_store_rewrites.py`).
+
+**Stage 4, one direction mechanism (done, with an exception).** `reversed_pass.py`: the same tracker on a mirrored view of
+the store (`ReversedStore`, writes in memory), links mapped back and merged Forward-First, as `two_phase` does. Used by
+`two_phase` and `fast_3d`. For `fast_3d` it beat the C-style backward on all three cases (0.243/0.145/0.155 against
+0.265/0.155/0.167). For `trackcorr` it was worse (0.327 against 0.297), so `trackcorr` keeps the legacy backward, which
+fits its role. Table in `docs/trackers.md`.
+
+**Stage 5, holistic for `fast_3d` (tried, rejected).** Velocity error 0.1986 against 0.1665 without the loop (and 0.0843
+for `two_phase` with it), at 109 s against 11 s. The loop adds true particles (yield 0.760 to 0.802, long-track
+completeness 0.67 to 0.78) but `fast_3d` has no link confirmation and links the extra points wrongly. Not shipped. The loop
+itself costs about 100 s of the 109, whatever the linker; that is the cost to cut (profile in section 8 of
+`2026-11-21-detection-hypotheses-and-events.md`: scalar Python per observation, vectorisable).
+
+**Found on the way.** On a clean dense case without ghost points, `two_phase` keeps 94 % of the true points against 99.6 %
+for the others; the ghost rules `q_seed`/`q_young` cause it (off: 99.6 %). With ghosts they win (link precision 0.971
+against 0.944), so they stay on and the guide says when to switch them off.
+
+## 10. What is left
+
+- **Holistic loop speed** (about 100 s on the benchmark; `two_phase` itself 4.9 s). Vectorise the per-observation Python in
+  `merge_refine`/`merge_post`, then Cython if needed. This decides whether holistic can ever be a default.
 - **Stage 6, deletion** of `unified`, `4be`, `hybrid_deltat_3d`, the splitter alias and `tracking_presets.py` after one
-  release of warnings.
+  release of warnings (decision C). Not before.

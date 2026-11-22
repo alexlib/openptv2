@@ -87,7 +87,7 @@ the rms speed (lower is better); link precision = share of links that are true.
 |---|---|---|---|---|
 | `two_phase`, both (default) | **0.105** | **0.971** | 0.62 | **4.0 s** |
 | `two_phase`, forward | 0.116 | 0.973 | 0.59 | 4.2 s |
-| `fast_3d`, both | 0.167 | 0.940 | 0.67 | 11.3 s |
+| `fast_3d`, both | 0.155 | 0.940 | 0.67 | 9.8 s |
 | `fast_3d`, forward | 0.157 | 0.941 | 0.67 | 4.9 s |
 | `trackcorr`, both | 0.220 | 0.940 | 0.54 | 24.2 s |
 | `trackcorr`, forward | n/a | n/a | n/a | 18.2 s |
@@ -96,8 +96,21 @@ Notes. (1) Writing the results to the run store used to dominate `fast_3d` and `
 zarr arrays; `fast_3d` took 22.6 s and `trackcorr` 34.6 s, with the kernel itself about 2 s for `fast_3d`). Tracking now
 holds the linkage in memory and writes it once per pass, rewrites in place, and skips identical re-writes: `fast_3d` forward
 11.3 s to 4.9 s, `trackcorr` both 34.6 s to 24.2 s, with identical link quality. What remains for `trackcorr` is its 2D
-search itself. (2) `fast_3d` forward scored better than `fast_3d` both here; the backward pass of `fast_3d` is not helping
-on this case, so `direction: forward` is worth a try for it. The default stays `both` because it helps `two_phase`.
+search itself. (2) With `fast_3d`, forward alone and both directions are close (velocity error 0.157 and 0.155 here; the other cases
+below); `two_phase` gains more from both.
+
+Direction, three cases (velocity error; `both` for `fast_3d` is the reversed pass, see below):
+
+| Case | `two_phase` fwd / both | `fast_3d` fwd / both (reversed) / both (old C-style backward) | `trackcorr` fwd / both |
+|---|---|---|---|
+| default merge rate | 0.188 / **0.183** | 0.254 / **0.243** / 0.265 | 0.294 / 0.297 |
+| merge scale 0.6 | 0.087 / **0.081** | **0.141** / 0.145 / 0.155 | 0.201 / 0.201 |
+| merge scale 0.75 | 0.116 / **0.105** | 0.157 / **0.155** / 0.167 | 0.220 / 0.220 |
+
+One more finding: on a clean dense case with no ghost points (`L0_d4_c0_k1_n150`, 4 times the seeding) `two_phase` keeps
+94 % of the true points where `fast_3d` and `trackcorr` keep 99.6 %. The ghost rules (`q_seed`, `q_young`) are the cause:
+with them off `two_phase` keeps 99.6 % too. With ghosts present (the other cases) they pay: link precision 0.971 against
+0.944. So they stay on; switch them off (`q_seed: null`, `q_young: 0`) for data you know has no ghost points.
 
 ### Settings: shared, and per tracker
 
@@ -106,7 +119,7 @@ on this case, so `direction: forward` is worth a try for it. The default stays `
 | `dvx*`, `dvy*`, `dvz*` (mm/frame) | yes (as the radius `v_max`: the largest of the six) | yes | yes |
 | `dacc` (mm/frame²), `angle` (gon) | no: it confirms links instead (`confirm_tol`, automatic) | yes | yes |
 | `direction`, `postprocess` | `direction` yes; `postprocess` not used (it carries gaps and confirms inside the loop) | both | both |
-| `holistic_rounds` | **yes (the add-on)** | not yet | not yet |
+| `holistic_rounds` | **yes (the add-on)** | no | no (tried, see below) |
 | `leaf_weight`, `max_gap`, `confirm_*`, `q_*`, `blob_gate` | yes | no | no |
 | `epi_weight`, `accel_gate` | no | no | yes (defaults 0 and off) |
 
@@ -117,10 +130,17 @@ take `dacc` from a probe run. `epi_weight` (the old "hybrid" penalty) changed th
 
 ## The two switches
 
-**`direction: forward | both`.** Forward tracks the frames in order. `both` also runs the same tracker on the
-reversed frame order (backward is only a different way of numbering the frames) and keeps what is consistent or
-fills gaps. It is two passes, so it takes longer, and it gives the better trajectories. Works for all three
-trackers. In the GUI the *Track back* menu item exists for `trackcorr` and `fast_3d` runs that were made forward-only.
+**`direction: forward | both`.** Forward tracks the frames in order. `both` also tracks backward and keeps what is
+consistent or fills gaps. It is two passes, so it takes longer, and it gives the better trajectories for `two_phase`.
+How backward is done depends on the tracker:
+
+- `two_phase` and `fast_3d`: **the same tracker on the reversed frame numbers** (backward is only a different way of
+  numbering the frames), then the forward links stay and backward links are added where both ends are still free
+  (Forward-First). For `fast_3d` this beat the old C-style backward on all three benchmark cases.
+- `trackcorr`: the **legacy backward pass** (`trackback`), because the tracker is meant to match the legacy
+  software; a reversed pass was measured and was worse for it (velocity error 0.327 against 0.297).
+
+In the GUI the *Track back* menu item exists for `trackcorr` and `fast_3d` runs that were made forward-only.
 
 **`postprocess: true | false`.** After the passes: reciprocity check (a link must be found from both ends) and gap
 bridging. For `trackcorr` and `fast_3d`. `two_phase` does these inside its own loop, so the switch has no effect
@@ -130,8 +150,9 @@ there.
 
 The merged-blob loop. Where two particles overlap in a camera image, the detector gives one blob with a shifted
 centre. The loop estimates a centre for each particle from its own track, re-triangulates, and links again;
-`holistic_rounds: 2` repeats that twice. It costs run time. It works with `two_phase` today; asking for it with
-another tracker is ignored with a log line. Details and measurements: [Holistic tracking](holistic-tracking.md).
+`holistic_rounds: 2` repeats that twice. It costs run time. It works with `two_phase`; asking for it with
+another tracker is ignored with a log line. It was tried around `fast_3d` and made the velocity error worse (0.167 to
+0.199: `fast_3d` has no link confirmation, and the extra points bring wrong links), so it is not offered there. Details and measurements: [Holistic tracking](holistic-tracking.md).
 
 ## Old names still work (for one release)
 

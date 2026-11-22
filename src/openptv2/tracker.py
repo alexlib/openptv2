@@ -203,6 +203,17 @@ class Tracker:
         # many steps ran.
         trackcorr_c_finish(self._run, self._spar.get_last())
 
+    def clone_for_store(self, store: Any) -> "Tracker":
+        """A tracker with the same parameters and settings, working on another store (the reversed pass)."""
+        other = Tracker(
+            self._cpar, self._vpar, self._tpar, self._spar, self._cals, dict(self._naming),
+            flatten_tol=self._flatten_tol, store=store, loser_retry=self._loser_retry,
+            cold_start_neighbour=self._cold_start_neighbour, app_weight=self._app_weight,
+            use_grid=self._use_grid,
+        )
+        other.w_epi, other.gate_dacc = self.w_epi, self.gate_dacc
+        return other
+
     def _linkage_held(self):
         """Hold this pass's linkage writes in memory and write them once at the end (RunStore.deferred_linkage)."""
         from contextlib import nullcontext
