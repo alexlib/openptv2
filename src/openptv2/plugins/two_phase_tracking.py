@@ -1319,6 +1319,12 @@ class Tracking:
 
             run_holistic_experiment(self.exp, store, frames, track_cfg, rounds)
             return
+        if setup.shared_correction:
+            # one round without births: re-estimate the points in shared blobs from their tracks, link again
+            from openptv2.holistic import run_holistic_experiment
+
+            run_holistic_experiment(self.exp, store, frames, track_cfg, 1, correction_only=True)
+            return
 
         track_store(
             store,

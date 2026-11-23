@@ -131,7 +131,8 @@ TWO_PHASE_INFO = TrackerInfo(
     algorithm_detail=(
         "Pure Python/NumPy/SciPy (plugins/two_phase_tracking.py). Needs the run store with per-camera "
         "targets. direction both runs the backward pass on reversed frames and merges (Forward-First). "
-        "Add-on: holistic_rounds > 0 re-estimates merged-blob centres from the tracks and relinks."
+        "Add-ons: shared_correction re-estimates the points that touch a shared blob from their tracks and links "
+        "again; holistic_rounds > 0 adds births of hidden partners."
     ),
     supports_backward=True,
     supports_new_particles=True,
@@ -145,6 +146,15 @@ TWO_PHASE_INFO = TrackerInfo(
     parameters=(
         _DIRECTION,
         *_BOUNDS[:1],
+        ParameterGuide(
+            name="shared_correction",
+            type="bool",
+            default="false",
+            description="Re-estimate the points that touch a blob shared with another particle from their tracks, then link again.",
+            how_to_choose="Off by default (about 4 times the run time). Helps when particles overlap in the images; "
+                          "pairs well with ptv.shared_pass.",
+            typical_range="false / true",
+        ),
         ParameterGuide(
             name="holistic_rounds",
             type="int",

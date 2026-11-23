@@ -45,6 +45,10 @@ def run_holistic(
     use_positions: bool = True,
     use_births: bool = True,
     refine_rounds: int = 3,
+    relink_after: bool = True,
+    shared_only: bool = False,
+    write_obs: bool = True,
+    first_link: Callable[[], Any] | None = None,
     log: Callable[[str], Any] = print,
 ) -> dict:
     """Run the loop on ``store`` over the contiguous ``frames``; ``relink()`` links the store's current points.
@@ -62,6 +66,8 @@ def run_holistic(
     )
     from openptv2.merge_refine import refine_merged, shared_blobs
 
+    if not relink_after and use_births:
+        raise ValueError("births need a new link pass: relink_after=False works with use_births=False only")
     frames = list(frames)
     first, last = frames[0], frames[-1]
     n_cams = len(cals)
@@ -78,7 +84,7 @@ def run_holistic(
         return RunStore(path, mode="a")
 
     if initial_link:
-        relink()
+        (first_link or relink)()
     store = fresh(store)
     n_orig = {f: len(store.read_correspondences(f)[0]) for f in frames}
     for rnd in range(1, rounds + 1):
@@ -89,21 +95,24 @@ def run_holistic(
         sig = estimate_signatures(arr["tid"], arr["frame"], blob, sumg)
         t_refine = time.perf_counter()
         res = refine_merged(arr["frame"], arr["tid"], blob, centre, sumg, cpar, cals, vpar, signatures=sig, rounds=refine_rounds,
+                            x_init=arr["pos"] if shared_only else None, shared_only=shared_only,
                             partner_min_len=partner_min_len)
         t_births = time.perf_counter()
-        counts = {(f, c): np.asarray(store.root[f"targets/cam_{c}/frame_{f:06d}"])[:, 3:6].astype(int)
-                  for f in frames for c in range(n_cams)}
-        fallback = np.full(res.pred_px.shape, np.nan)
-        okx = np.isfinite(res.x[:, 0])
-        for c in range(n_cams):
-            m = okx & (blob[:, c] >= 0)
-            if m.any():
-                fallback[m, c] = project_pixels(res.x[m], cals[c], cpar)
-        targets = birth_targets(arr["frame"], blob, res.pred_px, sig, arr["blobs"], counts, min_resid=min_resid,
-                                fallback_px=fallback)
-        births = birth_points(targets, frames, cpar, cals, vpar)
-        if not use_births:
-            births = {k: v[:0] for k, v in births.items()}
+        if use_births:
+            counts = {(f, c): np.asarray(store.root[f"targets/cam_{c}/frame_{f:06d}"])[:, 3:6].astype(int)
+                      for f in frames for c in range(n_cams)}
+            fallback = np.full(res.pred_px.shape, np.nan)
+            okx = np.isfinite(res.x[:, 0])
+            for c in range(n_cams):
+                m = okx & (blob[:, c] >= 0)
+                if m.any():
+                    fallback[m, c] = project_pixels(res.x[m], cals[c], cpar)
+            targets = birth_targets(arr["frame"], blob, res.pred_px, sig, arr["blobs"], counts, min_resid=min_resid,
+                                    fallback_px=fallback)
+            births = birth_points(targets, frames, cpar, cals, vpar)
+        else:
+            births = {"frame": np.zeros(0, int), "pos": np.zeros((0, 3)), "blob": np.zeros((0, n_cams), int),
+                      "n_hidden": np.zeros(0, int)}
         t_write = time.perf_counter()
         new_pos = np.where(np.isfinite(res.x[:, :1]) & use_positions, res.x, arr["pos"])
         sd = np.sqrt(res.pos_var) if res.pos_var is not None else np.full(len(new_pos), np.nan)
@@ -122,20 +131,21 @@ def run_holistic(
             ids_b[:, :n_cams] = births["blob"][b]
             all_ids = np.vstack([ids0, ids_b])
             store.write_correspondences(f, np.vstack([seg, births["pos"][b]]), all_ids)
-            # observation table: what each point used, how certain, how many particles share the blob
-            obs = np.zeros((len(all_ids), n_cams, 4), np.float32)
-            obs[:, :, :2] = np.nan
-            obs[:, :, 2] = np.nan
-            obs[:n, :, :2] = res.obs_px[off: off + n]
-            obs[:n, :, 2] = res.obs_var[off: off + n]
-            cent = [store_blob_centres(arr, f, c) for c in range(n_cams)]
-            for c in range(n_cams):
-                for k in np.flatnonzero(all_ids[n:, c] >= 0):
-                    obs[n + k, c, :2] = cent[c][all_ids[n + k, c]]
-                    obs[n + k, c, 2] = 0.01
-            share = shared_blobs(np.full(len(all_ids), f), all_ids[:, :n_cams])
-            obs[:, :, 3] = share
-            store.write_observations(f, obs)
+            if write_obs:
+                # observation table: what each point used, how certain, how many particles share the blob
+                obs = np.zeros((len(all_ids), n_cams, 4), np.float32)
+                obs[:, :, :2] = np.nan
+                obs[:, :, 2] = np.nan
+                obs[:n, :, :2] = res.obs_px[off: off + n]
+                obs[:n, :, 2] = res.obs_var[off: off + n]
+                cent = [store_blob_centres(arr, f, c) for c in range(n_cams)]
+                for c in range(n_cams):
+                    for k in np.flatnonzero(all_ids[n:, c] >= 0):
+                        obs[n + k, c, :2] = cent[c][all_ids[n + k, c]]
+                        obs[n + k, c, 2] = 0.01
+                share = shared_blobs(np.full(len(all_ids), f), all_ids[:, :n_cams])
+                obs[:, :, 3] = share
+                store.write_observations(f, obs)
             # position uncertainty per point: refined points from their fit, births 3x the median (their placement
             # error was measured about 4x the established points')
             store.write_point_sigma(f, np.concatenate([sd[off: off + n], np.full(len(all_ids) - n, birth_sigma_factor * sd_med)]))
@@ -145,12 +155,15 @@ def run_holistic(
                 "births": int(len(births["frame"])), "refine": res.info[-1] if res.info else {}}
         stats["rounds"].append(info)
         t_link = time.perf_counter()
-        relink()
+        if relink_after:
+            relink()
+        else:
+            _rewrite_linkage_positions(store, frames, linkage_name)
         store = fresh(store)
         log(f"holistic round {rnd}: {info['births']} births, {info['attachments']} attachments; seconds: "
             f"membership+signatures {t_refine - t_round:.1f}, refine {t_births - t_refine:.1f}, "
             f"births {t_write - t_births:.1f}, write {t_link - t_write:.1f}, relink {time.perf_counter() - t_link:.1f}")
-    if drop_unlinked_births and rounds > 0:
+    if drop_unlinked_births and rounds > 0 and use_births:
         # births that no track took are about half wrong (benchmark: 53 % against 96 % for linked births): drop them
         from openptv2.tracking_postprocess import read_linkage
 
@@ -182,6 +195,19 @@ def run_holistic(
             store = fresh(store)
     write_trajectories_cache(fresh(store), frames, n_cams, linkage_name)
     return stats
+
+
+def _rewrite_linkage_positions(store: Any, frames: list[int], linkage_name: str) -> None:
+    """Keep the links, give the linkage the points' current positions (the rows did not change)."""
+    from openptv2.tracking_postprocess import read_linkage
+
+    links, positions = [], []
+    for f in frames:
+        pos, _ids = store.read_correspondences(f)
+        prev, nxt, _old = read_linkage(linkage_name, f, store=store)
+        links.append((np.asarray(prev), np.asarray(nxt)))
+        positions.append(np.asarray(pos))
+    store.write_linkage_many(frames, links, positions, name=linkage_name)
 
 
 def write_trajectories_cache(store: Any, frames: list[int], n_cams: int, linkage_name: str = "ptv_is",
@@ -216,12 +242,17 @@ def store_blob_centres(arr: dict, frame: int, cam: int) -> np.ndarray:
     return arr["blobs"][(int(frame), cam)][0]
 
 
-def run_holistic_experiment(exp: Any, store: Any, frames: list[int], track_cfg: dict, rounds: int) -> None:
+def run_holistic_experiment(
+    exp: Any, store: Any, frames: list[int], track_cfg: dict, rounds: int, correction_only: bool = False
+) -> None:
     """Run the holistic loop for an experiment object, linking with ``two_phase``.
+
+    With ``correction_only`` (``track.shared_correction``) one round runs without births: only the points that touch
+    a shared blob are re-estimated from their tracks, then everything is linked again (docs/trackers.md).
 
     Called by the ``two_phase`` plugin when ``track.holistic_rounds`` > 0 (YAML keys: ``holistic_rounds``,
     ``holistic_min_resid``, ``holistic_partner_min_len``, ``holistic_extend``; experiment switches ``holistic_positions``,
-    ``holistic_births``, ``holistic_refine_rounds``: see the plan, section 13).
+    ``holistic_births``, ``holistic_refine_rounds``, ``holistic_relink``, ``holistic_shared_only``: see the plan, section 13).
     """
     from openptv2.plugins.two_phase_tracking import track_store
 
@@ -230,12 +261,27 @@ def run_holistic_experiment(exp: Any, store: Any, frames: list[int], track_cfg: 
     def relink():
         return track_store(store, frames, track_cfg, cals, cpar)
 
+    def first_link_forward():
+        # the first link only has to give tracks for signatures and predictions: one direction is enough
+        return track_store(store, frames, {**track_cfg, "direction": "forward", "run_backward": False,
+                                           "bidirectional": False}, cals, cpar)
+
+    first_forward = bool(track_cfg.get("holistic_first_forward", False))
+    if correction_only:
+        track_cfg = {**track_cfg, "holistic_births": False, "holistic_shared_only": True,
+                     "holistic_observations": False, "holistic_relink": True}
+        rounds = max(1, int(rounds))
+
     run_holistic(store, frames, cpar, list(cals), vpar, relink, rounds=rounds,
                  min_resid=float(track_cfg.get("holistic_min_resid", 0.25)),
                  partner_min_len=int(track_cfg.get("holistic_partner_min_len", 10)),
                  use_positions=bool(track_cfg.get("holistic_positions", True)),
                  use_births=bool(track_cfg.get("holistic_births", True)),
-                 refine_rounds=int(track_cfg.get("holistic_refine_rounds", 3)))
+                 refine_rounds=int(track_cfg.get("holistic_refine_rounds", 3)),
+                 relink_after=bool(track_cfg.get("holistic_relink", True)),
+                 shared_only=bool(track_cfg.get("holistic_shared_only", False)),
+                 write_obs=bool(track_cfg.get("holistic_observations", True)),
+                 first_link=first_link_forward if first_forward else None)
     passes = int(track_cfg.get("holistic_extend", 0))
     if passes > 0:                                        # strict track-assisted extension on the final tracks
         from openptv2.storage import RunStore

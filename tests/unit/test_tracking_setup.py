@@ -156,3 +156,21 @@ def test_fast_3d_extra_settings_are_read_flat_or_under_the_tracker_key():
     assert resolve_tracking_setup({"tracker": "fast_3d"}).accel_gate is False
     # not a setting of the other trackers
     assert resolve_tracking_setup({"tracker": "two_phase", "accel_gate": True}).accel_gate is False
+
+
+def test_shared_correction_is_a_two_phase_switch():
+    assert resolve_tracking_setup({}).shared_correction is False
+    assert resolve_tracking_setup({"shared_correction": True}).shared_correction is True
+    s = resolve_tracking_setup({"tracker": "fast_3d", "shared_correction": True})
+    assert s.shared_correction is False and any("shared_correction" in n for n in s.notes)
+    track, _ = apply_tracking_setup(resolve_tracking_setup({"shared_correction": True}), {}, {})
+    assert track["shared_correction"] is True
+    assert resolve_tracking_setup(track).shared_correction is True
+
+
+def test_shared_correction_command_line_flag():
+    from openptv2.tracking_setup import tracker_overrides_from_argv
+
+    assert tracker_overrides_from_argv(["--shared-correction"]) == {"shared_correction": True}
+    assert tracker_overrides_from_argv(["--no-shared-correction"]) == {"shared_correction": False}
+    assert "shared_correction" not in tracker_overrides_from_argv([])

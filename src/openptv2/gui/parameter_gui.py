@@ -386,6 +386,7 @@ class TrackHandler(Handler):
                 direction=track_params.direction,
                 postprocess=bool(track_params.postprocess),
                 holistic_rounds=int(track_params.holistic_rounds),
+                shared_correction=bool(track_params.shared_correction),
                 epi_weight=float(track_params.epi_weight),
                 accel_gate=bool(track_params.accel_gate),
             )
@@ -440,6 +441,7 @@ class Tracking_Params(HasTraits):
     dacc = Float()
     leaf_weight = Float()
     holistic_rounds = Int(0)
+    shared_correction = Bool(False)
 
     def __init__(self, experiment: Experiment):
         super(Tracking_Params, self).__init__()
@@ -464,6 +466,7 @@ class Tracking_Params(HasTraits):
         self.direction = setup.direction
         self.postprocess = setup.postprocess
         self.holistic_rounds = setup.holistic_rounds
+        self.shared_correction = setup.shared_correction
         self.epi_weight = setup.epi_weight
         self.accel_gate = setup.accel_gate
 
@@ -512,6 +515,8 @@ class Tracking_Params(HasTraits):
                 Item(name="accel_gate", label="fast_3d: limit by dacc/angle:",
                      enabled_when="tracker == 'fast_3d'"),
                 Item(name="holistic_rounds", label="Merged-blob loop rounds (two_phase; 0=off):",
+                     enabled_when="tracker == 'two_phase'"),
+                Item(name="shared_correction", label="Correct points in shared blobs (two_phase):",
                      enabled_when="tracker == 'two_phase'"),
             ),
             show_border=True,

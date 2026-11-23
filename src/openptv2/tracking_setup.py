@@ -7,9 +7,10 @@ Read ``docs/trackers.md`` first. In short::
       direction: both         # forward | both                       (default both)
       postprocess: true       # reciprocity + gap bridging           (default true)
       holistic_rounds: 0      # merged-blob loop, 0 = off            (default 0)
+      shared_correction: false  # corrects points in shared blobs    (default false)
 
 This module is the ONE place that turns a saved ``track`` / ``plugins`` section
-(new keys, or any old name or key) into those four choices. The GUI, the batch
+(new keys, or any old name or key) into those choices. The GUI, the batch
 runner and the plugins all call :func:`resolve_tracking_setup`; nothing else
 interprets tracker names or direction keys.
 
@@ -19,6 +20,7 @@ what they became (``TrackingSetup.notes``).
 
 from __future__ import annotations
 
+import argparse
 from dataclasses import dataclass, field
 from typing import Any, Mapping
 
@@ -83,6 +85,7 @@ class TrackingSetup:
     direction: str = DEFAULT_DIRECTION
     postprocess: bool = True
     holistic_rounds: int = 0
+    shared_correction: bool = False   # two_phase only: re-estimate the points that touch a shared blob, link again
     epi_weight: float = 0.0           # fast_3d only: soft epipolar penalty, 0 = pure 3D
     accel_gate: bool = False          # fast_3d only: also refuse links beyond dacc / angle
     custom: bool = False
@@ -213,11 +216,17 @@ def resolve_tracking_setup(
         )
         rounds = 0
 
+    shared_correction = bool(track.get("shared_correction", False))
+    if shared_correction and tracker not in HOLISTIC_TRACKERS:
+        notes.append(f"shared_correction is ignored: it runs with two_phase only (tracker is {tracker})")
+        shared_correction = False
+
     return TrackingSetup(
         tracker=tracker,
         direction=direction,
         postprocess=postprocess,
         holistic_rounds=rounds,
+        shared_correction=shared_correction,
         epi_weight=epi_weight,
         accel_gate=accel_gate,
         notes=tuple(notes),
@@ -252,6 +261,7 @@ def apply_tracking_setup(
     track["direction"] = setup.direction
     track["postprocess"] = bool(setup.postprocess)
     track["holistic_rounds"] = int(setup.holistic_rounds)
+    track["shared_correction"] = bool(setup.shared_correction)
     if setup.tracker == "fast_3d":
         track["epi_weight"] = float(setup.epi_weight)
         track["accel_gate"] = bool(setup.accel_gate)
@@ -282,11 +292,16 @@ def add_tracker_arguments(parser: Any) -> None:
         "--holistic-rounds", type=int, default=None, metavar="N",
         help="Merged-blob loop rounds (two_phase only). Default: track.holistic_rounds, which defaults to 0.",
     )
+    parser.add_argument(
+        "--shared-correction", dest="shared_correction", action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Re-estimate points that touch a shared blob from their tracks and link again (two_phase only). "
+             "Default: track.shared_correction, which defaults to false.",
+    )
 
 
 def tracker_overrides_from_argv(argv: list[str] | None = None) -> dict[str, Any]:
     """``{"direction": ..., "holistic_rounds": ...}`` for the flags that were given (others absent)."""
-    import argparse
     import sys
 
     parser = argparse.ArgumentParser(add_help=False)
@@ -297,4 +312,6 @@ def tracker_overrides_from_argv(argv: list[str] | None = None) -> dict[str, Any]
         out["direction"] = known.direction
     if known.holistic_rounds is not None:
         out["holistic_rounds"] = int(known.holistic_rounds)
+    if known.shared_correction is not None:
+        out["shared_correction"] = bool(known.shared_correction)
     return out

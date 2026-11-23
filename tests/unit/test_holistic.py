@@ -165,7 +165,7 @@ def _stub_two_phase(monkeypatch, cfg):
     monkeypatch.setattr(tp, "track_store", lambda *a, **k: ran.append("linker"))
     import openptv2.holistic as hol
 
-    monkeypatch.setattr(hol, "run_holistic_experiment", lambda e, s, f, c, rounds: ran.append(("holistic", rounds)))
+    monkeypatch.setattr(hol, "run_holistic_experiment", lambda e, s, f, c, rounds, **kw: ran.append(("holistic", rounds, kw.get("correction_only", False))))
     return tp, exp, ran
 
 
@@ -178,7 +178,19 @@ def test_two_phase_is_plain_by_default(monkeypatch):
 def test_two_phase_runs_the_loop_when_rounds_are_set(monkeypatch):
     tp, exp, ran = _stub_two_phase(monkeypatch, {"holistic_rounds": 3})
     tp.Tracking(exp=exp).do_tracking()
-    assert ran == [("holistic", 3)]
+    assert ran == [("holistic", 3, False)]
+
+
+def test_shared_correction_runs_one_round_without_births(monkeypatch):
+    tp, exp, ran = _stub_two_phase(monkeypatch, {"shared_correction": True})
+    tp.Tracking(exp=exp).do_tracking()
+    assert ran == [("holistic", 1, True)]
+
+
+def test_holistic_rounds_win_over_shared_correction(monkeypatch):
+    tp, exp, ran = _stub_two_phase(monkeypatch, {"shared_correction": True, "holistic_rounds": 2})
+    tp.Tracking(exp=exp).do_tracking()
+    assert ran == [("holistic", 2, False)]
 
 
 def test_holistic_name_is_two_phase_with_two_rounds(monkeypatch):
@@ -186,7 +198,7 @@ def test_holistic_name_is_two_phase_with_two_rounds(monkeypatch):
 
     tp, exp, ran = _stub_two_phase(monkeypatch, {})
     holistic_tracking.Tracking(exp=exp).do_tracking()
-    assert ran == [("holistic", 2)]
+    assert ran == [("holistic", 2, False)]
     tp, exp, ran = _stub_two_phase(monkeypatch, {"holistic_rounds": 0})
     holistic_tracking.Tracking(exp=exp).do_tracking()
     assert ran == ["linker"]

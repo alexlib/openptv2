@@ -119,6 +119,8 @@ def refine_merged(
     signatures: np.ndarray | None = None,
     partner_min_len: int = 0,
     mode: str = "effective",
+    x_init: np.ndarray | None = None,
+    shared_only: bool = False,
 ) -> RefineResult:
     from openptv2.orientation import point_positions
 
@@ -154,31 +156,50 @@ def refine_merged(
 
     pos_var = np.full(n_est, np.nan)
 
+    # rows whose position can change: a view on a shared blob, or a blob too bright for its own particle
+    # (a hidden partner); with ``shared_only`` only those are fitted, the others keep their position
+    sig_est = sig_mat[est]
+    hidden_row = np.zeros(n_est, bool)
+    if hidden_mass is not None:
+        with np.errstate(invalid="ignore"):
+            hidden_row = (det[est] & (share[est] == 1) & np.isfinite(sig_est) & (sig_est > 0)
+                          & (sumg[est] >= hidden_mass * sig_est)).any(1)
+    affected = (det[est] & (share[est] >= 2)).any(1) | hidden_row
+    fit_rows = np.flatnonzero(affected) if shared_only else np.arange(n_est)
+    if shared_only and x_init is None:
+        raise ValueError("shared_only needs x_init, the positions the other points keep")
+
     def fit(obs_px, obs_var, x_start=None, prior_px=None, prior_var=None):
         x = np.full((n_est, 3), np.nan) if x_start is None else x_start.copy()
         cam_ix = list(range(n_cams))
-        if prior_px is not None:
-            obs_px = np.concatenate([obs_px, prior_px], axis=1)
-            obs_var = np.concatenate([obs_var, np.broadcast_to(prior_var, prior_px.shape[:2])], axis=1)
-            cam_ix = cam_ix + cam_ix
-        # every point is independent of the others, so all frames go through one call
-        if n_est == 0:
+        idx = fit_rows                        # every point is independent of the others: one call for all frames
+        if n_est == 0 or len(idx) == 0:
             return x
+        obs_px, obs_var = obs_px[idx], obs_var[idx]
+        if prior_px is not None:
+            obs_px = np.concatenate([obs_px, prior_px[idx]], axis=1)
+            obs_var = np.concatenate([obs_var, np.broadcast_to(prior_var, (len(idx), n_cams))], axis=1)
+            cam_ix = cam_ix + cam_ix
         if x_start is None:
-            flat = np.full((n_est, n_cams, 2), -1e10)
+            flat = np.full((len(idx), n_cams, 2), -1e10)
             for c in range(n_cams):
                 v = ~np.isnan(obs_px[:, c, 0])
                 if v.any():
                     flat[v, c] = pixels_to_flat(obs_px[v, c], cals[c], cpar)
             x0 = np.asarray(point_positions(flat, cpar, cals, vpar, method="lsq")[0], float)
         else:
-            x0 = x_start
-        x[:], cv = triangulate_weighted(obs_px, obs_var, cpar, cals, x0, n_iter=3, cam_index=cam_ix, frozen_jacobian=True,
-                                        return_cov=True)
-        pos_var[:] = np.trace(cv, axis1=1, axis2=2) / 3.0
+            x0 = x_start[idx]
+        x[idx], cv = triangulate_weighted(obs_px, obs_var, cpar, cals, x0, n_iter=3, cam_index=cam_ix,
+                                          frozen_jacobian=True, return_cov=True)
+        pos_var[idx] = np.trace(cv, axis1=1, axis2=2) / 3.0
         return x
 
-    x = fit(raw, raw_var)
+    if x_init is not None:
+        x = np.asarray(x_init, float)[est].copy()
+        if not shared_only:
+            x = fit(raw, raw_var, x_start=x)
+    else:
+        x = fit(raw, raw_var)
     res = RefineResult(x=x, obs_px=raw.copy(), obs_var=raw_var.copy(), n_share=share.copy(),
                        pred_px=np.full((n_est, n_cams, 2), np.nan), x_rounds=[x.copy()])
     for rnd in range(1, rounds + 1):

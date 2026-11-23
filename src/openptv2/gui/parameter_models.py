@@ -166,6 +166,7 @@ class TrackParams(SectionModel):
     tracker: str = "two_phase"      # two_phase | trackcorr | fast_3d
     direction: str = "both"         # forward | both
     holistic_rounds: int = 0        # merged-blob loop (two_phase); 0 = off
+    shared_correction: bool = False  # re-estimate points in shared blobs (two_phase)
     angle: float = 120.0
     dacc: float = 5.5
     dvxmax: float = 15.5

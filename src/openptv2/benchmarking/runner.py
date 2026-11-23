@@ -232,6 +232,7 @@ def run_tracker(
                     "postprocess",
                     "direction",
                     "holistic_rounds",
+                    "shared_correction",
                     "epi_weight",
                 ):
                     pm_track[key] = val

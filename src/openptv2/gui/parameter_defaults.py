@@ -69,6 +69,7 @@ DEFAULT_TRACK = {
     "tracker": "two_phase",     # two_phase | trackcorr | fast_3d
     "direction": "both",        # forward | both
     "holistic_rounds": 0,       # merged-blob loop (two_phase); 0 = off
+    "shared_correction": False,  # re-estimate points in shared blobs (two_phase)
     "dvxmin": -20,
     "dvxmax": 20,
     "dvymin": -20,
