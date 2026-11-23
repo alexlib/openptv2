@@ -302,36 +302,51 @@ def birth_targets(
     out = {}
     n_cams = blob.shape[1]
     med_sig = [np.nanmedian(sig[:, c]) if np.isfinite(sig[:, c]).any() else np.nan for c in range(n_cams)]
-    for f in np.unique(frame):
-        rows = np.flatnonzero(frame == f)
-        for c in range(n_cams):
+    frames_u = np.unique(frame)
+    for c in range(n_cams):
+        # tracked rows grouped by (frame, blob): one pass for all frames
+        idx = np.flatnonzero(blob[:, c] >= 0)
+        key = frame[idx].astype(np.int64) * 10_000_000 + blob[idx, c]
+        o = np.argsort(key, kind="stable")
+        idx, key = idx[o], key[o]
+        cuts = np.flatnonzero(np.r_[True, key[1:] != key[:-1], True])
+        starts = cuts[:-1]
+        s_row, p_row = sig[idx, c], pred_px[idx, c]
+        fin = np.isfinite(s_row) & np.isfinite(p_row).all(1)
+        grp_ok = np.add.reduceat((~fin).astype(int), starts) == 0 if len(starts) else np.zeros(0, bool)
+        s_safe = np.where(fin, s_row, 0.0)
+        s_sum = np.add.reduceat(s_safe, starts) if len(starts) else np.zeros(0)
+        sp_sum = np.add.reduceat(s_safe[:, None] * np.where(fin[:, None], p_row, 0.0), starts, axis=0) if len(starts) \
+            else np.zeros((0, 2))
+        g_frame = frame[idx[starts]] if len(starts) else np.zeros(0, int)
+        g_blob = blob[idx[starts], c] if len(starts) else np.zeros(0, int)
+        g_first = idx[starts] if len(starts) else np.zeros(0, int)
+        lo_hi = np.searchsorted(g_frame, frames_u, side="left"), np.searchsorted(g_frame, frames_u, side="right")
+        for fi, f in enumerate(frames_u):
             if (int(f), c) not in blobs:
                 continue
             cent, sg = blobs[(int(f), c)]
             npx = counts[(int(f), c)]
-            used = blob[rows, c]
-            members: dict = {}
-            for r, b in zip(rows, used):
-                if b >= 0:
-                    members.setdefault(int(b), []).append(r)
-            free = np.setdiff1d(np.arange(len(cent)), np.array(sorted(members), dtype=int))
+            sl = slice(lo_hi[0][fi], lo_hi[1][fi])
+            gb = g_blob[sl]
+            used = np.zeros(len(cent), bool)
+            used[gb] = True
+            free = np.flatnonzero(~used)
             xy, s_, n_, src, kind = [cent[free]], [sg[free]], [npx[free]], [free], [np.zeros(len(free), int)]
-            for b, mem in members.items():
-                s_m = sig[mem, c]
-                p_m = pred_px[mem, c]
-                if not (np.all(np.isfinite(s_m)) and np.all(np.isfinite(p_m))):
-                    continue
-                resid = sg[b] - s_m.sum()
-                if not (np.isfinite(med_sig[c]) and resid >= min_resid * med_sig[c]):
-                    continue
-                s = (sg[b] * cent[b] - (s_m[:, None] * p_m).sum(0)) / resid
-                if np.linalg.norm(s - cent[b]) > max_shift_px:
-                    continue
-                xy.append(s[None, :])
-                s_.append(np.array([resid]))
-                n_.append(npx[b][None, :])
-                src.append(np.array([b]))
-                kind.append(np.array([1]))
+            if len(gb) and np.isfinite(med_sig[c]):
+                resid = sg[gb] - s_sum[sl]
+                cand = grp_ok[sl] & (resid >= min_resid * med_sig[c])
+                with np.errstate(divide="ignore", invalid="ignore"):
+                    sh = (sg[gb][:, None] * cent[gb] - sp_sum[sl]) / resid[:, None]
+                cand &= np.linalg.norm(sh - cent[gb], axis=1) <= max_shift_px
+                k = np.flatnonzero(cand)
+                k = k[np.argsort(g_first[sl][k], kind="stable")]       # the order the rows first use each blob
+                if len(k):
+                    xy.append(sh[k])
+                    s_.append(resid[k])
+                    n_.append(npx[gb[k]])
+                    src.append(gb[k])
+                    kind.append(np.ones(len(k), int))
             out[(int(f), c)] = {"xy": np.vstack(xy), "sumg": np.concatenate(s_), "npx": np.vstack(n_),
                                 "src": np.concatenate(src).astype(int), "kind": np.concatenate(kind)}
     return out

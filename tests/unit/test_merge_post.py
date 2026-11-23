@@ -327,3 +327,104 @@ def test_cross_camera_signature_fixes_a_camera_where_the_partner_never_leaves():
     assert plain[tid == 0, 1][0] > 1.6 * true1                      # camera 1 alone cannot see it
     assert abs(cross[tid == 0, 1][0] / true1 - 1) < 0.1             # the other camera can
     assert np.allclose(cross[tid == 5], plain[tid == 5], rtol=0.05)  # clean tracks are left as they are
+
+
+# the per-blob loop that birth_targets replaced, kept as the reference for the equivalence test
+def birth_targets_reference(
+    frame: np.ndarray,
+    blob: np.ndarray,
+    pred_px: np.ndarray,
+    sig: np.ndarray,
+    blobs: dict,
+    counts: dict,
+    min_resid: float = 0.5,
+    max_shift_px: float = 3.0,
+    fallback_px: np.ndarray | None = None,
+) -> dict:
+    """Virtual targets for births, per (frame, camera): the free blobs and the *residual targets*.
+
+    A blob used by tracked points whose typical grey sums (``sig``) and trusted predicted pixel positions
+    (``pred_px``) are known, and whose grey sum ``G`` exceeds the members' sum ``sum S_m`` by at least ``min_resid``
+    times the camera's median signature, holds an unseen particle of brightness ``R = G - sum S_m``. The blob centre
+    ``c`` is the brightness-weighted mean, so that particle sits at ``s = (G c - sum S_m p_m) / R``.
+    ``blobs[(f, c)] = (centres, grey sums)``, ``counts[(f, c)] = (n, nx, ny)`` per blob.
+    ``fallback_px`` (N, C, 2), if given, replaces a missing trusted prediction (e.g. the projection of the
+    member's refined position).
+    Returns ``{(f, c): dict(xy (k, 2), sumg (k,), npx (k, 3), src (k,), kind (k,))}`` with ``kind`` 0 = free blob,
+    1 = residual target; ``src`` is the blob index the target comes from.
+    """
+    if fallback_px is not None:
+        pred_px = np.where(np.isfinite(pred_px), pred_px, fallback_px)
+    out = {}
+    n_cams = blob.shape[1]
+    med_sig = [np.nanmedian(sig[:, c]) if np.isfinite(sig[:, c]).any() else np.nan for c in range(n_cams)]
+    for f in np.unique(frame):
+        rows = np.flatnonzero(frame == f)
+        for c in range(n_cams):
+            if (int(f), c) not in blobs:
+                continue
+            cent, sg = blobs[(int(f), c)]
+            npx = counts[(int(f), c)]
+            used = blob[rows, c]
+            members: dict = {}
+            for r, b in zip(rows, used):
+                if b >= 0:
+                    members.setdefault(int(b), []).append(r)
+            free = np.setdiff1d(np.arange(len(cent)), np.array(sorted(members), dtype=int))
+            xy, s_, n_, src, kind = [cent[free]], [sg[free]], [npx[free]], [free], [np.zeros(len(free), int)]
+            for b, mem in members.items():
+                s_m = sig[mem, c]
+                p_m = pred_px[mem, c]
+                if not (np.all(np.isfinite(s_m)) and np.all(np.isfinite(p_m))):
+                    continue
+                resid = sg[b] - s_m.sum()
+                if not (np.isfinite(med_sig[c]) and resid >= min_resid * med_sig[c]):
+                    continue
+                s = (sg[b] * cent[b] - (s_m[:, None] * p_m).sum(0)) / resid
+                if np.linalg.norm(s - cent[b]) > max_shift_px:
+                    continue
+                xy.append(s[None, :])
+                s_.append(np.array([resid]))
+                n_.append(npx[b][None, :])
+                src.append(np.array([b]))
+                kind.append(np.array([1]))
+            out[(int(f), c)] = {"xy": np.vstack(xy), "sumg": np.concatenate(s_), "npx": np.vstack(n_),
+                                "src": np.concatenate(src).astype(int), "kind": np.concatenate(kind)}
+    return out
+
+
+
+
+def test_birth_targets_equal_the_reference_loop():
+    from openptv2.merge_post import birth_targets
+
+    rng = np.random.default_rng(3)
+    n_fr, n_cams, per = 6, 3, 60
+    frame = np.repeat(np.arange(n_fr), per)
+    n = len(frame)
+    blob = np.full((n, n_cams), -1)
+    for c in range(n_cams):
+        for f in range(n_fr):
+            sel = np.flatnonzero(frame == f)
+            blob[sel, c] = rng.integers(0, 45, len(sel))          # several rows share a blob
+        blob[rng.random(n) < 0.15, c] = -1
+    sig = rng.uniform(50, 200, (n, n_cams))
+    sig[rng.random((n, n_cams)) < 0.1] = np.nan
+    pred = rng.uniform(0, 20, (n, n_cams, 2))
+    pred[rng.random((n, n_cams)) < 0.1] = np.nan
+    blobs, counts = {}, {}
+    for f in range(n_fr):
+        for c in range(n_cams):
+            if f == 2 and c == 1:
+                continue                                          # a (frame, camera) without blobs
+            cent = rng.uniform(0, 20, (60, 2))
+            blobs[(f, c)] = (cent, rng.uniform(100, 700, 60))
+            counts[(f, c)] = rng.integers(1, 9, (60, 3))
+    fb = rng.uniform(0, 20, pred.shape)
+    got = birth_targets(frame, blob, pred, sig, blobs, counts, min_resid=0.5, fallback_px=fb)
+    ref = birth_targets_reference(frame, blob, pred, sig, blobs, counts, min_resid=0.5, fallback_px=fb)
+    assert got.keys() == ref.keys() and sum(len(v["src"]) for v in ref.values()) > 100
+    assert any((v["kind"] == 1).any() for v in ref.values())
+    for k in ref:
+        for name in ("xy", "sumg", "npx", "src", "kind"):
+            np.testing.assert_allclose(got[k][name], ref[k][name], rtol=1e-12, err_msg=f"{k} {name}")
