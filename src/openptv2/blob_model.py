@@ -115,12 +115,17 @@ def triangulate_weighted(
         return (x, cov) if return_cov else x
     w_all = np.where(valid, 1.0 / np.where(valid, var_px, 1.0), 0.0)
     eye = np.eye(3)
+    slots_of: dict[int, list[int]] = {}
+    for c in range(n_cams):
+        slots_of.setdefault(cam_of[c], []).append(c)
     jac_cache: dict[int, np.ndarray] = {}
     for it in range(n_iter):
         a_mat = np.zeros((n, 3, 3))
         b_vec = np.zeros((n, 3))
-        for c in range(n_cams):
-            rows = np.flatnonzero(ok & valid[:, c])
+        for cam, slots in slots_of.items():
+            # slots that look through the same camera (measured blobs and path predictions) share one projection
+            use = ok & valid[:, slots].any(1)
+            rows = np.flatnonzero(use)
             if len(rows) == 0:
                 continue
             if it == 0 or not frozen_jacobian:
@@ -130,17 +135,25 @@ def triangulate_weighted(
                 steps[1:] = step_mm * np.eye(3)
                 k = len(rows)
                 allp = (x[rows][None, :, :] + steps[:, None, :]).reshape(-1, 3)
-                px = project_pixels(allp, cals[cam_of[c]], cpar).reshape(4, k, 2)
+                px = project_pixels(allp, cals[cam], cpar).reshape(4, k, 2)
                 base = px[0]
                 jac = np.stack([(px[1 + ax] - base) / step_mm for ax in range(3)], axis=2)
-                jac_cache[c] = jac
+                full = np.zeros((n, 2, 3))
+                full[rows] = jac
+                jac_cache[cam] = full
             else:
-                base = project_pixels(x[rows], cals[cam_of[c]], cpar)
-                jac = jac_cache[c]
-            r = pixel_xy[rows, c] - base                         # (k, 2)
-            w = w_all[rows, c][:, None, None]
-            a_mat[rows] += np.einsum("kij,kil->kjl", jac * np.sqrt(w), jac * np.sqrt(w))
-            b_vec[rows] += np.einsum("kij,ki->kj", jac, r * w[:, :, 0])
+                base = project_pixels(x[rows], cals[cam], cpar)
+            base_full = np.zeros((n, 2))
+            base_full[rows] = base
+            for c in slots:
+                sr = np.flatnonzero(ok & valid[:, c])
+                if len(sr) == 0:
+                    continue
+                jac_s = jac_cache[cam][sr]
+                r = pixel_xy[sr, c] - base_full[sr]                  # (k, 2)
+                w = w_all[sr, c][:, None, None]
+                a_mat[sr] += np.einsum("kij,kil->kjl", jac_s * np.sqrt(w), jac_s * np.sqrt(w))
+                b_vec[sr] += np.einsum("kij,ki->kj", jac_s, r * w[:, :, 0])
         idx = np.flatnonzero(ok)
         step = np.linalg.solve(a_mat[idx] + 1e-9 * eye, b_vec[idx][:, :, None])[:, :, 0]
         x[idx] += step
