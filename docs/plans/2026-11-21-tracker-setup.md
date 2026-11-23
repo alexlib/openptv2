@@ -224,9 +224,14 @@ Done, each step checked to give the same benchmark result (vErr 0.0932 with one 
 | `stamp_tnr` vectorised, rewrites one column and only if it changed (was 4.7 ms per array) | 49 |
 | measured slots of one camera share one projection (blob and prediction slots) | 45 |
 
-Two rounds: 108 s, now 80 s (round 1: membership 3.4, refine 11.6, births 7.0, write 4.9, relink 5.6). `two_phase`
-alone is 4.9 s, so the loop is still about 16 times it, not the 2 to 3 times aimed at. What remains is spread out:
-`project_pixels` for the Jacobian (about 6 s), births (7 s, per-blob Python), relink (a full `two_phase` pass per round),
+Then `birth_targets` grouped per camera over all frames (equal to the old loop in a test; 6.7 s to 2.9 s per round) and
+vectorised signatures and young-partner splits (about 1 s). Measured which of births and relink matters more: births
+was 7 s of Python loops, now 3 s; relink is a full `two_phase` pass (4.5 s) plus 1.7 s of zarr reads, so it has no
+cheap cut that keeps the result.
+
+Two rounds: 108 s, now 76 s (round 2: membership 2.9, refine 10.9, births 2.8, write 5.1, relink 5.5). `two_phase`
+alone is 4.9 s, so the loop is still about 15 times it, not the 2 to 3 times aimed at. What remains is spread out:
+`project_pixels` for the Jacobian (about 6 s), births (now 3 s), relink (a full `two_phase` pass per round),
 the per-camera write of observations. Each is 5 to 15 % of the loop; no single step is left that halves it.
 
 ## 12. What is left
