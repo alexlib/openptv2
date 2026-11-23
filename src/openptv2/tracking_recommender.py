@@ -65,6 +65,7 @@ class Recommendation:
 
     suggested_params: dict[str, Any] = field(default_factory=dict)
     alternate_choices: list[str] = field(default_factory=list)
+    advice: Any = None            # tracking_advice.Advice measured on the store's points, when it has them
 
 
 def compute_dataset_stats(
@@ -517,7 +518,15 @@ def recommend_from_files(
         frame_particles = [np.empty((0, 3)) for _ in range(first, last + 1)]
 
     stats = compute_dataset_stats(frame_particles)
-    return recommend_tracker(stats, user_preferences)
+    rec = recommend_tracker(stats, user_preferences)
+    if store is not None:
+        try:
+            from openptv2.tracking_advice import advise, describe_store
+
+            rec.advice = advise(describe_store(store, first or None, last or None))
+        except Exception:  # the advice is an extra: older stores without targets just do not get it
+            rec.advice = None
+    return rec
 
 
 def print_recommendation(rec: Recommendation) -> str:
@@ -545,6 +554,12 @@ def print_recommendation(rec: Recommendation) -> str:
                 lines.append(f"    {k}: {v:.2f}")
             else:
                 lines.append(f"    {k}: {v}")
+
+    if rec.advice is not None:
+        from openptv2.tracking_advice import format_advice
+
+        lines.append("")
+        lines.append(format_advice(rec.advice))
 
     lines.append("")
     lines.append("  For full tracker details: openptv list-trackers --show <name>")

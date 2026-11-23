@@ -9,7 +9,9 @@ for the default tracker in depth, [Two-Phase Tracking](two-phase-tracking.md); f
 
 ## Quick start
 
-Do nothing and you get the recommended setup: `two_phase`, `direction: both`, no holistic loop.
+Do nothing and you get the recommended setup: `two_phase`, `direction: both`, no extras. For difficult data (overlapping
+particles) `openptv recommend <run.zarr>` measures your points and says which extras are worth their run time
+([Choosing](#choosing-which-tracker-which-extras)).
 
 ```yaml
 track:
@@ -17,6 +19,7 @@ track:
   direction: both         # forward | both                           default: both
   postprocess: true       # trackcorr, fast_3d: reciprocity + gaps   default: true
   holistic_rounds: 0      # two_phase add-on: merged-blob loop       default: 0 (off)
+  shared_correction: false  # two_phase add-on: fix points in shared blobs  default: false
   dvxmin: -2.0            # search bounds, same for every tracker
   dvxmax: 2.0             #   (dvy*, dvz* likewise) mm/frame
   dacc: 0.4               # mm/frame^2
@@ -26,9 +29,62 @@ track:
 | Where | How |
 |---|---|
 | GUI | Tracking Parameters: **Tracker**, **Direction**, Post-process, the bounds, and the add-on box *Merged-blob loop rounds*. Saved into the YAML above. |
-| Batch | `openptv-batch parameters_Run1.yaml 1 500` uses the YAML. Override on the command line: `--tracker fast_3d`, `--direction forward`, `--holistic-rounds 2`. The same flags exist in the parallel batch. |
+| Batch | `openptv-batch parameters_Run1.yaml 1 500` uses the YAML. Override on the command line: `--tracker fast_3d`, `--direction forward`, `--holistic-rounds 2`, `--shared-correction`. The same flags exist in the parallel batch. |
 | Python | `run_tracking_plugin("default", exp)` reads the YAML; `run_tracking_plugin("trackcorr", exp)` names the tracker. |
+| Advice | `openptv recommend res/run.zarr`: measures the data, names the tracker and the extras, with reasons. |
 | List | `openptv list-trackers` (table); `openptv list-trackers --show two_phase` (details and every setting). |
+
+## Choosing: which tracker, which extras
+
+Short answer: **`two_phase`, with nothing else, unless your data says otherwise.** The extras
+(`ptv.shared_pass`, `track.shared_correction`) are for data where particles overlap in the camera images. They bring a
+solid but not drastic improvement and cost run time, so they are never on by default.
+
+Ask your own data: `openptv recommend <run.zarr>` measures six numbers on your points (no truth needed) and prints the
+setup below with the reasons. The numbers: points per frame; spacing/step (how many steps apart neighbours are);
+mutual-link share (how many points have an unambiguous partner in the next frame; low = dense); noise/step (the
+velocity kink of a track against its step: 0 = exact data); partial views (share of points seen by fewer cameras
+than the rig has); **shared-blob flag** (share of points with one view much brighter than their other views, the sign
+of a blob holding two particles).
+
+| Your data | Use | Why (benchmark, 13 cases; real wp1, wp2 for the descriptors) |
+|---|---|---|
+| Real or noisy data (any density, any step) | **`two_phase`** | fastest (4 to 5 s per 200 frames, against 25 to 176 s for `trackcorr`) and the most accurate: velocity error 1.3 to 7 times lower than `trackcorr` or `fast_3d`; the only one that copes when neighbours are fewer than 10 steps apart |
+| Exact data (simulation, no noise: noise/step below 0.1, no merged blobs) | **`fast_3d`** | keeps every point (yield 0.995) where `two_phase`'s ghost rules drop 3 to 6 % of them; `trackcorr` gives the same result 2 to 3 times slower |
+| You must reproduce a legacy (OpenPTV, C `trackcorr`) result | `trackcorr` | the legacy algorithm. It is never the fastest here, it is the least accurate on noisy data (velocity error 0.20 to 1.05 against 0.08 to 0.41 for `two_phase`), and with large steps it breaks (frame skip 4: 0.39 against 0.11; skip 8: 0.82 against 0.13, 176 s) |
+| Shared-blob flag 10 % or more | `two_phase` + `shared_correction` (+ `shared_pass`) | see below; real recordings wp1 and wp2 have 15 % |
+| Shared-blob flag below 8 % | `two_phase` alone | the extras change nothing (clean data) or a few percent |
+
+**What the extras bring**, velocity error (long-track completeness) per tracker setup. Benchmark cases with truth;
+the shared-blob flag is the number `openptv recommend` prints. Run time relative to `two_phase` alone:
+about 1 (`two_phase`), +10 to 30 % of the matching time for the pass, 3 to 4 times the tracking time for the
+correction.
+
+| Case (flag) | `two_phase` | + pass | + correction | + both | `fast_3d` | `trackcorr` |
+|---|---|---|---|---|---|---|
+| exact, no noise, dense (0.00) | 0.0008 (0.92) | 0.0009 | 0.0008 | 0.0009 | 0.0009 (0.98) | 0.0009 (0.98) |
+| noise only, no extra effects (0.13) | 0.160 (0.53) | 0.158 (0.56) | 0.096 (0.56) | 0.098 (0.60) | 0.204 (0.57) | 0.266 (0.52) |
+| real-like, merge rate 0.6 (0.11) | 0.081 (0.70) | 0.078 (0.73) | 0.078 (0.70) | 0.071 (0.74) | 0.145 (0.73) | 0.201 (0.59) |
+| real-like, merge rate 0.75 (0.14) | 0.105 (0.62) | 0.102 (0.66) | 0.092 (0.64) | 0.088 (0.69) | 0.155 (0.67) | 0.220 (0.54) |
+| real-like, default merge rate (0.17) | 0.183 (0.50) | 0.183 (0.53) | 0.128 (0.53) | 0.128 (0.56) | 0.243 (0.56) | 0.297 (0.44) |
+| density x2 (0.26) | 0.311 (0.34) | 0.319 (0.36) | 0.225 (0.36) | 0.226 (0.39) | 0.594 (0.39) | 0.508 (0.31) |
+| density x4 (0.40) | 0.409 (0.16) | 0.420 (0.16) | 0.340 (0.17) | 0.345 (0.17) | 1.688 (0.18) | 1.050 (0.15) |
+| every 4th frame (0.17) | 0.113 (0.52) | 0.112 (0.54) | 0.089 (0.55) | 0.096 (0.59) | 0.427 (0.54) | 0.388 (0.53) |
+| every 8th frame (0.17) | 0.130 (0.48) | 0.124 (0.52) | 0.112 (0.51) | 0.110 (0.56) | 1.162 (0.40) | 0.816 (0.45) |
+| clustered, every 4th frame (0.23) | 0.170 (0.32) | 0.173 (0.34) | 0.130 (0.34) | 0.131 (0.37) | 1.251 (0.34) | 0.758 (0.35) |
+
+Reading it:
+- The correction pays in proportion to the flag: about 4 % at 0.11, 12 % at 0.14, 28 to 40 % at 0.13 to 0.26 when
+  the noise is low. At 0.17 to 0.26 it removes a quarter to a third of the error.
+- The pass alone is a yield option: +2 points of yield and +3 to 4 of long-track completeness; it does not lower the
+  velocity error, and in dense data (flag above 0.25) it raises it a little unless the correction is on too.
+  Together they beat either alone when the flag is around 0.11 to 0.14.
+- At density x4 and with large steps `fast_3d` and `trackcorr` fall apart (ghost points, wrong links); `two_phase`
+  stays usable. Nothing makes the densest case good: yield stays at 0.23 to 0.25 (a particle in a crowd has no
+  clean view).
+- On the real recordings (flag 0.15, noise/step 0.67, density like the benchmark's x1) the same setup,
+  `two_phase` with both extras, raised the share of points in tracks of 200 frames or more from 6 to 7 % to 14 to 16 %
+  and the smoothness of the tracks by 15 %.
 
 ## What tracking is
 

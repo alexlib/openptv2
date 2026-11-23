@@ -435,3 +435,85 @@ link passes, membership and signatures 2.4 s, refine 4.6 s, write 2.7 s per 200 
 the cost is 3 to 4 times the run time; a default would be a decision for the user. A single-pass version (correction
 inside the forward and backward passes, no second link) was not built: the measurements say the second link is where
 part of the gain comes from.
+
+## 17. Choosing, and where the next step is (2026-11-24)
+
+The user's brief: the extras (`shared_pass`, `shared_correction`) stay off by default and are for difficult data;
+learn from the data which setup to recommend; find where the next significant quality gain is.
+
+### 17.1 The sweep
+
+10 benchmark cases (exact dense, noise only, three merge rates, density x2 and x4, frame skip 4 and 8, clustered with
+skip 4) x `trackcorr`, `fast_3d`, `two_phase`, +pass, +correction, +both, one job at a time (clean timings), plus three
+more cases with the three trackers only (exact sparse, two ghost-free); scored with the postptv repair and Savitzky-Golay at the best window. Raw numbers of the 10 cases: `bench/limits/sweep_results.json`.
+The table is in `docs/trackers.md` ("Choosing"). Findings:
+
+1. `two_phase` is the fastest *and* the most accurate on noisy data: 4 to 5 s per 200 frames against 25 s (`trackcorr`) and
+   10 s (`fast_3d`); velocity error 1.3x to 7x lower. `trackcorr` is never the fastest in this implementation.
+2. Large steps break the others: frame skip 4 / 8: `trackcorr` 0.39 / 0.82 (176 s), `fast_3d` 0.43 / 1.16, `two_phase`
+   0.11 / 0.13. Same at density x4 (1.05 / 1.69 against 0.41).
+3. On exact data the order flips: `fast_3d` and `trackcorr` yield 0.995 and long completeness 0.97 to 0.98,
+   `two_phase` 0.94 to 0.96 / 0.92 to 0.93 (its ghost rules drop 3 to 6 % of true points). With noise but no ghosts
+   `fast_3d` and `two_phase` tie in accuracy (0.139 against 0.141; 0.163 against 0.155) and `fast_3d` keeps 1 to 2 points more.
+   (`trackcorr` found almost nothing on the "noghost" variants: harness artefact, those rows are not used.)
+4. The correction pays in proportion to how many blobs are shared. The truth-free measure is the **shared-blob flag**
+   (share of 3 to 4 camera points with a view brighter than 1.7x their second-dimmest view): flag 0.11 -4 % (-13 % with the
+   pass), 0.14 -12 %, 0.17 -30 %, 0.13 on low-noise data -40 %, 0.26 -28 %, 0.40 -17 %, 0 none. The pass alone: +2 points
+   of yield, +3 to 4 of long completeness, no velocity gain, +3 % velocity error when the data is dense (mutual-link share
+   below 0.9) unless the correction is on too.
+5. Real wp1/wp2 measure like the benchmark's density x1, noise 0.08 px cases (1,150 points/frame, spacing 29 steps,
+   noise/step 0.67, partial views 0.38, flag 0.15).
+
+`tracking_advice.py` (`openptv recommend`) turns six numbers into this advice; checked on all 13 cases and both real
+recordings, it agrees with the best setup of the sweep in every case. (Its thresholds are those numbers: exact below
+noise/step 0.1; correction at flag >= 0.10; pass at flag >= 0.10 and, when dense, only with the correction.)
+
+### 17.2 Where is the headroom? (m0.75, the real-like case)
+
+| | velocity error |
+|---|---|
+| `two_phase` | 0.1046 |
+| + pass + correction (best now) | 0.0876 |
+| perfect association, each merged blob centre to 0.3 px (ceiling E1c, section 13 of the joint-tracker plan) | about 0.060 |
+| the same to 0.1 px | about 0.044 (sparse default case: 0.0436) |
+| exact data | 0.0009 |
+
+Three measurements decide where the gap is (scripts in `bench/limits/`):
+
+- **De-merge accuracy** (`demerge_error.py`): views on a blob shared by two particles, error of the pixel position used
+  against the truth. Clean views 0.082 px (median; 0.16 rms). Shared views, raw centre: median 0.60, 24 % above 1 px.
+  After the correction: **median 0.30 px** (0.28 when the point has a trusted prediction, 0.53 without), but **12.5 % above
+  1 px, rms 0.82 px** (p90 1.14, p99 3.14). The median is at the ceiling's 0.3 px; the tail is not. The fit knows: the
+  views that end up more than 1 px off report a standard deviation of 1.15 px against 0.28 px for the rest (error/sd:
+  median 0.93, p99 4.8), so they are down-weighted; the information in them is lost, not recovered. With three or more
+  particles in a blob the median is 0.68 px.
+- **Ray convergence** (`loco_compare.py`): leave-one-camera-out residual of 4-camera points. Synthetic 0.31 px median
+  (p90 0.51); real wp1 and wp2 0.35 px (p90 0.68). Real data is 13 % worse in the median, 35 % in p90: calibration and
+  optics are not a large hidden term.
+- **Information in the stored blob extents**: on real wp2, views flagged as merged have 1.62x the pixel count and
+  1.33x the x and y extent of the other views of the same point. The blob's shape carries information on the split that
+  the correction does not use (it uses centre and grey sum only). The synthetic blob tables have constant extents, so
+  this cannot be tested on the benchmark.
+
+### 17.3 Candidates, ranked by evidence
+
+| # | Idea | Evidence | Expected | Cost / risk |
+|---|---|---|---|---|
+| 1 | **Pixel-level de-merging**: fit the pixels of a shared blob with one PSF per member, seeded by the tracks' predictions (0.28 px), instead of splitting a centre by brightness. Store a small patch per target at detection (about 80 bytes) or re-read the images for the 15 % shared blobs | the tail (12.5 % above 1 px) is where centre + grey sum run out; real merged blobs differ in shape; ceiling at 0.1 px is 0.044 | velocity error -30 to -50 % from 0.0876; the tail of ambiguous splits goes; helps 3-particle blobs | needs the PSF (`scripts/psf_estimate.py` exists), image access or patches; a rendered case with truth to prove it first |
+| 2 | Use the stored extents (nx, ny, n) as a second measurement of the separation | real merged views are 1.33x wider | possibly part of #1's gain for free | untestable on the benchmark (constant extents); needs a rendered case with truth |
+| 3 | Tracks confirm 2-camera matches (pairs are ambiguous alone, the prediction picks the candidate) | 2.4 points of the 5 missing points of yield are particles seen by only 2 cameras | +2 to 3 points of yield, long completeness | moderate; ghost risk; the matcher stays untouched |
+| 4 | Track-guided detection of faint particles (lower local threshold along a predicted track) | 11 % of true particles have no blob at all (the yield ceiling of blob space, 0.85) | yield beyond 0.85 | needs the images; this is the second half of Shake-the-Box |
+| 5 | One-pass correction (no second link) | the second link is 40 % of the correction's time | run time 4x -> 2.5x, no accuracy change | measured against: the relink supplies part of the gain |
+| not worth it | weights in the smoothing (2 % even with oracle weights), ghost removal for `two_phase` (0.5 to 2 %), stitching (harmful), a better linker (99 % of reachable links found), calibration (13 %) | | | |
+
+**Where the breakthrough is:** #1, the step from blob space to pixel space for the shared blobs only, with the tracks as the
+prior: the same idea as Shake-the-Box's residual fit, but local and cheap (15 % of the blobs, no image rendering of the
+whole field). Everything else on the list is a few points. A tracker or a matcher change cannot reach it: the loss is in
+the measurement of the blob, and the sweep shows linking already finds 99 % of the reachable links.
+
+**First experiment (go / no-go before building anything):** take a rendered case with truth (`Synthetic-CompleteTest`
+syn1 render, or render x1 and x2 with openptv-analysis `synthetic_experiment`), take the blobs the standard detection
+merges, fit one PSF per member seeded with the true position plus 0.28 px noise, and measure the de-merge error as in
+`demerge_error.py`. Go when the median is at most 0.15 px and the share above 1 px at most 3 % (now 0.30 px and 12.5 %).
+Also on the rendered case: does a regression of the true separation on the stored extents beat the prediction alone
+(test of #2).

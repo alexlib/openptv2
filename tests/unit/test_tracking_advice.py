@@ -1,75 +1,91 @@
-"""tracking_advice: measurements -> recommendations, with reasons."""
+"""The data-driven tracker advice (src/openptv2/tracking_advice.py)."""
+
+from __future__ import annotations
 
 import numpy as np
+import pytest
 
-from openptv2.tracking_advice import advise, report
+from openptv2.tracking_advice import (
+    RunDescription,
+    advise,
+    describe_store,
+    format_advice,
+)
+
+pytestmark = pytest.mark.unit
 
 
-def _m(**kw):
-    base = {
-        "points_per_frame": 1100.0,
-        "neighbours": 5.5,
-        "three_cam_share": 0.38,
-        "flagged_02": 0.10,
-        "flagged_05": 0.04,
-        "median_step": 0.11,
-        "median_kink": 0.07,
-        "kink_step_ratio": 0.64,
-    }
+def _d(**kw):
+    base = dict(n_frames=100, ppf=1000.0, nn_mm=2.3, step_mm=0.1, spacing_over_step=23.0, mutual_rate=0.95,
+                kink_over_step=0.65, frac_partial=0.3, merge_flag_rate=0.0)
     base.update(kw)
-    return base
+    return RunDescription(**base)
 
 
-def _get(advice, name):
-    return next(a for a in advice if a.parameter == name)
+def test_exact_data_gets_fast_3d():
+    a = advise(_d(kink_over_step=0.01))
+    assert a.tracker == "fast_3d" and not a.shared_correction and not a.shared_pass
 
 
-def test_typical_sparse_noisy_data_gets_defaults_and_automatic_tolerance():
-    a = advise(_m(), fps=5000)
-    assert _get(a, "q_seed").value == 0.2 and _get(a, "q_young").value == 3
-    tol = _get(a, "confirm_tol")
-    assert "automatic" in str(tol.value) and "0.56" in tol.reason  # 8 x 0.07
-    assert _get(a, "trajectories.smoothing_window").value == 21
-    assert not any(x.parameter == "blob_gate" for x in a)
+def test_noisy_data_gets_two_phase_without_extras_by_default():
+    a = advise(_d(merge_flag_rate=0.03))
+    assert a.tracker == "two_phase" and not a.shared_correction and not a.shared_pass
 
 
-def test_dense_data_keeps_the_fixed_tolerance_and_says_why():
-    tol = _get(advise(_m(neighbours=10.5)), "confirm_tol")
-    assert tol.value == 0.3 and "dense" in tol.reason and "NOT safe" in tol.reason
+@pytest.mark.parametrize(("flag", "correction"), [(0.05, False), (0.09, False), (0.10, True), (0.12, True), (0.40, True)])
+def test_correction_follows_the_merge_flag_rate(flag, correction):
+    assert advise(_d(merge_flag_rate=flag)).shared_correction is correction
 
 
-def test_frame_skipped_data_keeps_fixed_tolerance_and_gets_the_brightness_gate():
-    a = advise(_m(median_step=0.33, median_kink=0.10, kink_step_ratio=0.30))
-    assert _get(a, "confirm_tol").value == 0.3
-    assert "motion dominates" in _get(a, "confirm_tol").reason
-    assert _get(a, "blob_gate").value == 0.5
+def test_pass_alone_only_on_sparse_data():
+    assert advise(_d(merge_flag_rate=0.095, mutual_rate=0.95)).shared_pass is False        # below the flag limit
+    assert advise(_d(merge_flag_rate=0.15, mutual_rate=0.95)).shared_pass
+    assert advise(_d(merge_flag_rate=0.15, mutual_rate=0.7)).shared_pass      # with the correction it is fine
 
 
-def test_many_doubtful_points_select_the_accuracy_mode_and_clean_data_the_light_rule():
-    a = advise(_m(three_cam_share=0.55, flagged_02=0.18))
-    assert _get(a, "q_seed").value == 0.15 and _get(a, "q_young").value == 6
-    b = advise(_m(three_cam_share=0.10, flagged_02=0.02))
-    assert _get(b, "q_seed").value == 0.3
+def test_unmeasurable_noise_is_not_treated_as_exact():
+    assert advise(_d(kink_over_step=float("nan"))).tracker == "two_phase"
 
 
-def test_missing_ghost_measurement_falls_back_to_defaults():
-    a = advise(_m(flagged_02=np.nan, three_cam_share=0.38))
-    assert _get(a, "q_seed").value == 0.2 and "not measured" in _get(a, "q_seed").reason
+def test_settings_and_text():
+    a = advise(_d(merge_flag_rate=0.2))
+    assert a.settings() == {"track": {"tracker": "two_phase", "shared_correction": True},
+                            "ptv": {"shared_pass": True}}
+    text = format_advice(a)
+    assert "shared_correction: true" in text and "two_phase" in text
 
 
-def test_report_lists_measurements_reasons_and_yaml():
-    m = _m()
-    txt = report(m, advise(m, fps=5000))
-    assert "MEASURED ON YOUR DATA" in txt and "why:" in txt and "track:" in txt
-    assert "q_seed: 0.2" in txt and "smoothing_window: 21" in txt
-    assert "# confirm_tol: leave unset (automatic)" in txt
+class _Store:
+    """A store with moving, noisy 3D points seen by 4 cameras; blob 3 of every point is twice as bright in 20 %."""
+
+    def __init__(self, noise, n=300, n_fr=12, seed=0):
+        rng = np.random.default_rng(seed)
+        base = rng.uniform(0, 30, (n, 3))
+        vel = np.array([0.1, 0.02, 0.0])
+        self.frames_ = list(range(1, n_fr + 1))
+        self.pos = {f: base + vel * f + rng.normal(0, noise, (n, 3)) for f in self.frames_}
+        bright = np.where(rng.random(n) < 0.2, 2.5, 1.0)
+        self.targets = {}
+        for f in self.frames_:
+            for c in range(4):
+                t = np.zeros((n, 8))
+                t[:, 6] = 100.0 * (bright if c == 3 else 1.0) * rng.uniform(0.95, 1.05, n)
+                self.targets[(c, f)] = t
+        self.root = {"targets": {f"cam_{c}": None for c in range(4)}}
+        for (c, f), t in self.targets.items():
+            self.root[f"targets/cam_{c}/frame_{f:06d}"] = t
+
+    def frames(self):
+        return self.frames_
+
+    def read_correspondences(self, f):
+        return self.pos[f], np.tile(np.arange(len(self.pos[f]))[:, None], (1, 4))
 
 
-def test_post_steps_follow_the_noise_dominance_guard():
-    a = advise(_m())
-    assert _get(a, "trajectories.reconnect_gap").value == 6
-    assert _get(a, "trajectories.smooth_filter_k").value == 6
-    b = advise(_m(median_step=0.5, median_kink=0.13, kink_step_ratio=0.26))
-    assert _get(b, "trajectories.smooth_filter_k").value == "off"
-    txt = report(_m(), a)
-    assert "reconnect_gap: 6" in txt and "smooth_filter_k: 6" in txt
+def test_describe_store_measures_noise_and_the_shared_flag():
+    quiet = describe_store(_Store(noise=0.0))
+    noisy = describe_store(_Store(noise=0.05))
+    assert quiet.kink_over_step < 0.05 < 0.3 < noisy.kink_over_step
+    assert 0.1 < noisy.merge_flag_rate < 0.3                   # about 20 % of the points have the bright view
+    assert noisy.frac_partial == 0.0 and noisy.mutual_rate > 0.9
+    assert advise(quiet).tracker == "fast_3d" and advise(noisy).tracker == "two_phase"
