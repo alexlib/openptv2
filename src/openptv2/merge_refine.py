@@ -44,6 +44,7 @@ from openptv2.blob_model import (
     local_poly_predict,
     signature_from_history,
     split_blob_effective,
+    split_blobs_effective,
     triangulate_weighted,
 )
 from openptv2.loco import pixels_to_flat, project_pixels
@@ -131,10 +132,17 @@ def refine_merged(
     sig = _signatures(pid, clean, sumg)
     track_len = np.bincount(np.unique(pid, return_inverse=True)[1])[np.unique(pid, return_inverse=True)[1]]
 
+    if signatures is not None:
+        sig_mat = np.asarray(signatures, float)
+    else:
+        up, inv = np.unique(pid, return_inverse=True)
+        table = np.full((len(up), n_cams), np.nan)
+        for (p_, c_), v_ in sig.items():
+            table[np.searchsorted(up, p_), c_] = v_
+        sig_mat = table[inv]
+
     def sig_of(rows, c):
-        if signatures is not None:
-            return np.asarray(signatures[rows, c], float)
-        return np.array([sig.get((int(pid[m]), c), np.nan) for m in rows])
+        return sig_mat[rows, c]
     raw = centre[est]
     raw_var = np.where(np.isnan(raw[:, :, 0]), np.nan, var_c)
 
@@ -147,21 +155,21 @@ def refine_merged(
             obs_px = np.concatenate([obs_px, prior_px], axis=1)
             obs_var = np.concatenate([obs_var, np.broadcast_to(prior_var, prior_px.shape[:2])], axis=1)
             cam_ix = cam_ix + cam_ix
-        for f, rr in est_rows_of.items():
-            if len(rr) == 0:
-                continue
-            if x_start is None:
-                flat = np.full((len(rr), n_cams, 2), -1e10)
-                for c in range(n_cams):
-                    v = ~np.isnan(obs_px[rr, c, 0])
-                    if v.any():
-                        flat[v, c] = pixels_to_flat(obs_px[rr[v], c], cals[c], cpar)
-                x0 = np.asarray(point_positions(flat, cpar, cals, vpar, method="lsq")[0], float)
-            else:
-                x0 = x_start[rr]
-            x[rr], cv = triangulate_weighted(obs_px[rr], obs_var[rr], cpar, cals, x0, n_iter=3, cam_index=cam_ix, frozen_jacobian=True,
-                                             return_cov=True)
-            pos_var[rr] = np.trace(cv, axis1=1, axis2=2) / 3.0
+        # every point is independent of the others, so all frames go through one call
+        if n_est == 0:
+            return x
+        if x_start is None:
+            flat = np.full((n_est, n_cams, 2), -1e10)
+            for c in range(n_cams):
+                v = ~np.isnan(obs_px[:, c, 0])
+                if v.any():
+                    flat[v, c] = pixels_to_flat(obs_px[v, c], cals[c], cpar)
+            x0 = np.asarray(point_positions(flat, cpar, cals, vpar, method="lsq")[0], float)
+        else:
+            x0 = x_start
+        x[:], cv = triangulate_weighted(obs_px, obs_var, cpar, cals, x0, n_iter=3, cam_index=cam_ix, frozen_jacobian=True,
+                                        return_cov=True)
+        pos_var[:] = np.trace(cv, axis1=1, axis2=2) / 3.0
         return x
 
     x = fit(raw, raw_var)
@@ -180,66 +188,60 @@ def refine_merged(
         var_p = max(float(np.mean((raw - pred_px)[cl] ** 2)) - var_c, 0.01) if cl.any() else 0.25
         obs_px, obs_var = raw.copy(), raw_var.copy()
         n_gated = n_hidden = 0
-        for f in frames:
-            sel = rows_of[f]
-            for c in range(n_cams):
-                idx = sel[det[sel, c]]
-                b = blob[idx, c]
-                o = np.argsort(b, kind="stable")
-                idx, b = idx[o], b[o]
-                cuts = np.flatnonzero(np.r_[True, b[1:] != b[:-1], True])
-                for a, e in zip(cuts[:-1], cuts[1:]):
-                    if e - a < 2:
-                        if hidden_mass is None:
-                            continue
-                        r0 = idx[a]
-                        s_own = float(sig_of(np.array([r0]), c)[0])
-                        g = sumg[r0, c]
-                        if not (np.isfinite(s_own) and s_own > 0 and np.isfinite(g) and g >= hidden_mass * s_own):
-                            continue
-                        if pidx[r0] < 0:
-                            continue
-                        ctr = centre[r0, c]
-                        _s, v_h = split_blob_effective(ctr, np.vstack([ctr, ctr]), np.array([s_own, g - s_own]),
-                                                       var_c, np.array([var_p, var_unknown]))
-                        obs_var[pidx[r0], c] = v_h[0]
-                        n_hidden += 1
-                        continue
-                    mem = idx[a:e]
-                    ctr = centre[mem[0], c]
-                    pm = pidx[mem]
-                    pr = np.where((pm >= 0)[:, None], pred_px[np.maximum(pm, 0), c], np.nan)
-                    unknown = ~np.isfinite(pr[:, 0])
-                    young = track_len[mem] < partner_min_len
-                    pr[unknown] = ctr
-                    vp = np.where(unknown, var_unknown, var_p)
-                    bright = sig_of(mem, c)
-                    if young.any():
-                        # a young member's own observation is computed normally, but for its partners it counts as
-                        # unknown: one split per member, with the others' predictions as trusted or not
-                        s_eff = np.zeros((len(mem), 2))
-                        v_eff = np.zeros(len(mem))
-                        for j in range(len(mem)):
-                            pr_j, vp_j = pr.copy(), vp.copy()
-                            others = np.arange(len(mem)) != j
-                            mask = others & young
-                            pr_j[mask] = ctr
-                            vp_j[mask] = var_unknown
-                            s_j, v_j = split_blob_effective(ctr, pr_j, bright, var_c, vp_j)
-                            s_eff[j], v_eff[j] = s_j[j], v_j[j]
-                    else:
-                        s_eff, v_eff = split_blob_effective(ctr, pr, bright, var_c, vp)
-                    for j in range(len(mem)):
-                        if pm[j] < 0:
-                            continue
-                        if gate > 0 and not unknown[j]:
-                            if np.sum((s_eff[j] - pr[j]) ** 2) / (v_eff[j] + vp[j]) > gate**2:
-                                obs_px[pm[j], c] = np.nan
-                                obs_var[pm[j], c] = np.nan
-                                n_gated += 1
-                                continue
-                        obs_px[pm[j], c] = s_eff[j]
-                        obs_var[pm[j], c] = v_eff[j]
+        for c in range(n_cams):
+            idx = np.flatnonzero(det[:, c])
+            key = frame[idx].astype(np.int64) * 10_000_000 + blob[idx, c]
+            o = np.argsort(key, kind="stable")
+            idx, key = idx[o], key[o]
+            cuts = np.flatnonzero(np.r_[True, key[1:] != key[:-1], True])
+            starts, sizes = cuts[:-1], np.diff(cuts)
+            # blobs of one particle: only a hidden partner can change them
+            if hidden_mass is not None:
+                r0 = idx[starts[sizes == 1]]
+                s_own, g = sig_mat[r0, c], sumg[r0, c]
+                hid = np.isfinite(s_own) & (s_own > 0) & np.isfinite(g) & (g >= hidden_mass * np.where(np.isfinite(s_own), s_own, np.inf))
+                hid &= pidx[r0] >= 0
+                if hid.any():
+                    r0, s_own, g = r0[hid], s_own[hid], g[hid]
+                    ctr = centre[r0, c]
+                    _s, v_h = split_blobs_effective(
+                        ctr, np.stack([ctr, ctr], axis=1), np.stack([s_own, g - s_own], axis=1), var_c,
+                        np.broadcast_to([var_p, var_unknown], (len(r0), 2)))
+                    obs_var[pidx[r0], c] = v_h[:, 0]
+                    n_hidden += len(r0)
+            for m in np.unique(sizes[sizes >= 2]):
+                st = starts[sizes == m]
+                mem = idx[st[:, None] + np.arange(m)[None, :]]            # (G, m) rows of the blobs
+                ctr = centre[mem[:, 0], c]
+                pm = pidx[mem]
+                pr = np.where((pm >= 0)[:, :, None], pred_px[np.maximum(pm, 0), c], np.nan)
+                unknown = ~np.isfinite(pr[:, :, 0])
+                pr = np.where(unknown[:, :, None], ctr[:, None, :], pr)
+                vp = np.where(unknown, var_unknown, var_p)
+                bright = sig_mat[mem, c]
+                young = track_len[mem] < partner_min_len
+                s_eff, v_eff = split_blobs_effective(ctr, pr, bright, var_c, vp)
+                for g_ in np.flatnonzero(young.any(1)):
+                    # a young member's own observation is computed normally, but for its partners it counts as
+                    # unknown: one split per member, with the others' predictions as trusted or not
+                    for j in range(m):
+                        pr_j, vp_j = pr[g_].copy(), vp[g_].copy()
+                        mask = (np.arange(m) != j) & young[g_]
+                        pr_j[mask] = ctr[g_]
+                        vp_j[mask] = var_unknown
+                        s_j, v_j = split_blob_effective(ctr[g_], pr_j, bright[g_], var_c, vp_j)
+                        s_eff[g_, j], v_eff[g_, j] = s_j[j], v_j[j]
+                keep = pm >= 0
+                if gate > 0:
+                    bad = keep & ~unknown & (np.sum((s_eff - pr) ** 2, axis=2) / (v_eff + vp) > gate**2)
+                else:
+                    bad = np.zeros_like(keep)
+                n_gated += int(bad.sum())
+                ok = keep & ~bad
+                obs_px[pm[bad], c] = np.nan
+                obs_var[pm[bad], c] = np.nan
+                obs_px[pm[ok], c] = s_eff[ok]
+                obs_var[pm[ok], c] = v_eff[ok]
         if prior:
             pri = np.where(good[:, None, None], pred_px, np.nan)
             x = fit(obs_px, obs_var, x_start=x, prior_px=pri, prior_var=prior_scale * var_p)

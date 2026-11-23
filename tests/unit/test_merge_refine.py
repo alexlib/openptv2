@@ -125,3 +125,23 @@ def test_joint_mode_solves_the_merged_frames_at_least_as_well(scene):
     e_joint = np.linalg.norm(joint.x - truth, axis=1)[merged_rows].mean()
     assert e_joint < 0.6 * raw
     assert e_joint <= 1.1 * e_eff
+
+
+@pytest.mark.parametrize("m", [2, 3, 4])
+def test_batched_split_equals_the_one_blob_function(m):
+    from openptv2.blob_model import split_blob_effective, split_blobs_effective
+
+    rng = np.random.default_rng(m)
+    g = 40
+    ctr = rng.normal(size=(g, 2)) * 100
+    pred = ctr[:, None, :] + rng.normal(size=(g, m, 2))
+    bright = rng.uniform(50, 500, size=(g, m))
+    bright[0, 0] = np.nan            # unknown signature -> median of the others
+    bright[1] = np.nan               # all unknown -> equal shares
+    bright[2, 1] = -3.0              # non-positive counts as unknown
+    var_p = rng.uniform(0.05, 1.0, size=(g, m))
+    s, v = split_blobs_effective(ctr, pred, bright, 0.01, var_p)
+    for k in range(g):
+        s1, v1 = split_blob_effective(ctr[k], pred[k], bright[k], 0.01, var_p[k])
+        np.testing.assert_allclose(s[k], s1, rtol=1e-12)
+        np.testing.assert_allclose(v[k], v1, rtol=1e-12)

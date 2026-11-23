@@ -124,15 +124,15 @@ def triangulate_weighted(
             if len(rows) == 0:
                 continue
             if it == 0 or not frozen_jacobian:
-                steps = np.zeros((7, 3))
-                for ax in range(3):
-                    steps[1 + 2 * ax, ax] = step_mm
-                    steps[2 + 2 * ax, ax] = -step_mm
+                # forward differences: 4 projections per point instead of 7 (step 0.01 mm: the error is far
+                # below the pixel noise)
+                steps = np.zeros((4, 3))
+                steps[1:] = step_mm * np.eye(3)
                 k = len(rows)
                 allp = (x[rows][None, :, :] + steps[:, None, :]).reshape(-1, 3)
-                px = project_pixels(allp, cals[cam_of[c]], cpar).reshape(7, k, 2)
+                px = project_pixels(allp, cals[cam_of[c]], cpar).reshape(4, k, 2)
                 base = px[0]
-                jac = np.stack([(px[1 + 2 * ax] - px[2 + 2 * ax]) / (2 * step_mm) for ax in range(3)], axis=2)
+                jac = np.stack([(px[1 + ax] - base) / step_mm for ax in range(3)], axis=2)
                 jac_cache[c] = jac
             else:
                 base = project_pixels(x[rows], cals[cam_of[c]], cpar)
@@ -181,6 +181,39 @@ def split_blob_effective(
     s = (centre[None, :] - others) / w[:, None]
     var_others = np.sum(w**2 * var_p) - w**2 * var_p
     var = (var_centre + var_others) / w**2
+    return s, var
+
+
+def split_blobs_effective(
+    centre: np.ndarray,
+    pred: np.ndarray,
+    brightness: np.ndarray,
+    var_centre: float,
+    var_pred: np.ndarray,
+    min_share: float = 0.05,
+) -> tuple[np.ndarray, np.ndarray]:
+    """:func:`split_blob_effective` for ``G`` blobs of the same member count ``m >= 2`` at once.
+
+    ``centre`` (G, 2), ``pred`` (G, m, 2), ``brightness`` (G, m), ``var_pred`` (G, m). Returns
+    ``(s (G, m, 2), var (G, m))``, row for row what the one-blob function gives."""
+    centre = np.asarray(centre, float)
+    pred = np.asarray(pred, float)
+    var_p = np.asarray(var_pred, float)
+    a = np.asarray(brightness, float)
+    a = np.where(np.isfinite(a) & (a > 0), a, np.nan)
+    none = np.all(np.isnan(a), axis=1)
+    fill = np.zeros(len(a))
+    if (~none).any():
+        fill[~none] = np.nanmedian(a[~none], axis=1)
+    a = np.where(np.isnan(a), fill[:, None], a)
+    w = np.where(none[:, None], 1.0 / a.shape[1], a / np.where(none, 1.0, a.sum(1))[:, None])
+    w = np.maximum(w, min_share)
+    w = w / w.sum(1, keepdims=True)
+    wp = w[:, :, None] * pred
+    others = wp.sum(1, keepdims=True) - wp
+    s = (centre[:, None, :] - others) / w[:, :, None]
+    w2vp = w**2 * var_p
+    var = (var_centre + (w2vp.sum(1, keepdims=True) - w2vp)) / w**2
     return s, var
 
 
