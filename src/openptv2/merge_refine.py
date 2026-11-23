@@ -128,7 +128,6 @@ def refine_merged(
     fr_e, pid_e = frame[est], pid[est]
     frames = np.unique(frame)
     rows_of = {f: np.flatnonzero(frame == f) for f in frames}
-    est_rows_of = {f: np.flatnonzero(fr_e == f) for f in frames}
     sig = _signatures(pid, clean, sumg)
     track_len = np.bincount(np.unique(pid, return_inverse=True)[1])[np.unique(pid, return_inverse=True)[1]]
 

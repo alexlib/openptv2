@@ -211,9 +211,27 @@ operations on 2 to 3 members) plus 17,600 calls of `project_pixels` on tiny arra
 `birth_targets` was tried first and proved equivalent to the old loop, but changed the run time by about 3 %, so it was
 not kept: the per-call overhead is spread over many functions and needs a batched design, not one function at a time.
 
-## 11. What is left
+## 11. Batched refine (2026-11-23)
 
-- **Holistic loop speed.** Batch the refine step: group the blobs of a frame and camera by member count (2, 3, 4), run
+Done, each step checked to give the same benchmark result (vErr 0.0932 with one round, 0.0843 with two):
+
+| Step | one round (s) |
+|---|---|
+| before | 99 |
+| all frames in one `triangulate_weighted` call (was 800 per-frame calls) | 77 |
+| blobs split in batches by member count (`split_blobs_effective`, equal to the one-blob function in a test) | 64 |
+| forward-difference Jacobian (4 projections per point instead of 7) | 60 |
+| `stamp_tnr` vectorised, rewrites one column and only if it changed (was 4.7 ms per array) | 49 |
+| measured slots of one camera share one projection (blob and prediction slots) | 45 |
+
+Two rounds: 108 s, now 80 s (round 1: membership 3.4, refine 11.6, births 7.0, write 4.9, relink 5.6). `two_phase`
+alone is 4.9 s, so the loop is still about 16 times it, not the 2 to 3 times aimed at. What remains is spread out:
+`project_pixels` for the Jacobian (about 6 s), births (7 s, per-blob Python), relink (a full `two_phase` pass per round),
+the per-camera write of observations. Each is 5 to 15 % of the loop; no single step is left that halves it.
+
+## 12. What is left
+
+- **Holistic loop speed (partly done, section 11).** Remaining: births, relink and the Jacobian cost. Original text: batch the refine step: group the blobs of a frame and camera by member count (2, 3, 4), run
   `split_blob_effective`, the gate test and the projections on whole groups at once (young members and hidden partners as
   masks), and project all points of a frame and camera in one call. Prove each step equal to the current loop on the
   benchmark before replacing it. Target: the loop at most 2 to 3 times the `two_phase` time (about 15 s), from about 110 s.
