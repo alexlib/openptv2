@@ -1,3 +1,4 @@
+# ruff: noqa  (one-off analysis script)
 import sys, numpy as np
 from collections import Counter
 from openptv2.storage import RunStore

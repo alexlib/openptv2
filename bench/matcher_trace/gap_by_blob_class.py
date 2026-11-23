@@ -1,3 +1,4 @@
+# ruff: noqa  (one-off analysis script)
 import sys, numpy as np
 sys.path.insert(0, "scripts")
 from scipy.spatial import cKDTree

@@ -381,3 +381,57 @@ Two things were learnt on the way:
 What is left: the new points are noisy (vErr 0.22 to 0.69 on the extra points). A position refinement for shared
 blobs inside the linker (section 13, last paragraph) is what would bring them in line, and with it the second pass
 could become a default. Not tried on real recordings yet.
+
+## 16. Real recordings, and the position correction (2026-11-23)
+
+**Real data, no truth.** `bench/real_check/shared_pass_real.py` copies `res/run.zarr` of a run folder to a scratch
+directory (the source is only read), matches the first 300 frames again with and without the pass, tracks with the
+run's own settings, and prints truth-free statistics. CompleteTest wp2 and wp1, 300 frames each (about 1,150 points per
+frame, 40 % of them 3-camera points):
+
+| | base | `shared_pass` | `shared_correction` | both |
+|---|---|---|---|---|
+| wp2: points in tracks >= 50 frames | 42.2 % | 44.2 % | 51.1 % | 55.3 % |
+| wp2: points in tracks >= 200 frames | 7.1 % | 8.2 % | 10.8 % | 15.6 % |
+| wp2: tracks >= 50 frames | 1540 | 1609 | 1695 | 1720 |
+| wp2: roughness, median (mm) | 0.0548 | 0.0557 | 0.0464 | 0.0465 |
+| wp2: roughness of the new points | | 0.105 | | 0.054 |
+| wp2: short tracks (< 5 frames) | 15.4 % | 15.5 % | 14.1 % | 14.1 % |
+| wp1: points in tracks >= 50 / >= 200 | 40.0 / 6.0 % | | 49.6 / 10.2 % | 54.4 / 14.1 % |
+| wp1: roughness, median (mm) | 0.0557 | | 0.0474 | 0.0474 |
+| tracking time, 300 frames (s) | 9 | 9 | 29 | 29 |
+
+The pass alone adds 2.1 % points (7.2k and 7.4k in 300 frames), 84 to 88 % of them in tracks of 5 frames or more, and
+changes nothing about the ordinary points (roughness 0.0548 -> 0.0554, singletons 11.7 % -> 11.9 %); the new points
+are rough (0.105, about twice). The correction removes that: new points 0.054 against 0.0465 for the others, and it
+makes the whole track set smoother (-15 %) and longer. The effect on the real recordings is larger than on the
+benchmark.
+
+**The position correction** is `track.shared_correction` (`holistic.run_holistic_experiment(..., correction_only=True)`):
+link, re-estimate only the points that touch a shared blob (or whose blob is too bright for its own particle:
+`refine_merged(shared_only=True, x_init=stored positions)`), link again. What was learnt building it:
+- Re-estimating *only* the shared-blob points is better and faster than re-estimating all points (velocity error
+  0.0876 against 0.0903, refine 4.6 s against 10.1 s): the temporal prior on the clean points was not helping.
+- The second link is necessary. Writing the corrected positions into the existing links (no relink) gave velocity error
+  0.163 (worse than no correction, 0.1046), and re-confirming the old links with the two-hop rule only got to 0.106;
+  a real relink gives 0.0903. The corrected positions let the linker connect more links (link recall 0.9737 -> 0.9860).
+- A forward-only first link saves 2 s and costs accuracy (0.0904 against 0.0876): not used.
+- The observation table is written by the loop and read by nothing; the correction does not write it.
+
+Benchmark, velocity error / long completeness / fragments / yield (all with truth):
+
+| | `two_phase` | correction | pass + correction |
+|---|---|---|---|
+| m0.75 | 0.1046 / 0.623 / 1.68 / 0.754 | 0.0921 / 0.639 / 1.57 / 0.755 | 0.0876 / 0.685 / 1.38 / 0.773 |
+| default merge rate | 0.1825 / 0.503 / 2.29 / 0.680 | 0.1283 / 0.528 / 2.07 / 0.686 | 0.1281 / 0.563 / 1.91 / 0.708 |
+| 4x density | 0.4326 / 0.182 / 0.77 / 0.227 | 0.3605 / 0.189 / 0.77 / 0.232 | 0.3649 / 0.196 / 0.78 / 0.240 |
+| no merged blobs | | identical (round skipped) | identical |
+
+At the default merge rate acceleration error falls 11.5 -> 8.3 and ghost points 3.8 % -> 3.3 %; at 4x density ghost
+points fall 6.8 % -> 5.0 % and link precision rises 0.929 -> 0.944. Cost: about 4 times the `two_phase` run time (two
+link passes, membership and signatures 2.4 s, refine 4.6 s, write 2.7 s per 200 frames).
+
+**Not done:** both options are off by default. The real-data evidence is truth-free (track length and roughness), and
+the cost is 3 to 4 times the run time; a default would be a decision for the user. A single-pass version (correction
+inside the forward and backward passes, no second link) was not built: the measurements say the second link is where
+part of the gain comes from.

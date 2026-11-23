@@ -154,6 +154,48 @@ centre. The loop estimates a centre for each particle from its own track, re-tri
 another tracker is ignored with a log line. It was tried around `fast_3d` and made the velocity error worse (0.167 to
 0.199: `fast_3d` has no link confirmation, and the extra points bring wrong links), so it is not offered there. Details and measurements: [Holistic tracking](holistic-tracking.md).
 
+## The add-on: `shared_correction`
+
+The part of the merged-blob loop that matters most, on its own and cheaper. A point that uses a blob another particle
+also uses has a shifted centre in that camera, and its position is wrong by a correlated amount that smoothing cannot
+remove (down-weighting such points in the smoothing gained 2 % even with perfect weights). With
+`shared_correction: true` the linker does this:
+
+1. link once (as usual);
+2. for every point that touches a shared blob (or whose blob is too bright for its own particle), take the track's
+   predicted position of the *other* members of the blob and compute this point's own share of the blob centre,
+   `(centre - sum of the others' weights x predicted positions) / its own weight`; weights are the brightness
+   signatures of the tracks. Triangulate from those corrected views, against the track's path as a prior. Points that
+   touch no shared blob are not touched;
+3. link again with the corrected positions. The second link is needed: it is what lets the linker connect the
+   corrected points (link recall 0.974 to 0.984 on the benchmark); keeping the old links with new positions was
+   measurably worse.
+
+```yaml
+track:
+  shared_correction: true     # two_phase only; default false. Batch: --shared-correction
+```
+
+If no blob is shared by two points the step is skipped. It works best with `ptv.shared_pass` (the new points of the
+pass are then corrected too and are as smooth as the others). Cost: about 4 times the `two_phase` run time (two link
+passes plus the correction).
+
+Measured (benchmark with truth; velocity error, long-track completeness, fragments per long track, yield):
+
+| Case | `two_phase` | `shared_correction` | + `shared_pass` |
+|---|---|---|---|
+| real-like merge rate (m0.75) | 0.1046 / 0.623 / 1.68 / 0.754 | 0.0921 / 0.639 / 1.57 / 0.755 | 0.0876 / 0.685 / 1.38 / 0.773 |
+| default merge rate | 0.1825 / 0.503 / 2.29 / 0.680 | 0.1283 / 0.528 / 2.07 / 0.686 | 0.1281 / 0.563 / 1.91 / 0.708 |
+| 4x density | 0.433 / 0.182 / 0.77 / 0.227 | 0.361 / 0.189 / 0.77 / 0.232 | 0.365 / 0.196 / 0.78 / 0.240 |
+| no merged blobs | no change (skipped) | | |
+
+On the real recording wp2 (300 frames, no truth; `bench/real_check/shared_pass_real.py`): share of
+points in tracks of 50 frames or more 42.2 % -> 51.1 % (55.3 % with the pass), of 200 or more 7.1 % -> 10.8 % (15.6 %),
+roughness of the tracks (second difference, median) 0.0548 -> 0.0464 mm, short tracks (under 5 frames) 15.4 % -> 14.1 %,
+tracks of 50 frames or more 1540 -> 1695 (1720). Tracking took 9 s -> 29 s for the 300 frames. wp1 (same
+check): 40.0 % -> 49.6 % (54.4 %), 200 or more 6.0 % -> 10.2 % (14.1 %), roughness 0.0557 -> 0.0474 mm, tracks of 50
+frames or more 1512 -> 1691 (1738).
+
 ## Before tracking: the shared-blob pass (`ptv.shared_pass`)
 
 Two particles that overlap in a camera produce one blob. The stereo matcher uses every blob once, so the first

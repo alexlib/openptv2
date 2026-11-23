@@ -221,3 +221,27 @@ def test_retired_trackers_are_hidden_but_resolve():
         from openptv2.plugins.loader import BUILTIN_TRACKING_PLUGINS
 
         assert resolve_plugin_module(name, BUILTIN_TRACKING_PLUGINS) is not None
+
+
+def test_shared_only_round_is_skipped_when_no_blob_is_shared(monkeypatch):
+    """Clean data: the correction has nothing to do and must not link a second time."""
+    import numpy as np
+
+    import openptv2.holistic as hol
+    import openptv2.merge_post as mp
+
+    n = 4
+    arr = {"frame": np.array([1, 1, 2, 2]), "tid": np.arange(n), "pos": np.zeros((n, 3)),
+           "blob": np.arange(n * 4).reshape(n, 4), "centre": np.zeros((n, 4, 2)), "sumg": np.ones((n, 4)),
+           "blobs": {}}
+    monkeypatch.setattr(mp, "arrays_from_store", lambda *a, **k: arr)
+    monkeypatch.setattr(mp, "extend_membership", lambda frame, pos, blob, centre, sumg, blobs, cpar, cals, radius=2.0:
+                        (blob, centre, sumg, 0))
+    monkeypatch.setattr(mp, "write_trajectories_cache", lambda *a, **k: None, raising=False)
+    monkeypatch.setattr(hol, "write_trajectories_cache", lambda *a, **k: None)
+    links, logs = [], []
+    store = type("S", (), {"read_correspondences": lambda self, f: (np.zeros((2, 3)), np.zeros((2, 4)))})()
+    hol.run_holistic(store, [1, 2], None, [None] * 4, None, lambda: links.append(1), rounds=1, shared_only=True,
+                     use_births=False, log=logs.append)
+    assert links == [1]                         # only the first link, none after a round that did not happen
+    assert any("nothing to correct" in m for m in logs)

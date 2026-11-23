@@ -92,6 +92,9 @@ def run_holistic(
         arr = arrays_from_store(store, linkage_name, first, last, n_cams)
         blob, centre, sumg, n_att = extend_membership(arr["frame"], arr["pos"], arr["blob"], arr["centre"],
                                                       arr["sumg"], arr["blobs"], cpar, cals, radius=radius)
+        if shared_only and not (shared_blobs(arr["frame"], blob) >= 2).any():
+            log("holistic: no blob is shared by two points, nothing to correct")
+            break
         sig = estimate_signatures(arr["tid"], arr["frame"], blob, sumg)
         t_refine = time.perf_counter()
         res = refine_merged(arr["frame"], arr["tid"], blob, centre, sumg, cpar, cals, vpar, signatures=sig, rounds=refine_rounds,

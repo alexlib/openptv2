@@ -1,6 +1,8 @@
 """Truth-free check of the shared-blob second pass on a real recording (scratch copy; the source is only read).
 
-    uv run python bench/real_check/shared_pass_real.py <source test dir> <work dir> <n_frames> [ratio]
+    uv run python bench/real_check/shared_pass_real.py <source test dir> <work dir> <n_frames> [variants]
+
+variants: comma list of base, pass, corr, pass+corr (default all; base first)
 
 Copies ``res/run.zarr``, ``cal`` and the parameter file of a run folder (e.g. CompleteTest-e2e-local/wp2/test) to
 ``<work dir>/{base,shared}``, matches the first ``n_frames`` frames again with and without ``ptv.shared_pass``,
@@ -27,7 +29,7 @@ import synth_bench as sb  # noqa: E402
 oc = importlib.import_module("openptv2.correspondences")
 
 
-def prepare(src: Path, dst: Path, n_frames: int) -> Path:
+def prepare(src: Path, dst: Path, n_frames: int, track_over: dict | None = None) -> Path:
     if dst.exists():
         shutil.rmtree(dst)
     (dst / "res").mkdir(parents=True)
@@ -35,15 +37,16 @@ def prepare(src: Path, dst: Path, n_frames: int) -> Path:
     shutil.copytree(src / "res" / "run.zarr", dst / "res" / "run.zarr")
     raw = yaml.safe_load((src / "parameters_Run1.yaml").read_text())
     raw["sequence"]["first"], raw["sequence"]["last"] = 1, n_frames
+    raw["track"].update(track_over or {})
     (dst / "parameters_Run1.yaml").write_text(yaml.safe_dump(raw, sort_keys=False))
     return dst / "parameters_Run1.yaml"
 
 
-def run_variant(src: Path, dst: Path, n_frames: int, shared_pass) -> dict:
+def run_variant(src: Path, dst: Path, n_frames: int, shared_pass, track_over: dict | None = None) -> dict:
     from openptv2.plugins import run_tracking_plugin
     from openptv2.storage import RunStore
 
-    yaml_path = prepare(src, dst, n_frames)
+    yaml_path = prepare(src, dst, n_frames, track_over)
     exp = sb._experiment(dst, yaml_path, 1, n_frames)
     t0 = time.perf_counter()
     oc.match_correspondences_batch_parallel(
@@ -83,7 +86,11 @@ def stats(info: dict, n_base: dict | None) -> tuple[dict, dict]:
     ok = (t_s[:-2] == t_s[2:]) & (f_s[2:] - f_s[:-2] == 2)
     rough = np.full(n, np.nan)
     rough[o[1:-1][ok]] = np.linalg.norm(p_s[:-2][ok] - 2 * p_s[1:-1][ok] + p_s[2:][ok], axis=1)
-    kinds = {"all": np.ones(n, bool), "ordinary": ~new, "new": new}
+    from openptv2.merge_refine import shared_blobs
+
+    touches = (shared_blobs(frame, a["blob"]) >= 2).any(1)           # a view on a blob another point also uses
+    kinds = {"all": np.ones(n, bool), "ordinary": ~new, "new": new, "shared_blob_pts": touches & ~new,
+             "clean_pts": ~touches & ~new}
     out = {
         "points": n, "points_per_frame": n / info["n_frames"], "tracks": int(len(length)),
         "mean_len": float(length.mean()), "tracks_ge_50": int((length >= 50).sum()),
@@ -102,24 +109,37 @@ def stats(info: dict, n_base: dict | None) -> tuple[dict, dict]:
     return out, {int(f): int((frame == f).sum()) for f in np.unique(frame)}
 
 
+VARIANTS = {
+    "base": (None, {}),
+    "pass": ("ratio", {}),
+    "corr": (None, {"shared_correction": True}),
+    "pass+corr": ("ratio", {"shared_correction": True}),
+}
+
+
 def main() -> None:
     src, work, n_frames = Path(sys.argv[1]), Path(sys.argv[2]), int(sys.argv[3])
-    ratio = float(sys.argv[4]) if len(sys.argv) > 4 else oc.DEFAULT_SHARED_PASS
-    base = run_variant(src, work / "base", n_frames, None)
-    base_stats, _ = stats(base, None)
-    # number of standard rows per frame = the rows of the base run's correspondences
-    st = base["_open"](base["store"], mode="r")
-    n_base = {f: len(st.read_correspondences(f)[0]) for f in range(1, n_frames + 1)}
-    sh = run_variant(src, work / "shared", n_frames, ratio)
-    sh_stats, _ = stats(sh, n_base)
-    res = {"base": base_stats, "shared": sh_stats, "ratio": ratio}
-    (work / "result.json").write_text(json.dumps(res, indent=2))
-    keys = sorted(set(base_stats) | set(sh_stats))
-    print(f"{'':28s} {'base':>12s} {'shared':>12s}")
+    names = sys.argv[4].split(",") if len(sys.argv) > 4 else list(VARIANTS)
+    ratio = oc.DEFAULT_SHARED_PASS
+    results, n_base = {}, None
+    for name in names:
+        sp, over = VARIANTS[name]
+        info = run_variant(src, work / name.replace("+", "_"), n_frames, ratio if sp else None, over)
+        if n_base is None:        # the first variant must be the plain one: its row counts mark the new points
+            st = info["_open"](info["store"], mode="r")
+            n_base = {f: len(st.read_correspondences(f)[0]) for f in range(1, n_frames + 1)}
+            results[name], _ = stats(info, None)
+        else:
+            results[name], _ = stats(info, n_base if sp else None)
+    (work / "result.json").write_text(json.dumps(results, indent=2))
+    keys = sorted({k for r in results.values() for k in r})
+    print(f"{'':28s}" + "".join(f"{n:>14s}" for n in names))
     for k in keys:
-        b, s = base_stats.get(k), sh_stats.get(k)
-        fmt = lambda v: "-" if v is None else (f"{v:12.4f}" if isinstance(v, float) else f"{v:12d}")  # noqa: E731
-        print(f"{k:28s} {fmt(b):>12s} {fmt(s):>12s}")
+        row = f"{k:28s}"
+        for n in names:
+            v = results[n].get(k)
+            row += f"{'-':>14s}" if v is None else (f"{v:14.4f}" if isinstance(v, float) else f"{v:14d}")
+        print(row)
 
 
 if __name__ == "__main__":
