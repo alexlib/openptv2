@@ -42,6 +42,9 @@ def run_holistic(
     initial_link: bool = True,
     birth_sigma_factor: float = 3.0,
     drop_unlinked_births: bool = True,
+    use_positions: bool = True,
+    use_births: bool = True,
+    refine_rounds: int = 3,
     log: Callable[[str], Any] = print,
 ) -> dict:
     """Run the loop on ``store`` over the contiguous ``frames``; ``relink()`` links the store's current points.
@@ -85,7 +88,7 @@ def run_holistic(
                                                       arr["sumg"], arr["blobs"], cpar, cals, radius=radius)
         sig = estimate_signatures(arr["tid"], arr["frame"], blob, sumg)
         t_refine = time.perf_counter()
-        res = refine_merged(arr["frame"], arr["tid"], blob, centre, sumg, cpar, cals, vpar, signatures=sig,
+        res = refine_merged(arr["frame"], arr["tid"], blob, centre, sumg, cpar, cals, vpar, signatures=sig, rounds=refine_rounds,
                             partner_min_len=partner_min_len)
         t_births = time.perf_counter()
         counts = {(f, c): np.asarray(store.root[f"targets/cam_{c}/frame_{f:06d}"])[:, 3:6].astype(int)
@@ -99,8 +102,10 @@ def run_holistic(
         targets = birth_targets(arr["frame"], blob, res.pred_px, sig, arr["blobs"], counts, min_resid=min_resid,
                                 fallback_px=fallback)
         births = birth_points(targets, frames, cpar, cals, vpar)
+        if not use_births:
+            births = {k: v[:0] for k, v in births.items()}
         t_write = time.perf_counter()
-        new_pos = np.where(np.isfinite(res.x[:, :1]), res.x, arr["pos"])
+        new_pos = np.where(np.isfinite(res.x[:, :1]) & use_positions, res.x, arr["pos"])
         sd = np.sqrt(res.pos_var) if res.pos_var is not None else np.full(len(new_pos), np.nan)
         sd_med = float(np.nanmedian(sd)) if np.isfinite(sd).any() else 0.05
         sd = np.where(np.isfinite(sd) & (sd > 0), sd, sd_med)
@@ -215,7 +220,8 @@ def run_holistic_experiment(exp: Any, store: Any, frames: list[int], track_cfg: 
     """Run the holistic loop for an experiment object, linking with ``two_phase``.
 
     Called by the ``two_phase`` plugin when ``track.holistic_rounds`` > 0 (YAML keys: ``holistic_rounds``,
-    ``holistic_min_resid``, ``holistic_partner_min_len``, ``holistic_extend``).
+    ``holistic_min_resid``, ``holistic_partner_min_len``, ``holistic_extend``; experiment switches ``holistic_positions``,
+    ``holistic_births``, ``holistic_refine_rounds``: see the plan, section 13).
     """
     from openptv2.plugins.two_phase_tracking import track_store
 
@@ -226,7 +232,10 @@ def run_holistic_experiment(exp: Any, store: Any, frames: list[int], track_cfg: 
 
     run_holistic(store, frames, cpar, list(cals), vpar, relink, rounds=rounds,
                  min_resid=float(track_cfg.get("holistic_min_resid", 0.25)),
-                 partner_min_len=int(track_cfg.get("holistic_partner_min_len", 10)))
+                 partner_min_len=int(track_cfg.get("holistic_partner_min_len", 10)),
+                 use_positions=bool(track_cfg.get("holistic_positions", True)),
+                 use_births=bool(track_cfg.get("holistic_births", True)),
+                 refine_rounds=int(track_cfg.get("holistic_refine_rounds", 3)))
     passes = int(track_cfg.get("holistic_extend", 0))
     if passes > 0:                                        # strict track-assisted extension on the final tracks
         from openptv2.storage import RunStore

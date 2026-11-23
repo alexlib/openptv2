@@ -243,3 +243,59 @@ the per-camera write of observations. Each is 5 to 15 % of the loop; no single s
   This decides whether holistic can ever be a default.
 - **Stage 6, deletion** of `unified`, `4be`, `hybrid_deltat_3d`, the splitter alias and `tracking_presets.py` after one
   release of warnings (decision C). Not before.
+
+## 13. What `two_phase` is missing, and what holistic gives (2026-11-23)
+
+Method: truth per particle-frame (`truth.npz` has `ndet`, the blob id per camera), match each tracker's output to it,
+classify every true point by its blobs. Main case (m0.75), then the 4x density case as a check.
+
+**Where the gap is.** Share of true points / found by `two_phase` / found by holistic (2 rounds) / position error (mm):
+
+| True points | share | `two_phase` | holistic | error |
+|---|---|---|---|---|
+| all detected blobs clean | 47 % | 96.5 % | 96.5 % | 0.039 -> 0.032 |
+| some blob shared with another particle | 38 % | 81.4 % | 90.7 % | 0.083 -> 0.055 |
+| fewer than 2 cameras see it | 15 % | 0 % | 0 % | none can be found |
+
+All 10,849 recovered points are in the shared-blob group (8,225 of them are particles with 2 clean and 2 shared
+cameras). In clean situations holistic adds nothing. At 4x density 82 % of true points have a shared blob.
+
+**Where the loss happens.** Not in the linker. The input points already lack them (input recall 0.762, final yield
+0.754, so linking keeps about 99 % of what it gets). The matcher gives each blob to one particle, and its size and
+grey-sum criteria (`cn`, `cnx`, `csumg`) reject a merged blob, which is about twice as bright, for both partners. The
+partner is left with its 2 clean cameras. `two_phase` has no way to find it: it links points, it does not create them.
+
+**What each part of the loop does** (main case, 2 rounds / 4x density, 1 round; velocity error, long-track
+completeness, fragments per long track, yield):
+
+| Variant | m0.75 vErr | longC | frag | yield | 4x vErr | 4x yield |
+|---|---|---|---|---|---|---|
+| `two_phase` | 0.1046 | 0.623 | 1.68 | 0.754 | 0.433 | 0.227 |
+| positions only (births off) | 0.0945 | 0.630 | 1.66 | 0.753 | 0.360 | 0.231 |
+| births only (positions off) | 0.1019 | 0.691 | 1.38 | 0.785 | 0.457 | 0.240 |
+| both | 0.0843 | 0.738 | 1.16 | 0.790 | 0.390 | 0.246 |
+
+- **Positions** reduce noise on shared blobs, and also raise link precision at density (0.929 -> 0.944). They matter
+  more the denser the data.
+- **Births** (hidden partners from residual blob brightness; every birth needs at least one residual target) give the
+  continuity and about 3 points of yield on sparse data. At density, births without corrected positions make things
+  worse (vErr 0.457), so births depend on positions.
+- Births do not need refined positions to be found: with one inner refine pass the births and the fragmentation are
+  the same (yield 0.783, frag 1.38). Positions need the full three passes to reach their gain on sparse data (one pass:
+  0.1054, no gain; at 4x one pass gives 0.376).
+
+**Tried and rejected.**
+- *Weight points in shared blobs less in the smoothing*, even with oracle weights: vErr 0.1046 -> 0.1024 (2 %). The
+  errors are correlated shifts while two particles overlap, not noise that smoothing averages out. Only a corrected
+  centre fixes them.
+- *Drop unlinked births in place* (renumber the neighbouring links) instead of linking again: saves 4 s but vErr
+  0.1010 against 0.0982 and aErr 6.10 against 5.61 (plain `two_phase`: 5.80). The second link does real work. Kept the
+  relink.
+
+**What this means for a smarter `two_phase`.** The shared-blob group is the whole difference. A tracker that does the
+correction while it links would need, per point: its blob id and share count per camera (known), a brightness signature
+per track and camera (running median of the clean observations), and the track's predicted pixel position (the linker
+already has the predicted 3D position). With those, a linked point in a shared blob gets its effective observation
+`(centre - sum_others w p) / w` instead of the raw centre, and the hidden partner of a blob whose grey sum exceeds its
+members' typical sum is proposed as a candidate for the next frame. That is the loop's logic running inside the forward
+and backward passes, with no store round trip and no second full pass. Not built yet.
