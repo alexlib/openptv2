@@ -507,14 +507,14 @@ def stamp_tnr(store: Any, frames, n_cams: int) -> None:
         _, ids = store.read_correspondences(f)
         ids = np.asarray(ids)
         for c in range(n_cams):
-            key = f"targets/cam_{c}/{_frame_key(f)}"
-            t = np.asarray(store.root[key]).copy()
-            t[:, 7] = -1
+            arr = store.root[f"targets/cam_{c}/{_frame_key(f)}"]
+            tnr = np.full(arr.shape[0], -1.0)
             col = ids[:, c] if ids.ndim == 2 and ids.shape[1] > c else np.zeros(0, int)
             used = np.flatnonzero(col >= 0)
-            for r in used[::-1]:                         # reversed: the first user wins
-                t[int(col[r]), 7] = r
-            store.root[key] = t
+            first = np.unique(col[used], return_index=True)     # the first row that uses a target wins
+            tnr[first[0]] = used[first[1]]
+            if not np.array_equal(np.asarray(arr[:, 7]), tnr):  # rewrite the one column, and only if it changed
+                arr[:, 7] = tnr
 
 
 def estimate_signatures(

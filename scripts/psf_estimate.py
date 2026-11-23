@@ -43,7 +43,12 @@ def main() -> None:
     run = Path(a.run_dir).resolve()
     os.chdir(run)
     from openptv2.gui.parameter_manager import ParameterManager
-    from openptv2.gui.ptv import DEFAULT_HIGHPASS_FILTER_SIZE, py_start_proc_c, read_frame_images, simple_highpass
+    from openptv2.gui.ptv import (
+        DEFAULT_HIGHPASS_FILTER_SIZE,
+        py_start_proc_c,
+        read_frame_images,
+        simple_highpass,
+    )
     from openptv2.segmentation import target_recognition
 
     pm = ParameterManager()
