@@ -261,9 +261,8 @@ All 10,849 recovered points are in the shared-blob group (8,225 of them are part
 cameras). In clean situations holistic adds nothing. At 4x density 82 % of true points have a shared blob.
 
 **Where the loss happens.** Not in the linker. The input points already lack them (input recall 0.762, final yield
-0.754, so linking keeps about 99 % of what it gets). The matcher gives each blob to one particle, and its size and
-grey-sum criteria (`cn`, `cnx`, `csumg`) reject a merged blob, which is about twice as bright, for both partners. The
-partner is left with its 2 clean cameras. `two_phase` has no way to find it: it links points, it does not create them.
+0.754, so linking keeps about 99 % of what it gets). The matcher gives each blob to one particle; the mechanism is traced in section 14
+(it is not the size and grey-sum criteria, as first assumed). `two_phase` has no way to find it: it links points, it does not create them.
 
 **What each part of the loop does** (main case, 2 rounds / 4x density, 1 round; velocity error, long-track
 completeness, fragments per long track, yield):
@@ -299,3 +298,50 @@ already has the predicted 3D position). With those, a linked point in a shared b
 `(centre - sum_others w p) / w` instead of the raw centre, and the hidden partner of a blob whose grey sum exceeds its
 members' typical sum is proposed as a candidate for the next frame. That is the loop's logic running inside the forward
 and backward passes, with no store round trip and no second full pass. Not built yet.
+
+## 14. Matcher trace: why the partner in a merged blob is missing (2026-11-23)
+
+Scripts: `bench/matcher_trace/`. Main case (m0.75), every 7th frame (about 37,000 true particles), truth blob ids per
+camera from `truth.npz`.
+
+**Not the size and grey-sum criteria.** For every camera pair of every true particle the matcher's tests were applied:
+`cn` 0.02, `csumg` 0.02, `cnx` 0.3, `cny` 0.3 are ratios (min/max), so a blob up to 50 times brighter passes. Pass rates
+99.5 to 100 % for pairs of missing and of matched particles alike. A merged blob is not rejected for its size or grey sum.
+
+**The epipolar band matters a little.** `eps0` 0.02 mm is 1 pixel here (`pix_x` 0.02). A clean-clean pair passes it
+100 %, a clean-shared pair 87 % (matched particles) / 78 % (missing ones): the shifted centre of a merged blob
+sometimes falls outside the band. This explains a minority.
+
+**The mechanism is blob exclusivity.** Share found by the matcher, 4-camera particles by the number of cameras where
+their blob is shared with another particle: 0 shared 100 %, 1 shared 99.7 %, **2 shared 64 %**, 3 shared 63 %, 4 shared
+91 %. Of the missing particles with 2 shared cameras, 1,148 of 1,297 have exactly their 2 shared blobs used by another
+matcher row (the partner took them) and their 2 clean blobs free. 401 of them have a full 4-camera clique of passing
+pair edges and 763 a 3-camera one, so the edges exist; the targets are gone. The matcher takes cliques by descending
+correlation and uses every target once (`take_best_candidates`, `tusage`). What is left to the partner are its 2 clean
+cameras, and 2-camera pairs are off (`pair_flag` false) and, when on, accepted only if unambiguous (exactly one
+candidate in the band: `consistent_pair_matching`, `n_arr == 1`).
+
+**Pairs on is not the fix.** `pair_flag` 1: shared-in-2-cameras particles found 54.7 % -> 57.4 %, ghost rows 6.4 % -> 11.5 %.
+
+**Letting a shared blob serve a second particle is.** A second matcher pass on the leftover targets plus the blobs
+considered shared, keeping only new matches with at least 3 cameras and at least one leftover target:
+
+| Which blobs count as shared | missing shared-in-2-cameras particles recovered | new rows correct |
+|---|---|---|
+| truth (oracle) | 62 % | 96.4 % |
+| brighter than the same matcher row's other cameras by 1.4x (gain-normalised, vs its second-dimmest camera) | 48 % | 85 % |
+| same, 1.7x | 37 % | 88 % |
+| brighter than 1.4x the camera median | 30 % | 80 % |
+
+The cross-camera test needs no tracks: a matched row sees one particle in several cameras, so a blob much brighter than
+its row's other cameras is likely merged. The second pass costs one more matcher call on a reduced target set.
+
+**At 4x density it is much weaker.** Oracle second pass: 9 % of the missing particles recovered at 61 % precision
+(1.4x cross-camera: 6 % at 57 %). There the epipolar candidate lists are long and the cliques ambiguous, so the loss is
+ambiguity as much as exclusivity.
+
+**What follows.** A track-free "shared blob" second pass in the correspondence stage is a real, cheap lever at
+sparse and moderate density (recovering about half of the missing partners at about 85 % precision before any tracker
+ghost rule), and it would feed `two_phase` points it currently never sees. At high density the matcher itself is the
+limit. Not built yet; the next step is to implement it in `correspondences.py` (wrapper level, not the compiled
+`algorithms/`), switch it by a `shared_pass` key, and measure the tracker output end to end.
