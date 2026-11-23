@@ -275,7 +275,9 @@ def single_cam_correspondence(img_pts, flat_coords, cals):
     return sorted_pos, sorted_corresp, num_targs
 
 
-def match_frame_correspondences(detections, cpar, cals, vpar, method="lsq", return_rcm: bool = False):
+def match_frame_correspondences(
+    detections, cpar, cals, vpar, method="lsq", return_rcm: bool = False, shared_pass: float | None = None
+):
     """Compute multi-camera stereo correspondences and triangulated 3D positions
     for a single frame.
 
@@ -286,6 +288,8 @@ def match_frame_correspondences(detections, cpar, cals, vpar, method="lsq", retu
         vpar: VolumeParams / VolumePar instance.
         method: triangulation method, "lsq" (default), "pairs" or "weighted"
             (see openptv2.algorithms.orientation.point_position_batch).
+        shared_pass: ratio for the shared-blob second pass (see :func:`shared_blob_pass`), or None for
+            the standard matching only.
 
     Returns:
         tuple: (pos_3d, cam_target_ids)
@@ -333,14 +337,130 @@ def match_frame_correspondences(detections, cpar, cals, vpar, method="lsq", retu
         print_corresp[:num_cams, :] = sorted_corresp
     else:
         print_corresp = sorted_corresp.astype(np.int32)
+    ids = print_corresp.T
+
+    if shared_pass:
+        extra = shared_blob_pass(wrapped_detections, ids, cpar, cals, vpar, method, float(shared_pass))
+        if len(extra[0]):
+            pos = np.vstack([np.asarray(pos), extra[0]])
+            ids = np.vstack([ids, extra[1]])
+            rcm = np.concatenate([np.asarray(rcm, dtype=np.float64), extra[2]])
 
     if return_rcm:
-        return pos, print_corresp.T, rcm
-    return pos, print_corresp.T
+        return pos, ids, rcm
+    return pos, ids
+
+
+#: pixel variance of a view of a blob that was already used (shared) and of one that was not
+SHARED_VIEW_VAR_PX2 = 1.0
+OWN_VIEW_VAR_PX2 = 0.01
+
+#: a new point needs at least this many views on blobs no other point used (its own)
+MIN_OWN_VIEWS = 2
+
+#: ratio used when ``ptv.shared_pass`` is simply switched on (true)
+DEFAULT_SHARED_PASS = 1.4
+
+
+def shared_pass_from_params(ptv: dict | None) -> float | None:
+    """The ``shared_pass`` ratio of the ``ptv`` parameter section: ``None`` (off) for missing, false or 0, the
+    default ratio for true, else the number given."""
+    value = (ptv or {}).get("shared_pass", None)
+    if value is None or value is False or value == 0:
+        return None
+    return DEFAULT_SHARED_PASS if value is True else float(value)
+
+
+def shared_blob_pass(
+    detections, ids, cpar, cals, vpar, method="lsq", ratio=DEFAULT_SHARED_PASS, min_own=MIN_OWN_VIEWS
+):
+    """Second matching pass: a blob that holds several particles may serve each of them.
+
+    The standard matcher uses every target once, so when two particles share a blob in some cameras the first one
+    takes it and the other is left with its clean cameras only (benchmark: 2 shared cameras of 4 -> 64 % found,
+    docs/plans/2026-11-21-tracker-setup.md section 14). Here the blobs that look shared are offered again together
+    with the targets no point used, the matcher runs once more on that reduced set, and its new points with at
+    least 3 cameras and at least one unused target are added.
+
+    A blob looks shared when it is brighter than ``ratio`` times the second-dimmest view of the same matched point
+    (grey sums normalised by the camera's median blob), a test that needs no tracks.
+
+    ``detections`` are the per-camera targets as matched (``ids`` index them), ``ids`` the standard result.
+    Returns ``(pos (k, 3), ids (k, C), rcm (k,))`` of the new points.
+    """
+    from openptv2.tracking_framebuf import TargetArray
+
+    n_cams = len(cals)
+    ids = np.asarray(ids)
+    empty = (np.empty((0, 3)), np.empty((0, ids.shape[1] if ids.ndim == 2 else 4), np.int32), np.empty(0))
+    if len(ids) == 0:
+        return empty
+    attrs, used, gain = [], [], []
+    for c in range(n_cams):
+        t = detections[c]
+        a = np.array([[x.sumg, x.n, x.nx, x.ny, x.x, x.y] for x in t], dtype=np.float64).reshape(-1, 6)
+        attrs.append(a)
+        u = np.zeros(len(t), bool)
+        col = ids[:, c]
+        u[col[col >= 0]] = True
+        used.append(u)
+        gain.append(float(np.median(a[:, 0])) if len(a) else 1.0)
+    # grey sum of every view of every matched point, per camera gain
+    bright = np.full((len(ids), n_cams), np.nan)
+    for c in range(n_cams):
+        m = ids[:, c] >= 0
+        bright[m, c] = attrs[c][ids[m, c], 0] / max(gain[c], 1e-9)
+    rows = np.flatnonzero((~np.isnan(bright)).sum(1) >= 3)
+    if len(rows) == 0:
+        return empty
+    ref = np.sort(np.where(np.isnan(bright[rows]), np.inf, bright[rows]), axis=1)[:, 1]
+    keep, new_dets = [], []
+    flagged = [np.zeros(len(attrs[c]), bool) for c in range(n_cams)]
+    for c in range(n_cams):
+        hit = ~np.isnan(bright[rows, c]) & (bright[rows, c] > ratio * ref)
+        flagged[c][ids[rows[hit], c]] = True
+    for c in range(n_cams):
+        k = np.flatnonzero(~used[c] | flagged[c])        # original order = y order, which the matcher needs
+        keep.append(k)
+        ta = TargetArray(len(k))
+        for j, i in enumerate(k):
+            sumg, n, nx, ny, x, y = attrs[c][i]
+            ta[j].set_pnr(j)
+            ta[j].set_pos((float(x), float(y)))
+            ta[j].set_pixel_counts(int(n), int(nx), int(ny))
+            ta[j].set_sum_grey_value(int(max(sumg, 1)))
+            ta[j].set_tnr(-1)
+        new_dets.append(ta)
+    if any(len(k) == 0 for k in keep):
+        return empty
+    pos2, ids2, rcm2 = match_frame_correspondences(new_dets, cpar, cals, vpar, method=method, return_rcm=True)
+    if len(ids2) == 0:
+        return empty
+    orig = np.full(ids2.shape, -1, dtype=np.int32)
+    n_own = np.zeros(len(ids2), int)
+    for c in range(n_cams):
+        m = ids2[:, c] >= 0
+        orig[m, c] = keep[c][ids2[m, c]]
+        n_own[m] += ~used[c][orig[m, c]]
+    ok = (n_own >= min_own) & ((orig >= 0).sum(1) >= 3)
+    pos_new, orig, rcm_new = np.asarray(pos2, dtype=np.float64)[ok], orig[ok], np.asarray(rcm2, dtype=np.float64)[ok]
+    if len(orig):
+        # the centre of a shared blob is shifted by the other particle: those views count little (sd about 1 px,
+        # against 0.1 px for a blob of its own), so the position rests on the particle's own views
+        from openptv2.blob_model import triangulate_weighted
+
+        px = np.full((len(orig), n_cams, 2), np.nan)
+        var = np.full((len(orig), n_cams), np.nan)
+        for c in range(n_cams):
+            m = orig[:, c] >= 0
+            px[m, c] = attrs[c][orig[m, c]][:, 4:6]
+            var[m, c] = np.where(used[c][orig[m, c]], SHARED_VIEW_VAR_PX2, OWN_VIEW_VAR_PX2)
+        pos_new = triangulate_weighted(px, var, cpar, cals, pos_new, n_iter=3)
+    return pos_new, orig, rcm_new
 
 
 def _correspondence_worker_chunk(
-    frames, targets_data, cpar, cals, vpar, zarr_store_path=None, method="lsq"
+    frames, targets_data, cpar, cals, vpar, zarr_store_path=None, method="lsq", shared_pass=None
 ):
     """Worker function to process a chunk of frames in parallel."""
     results = []
@@ -361,7 +481,7 @@ def _correspondence_worker_chunk(
             raise ValueError("Either targets_data or zarr_store_path must be provided")
 
         pos_3d, cam_target_ids = match_frame_correspondences(
-            detections, cpar, cals, vpar, method=method
+            detections, cpar, cals, vpar, method=method, shared_pass=shared_pass
         )
         results.append((frame, pos_3d, cam_target_ids))
 
@@ -378,6 +498,7 @@ def match_correspondences_batch_parallel(
     n_workers=None,
     write_to_store=True,
     method="lsq",
+    shared_pass=None,
 ):
     """Process stereo correspondences and 3D point positions for a batch/sequence of frames
     in parallel using multi-processing.
@@ -393,6 +514,7 @@ def match_correspondences_batch_parallel(
         n_workers: Number of parallel worker processes. If None, auto-selects based on CPU count.
         write_to_store: If True and zarr_store_path is given, writes all correspondences into the Zarr store.
         method: triangulation method, "lsq" (default), "pairs" or "weighted".
+        shared_pass: ratio of the shared-blob second pass (:func:`shared_blob_pass`), None = off.
 
     Returns:
         dict: Mapping frame -> (pos_3d, cam_target_ids)
@@ -416,7 +538,7 @@ def match_correspondences_batch_parallel(
     # If single worker or single frame, run directly without multiprocessing overhead
     if n_workers <= 1:
         chunk_results = _correspondence_worker_chunk(
-            frames_list, targets, cpar, cals, vpar, zarr_store_path, method
+            frames_list, targets, cpar, cals, vpar, zarr_store_path, method, shared_pass
         )
         for frame, pos_3d, cam_target_ids in chunk_results:
             results[frame] = (pos_3d, cam_target_ids)
@@ -445,6 +567,7 @@ def match_correspondences_batch_parallel(
                     vpar,
                     zarr_store_path,
                     method,
+                    shared_pass,
                 )
                 futures.append(fut)
 
@@ -471,4 +594,6 @@ __all__ = [
     "correspondences",
     "match_frame_correspondences",
     "match_correspondences_batch_parallel",
+    "shared_blob_pass",
+    "shared_pass_from_params",
 ]

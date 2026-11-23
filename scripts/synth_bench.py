@@ -50,7 +50,7 @@ from scipy.spatial import cKDTree
 
 # postptv (flowtracks) from the local checkout: the gap repair
 # (flowtracks.repair) is newer than the flowtracks release installed here
-POSTPTV = Path("/Users/alex/Documents/Github/postptv")
+POSTPTV = Path(os.environ.get("POSTPTV_DIR", "/Users/alex/Documents/Github/postptv"))
 if POSTPTV.exists():
     sys.path.insert(0, str(POSTPTV))
 
@@ -700,6 +700,7 @@ def track(case: str, tracker: str) -> Path:
     for item in overrides:
         key, _, val = item.partition("=")
         raw["track"][key] = yaml.safe_load(val)
+    shared_pass = raw["track"].pop("shared_pass", None)      # a matching key, not a tracking one
     if mod == "fwd" or overrides:
         yaml_path.write_text(yaml.safe_dump(raw, sort_keys=False))
 
@@ -713,6 +714,21 @@ def track(case: str, tracker: str) -> Path:
     t0 = time.perf_counter()
     try:
         os.chdir(run_dir)
+        if shared_pass:
+            # match again from the stored targets, with the shared-blob second pass, before tracking
+            from openptv2.correspondences import (
+                match_correspondences_batch_parallel,
+                shared_pass_from_params,
+            )
+
+            match_correspondences_batch_parallel(
+                frames=range(1, n_out + 1), cpar=exp.cpar, cals=exp.cals, vpar=exp.vpar,
+                zarr_store_path=str(run_dir / "res" / "run.zarr"), n_workers=min(16, n_out),
+                write_to_store=True, shared_pass=shared_pass_from_params({"shared_pass": shared_pass}),
+            )
+            exp = _experiment(run_dir, yaml_path, 1, n_out)
+            if tracker in ("fast_3d", "priority_segment_3d"):
+                exp.track3d = True
         run_tracking_plugin(tracker, exp)
     except Exception as e:  # keep the sweep going; record the failure
         import traceback

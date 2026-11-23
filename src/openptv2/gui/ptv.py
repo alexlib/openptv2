@@ -1075,6 +1075,11 @@ def py_sequence_loop(exp) -> None:
     if isinstance(ptv_params_dict, dict):
         tri_method = ptv_params_dict.get("triangulation", "lsq")
 
+    from openptv2.correspondences import (
+        match_correspondences_batch_parallel,
+        shared_pass_from_params,
+    )
+
     store = _open_run_store(exp)
 
     if parallel_preprocess and not existing_target:
@@ -1094,8 +1099,6 @@ def py_sequence_loop(exp) -> None:
             store.has_targets(c, f) for f in frames for c in range(num_cams)
         )
         if all_in_store:
-            from openptv2.correspondences import match_correspondences_batch_parallel
-
             results = match_correspondences_batch_parallel(
                 frames=frames,
                 cpar=cpar,
@@ -1104,6 +1107,7 @@ def py_sequence_loop(exp) -> None:
                 zarr_store_path=str(store.store_path),
                 write_to_store=True,
                 method=tri_method,
+                shared_pass=shared_pass_from_params(ptv_params_dict if isinstance(ptv_params_dict, dict) else None),
             )
             for frame in frames:
                 pos, cam_ids = results[frame]
@@ -1167,8 +1171,20 @@ def py_sequence_loop(exp) -> None:
         else:
             print_corresp = sorted_corresp
 
+        ids_out = print_corresp.T
+        sp_ratio = shared_pass_from_params(ptv_params_dict if isinstance(ptv_params_dict, dict) else None)
+        if sp_ratio:
+            from openptv2.correspondences import shared_blob_pass
+
+            extra = shared_blob_pass(
+                detections, np.asarray(ids_out, dtype=np.int32), cpar, cals, vpar, tri_method, sp_ratio
+            )
+            if len(extra[0]):
+                pos = np.vstack([np.asarray(pos), extra[0]])
+                ids_out = np.vstack([np.asarray(ids_out, dtype=np.int32), extra[1]])
+
         store.write_correspondences(
-            frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
+            frame=frame, pos_3d=pos, cam_target_ids=ids_out
         )
         store.write_rcm(frame=frame, rcm=rcm)
 
