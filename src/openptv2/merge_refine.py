@@ -42,8 +42,6 @@ import numpy as np
 
 from openptv2.blob_model import (
     local_poly_predict,
-    signature_from_history,
-    split_blob_effective,
     split_blobs_effective,
     triangulate_weighted,
 )
@@ -75,16 +73,25 @@ def shared_blobs(frame: np.ndarray, blob: np.ndarray) -> np.ndarray:
 
 
 def _signatures(pid: np.ndarray, clean: np.ndarray, sumg: np.ndarray, quantile: float = 0.5) -> dict:
-    """Typical grey sum per (particle, camera): median over the frames where its blob held only it."""
+    """Typical grey sum per (particle, camera): the ``quantile`` (median) over the frames where its blob held only
+    it, as :func:`signature_from_history` (positive finite values; linear interpolation like ``np.quantile``)."""
     sig = {}
     for c in range(clean.shape[1]):
-        m = np.flatnonzero(clean[:, c])
-        o = m[np.argsort(pid[m], kind="stable")]
-        if len(o) == 0:
+        m = np.flatnonzero(clean[:, c] & np.isfinite(sumg[:, c]) & (sumg[:, c] > 0))
+        if len(m) == 0:
             continue
-        cuts = np.flatnonzero(np.r_[True, pid[o][1:] != pid[o][:-1], True])
-        for a, b in zip(cuts[:-1], cuts[1:]):
-            sig[(int(pid[o[a]]), c)] = signature_from_history(sumg[o[a:b], c], np.ones(b - a, bool), quantile)
+        o = m[np.lexsort((sumg[m, c], pid[m]))]               # by particle, then by value
+        p_o, v_o = pid[o], sumg[o, c]
+        cuts = np.flatnonzero(np.r_[True, p_o[1:] != p_o[:-1], True])
+        a, cnt = cuts[:-1], np.diff(cuts)
+        pos = (cnt - 1) * quantile
+        lo = np.floor(pos).astype(int)
+        hi = np.minimum(lo + 1, cnt - 1)
+        frac = pos - lo
+        v_lo, v_hi = v_o[a + lo], v_o[a + hi]
+        val = v_lo + (v_hi - v_lo) * frac
+        for pp, vv in zip(p_o[a], val):
+            sig[(int(pp), c)] = float(vv)
     return sig
 
 
@@ -220,16 +227,16 @@ def refine_merged(
                 bright = sig_mat[mem, c]
                 young = track_len[mem] < partner_min_len
                 s_eff, v_eff = split_blobs_effective(ctr, pr, bright, var_c, vp)
-                for g_ in np.flatnonzero(young.any(1)):
+                yg = np.flatnonzero(young.any(1))
+                if len(yg):
                     # a young member's own observation is computed normally, but for its partners it counts as
                     # unknown: one split per member, with the others' predictions as trusted or not
                     for j in range(m):
-                        pr_j, vp_j = pr[g_].copy(), vp[g_].copy()
-                        mask = (np.arange(m) != j) & young[g_]
-                        pr_j[mask] = ctr[g_]
-                        vp_j[mask] = var_unknown
-                        s_j, v_j = split_blob_effective(ctr[g_], pr_j, bright[g_], var_c, vp_j)
-                        s_eff[g_, j], v_eff[g_, j] = s_j[j], v_j[j]
+                        mask = (np.arange(m) != j)[None, :] & young[yg]
+                        pr_j = np.where(mask[:, :, None], ctr[yg][:, None, :], pr[yg])
+                        vp_j = np.where(mask, var_unknown, vp[yg])
+                        s_j, v_j = split_blobs_effective(ctr[yg], pr_j, bright[yg], var_c, vp_j)
+                        s_eff[yg, j], v_eff[yg, j] = s_j[:, j], v_j[:, j]
                 keep = pm >= 0
                 if gate > 0:
                     bad = keep & ~unknown & (np.sum((s_eff - pr) ** 2, axis=2) / (v_eff + vp) > gate**2)

@@ -145,3 +145,28 @@ def test_batched_split_equals_the_one_blob_function(m):
         s1, v1 = split_blob_effective(ctr[k], pred[k], bright[k], 0.01, var_p[k])
         np.testing.assert_allclose(s[k], s1, rtol=1e-12)
         np.testing.assert_allclose(v[k], v1, rtol=1e-12)
+
+
+@pytest.mark.parametrize("q", [0.5, 0.25])
+def test_signatures_equal_the_per_particle_quantile(q):
+    from openptv2.blob_model import signature_from_history
+    from openptv2.merge_refine import _signatures
+
+    rng = np.random.default_rng(5)
+    n, n_cams = 400, 3
+    pid = rng.integers(0, 40, n)
+    sumg = rng.uniform(20, 300, (n, n_cams))
+    sumg[rng.random((n, n_cams)) < 0.1] = np.nan
+    sumg[rng.random((n, n_cams)) < 0.05] = -1.0
+    clean = rng.random((n, n_cams)) < 0.7
+    got = _signatures(pid, clean, sumg, q)
+    want = {}
+    for c in range(n_cams):
+        for p_ in np.unique(pid[clean[:, c]]):
+            sel = (pid == p_) & clean[:, c]
+            v = signature_from_history(sumg[sel, c], np.ones(sel.sum(), bool), q)
+            if np.isfinite(v):
+                want[(int(p_), c)] = v
+    assert got.keys() == want.keys()
+    for k in want:
+        assert got[k] == pytest.approx(want[k], rel=1e-12)
