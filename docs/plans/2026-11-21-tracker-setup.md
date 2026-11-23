@@ -345,3 +345,39 @@ sparse and moderate density (recovering about half of the missing partners at ab
 ghost rule), and it would feed `two_phase` points it currently never sees. At high density the matcher itself is the
 limit. Not built yet; the next step is to implement it in `correspondences.py` (wrapper level, not the compiled
 `algorithms/`), switch it by a `shared_pass` key, and measure the tracker output end to end.
+
+## 15. The shared-blob second pass, built and measured (2026-11-23)
+
+`correspondences.shared_blob_pass` (called by `match_frame_correspondences(shared_pass=...)`; YAML `ptv.shared_pass`;
+unit tests `tests/unit/test_shared_blob_pass.py`). Offers the blobs that look shared (brighter than `ratio` times the
+second-dimmest view of the same matched point, per-camera gain) again, with the unused targets, to a second matcher
+run; keeps new points with at least 3 cameras and at least 2 own (unused-blob) views; triangulates them with the
+shared views at variance 1 px^2 against 0.01 px^2. Default off; ratio 1.7 when switched on.
+
+End to end through `two_phase` (`scripts/synth_bench.py track ... --tracker two_phase+shared_pass=R`; the key re-matches
+the stored targets before tracking). Main case m0.75:
+
+| | vErr | vErr, points `two_phase` has | longC | frag | yield | ghost | extra pts |
+|---|---|---|---|---|---|---|---|
+| `two_phase` | 0.1046 | 0.0905 | 0.623 | 1.68 | 0.754 | 0.0286 | 0 |
+| R 1.2 | 0.1037 | 0.0784 | 0.671 | 1.48 | 0.779 | 0.0287 | 3.3 % |
+| R 1.4 | 0.1024 | 0.0787 | 0.669 | 1.48 | 0.776 | 0.0284 | 3.0 % |
+| **R 1.7** | **0.1016** | 0.0809 | 0.658 | 1.53 | 0.772 | 0.0282 | 2.4 % |
+| R 2.0 | 0.1018 | 0.0827 | 0.648 | 1.57 | 0.767 | 0.0283 | 1.8 % |
+
+Default merge rate: R 1.7 gives vErr 0.1825 -> 0.1832, longC 0.503 -> 0.526, yield 0.680 -> 0.700. 4x density: yield
+0.227 -> 0.236, vErr 0.433 -> 0.445, ghost 0.068 -> 0.071. Clean dense case: identical. Cost per matcher frame: +13 ms
+on 110 ms (+12 %) on the main case, +1 % on the dense clean case.
+
+Two things were learnt on the way:
+- The first version (1 own view allowed) made velocity error worse (0.1111): rows with a single own view are poorly
+  constrained in depth (position error 0.13 mm median against 0.039). Requiring 2 own views, plus down-weighting the
+  shared views in the triangulation, fixed it. The points `two_phase` already had got better by 14 % on their own
+  (0.0905 -> 0.0787 at R 1.4): the partner is no longer swallowed into the wrong point.
+- With the holistic loop on top (m0.75, one round): second pass + positions only (no births) 0.0895 / long 0.691 /
+  frag 1.37 / yield 0.777 at 38 s; second pass + full loop 0.0929 / 0.724 / 1.23 / 0.789 at 49 s; the loop alone
+  0.0932 / 0.712 / 1.26 / 0.785 at 46 s. The second pass makes half of the births unnecessary (6.9k against 13.8k).
+
+What is left: the new points are noisy (vErr 0.22 to 0.69 on the extra points). A position refinement for shared
+blobs inside the linker (section 13, last paragraph) is what would bring them in line, and with it the second pass
+could become a default. Not tried on real recordings yet.

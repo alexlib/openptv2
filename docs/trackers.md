@@ -154,6 +154,40 @@ centre. The loop estimates a centre for each particle from its own track, re-tri
 another tracker is ignored with a log line. It was tried around `fast_3d` and made the velocity error worse (0.167 to
 0.199: `fast_3d` has no link confirmation, and the extra points bring wrong links), so it is not offered there. Details and measurements: [Holistic tracking](holistic-tracking.md).
 
+## Before tracking: the shared-blob pass (`ptv.shared_pass`)
+
+Two particles that overlap in a camera produce one blob. The stereo matcher uses every blob once, so the first
+particle takes it and the second is left with its other cameras, often only two, which the matcher does not accept.
+On the benchmark that costs a particle seen in 4 cameras with 2 of them shared about a third of its chances to be
+found (64 % found, against 100 % when no blob is shared). The tracker cannot get back a point that was never made.
+
+`shared_pass` is an option of the matching step (the `ptv` section of the parameter file, not `track`):
+
+```yaml
+ptv:
+  shared_pass: true      # or a number, the brightness ratio (default 1.7); false / absent = off (default)
+```
+
+After the normal matching, the blobs that look shared are offered again together with the targets no point used, and
+the matcher runs once more on that small set. A blob looks shared when it is brighter than the ratio times the
+second-dimmest view of the same matched point (grey sums normalised by the camera's median blob). A new point needs
+at least 3 cameras, at least 2 of them on blobs nobody else used, and its shared views count little in the position.
+It costs about 10 % more matching time and changes nothing when no blob is shared (clean data).
+
+Measured with `two_phase` (benchmark, ratio 1.7; yield, long-track completeness, velocity error):
+
+| Case | yield | long tracks | velocity error |
+|---|---|---|---|
+| real-like merge rate (m0.75) | 0.754 -> 0.772 | 0.623 -> 0.658 | 0.1046 -> 0.1016 |
+| default merge rate | 0.680 -> 0.700 | 0.503 -> 0.526 | 0.1825 -> 0.1832 |
+| 4x density | 0.227 -> 0.236 | 0.182 -> 0.189 | 0.433 -> 0.445 |
+| no merged blobs | no change | no change | no change |
+
+The new points are noisier than ordinary ones (about 3 times the position error), so the gain is in yield and
+continuity; at 4x density it costs a little velocity error and a few more ghost points, so use it for sparse to
+moderate seeding. Combined with `holistic_rounds` it supplies most of what the births do, and the loop's position
+refinement then lowers the error further. Measurements: `docs/plans/2026-11-21-tracker-setup.md`, sections 14 and 15.
+
 ## Old names still work (for one release)
 
 A saved YAML or script that uses an old name is translated by `tracking_setup.resolve_tracking_setup`, and the log

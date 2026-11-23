@@ -359,7 +359,7 @@ OWN_VIEW_VAR_PX2 = 0.01
 MIN_OWN_VIEWS = 2
 
 #: ratio used when ``ptv.shared_pass`` is simply switched on (true)
-DEFAULT_SHARED_PASS = 1.4
+DEFAULT_SHARED_PASS = 1.7
 
 
 def shared_pass_from_params(ptv: dict | None) -> float | None:

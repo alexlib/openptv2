@@ -75,7 +75,7 @@ def test_the_standard_matcher_loses_one_of_two_particles_in_a_shared_blob():
 def test_the_second_pass_gives_the_partner_its_point():
     cpar, vpar, cals, dets, pts = _scene()
     pos0, ids0 = oc.match_frame_correspondences(dets, cpar, cals, vpar)
-    pos1, ids1 = oc.match_frame_correspondences(dets, cpar, cals, vpar, shared_pass=1.4)
+    pos1, ids1 = oc.match_frame_correspondences(dets, cpar, cals, vpar, shared_pass=1.7)
     assert _has(pos1, pts[0]) and _has(pos1, pts[1])
     assert len(pos1) == len(pos0) + 1 and ids1.shape[1] == ids0.shape[1]
     new = ids1[len(ids0):][0]
@@ -89,7 +89,7 @@ def test_the_pass_changes_nothing_without_a_shared_blob():
     cpar, vpar, cals, dets, pts = _scene()
     clean = [TargetArray([t for t in d if t.sumg < 2 * GRAIN * 0.9]) for d in dets]     # drop the merged blobs
     pos0, ids0 = oc.match_frame_correspondences(clean, cpar, cals, vpar)
-    pos1, ids1 = oc.match_frame_correspondences(clean, cpar, cals, vpar, shared_pass=1.4)
+    pos1, ids1 = oc.match_frame_correspondences(clean, cpar, cals, vpar, shared_pass=1.7)
     assert len(pos1) == len(pos0)
     np.testing.assert_array_equal(ids1, ids0)
 
@@ -98,4 +98,4 @@ def test_shared_pass_from_params():
     f = oc.shared_pass_from_params
     assert f(None) is None and f({}) is None and f({"shared_pass": False}) is None and f({"shared_pass": 0}) is None
     assert f({"shared_pass": True}) == oc.DEFAULT_SHARED_PASS
-    assert f({"shared_pass": 1.7}) == 1.7
+    assert f({"shared_pass": 1.5}) == 1.5
