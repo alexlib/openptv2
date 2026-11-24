@@ -688,3 +688,43 @@ A streak is a chain of 1-1 links between consecutive frames in one camera (Hunga
 - Reference age (syn1, truth-clean frames): 36 % of merged blobs have one within +-3 frames, 82 % anywhere on their streak; 18-21 % are on streaks with no clean frame. Truth-free unit mass: AUC 0.64 (+-3 frames) rising to 0.78 (whole streak).
 
 **Reading.** Brightness helps, strongly on rendered images and about a third as much on real data. Streaks add a clear gain over the single blob. What this measures is finding merged blobs, not resolving them; the earlier oracle (perfect observation after the correction) bought only 3 % of velocity error. The value of streaks, if any, is in yield and track continuity, which is the unmeasured part: what share of breaks and missing views lies inside an episode with clean frames on both sides.
+
+## 22. Where the tracker loses particles, and how much a streak could bridge (2026-11-24)
+
+Scripts: `bench/limits/loss_in_episodes.py` (syn1, truth), `loss_streaks_real.py` (truth-free, syn1 and real wp2). syn1 frames 1-40, rows from frames 7-34 with at least 3 cameras in view (42000 particle-frames), raw two_phase output. Per camera a truth particle is 'clean' (alone in its blob), 'shared' (blob holds 2 or more), or 'noblob'. A shared view is **bridgeable** when the particle has a clean view in the same camera within K = 6 frames on both sides (interpolation) or on one side only.
+
+**Loss, in points of all particle-frames (base, then shared_pass + shared_correction):**
+
+| | base | pass + corr |
+|---|---|---|
+| lost | 27.2 | 24.9 |
+| held with 3 cameras | 21.2 | 23.2 |
+| held with 4 cameras | 51.6 | 51.9 |
+| lost, clean in 3+ cameras (matcher / linker, not a merge) | 0.7 | 0.6 |
+| lost, streak bridge both sides | 2.7 | 2.0 |
+| lost, one-sided bridge only | 5.1 | 4.2 |
+| lost, shared with no clean frame within 6 (episode too long) | 7.3 | 6.7 |
+| lost, fewer than 3 blobs (faint, outside) | 11.3 | 11.3 |
+
+- The existing second pass (`shared_pass`) already takes back 2.3 points, almost all from the bridgeable classes (a third of the two-sided, about a sixth of the one-sided) and a little from the too-long episodes; nothing from the faint ones.
+- What is left for a streak: 2.0 points (two-sided) up to 6.2 (with one-sided extrapolation), at best. The faint class (11.3) and the too-long episodes (6.7) are outside it; the second needs a per-frame resolution, not a bridge.
+- Dose-response of loss with shared cameras per particle-frame (0, 1, 2, 3, 4): lost 12, 21, 47, 62, 62 %; held with 4 cameras 82, 45, 29, 23, 27 %. 67 % of all particle-frames have a shared blob in some camera, so "a merge is near" is not a cause on its own.
+- Missing view of a 3-camera point (8890): shared blob 88 % (bridgeable both sides 21 %, one side 35 %, no clean frame within 6 frames 32 %), no blob 10 %, clean blob not used 2 %.
+
+**Breaks (1145 gaps, about 900 id switches, 1509 particles):**
+- 78 % of the gaps are 1-3 frames; the scored pipeline repairs those in 3D (`repair_arrays`, `max_gap=3`) with no streak. The 253 long gaps (22 %): 43 % bridgeable by a streak, 25 % too-long episodes, 29 % with a frame of fewer than 3 blobs.
+- Id switches with every frame found (the points exist, the tracker does not link them): 849 base, 1043 with the pass (new points), 824 with pass + correction. 87 % have a shared blob at one of the two frames, against 63 % of correctly linked pairs; only 3 % are clean 4-camera points. This is the larger break class and it is merge-related, but a link problem of shifted centres, not a missing view.
+
+**Truth-free counterpart (same script on syn1 and real wp2):**
+
+| | syn1 | wp2 |
+|---|---|---|
+| missing view of a 3-camera point lands on a blob within 1.5 px / 1.5-3 px / none | 49 / 37 / 14 % | 53 / 24 / 23 % |
+| points with 4 cameras: track ends / starts / mid-track | 39 / 35 / 77 % | 40 / 44 / 68 % |
+| points with a flagged blob in some camera: ends / mid-track | 57 / 37 % | 72 / 66 % |
+| flagged blobs at ends and starts, clean on both sides within 6 frames / one side / none | 21 / 51 / 27 % | 19 / 49 / 32 % |
+
+- On real data, as on syn1, tracks end where views drop out, and most missing views land on an existing blob (77 % real, 86 % syn1). Real has more missing views with no blob there (23 % against 14 %).
+- The streak flags lose their power on real data: 66 % of mid-track points already have a flagged blob (mass noise 2.8 times larger, detection flicker makes topology events), so the end-of-track enrichment is 1.09 against 1.5 on syn1.
+
+**Reading.** Merges explain most of the loss that is not faint, and the dose-response is clear, but a streak bridge would add at most 2 to 6 points of raw yield on top of the shared pass, and fewer long track gaps than the id switches. The two larger parts of the loss need other tools: faint particles (no blob at all) need a lower local threshold on the image; episodes with no clean frame and the id switches need a per-frame resolution, which is what the pixel fit did at observation level (it fixes the points that exist, not the ones never matched).
