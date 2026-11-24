@@ -273,6 +273,10 @@ class CalHandler(Handler):
                 }
             )
 
+            experiment.pm.parameters.setdefault("sortgrid", {})[
+                "radius"
+            ] = calib_params.sortgrid_radius
+
             # Update ONLY the 'man_ori' section (legacy indices), never touch 'man_ori_coordinates' here
             nr1 = [
                 calib_params.img_1_p1,
@@ -966,6 +970,7 @@ class Calib_Params(HasTraits):
     max_npix_y = Int(label="max npix in y (px)")
     sum_of_grey = Int(label="Sum of grey (0-255 sum)")
     size_of_crosses = Int(label="Size of crosses (px)")
+    sortgrid_radius = Int(5, label="Sortgrid search radius (px)")
 
     Group2_1 = Group(
         Item(name="h_image_size"),
@@ -1006,6 +1011,7 @@ class Calib_Params(HasTraits):
             Item(name="tolerable_discontinuity"),
             Item(name="sum_of_grey"),
             Item(name="size_of_crosses"),
+            Item(name="sortgrid_radius"),
             orientation="vertical",
         ),
         orientation="horizontal",
@@ -1243,6 +1249,9 @@ class Calib_Params(HasTraits):
         self.max_npix_y = int(detect_plate_params["max_npix_y"])
         self.sum_of_grey = int(detect_plate_params["sum_grey"])
         self.size_of_crosses = int(detect_plate_params["size_cross"])
+        self.sortgrid_radius = (
+            int(pm.parameters.get("sortgrid", {}).get("radius", 0)) or 5
+        )
 
         man_ori_params = pm.get_section("man_ori")
         nr = man_ori_params["nr"]
