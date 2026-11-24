@@ -10,6 +10,7 @@ so that the O(n^4) clique-finding loops compile to pure C pointer arithmetic.
 """
 
 import operator
+from functools import partial
 
 import cython
 import numpy as np
@@ -17,6 +18,22 @@ import numpy as np
 from .epi import MAXCAND
 
 NMAX = 20240
+#: Initial rows of the candidate buffer per camera. The buffer holds every candidate match a stage finds before the
+#: best ones are taken; with a wide epipolar band (criteria.eps0) and dense seeding a frame can need far more rows
+#: than this, so a stage that fills it is run again on a buffer twice as large (see ``_run_matching_stage``).
+CANDIDATE_ROWS_PER_CAM = NMAX
+#: Hard cap (rows) on the growing candidate buffer, a memory guard (about 0.4 GB at the cap). Reaching it drops the
+#: remaining candidates, and says so with a RuntimeWarning: this used to happen silently at 4 * NMAX rows.
+MAX_CANDIDATE_ROWS = 1 << 23
+#: A stage that fills its buffer is run again on a buffer sized from how far it got (rows written / share of the
+#: targets visited), with this margin because the candidates are not spread evenly over the targets, and at most this
+#: many times larger than the buffer it filled (the retry stays the safety net, so a poor estimate costs one more run).
+GROWTH_MARGIN = 1.5
+MAX_GROWTH_PER_STEP = 128
+#: Warn (once) when a stage finds this many candidates and at least this many per target: the epipolar band is far
+#: too wide for the data (about 0.5 candidates per target is normal, hundreds is not).
+WARN_CANDIDATES_ABS = 100_000
+WARN_CANDIDATES_PER_TARGET = 20
 PT_UNUSED = -999
 
 
@@ -717,13 +734,14 @@ def three_camera_matching(
 ) -> cython.int:
     """Find consistent 3-camera correspondences (triplets)."""
     matched = 0
+    n_slots: cython.int = tusage.shape[1]
     tc = np.asarray(target_counts, dtype=np.int32)
 
     for i1 in range(num_cams - 2):
         for i in range(tc[i1]):
             for i2 in range(i1 + 1, num_cams - 1):
                 p1 = p1_arr[i1, i2, i]
-                if p1 >= NMAX or tusage[i1, p1] > 0:
+                if p1 >= n_slots or tusage[i1, p1] > 0:
                     continue
 
                 # 1D views for (i1, i2, i) row
@@ -734,7 +752,7 @@ def three_camera_matching(
 
                 for j in range(n_i1i2_i):
                     p2 = p2_i1i2_i[j]
-                    if p2 >= NMAX or tusage[i2, p2] > 0:
+                    if p2 >= n_slots or tusage[i2, p2] > 0:
                         continue
 
                     c12: cython.double = c_i1i2_i[j]
@@ -755,7 +773,7 @@ def three_camera_matching(
 
                         for k in range(n_i1i3_i):
                             p3 = p2_i1i3_i[k]
-                            if p3 >= NMAX or tusage[i3, p3] > 0:
+                            if p3 >= n_slots or tusage[i3, p3] > 0:
                                 continue
 
                             c13: cython.double = c_i1i3_i[k]
@@ -815,13 +833,14 @@ def consistent_pair_matching(
 ) -> cython.int:
     """Find unambiguous 2-camera pairs."""
     matched = 0
+    n_slots: cython.int = tusage.shape[1]
     tc = np.asarray(target_counts, dtype=np.int32)
 
     for i1 in range(num_cams - 1):
         for i2 in range(i1 + 1, num_cams):
             for i in range(tc[i1]):
                 p1 = p1_arr[i1, i2, i]
-                if p1 >= NMAX or tusage[i1, p1] > 0:
+                if p1 >= n_slots or tusage[i1, p1] > 0:
                     continue
 
                 if n_arr[i1, i2, i] != 1:
@@ -832,7 +851,7 @@ def consistent_pair_matching(
                 c_row: cython.double[:] = corr_arr[i1, i2, i]
                 d_row: cython.double[:] = dist_arr[i1, i2, i]
                 p2 = p2_row[0]
-                if p2 >= NMAX or tusage[i2, p2] > 0:
+                if p2 >= n_slots or tusage[i2, p2] > 0:
                     continue
 
                 corr = c_row[0] / d_row[0]
@@ -875,7 +894,10 @@ def take_best_candidates(
     dst_offset: cython.int,
 ) -> cython.int:
     """Take candidates by descending correlation, skipping used targets."""
-    order = np.argsort(src_corr[:num_cands])[::-1]
+    # same order as np.argsort(...)[::-1] (ties included), as a typed contiguous array: no Python-object indexing per candidate
+    order: cython.longlong[:] = np.ascontiguousarray(
+        np.argsort(src_corr[:num_cands])[::-1], dtype=np.int64
+    )
 
     taken = 0
 
@@ -975,6 +997,182 @@ def correct_frame(frm, calib, cpar, tol):
 
 
 # ---------------------------------------------------------------------------
+# Candidate buffer that grows
+# ---------------------------------------------------------------------------
+
+
+def _stage_four(p1_arr, n_arr, p2_arr, corr_arr, dist_arr, base_target_count, accept_corr, scratch_p, scratch_corr, scratch_size):
+    """Python-level entry of the 4-camera stage (the ``ccall`` functions cannot be passed around as objects)."""
+    fcm = four_camera_matching if cython.compiled else _four_camera_matching_fast_py
+    return fcm(
+        p1_arr, n_arr, p2_arr, corr_arr, dist_arr, base_target_count, accept_corr, scratch_p, scratch_corr, scratch_size
+    )
+
+
+def _stage_three(
+    p1_arr, n_arr, p2_arr, corr_arr, dist_arr, num_cams, target_counts, accept_corr, scratch_p, scratch_corr,
+    scratch_size, tusage,
+):
+    """Python-level entry of the 3-camera stage."""
+    return three_camera_matching(
+        p1_arr, n_arr, p2_arr, corr_arr, dist_arr, num_cams, target_counts, accept_corr, scratch_p, scratch_corr,
+        scratch_size, tusage,
+    )
+
+
+def _stage_pair(
+    p1_arr, n_arr, p2_arr, corr_arr, dist_arr, num_cams, target_counts, accept_corr, scratch_p, scratch_corr,
+    scratch_size, tusage,
+):
+    """Python-level entry of the 2-camera stage."""
+    return consistent_pair_matching(
+        p1_arr, n_arr, p2_arr, corr_arr, dist_arr, num_cams, target_counts, accept_corr, scratch_p, scratch_corr,
+        scratch_size, tusage,
+    )
+
+
+def _bound_quads(n_arr, target_counts):
+    """Upper bound on the 4-camera candidates: a quad needs a candidate in each of cameras 2-4 for its camera-1 target."""
+    t0 = int(target_counts[0])
+    n = np.asarray(n_arr)
+    return int(np.sum(n[0, 1, :t0].astype(np.int64) * n[0, 2, :t0] * n[0, 3, :t0]))
+
+
+def _bound_triplets(n_arr, target_counts, num_cams):
+    """Upper bound on the 3-camera candidates: every camera triple (a < b < c) and target of camera a."""
+    n = np.asarray(n_arr)
+    total = 0
+    for a in range(num_cams - 2):
+        t = int(target_counts[a])
+        for b in range(a + 1, num_cams - 1):
+            for c in range(b + 1, num_cams):
+                total += int(np.sum(n[a, b, :t].astype(np.int64) * n[a, c, :t]))
+    return total
+
+
+def _bound_pairs(n_arr, target_counts, num_cams):
+    """Upper bound on the 2-camera candidates: every camera pair and target of its first camera."""
+    n = np.asarray(n_arr)
+    total = 0
+    for a in range(num_cams - 1):
+        t = int(target_counts[a])
+        for b in range(a + 1, num_cams):
+            total += int(np.sum(n[a, b, :t].astype(np.int64)))
+    return total
+
+
+def _progress_four(scratch_p, scratch_size, target_counts, num_cams):
+    """Share of the camera-1 targets a full 4-camera buffer has been through (its last row names the target)."""
+    last = int(scratch_p[scratch_size - 1, 0])
+    return (last + 0.5) / max(int(target_counts[0]), 1)
+
+
+def _progress_three(scratch_p, scratch_size, target_counts, num_cams):
+    """Same for the 3-camera stage, which visits the targets of camera a for a = 0 .. num_cams - 3 in turn."""
+    row = np.asarray(scratch_p[scratch_size - 1])
+    a = int(np.flatnonzero(row >= 0)[0])
+    done = sum(int(target_counts[k]) for k in range(a)) + int(row[a]) + 0.5
+    total = sum(int(target_counts[k]) for k in range(num_cams - 2))
+    return done / max(total, 1)
+
+
+def _progress_pair(scratch_p, scratch_size, target_counts, num_cams):
+    """Same for the 2-camera stage, which visits the targets of camera a once for every partner camera b > a."""
+    row = np.asarray(scratch_p[scratch_size - 1])
+    hit = np.flatnonzero(row >= 0)
+    a, b = int(hit[0]), int(hit[1])
+    done = total = 0.0
+    for x in range(num_cams - 1):
+        for y in range(x + 1, num_cams):
+            if (x, y) < (a, b):
+                done += int(target_counts[x])
+            total += int(target_counts[x])
+    done += int(row[a]) + 0.5
+    return done / max(total, 1)
+
+
+_wide_band_warned = False
+
+
+def _warn_wide_band(name, candidates, n_targets):
+    """Warn once per process that a stage found far more candidates than targets (an over-wide epipolar band)."""
+    global _wide_band_warned
+    if _wide_band_warned or candidates < WARN_CANDIDATES_ABS:
+        return
+    if candidates < WARN_CANDIDATES_PER_TARGET * max(int(n_targets), 1):
+        return
+    import warnings
+
+    _wide_band_warned = True
+    warnings.warn(
+        f"{name}: {candidates} candidate matches for {int(n_targets)} targets "
+        f"({candidates / max(int(n_targets), 1):.0f} per target; about 0.5 is normal). The epipolar band "
+        "(criteria eps0) is probably too wide for this data: the result is complete (the candidate buffer grew) but "
+        "most candidates are false and matching is slow. Narrowing the band speeds it up and removes ghosts.",
+        RuntimeWarning,
+        stacklevel=3,
+    )
+
+
+def _run_matching_stage(
+    stage,
+    args_before,
+    args_after,
+    scratch_p,
+    scratch_corr,
+    scratch_size,
+    num_cams,
+    name,
+    bound=None,
+    progress=None,
+    n_targets=0,
+):
+    """Run one matching stage (``four_camera_matching`` and friends) and give it room.
+
+    A stage writes its candidate matches into ``scratch_p`` / ``scratch_corr`` and stops the moment they are full.
+    Targets are visited in the order of camera 1, so a full buffer silently loses every candidate of the targets that
+    come last. Here a stage that fills its buffer is run again on a larger one, up to ``MAX_CANDIDATE_ROWS``; at the
+    cap the rest is dropped and a RuntimeWarning says so.
+
+    How much larger: at least twice; when ``progress(scratch_p, scratch_size)`` gives the share of the work done when
+    the buffer filled, the size the whole stage is projected to need (with ``GROWTH_MARGIN``, at most
+    ``MAX_GROWTH_PER_STEP`` times the old size), so a very full stage is not run once per doubling; never beyond
+    ``bound`` + 1, the number of rows the stage could possibly write (computed from the candidate counts).
+
+    The stage is called ``stage(*args_before, scratch_p, scratch_corr, scratch_size, *args_after)``. Returns
+    ``(matched, scratch_p, scratch_corr, scratch_size)``; the buffers returned are the ones to use afterwards.
+    """
+    while True:
+        matched = stage(*args_before, scratch_p, scratch_corr, scratch_size, *args_after)
+        if matched < scratch_size:
+            _warn_wide_band(name, matched, n_targets)
+            return matched, scratch_p, scratch_corr, scratch_size
+        if scratch_size >= MAX_CANDIDATE_ROWS:
+            import warnings
+
+            warnings.warn(
+                f"{name}: the candidate buffer reached its cap of {MAX_CANDIDATE_ROWS} rows; the candidates of the "
+                "targets visited last are dropped, so particles at the end of the camera-1 order are not matched. "
+                "Narrow the epipolar band (criteria eps0) or thin out the detections.",
+                RuntimeWarning,
+                stacklevel=3,
+            )
+            return matched, scratch_p, scratch_corr, scratch_size
+        new_size = 2 * scratch_size
+        if progress is not None:
+            frac = progress(scratch_p, scratch_size)
+            if 0.0 < frac < 1.0:
+                projected = int(scratch_size / frac * GROWTH_MARGIN) + 1
+                new_size = max(new_size, min(projected, MAX_GROWTH_PER_STEP * scratch_size))
+        new_size = min(new_size, MAX_CANDIDATE_ROWS)
+        if bound is not None and scratch_size <= bound:
+            new_size = min(new_size, bound + 1)           # a stage cannot write more rows than its bound
+        scratch_size = new_size
+        scratch_p = np.full((scratch_size, num_cams), -1, dtype=np.int32)
+        scratch_corr = np.zeros(scratch_size, dtype=np.float64)
+
+
+# ---------------------------------------------------------------------------
 # Candidate-saturation diagnostics
 # ---------------------------------------------------------------------------
 
@@ -1060,14 +1258,18 @@ def correspondences(frm, corrected, vpar, cpar, calib):
         and match_counts is [quads, trips, pairs, total].
     """
     num_cams = cpar.num_cams
-    con0_size = num_cams * NMAX
+    con0_size = num_cams * CANDIDATE_ROWS_PER_CAM
+    # target-usage table and result list are sized from the data, never below NMAX: more than NMAX targets in a
+    # camera used to index past the table (and every target from NMAX on was skipped)
+    n_slots = max(NMAX, int(max(frm.num_targets[:num_cams])) if num_cams else 0)
+    con_size = num_cams * n_slots
 
     # Flat scratch arrays — 98× faster than [NTupel() for _ in range(con0_size)]
     con0_p: cython.int[:, :] = np.full((con0_size, num_cams), -1, dtype=np.int32)
     con0_corr: cython.double[:] = np.zeros(con0_size, dtype=np.float64)
-    con_p: cython.int[:, :] = np.full((con0_size, num_cams), -1, dtype=np.int32)
-    con_corr: cython.double[:] = np.zeros(con0_size, dtype=np.float64)
-    tusage: cython.int[:, :] = np.zeros((num_cams, NMAX), dtype=np.int32)
+    con_p: cython.int[:, :] = np.full((con_size, num_cams), -1, dtype=np.int32)
+    con_corr: cython.double[:] = np.zeros(con_size, dtype=np.float64)
+    tusage: cython.int[:, :] = np.zeros((num_cams, n_slots), dtype=np.int32)
 
     # Allocate flat adjacency arrays
     p1_arr, n_arr, p2_arr, corr_arr, dist_arr = allocate_adjacency_arrays(
@@ -1084,18 +1286,19 @@ def correspondences(frm, corrected, vpar, cpar, calib):
 
     # 4-camera cliques
     if num_cams == 4:
-        _fcm = four_camera_matching if cython.compiled else _four_camera_matching_fast_py
-        match0: cython.int = _fcm(
-            p1_arr,
-            n_arr,
-            p2_arr,
-            corr_arr,
-            dist_arr,
-            frm.num_targets[0],
-            vpar.corrmin,
+        match0: cython.int
+        match0, con0_p, con0_corr, con0_size = _run_matching_stage(
+            _stage_four,
+            (p1_arr, n_arr, p2_arr, corr_arr, dist_arr, frm.num_targets[0], vpar.corrmin),
+            (),
             con0_p,
             con0_corr,
             con0_size,
+            num_cams,
+            "four-camera matching",
+            bound=_bound_quads(n_arr, frm.num_targets),
+            progress=partial(_progress_four, target_counts=frm.num_targets, num_cams=num_cams),
+            n_targets=frm.num_targets[0],
         )
         match_counts[0] = take_best_candidates(
             con0_p, con0_corr, con_p, con_corr, num_cams, match0, tusage, 0
@@ -1104,19 +1307,18 @@ def correspondences(frm, corrected, vpar, cpar, calib):
 
     # 3-camera cliques
     if (num_cams == 4 and cpar.allCam_flag == 0) or num_cams == 3:
-        match0 = three_camera_matching(
-            p1_arr,
-            n_arr,
-            p2_arr,
-            corr_arr,
-            dist_arr,
-            num_cams,
-            frm.num_targets,
-            vpar.corrmin,
+        match0, con0_p, con0_corr, con0_size = _run_matching_stage(
+            _stage_three,
+            (p1_arr, n_arr, p2_arr, corr_arr, dist_arr, num_cams, frm.num_targets, vpar.corrmin),
+            (tusage,),
             con0_p,
             con0_corr,
             con0_size,
-            tusage,
+            num_cams,
+            "three-camera matching",
+            bound=_bound_triplets(n_arr, frm.num_targets, num_cams),
+            progress=partial(_progress_three, target_counts=frm.num_targets, num_cams=num_cams),
+            n_targets=max(frm.num_targets[:num_cams]),
         )
         match_counts[1] = take_best_candidates(
             con0_p,
@@ -1135,19 +1337,18 @@ def correspondences(frm, corrected, vpar, cpar, calib):
     from openptv2.algorithms.parameters import pairs_allowed
 
     if pairs_allowed(num_cams, cpar.allCam_flag, getattr(cpar, "pair_flag", 0)):
-        match0 = consistent_pair_matching(
-            p1_arr,
-            n_arr,
-            p2_arr,
-            corr_arr,
-            dist_arr,
-            num_cams,
-            frm.num_targets,
-            vpar.corrmin,
+        match0, con0_p, con0_corr, con0_size = _run_matching_stage(
+            _stage_pair,
+            (p1_arr, n_arr, p2_arr, corr_arr, dist_arr, num_cams, frm.num_targets, vpar.corrmin),
+            (tusage,),
             con0_p,
             con0_corr,
             con0_size,
-            tusage,
+            num_cams,
+            "two-camera matching",
+            bound=_bound_pairs(n_arr, frm.num_targets, num_cams),
+            progress=partial(_progress_pair, target_counts=frm.num_targets, num_cams=num_cams),
+            n_targets=max(frm.num_targets[:num_cams]),
         )
         match_counts[2] = take_best_candidates(
             con0_p,
