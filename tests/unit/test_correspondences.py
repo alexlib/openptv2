@@ -595,3 +595,257 @@ def test_determination_3d_cloud_is_physically_bounded():
     # Most points should land near the measurement volume, not scattered far.
     near = (np.abs(x) < 80.0) & (np.abs(z) < 60.0)
     assert near.mean() > 0.5, f"only {near.mean():.0%} of cloud near volume"
+
+
+class TestCandidateBuffer:
+    """The candidate buffer used to be 4 * NMAX rows and a full buffer silently dropped every candidate of the targets
+    visited last (those at the end of the camera-1 order), so with a wide epipolar band (criteria.eps0) and dense
+    seeding the last particles were never matched and no warning said so. Now a stage that fills the buffer runs again on
+    a buffer twice as large, up to a hard cap that warns; the target-usage table follows the number of targets."""
+
+    NUM_CAMS = 4
+
+    def _frame(self, n, eps0=None, seed=1):
+        import openptv2.algorithms.correspondences as corr_mod  # noqa: F401  (module attributes are patched by the tests)
+
+        cpar = ControlPar.from_yaml("test_data/parameters.yaml")
+        vpar = VolumePar.from_yaml("test_data/parameters.yaml")
+        cpar.mm.n2[0] = 1.0001
+        cpar.mm.n3 = 1.0001
+        if eps0 is not None:
+            vpar.eps0 = eps0
+        calib = read_all_calibration(cpar)
+        frm, pid_by_pnr = TestNTupelIdentityTranslation()._random_scatter_frame(calib, cpar, n=n, seed=seed)
+        corrected = correct_frame(frm, calib, cpar, 0.0001)
+        return frm, corrected, vpar, cpar, calib, pid_by_pnr
+
+    @staticmethod
+    def _signature(con, match_counts):
+        return list(match_counts), [(tuple(int(x) for x in t.p), round(float(t.corr), 9)) for t in con]
+
+    def _pids(self, con, corrected, pid_by_pnr, k):
+        """True particle of every camera of the first k tuples (all cameras must agree)."""
+        out = []
+        for tup in con[:k]:
+            pids = {pid_by_pnr[c][corrected[c][tup.p[c]].pnr] for c in range(self.NUM_CAMS)}
+            assert len(pids) == 1, f"cameras disagree on the particle: {pids}"
+            out.append(pids.pop())
+        return out
+
+    @pytest.mark.filterwarnings("ignore:.*epipolar band.*too wide:RuntimeWarning")
+    def test_wide_band_is_not_truncated_at_the_default_buffer(self):
+        # 150 particles and a 1 mm band: more candidates than the 80960 rows of the old buffer. The old code returned
+        # 66 quads + 93 triplets (mostly wrong); the right answer is every particle as a quad.
+        frm, corrected, vpar, cpar, calib, pid_by_pnr = self._frame(150, eps0=1.0)
+        con, mc = correspondences(frm, corrected, vpar, cpar, calib)
+        assert list(mc) == [150, 0, 0, 150]
+        assert sorted(self._pids(con, corrected, pid_by_pnr, 150)) == list(range(150))
+
+    def test_a_tiny_initial_buffer_gives_the_same_matches(self, monkeypatch):
+        import openptv2.algorithms.correspondences as corr_mod
+
+        frm, corrected, vpar, cpar, calib, _ = self._frame(60, eps0=0.5)
+        reference = self._signature(*correspondences(frm, corrected, vpar, cpar, calib))
+        assert reference[0][0] >= 40                     # the reference is not a trivial case
+        monkeypatch.setattr(corr_mod, "CANDIDATE_ROWS_PER_CAM", 4)       # 16 rows: overflows at once, many times
+        assert self._signature(*correspondences(frm, corrected, vpar, cpar, calib)) == reference
+
+    def test_target_tables_follow_the_number_of_targets(self, monkeypatch):
+        import openptv2.algorithms.correspondences as corr_mod
+
+        frm, corrected, vpar, cpar, calib, _ = self._frame(60, eps0=0.5)
+        reference = self._signature(*correspondences(frm, corrected, vpar, cpar, calib))
+        monkeypatch.setattr(corr_mod, "NMAX", 8)         # fewer slots than targets: used to skip / overrun every target past 8
+        monkeypatch.setattr(corr_mod, "CANDIDATE_ROWS_PER_CAM", 8)
+        assert self._signature(*correspondences(frm, corrected, vpar, cpar, calib)) == reference
+
+    def test_reaching_the_cap_warns_instead_of_failing_silently(self, monkeypatch):
+        import openptv2.algorithms.correspondences as corr_mod
+
+        frm, corrected, vpar, cpar, calib, _ = self._frame(60, eps0=0.5)
+        monkeypatch.setattr(corr_mod, "CANDIDATE_ROWS_PER_CAM", 4)
+        monkeypatch.setattr(corr_mod, "MAX_CANDIDATE_ROWS", 16)
+        with pytest.warns(RuntimeWarning, match="candidate buffer reached its cap of 16 rows"):
+            con, mc = correspondences(frm, corrected, vpar, cpar, calib)
+        assert mc[3] == len(con) <= 16                    # what fitted is still returned, consistently
+
+    def test_stage_runner_doubles_until_the_stage_fits(self):
+        import openptv2.algorithms.correspondences as corr_mod
+
+        calls = []
+
+        def stage(scratch_p, scratch_corr, scratch_size):
+            calls.append(scratch_size)
+            return min(100, scratch_size)               # wants 100 rows, stops when full
+
+        matched, p, c, size = corr_mod._run_matching_stage(
+            stage, (), (), np.full((8, 4), -1, np.int32), np.zeros(8), 8, 4, "test stage"
+        )
+        assert (matched, size, calls) == (100, 128, [8, 16, 32, 64, 128])
+        assert p.shape == (128, 4) and c.shape == (128,)
+
+    def test_stage_runner_passes_the_other_arguments_in_order(self):
+        import openptv2.algorithms.correspondences as corr_mod
+
+        seen = {}
+
+        def stage(a, b, scratch_p, scratch_corr, scratch_size, tail):
+            seen.update(a=a, b=b, size=scratch_size, tail=tail)
+            return 3
+
+        out = corr_mod._run_matching_stage(stage, ("A", "B"), ("T",), np.zeros((8, 4), np.int32), np.zeros(8), 8, 4, "x")
+        assert out[0] == 3 and seen == {"a": "A", "b": "B", "size": 8, "tail": "T"}
+
+
+class TestCandidateBufferEstimates:
+    """The buffer is sized from the data: an upper bound from the candidate counts (never grow past what a stage can
+    write), a projection from how far a full stage got (one rerun instead of one per doubling), and a warning when
+    the candidates are absurdly many per target."""
+
+    def _stage_needing(self, rows, calls):
+        def stage(scratch_p, scratch_corr, scratch_size):
+            calls.append(scratch_size)
+            return min(rows, scratch_size)
+
+        return stage
+
+    def _run(self, calls, rows, start=8, **kw):
+        import openptv2.algorithms.correspondences as corr_mod
+
+        return corr_mod._run_matching_stage(
+            self._stage_needing(rows, calls), (), (), np.full((start, 4), -1, np.int32), np.zeros(start), start, 4, "t", **kw
+        )
+
+    def test_growth_never_passes_the_bound(self):
+        calls = []
+        matched, _, _, size = self._run(calls, rows=100, bound=100)
+        assert matched == 100 and calls == [8, 16, 32, 64, 101]          # bound + 1: room for a stage that writes the bound
+
+    def test_a_stage_that_writes_exactly_its_bound_still_ends(self):
+        calls = []
+        matched, _, _, size = self._run(calls, rows=64, bound=64)
+        assert matched == 64 and size == 65 and calls == [8, 16, 32, 64, 65]
+
+    def test_progress_projects_the_size_in_one_step(self):
+        calls = []
+        matched, _, _, size = self._run(calls, rows=100, progress=lambda p, s: 0.1)       # "10 % done": needs ~80, with margin 121
+        assert matched == 100 and calls == [8, 121]
+
+    def test_projection_is_limited_per_step_and_doubling_is_the_floor(self):
+        import openptv2.algorithms.correspondences as corr_mod
+
+        calls = []
+        self._run(calls, rows=100_000, progress=lambda p, s: 1e-9)             # absurd projection: limited per step
+        assert calls[1] == 8 * corr_mod.MAX_GROWTH_PER_STEP
+        calls = []
+        self._run(calls, rows=20, progress=lambda p, s: 0.99)                    # nearly done: still at least doubling
+        assert calls == [8, 16, 32]
+
+    def test_bounds_equal_a_brute_force_count(self):
+        import openptv2.algorithms.correspondences as corr_mod
+
+        rng = np.random.default_rng(3)
+        nc, nt = 4, np.array([7, 9, 5, 8])
+        n = rng.integers(0, 6, (nc, nc, 9)).astype(np.int32)
+        quads = sum(int(n[0, 1, i]) * int(n[0, 2, i]) * int(n[0, 3, i]) for i in range(nt[0]))
+        trips = sum(int(n[a, b, i]) * int(n[a, c, i]) for a in range(2) for b in range(a + 1, 3) for c in range(b + 1, 4)
+                    for i in range(nt[a]) if b < nc - 1)
+        pairs = sum(int(n[a, b, i]) for a in range(3) for b in range(a + 1, 4) for i in range(nt[a]))
+        assert corr_mod._bound_quads(n, nt) == quads
+        assert corr_mod._bound_triplets(n, nt, nc) == trips
+        assert corr_mod._bound_pairs(n, nt, nc) == pairs
+
+    def test_progress_readers_name_the_target_a_full_buffer_reached(self):
+        import openptv2.algorithms.correspondences as corr_mod
+
+        tc = [100, 100, 100, 100]
+        p = np.full((5, 4), -1, np.int32)
+        p[4] = [39, 7, 8, 9]                                                     # last quad belongs to target 39 of 100
+        assert corr_mod._progress_four(p, 5, tc, 4) == pytest.approx(0.395)
+        p3 = np.full((5, 4), -2, np.int32)
+        p3[4] = [-2, 49, 3, 4]                                                   # block a=1 (the second of two), target 49
+        assert corr_mod._progress_three(p3, 5, tc, 4) == pytest.approx((100 + 49.5) / 200)
+        p2 = np.full((5, 4), -2, np.int32)
+        p2[4] = [-2, 9, 20, -2]                                                  # camera pair (1, 2), target 9: pairs (0,1)(0,2)(0,3) done
+        assert corr_mod._progress_pair(p2, 5, tc, 4) == pytest.approx((300 + 9.5) / 600)
+
+    def test_stage_bounds_hold_on_real_frames_and_the_jump_saves_reruns(self, monkeypatch):
+        import openptv2.algorithms.correspondences as corr_mod
+
+        seen = []
+        orig = corr_mod._run_matching_stage
+
+        def spy(stage, ab, aa, p, c, size, nc, name, **kw):
+            out = orig(stage, ab, aa, p, c, size, nc, name, **kw)
+            seen.append((name, out[0], kw.get("bound")))
+            return out
+
+        attempts = []
+        orig_four = corr_mod._stage_four
+
+        def counting(*a):
+            attempts.append(a[-1])
+            return orig_four(*a)
+
+        monkeypatch.setattr(corr_mod, "_run_matching_stage", spy)
+        monkeypatch.setattr(corr_mod, "_stage_four", counting)
+        frm, corrected, vpar, cpar, calib, _ = TestCandidateBuffer()._frame(150, eps0=1.5)
+        correspondences(frm, corrected, vpar, cpar, calib)
+        assert seen and all(m <= b for _, m, b in seen), seen                 # every stage wrote no more than its bound
+        quads = [m for n, m, _ in seen if n.startswith("four")][0]
+        assert quads > 500_000
+        assert len(attempts) <= 3, attempts                                       # doubling alone needed 5 attempts for this frame
+
+    def test_wide_band_warns_once_and_normal_data_does_not(self, monkeypatch):
+        import warnings
+
+        import openptv2.algorithms.correspondences as corr_mod
+
+        monkeypatch.setattr(corr_mod, "_wide_band_warned", False)
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")                                         # a normal band: no warning at all
+            frm, corrected, vpar, cpar, calib, _ = TestCandidateBuffer()._frame(150, eps0=0.2)
+            correspondences(frm, corrected, vpar, cpar, calib)
+        frm, corrected, vpar, cpar, calib, _ = TestCandidateBuffer()._frame(150, eps0=1.0)
+        with pytest.warns(RuntimeWarning, match=r"epipolar band.*too wide"):
+            correspondences(frm, corrected, vpar, cpar, calib)
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")                                         # once per process
+            correspondences(frm, corrected, vpar, cpar, calib)
+
+
+def _take_best_reference(src_p, src_corr, dst_p, dst_corr, num_cams, num_cands, tusage, dst_offset):
+    """The loop of take_best_candidates as it was written before the typed order array (plain Python)."""
+    order = np.argsort(src_corr[:num_cands])[::-1]
+    taken = 0
+    for idx in range(num_cands):
+        cand = int(order[idx])
+        if any(src_p[cand, c] > -1 and tusage[c, src_p[cand, c]] > 0 for c in range(num_cams)):
+            continue
+        for c in range(num_cams):
+            if src_p[cand, c] > -1:
+                tusage[c, src_p[cand, c]] += 1
+            dst_p[dst_offset + taken, c] = src_p[cand, c]
+        dst_corr[dst_offset + taken] = src_corr[cand]
+        taken += 1
+    return taken
+
+
+@pytest.mark.parametrize("seed", [0, 1, 2])
+def test_take_best_candidates_is_unchanged_by_the_typed_order(seed):
+    from openptv2.algorithms.correspondences import take_best_candidates
+
+    rng = np.random.default_rng(seed)
+    n, nc = 5000, 4
+    src_p = rng.integers(-1, 300, (n, nc)).astype(np.int32)
+    src_corr = np.round(rng.random(n), 2)                        # many exact ties: the order among them must not change
+    out = []
+    for fn in (take_best_candidates, _take_best_reference):
+        dst_p = np.full((n + 10, nc), -1, np.int32)
+        dst_corr = np.zeros(n + 10)
+        tus = np.zeros((nc, 400), np.int32)
+        k = fn(src_p, src_corr, dst_p, dst_corr, nc, n, tus, 3)
+        out.append((k, dst_p.copy(), dst_corr.copy(), tus.copy()))
+    assert out[0][0] == out[1][0] > 50
+    for a, b in zip(out[0][1:], out[1][1:]):
+        np.testing.assert_array_equal(a, b)
