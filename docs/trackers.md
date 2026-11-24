@@ -286,6 +286,44 @@ continuity; at 4x density it costs a little velocity error and a few more ghost 
 moderate seeding. Combined with `holistic_rounds` it supplies most of what the births do, and the loop's position
 refinement then lowers the error further. Measurements: `docs/plans/2026-11-21-tracker-setup.md`, sections 14 and 15.
 
+## Before tracking: the light check (`ptv.light_check`)
+
+A point matched in all cameras but one is the weakest kind the stereo matcher makes: a few rays that meet by chance (a
+ghost) look like a particle seen in one camera less. A real particle leaves light in the camera that did not see it.
+The light check projects every such point into its missing camera, reads the raw image there, and drops the point when
+there is no light:
+
+```yaml
+ptv:
+  light_check: true      # or a number, the minimum light in noise units (default 6); false / absent = off (default)
+```
+
+The light is the peak within 1.5 px of the projected position over the local background (median of the ring beyond
+4 px), in units of the local noise (1.4826 times the median absolute deviation). A ghost shows noise there (median about
+4), a real particle a clear peak (median about 90 on the rendered benchmark, about half that on real recordings). Only
+points with exactly one camera missing are judged; a point whose window leaves the image is kept; a frame whose images
+cannot be read is skipped with one warning and keeps all its points. It runs after the matching, needs the images (read
+once per frame), and adds about 3 to 4 s per 300 frames of 4 cameras.
+
+Measured with `two_phase` + `shared_correction` (docs/plans/2026-11-21-tracker-setup.md, sections 23 and 24):
+
+| Case | pass only | pass + light check |
+|---|---|---|
+| rendered benchmark syn1, 400 frames: yield | 0.694 | 0.690 |
+| ghost points | 3.58 % | 2.71 % |
+| raw link precision | 0.9643 | 0.9724 |
+| velocity error | 0.1188 | 0.1132 |
+| real wp2, 300 frames: points in tracks of 50+ frames, per frame | 649 | 621 |
+| singletons | 11.3 % | 8.8 % |
+| real wp1, 300 frames: points in tracks of 50+ frames, per frame | 648 | 621 |
+| singletons | 11.1 % | 8.7 % |
+
+On real recordings the missing views carry less light than on the benchmark (a quarter of the 3-camera points show
+none), so the check removes 8 to 10 % of the points; the roughness tail and the leave-one-camera-out residual do not
+get worse, but some of the removed points are real. Lower the number (4) to keep more, raise it (10) to remove more.
+It is meant to go with `shared_pass`, whose new points are 3-camera points and, left alone, add ghosts. Without
+`shared_pass` it removes ghosts at a small cost in points.
+
 ## Old names still work (for one release)
 
 A saved YAML or script that uses an old name is translated by `tracking_setup.resolve_tracking_setup`, and the log

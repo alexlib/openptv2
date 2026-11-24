@@ -1079,8 +1079,21 @@ def py_sequence_loop(exp) -> None:
         match_correspondences_batch_parallel,
         shared_pass_from_params,
     )
+    from openptv2.light_check import apply_light_check, light_check_from_params
 
     store = _open_run_store(exp)
+    light_z_min = light_check_from_params(ptv_params_dict if isinstance(ptv_params_dict, dict) else None)
+
+    def _light_check(frames_) -> None:
+        """ptv.light_check: drop 3-camera points with no light in the missing camera's raw image."""
+        if not light_z_min or store is None:
+            return
+        stats = apply_light_check(
+            store, list(frames_), lambda f: read_frame_images(pm, img_base_names, num_cams, f), cals, cpar, light_z_min
+        )
+        kept = sum(k for k, _ in stats.values())
+        total = sum(n for _, n in stats.values())
+        print(f"Light check (z >= {light_z_min:g}): kept {kept} of {total} points ({total - kept} dropped).")
 
     if parallel_preprocess and not existing_target:
         preprocess_and_detect_all_parallel(exp, zarr_store_path=str(store.store_path))
@@ -1112,6 +1125,7 @@ def py_sequence_loop(exp) -> None:
             for frame in frames:
                 pos, cam_ids = results[frame]
                 print(f"Frame {frame} had {len(pos)} correspondences.")
+            _light_check(frames)
             return
 
     for frame in frames:
@@ -1187,6 +1201,8 @@ def py_sequence_loop(exp) -> None:
             frame=frame, pos_3d=pos, cam_target_ids=ids_out
         )
         store.write_rcm(frame=frame, rcm=rcm)
+
+    _light_check(frames)
 
 
 def _convert_optv_params_for_python_engine(cpar, vpar, tpar, cals, num_cams):
