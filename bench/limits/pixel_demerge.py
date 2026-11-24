@@ -78,6 +78,7 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--image", choices=["hp", "raw"], default="hp", help="fit the high-passed or the raw image (raw: + local plane)")
     ap.add_argument("--free-sigma", action="store_true", help="shared sigma per blob is free (0.5..1.1)")
+    ap.add_argument("--module", action="store_true", help="use openptv2.pixel_fit.fit_window (noise-weighted prior) as the MAP fit")
     ap.add_argument("--prior-w", type=float, default=10.0)
     a = ap.parse_args()
     rng = np.random.default_rng(a.seed)
@@ -102,6 +103,7 @@ def main() -> None:
     singles = []
     offs = {c: [] for c in range(ncam)}
     store = []
+    raw_of = {}
     for f in a.frames:
         raw = read_frame_images(pm, base, ncam, f)
         sel = tf == f0 + (f - 1) if False else None
@@ -118,6 +120,7 @@ def main() -> None:
             ok = np.isfinite(tr).all(axis=1)
             tr = tr[ok]
             store.append((f, c, (hp if a.image == 'hp' else raw[c].astype(float)), det, tr))
+            raw_of[(f, c)] = raw[c]
     # global offset between detection and truth per camera, from isolated blobs
     off = {}
     for f, c, hp, det, tr in store:
@@ -184,6 +187,13 @@ def main() -> None:
                     out[name] = fit_window(win, xx, yy, [tuple(sd) for sd in seeds], sig[c], prior, a.free_sigma, a.image == 'raw', a.prior_w)
                 except Exception:
                     out[name] = None
+            if a.module:
+                from openptv2.pixel_fit import fit_window as _fw
+                r_ = _fw(raw_of[(f, c)], seeds, np.full(len(seeds), a.seed_px), np.array([x, y]), r)
+                out["map"] = None if r_ is None else np.column_stack([r_[0], np.full(len(seeds), 1.0)])
+                var_mod = None if r_ is None else r_[1]
+                if r_ is None:
+                    continue
             if out["fit"] is None:
                 continue
             mem_k = [k for k, j in enumerate(inwin) if j in members]
@@ -203,7 +213,7 @@ def main() -> None:
                 e_seed = np.hypot(*(seeds[k] - trs[j]))
                 e_fit = np.hypot(*(out["fit"][k, :2] - trs[j]))
                 e_map = np.hypot(*(out["map"][k, :2] - trs[j])) if out["map"] is not None else np.nan
-                res[kind].append((len(members), e_cent, e_seed, e_fit, e_map, sep, e_split))
+                res[kind].append((len(members), e_cent, e_seed, e_fit, e_map, sep, e_split, (e_map ** 2 / (2 * var_mod[k])) if a.module and np.isfinite(var_mod[k]) else np.nan))
     np.savez(os.environ.get("DEMERGE_OUT", "/tmp/demerge_res.npz"), merged=np.array(res["merged"]), single=np.array(res["single"]))
     print(f"blobs {nb}  merged members {len(res['merged'])}  single {len(res['single'])}")
     for kind in ("single", "merged"):
@@ -218,6 +228,9 @@ def main() -> None:
             if len(e) == 0:
                 continue
             print(f"  {name:9s} {np.median(e):7.3f} {e.mean():7.3f} {np.percentile(e, 90):7.3f}   {np.mean(e > 1):7.3f}   {np.mean(e > 0.5):7.3f}")
+        if kind == "merged" and a.module:
+            z = v[:, 7][np.isfinite(v[:, 7])]
+            print(f"  variance calibration z=err^2/(2 var): median {np.median(z):.2f} (ideal ln2=0.69 for chi2 with 2 dof), p90 {np.percentile(z,90):.2f} (ideal 2.30), n={len(z)}")
         if kind == "merged":
             print("  by separation to the nearest co-member (map | split | seed):")
             for lo_, hi_ in ((0, 0.75), (0.75, 1.25), (1.25, 2.0), (2.0, 99)):

@@ -49,6 +49,7 @@ def run_holistic(
     shared_only: bool = False,
     write_obs: bool = True,
     first_link: Callable[[], Any] | None = None,
+    pixel_fit: Any = None,
     log: Callable[[str], Any] = print,
 ) -> dict:
     """Run the loop on ``store`` over the contiguous ``frames``; ``relink()`` links the store's current points.
@@ -99,7 +100,7 @@ def run_holistic(
         t_refine = time.perf_counter()
         res = refine_merged(arr["frame"], arr["tid"], blob, centre, sumg, cpar, cals, vpar, signatures=sig, rounds=refine_rounds,
                             x_init=arr["pos"] if shared_only else None, shared_only=shared_only,
-                            partner_min_len=partner_min_len)
+                            partner_min_len=partner_min_len, pixel_fit=pixel_fit)
         t_births = time.perf_counter()
         if use_births:
             counts = {(f, c): np.asarray(store.root[f"targets/cam_{c}/frame_{f:06d}"])[:, 3:6].astype(int)
@@ -200,6 +201,17 @@ def run_holistic(
     return stats
 
 
+def pixel_fitter_for(exp: Any):
+    """A :class:`openptv2.pixel_fit.PixelFitter` reading the run's own images (relative to the working directory)."""
+    from openptv2.gui.ptv import read_frame_images
+    from openptv2.pixel_fit import PixelFitter
+
+    pm = exp.pm
+    base = pm.get_parameter("sequence")["base_name"]
+    n_cams = len(exp.cals)
+    return PixelFitter(lambda f: read_frame_images(pm, base, n_cams, f))
+
+
 def _rewrite_linkage_positions(store: Any, frames: list[int], linkage_name: str) -> None:
     """Keep the links, give the linkage the points' current positions (the rows did not change)."""
     from openptv2.tracking_postprocess import read_linkage
@@ -269,6 +281,9 @@ def run_holistic_experiment(
         return track_store(store, frames, {**track_cfg, "direction": "forward", "run_backward": False,
                                            "bidirectional": False}, cals, cpar)
 
+    pixel_fit = None
+    if track_cfg.get("holistic_pixel_fit", False):
+        pixel_fit = pixel_fitter_for(exp)
     first_forward = bool(track_cfg.get("holistic_first_forward", False))
     if correction_only:
         track_cfg = {**track_cfg, "holistic_births": False, "holistic_shared_only": True,
@@ -284,7 +299,10 @@ def run_holistic_experiment(
                  relink_after=bool(track_cfg.get("holistic_relink", True)),
                  shared_only=bool(track_cfg.get("holistic_shared_only", False)),
                  write_obs=bool(track_cfg.get("holistic_observations", True)),
-                 first_link=first_link_forward if first_forward else None)
+                 first_link=first_link_forward if first_forward else None, pixel_fit=pixel_fit)
+    if pixel_fit is not None:
+        st = pixel_fit.stats
+        print(f"pixel fit: {st['fitted']} of {st['groups']} shared blobs fitted, {st['failed']} failed")
     passes = int(track_cfg.get("holistic_extend", 0))
     if passes > 0:                                        # strict track-assisted extension on the final tracks
         from openptv2.storage import RunStore

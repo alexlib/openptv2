@@ -170,3 +170,26 @@ def test_signatures_equal_the_per_particle_quantile(q):
     assert got.keys() == want.keys()
     for k in want:
         assert got[k] == pytest.approx(want[k], rel=1e-12)
+
+
+def test_pixel_fit_hook_replaces_the_split_of_shared_blobs(scene):
+    """refine_merged(pixel_fit=...): the callable gets one shared blob at a time (frame, camera, centre, member seeds,
+    prior, other blobs) and its positions and variances become the members' observations."""
+    cpar, vpar, cals, frame, pid, blob, centre, sumg, truth = scene
+    calls = []
+
+    def oracle(f, cam, ctr, seeds, prior_px, others):
+        calls.append((f, cam, len(seeds)))
+        # true pixel position of the two particles in that frame: rows of frame f, pid 1 and 2
+        px = np.stack([project_pixels(truth[(frame == f) & (pid == p)][:1], cals[cam], cpar)[0] for p in (1, 2)])
+        order = np.argmin(((px[:, None, :] - seeds[None, :, :]) ** 2).sum(-1), axis=0)     # member k -> truth row
+        return px[order], np.full(len(seeds), 0.01)
+
+    r0 = refine_merged(frame, pid, blob, centre, sumg, cpar, cals, vpar, rounds=2)
+    r1 = refine_merged(frame, pid, blob, centre, sumg, cpar, cals, vpar, rounds=2, pixel_fit=oracle)
+    assert calls and {c[1] for c in calls} == {0} and {c[0] for c in calls} <= set(MERGED) and {c[2] for c in calls} == {2}
+    assert r1.info[-1]["pixel_fit_obs"] > 0 and r0.info[-1]["pixel_fit_obs"] == 0
+    merged = np.isin(frame, list(MERGED))
+    e0 = np.linalg.norm(r0.x - truth, axis=1)[merged]
+    e1 = np.linalg.norm(r1.x - truth, axis=1)[merged]
+    assert np.sqrt(np.mean(e1 ** 2)) < np.sqrt(np.mean(e0 ** 2))

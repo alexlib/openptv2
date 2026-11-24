@@ -121,6 +121,7 @@ def refine_merged(
     mode: str = "effective",
     x_init: np.ndarray | None = None,
     shared_only: bool = False,
+    pixel_fit: Any = None,
 ) -> RefineResult:
     from openptv2.orientation import point_positions
 
@@ -214,12 +215,17 @@ def refine_merged(
         cl = clean[est] & np.isfinite(pred_px[:, :, 0])
         var_p = max(float(np.mean((raw - pred_px)[cl] ** 2)) - var_c, 0.01) if cl.any() else 0.25
         obs_px, obs_var = raw.copy(), raw_var.copy()
-        n_gated = n_hidden = 0
+        n_gated = n_hidden = n_pixel = 0
         for c in range(n_cams):
             idx = np.flatnonzero(det[:, c])
             key = frame[idx].astype(np.int64) * 10_000_000 + blob[idx, c]
             o = np.argsort(key, kind="stable")
             idx, key = idx[o], key[o]
+            if pixel_fit is not None:
+                ukey, first = np.unique(key, return_index=True)
+                blob_ctr, blob_fr = centre[idx[first], c], ukey // 10_000_000
+                fcut = np.flatnonzero(np.r_[True, blob_fr[1:] != blob_fr[:-1], True])
+                ctrs_of = {int(blob_fr[a]): blob_ctr[a:b] for a, b in zip(fcut[:-1], fcut[1:])}
             cuts = np.flatnonzero(np.r_[True, key[1:] != key[:-1], True])
             starts, sizes = cuts[:-1], np.diff(cuts)
             # blobs of one particle: only a hidden partner can change them
@@ -258,6 +264,18 @@ def refine_merged(
                         vp_j = np.where(mask, var_unknown, vp[yg])
                         s_j, v_j = split_blobs_effective(ctr[yg], pr_j, bright[yg], var_c, vp_j)
                         s_eff[yg, j], v_eff[yg, j] = s_j[:, j], v_j[:, j]
+                if pixel_fit is not None and m <= 4:
+                    # measure the members of the shared blob from the pixels; the track prediction is the seed
+                    prior_px = max(float(np.sqrt(var_p)), float(getattr(pixel_fit, "min_prior_px", 0.15)))
+                    for gi in np.flatnonzero(~unknown.any(1)):
+                        f_g = int(frame[mem[gi, 0]])
+                        r = pixel_fit(f_g, c, ctr[gi], pr[gi], prior_px, ctrs_of.get(f_g))
+                        if r is None:
+                            continue
+                        p_fit, v_fit = r
+                        okm = np.isfinite(v_fit)
+                        s_eff[gi, okm], v_eff[gi, okm] = p_fit[okm], v_fit[okm]
+                        n_pixel += int(okm.sum())
                 keep = pm >= 0
                 if gate > 0:
                     bad = keep & ~unknown & (np.sum((s_eff - pr) ** 2, axis=2) / (v_eff + vp) > gate**2)
@@ -280,7 +298,7 @@ def refine_merged(
         res.x_rounds.append(x.copy())
         res.obs_px, res.obs_var, res.pred_px = obs_px, obs_var, pred_px
         res.info.append({"round": rnd, "var_p_px2": var_p, "trusted_share": float(np.mean(good)),
-                         "gated_obs": n_gated, "hidden_partner_obs": n_hidden})
+                         "gated_obs": n_gated, "hidden_partner_obs": n_hidden, "pixel_fit_obs": n_pixel})
     res.x = x
     # back to the caller's rows
     full_x = np.full((n, 3), np.nan)

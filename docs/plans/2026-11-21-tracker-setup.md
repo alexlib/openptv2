@@ -568,3 +568,51 @@ Not done: the stored extents as a measurement (#2) were not tested; the free sig
 Next step if continued: put the fit inside `refine_merged` as the measurement for shared views (seed from the track, return
 a position and a variance per view, fall back to the centre split where images are unavailable), run it on syn1 through the
 tracker, and compare the velocity error to truth against `shared_correction`.
+
+## 19. The pixel fit inside the refine step: built, and it does not pay on the rendered case (2026-11-24)
+
+Built: `src/openptv2/pixel_fit.py` (`fit_window`, `PixelFitter`), the hook `refine_merged(pixel_fit=...)`, the loop argument
+`run_holistic(pixel_fit=...)` and the experiment key `track.holistic_pixel_fit` (with `shared_correction`). Off, not in the
+setup, the GUI, the command line or `trackers.md`: it stays an experiment. The fit takes the track prediction as the seed,
+reads the pixel noise from its own residual (so the prior needs no per-camera tuning), fits other blobs of the window along,
+and reports a variance (covariance x 2.5: measured 2.6x too small). Tests: `tests/unit/test_pixel_fit.py`, the hook in
+`test_merge_refine.py`. Harness: `bench/limits/syn1_pixel_fit.py` (tracker on syn1, truth score, oracle variant),
+`bench/limits/syn1_obs_check.py` (observation level).
+
+Observation level (15 frames, 5,005 shared views matched to truth, the real refine step with its own predictions):
+
+| pixel position of a shared view | median error | share > 1 px |
+|---|---|---|
+| blob centre | 0.72 px | 34.6 % |
+| centre split (`shared_correction` today) | 0.44 px | 23.3 % |
+| pixel fit | 0.22 px | 13.2 % |
+
+The fit does what it should, but less than in the isolated experiment of section 18 (0.15 px, 2 %): here the seeds are the
+tracker's own predictions (wrong for some), the other blobs are seeded at their centres, and 3 or 4 members occur.
+
+Tracker level (syn1, first 40 frames, truth score on the common set, velocity error with the 41-frame window):
+
+| variant | velocity error | acc error | position error (bias removed) | time |
+|---|---|---|---|---|
+| `two_phase` | 0.1670 | 10.63 | 0.0775 | 1.1 s |
+| + `shared_correction` | 0.1179 | 7.93 | 0.0559 | 4.2 s |
+| + correction with the pixel fit | 0.1188 | 8.03 | 0.0543 | 207 s |
+| + correction with the **true pixel positions** (+0.05 px) | 0.1146 | 8.12 | 0.0501 | 4.7 s |
+
+**Result: no gain, and the oracle says why.** Perfect de-merging of every shared view improves the velocity error by 3 % over
+the centre-split correction, and the pixel fit by 0 %, at 50 times the time (11 ms per blob, a numeric Jacobian and two
+fits per blob; it could be made 5 to 10 times faster, but that is not the problem). On this case the correction has already
+taken what shared blobs had to give (0.167 to 0.118); what is left (0.115) is something else. The 3D error of the points
+that touch a shared blob against truth is 0.16 to 0.17 mm in all variants (stored positions, split, fit): a systematic
+offset, larger than any de-merge difference. The likely floor is the case itself: the images were rendered with the
+calibration perturbed by 0.12 to 0.34 px RMS per camera, so every camera sees the particle shifted by a smooth field that no
+tracker can remove. That reading is not proved here (it would need a render with the processing calibration exactly).
+
+What this changes in section 17: the "breakthrough" claim (velocity error 0.0876 to about 0.044 by closing the de-merge
+error) came from blob-table cases with exact calibration. A rendered case with a realistic calibration error shows the
+ceiling for this idea at 3 % beyond `shared_correction`. Real recordings have a calibration miss of about 0.35 px
+(leave-one-camera-out, section 17.2), like syn1's. So on real data the pixel fit is expected to add little too, and it needs
+the images and 50 times the time. **Recommendation: do not ship it, keep the code as an experiment.** What would reopen it: a
+render with an exact calibration (isolates the de-merge from the calibration floor), or a real run whose truth-free score
+(leave-one-camera-out) improves with it. The calibration floor is the next thing to look at: 0.12 to 0.34 px per camera is
+the same size as the whole error budget, and self-calibration on particle tracks (`scripts/selfcal_synthetic.py`) attacks it.
