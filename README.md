@@ -74,6 +74,7 @@ There are three install profiles:
 | --- | --- | --- |
 | `pip install openptv2` | scripting + `openptv2-batch` (default) | headless algorithms/API + sequence/tracking pipeline |
 | `pip install openptv2[gui]` | desktop users | default **plus** the TraitsUI/Chaco/PySide6 desktop GUI |
+| `pip install openptv2[viz]` | notebook users | default **plus** marimo and matplotlib for the interactive calibration / camera / detection notebooks (`openptv2/gui/*_nb.py`); marimo is no longer part of the default install |
 | `pip install openptv2[dev]` | contributors | everything: GUI, tests, lint, type-check, notebooks, docs |
 
 ### Default (headless / batch)

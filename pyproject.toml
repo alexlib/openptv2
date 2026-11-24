@@ -53,8 +53,6 @@ dependencies = [
     "scipy>=1.10.0",
     "xarray>=2024.0",
     "zarr>=2.16.0",
-    "marimo>=0.24.0",
-    "nbformat>=5.11.1",
 ]
 
 [project.optional-dependencies]
@@ -85,9 +83,15 @@ rembg = [
 ]
 # Interactive calibration/camera-pose visualization (src/openptv2/gui/*_nb.py
 # marimo notebooks). Deliberately separate from [gui]: no Qt/chaco/traitsui,
-# just marimo + matplotlib (numpy is already a core dependency).
+# just marimo + matplotlib (numpy is already a core dependency). marimo and
+# nbformat used to be core dependencies although only these notebooks import
+# them (nothing under openptv2/ except the *_nb.py notebooks does); they live
+# here now, with the minimum versions the core list had, so a plain install
+# (`pip install openptv2`, the batch/cloud image) no longer pulls marimo and
+# its dependency tree (loro, ...) for nothing.
 viz = [
-    "marimo>=0.19.10",
+    "marimo>=0.24.0",
+    "nbformat>=5.11.1",
     "matplotlib>=3.7.0",
     "wigglystuff>=0.5.22",
 ]
