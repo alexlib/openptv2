@@ -2406,8 +2406,10 @@
 
 <h1 id="the-two_phase-tracker">The two_phase tracker<a class="headerlink" href="#the-two_phase-tracker" title="Permanent link">&para;</a></h1>
 <p>Source: <code>src/openptv2/plugins/two_phase_tracking.py</code>.
-Select it with <code>selected_tracking: two_phase</code> (GUI: Plugins page, tracking plugin).
-All parameters are in the <code>track</code> section of the YAML file.
+Select it with <code>track.tracker: two_phase</code> (the default; GUI: Tracking Parameters, Tracker). Direction and the
+add-on are the shared switches <code>track.direction</code> (<code>forward</code> | <code>both</code>, default <code>both</code>) and <code>track.holistic_rounds</code>
+(default 0); see <a href="../trackers/">Particle trackers</a>. All parameters are in the <code>track</code> section of the YAML file.
+<code>bidirectional</code> is now the switch <code>direction: both</code>.
 This document uses the ASD-STE100 style (Simplified Technical English).</p>
 <h2 id="1-purpose">1. Purpose<a class="headerlink" href="#1-purpose" title="Permanent link">&para;</a></h2>
 <p>The tracker links 3D particle positions from frame to frame. The result is a set of trajectories.</p>

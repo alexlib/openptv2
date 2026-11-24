@@ -1,0 +1,3179 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+      
+        <title>Detection that keeps its doubts: blob hypotheses for overlapping tracers - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#detection-that-keeps-its-doubts-blob-hypotheses-for-overlapping-tracers" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Detection that keeps its doubts: blob hypotheses for overlapping tracers
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../plate-calibration-howto/" class="md-tabs__link">
+          
+  
+  
+  Calibration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../benchmarking_guide/" class="md-tabs__link">
+          
+  
+  
+  Benchmarks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
+          
+  
+  
+  Decisions
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Your First Tracking (GUI)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/cavity_flow_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lid-Driven Cavity Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aorta_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aorta Flow (cloud-native)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/four_view_splitter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4-View Image Splitter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sequence & Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_parameters_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Parameters (what to measure, how to set)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_advice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tracking_advice (measure your data, get the values)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Point Quality and Ghost Marks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracker-tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracker Engines & Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lagrangian_turbulence_quality_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lagrangian Turbulence Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-batch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud-like Batch Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multi-folder-runs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Folder Experiments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Calibration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plate-calibration-howto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plate Calibration How-To
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../illmenau-4cam-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illmenau 4-Camera Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../illmenau-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Illmenau Processing Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/particle_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle-Based Refinement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/dumbbell_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dumbbell Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/warmup_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auto-Calibration (warmup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-rms-vs-rcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reprojection RMS vs Ray Convergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-bundle-adjustment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bundle Adjustment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracer-self-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracer Self-Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Benchmarks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarking & Tracker Selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking-benchmark-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Engine Benchmark Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/custom_tracking_plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../software_map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Map (Trackers & Strategy)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correspondence eps0 Semantics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Decisions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Cython Optimization Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-where-we-stand-and-the-main-point" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Where we stand, and the main point
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-goal-and-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Goal and principles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-detection-that-keeps-its-doubts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Detection that keeps its doubts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Detection that keeps its doubts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-what-detection-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 What detection writes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-brightness-and-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Brightness and size
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-how-it-is-computed-fast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 How it is computed, fast
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-where-it-is-stored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Where it is stored
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-using-the-doubts-where-they-matter-conflict-sites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Using the doubts where they matter (conflict sites)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-resolving-an-overlap-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Resolving an overlap window
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Resolving an overlap window">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-what-can-explain-a-shared-blob" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 What can explain a shared blob
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-what-tells-them-apart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 What tells them apart
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-the-solver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 The solver
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-we-take-from-image-space-methods-and-what-we-leave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What we take from image-space methods, and what we leave
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-related-methods-to-read-before-building-from-memory-check-the-papers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Related methods to read before building (from memory; check the papers)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-stages-each-measured-stop-rules-are-part-of-the-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Stages, each measured; stop rules are part of the plan
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-speed-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Speed budget
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#d0-truth-cases-and-baselines-done-2026-11-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D0. Truth cases and baselines (done 2026-11-21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d1-the-hypothesis-detector-scored-against-rendered-truth-measured-2026-11-21-first-pass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D1. The hypothesis detector, scored against rendered truth (measured 2026-11-21; first pass)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-the-holistic-loop-spends-its-time-profile-2026-11-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where the holistic loop spends its time (profile, 2026-11-21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="detection-that-keeps-its-doubts-blob-hypotheses-for-overlapping-tracers">Detection that keeps its doubts: blob hypotheses for overlapping tracers<a class="headerlink" href="#detection-that-keeps-its-doubts-blob-hypotheses-for-overlapping-tracers" title="Permanent link">&para;</a></h1>
+<p>Date: 2026-11-21. Follows <code>2026-11-21-what-we-missed.md</code> (M1 becomes stage D1 here) and
+<code>2026-11-21-holistic-next-phase.md</code> (the holistic loop becomes one of the users of the hypotheses).</p>
+<p><strong>Scope.</strong> Tracers only. The goal is a 3D-PTV tracker (not Shake-The-Box) that is clearly better than the older
+libptv <code>trackcorr</code>-based solution. Colliding or breaking particles are only a picture that helps think about
+overlaps; overlapping tracers do not behave like them. They pass each other and keep their own paths.</p>
+<h2 id="0-where-we-stand-and-the-main-point">0. Where we stand, and the main point<a class="headerlink" href="#0-where-we-stand-and-the-main-point" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>We are sparse.</strong> Real wp2 has 0.0057 particles per pixel (ppp) and lv-multi wp4 has 0.0053 ppp, counting
+  detected blobs only. The true density is about 0.007 ppp, since merged and missed particles are not counted.
+  Image-based tracking (Shake-The-Box and similar) runs at 0.05-0.1 ppp.</li>
+<li><strong>Even so, centroids lose 7-15 % of particles to overlap.</strong> Random placement at 0.0057 ppp puts a neighbour within
+  2-3 px of 1 - exp(-ρπd²) = 7-15 % of particles, which matches the roughly 13 % merged rate on wp2. This comes from
+  geometry, not detector settings, and it grows quickly with seeding (50-75 % at 0.05 ppp).</li>
+<li><strong>Our synthetic benchmark is denser than the real data</strong> (27 % merged against about 13 %), so it overweights
+  overlaps, and gains measured on it shrink on real data.</li>
+<li><strong>At real density, overlap is not the only loss.</strong> About 11-15 % of true particles have no blob (too faint), and the
+  calibration floor sets the position noise.</li>
+<li><strong>The main point.</strong> Detection makes one hard decision per blob ("one particle, this centre") and throws the image
+  away. Overlapped tracers and faint tracers are both detection doubts that were silently resolved the wrong way,
+  and no later step can undo that.</li>
+</ul>
+<h2 id="1-goal-and-principles">1. Goal and principles<a class="headerlink" href="#1-goal-and-principles" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Better than <code>trackcorr</code>, measured.</strong> Every stage is scored against legacy <code>trackcorr</code> (and our current best,
+   <code>two_phase</code> with holistic rounds) on the same cases and metrics.</li>
+<li><strong>Quality first, then density.</strong> First raise track quality at today's density (about 0.005 ppp). Then raise the
+   seeding step by step (0.005 -&gt; 0.01 -&gt; 0.02 -&gt; 0.04 ppp, synthetic first) and find where each part breaks.</li>
+<li><strong>Learn from image-space methods; do not rebuild Shake-The-Box.</strong> We take a measured per-camera particle image
+   shape, the idea that a blob is explained by the tracers inside it, and the use of track predictions to resolve the
+   image. We do not take the global loop that re-renders and shakes every particle in every frame.</li>
+<li><strong>Keep the doubt, resolve it lazily.</strong> Detection writes its best answer exactly as today, plus the alternatives it
+   was unsure about, each with a probability. Later steps use an alternative only where they need one.</li>
+<li><strong>Only detection, stereo and time together decide.</strong> Whether a blob is one tracer or two overlapping tracers is
+   often undecidable in one image. Other cameras (where the two are apart) and the tracks before and after (two
+   smooth paths entering and leaving) decide it.</li>
+</ol>
+<h2 id="2-detection-that-keeps-its-doubts">2. Detection that keeps its doubts<a class="headerlink" href="#2-detection-that-keeps-its-doubts" title="Permanent link">&para;</a></h2>
+<h3 id="21-what-detection-writes">2.1 What detection writes<a class="headerlink" href="#21-what-detection-writes" title="Permanent link">&para;</a></h3>
+<p>For each blob, the primary target exactly as today, plus a small hypothesis record:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>p_single</code></td>
+<td>probability that the blob holds one tracer</td>
+</tr>
+<tr>
+<td><code>k2: (x1, y1, x2, y2, share, p)</code></td>
+<td>best two-tracer explanation: two centres, the grey share of the first, its probability</td>
+</tr>
+<tr>
+<td><code>k3: ..., p</code></td>
+<td>three-tracer explanation, only when <code>k2</code> fits clearly better than one tracer</td>
+</tr>
+<tr>
+<td><code>shape: (sxx, sxy, syy)</code></td>
+<td>grey-weighted second moments (size and elongation)</td>
+</tr>
+<tr>
+<td><code>brightness</code></td>
+<td>mean intensity, <code>sumg / n</code></td>
+</tr>
+</tbody>
+</table>
+<p>Plus a list of <strong>faint candidates</strong>: local maxima above a lower threshold (for example half of <code>gvthres</code>) that did
+not become targets, with centre, brightness and a probability.</p>
+<p>The primary target list does not change, so matching and tracking see the same input as today. The hypotheses
+cost nothing unless a later step uses them.</p>
+<h3 id="22-brightness-and-size">2.2 Brightness and size<a class="headerlink" href="#22-brightness-and-size" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Brightness is mean intensity</strong>, <code>sumg / n</code>. For one tracer it is a property of the tracer and its distance from the
+  light sheet, so it changes slowly along a track and works as the tracer's signature in each camera.</li>
+<li><strong>Overlap shows mainly in size and shape.</strong> Two overlapping tracer images give a blob with more pixels and an
+  elongated shape, while its mean intensity stays close to that of a single tracer (a little higher where the two
+  images add up).</li>
+<li><strong>The centre split needs the grey shares.</strong> A blob's centre is the grey-weighted mean of the tracers inside it, so
+  splitting it uses each tracer's share of the summed grey value (its mean intensity times its area), not the mean
+  intensity alone.</li>
+<li><strong>Today the holistic loop uses the summed grey value</strong> (<code>sumg</code>) as signature (<code>holistic.estimate_signatures</code>). D1
+  measures which cue separates one tracer from two best on truth: mean intensity, pixel count, the second moments,
+  or the summed value. The signature follows the result.</li>
+</ul>
+<h3 id="23-how-it-is-computed-fast">2.3 How it is computed, fast<a class="headerlink" href="#23-how-it-is-computed-fast" title="Permanent link">&para;</a></h3>
+<p>All of this comes from the region-growing loop in <code>segmentation._vectorized_targ_rec</code>, which already visits every
+pixel of every blob once:</p>
+<ol>
+<li><strong>Second moments in the same loop.</strong> Add grey-weighted sums of <code>x²</code>, <code>xy</code> and <code>y²</code> next to the existing
+   weighted sums: three more additions per pixel.</li>
+<li><strong>A per-camera particle image size from the data.</strong> Take isolated, unsaturated blobs (no neighbour within 6 px)
+   and record their second moments. Their median is the camera's single-tracer size σ²_psf, and their spread tells
+   how much a single tracer varies. This is the image-space point-spread-function idea, done with numbers we
+   already have.</li>
+<li><strong>Split by moments (closed form).</strong> Two tracers at distance d with grey shares w₁ and w₂ add w₁w₂d² to the
+   variance along the line joining them. So the excess along the major axis, λ₁ - σ²_psf, gives the separation, and
+   the third moment along that axis gives the share. That yields <code>k2</code> with no iteration. A short two-Gaussian fit on
+   the blob's own pixels (10-30 pixels) refines it only for blobs kept as doubtful.</li>
+<li><strong>Peaks inside the blob.</strong> Today the region growing absorbs a second local maximum when the dip between them is
+   smaller than <code>discont</code>. We record that maximum instead of losing it. Two maxima are strong evidence for <code>k2</code>. A
+   merged blob with a single maximum is the hard case that the moments handle.</li>
+<li><strong>Probabilities.</strong> A small calibrated model (logistic regression on excess variance over σ²_psf, eccentricity,
+   number of internal maxima, mean intensity against the tracer population, pixel count), trained on <code>syn1</code>, where
+   truth tells how many tracers each blob holds. On real data σ²_psf and the brightness scale come from the run.</li>
+</ol>
+<p>Cost: a few more operations per pixel in a loop that runs anyway, plus a fit for the doubtful 10-25 % of blobs.</p>
+<h3 id="24-where-it-is-stored">2.4 Where it is stored<a class="headerlink" href="#24-where-it-is-stored" title="Permanent link">&para;</a></h3>
+<p>New optional arrays in <code>RunStore</code> next to <code>targets/</code>: <code>target_hyp/cam_{c}/{frame}</code> (one row per blob, keyed by the
+target's <code>pnr</code>) and <code>faint/cam_{c}/{frame}</code>. Old stores without them work as now. Readers and writers sit beside
+<code>write_targets</code> / <code>read_targets</code> in <code>storage/run_store.py</code>.</p>
+<h2 id="3-using-the-doubts-where-they-matter-conflict-sites">3. Using the doubts where they matter (conflict sites)<a class="headerlink" href="#3-using-the-doubts-where-they-matter-conflict-sites" title="Permanent link">&para;</a></h2>
+<p>An alternative is consulted only at a <strong>conflict site</strong>. These are a few percent of all observations, which keeps
+the method fast.</p>
+<table>
+<thead>
+<tr>
+<th>Conflict site</th>
+<th>What triggers it</th>
+<th>What the alternative gives</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Stereo: a camera is missing</strong></td>
+<td>a 3D candidate seen in 2-3 cameras projects, in the remaining camera, onto a blob already used, or onto nothing</td>
+<td>a <code>k2</code> centre on the epipolar line inside the used blob, or a faint candidate there; the point gets that camera with a larger uncertainty</td>
+</tr>
+<tr>
+<td><strong>Tracking: a prediction lands in a taken blob</strong></td>
+<td>two tracks predict into the same blob</td>
+<td>the <code>k2</code> pair, assigned to the two tracks by their predictions; both tracks continue with their own centres instead of one ending</td>
+</tr>
+<tr>
+<td><strong>Tracking: a prediction lands on nothing</strong></td>
+<td>a good track has no blob within the search radius</td>
+<td>a faint candidate near the prediction; the gap is filled instead of the track ending</td>
+</tr>
+<tr>
+<td><strong>Identity swap</strong></td>
+<td>a track zig-zags (a jump and a jump back, or acceleration far above its own level) next to another track</td>
+<td>the <code>k2</code> record of the blobs along the jump; the two tracks are re-assigned so both become smooth</td>
+</tr>
+<tr>
+<td><strong>Overlap window</strong></td>
+<td>tracks end, break or swap where they meet a shared blob</td>
+<td>the overlap-window solver of section 4</td>
+</tr>
+</tbody>
+</table>
+<p>The first two are what the holistic loop already does by inference from predictions (<code>docs/holistic-tracking.md</code>).
+The hypotheses give it measured sub-blob centres to check against, instead of positions inferred from the tracks
+only.</p>
+<h2 id="4-resolving-an-overlap-window">4. Resolving an overlap window<a class="headerlink" href="#4-resolving-an-overlap-window" title="Permanent link">&para;</a></h2>
+<h3 id="41-what-can-explain-a-shared-blob">4.1 What can explain a shared blob<a class="headerlink" href="#41-what-can-explain-a-shared-blob" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Explanation</th>
+<th>In 3D</th>
+<th>What the cameras see</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Overlap</strong> (the common case)</td>
+<td>two tracers pass each other at a distance larger than their image size</td>
+<td>a merged blob in one or two cameras, at frames that differ between cameras; separate blobs in the others; afterwards both continue on their own smooth paths</td>
+</tr>
+<tr>
+<td><strong>Split image of one tracer</strong></td>
+<td>one tracer</td>
+<td>its blob breaks into two at the threshold in some frames or cameras only (noise, uneven illumination)</td>
+</tr>
+<tr>
+<td><strong>Ghost</strong></td>
+<td>no tracer</td>
+<td>a stereo candidate that borrows a blob already explained by real tracers</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-what-tells-them-apart">4.2 What tells them apart<a class="headerlink" href="#42-what-tells-them-apart" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Other cameras.</strong> Where the two tracers are still apart, they give two 3D points whose distance stays larger
+  than the image size. That settles "overlap" in most cases (cameras plus nearby frames resolved 76 % of merged
+  observations on the benchmark, <code>2026-11-19-joint-tracker.md</code>).</li>
+<li><strong>Frames differ between cameras.</strong> An overlap depends on the viewing direction, so it starts and ends at different
+  frames in different cameras. A blob that is merged in every camera at once needs the tracks to decide.</li>
+<li><strong>Duration.</strong> An overlap lasts about blob size divided by relative image speed: a few frames.</li>
+<li><strong>Tracks before and after.</strong> Two smooth paths enter the shared blob and two leave it. Following them forward and
+  backward fixes the first and last shared frames in each camera.</li>
+<li><strong>Size and shape.</strong> In the overlap camera the blob is larger and elongated along the line between the predicted
+  positions; its mean intensity stays near a single tracer's.</li>
+</ul>
+<h3 id="43-the-solver">4.3 The solver<a class="headerlink" href="#43-the-solver" title="Permanent link">&para;</a></h3>
+<p>For each window (2-3 tracks, about 20 frames, all cameras): fit both tracers' 3D paths through the window, with the
+observation model of the holistic loop (a blob is explained by the tracers projecting into it, its centre is their
+grey-weighted mean) and the <code>k2</code> centres as extra measurements. Compare with "one tracer" and "one of the two is a
+ghost", with a penalty for each extra tracer. Keep the best, write its probability, and pass the two continuous
+tracks on.</p>
+<p>This is a small exact problem, solved only at the few windows where tracks meet a shared blob.</p>
+<h2 id="5-what-we-take-from-image-space-methods-and-what-we-leave">5. What we take from image-space methods, and what we leave<a class="headerlink" href="#5-what-we-take-from-image-space-methods-and-what-we-leave" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Idea</th>
+<th>Image-space methods (Shake-The-Box, IPR)</th>
+<th>Here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Particle image shape</td>
+<td>optical transfer function calibrated per camera and volume region</td>
+<td>per-camera σ²_psf from isolated blobs, per run</td>
+</tr>
+<tr>
+<td>Overlapping tracers</td>
+<td>fit the image of all particles jointly, every frame</td>
+<td>split only doubtful blobs, from moments plus a small fit; used only at conflict sites</td>
+</tr>
+<tr>
+<td>Track-guided detection</td>
+<td>predicted particles shaken in the image; residual image searched for new ones</td>
+<td>the prediction asks for a stored alternative (sub-blob centre or faint candidate); no residual images</td>
+</tr>
+<tr>
+<td>Ghost removal</td>
+<td>ghosts fade because the image does not support their intensity</td>
+<td>blob accounting in blob space (holistic loop)</td>
+</tr>
+</tbody>
+</table>
+<p>The pixels are read once, at detection, in the loop that already runs. A later stage (D6) may re-read small windows
+around predictions for faint tracers, but there is never a global image loop.</p>
+<h2 id="6-related-methods-to-read-before-building-from-memory-check-the-papers">6. Related methods to read before building (from memory; check the papers)<a class="headerlink" href="#6-related-methods-to-read-before-building-from-memory-check-the-papers" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>u-track</strong> (Jaqaman et al., Nature Methods 2008): 2D tracking with explicit merge and split events and an
+  intensity cost; a tested formulation of tracks meeting in one blob.</li>
+<li><strong>Conservation tracking</strong> (Schiegg et al., ICCV 2013; ilastik): a detection may hold several objects (a count
+  variable), chosen jointly with tracking; once the count is known, the blob is split by fitting that many
+  Gaussians. That is "keep the doubt, resolve it later" in published form.</li>
+<li><strong>Segmentation hypotheses</strong> (Jug et al. 2014; Arteta et al., MICCAI 2012): a tree of blobs at several thresholds,
+  from which tracking picks a consistent set. Our internal-maxima record is a small version of this tree.</li>
+<li><strong>Shake-The-Box / IPR</strong> (Schanz et al., Wieneke) and <strong>OpenLPT</strong> (open source): comparators at the density ladder,
+  and their point-spread-function practice.</li>
+</ul>
+<h2 id="7-stages-each-measured-stop-rules-are-part-of-the-plan">7. Stages, each measured; stop rules are part of the plan<a class="headerlink" href="#7-stages-each-measured-stop-rules-are-part-of-the-plan" title="Permanent link">&para;</a></h2>
+<p>Scoring as in <code>2026-11-21-what-we-missed.md</code>: one scorecard (<code>scripts/synth_bench.py eval</code>, <code>bench/*.json</code>), the
+same cases for every claim. Baselines in every table: legacy <code>trackcorr</code> and <code>two_phase</code> with holistic rounds. A
+stage that gains only by dropping true points is reverted.</p>
+<p><strong>D0. Truth cases and baselines (first; about a day)</strong>
+- Re-render <code>syn1</code> at the real merged rate (about 13 %) next to the current 27 %, so gains are measured where the
+  real data is.
+- Density ladder for later: 0.005, 0.01, 0.02, 0.04 ppp.
+- Per-camera σ²_psf on <code>syn1</code> and on wp2 (scratch copy): does the real particle image behave like the rendered one?
+- Legacy <code>trackcorr</code> scored on all cases, so "better than trackcorr" has numbers.</p>
+<p><strong>D1. The hypothesis detector, scored against truth (replaces M1)</strong>
+- Second moments, internal maxima, moment split, faint candidates, calibrated probabilities (section 2), and the
+  comparison of cues (mean intensity, pixel count, moments, summed grey value).
+- Score per blob against <code>syn1/truth/truth.npz</code>: <code>k2</code> centre error against the true centres; recall and false rate of
+  faint candidates; calibration of <code>p_single</code>.
+- Compare with the detectors on <code>feat/detection-prototypes-dask-trackpy-skimage-proptv</code> on the same scorecard.
+- <strong>Gate:</strong> <code>k2</code> centres within 0.5 px of truth for at least half of the two-tracer blobs; <code>p_single</code> calibrated
+  within 0.1; faint candidates recover at least a third of the tracers with no blob, with fewer than 2 false
+  candidates per true one. If the <code>k2</code> error is no better than the 0.27 px track prediction, the split adds nothing
+  over inference, and we keep only the faint candidates.</p>
+<p><strong>D2. Stereo and tracking use the alternatives (conflict sites 1-3)</strong>
+- Missing-camera completion in matching; shared-blob claims and faint-candidate gap filling in <code>two_phase</code> and the
+  holistic loop.
+- <strong>Gate (benchmark at the real merged rate):</strong> yield +5 points and long-track completeness +8 points over
+  <code>two_phase</code> with holistic rounds, velocity error not higher; on wp2: leave-one-camera-out error not higher, and
+  clearly more tracks of 50 frames or more.</p>
+<p><strong>D3. Identity-swap repair and the overlap-window solver (sections 3-4)</strong>
+- Zig-zag detector, re-assignment through the <code>k2</code> record, and the window solver.
+- <strong>Gate:</strong> on truth, swaps per 1000 track frames down by half and tracks through overlaps continuous in at least
+  80 % of cases; on wp2, acceleration flatness (M6) lower.</p>
+<p><strong>D4. Density ladder</strong>
+- Run the whole chain at 0.005 -&gt; 0.04 ppp against <code>trackcorr</code> and <code>two_phase</code>. Find the density at which yield or
+  velocity error break down, and which part breaks first. That density is the recommended seeding limit, and the
+  part that breaks is the next thing to fix.</p>
+<p><strong>D5. Real data</strong>
+- wp2 (300 frames, then all 1072) and lv-multi on scratch copies: leave-one-camera-out error, tracks of 50 frames or
+  more, acceleration flatness, and the Eulerian statistics against the MATLAB reference.</p>
+<p><strong>D6. Only if D4 shows it is needed: small-window image re-reads</strong>
+- Around a prediction, re-detect with a local threshold or fit the known particle image to a 9x9 window. Still no
+  global image loop.</p>
+<h2 id="8-speed-budget">8. Speed budget<a class="headerlink" href="#8-speed-budget" title="Permanent link">&para;</a></h2>
+<p>Detection at most +20 % (moments in the existing loop, fits on doubtful blobs only). Matching and tracking at most
++50 %, since alternatives are consulted only at conflict sites. Whole pipeline at most 1.5x today at 0.005 ppp,
+measured at every rung of the density ladder.</p>
+<h2 id="9-results">9. Results<a class="headerlink" href="#9-results" title="Permanent link">&para;</a></h2>
+<h3 id="d0-truth-cases-and-baselines-done-2026-11-21">D0. Truth cases and baselines (done 2026-11-21)<a class="headerlink" href="#d0-truth-cases-and-baselines-done-2026-11-21" title="Permanent link">&para;</a></h3>
+<p>Case <code>L1_d1_c0_k1_n200_s0.08_a0.18_f0.05_m0.75</code>, 200 frames, built with <code>MERGE_SCALE=0.75</code>. Data in
+<code>bench/d0_baselines_real_merge_rate_2026-11-21.json</code>.</p>
+<ul>
+<li><strong>Merge rate.</strong> Share of particle views inside a merged blob: 22.6 % at the default scale (1.0), 13.4 % at 0.75,
+  9.3 % at 0.6. The real wp2 rate is about 13 %, so <strong>0.75 is the real-like case</strong> and is the main benchmark from
+  here on. The share with no blob is about 16 % in all of them.</li>
+<li><strong>Particle image size.</strong> <code>scripts/psf_estimate.py</code> (isolated blobs, median grey-weighted second moment): rendered
+  <code>syn1</code> 0.35-0.38 px² and 7-9 pixels per blob; real wp2 0.25-0.28 px² and 5-6 pixels. Real tracers are smaller than the
+  rendered ones, which is why the real merge rate is lower, and it agrees with the scale 0.75. The rendered images
+  therefore overstate the overlap problem, and <code>D1</code> thresholds must come from each run's own estimate.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>tracker</th>
+<th style="text-align: right;">velocity error</th>
+<th style="text-align: right;">acceleration error</th>
+<th style="text-align: right;">ghosts</th>
+<th style="text-align: right;">long-track completeness</th>
+<th style="text-align: right;">pieces per track</th>
+<th style="text-align: right;">yield</th>
+<th style="text-align: right;">time (s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>oracle (perfect linking of the input)</td>
+<td style="text-align: right;">0.078</td>
+<td style="text-align: right;">5.1</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">1.37</td>
+<td style="text-align: right;">0.76</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td><code>two_phase</code> + holistic rounds=2</td>
+<td style="text-align: right;"><strong>0.084</strong></td>
+<td style="text-align: right;"><strong>5.1</strong></td>
+<td style="text-align: right;">0.027</td>
+<td style="text-align: right;"><strong>0.74</strong></td>
+<td style="text-align: right;"><strong>1.16</strong></td>
+<td style="text-align: right;"><strong>0.79</strong></td>
+<td style="text-align: right;">157</td>
+</tr>
+<tr>
+<td><code>two_phase</code></td>
+<td style="text-align: right;">0.105</td>
+<td style="text-align: right;">5.8</td>
+<td style="text-align: right;">0.029</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">1.68</td>
+<td style="text-align: right;">0.75</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td><code>trackcorr</code> (our port)</td>
+<td style="text-align: right;">0.167</td>
+<td style="text-align: right;">13.2</td>
+<td style="text-align: right;">0.060</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: right;">0.76</td>
+<td style="text-align: right;">42</td>
+</tr>
+<tr>
+<td>legacy C <code>trackcorr</code> (<code>optv</code>, forward only)</td>
+<td style="text-align: right;">0.393</td>
+<td style="text-align: right;">27.5</td>
+<td style="text-align: right;">0.065</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">2.45</td>
+<td style="text-align: right;">0.77</td>
+<td style="text-align: right;">19</td>
+</tr>
+</tbody>
+</table>
+<p>What it says:
+- <strong>Legacy <code>trackcorr</code> needs tuned bounds; see the sweep below.</strong> With the case's own generous bounds (velocity
+  +-0.84 per axis, about 9x the real step) the legacy tracker mislinks heavily (velocity error 0.393). That is not a fair
+  comparison. The fair one is against its best bounds (+-0.3: 0.162), and against that <code>two_phase</code> is 1.5x lower (0.105)
+  and <code>two_phase</code> + holistic 1.9x lower (0.084), with fewer pieces per track (1.68 and 1.16 against 2.47) and fewer ghosts.
+- <strong>The oracle is not a ceiling for the holistic loop.</strong> The oracle links the input points perfectly but keeps the
+  merged-blob positions as they are. The holistic loop corrects those positions, so it ends below the oracle in
+  acceleration error and above it in long-track completeness. The room left is in the <em>input</em>, which is what D1-D3 target.
+- <strong>Cost of the holistic loop is 20x</strong> (157 s against 8 s for the same 200 frames), far outside the speed budget of
+  section 8. Any gain from D2/D3 has to be got without that cost, or by making the loop cheaper first.
+- The yield is 0.75-0.79 in every method: the 16 % of particle views with no blob cap it, as the plan said.</p>
+<p><strong>Legacy <code>trackcorr</code> with tuned velocity bounds</strong> (same case; forward only, no post-processing, which is how the C
+tracker works; acceleration bound 0.712 and angle 100 as in the case):</p>
+<table>
+<thead>
+<tr>
+<th>bound per axis</th>
+<th style="text-align: right;">velocity error</th>
+<th style="text-align: right;">long-track completeness</th>
+<th style="text-align: right;">pieces per track</th>
+<th style="text-align: right;">yield</th>
+<th style="text-align: right;">link recall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.84 (case default)</td>
+<td style="text-align: right;">0.393</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">2.45</td>
+<td style="text-align: right;">0.77</td>
+<td style="text-align: right;">0.89</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td style="text-align: right;">0.247</td>
+<td style="text-align: right;">0.57</td>
+<td style="text-align: right;">2.44</td>
+<td style="text-align: right;">0.77</td>
+<td style="text-align: right;">0.89</td>
+</tr>
+<tr>
+<td><strong>0.3</strong></td>
+<td style="text-align: right;"><strong>0.162</strong></td>
+<td style="text-align: right;">0.56</td>
+<td style="text-align: right;">2.47</td>
+<td style="text-align: right;">0.76</td>
+<td style="text-align: right;">0.88</td>
+</tr>
+<tr>
+<td>0.2</td>
+<td style="text-align: right;">0.172</td>
+<td style="text-align: right;">0.49</td>
+<td style="text-align: right;">2.72</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">0.80</td>
+</tr>
+<tr>
+<td>0.12</td>
+<td style="text-align: right;">0.266</td>
+<td style="text-align: right;">0.32</td>
+<td style="text-align: right;">3.04</td>
+<td style="text-align: right;">0.56</td>
+<td style="text-align: right;">0.58</td>
+</tr>
+</tbody>
+</table>
+<p>Joint sweep of the velocity bound and <code>dacc</code> (position noise 0.09 mm makes a loose <code>dacc</code> necessary; the true largest step
+is 0.3 mm per frame per axis and true accelerations are below 0.03):</p>
+<table>
+<thead>
+<tr>
+<th>dv</th>
+<th style="text-align: right;">dacc</th>
+<th style="text-align: right;">velocity error</th>
+<th style="text-align: right;">link recall</th>
+<th style="text-align: right;">long-track completeness</th>
+<th style="text-align: right;">pieces per track</th>
+<th style="text-align: right;">yield</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.3</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.161</td>
+<td style="text-align: right;">0.82</td>
+<td style="text-align: right;">0.46</td>
+<td style="text-align: right;">3.50</td>
+<td style="text-align: right;">0.75</td>
+</tr>
+<tr>
+<td>0.3</td>
+<td style="text-align: right;"><strong>0.4</strong></td>
+<td style="text-align: right;"><strong>0.155</strong></td>
+<td style="text-align: right;">0.86</td>
+<td style="text-align: right;">0.53</td>
+<td style="text-align: right;">2.86</td>
+<td style="text-align: right;">0.76</td>
+</tr>
+<tr>
+<td>0.3</td>
+<td style="text-align: right;">1.5</td>
+<td style="text-align: right;">0.198</td>
+<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">1.86</td>
+<td style="text-align: right;">0.77</td>
+</tr>
+<tr>
+<td>0.3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.237</td>
+<td style="text-align: right;">0.98</td>
+<td style="text-align: right;">0.68</td>
+<td style="text-align: right;">1.45</td>
+<td style="text-align: right;">0.78</td>
+</tr>
+<tr>
+<td>0.3</td>
+<td style="text-align: right;"><strong>6</strong></td>
+<td style="text-align: right;">0.305</td>
+<td style="text-align: right;">0.995</td>
+<td style="text-align: right;"><strong>0.71</strong></td>
+<td style="text-align: right;"><strong>1.29</strong></td>
+<td style="text-align: right;">0.78</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0.468</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">1.34</td>
+<td style="text-align: right;">0.79</td>
+</tr>
+</tbody>
+</table>
+<p>A loose <code>dacc</code> keeps legacy tracks whole (1.3 pieces per track, completeness 0.71, close to holistic's 0.74) but admits
+wrong links, so velocity error doubles. No setting gives legacy both: <code>two_phase</code> has 0.105 and 1.68, holistic 0.084 and
+1.16. Raising <code>dv</code> above 0.3 only hurts. (Angle not tuned.)</p>
+<p>Tuned legacy is about as accurate as our port of <code>trackcorr</code> (0.167) and takes 8 s, but still cuts tracks into
+about 2.5 pieces each. Acceleration bound and angle were not tuned.</p>
+<p>D0 also restored the legacy comparator: <code>scripts/legacy_export.py</code> now holds the ASCII exporter and trajectory reader
+that the zarr-only change removed, so <code>synth_bench.py track --tracker optv_c</code> works again.</p>
+<h3 id="d1-the-hypothesis-detector-scored-against-rendered-truth-measured-2026-11-21-first-pass">D1. The hypothesis detector, scored against rendered truth (measured 2026-11-21; first pass)<a class="headerlink" href="#d1-the-hypothesis-detector-scored-against-rendered-truth-measured-2026-11-21-first-pass" title="Permanent link">&para;</a></h3>
+<p>Code: <code>src/openptv2/blob_hypotheses.py</code> (cues from each blob's own pixels, one- and two-Gaussian fits, a small
+logistic regression), <code>scripts/d1_features.py</code>, <code>d1_split.py</code>, <code>d1_classify.py</code>, <code>d1_faint.py</code>. Tests in
+<code>tests/unit/test_blob_hypotheses.py</code>. The reference segmentation (<code>segmentation._vectorized_targ_rec</code>) gained an optional
+<code>pixels_out</code> to hand out each blob's pixels; it finds exactly the blobs of the production detector (1298 against 1298
+in the check frame). The production Cython detector is not changed yet. Rendered <code>syn1</code>, 4 cameras, frames 1/5 for
+training and 9/13 for testing; blobs are labelled by how many true tracers fall inside them.</p>
+<p><strong>Which cue says "more than one tracer"</strong> (single cues, area under the ROC curve; 0.5 = nothing): major-axis variance
+0.82, eccentricity 0.77, pixel count 0.75, summed grey value 0.71, <strong>mean intensity 0.63</strong>, internal maxima 0.62, third
+moment 0.52. So mean intensity is a weak cue for overlap, as expected: overlap shows in size and shape, and the
+signature of a tracer should stay <code>sumg / n</code> only as a <em>brightness</em> identity, not as the overlap detector.
+Combined with the gain of the two-Gaussian fit over the one-Gaussian fit, the logistic model reaches <strong>0.87</strong>.</p>
+<p><strong>Calibration of <code>p_single</code></strong> on the test frames: predicted against actual share of "two or more" in six bins agrees
+to within 0.05 in five of them; the top bin (predicted 0.94, 113 blobs) has 0.79 actually, 0.15 off. At p above 0.3
+the model catches 67 % of two-tracer blobs with 9 % false alarms among single-tracer blobs; at p above 0.5, 48 % with
+3.6 %.</p>
+<p><strong>Centre of the split</strong> (two-tracer blobs, true count given, single-tracer variance 0.4 px² from the fit on clean
+blobs, where the Gaussian fit gives a 0.06 px centre error):</p>
+<table>
+<thead>
+<tr>
+<th>true separation</th>
+<th style="text-align: right;">blob centroid error (px, median)</th>
+<th style="text-align: right;">fitted centre error</th>
+<th style="text-align: right;">fitted within 0.5 px</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>under 1 px</td>
+<td style="text-align: right;">0.28</td>
+<td style="text-align: right;">0.35</td>
+<td style="text-align: right;">0.67</td>
+</tr>
+<tr>
+<td>1-2 px</td>
+<td style="text-align: right;">0.75</td>
+<td style="text-align: right;"><strong>0.24</strong></td>
+<td style="text-align: right;">0.71</td>
+</tr>
+<tr>
+<td>2-3 px</td>
+<td style="text-align: right;">1.17</td>
+<td style="text-align: right;"><strong>0.42</strong></td>
+<td style="text-align: right;">0.54</td>
+</tr>
+<tr>
+<td>over 3 px</td>
+<td style="text-align: right;">1.68</td>
+<td style="text-align: right;">0.69</td>
+<td style="text-align: right;">0.42</td>
+</tr>
+<tr>
+<td>all (600 blobs)</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;"><strong>0.33</strong></td>
+<td style="text-align: right;"><strong>0.62</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Faint candidates</strong> (peaks at a lower threshold that are not within 3 px of a standard blob; 1114 true tracers had no
+standard blob in the test frames): threshold 3 recovers 35 % of them with 1.5 false candidates per recovered one;
+threshold 5 recovers 27 % with 1.2; threshold 7 recovers 17 % with 1.0.</p>
+<p><strong>Against the gate</strong>
+- Split centres within 0.5 px for at least half of the two-tracer blobs: <strong>met</strong> (0.62), with the true count given.
+- <code>p_single</code> calibrated within 0.1: <strong>met in five of six bins</strong>, not in the top bin.
+- Faint candidates: at least a third of the missing tracers with fewer than 2 false per recovered: <strong>met at threshold 3</strong>
+  (0.35 and 1.5), narrowly. A faint candidate by itself is not trustworthy; it is only used where a prediction or
+  an epipolar line asks for one (section 3), which removes most of the false ones.
+- Split centre error better than the 0.27 px track prediction: <strong>not met on its own</strong> (median 0.33; better only for
+  separations of 1-2 px). The split is an independent measurement, so combined with the prediction the error falls to
+  about 0.2 px if the two errors are independent, and the blob centroid it replaces is off by 0.67 px. D2 is the real
+  test of that, and its stop rule applies.</p>
+<p><strong>Caveats.</strong> All of this is on rendered images in which the tracer is a Gaussian of known width, so it is optimistic for
+real data, where the tracer image is smaller (0.25-0.28 px², D0) and its shape is less regular. The classifier trained on
+rendered data cannot be transferred as it is; on a real run the cue weights have to come from that run (the
+tracks themselves give labels: a blob a good track passes through while a second track also predicts into it).
+Pixel count and the fits depend on the threshold and the particle image size, so they are re-estimated per camera and run
+(<code>scripts/psf_estimate.py</code>).</p>
+<p><strong>Decision.</strong> Go on to D2 with the split as an extra, weighted measurement at conflict sites and faint candidates only
+where a prediction asks for them; D2's gate decides whether it stays.</p>
+<h3 id="where-the-holistic-loop-spends-its-time-profile-2026-11-21">Where the holistic loop spends its time (profile, 2026-11-21)<a class="headerlink" href="#where-the-holistic-loop-spends-its-time-profile-2026-11-21" title="Permanent link">&para;</a></h3>
+<p><code>two_phase</code> + <code>holistic_rounds=2</code> on the D0 case, 200 frames, cProfile (172 s under the profiler, 157 s without):</p>
+<table>
+<thead>
+<tr>
+<th>part</th>
+<th style="text-align: right;">seconds</th>
+<th>what it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>refine_merged</code> (2 rounds)</td>
+<td style="text-align: right;">82</td>
+<td>per-observation merged-blob refinement; 836,664 calls of <code>split_blob_effective</code> (28 s), <code>project_pixels</code> (22 s), 5.6 million <code>sig_of</code> calls, the rest is Python loop overhead</td>
+</tr>
+<tr>
+<td><code>triangulate_weighted</code></td>
+<td style="text-align: right;">29</td>
+<td>1,600 calls (frame by camera set), each a weighted least squares</td>
+</tr>
+<tr>
+<td><code>relink</code></td>
+<td style="text-align: right;">28</td>
+<td><code>two_phase</code> run again, 4 times, about 7 s each: the same cost as the base tracker</td>
+</tr>
+<tr>
+<td><code>birth_targets</code></td>
+<td style="text-align: right;">11</td>
+<td>particles hidden in other particles' blobs</td>
+</tr>
+<tr>
+<td>base <code>two_phase</code> and setup</td>
+<td style="text-align: right;">about 58</td>
+<td>the 8 s tracker, store I/O and the rest</td>
+</tr>
+</tbody>
+</table>
+<p>Nearly all of the loop is scalar Python called once per observation (250,000 per round), where each observation is
+independent of the others. That is the shape that vectorises, and compiles, well. A first estimate is that batching
+<code>split_blob_effective</code>, the projection and the weighted triangulation over a frame at a time in NumPy brings the 82 + 29 s
+to a few seconds, and Cython kernels for the three hot functions to about one. The four relinks cost what four
+<code>two_phase</code> runs cost and shrink only if the rounds are made incremental (relink only the tracks that changed).
+Target: whole loop at most 2x <code>two_phase</code> before D2 builds on it.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

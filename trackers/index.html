@@ -23,7 +23,7 @@
     
     
       
-        <title>Particle Trackers in openptv2 - OpenPTV2 Documentation</title>
+        <title>Particle trackers in openptv2 - OpenPTV2 Documentation</title>
       
     
     
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Particle Trackers in openptv2
+              Particle trackers in openptv2
             
           </span>
         </div>
@@ -2214,10 +2214,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-the-basics-what-tracking-is" class="md-nav__link">
+  <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. The basics: what tracking is
+        Quick start
       
     </span>
   </a>
@@ -2225,10 +2225,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-all-trackers-at-a-glance" class="md-nav__link">
+  <a href="#choosing-which-tracker-which-extras" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. All trackers at a glance
+        Choosing: which tracker, which extras
       
     </span>
   </a>
@@ -2236,22 +2236,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-each-tracker-caveats-tips-tricks" class="md-nav__link">
+  <a href="#what-tracking-is" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Each tracker: caveats, tips, tricks
+        What tracking is
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Each tracker: caveats, tips, tricks">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-three-trackers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The three trackers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The three trackers">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#trackcorr-default-standard_forward-the-original-engine" class="md-nav__link">
+  <a href="#what-we-measured" class="md-nav__link">
     <span class="md-ellipsis">
       
-        trackcorr (default, standard_forward, …) — the original engine
+        What we measured
       
     </span>
   </a>
@@ -2259,43 +2270,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fast-3d-3ma-priority_segment_3d-the-fast-one" class="md-nav__link">
+  <a href="#settings-shared-and-per-tracker" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Fast 3D / 3MA (priority_segment_3d) — the fast one
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4be-4be-the-careful-one" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4BE (4be) — the careful one
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#two-phase-two_phase-the-hybrid" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Two-Phase (two_phase) — the hybrid
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hybrid-multi-t-hybrid_deltat_3d-the-slow-flow-specialist" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Hybrid multi-Δt (hybrid_deltat_3d) — the slow-flow specialist
+        Settings: shared, and per tracker
       
     </span>
   </a>
@@ -2308,10 +2286,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-upstream-credit-myptv-and-proptv" class="md-nav__link">
+  <a href="#the-two-switches" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Upstream credit: MyPTV and proPTV
+        The two switches
       
     </span>
   </a>
@@ -2319,10 +2297,54 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#which-trackers-to-use-2026-11-simplification" class="md-nav__link">
+  <a href="#the-add-on-holistic_rounds" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Which trackers to use (2026-11 simplification)
+        The add-on: holistic_rounds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-add-on-shared_correction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The add-on: shared_correction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-tracking-the-shared-blob-pass-ptvshared_pass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before tracking: the shared-blob pass (ptv.shared_pass)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#old-names-still-work-for-one-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Old names still work (for one release)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upstream-credit-myptv-and-proptv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upstream credit: MyPTV and proPTV
       
     </span>
   </a>
@@ -2349,12 +2371,226 @@
   
 
 
-<h1 id="particle-trackers-in-openptv2">Particle Trackers in openptv2<a class="headerlink" href="#particle-trackers-in-openptv2" title="Permanent link">&para;</a></h1>
-<p>Start here if you want to know which tracker to use and why. For measured
-numbers on a reference dataset, see <a href="../tracker-tutorials/">Tracker Tutorials</a>;
-for pipeline and file formats, see the <a href="../tracking_guide/">Tracking Guide</a>;
-for Two-Phase usage in depth, see <a href="../two-phase-tracking/">Two-Phase Tracking</a>.</p>
-<h2 id="1-the-basics-what-tracking-is">1. The basics: what tracking is<a class="headerlink" href="#1-the-basics-what-tracking-is" title="Permanent link">&para;</a></h2>
+<h1 id="particle-trackers-in-openptv2">Particle trackers in openptv2<a class="headerlink" href="#particle-trackers-in-openptv2" title="Permanent link">&para;</a></h1>
+<p><strong>Three trackers, two switches, one add-on.</strong> That is the whole setup. This page is the user guide; the
+machine-readable version is <code>openptv list-trackers</code> (<code>src/openptv2/tracking_registry.py</code>), and the single place
+that interprets a saved configuration is <code>src/openptv2/tracking_setup.py</code>. For measured numbers see
+<a href="../tracker-tutorials/">Tracker Tutorials</a>; for files and pipeline see the <a href="../tracking_guide/">Tracking Guide</a>;
+for the default tracker in depth, <a href="../two-phase-tracking/">Two-Phase Tracking</a>; for the add-on,
+<a href="../holistic-tracking/">Holistic tracking</a>.</p>
+<h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<p>Do nothing and you get the recommended setup: <code>two_phase</code>, <code>direction: both</code>, no extras. For difficult data (overlapping
+particles) <code>openptv recommend &lt;run.zarr&gt;</code> measures your points and says which extras are worth their run time
+(<a href="#choosing-which-tracker-which-extras">Choosing</a>).</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">track</span><span class="p">:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">tracker</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">two_phase</span><span class="w">      </span><span class="c1"># two_phase | trackcorr | fast_3d          default: two_phase</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">direction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">both</span><span class="w">         </span><span class="c1"># forward | both                           default: both</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">postprocess</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">       </span><span class="c1"># trackcorr, fast_3d: reciprocity + gaps   default: true</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">holistic_rounds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">      </span><span class="c1"># two_phase add-on: merged-blob loop       default: 0 (off)</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="nt">shared_correction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w">  </span><span class="c1"># two_phase add-on: fix points in shared blobs  default: false</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="nt">dvxmin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-2.0</span><span class="w">            </span><span class="c1"># search bounds, same for every tracker</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="nt">dvxmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.0</span><span class="w">             </span><span class="c1">#   (dvy*, dvz* likewise) mm/frame</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="nt">dacc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.4</span><span class="w">               </span><span class="c1"># mm/frame^2</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span><span class="nt">angle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120</span><span class="w">              </span><span class="c1"># gon</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GUI</td>
+<td>Tracking Parameters: <strong>Tracker</strong>, <strong>Direction</strong>, Post-process, the bounds, and the add-on box <em>Merged-blob loop rounds</em>. Saved into the YAML above.</td>
+</tr>
+<tr>
+<td>Batch</td>
+<td><code>openptv-batch parameters_Run1.yaml 1 500</code> uses the YAML. Override on the command line: <code>--tracker fast_3d</code>, <code>--direction forward</code>, <code>--holistic-rounds 2</code>, <code>--shared-correction</code>. The same flags exist in the parallel batch.</td>
+</tr>
+<tr>
+<td>Python</td>
+<td><code>run_tracking_plugin("default", exp)</code> reads the YAML; <code>run_tracking_plugin("trackcorr", exp)</code> names the tracker.</td>
+</tr>
+<tr>
+<td>Advice</td>
+<td><code>openptv recommend res/run.zarr</code>: measures the data, names the tracker and the extras, with reasons.</td>
+</tr>
+<tr>
+<td>List</td>
+<td><code>openptv list-trackers</code> (table); <code>openptv list-trackers --show two_phase</code> (details and every setting).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="choosing-which-tracker-which-extras">Choosing: which tracker, which extras<a class="headerlink" href="#choosing-which-tracker-which-extras" title="Permanent link">&para;</a></h2>
+<p>Short answer: <strong><code>two_phase</code>, with nothing else, unless your data says otherwise.</strong> The extras
+(<code>ptv.shared_pass</code>, <code>track.shared_correction</code>) are for data where particles overlap in the camera images. They bring a
+solid but not drastic improvement and cost run time, so they are never on by default.</p>
+<p>Ask your own data: <code>openptv recommend &lt;run.zarr&gt;</code> measures six numbers on your points (no truth needed) and prints the
+setup below with the reasons. The numbers: points per frame; spacing/step (how many steps apart neighbours are);
+mutual-link share (how many points have an unambiguous partner in the next frame; low = dense); noise/step (the
+velocity kink of a track against its step: 0 = exact data); partial views (share of points seen by fewer cameras
+than the rig has); <strong>shared-blob flag</strong> (share of points with one view much brighter than their other views, the sign
+of a blob holding two particles).</p>
+<table>
+<thead>
+<tr>
+<th>Your data</th>
+<th>Use</th>
+<th>Why (benchmark, 13 cases; real wp1, wp2 for the descriptors)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real or noisy data (any density, any step)</td>
+<td><strong><code>two_phase</code></strong></td>
+<td>fastest (4 to 5 s per 200 frames, against 25 to 176 s for <code>trackcorr</code>) and the most accurate: velocity error 1.3 to 7 times lower than <code>trackcorr</code> or <code>fast_3d</code>; the only one that copes when neighbours are fewer than 10 steps apart</td>
+</tr>
+<tr>
+<td>Exact data (simulation, no noise: noise/step below 0.1, no merged blobs)</td>
+<td><strong><code>fast_3d</code></strong></td>
+<td>keeps every point (yield 0.995) where <code>two_phase</code>'s ghost rules drop 3 to 6 % of them; <code>trackcorr</code> gives the same result 2 to 3 times slower</td>
+</tr>
+<tr>
+<td>You must reproduce a legacy (OpenPTV, C <code>trackcorr</code>) result</td>
+<td><code>trackcorr</code></td>
+<td>the legacy algorithm. It is never the fastest here, it is the least accurate on noisy data (velocity error 0.20 to 1.05 against 0.08 to 0.41 for <code>two_phase</code>), and with large steps it breaks (frame skip 4: 0.39 against 0.11; skip 8: 0.82 against 0.13, 176 s)</td>
+</tr>
+<tr>
+<td>Shared-blob flag 10 % or more</td>
+<td><code>two_phase</code> + <code>shared_correction</code> (+ <code>shared_pass</code>)</td>
+<td>see below; real recordings wp1 and wp2 have 15 %</td>
+</tr>
+<tr>
+<td>Shared-blob flag below 8 %</td>
+<td><code>two_phase</code> alone</td>
+<td>the extras change nothing (clean data) or a few percent</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What the extras bring</strong>, velocity error (long-track completeness) per tracker setup. Benchmark cases with truth;
+the shared-blob flag is the number <code>openptv recommend</code> prints. Run time relative to <code>two_phase</code> alone:
+about 1 (<code>two_phase</code>), +10 to 30 % of the matching time for the pass, 3 to 4 times the tracking time for the
+correction.</p>
+<table>
+<thead>
+<tr>
+<th>Case (flag)</th>
+<th><code>two_phase</code></th>
+<th>+ pass</th>
+<th>+ correction</th>
+<th>+ both</th>
+<th><code>fast_3d</code></th>
+<th><code>trackcorr</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>exact, no noise, dense (0.00)</td>
+<td>0.0008 (0.92)</td>
+<td>0.0009</td>
+<td>0.0008</td>
+<td>0.0009</td>
+<td>0.0009 (0.98)</td>
+<td>0.0009 (0.98)</td>
+</tr>
+<tr>
+<td>noise only, no extra effects (0.13)</td>
+<td>0.160 (0.53)</td>
+<td>0.158 (0.56)</td>
+<td>0.096 (0.56)</td>
+<td>0.098 (0.60)</td>
+<td>0.204 (0.57)</td>
+<td>0.266 (0.52)</td>
+</tr>
+<tr>
+<td>real-like, merge rate 0.6 (0.11)</td>
+<td>0.081 (0.70)</td>
+<td>0.078 (0.73)</td>
+<td>0.078 (0.70)</td>
+<td>0.071 (0.74)</td>
+<td>0.145 (0.73)</td>
+<td>0.201 (0.59)</td>
+</tr>
+<tr>
+<td>real-like, merge rate 0.75 (0.14)</td>
+<td>0.105 (0.62)</td>
+<td>0.102 (0.66)</td>
+<td>0.092 (0.64)</td>
+<td>0.088 (0.69)</td>
+<td>0.155 (0.67)</td>
+<td>0.220 (0.54)</td>
+</tr>
+<tr>
+<td>real-like, default merge rate (0.17)</td>
+<td>0.183 (0.50)</td>
+<td>0.183 (0.53)</td>
+<td>0.128 (0.53)</td>
+<td>0.128 (0.56)</td>
+<td>0.243 (0.56)</td>
+<td>0.297 (0.44)</td>
+</tr>
+<tr>
+<td>density x2 (0.26)</td>
+<td>0.311 (0.34)</td>
+<td>0.319 (0.36)</td>
+<td>0.225 (0.36)</td>
+<td>0.226 (0.39)</td>
+<td>0.594 (0.39)</td>
+<td>0.508 (0.31)</td>
+</tr>
+<tr>
+<td>density x4 (0.40)</td>
+<td>0.409 (0.16)</td>
+<td>0.420 (0.16)</td>
+<td>0.340 (0.17)</td>
+<td>0.345 (0.17)</td>
+<td>1.688 (0.18)</td>
+<td>1.050 (0.15)</td>
+</tr>
+<tr>
+<td>every 4th frame (0.17)</td>
+<td>0.113 (0.52)</td>
+<td>0.112 (0.54)</td>
+<td>0.089 (0.55)</td>
+<td>0.096 (0.59)</td>
+<td>0.427 (0.54)</td>
+<td>0.388 (0.53)</td>
+</tr>
+<tr>
+<td>every 8th frame (0.17)</td>
+<td>0.130 (0.48)</td>
+<td>0.124 (0.52)</td>
+<td>0.112 (0.51)</td>
+<td>0.110 (0.56)</td>
+<td>1.162 (0.40)</td>
+<td>0.816 (0.45)</td>
+</tr>
+<tr>
+<td>clustered, every 4th frame (0.23)</td>
+<td>0.170 (0.32)</td>
+<td>0.173 (0.34)</td>
+<td>0.130 (0.34)</td>
+<td>0.131 (0.37)</td>
+<td>1.251 (0.34)</td>
+<td>0.758 (0.35)</td>
+</tr>
+</tbody>
+</table>
+<p>Reading it:
+- The correction pays in proportion to the flag: about 4 % at 0.11, 12 % at 0.14, 28 to 40 % at 0.13 to 0.26 when
+  the noise is low. At 0.17 to 0.26 it removes a quarter to a third of the error.
+- The pass alone is a yield option: +2 points of yield and +3 to 4 of long-track completeness; it does not lower the
+  velocity error, and in dense data (flag above 0.25) it raises it a little unless the correction is on too.
+  Together they beat either alone when the flag is around 0.11 to 0.14.
+- At density x4 and with large steps <code>fast_3d</code> and <code>trackcorr</code> fall apart (ghost points, wrong links); <code>two_phase</code>
+  stays usable. Nothing makes the densest case good: yield stays at 0.23 to 0.25 (a particle in a crowd has no
+  clean view).
+- On the real recordings (flag 0.15, noise/step 0.67, density like the benchmark's x1) the same setup,
+  <code>two_phase</code> with both extras, raised the share of points in tracks of 200 frames or more from 6 to 7 % to 14 to 16 %
+  and the smoothness of the tracks by 15 %.</p>
+<h2 id="what-tracking-is">What tracking is<a class="headerlink" href="#what-tracking-is" title="Permanent link">&para;</a></h2>
 <p>A camera takes a picture every frame. In each picture, every particle is a
 dot. In the next picture the dots have moved a little. <strong>Tracking means
 deciding which dot in picture 2 is the same particle as each dot in
@@ -2380,93 +2616,419 @@ of rules for that decision. They differ in only four things:</p>
 from the scoring rule. So gap handling matters more than clever costs.
 Second, particles only ever <strong>enter and exit</strong> the volume; a track that ends
 mid-volume is almost always an occlusion or a dropout, not a real exit.</p>
-<h2 id="2-all-trackers-at-a-glance">2. All trackers at a glance<a class="headerlink" href="#2-all-trackers-at-a-glance" title="Permanent link">&para;</a></h2>
-<p>Select with <code>plugins.selected_tracking</code> in your parameters (GUI: Plugins
-page). The <code>name</code> column is the exact preset string.</p>
+<h2 id="the-three-trackers">The three trackers<a class="headerlink" href="#the-three-trackers" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>preset (<code>name</code>)</th>
-<th>idea in one line</th>
-<th>looks at</th>
+<th></th>
+<th><code>two_phase</code> (default)</th>
+<th><code>trackcorr</code></th>
+<th><code>fast_3d</code></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>default</code>, <code>standard_forward</code>, <code>full_multipass</code>, <code>two_directional</code> (trackcorr)</td>
-<td>Guess forward, confirm in every camera, accept smooth links</td>
-<td>2D targets + 3D</td>
+<td>In one line</td>
+<td>3D candidates, image-based cost, optimal pairing, confirmation</td>
+<td>The legacy algorithm: search the 2D targets in each camera</td>
+<td>Links the triangulated 3D points only</td>
 </tr>
 <tr>
-<td><code>priority_segment_3d</code> (Fast 3D / 3MA)</td>
-<td>Cheapest (smoothest) links first, globally</td>
-<td>3D only</td>
+<td>Looks at</td>
+<td>3D points and the 2D blob positions in every camera</td>
+<td>2D targets in the images and 3D</td>
+<td>3D points only (optional soft epipolar score)</td>
 </tr>
 <tr>
-<td><code>4be</code></td>
-<td>Peek at frame n+2 before accepting; conflicts link to nobody</td>
-<td>3D only</td>
+<td>Predicts</td>
+<td>position + velocity × steps, velocity learned along the track</td>
+<td>the last step repeated</td>
+<td>the last step repeated (neighbours' velocity at track starts)</td>
 </tr>
 <tr>
-<td><code>two_phase</code> (Two-Phase)</td>
-<td>3D search for candidates, per-camera images for ranking</td>
-<td>3D + 2D</td>
+<td>Picks links</td>
+<td>best total pairing per group of conflicting candidates (Hungarian)</td>
+<td>per particle, in the legacy order</td>
+<td>cheapest link first, per pass (greedy)</td>
 </tr>
 <tr>
-<td><code>holistic</code></td>
-<td><code>two_phase</code> + merged-blob correction + births, repeated; see <a href="../holistic-tracking/">Holistic tracking</a></td>
-<td>3D + 2D + blob model</td>
+<td>Checks</td>
+<td>a link must be continued smoothly by the next one (two-hop)</td>
+<td>epipolar match in all cameras, acceleration and angle limits</td>
+<td>acceleration limit</td>
 </tr>
 <tr>
-<td><code>hybrid_deltat_3d</code> (Hybrid)</td>
-<td>Match every N-th frame where motion beats noise, fill between</td>
-<td>3D only</td>
+<td>Gaps</td>
+<td>carried inside the loop (<code>max_gap</code>)</td>
+<td>bridged in post-processing</td>
+<td>bridged in post-processing</td>
+</tr>
+<tr>
+<td>Choose it for</td>
+<td>quality and speed on the standard pipeline; the only one the add-on works with</td>
+<td>comparison with the legacy software, old results</td>
+<td>runs with triangulated points only; a 3D-only baseline</td>
+</tr>
+<tr>
+<td>Needs</td>
+<td>the run store (the standard pipeline)</td>
+<td>the targets of every camera</td>
+<td>triangulated points</td>
 </tr>
 </tbody>
 </table>
-<p>Details per tracker live in <code>src/openptv2/tracking_registry.py</code>
-(<code>TRACKER_REGISTRY</code>) — the machine-readable version of this page.</p>
-<h2 id="3-each-tracker-caveats-tips-tricks">3. Each tracker: caveats, tips, tricks<a class="headerlink" href="#3-each-tracker-caveats-tips-tricks" title="Permanent link">&para;</a></h2>
-<h3 id="trackcorr-default-standard_forward-the-original-engine">trackcorr (<code>default</code>, <code>standard_forward</code>, …) — the original engine<a class="headerlink" href="#trackcorr-default-standard_forward-the-original-engine" title="Permanent link">&para;</a></h3>
-<p>The safest default. Predicts forward, checks candidates in every camera
-image, accepts links with small acceleration and turning angle, and can run
-backward plus gap relinking. <strong>Caveat:</strong> slowest of the bunch, and three
-interacting parameters (<code>dvxmax</code>, <code>dacc</code>, <code>angle</code>). <strong>Tip:</strong> on noisy slow
-flow, switch the angle limit off — the measured turning angle is mostly
-noise then. If a particle is hidden in one camera, trackcorr usually still
-gets it through the others.</p>
-<h3 id="fast-3d-3ma-priority_segment_3d-the-fast-one">Fast 3D / 3MA (<code>priority_segment_3d</code>) — the fast one<a class="headerlink" href="#fast-3d-3ma-priority_segment_3d-the-fast-one" title="Permanent link">&para;</a></h3>
-<p>Hundreds of thousands of particles per second, simplest mental model
-(smoothest join wins). <strong>Caveat:</strong> blind to the images, so a ghost particle
-sitting where the guess expects is accepted without question. <strong>Tip:</strong> use
-it for clean, dense data and high throughput; distrust it where ghosts are
-likely (poor calibration, few cameras).</p>
-<h3 id="4be-4be-the-careful-one">4BE (<code>4be</code>) — the careful one<a class="headerlink" href="#4be-4be-the-careful-one" title="Permanent link">&para;</a></h3>
-<p>Looks one frame into the future before committing, and refuses contested
-dots outright. <strong>Caveat:</strong> built for sparse clean data; on noisy/dense data
-it produces the worst accelerations of all engines and leaves gaps
-deliberately (gap bridging is off for its preset on purpose — it would
-rebuild exactly the links 4BE declined). <strong>Tip:</strong> sparse lab data with
-reliable detection; not turbulence.</p>
-<h3 id="two-phase-two_phase-the-hybrid">Two-Phase (<code>two_phase</code>) — the hybrid<a class="headerlink" href="#two-phase-two_phase-the-hybrid" title="Permanent link">&para;</a></h3>
-<p>3D search lists candidates, per-camera image distances rank them, Hungarian
-per connected group decides. No motion model — immune to bad guesses, but
-fails once motion outruns particle spacing. Reported +74% multi-frame
-trajectories over the default on a poorly-conditioned aorta dataset.
-<strong>Caveat:</strong> needs Cet 2D targets per camera in the store; falls back to
-pure 3D (<code>leaf_weight=0</code>) without them. <strong>Tips:</strong> start with
-<code>leaf_weight=1</code>, <code>v_max</code> at ~3× your typical step; see
-<a href="../two-phase-tracking/">Two-Phase Tracking</a> for the full parameter guide
-including the shared-observation prototype flags. Ghost-point quality rules
-(<code>q_seed</code>, <code>q_young</code>) are on by default; see <a href="../tracking_quality/">Point quality</a>.</p>
-<h3 id="hybrid-multi-t-hybrid_deltat_3d-the-slow-flow-specialist">Hybrid multi-Δt (<code>hybrid_deltat_3d</code>) — the slow-flow specialist<a class="headerlink" href="#hybrid-multi-t-hybrid_deltat_3d-the-slow-flow-specialist" title="Permanent link">&para;</a></h3>
-<p>When particles crawl, frame-to-frame steps drown in noise — so it matches
-every N-th frame (where displacement beats noise) and fills the middle with
-a smooth curve. <strong>Caveat:</strong> the only engine that changes the signal-to-noise
-ratio instead of fighting it, but the smooth fill is wrong for fast or
-curved motion. <strong>Tip:</strong> high frame rate + slow flow; set <code>stride</code> so the
-coarse step clearly exceeds your 3D noise floor.</p>
-<h2 id="4-upstream-credit-myptv-and-proptv">4. Upstream credit: MyPTV and proPTV<a class="headerlink" href="#4-upstream-credit-myptv-and-proptv" title="Permanent link">&para;</a></h2>
+<p><strong>How to choose.</strong> Start with the default. Use <code>trackcorr</code> when you must reproduce the legacy software. Use <code>fast_3d</code>
+when you have only triangulated points, or want a baseline that ignores the images. Each tracker has its own few extra
+settings, listed below; do not carry them from one tracker to another.</p>
+<h3 id="what-we-measured">What we measured<a class="headerlink" href="#what-we-measured" title="Permanent link">&para;</a></h3>
+<p>One synthetic case with truth (1,220 particles per frame, 200 frames, real-like merge rate and brightness scatter;
+<code>scripts/synth_bench.py</code>, case <code>L1_d1_c0_k1_n200_s0.08_a0.18_f0.05_m0.75</code>), same search bounds for all, run time on one
+machine with nothing else running. Velocity error = RMS of the smoothed velocity error against the true flow, relative to
+the rms speed (lower is better); link precision = share of links that are true.</p>
+<table>
+<thead>
+<tr>
+<th>Tracker, direction</th>
+<th>velocity error</th>
+<th>link precision</th>
+<th>long-track completeness</th>
+<th>time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>two_phase</code>, both (default)</td>
+<td><strong>0.105</strong></td>
+<td><strong>0.971</strong></td>
+<td>0.62</td>
+<td><strong>4.0 s</strong></td>
+</tr>
+<tr>
+<td><code>two_phase</code>, forward</td>
+<td>0.116</td>
+<td>0.973</td>
+<td>0.59</td>
+<td>4.2 s</td>
+</tr>
+<tr>
+<td><code>fast_3d</code>, both</td>
+<td>0.155</td>
+<td>0.940</td>
+<td>0.67</td>
+<td>9.8 s</td>
+</tr>
+<tr>
+<td><code>fast_3d</code>, forward</td>
+<td>0.157</td>
+<td>0.941</td>
+<td>0.67</td>
+<td>4.9 s</td>
+</tr>
+<tr>
+<td><code>trackcorr</code>, both</td>
+<td>0.220</td>
+<td>0.940</td>
+<td>0.54</td>
+<td>24.2 s</td>
+</tr>
+<tr>
+<td><code>trackcorr</code>, forward</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>18.2 s</td>
+</tr>
+</tbody>
+</table>
+<p>Notes. (1) Writing the results to the run store used to dominate <code>fast_3d</code> and <code>trackcorr</code> (every frame wrote several
+zarr arrays; <code>fast_3d</code> took 22.6 s and <code>trackcorr</code> 34.6 s, with the kernel itself about 2 s for <code>fast_3d</code>). Tracking now
+holds the linkage in memory and writes it once per pass, rewrites in place, and skips identical re-writes: <code>fast_3d</code> forward
+11.3 s to 4.9 s, <code>trackcorr</code> both 34.6 s to 24.2 s, with identical link quality. What remains for <code>trackcorr</code> is its 2D
+search itself. (2) With <code>fast_3d</code>, forward alone and both directions are close (velocity error 0.157 and 0.155 here; the other cases
+below); <code>two_phase</code> gains more from both.</p>
+<p>Direction, three cases (velocity error; <code>both</code> for <code>fast_3d</code> is the reversed pass, see below):</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th><code>two_phase</code> fwd / both</th>
+<th><code>fast_3d</code> fwd / both (reversed) / both (old C-style backward)</th>
+<th><code>trackcorr</code> fwd / both</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>default merge rate</td>
+<td>0.188 / <strong>0.183</strong></td>
+<td>0.254 / <strong>0.243</strong> / 0.265</td>
+<td>0.294 / 0.297</td>
+</tr>
+<tr>
+<td>merge scale 0.6</td>
+<td>0.087 / <strong>0.081</strong></td>
+<td><strong>0.141</strong> / 0.145 / 0.155</td>
+<td>0.201 / 0.201</td>
+</tr>
+<tr>
+<td>merge scale 0.75</td>
+<td>0.116 / <strong>0.105</strong></td>
+<td>0.157 / <strong>0.155</strong> / 0.167</td>
+<td>0.220 / 0.220</td>
+</tr>
+</tbody>
+</table>
+<p>One more finding: on a clean dense case with no ghost points (<code>L0_d4_c0_k1_n150</code>, 4 times the seeding) <code>two_phase</code> keeps
+94 % of the true points where <code>fast_3d</code> and <code>trackcorr</code> keep 99.6 %. The ghost rules (<code>q_seed</code>, <code>q_young</code>) are the cause:
+with them off <code>two_phase</code> keeps 99.6 % too. With ghosts present (the other cases) they pay: link precision 0.971 against
+0.944. So they stay on; switch them off (<code>q_seed: null</code>, <code>q_young: 0</code>) for data you know has no ghost points.</p>
+<h3 id="settings-shared-and-per-tracker">Settings: shared, and per tracker<a class="headerlink" href="#settings-shared-and-per-tracker" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th><code>two_phase</code></th>
+<th><code>trackcorr</code></th>
+<th><code>fast_3d</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dvx*</code>, <code>dvy*</code>, <code>dvz*</code> (mm/frame)</td>
+<td>yes (as the radius <code>v_max</code>: the largest of the six)</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>dacc</code> (mm/frame²), <code>angle</code> (gon)</td>
+<td>no: it confirms links instead (<code>confirm_tol</code>, automatic)</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>direction</code>, <code>postprocess</code></td>
+<td><code>direction</code> yes; <code>postprocess</code> not used (it carries gaps and confirms inside the loop)</td>
+<td>both</td>
+<td>both</td>
+</tr>
+<tr>
+<td><code>holistic_rounds</code></td>
+<td><strong>yes (the add-on)</strong></td>
+<td>no</td>
+<td>no (tried, see below)</td>
+</tr>
+<tr>
+<td><code>leaf_weight</code>, <code>max_gap</code>, <code>confirm_*</code>, <code>q_*</code>, <code>blob_gate</code></td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>epi_weight</code>, <code>accel_gate</code></td>
+<td>no</td>
+<td>no</td>
+<td>yes (defaults 0 and off)</td>
+</tr>
+</tbody>
+</table>
+<p><code>fast_3d</code> reads <code>dacc</code> and <code>angle</code> only when <code>accel_gate: true</code> is set. Measured: with a loose <code>dacc</code> (6) the velocity error
+fell from 0.1665 to 0.1595 and link recall stayed at 0.999; with a tight <code>dacc</code> (0.4) link recall fell to 0.887, so
+take <code>dacc</code> from a probe run. <code>epi_weight</code> (the old "hybrid" penalty) changed the velocity error by 0.0004 (0.1665 to
+0.1661); the old "hybrid" never applied it at all (a bug, fixed), so its measured results were plain <code>fast_3d</code>.</p>
+<h2 id="the-two-switches">The two switches<a class="headerlink" href="#the-two-switches" title="Permanent link">&para;</a></h2>
+<p><strong><code>direction: forward | both</code>.</strong> Forward tracks the frames in order. <code>both</code> also tracks backward and keeps what is
+consistent or fills gaps. It is two passes, so it takes longer, and it gives the better trajectories for <code>two_phase</code>.
+How backward is done depends on the tracker:</p>
+<ul>
+<li><code>two_phase</code> and <code>fast_3d</code>: <strong>the same tracker on the reversed frame numbers</strong> (backward is only a different way of
+  numbering the frames), then the forward links stay and backward links are added where both ends are still free
+  (Forward-First). For <code>fast_3d</code> this beat the old C-style backward on all three benchmark cases.</li>
+<li><code>trackcorr</code>: the <strong>legacy backward pass</strong> (<code>trackback</code>), because the tracker is meant to match the legacy
+  software; a reversed pass was measured and was worse for it (velocity error 0.327 against 0.297).</li>
+</ul>
+<p>In the GUI the <em>Track back</em> menu item exists for <code>trackcorr</code> and <code>fast_3d</code> runs that were made forward-only.</p>
+<p><strong><code>postprocess: true | false</code>.</strong> After the passes: reciprocity check (a link must be found from both ends) and gap
+bridging. For <code>trackcorr</code> and <code>fast_3d</code>. <code>two_phase</code> does these inside its own loop, so the switch has no effect
+there.</p>
+<h2 id="the-add-on-holistic_rounds">The add-on: <code>holistic_rounds</code><a class="headerlink" href="#the-add-on-holistic_rounds" title="Permanent link">&para;</a></h2>
+<p>The merged-blob loop. Where two particles overlap in a camera image, the detector gives one blob with a shifted
+centre. The loop estimates a centre for each particle from its own track, re-triangulates, and links again;
+<code>holistic_rounds: 2</code> repeats that twice. It costs run time. It works with <code>two_phase</code>; asking for it with
+another tracker is ignored with a log line. It was tried around <code>fast_3d</code> and made the velocity error worse (0.167 to
+0.199: <code>fast_3d</code> has no link confirmation, and the extra points bring wrong links), so it is not offered there. Details and measurements: <a href="../holistic-tracking/">Holistic tracking</a>.</p>
+<h2 id="the-add-on-shared_correction">The add-on: <code>shared_correction</code><a class="headerlink" href="#the-add-on-shared_correction" title="Permanent link">&para;</a></h2>
+<p>The part of the merged-blob loop that matters most, on its own and cheaper. A point that uses a blob another particle
+also uses has a shifted centre in that camera, and its position is wrong by a correlated amount that smoothing cannot
+remove (down-weighting such points in the smoothing gained 2 % even with perfect weights). With
+<code>shared_correction: true</code> the linker does this:</p>
+<ol>
+<li>link once (as usual);</li>
+<li>for every point that touches a shared blob (or whose blob is too bright for its own particle), take the track's
+   predicted position of the <em>other</em> members of the blob and compute this point's own share of the blob centre,
+   <code>(centre - sum of the others' weights x predicted positions) / its own weight</code>; weights are the brightness
+   signatures of the tracks. Triangulate from those corrected views, against the track's path as a prior. Points that
+   touch no shared blob are not touched;</li>
+<li>link again with the corrected positions. The second link is needed: it is what lets the linker connect the
+   corrected points (link recall 0.974 to 0.984 on the benchmark); keeping the old links with new positions was
+   measurably worse.</li>
+</ol>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">track</span><span class="p">:</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">shared_correction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">     </span><span class="c1"># two_phase only; default false. Batch: --shared-correction</span>
+</span></code></pre></div>
+<p>If no blob is shared by two points the step is skipped. It works best with <code>ptv.shared_pass</code> (the new points of the
+pass are then corrected too and are as smooth as the others). Cost: about 4 times the <code>two_phase</code> run time (two link
+passes plus the correction).</p>
+<p>Measured (benchmark with truth; velocity error, long-track completeness, fragments per long track, yield):</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th><code>two_phase</code></th>
+<th><code>shared_correction</code></th>
+<th>+ <code>shared_pass</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>real-like merge rate (m0.75)</td>
+<td>0.1046 / 0.623 / 1.68 / 0.754</td>
+<td>0.0921 / 0.639 / 1.57 / 0.755</td>
+<td>0.0876 / 0.685 / 1.38 / 0.773</td>
+</tr>
+<tr>
+<td>default merge rate</td>
+<td>0.1825 / 0.503 / 2.29 / 0.680</td>
+<td>0.1283 / 0.528 / 2.07 / 0.686</td>
+<td>0.1281 / 0.563 / 1.91 / 0.708</td>
+</tr>
+<tr>
+<td>4x density</td>
+<td>0.433 / 0.182 / 0.77 / 0.227</td>
+<td>0.361 / 0.189 / 0.77 / 0.232</td>
+<td>0.365 / 0.196 / 0.78 / 0.240</td>
+</tr>
+<tr>
+<td>no merged blobs</td>
+<td>no change (skipped)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>On the real recording wp2 (300 frames, no truth; <code>bench/real_check/shared_pass_real.py</code>): share of
+points in tracks of 50 frames or more 42.2 % -&gt; 51.1 % (55.3 % with the pass), of 200 or more 7.1 % -&gt; 10.8 % (15.6 %),
+roughness of the tracks (second difference, median) 0.0548 -&gt; 0.0464 mm, short tracks (under 5 frames) 15.4 % -&gt; 14.1 %,
+tracks of 50 frames or more 1540 -&gt; 1695 (1720). Tracking took 9 s -&gt; 29 s for the 300 frames. wp1 (same
+check): 40.0 % -&gt; 49.6 % (54.4 %), 200 or more 6.0 % -&gt; 10.2 % (14.1 %), roughness 0.0557 -&gt; 0.0474 mm, tracks of 50
+frames or more 1512 -&gt; 1691 (1738).</p>
+<h2 id="before-tracking-the-shared-blob-pass-ptvshared_pass">Before tracking: the shared-blob pass (<code>ptv.shared_pass</code>)<a class="headerlink" href="#before-tracking-the-shared-blob-pass-ptvshared_pass" title="Permanent link">&para;</a></h2>
+<p>Two particles that overlap in a camera produce one blob. The stereo matcher uses every blob once, so the first
+particle takes it and the second is left with its other cameras, often only two, which the matcher does not accept.
+On the benchmark that costs a particle seen in 4 cameras with 2 of them shared about a third of its chances to be
+found (64 % found, against 100 % when no blob is shared). The tracker cannot get back a point that was never made.</p>
+<p><code>shared_pass</code> is an option of the matching step (the <code>ptv</code> section of the parameter file, not <code>track</code>):</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">ptv</span><span class="p">:</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">shared_pass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">      </span><span class="c1"># or a number, the brightness ratio (default 1.7); false / absent = off (default)</span>
+</span></code></pre></div>
+<p>After the normal matching, the blobs that look shared are offered again together with the targets no point used, and
+the matcher runs once more on that small set. A blob looks shared when it is brighter than the ratio times the
+second-dimmest view of the same matched point (grey sums normalised by the camera's median blob). A new point needs
+at least 3 cameras, at least 2 of them on blobs nobody else used, and its shared views count little in the position.
+It costs about 10 % more matching time and changes nothing when no blob is shared (clean data).</p>
+<p>Measured with <code>two_phase</code> (benchmark, ratio 1.7; yield, long-track completeness, velocity error):</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>yield</th>
+<th>long tracks</th>
+<th>velocity error</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>real-like merge rate (m0.75)</td>
+<td>0.754 -&gt; 0.772</td>
+<td>0.623 -&gt; 0.658</td>
+<td>0.1046 -&gt; 0.1016</td>
+</tr>
+<tr>
+<td>default merge rate</td>
+<td>0.680 -&gt; 0.700</td>
+<td>0.503 -&gt; 0.526</td>
+<td>0.1825 -&gt; 0.1832</td>
+</tr>
+<tr>
+<td>4x density</td>
+<td>0.227 -&gt; 0.236</td>
+<td>0.182 -&gt; 0.189</td>
+<td>0.433 -&gt; 0.445</td>
+</tr>
+<tr>
+<td>no merged blobs</td>
+<td>no change</td>
+<td>no change</td>
+<td>no change</td>
+</tr>
+</tbody>
+</table>
+<p>The new points are noisier than ordinary ones (about 3 times the position error), so the gain is in yield and
+continuity; at 4x density it costs a little velocity error and a few more ghost points, so use it for sparse to
+moderate seeding. Combined with <code>holistic_rounds</code> it supplies most of what the births do, and the loop's position
+refinement then lowers the error further. Measurements: <code>docs/plans/2026-11-21-tracker-setup.md</code>, sections 14 and 15.</p>
+<h2 id="old-names-still-work-for-one-release">Old names still work (for one release)<a class="headerlink" href="#old-names-still-work-for-one-release" title="Permanent link">&para;</a></h2>
+<p>A saved YAML or script that uses an old name is translated by <code>tracking_setup.resolve_tracking_setup</code>, and the log
+says what it became. Old names will stop working after one release of warnings.</p>
+<table>
+<thead>
+<tr>
+<th>Old</th>
+<th>Now</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>priority_segment_3d</code>, <code>fast</code>, <code>fast_3d</code>, <code>cython_3d*</code>, <code>openptv_fast_3d</code></td>
+<td><code>fast_3d</code></td>
+</tr>
+<tr>
+<td><code>trackcorr</code> (any engine key absent or <code>epipolar</code>), <code>cython_epipolar*</code>, <code>openptv_epipolar</code></td>
+<td><code>trackcorr</code>, <strong>the legacy algorithm only</strong></td>
+</tr>
+<tr>
+<td><code>trackcorr</code> with <code>trackcorr_engine: 3d_hybrid</code> (the old default)</td>
+<td><code>fast_3d</code> with <code>epi_weight: 1</code>, direction both</td>
+</tr>
+<tr>
+<td><code>full_multipass</code>, <code>two_directional</code></td>
+<td><code>trackcorr</code>, direction both</td>
+</tr>
+<tr>
+<td><code>standard_forward</code></td>
+<td><code>trackcorr</code>, direction forward</td>
+</tr>
+<tr>
+<td><code>holistic</code></td>
+<td><code>two_phase</code>, <code>holistic_rounds: 2</code></td>
+</tr>
+<tr>
+<td><code>unified</code>, <code>4be</code>, <code>hybrid_deltat_3d</code>, <code>splitter_tracking</code></td>
+<td>retired; shown as the nearest kept tracker</td>
+</tr>
+<tr>
+<td><code>run_backward</code>, <code>backward</code>, <code>bidirectional</code>, <code>direction: forward_backward</code></td>
+<td><code>direction: forward \| both</code></td>
+</tr>
+<tr>
+<td>a plugin name of your own</td>
+<td>runs your plugin, unchanged</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What changed in behaviour.</strong> (1) The default is now <code>two_phase</code> with <code>direction: both</code>; before, a YAML without a
+choice ran the 3D-only tracker forward. (2) <code>trackcorr</code> now always means the legacy algorithm; before, it ran the
+faster 3D "hybrid" unless <code>trackcorr_engine: epipolar</code> was set. To keep the old default behaviour use <code>tracker:
+fast_3d</code> with <code>epi_weight: 1</code>. (3) New projects no longer get <code>preset: full_multipass</code> in the YAML.</p>
+<h2 id="upstream-credit-myptv-and-proptv">Upstream credit: MyPTV and proPTV<a class="headerlink" href="#upstream-credit-myptv-and-proptv" title="Permanent link">&para;</a></h2>
 <p>openptv2 borrows ideas from two outside projects — adapted concepts on
 openptv2's own data structures, not modified copies of their code. The full
 frameworks (triangulation pipelines, calibration, backtracking/repair,
@@ -2478,8 +3040,8 @@ directly if you need them. Both are permissively MIT-licensed.</p>
   Paper: Shnapp, R. (2022). <em>MyPTV: A Python Package for 3D Particle
   Tracking.</em> Journal of Open Source Software, 7(75), 4398.
   <a href="https://doi.org/10.21105/joss.04398">https://doi.org/10.21105/joss.04398</a> ·
-  What we adapted: kinematic prediction + assignment matching in 3D, the
-  coarse pass of <code>hybrid_deltat_3d</code>.</li>
+  What we adapted: kinematic prediction + assignment matching in 3D
+  (the retired <code>hybrid_deltat_3d</code>).</li>
 <li><strong>proPTV</strong> by Robin Barta and colleagues (DLR) — probabilistic PTV
   framework, Python.
   Repository: <a href="https://github.com/RobinBarta/proPTV">https://github.com/RobinBarta/proPTV</a> ·
@@ -2492,32 +3054,6 @@ directly if you need them. Both are permissively MIT-licensed.</p>
 </ul>
 <p>If you publish with these methods, please cite the original authors above
 in addition to openptv2.</p>
-<h2 id="which-trackers-to-use-2026-11-simplification">Which trackers to use (2026-11 simplification)<a class="headerlink" href="#which-trackers-to-use-2026-11-simplification" title="Permanent link">&para;</a></h2>
-<p>Three trackers are offered in the GUI and in <code>plugins.available_tracking</code>:</p>
-<table>
-<thead>
-<tr>
-<th>Tracker</th>
-<th>Use it for</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>priority_segment_3d</code> (default)</td>
-<td>fast 3D linking; existing runs</td>
-</tr>
-<tr>
-<td><code>trackcorr</code></td>
-<td>classic OpenPTV epipolar tracking (forward/backward/post-process are settings, not separate trackers)</td>
-</tr>
-<tr>
-<td><code>two_phase</code></td>
-<td>best linker on the truth benchmark; <code>track.holistic_rounds: 2</code> adds the merged-blob loop (<code>docs/holistic-tracking.md</code>)</td>
-</tr>
-</tbody>
-</table>
-<p><code>unified</code>, <code>4be</code>, <code>hybrid_deltat_3d</code>, <code>splitter_tracking</code> and <code>holistic</code> are retired from the pickers. Saved YAMLs
-that name them still run (with a log warning); <code>holistic</code> means <code>two_phase</code> with <code>holistic_rounds: 2</code>.</p>
 
 
 

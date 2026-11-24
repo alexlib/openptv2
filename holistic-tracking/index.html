@@ -23,7 +23,7 @@
     
     
       
-        <title>Holistic tracking (two_phase with holistic_rounds) - OpenPTV2 Documentation</title>
+        <title>Holistic tracking (the add-on: holistic_rounds with two_phase) - OpenPTV2 Documentation</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#holistic-tracking-two_phase-with-holistic_rounds" class="md-skip">
+        <a href="#holistic-tracking-the-add-on-holistic_rounds-with-two_phase" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Holistic tracking (two_phase with holistic_rounds)
+              Holistic tracking (the add-on: holistic_rounds with two_phase)
             
           </span>
         </div>
@@ -2277,7 +2277,8 @@
   
 
 
-<h1 id="holistic-tracking-two_phase-with-holistic_rounds">Holistic tracking (<code>two_phase</code> with <code>holistic_rounds</code>)<a class="headerlink" href="#holistic-tracking-two_phase-with-holistic_rounds" title="Permanent link">&para;</a></h1>
+<h1 id="holistic-tracking-the-add-on-holistic_rounds-with-two_phase">Holistic tracking (the add-on: <code>holistic_rounds</code> with <code>two_phase</code>)<a class="headerlink" href="#holistic-tracking-the-add-on-holistic_rounds-with-two_phase" title="Permanent link">&para;</a></h1>
+<p>Switch: <code>track.holistic_rounds: 2</code> (default 0 = off). See <a href="../trackers/">Particle trackers</a> for the whole setup.</p>
 <p>Detection, stereo matching and tracking normally run once each, in that order. The weak point is the <strong>merged blob</strong>:
 two or more particles in one detected blob. The matcher gives the blob to one point, so the kept particle gets a
 shifted centre, its partner is dropped, and the partner's light corrupts the kept particle's observation. On the
