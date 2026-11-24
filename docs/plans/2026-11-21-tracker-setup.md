@@ -616,3 +616,51 @@ the images and 50 times the time. **Recommendation: do not ship it, keep the cod
 render with an exact calibration (isolates the de-merge from the calibration floor), or a real run whose truth-free score
 (leave-one-camera-out) improves with it. The calibration floor is the next thing to look at: 0.12 to 0.34 px per camera is
 the same size as the whole error budget, and self-calibration on particle tracks (`scripts/selfcal_synthetic.py`) attacks it.
+
+## 20. Two corrections to section 19, and the `disco` sweep (2026-11-24)
+
+**The calibration-floor reading in section 19 is wrong.** `bench/limits/calib_floor.py` triangulates syn1's truth pixel
+positions (rendered with the perturbed calibration) with the processing calibration, perfect identities, and scores them with
+the benchmark evaluator:
+
+| input | velocity error (41) | acceleration error | 3D error (median) |
+|---|---|---|---|
+| truth pixels, exact | 0.0066 | 0.27 | 0.167 mm |
+| truth pixels + 0.05 px noise | 0.0207 | 1.34 | 0.167 mm |
+| control: truth 3D through the processing calibration | 0.0066 | 0.27 | 0.0001 mm |
+
+The calibration mismatch is real (0.167 mm of position offset: the floor seen in section 19) but a smooth offset cancels along a
+track: it costs 0.0066 of velocity error, not the 0.115 left after `shared_correction`. So the remaining error is elsewhere, and
+"perfect de-merging adds 3 %" still stands (the oracle of section 19 is unaffected) but its explanation does not.
+
+Where the error is (`bench/limits/error_sources.py`, tracked points against the truth triangulated with the processing
+calibration, so the offset is gone; 40 frames after `shared_correction`): median 0.027 mm, rms 0.068 mm, p90 0.105 mm.
+Points from 3 cameras (29 % of points) have median 0.054 mm and carry 53 % of the squared error; 4-camera points have median
+0.021 mm and carry 47 % (a heavy tail). A 3-camera point is a point that lost a view, most often to blob exclusivity in the
+matcher or to a missing detection. The stored blob ids hold one point per blob, so "touches a shared blob" cannot be read
+from the store without `extend_membership`; that split is not in this table.
+
+Not explained yet: why 0.115 of velocity error remains when single-blob centroids are accurate to 0.03 px (median) and exact
+pixels give 0.007. The candidates are the 3-camera points, the 3 % wrong links (raw link precision 0.969), and the 3 % ghost
+points. The next measurement is a velocity error split by those groups (which points enter the error), not another
+measurement-model change.
+
+**`targ_rec.disco`** (the discontinuity value; `bench/limits/disco_sweep.py`, syn1 frames 3 and 60, per true particle in a
+camera view, all values with the same other thresholds):
+
+| disco | blobs | own blob | merged | over-split | missed | fragments (blobs without a true particle) |
+|---|---|---|---|---|---|---|
+| 0 | 11,407 | 61.6 % | 26.1 % | 1.9 % | 10.9 % | 18.0 % |
+| 5 | 10,901 | 62.0 % | 26.3 % | 0.6 % | 11.2 % | 16.0 % |
+| 20 (syn1's value) | 10,598 | 61.4 % | 26.5 % | 0.4 % | 11.5 % | 14.4 % |
+| 50 | 9,988 | 59.6 % | 27.5 % | 0.2 % | 12.4 % | 11.5 % |
+| 100 | 9,333 | 56.6 % | 29.0 % | 0.1 % | 14.0 % | 9.0 % |
+| 255 | 8,566 | 50.3 % | 30.0 % | 0.0 % | 18.8 % | 9.1 % |
+
+`disco` is how far a pixel may rise above the pixel it grows from; small values stop at the valley between two peaks. The
+merged share barely moves (26 % to 30 %): merged particles of this size are closer than about 1.5 px and form one intensity
+peak, so there is no valley to cut. Values from 0 to 20 are equivalent (own blobs 61.4 to 62.1 %); only values above 50 hurt (own
+blobs fall to 50 %, particles missed rise to 19 %, because separate particles are grown into one blob and one of them is
+dropped). Advice: leave it at 5 to 20; it is not a lever for merges. A splitter at detection would need a model of the blob
+(this section 18's fit run on every blob with a second peak or an excess size), not a threshold; whether that pays is the same
+question as section 19 and the 3-camera error above.
