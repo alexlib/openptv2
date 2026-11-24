@@ -517,3 +517,54 @@ merges, fit one PSF per member seeded with the true position plus 0.28 px noise,
 `demerge_error.py`. Go when the median is at most 0.15 px and the share above 1 px at most 3 % (now 0.30 px and 12.5 %).
 Also on the rendered case: does a regression of the true separation on the stored extents beat the prediction alone
 (test of #2).
+
+## 18. Pixel-level de-merging: the go/no-go experiment (2026-11-24)
+
+Script: `bench/limits/pixel_demerge.py` (reads images only). Case: `Synthetic-CompleteTest/syn1`, rendered images with truth
+(1500 particles per frame, Gaussian PSF sigma 0.72 +- 0.15 px, 4 cameras). For each detected blob (the pipeline's own
+high-pass and `target_recognition`) that holds two or more true particles, one Gaussian per member is fitted to the pixels,
+seeded at truth + N(0, 0.28 px), which stands for the track's prediction (the real prediction error measured earlier).
+Truth is used for the association of members to blobs and for the error only. The fit knows no truth position and no
+amplitude. Members: 7,262 merged members in 4 frames (33 % of all blob members here, a denser case than the benchmark).
+
+Setup that was tuned on frame 3 and then **checked on frames 60, 120, 200 (5,498 merged members, never seen when tuning)**:
+raw image with a local plane as background, one common sigma per blob (free, 0.5 to 1.1), amplitudes free, a Gaussian prior
+on the positions at the seed (weight 15 to 20 relative to the pixel residuals).
+
+| held-out frames, merged members | median error | share > 1 px | share > 0.5 px |
+|---|---|---|---|
+| blob centre (a merged observation today) | 0.776 px | 42.7 % | 61 % |
+| seed alone (the prediction) | 0.327 | 0.2 % | 20 % |
+| brightness-weighted centre split (the `shared_correction` idea, with fitted amplitudes: generous) | 0.348 | 8.8 % | 33 % |
+| **pixel fit, prior weight 15** | **0.153** | **2.7 %** | 12 % |
+| **pixel fit, prior weight 20** | 0.159 | 1.6 % | 11 % |
+| pixel fit, prior weight 20, seed error 0.40 px instead of 0.28 | 0.176 | 4.7 % | 18 % |
+| single (unmerged) blobs, same fit | 0.05 | 0.8 % | 1.6 % |
+
+What drove the numbers (frame 3, merged members, median / share above 1 px):
+- fixed sigma per camera 0.188 / 6.6 %; **free common sigma** 0.156 / 4.5 %; raw image + plane instead of the high-passed
+  image: 0.145 / 4.0 % (the high-pass has negative lobes that a Gaussian cannot follow);
+- the prior weight trades the median against the tail: weight 3: 0.189 / 8.7 %; 15: 0.143 / 2.8 %; 30: 0.166 / 0.9 %;
+  100: 0.261 / 0.1 %. At very strong weights the fit just returns the seed (0.33).
+- by separation of the nearest co-member: below 0.75 px the fit is no better than the split (0.32 against 0.29: these two
+  particles are one blob); from 1.25 px the gain is 2x (0.16 against 0.31); above 2 px 4x (0.11 against 0.43).
+- 3 or more members: median 0.22 to 0.29, share above 1 px 2.5 to 4 %.
+
+**Verdict: go, with two cautions.** The criterion (median at most 0.15 px, share above 1 px at most 3 %) is met on the tail
+and is at the line on the median (0.153 to 0.159 on the held-out frames, 0.143 on the tuning frame). Against the centre
+split on the same blobs it halves the median and cuts the share above 1 px by 3 to 5 times. A rough translation to the
+velocity error, from the error budget of section 13 (ceiling 0.0436 with centres at 0.1 px, 0.060 at 0.3 px): a median of 0.15
+px with a 2 % tail should land between them, about 0.05 to 0.06 at m0.75, against 0.0876 now. That is an estimate, not a
+measurement.
+
+Cautions: (1) the render uses the same circular Gaussian that the fit assumes. A real PSF is not exactly that; the fit
+needs to be checked on a PSF it does not know (render with another PSF shape, or the real recordings, where the leave-one-
+camera-out miss is the truth-free score). (2) The cost: one least-squares per shared blob, about 2.5 s for the 5,300 blobs
+of a frame in this unoptimised script (about 1,800 merged members of which); at 15 % shared blobs in a real run this is
+tracker-scale cost, and it needs the images (or a stored patch per target), which `shared_correction` does not.
+
+Not done: the stored extents as a measurement (#2) were not tested; the free sigma already captures much of the shape.
+
+Next step if continued: put the fit inside `refine_merged` as the measurement for shared views (seed from the track, return
+a position and a variance per view, fall back to the centre split where images are unavailable), run it on syn1 through the
+tracker, and compare the velocity error to truth against `shared_correction`.
