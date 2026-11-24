@@ -664,3 +664,27 @@ blobs fall to 50 %, particles missed rise to 19 %, because separate particles ar
 dropped). Advice: leave it at 5 to 20; it is not a lever for merges. A splitter at detection would need a model of the blob
 (this section 18's fit run on every blob with a second peak or an excess size), not a threshold; whether that pays is the same
 question as section 19 and the 3-camera error above.
+
+## 21. Streaks: blobs followed in one camera through time (2026-11-24)
+
+Question (user): merges are episodes (approach, merge, separate) and occlusion along the viewing axis is the same thing; follow the blob in 2D over time and use its brightness. Is brightness helpful, and do streaks help? Scripts: `bench/limits/streaks_syn1.py` (mass additivity, truth), `streak_lib.py` (truth-free streaks), `streaks_ablation.py` (ablation on syn1 and real wp2, frames 100-140).
+
+A streak is a chain of 1-1 links between consecutive frames in one camera (Hungarian, gate 2 px; particles move 0.45 px per frame, blobs are 4.7 px apart, so linking is nearly unambiguous). Cues per blob: mass ratio to the streak's own unit mass (15th percentile of its mass within +-30 frames, no identities), and topology (another chain ended or started within 3 px in the 6 frames before or after).
+
+**Brightness is additive (syn1, truth identities).** Two parents merging into one child: log(child / sum of parents) median -0.009. A single blob from one frame to the next: robust sd 0.033, 5-95 % within +-0.10. A second particle joining: median +0.40 (x1.5), tail to +2.2, because overlap is gradual. AUC of the one-frame jump for "a second particle joined": 0.888, without identities.
+
+**Does the streak help, merged blobs found at 5 % false alarms:**
+
+| Cues | syn1, truth: merged | syn1: geo label | real wp2: geo label |
+|---|---|---|---|
+| blob alone (n, grey sum) | AUC 0.763, recall 29 % | 0.784, 24 % | 0.693, 23 % |
+| + streak mass ratio | 0.844, 56 % | 0.872, 52 % | 0.713, 34 % |
+| + streak topology | 0.810, 42 % | 0.836, 42 % | 0.723, 32 % |
+| + both | 0.851, 56 % | 0.874, 53 % | 0.725, 37 % |
+
+- Geo label = a 3D point seen by three cameras projects within 1.5 px onto this blob in the fourth. Truth-free. On syn1 it is right 96 % of the time but finds only 18 % of the truly merged blobs (partner must be a clean 3-camera point).
+- Real mass is noisier: robust sd of the per-frame change 0.090 against 0.032; 4.5 % of links jump above x1.3 against 1.4 %. The real lift is about a third of the synthetic one (AUC +0.03 against +0.09), and topology carries more of it than mass.
+- The leave-one-camera-out label is a poor merge label (on syn1 AUC 0.68 against the truth shift; on real it also holds calibration and optics error: 26 % above 0.5 px against 12 %). It shows no lift on real (0.569 to 0.574) and should not be used for this question.
+- Reference age (syn1, truth-clean frames): 36 % of merged blobs have one within +-3 frames, 82 % anywhere on their streak; 18-21 % are on streaks with no clean frame. Truth-free unit mass: AUC 0.64 (+-3 frames) rising to 0.78 (whole streak).
+
+**Reading.** Brightness helps, strongly on rendered images and about a third as much on real data. Streaks add a clear gain over the single blob. What this measures is finding merged blobs, not resolving them; the earlier oracle (perfect observation after the correction) bought only 3 % of velocity error. The value of streaks, if any, is in yield and track continuity, which is the unmeasured part: what share of breaks and missing views lies inside an episode with clean frames on both sides.
