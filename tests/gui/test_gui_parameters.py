@@ -303,3 +303,53 @@ def test_calib_params_accepts_float_int_values(temp_experiment):
     assert cp.grey_value_treshold_1 == 100
     assert cp.dumbbell_step == 10
     assert cp.dumbbell_niter == 100
+
+
+def _yaml_of(exp):
+    import yaml
+
+    return yaml.safe_load(Path(exp.active_params.yaml_path).read_text())
+
+
+def test_calib_params_sortgrid_radius_defaults_to_five_when_missing_or_zero(temp_experiment):
+    """No ``sortgrid`` section, or radius 0: the dialog shows 5, the fallback of the Sortgrid button."""
+    exp = temp_experiment
+    assert "sortgrid" not in exp.pm.parameters
+    assert Calib_Params(exp).sortgrid_radius == 5
+    exp.pm.parameters["sortgrid"] = {"radius": 0}
+    assert Calib_Params(exp).sortgrid_radius == 5
+    exp.pm.parameters["sortgrid"] = {}
+    assert Calib_Params(exp).sortgrid_radius == 5
+
+
+def test_calib_params_sortgrid_radius_is_read_from_the_parameters(temp_experiment):
+    exp = temp_experiment
+    exp.pm.parameters["sortgrid"] = {"radius": 8}
+    assert Calib_Params(exp).sortgrid_radius == 8
+    exp.pm.parameters["sortgrid"] = {"radius": 8.0}          # a float-valued YAML int
+    assert Calib_Params(exp).sortgrid_radius == 8
+
+
+def test_calib_params_sortgrid_radius_is_saved_and_reaches_the_sortgrid_button(temp_experiment):
+    """OK in the dialog writes sortgrid.radius to the parameters AND the YAML, and the value the Sortgrid button
+    reads (``experiment.get_parameter("sortgrid")``) is the new one at once; a reload shows it again."""
+    exp = temp_experiment
+    cp = Calib_Params(exp)
+    cp.sortgrid_radius = 3
+    CalHandler().closed(DummyInfo(cp), is_ok=True)
+
+    assert exp.pm.parameters["sortgrid"]["radius"] == 3
+    assert int(exp.get_parameter("sortgrid").get("radius", 0)) == 3      # what calibration_gui reads per click
+    assert _yaml_of(exp)["sortgrid"]["radius"] == 3                    # survives the YAML round trip
+    assert Calib_Params(exp).sortgrid_radius == 3
+
+
+def test_calib_params_sortgrid_radius_keeps_other_sortgrid_keys_and_ignores_cancel(temp_experiment):
+    exp = temp_experiment
+    exp.pm.parameters["sortgrid"] = {"radius": 8, "note": "keep me"}
+    cp = Calib_Params(exp)
+    cp.sortgrid_radius = 4
+    CalHandler().closed(DummyInfo(cp), is_ok=False)                      # Cancel: nothing written
+    assert exp.pm.parameters["sortgrid"] == {"radius": 8, "note": "keep me"}
+    CalHandler().closed(DummyInfo(cp), is_ok=True)
+    assert exp.pm.parameters["sortgrid"] == {"radius": 4, "note": "keep me"}
