@@ -80,13 +80,78 @@ After self-calibration the report reads `consistent` on all three (0.02-0.03 px)
 already small on wp1 (2-4 um), alignment removes it where it exists (wp2: 10-18 -> 2-5 um), and self-calibration leaves 1-10 um;
 the gain in long tracks does not come from that jump alone.
 
+### Full length (wp2, all 1072 frames, two_phase)
+
+Same behaviour as the 300-frame ranges: report `marginal` (0.13 px), self-calibration accepted (held-out jump 23.5 -> 1.3 µm,
+`consistent` afterwards), tracks of 50 frames or longer 5723 -> 5884 with align (+2.8 %) and **6283 with selfcal (+9.8 %)**, points in
+tracks of 20 frames or longer +2.2 % / **+8.7 %**. The volume change did not shrink with more data: stretches 0.9958, 1.0042,
+1.0110 (mean +0.37 %), shift 2.5 mm.
+
+### Cavity geometry (`test_data/test_cavity`, cameras on opposite sides, real images, 5 frames, ~430 quads per frame)
+
+Run with `bench/calibration_lab/cavity_selfcal.py` (detect and match all five frames with the production loop in a scratch copy).
+Result: **self-calibration is possible but gives nothing measurable here**, and testing it exposed three defects, now fixed:
+
+* The first run said INCONSISTENT with 198 µm jumps and the fit made things worse. The stored quads contain many wrong matches
+  (reprojection residual median 0.78 px, 99th percentile 17 px, maximum 43 px). Wrong matches now are excluded from every number
+  (`inlier_mask`: rms residual above max(1.5 px, 3 x median)); 12 % of the points were left out, the real systematic jump is about
+  30 µm, and wp1 / wp2 / syn1 reports are unchanged (0 % left out). Test: `test_wrong_matches_do_not_spoil_the_report`.
+* A verdict from one frame and 434 points was printed with confidence. The report now has an `inconclusive` verdict when the
+  offsets are within 3 standard errors of the sample noise, shows the standard error, and prints "n/a" instead of "0 %" for the
+  reproducibility when there is no held-out half.
+* On the perfect syn1 control the self-calibration was ACCEPTED although the cameras were already consistent. It now declines
+  (test `test_self_calibration_declines_when_there_is_nothing_to_gain`).
+
+With those fixed: report `marginal` (0.28 px, jumps 1-27 µm, smooth field **not reproducible**, 0-4 %: there is no consistent camera
+error to fit); self-calibration accepted (held-out jump 30 -> 12 µm) with stretches 0.9952 / 0.9989 / 0.9999 (-0.20 % mean, 0.26 mm
+shift); free focal length, glass thickness, fluid index and glass distance change nothing (fitted d 5.98 mm for 6.0, n3 1.335 for 1.33;
+looser priors: scale -0.5 %). Tracking over the five frames, good trajectories (>= 4 frames, quadratic-fit rms < 0.2 mm):
+
+| tracker | shipped cameras | self-calibrated | |
+|---|---|---|---|
+| two_phase | 189 | 191 | +1 % |
+| trackcorr | 408 | 416 | +2 % |
+| fast_3d | 576 | 545 | -5 % |
+
+That is noise. What limits `test_cavity` is the per-blob noise (residuals 0.6-0.75 px against 0.2 px on wp1 / wp2) and the ghosts in
+the matches, not camera consistency; its calibration was already refined once by the particle bundle adjustment
+(`scripts/particle_bundle_adjust.py`). Recommendation: do not self-calibrate `test_cavity`; more frames would let the report separate
+noise from structure (it needs a held-out half of frames to judge a field).
+
+### lv_multi (real, one side, 20 frames each): self-calibration made tracking worse
+
+Run with `bench/calibration_lab/redetect_selfcal.py` (the stores hold only trajectories, so all 20 frames are detected from the
+multiplexed images and matched with the production loop). Both sub-runs: report `marginal` (0.14 / 0.12 px; jumps 3-25 µm), the
+fit is accepted by the jump criterion (held-out 24.2 -> 0.5 µm and 18.8 -> 1.8 µm) and the volume changes by -0.94 % / -1.09 %
+(stretches down to 0.984 / 0.982) with 4.8 / 6.2 mm shift. Good trajectories (>= 4 frames, quadratic-fit rms < 0.2 mm) before ->
+after:
+
+| run | two_phase | trackcorr | fast_3d | 4-camera matches per frame |
+|---|---|---|---|---|
+| wp5 | 1430 -> 1292 (**-9.7 %**) | 2033 -> 2001 (-1.5 %) | 1495 -> 1471 (-1.6 %) | 642 -> 576 (**-10 %**) |
+| wp4 | 1096 -> 1015 (**-7.4 %**) | 1646 -> 1621 (-1.5 %) | 1250 -> 1210 (-3.2 %) | 515 -> 516 |
+
+Anchoring with the 95 calibration-target points (`known_body_from_calibration`) fixes the gauge (wp5: scale -0.14 %, shift 0.04 mm;
+wp4 similar) and the same jump removal, **and the same tracking loss** (two_phase -8.7 % / -7.8 %, wp5 matches -8 %). The cause is
+not known. What we learned: the jump criterion alone accepted cameras that were worse for tracking, because both the fit and the
+check use points the old cameras matched. A second criterion, the yield of matching again with the new cameras on held-out frames,
+now guards the acceptance (`min_yield`, default 1.0): it declines wp5 (ratio 0.913), accepts wp1 / wp2 (1.055-1.074, where tracking
+gained 9-14 % long tracks), but misses wp4 (0.997) and declines rendered syn1 (0.965) although its accuracy against truth improved
+(a yield-for-accuracy trade; lower `min_yield` to accept it). The report remains necessary, not sufficient: compare your own tracking.
+
+### Full length (wp1, all 1072 frames, two_phase)
+
+Report marginal (0.11 px), selfcal held-out jump 19.4 -> 1.1 µm, stretches 0.9950 / 1.0036 / 1.0101 (+0.29 %, 2.1 mm). Tracks of 50 frames
+or longer 5961 -> 6138 with align (+3.0 %) and 6513 with selfcal (+9.3 %); points in tracks of 20 frames or longer +2.1 % / +8.2 %.
+
 ### Limitation: the gauge
-Tracers define consistency, not scale or frame. On all three recordings the fit moves the volume by +0.25...+0.32 % in scale and
-about 2.2 mm in position, and tighter priors on the camera positions (sigma 0.3, 1.0, 3.0 times the default) leave it at
+Tracers define consistency, not scale, shape or frame. On every real recording the fit moves the volume by +0.25...+0.37 % in
+mean scale (principal stretches up to 0.995 / 1.011: not uniform) and about 2.2 mm in position (cavity: -0.20 %, 0.26 mm), and tighter priors on the camera positions (sigma 0.3, 1.0, 3.0 times the default) leave it at
 +0.27...+0.31 %: it is driven by the data, either a real scale error of the old calibration or the scale degeneracy of tracers
 (the glass and fluid index couple to it). Velocity is shift-invariant but a 0.3 % scale change is a 0.3 % velocity bias. The
 result prints the scale and warns; check it against a known length (dumbbell, plate) or pass an anchor
-(`KnownBody` / `Dumbbell` in `openptv2.selfcal`) before using absolute velocities from new cameras. Soft gauge rows over all
+(`KnownBody` / `Dumbbell` in `openptv2.selfcal`) before using absolute velocities from new cameras. Written up in
+`docs/self-calibration-scale-bias.md`; from a perfect start on rendered syn1 the fit introduced +0.04...0.10 %. Soft gauge rows over all
 points were tried and dropped (they make the sparse Jacobian dense, a 10x slowdown).
 
 ## A bug found on the way: re-matching left stale target pointers
@@ -100,14 +165,16 @@ also explains the unexplained `trackcorr` yield of 0.0001 in the earlier #51 con
 ## Decisions this supports
 
 1. Layer 1 is cheap and informative everywhere: ship it, run it in `self_check` / GUI later.
-2. Layer 2 is the fix when the report says `marginal` or `inconsistent`; it is validated on held-out frames and declines when it
-   does not help.
+2. Layer 2 can help (+9-14 % long tracks on wp1 / wp2) but is **not** a universal fix (lv_multi: -7 to -10 %). The report says
+   whether there is a camera inconsistency, not whether removing it improves tracking: match again and compare your own tracking.
+   The acceptance requires a held-out jump reduction and no loss of matching yield.
 3. Layer 3 only as an explicit stopgap. `align_4cam` as a silent default in the loader is not needed.
 4. The multimedia parameters are not where quality is lost for this rig class; revisit only with a rig whose plate does not
    cover the volume or whose fluid index is uncertain by more than 0.04.
 
 ## Open
 
-* lv_multi; a dumbbell or plate anchor for the scale; a longer wp1/wp2 range (all 1072 frames).
-* Rigs with cameras on opposite sides (cavity): the ladder was run on the same-side syn1 geometry only.
+* A dumbbell or plate anchor measured on a real recording (does it remove the deformation?); the full wp1 length.
+* Rigs with cameras on opposite sides: tested on `test_cavity` (5 frames, above) but not with a truth-known rig; the ladder is same-side only.
+* The cause of the lv_multi tracking loss; whether a better acceptance test (a short tracking run on held-out frames) than the matching yield exists.
 * A GUI button for the check and for `selfcal`.

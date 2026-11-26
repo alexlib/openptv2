@@ -89,7 +89,7 @@ def test_a_drifted_calibration_is_reported_and_self_calibration_repairs_it(rig, 
     st = _store(tmp_path / "b.zarr", drifted, cals, cpar, vpar)
     rep = consistency_report(st, FRAMES, cals, cpar, vpar, min_points=300)
     assert rep.verdict != "consistent", rep.text()
-    res = self_calibrate_from_store(st, FRAMES, cals, cpar, vpar, max_nfev=120)
+    res = self_calibrate_from_store(st, FRAMES, cals, cpar, vpar, max_nfev=120, min_yield=0)
     assert res.accepted, res.text()
     assert max(res.after.jump_um) < 0.5 * max(res.before.jump_um)
     # inputs untouched
@@ -99,8 +99,9 @@ def test_a_drifted_calibration_is_reported_and_self_calibration_repairs_it(rig, 
 def test_self_calibration_declines_when_there_is_nothing_to_gain(rig, tmp_path):
     cpar, vpar, cals = rig
     st = _store(tmp_path / "c.zarr", cals, cals, cpar, vpar)
-    res = self_calibrate_from_store(st, FRAMES, cals, cpar, vpar, max_nfev=30)
-    assert not res.accepted and "already consistent" in res.message
+    res = self_calibrate_from_store(st, FRAMES, cals, cpar, vpar, max_nfev=120)
+    # even if the fit shrinks the (already tiny) jump further it must not be accepted: it would only move the scale
+    assert not res.accepted and "already consistent" in res.message, res.text()
 
 
 def test_fewer_than_four_cameras_is_not_applicable(rig, tmp_path):
@@ -160,3 +161,72 @@ def test_alignment_leaves_consistent_cameras_alone(rig, tmp_path):
     st = _store(tmp_path / "h.zarr", cals, cals, cpar, vpar)
     res = align_partial_points(st, FRAMES, cals, cpar, vpar)
     assert not res.applied and "nothing to correct" in res.message
+
+
+def test_a_small_sample_is_inconclusive_not_a_confident_verdict(rig, tmp_path):
+    """Few points of a noisy sample cannot separate a systematic jump from noise: say so instead of guessing."""
+    cpar, vpar, cals = rig
+    drifted = _drifted(cals, 1.0)
+    st = _store(tmp_path / "i.zarr", drifted, cals, cpar, vpar, drop=0.0, n=320)
+    rep = consistency_report(st, FRAMES[:1], cals, cpar, vpar, min_points=300)
+    assert rep.applicable
+    assert rep.verdict in ("inconclusive", "consistent") or max(rep.jump_um) > 3 * max(rep.se_um), rep.text()
+    assert all(np.isnan(c["field_explained"]) for c in rep.cameras)       # one frame: no held-out half
+
+
+def test_wrong_matches_do_not_spoil_the_report(rig, tmp_path):
+    """Matched quadruplets contain ghosts; their huge residuals must not turn a consistent calibration into a bad verdict."""
+    cpar, vpar, cals = rig
+    st = _store(tmp_path / "j.zarr", cals, cals, cpar, vpar, drop=0.0, n=600)
+    clean = consistency_report(st, FRAMES, cals, cpar, vpar, min_points=300)
+    rng = np.random.default_rng(5)
+    for f in FRAMES:                                     # 15 % of the points get one camera's blob 20 px away: a wrong match
+        for c in range(4):
+            key = f"targets/cam_{c}/frame_{f:06d}"
+            t = np.array(st.root[key])
+            bad = rng.random(len(t)) < 0.04
+            t[bad, 1:3] += rng.choice([-20.0, 20.0], (int(bad.sum()), 2))
+            st.write_targets(c, f, t)
+    dirty = consistency_report(st, FRAMES, cals, cpar, vpar, min_points=300)
+    assert dirty.outlier_fraction > 0.08
+    assert dirty.verdict == clean.verdict == "consistent", dirty.text()
+    assert max(dirty.jump_um) < 3 * max(max(clean.jump_um), 5.0)
+
+
+def test_an_anchor_is_reported_and_the_unanchored_warning_names_the_stretches(rig, tmp_path):
+    """Without an anchor the result says the scale is not fixed (and gives the three stretches); with a known body it does not."""
+    from openptv2.selfcal import KnownBody
+
+    cpar, vpar, cals = rig
+    drifted = _drifted(cals)
+    st = _store(tmp_path / "k.zarr", drifted, cals, cpar, vpar)
+    free = self_calibrate_from_store(st, FRAMES, cals, cpar, vpar, max_nfev=80, min_yield=0)
+    assert not free.anchored and "SCALE NOT ANCHORED" in free.text()
+    assert len(free.scale_axes) == 3 and free.stretch_dirs.shape == (3, 3)
+    rng = np.random.default_rng(9)
+    xyz = rng.uniform(-3.0, 3.0, (60, 3))
+    obs = TruthRig.from_cals(drifted, cpar).project(xyz)
+    ok = np.isfinite(obs).all(axis=(1, 2))
+    anchored = self_calibrate_from_store(st, FRAMES, cals, cpar, vpar, max_nfev=80, min_yield=0, body=KnownBody(xyz[ok], obs[ok]))
+    assert anchored.anchored and "SCALE NOT ANCHORED" not in anchored.text()
+
+
+def test_a_calibration_that_matches_worse_is_refused_even_if_the_jump_fell(rig, tmp_path, monkeypatch):
+    """The held-out jump is measured on points the old cameras matched; matching again with the new cameras must not lose points."""
+    import openptv2.calibration_consistency as cc
+
+    cpar, vpar, cals = rig
+    st = _store(tmp_path / "m.zarr", _drifted(cals), cals, cpar, vpar)
+    seen = []
+
+    def fake_yield(store, frames, cs, cp, vp):
+        seen.append(cs)
+        return (1000, 2000) if len(seen) == 1 else (850, 2000)        # old cameras first, the new ones lose 15 %
+
+    monkeypatch.setattr(cc, "matching_yield", fake_yield)
+    res = cc.self_calibrate_from_store(st, FRAMES, cals, cpar, vpar, max_nfev=120)
+    assert not res.accepted and abs(res.yield_ratio - 0.85) < 1e-9 and "fewer 4-camera matches" in res.message, res.text()
+    monkeypatch.setattr(cc, "matching_yield", lambda *a: (1000, 2000))
+    seen.clear()
+    ok = cc.self_calibrate_from_store(st, FRAMES, cals, cpar, vpar, max_nfev=120)
+    assert ok.accepted and ok.yield_ratio == 1.0
