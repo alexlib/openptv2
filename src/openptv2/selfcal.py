@@ -185,6 +185,8 @@ class SelfCalResult:
     length_rms_mm_before: float | None = None      # dumbbell length error, if a Dumbbell was given
     length_rms_mm_after: float | None = None
     body_rms_mm_after: float | None = None         # known-body 3D misfit (triangulated vs known), if a KnownBody was given
+    multimedia: dict | None = None                 # fitted glass thickness / indices when ``free_multimedia`` was used
+    cpar: Any = None                               # ``cpar`` with the fitted multimedia (the input one when none was free)
 
 
 def joint_self_calibrate(
@@ -199,12 +201,17 @@ def joint_self_calibrate(
     free_cc: bool = False,
     free_radial: tuple = ("k1", "k2"),
     free_decentering: bool = True,
+    free_multimedia: tuple = (),
+    free_glass: bool = False,
+    mm_sigma: dict | None = None,
+    glass_sigma_mm: float = 0.5,
     pp_sigma_mm: float = 0.05,
     ext_sigma_scale: float = 1.0,
     cc_sigma_mm: float = 0.1,
     k_sigma: float = 0.02,
     p_sigma: float = 0.002,
     huber_px: float = 0.7,
+    anneal: tuple = (8.0, 3.0, 1.0),
     max_nfev: int = 25,
     verbose: int = 0,
     body: KnownBody | None = None,
@@ -247,6 +254,40 @@ def joint_self_calibrate(
     cur = [copy.deepcopy(c) for c in cals]
     valid = np.isfinite(obs_px[:, :, 0])
 
+    # multimedia parameters shared by all cameras (glass thickness, indices): a private copy of cpar carries them
+    import copy as _copy
+
+    from openptv2.algorithms.parameters import MmNp
+
+    cpar = _copy.copy(cpar)
+    mm0 = cpar.mm
+    cpar.mm = MmNp(int(mm0.nlay), float(mm0.n1), np.array(mm0.n2, float), np.array(mm0.d, float), float(mm0.n3))
+    mm_names = tuple(free_multimedia)
+    bad = [m for m in mm_names if m not in ("d", "n2", "n3")]
+    if bad:
+        raise ValueError(f"free_multimedia takes 'd', 'n2', 'n3'; got {bad}")
+    mm_sig = {"d": 0.5, "n2": 0.02, "n3": 0.02, **(mm_sigma or {})}
+
+    def _mm_get():
+        return np.array([float(np.atleast_1d(cpar.mm.d)[0]) if m == "d" else float(np.atleast_1d(cpar.mm.n2)[0]) if m == "n2"
+                         else float(cpar.mm.n3) for m in mm_names])
+
+    def _mm_set(v):
+        for m, x in zip(mm_names, v):
+            if m == "d":
+                cpar.mm.d[0] = float(x)
+            elif m == "n2":
+                cpar.mm.n2[0] = float(x)
+            else:
+                cpar.mm.n3 = float(x)
+
+    def _glass_get(cc):
+        return np.array([float(np.linalg.norm(cc.get_glass_vec()))])
+
+    def _glass_set(cc, v):
+        g = np.asarray(cc.get_glass_vec(), float)
+        cc.set_glass_vec(g * float(v[0]) / np.linalg.norm(g))
+
     # parameter layout: per camera a list of (slice, getter, setter, sigma)
     layout = []
     x_init = []
@@ -268,6 +309,8 @@ def joint_self_calibrate(
         if free_decentering:
             groups.append((lambda cc: _add_get(cc, ("p1", "p2")), lambda cc, v: _add_set(cc, v, ("p1", "p2")),
                            np.full(2, p_sigma)))
+        if free_glass:
+            groups.append((_glass_get, _glass_set, np.full(1, glass_sigma_mm)))
         cam_groups = []
         for get, setf, sig in groups:
             v = get(cur[c])
@@ -275,9 +318,13 @@ def joint_self_calibrate(
             x_init.append(v)
             off += len(v)
         layout.append(cam_groups)
+    mm_cols = np.arange(off, off + len(mm_names))
+    if mm_names:
+        x_init.append(_mm_get())
+        off += len(mm_names)
     n_par = off
     x_cam0 = np.concatenate(x_init)
-    sig_all = np.concatenate([g[3] for cg in layout for g in cg])
+    sig_all = np.concatenate([g[3] for cg in layout for g in cg] + ([np.array([mm_sig[m] for m in mm_names])] if mm_names else []))
     x_start = np.concatenate([x_cam0, np.asarray(x0, float).ravel()])
 
     rows_of = [np.flatnonzero(valid[:, c]) for c in range(n_cams)]
@@ -287,6 +334,8 @@ def joint_self_calibrate(
         for c in range(n_cams):
             for sl, _g, setf, _s in layout[c]:
                 setf(cur[c], x[sl])
+        if mm_names:
+            _mm_set(x[mm_cols])
 
     def resid(x):
         apply(x)
@@ -309,6 +358,7 @@ def joint_self_calibrate(
     for c in range(n_cams):
         r = rows_of[c]
         cols_cam = np.concatenate([np.arange(g[0].start, g[0].stop) for g in layout[c]]) if layout[c] else np.zeros(0, int)
+        cols_cam = np.concatenate([cols_cam, mm_cols])
         for k, pt in enumerate(r):
             rr = base + 2 * k
             for dr in (0, 1):
@@ -338,8 +388,13 @@ def joint_self_calibrate(
 
     len0 = length_rms(x_start) if db_a is not None else None
     r0 = resid(x_start)[:n_res_obs]
-    sol = least_squares(resid, x_start, jac_sparsity=sp, method="trf", x_scale="jac", loss="huber", f_scale=huber_px,
-                        max_nfev=max_nfev, tr_solver="lsmr", verbose=verbose)
+    # coarse to fine: with a large starting error every residual looks like an outlier to a tight Huber loss and the fit
+    # stalls; start with a wide one (``anneal`` = multiples of ``huber_px``, the last is the final loss) and narrow it.
+    x_cur, nfev_total = x_start, 0
+    for k, mult in enumerate(anneal or (1.0,)):
+        sol = least_squares(resid, x_cur, jac_sparsity=sp, method="trf", x_scale="jac", loss="huber", f_scale=huber_px * mult,
+                            max_nfev=max_nfev, tr_solver="lsmr", verbose=verbose)
+        x_cur, nfev_total = sol.x, nfev_total + int(sol.nfev)
     r1 = resid(sol.x)[:n_res_obs]
     apply(sol.x)
     names = ("ext", "pp", "radial", "decentering")
@@ -354,4 +409,5 @@ def joint_self_calibrate(
         pts_ = sol.x[n_par:].reshape(n, 3)
         body_rms = float(np.sqrt(np.mean(np.sum((pts_[body_idx] - body.xyz) ** 2, axis=1))))
     return SelfCalResult(cur, float(np.sqrt(np.mean(r0**2))), float(np.sqrt(np.mean(r1**2))), n_tr, int(valid.sum()),
-                         n_par, change, bool(sol.success), int(sol.nfev), len0, len1, body_rms)
+                         n_par, change, bool(sol.success), nfev_total, len0, len1, body_rms,
+                         dict(zip(mm_names, [float(v) for v in _mm_get()])) if mm_names else None, cpar)
