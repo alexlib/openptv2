@@ -12,7 +12,6 @@ from openptv2.calibration_consistency import (
     align_partial_points,
     consistency_report,
     self_calibrate_from_store,
-    stored_partial_jump_um,
 )
 from openptv2.recorrespond import load_parameters
 from openptv2.storage import RunStore
@@ -45,6 +44,7 @@ def _store(path, truth_cals, model_cals, cpar, vpar, drop=0.3, n=500, seed=0):
     rng = np.random.default_rng(seed)
     rig = TruthRig.from_cals(truth_cals, cpar)
     st = RunStore(str(path), mode="a")
+    truth = {}
     for f in FRAMES:
         pts = rng.uniform(-3.5, 3.5, (n * 3, 3))
         px = rig.observe(pts, 0.05, rng)
@@ -63,6 +63,8 @@ def _store(path, truth_cals, model_cals, cpar, vpar, drop=0.3, n=500, seed=0):
         flat[ids < 0] = -1e10
         pos = np.asarray(point_positions(flat, cpar, model_cals, vpar, method="lsq")[0], float)
         st.write_correspondences(f, pos, ids)
+        truth[f] = pts
+    st.truth = truth
     return st
 
 
@@ -120,11 +122,24 @@ def test_alignment_is_explicit_marked_guarded_and_repeatable_only_by_force(rig, 
     drifted = _drifted(cals, 2.0)
     # processed with the same cameras the points were triangulated with, but the real cameras differ: partial points jump
     st = _store(tmp_path / "f.zarr", drifted, cals, cpar, vpar, drop=0.5, n=700)
-    before = stored_partial_jump_um(st, FRAMES, 4)
+    def partial_error():
+        err = []
+        for f in FRAMES:
+            pos, ids = st.read_correspondences(f)
+            seen = (np.asarray(ids)[:, :4] >= 0).sum(1)
+            m = seen == 3
+            err.append(np.linalg.norm(np.asarray(pos)[m] - st.truth[f][m], axis=1))
+        return float(np.median(np.concatenate(err)))
+
+    four_before = {f: np.asarray(st.read_correspondences(f)[0])[(np.asarray(st.read_correspondences(f)[1])[:, :4] >= 0).all(1)] for f in FRAMES}
+    e0 = partial_error()
     res = align_partial_points(st, FRAMES, cals, cpar, vpar)
     assert res.applied and res.n_updated > 0, res.text()
-    after = stored_partial_jump_um(st, FRAMES, 4)
-    assert np.nanmax(after) < 0.6 * np.nanmax(before), (before, after)
+    assert res.four_cam_changed == 0 and res.shift_median_um > 0
+    for f in FRAMES:
+        now = np.asarray(st.read_correspondences(f)[0])[(np.asarray(st.read_correspondences(f)[1])[:, :4] >= 0).all(1)]
+        assert np.array_equal(now, four_before[f])
+    assert partial_error() < e0
     assert "align_partial_points" in dict(st.root.attrs)
     again = align_partial_points(st, FRAMES, cals, cpar, vpar)
     assert not again.applied and "already applied" in again.message

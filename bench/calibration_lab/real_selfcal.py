@@ -23,7 +23,7 @@ import syn1_pixel_fit as sp
 sb = sp.sb
 oc = importlib.import_module("openptv2.correspondences")
 from openptv2.calibration_consistency import (
-    align_partial_points, consistency_report, self_calibrate_from_store, stored_partial_jump_um, write_calibration)
+    align_partial_points, consistency_report, self_calibrate_from_store, write_calibration)
 from openptv2.merge_post import arrays_from_store
 from openptv2.plugins import run_tracking_plugin
 from openptv2.recorrespond import load_parameters
@@ -58,8 +58,6 @@ print(f"[{label}] frames {F0}-{F1}, tracker {tracker}")
 st_off = RunStore(str(dirs["off"] / "res" / "run.zarr"), mode="r")
 rep0 = consistency_report(st_off, frames, cals, cpar, vpar)
 print("\noriginal cameras\n" + rep0.text())
-jb = stored_partial_jump_um(st_off, frames, len(cals))
-print("  stored 3-camera points vs 4-camera neighbours (um) per missing camera: " + " ".join(f"{x:5.1f}" for x in jb))
 
 if "align" in variants:
     r = align_partial_points(RunStore(str(dirs["align"] / "res" / "run.zarr"), mode="a"), frames, cals, cpar, vpar, min_verdict="consistent")

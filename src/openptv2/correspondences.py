@@ -488,6 +488,31 @@ def _correspondence_worker_chunk(
     return results
 
 
+def sync_target_tnr(store: Any, frame: int, cam_target_ids: Any, n_cams: int) -> None:
+    """Point every stored target of ``frame`` at the 3D point it belongs to (its ``tnr``), -1 when it belongs to none.
+
+    The legacy tracker follows these pointers from a particle to its blob in each image. The sequence loop writes them
+    together with the correspondences; a re-matching that writes only the correspondences (new calibration, new settings)
+    would leave the pointers of the previous matching in place and the legacy tracker would find no links at all."""
+    ids = np.asarray(cam_target_ids)
+    if ids.ndim != 2:
+        return
+    for cam in range(n_cams):
+        key = f"targets/cam_{cam}/frame_{int(frame):06d}"
+        if key not in store.root:
+            continue
+        arr = np.array(store.root[key], dtype=np.float64)
+        if arr.ndim != 2 or arr.shape[1] < 8:
+            continue
+        tnr = np.full(len(arr), -1.0)
+        if ids.shape[1] > cam:
+            rows = np.flatnonzero((ids[:, cam] >= 0) & (ids[:, cam] < len(arr)))
+            tnr[ids[rows, cam].astype(np.int64)] = rows
+        if not np.array_equal(arr[:, 7], tnr):
+            arr[:, 7] = tnr
+            store.write_targets(cam, frame, arr)
+
+
 def match_correspondences_batch_parallel(
     frames,
     cpar,
@@ -585,6 +610,7 @@ def match_correspondences_batch_parallel(
             if frame in results:
                 pos_3d, cam_target_ids = results[frame]
                 store.write_correspondences(frame, pos_3d, cam_target_ids)
+                sync_target_tnr(store, frame, cam_target_ids, len(cals))
 
     return results
 
@@ -594,6 +620,7 @@ __all__ = [
     "correspondences",
     "match_frame_correspondences",
     "match_correspondences_batch_parallel",
+    "sync_target_tnr",
     "shared_blob_pass",
     "shared_pass_from_params",
 ]

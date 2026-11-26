@@ -289,40 +289,17 @@ def write_calibration(cals: list, folder: Any, *, prefix: str = "cam_", suffix: 
     return paths
 
 
-def stored_partial_jump_um(store: Any, frames: list[int], n_cams: int, k: int = 30, max_ref: int = 60000) -> list:
-    """Per missing camera: the systematic offset (um) of the STORED 3-camera points from their 4-camera neighbours: mean over
-    the points of (position - mean position of the ``k`` nearest 4-camera points). Random position spread averages out,
-    what remains is the camera-switching jump actually present in the stored points (so it changes when they are aligned)."""
-    from scipy.spatial import cKDTree
-
-    pos4, pos3, miss3 = [], [], []
+def _partial_positions(store: Any, frames: list[int], n_cams: int) -> dict:
+    """{frame: positions (n, 3)} of the stored points, with the mask of the partial-camera ones (2 <= seen < n_cams)."""
+    out = {}
     for f in frames:
         try:
             pos, ids = store.read_correspondences(int(f))
         except Exception:  # noqa: BLE001
             continue
         pos, ids = np.asarray(pos, float), np.asarray(ids)[:, :n_cams]
-        if len(pos) == 0:
-            continue
         seen = (ids >= 0).sum(1)
-        fin = np.isfinite(pos[:, 0])
-        pos4.append(pos[(seen == n_cams) & fin])
-        m3 = (seen == n_cams - 1) & fin
-        pos3.append(pos[m3])
-        miss3.append(np.argmax(ids[m3] < 0, axis=1))
-    out = [float("nan")] * n_cams
-    if not pos4 or not pos3:
-        return out
-    p4, p3, ms = np.concatenate(pos4)[:max_ref], np.concatenate(pos3), np.concatenate(miss3)
-    if len(p4) < 5 * k:
-        return out
-    tree = cKDTree(p4)
-    for m in range(n_cams):
-        sel = ms == m
-        if sel.sum() < 30:
-            continue
-        _, j = tree.query(p3[sel], k=k)
-        out[m] = float(np.linalg.norm(np.mean(p3[sel] - p4[j].mean(axis=1), axis=0)) * 1e3)
+        out[int(f)] = (pos.copy(), (seen >= 2) & (seen < n_cams) & np.isfinite(pos[:, 0]))
     return out
 
 
@@ -336,17 +313,15 @@ class AlignResult:
     n_updated: int = 0
     message: str = ""
     before: ConsistencyReport | None = None
-    jump_before_um: list = field(default_factory=list)      # stored 3-camera points vs 4-camera neighbours, per missing camera
-    jump_after_um: list = field(default_factory=list)
+    shift_median_um: float = float("nan")    # how far the partial-camera points moved (median, um)
+    shift_p99_um: float = float("nan")
+    four_cam_changed: int = 0                # 4-camera points whose position changed (must be 0)
 
     def text(self) -> str:
         head = f"align_partial_points: {'applied to ' + str(self.n_updated) + ' partial-camera points' if self.applied else 'not applied'}: {self.message}"
-        if self.jump_before_um and self.jump_after_um:
-            def fmt(v):
-                return " ".join("  n/a" if not np.isfinite(x) else f"{x:5.1f}" for x in v)
-
-            head += (f"\n  stored 3-camera points, systematic offset from their 4-camera neighbours (um) per missing camera: "
-                     f"[{fmt(self.jump_before_um)}] -> [{fmt(self.jump_after_um)}]  (4-camera points are not changed)")
+        if self.applied:
+            head += (f"\n  partial-camera points moved by {self.shift_median_um:.1f} um (median), {self.shift_p99_um:.1f} um (99 %); "
+                     f"4-camera points changed: {self.four_cam_changed}")
         return head
 
 
@@ -393,15 +368,23 @@ def align_partial_points(
     order = ("consistent", "marginal", "inconsistent")
     if order.index(before.verdict) < order.index(min_verdict) and not force:
         return AlignResult(False, 0, f"the cameras are {before.verdict}: nothing to correct", before)
-    jb = stored_partial_jump_um(store, frames, len(cals))
+    old = _partial_positions(store, list(frames), len(cals))
     n = align_store_correspondences_4cam(store, list(frames), list(cals), cpar, vpar)
-    ja = stored_partial_jump_um(store, frames, len(cals))
+    new = _partial_positions(store, list(frames), len(cals))
+    moved, changed4 = [], 0
+    for f, (p0, m0) in old.items():
+        p1, _m1 = new[f]
+        moved.append(np.linalg.norm(p1[m0] - p0[m0], axis=1))
+        changed4 += int((np.linalg.norm(p1[~m0] - p0[~m0], axis=1) > 1e-9).sum())
+    mv = np.concatenate(moved) * 1e3 if moved else np.zeros(0)
+    med = float(np.median(mv)) if len(mv) else float("nan")
+    p99 = float(np.percentile(mv, 99)) if len(mv) else float("nan")
     try:
         attrs[ALIGN_ATTR] = dict(frames=[int(min(frames)), int(max(frames))], n_updated=int(n),
                                  worst_jump_um_before=round(max(before.jump_um), 2))
     except Exception:  # noqa: BLE001 - a read-only store cannot carry the marker; the result still says what happened
         pass
-    return AlignResult(True, int(n), "recorded in the store attributes", before, jb, ja)
+    return AlignResult(True, int(n), "recorded in the store attributes", before, med, p99, changed4)
 
 
 __all__ = [
@@ -412,7 +395,6 @@ __all__ = [
     "collect_clean_points",
     "consistency_report",
     "self_calibrate_from_store",
-    "stored_partial_jump_um",
     "write_calibration",
 ]
 
