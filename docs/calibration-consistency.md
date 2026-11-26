@@ -46,7 +46,7 @@ uv run python -m openptv2.calibration_consistency selfcal <run folder> [--out ne
 `self_calibrate_from_store` fits exterior orientation, principal point and `k1 k2 p1 p2` of every camera on the clean
 4-camera points of the odd frames and judges the result on the **even frames**. The new cameras are accepted only when
 (1) the worst jump on held-out frames falls by at least half, **and** (2) matching those frames again with the new cameras does not
-lose 4-camera matches (`min_yield`, ratio >= 1.0; `--min-yield`). It declines when the cameras were already consistent, and when
+lose 4-camera matches (`min_yield`, ratio >= 1.0; `--min-yield`). Lens terms are fitted with priors set in pixels at the sensor corner (`edge_px`, default 1 px). One camera's exterior is held fixed as the reference (`hold_cam`, default "auto": the camera that already agrees best); a held camera keeps its own errors for good and the others are moved to agree with it, which the consistency numbers cannot show (`docs/self-calibration-cavity-synthetic.md`, section 2). It declines when the cameras were already consistent, and when
 the fit does not clearly help (then the inconsistency is not a camera-parameter error).
 
 Why the second test: the jump is measured on points that the *old* cameras matched, and the fit saw the same kind of points,
@@ -55,29 +55,24 @@ is the cheapest independent signal we found.
 
 ### When self-calibration helped, and when it did not
 
-| data | cameras | report | yield with new cameras | long tracks / good trajectories (two_phase) | guard |
-|---|---|---|---|---|---|
-| wp2 (300 / 201 / 1072 frames) | one side | marginal | +5.5 / +7.4 % (300 / 201 frames; not measured on the full run) | tracks >= 50 frames **+9.8 % / +13.7 % / +9.8 %** | accepts |
-| wp1 (300 / 1072 frames) | one side | marginal | +5.7 % | **+9.5 % / +9.3 %** | accepts |
-| rendered syn1 (truth) | one side | inconsistent | -3.5 % | velocity error -26 ... -42 % (fast_3d) but yield -1.4 points | declines (strict default) |
-| test_cavity (5 frames) | opposite | marginal, field not reproducible | +1.8 % | +1 / +2 / -5 % (two_phase / trackcorr / fast_3d): noise | accepts, no benefit |
-| **lv_multi wp5** (20 frames) | one side | marginal | **-8.7 %** | **-9.7 %** (1430 -> 1292); trackcorr -1.5 %, fast_3d -1.6 % | **declines** |
-| **lv_multi wp4** (20 frames) | one side | marginal | -0.3 % | **-7.4 %** (1096 -> 1015); trackcorr -1.5 %, fast_3d -3.2 % | accepts: a miss |
+The first version of the fit **lost** matches and tracks on lv_multi because its priors on the lens terms were meaningless: the
+distortion acts on the image radius in mm (k1 ~ r^3, k2 ~ r^5), so a fixed prior number means thousands of pixels at the sensor edge,
+the data fix the terms near the centre, and the fit then wrecked the periphery (97 % of the matches beyond 5 mm lost). The priors are
+now set in pixels at the sensor corner (`edge_px`, 1 px). With that:
 
-Anchoring the fit on lv_multi (calibration-target body) removes the shift and most of the scale change but gives the same tracking
-loss (-8.7 % / -7.8 % two_phase). So the loss is **not** the gauge. We do not know its cause. The check says marginal in both
-cases and the jump falls in both; only the tracking tells them apart. **Rule: never adopt self-calibrated cameras on the strength
-of the report alone; match again and compare your own tracking (tracks of useful length, yield, smoothness) before and after.**
-The CLI writes the new cameras to a new folder, so trying costs nothing; adopting them is a decision.
- The original `.ori` files are never touched;
-the new ones go to a new folder. **Match the frames again with the new cameras before tracking**: the stored points were
-triangulated with the old ones. (Re-matching now also refreshes the target-to-point pointers that the legacy `trackcorr` follows;
-before this was fixed that tracker found no links after a re-match.)
+| data | cameras | report | yield with new cameras | two_phase / trackcorr / fast_3d |
+|---|---|---|---|---|
+| wp2 (300 frames) | one side | marginal | +11 % | tracks >= 50 frames **+11.7 %**; points in tracks >= 20 frames +10.5 % |
+| wp1 (300 frames) | one side | marginal | +9 % | tracks >= 50 frames **+15.2 %**; points in tracks >= 20 frames +10.9 % |
+| wp1 / wp2, all 1072 frames | one side | marginal | not measured | tracks >= 50 frames +9.3 / +9.8 % with the old priors |
+| lv_multi wp5 (20 frames) | one side | marginal | +9 % | good trajectories +1.4 / +5.4 / +4.9 % (were -9.7 / -1.5 / -1.6 %) |
+| lv_multi wp4 (20 frames) | one side | marginal | +8 % | -0.5 / +5.1 / +3.8 % (were -7.4 / -1.5 / -3.2 %) |
+| rendered syn1 (truth) | one side | inconsistent | see the lab page | velocity error -26 ... -42 % (fast_3d) |
+| test_cavity (5 frames) | opposite | marginal, field not reproducible | +2 % | noise-level; blob noise dominates |
 
-Tracers fix the consistency between cameras, **not the absolute frame, scale or shape of the volume**: the fit moved the volume by 0.2 to 1 % (uneven stretches), and by 0.04-0.07 % even from a perfect start. **Read `docs/self-calibration-scale-bias.md` before using velocities from self-calibrated cameras.** The result reports the scale and the shift of the
-volume against the old cameras; check the scale against a known length (dumbbell, plate) before you trust new absolute
-velocities, or pass a `KnownBody` / `Dumbbell` (see `docs/self-calibration.md`) to anchor it. A coarse-to-fine robust loss is
-built in, so a large initial inconsistency (several pixels) converges too.
+Still true, and still the main caveat: the volume changes (`docs/self-calibration-scale-bias.md`); and the matching-yield acceptance
+test remains, because a smaller jump among points the old cameras matched is not proof of a better calibration. **Match again and
+compare your own tracking before adopting new cameras.** The CLI writes the new cameras to a new folder, so trying costs nothing.
 
 ## 3. Align the partial-camera points (stopgap; explicit; marked)
 
@@ -133,6 +128,15 @@ Its one real advantage over layer 2 is that **it does not change the gauge**. Se
 
 So expect a small gain at best on real recordings, a possible loss when the error is large, and nothing with the legacy tracker.
 Treat it as the gauge-preserving alternative to layer 2, not as a substitute.
+
+## What the synthetic cavity showed (truth known, cameras on both sides)
+
+Details and tables: `docs/self-calibration-cavity-synthetic.md`. In short: it works only from a calibration that still matches (image-space
+error up to about 1.5 px; beyond about 3 px the matcher finds nothing and the report says "not applicable"); consistency is restored in all
+13 experiments (jump 1-4 µm, recall of the true cameras) while the error against the truth stays at 0.1-1.0 px depending on the reference
+camera and on what was wrong; glass distance and thickness are never recovered (the cameras absorb them), the fluid index only
+partly; the volume keeps its shape to 0.35 %; a rotation of the whole rig by 180 degrees (+z cameras to -z, glass vectors with them)
+changes nothing; and the matcher itself assumes the cameras look roughly along lab z (a rig turned 90 degrees finds no matches).
 
 ## What the lab found
 

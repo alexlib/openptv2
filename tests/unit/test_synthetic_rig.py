@@ -58,3 +58,50 @@ def test_with_copies_and_does_not_touch_the_original(rig_pts):
     other.cals[0].int_par.xh += 1.0
     assert rig.glass_thickness != 11.0
     assert rig.cals[0].int_par.xh != other.cals[0].int_par.xh
+
+
+def _rot(axis, angle):
+    a = np.asarray(axis, float) / np.linalg.norm(axis)
+    k = np.array([[0, -a[2], a[1]], [a[2], 0, -a[0]], [-a[1], a[0], 0]])
+    return np.eye(3) + np.sin(angle) * k + (1 - np.cos(angle)) * k @ k
+
+
+def test_cavity_rig_has_cameras_on_both_sides_and_sees_the_volume():
+    from openptv2.synthetic_rig import cavity_rig
+
+    rig = cavity_rig()
+    z = [float(c.get_pos()[2]) for c in rig.cals]
+    gz = [float(c.get_glass_vec()[2]) for c in rig.cals]
+    assert z[0] < 0 and z[1] < 0 and z[2] > 0 and z[3] > 0
+    assert gz[0] < 0 and gz[1] < 0 and gz[2] > 0 and gz[3] > 0          # the glass vector points to the camera's side
+    pts = np.random.default_rng(1).uniform(-30, 30, (400, 3))
+    assert np.isfinite(rig.project(pts)).all(axis=(1, 2)).mean() > 0.95
+
+
+@pytest.mark.parametrize("axis,angle,shift", [((0, 1, 0), np.pi, (0, 0, 0)), ((1, 0, 0), np.pi / 2, (0, 0, 0)),
+                                              ((1, 2, 3), 0.7, (10.0, -20.0, 7.0)), ((0, 0, 1), 0.0, (5.0, 0.0, -30.0))])
+def test_moving_the_whole_rig_changes_no_image(axis, angle, shift):
+    """A rotation by 180 deg about y puts the +z cameras at -z (and their glass vectors with them); images must not change."""
+    from openptv2.synthetic_rig import cavity_rig, transformed
+
+    rig = cavity_rig()
+    r, t = _rot(axis, angle), np.asarray(shift, float)
+    moved = transformed(rig, r, t)
+    pts = np.random.default_rng(2).uniform(-25, 25, (300, 3))
+    a, b = rig.project(pts), moved.project(pts @ r.T + t)
+    ok = np.isfinite(a).all(axis=(1, 2)) & np.isfinite(b).all(axis=(1, 2))
+    assert ok.sum() > 200
+    assert np.abs(a[ok] - b[ok]).max() < 2e-3
+
+
+def test_synthetic_run_scores_the_truth_matching(tmp_path):
+    from openptv2.correspondences import match_correspondences_batch_parallel
+    from openptv2.storage import RunStore
+    from openptv2.synthetic_rig import cavity_rig, score_matching, synthetic_run
+
+    rig = cavity_rig()
+    truth = synthetic_run(rig, tmp_path / "r.zarr", [1], n_particles=300, seed=3)
+    match_correspondences_batch_parallel(frames=[1], cpar=rig.cpar, cals=rig.cals, vpar=rig.vpar, zarr_store_path=str(tmp_path / "r.zarr"),
+                                         n_workers=1, write_to_store=True)
+    sc = score_matching(RunStore(str(tmp_path / "r.zarr"), mode="r"), [1], truth)
+    assert sc["possible"] > 50 and sc["recall"] > 0.8 and sc["err_med"] < 0.05, sc

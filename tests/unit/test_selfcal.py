@@ -154,3 +154,21 @@ def test_dumbbell_from_store_reads_frames_with_two_targets(tmp_path):
     assert d.obs_px.shape == (2, 2, 2, 2)                    # frames 1 and 3, (end, camera, xy)
     assert d.length_mm == 25.0
     assert np.allclose(d.obs_px[0, 0, :, 0], [10.0, 11.0])
+
+
+def test_lens_priors_in_pixels_at_the_sensor_corner_keep_k_from_running_away(rig):
+    """The distortion acts on the image radius in mm (k1 ~ r^3, k2 ~ r^5): a fixed prior number means thousands of pixels at the
+    edges. ``edge_px`` sets every lens term's prior as the image shift (px) it may cause at the sensor corner."""
+    cpar, vpar, cals, _pts, px = rig
+    bad = _perturbed(cals)
+    bad[1].added_par.k1 += 6e-4                                   # a lens error the data can see
+    from openptv2.selfcal import triangulate_pixels
+
+    x0 = triangulate_pixels(px, bad, cpar, vpar)
+    start = bad[1].added_par.k1
+    loose = joint_self_calibrate(px, x0, bad, cpar, max_nfev=150, free_radial=("k1", "k2"), ext_sigma_scale=3.0, vpar=vpar)
+    tight = joint_self_calibrate(px, x0, bad, cpar, max_nfev=150, free_radial=("k1", "k2"), ext_sigma_scale=3.0, vpar=vpar, edge_px=0.02)
+    moved_loose = abs(loose.cals[1].added_par.k1 - start)
+    moved_tight = abs(tight.cals[1].added_par.k1 - start)
+    assert moved_loose > 1e-4, moved_loose                         # the old priors let the fit set k1 from the data
+    assert moved_tight < 0.5 * moved_loose, (moved_tight, moved_loose)

@@ -237,6 +237,7 @@ class RecalibrationResult:
     n_fit: int = 0
     cpar: Any = None                         # control parameters with the fitted multimedia (use them with ``cals``)
     yield_ratio: float = float("nan")        # 4-camera matches with the new cameras / with the old ones, on held-out frames
+    hold_cam: int = 0                        # the camera held fixed in the fit (-1: none): its own errors can never be corrected
     multimedia: dict | None = None           # fitted glass thickness / indices when they were free
 
     def text(self) -> str:
@@ -248,6 +249,8 @@ class RecalibrationResult:
                 f"  fit: {self.n_fit} points, reprojection rms {self.rms_before_px:.3f} -> {self.rms_after_px:.3f} px\n"
                 f"  matching yield with the new cameras (held-out frames): "
                 f"{'not measured' if not np.isfinite(self.yield_ratio) else format(100 * self.yield_ratio, '.1f') + ' % of the old'}\n"
+                f"  reference camera held fixed in the fit: {'none (priors only)' if self.hold_cam < 0 else self.hold_cam + 1} (its own errors cannot be corrected; "
+                f"camera with the smallest residual by default)\n"
                 f"  held-out frames: worst jump {self.before.worst_jump_px:.2f} -> {self.after.worst_jump_px:.2f} px footprint "
                 f"({max(self.before.jump_um):.1f} -> {max(self.after.jump_um):.1f} um)\n"
                 f"  volume vs old cameras: scale {self.scale:.5f}, mean shift {self.shift_mm:.3f} mm")
@@ -284,6 +287,7 @@ def self_calibrate_from_store(
     max_points: int = 12000,
     min_improvement: float = 0.5,
     min_yield: float = 1.0,            # 4-camera matches with the new cameras / the old ones, on held-out frames; 0 = check off
+    hold_cam: Any = "auto",            # the camera whose exterior stays fixed: an index, "auto" (the most consistent one) or "none"
     body: Any = None,
     dumbbell: Any = None,
     **selfcal_kwargs: Any,
@@ -320,7 +324,17 @@ def self_calibrate_from_store(
         idx = np.flatnonzero(ok)
         ok = np.zeros(len(ok), bool)
         ok[idx[keep]] = True
-    kw = dict(max_nfev=200, free_radial=("k1", "k2"), ext_sigma_scale=3.0)
+    # edge_px: the lens terms may shift the sensor corner by about 1 px (1 sigma); see selfcal.joint_self_calibrate
+    kw = dict(max_nfev=200, free_radial=("k1", "k2"), ext_sigma_scale=3.0, edge_px=1.0)
+    # The fit needs a reference: tracers fix only the consistency between cameras. A camera held fixed keeps its own errors for good and the
+    # others are moved to agree with it, so hold the one that already agrees best (smallest residual to the 4-camera position).
+    if hold_cam == "auto":
+        hold = int(np.argmin([c["res_med"] for c in before.cameras]))
+    elif hold_cam in ("none", None):
+        hold = -1
+    else:
+        hold = int(hold_cam)
+    kw["hold_cam"] = hold
     kw.update(selfcal_kwargs)
     res = joint_self_calibrate(ctr[ok], x0[ok], cals, cpar, body=body, dumbbell=dumbbell, vpar=vpar, **kw)
     cpar2 = res.cpar if res.cpar is not None else cpar
@@ -360,7 +374,7 @@ def self_calibrate_from_store(
                        f"a better calibration (lower min_yield to accept a loss of matches for more accuracy). Keep the old cameras")
     return RecalibrationResult(res.cals, before, after, res.rms_before_px, res.rms_after_px, scale,
                                tuple(float(v) for v in stretches[order]), stretch_dirs, body is not None or dumbbell is not None, shift,
-                               accepted, msg, int(ok.sum()), cpar2, yield_ratio, res.multimedia)
+                               accepted, msg, int(ok.sum()), cpar2, yield_ratio, hold, res.multimedia)
 
 
 def write_calibration(cals: list, folder: Any, *, prefix: str = "cam_", suffix: str = ".tif") -> list:

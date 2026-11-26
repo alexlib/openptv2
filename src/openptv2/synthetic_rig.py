@@ -133,6 +133,7 @@ class TruthRig:
     tilt_back: list = field(default_factory=list)
     #: extra lens terms the calibration model does not fit: per camera dict(k3=, scx=, she=, ...) added to ``added_par``
     note: str = "ideal flat layers"
+    vpar: Any = None                  # volume / epipolar parameters to match this rig's blobs with (set by ``cavity_rig``)
 
     @classmethod
     def from_cals(cls, cals: list, cpar: Any) -> "TruthRig":
@@ -215,4 +216,155 @@ class TruthRig:
         return px
 
 
-__all__ = ["TruthRig", "air_direction"]
+
+
+
+# --------------------------------------------------------------------------------------------------------------------
+# a cavity-like rig (cameras on both sides of a water cell), rigid transforms of a rig, and synthetic run stores
+
+
+def _angles_for_matrix(target: np.ndarray, cal: Any) -> np.ndarray:
+    """Angles (omega, phi, kappa) of the library's convention whose rotation matrix is ``target`` (multi-start least squares)."""
+    from scipy.optimize import least_squares
+
+    trial = copy.deepcopy(cal)
+    rng = np.random.default_rng(0)
+    best = None
+    for k in range(40):
+        a0 = np.asarray(cal.get_angles(), float) if k == 0 else rng.uniform(-np.pi, np.pi, 3)
+
+        def resid(a):
+            trial.set_angles(a)
+            return (trial.get_rotation_matrix() - target).ravel()
+
+        sol = least_squares(resid, a0, xtol=1e-14, ftol=1e-14, gtol=1e-14)
+        if best is None or sol.cost < best.cost:
+            best = sol
+        if best.cost < 1e-24:
+            break
+    return best.x
+
+
+def transformed(rig: "TruthRig", rot: np.ndarray, shift: np.ndarray) -> "TruthRig":
+    """The same physical rig moved rigidly in the laboratory frame: every point ``x`` becomes ``rot @ x + shift``. Cameras and
+    glass planes move with it (the glass vector is the foot of the plane from the origin, so its length changes with a shift).
+    ``project`` of the new rig at the moved points equals ``project`` of the old rig at the old points."""
+    rot, shift = np.asarray(rot, float), np.asarray(shift, float)
+    out = rig.with_()
+    for cal in out.cals:
+        m = np.asarray(cal.get_rotation_matrix(), float)
+        pos = np.asarray(cal.get_pos(), float)
+        g = np.asarray(cal.get_glass_vec(), float)
+        ghat = g / np.linalg.norm(g)
+        new_hat = rot @ ghat
+        foot = new_hat * float(new_hat @ (rot @ g + shift))
+        cal.set_pos(rot @ pos + shift)
+        cal.set_angles(_angles_for_matrix(rot @ m, cal))      # the library's matrix has the camera axes as columns
+        cal.set_glass_vec(foot)
+        cal.invalidate_mmlut()
+    out.note = f"{rig.note}; moved"
+    return out
+
+
+def cavity_rig(imx: int = 1280, imy: int = 1024, half_width: float = 125.0, truth_lens: bool = True) -> "TruthRig":
+    """A water cell seen through two flat windows by two cameras on each side (geometry of ``test_data/test_cavity_small``): cameras at
+    z about -575 with the glass vector (0, 0, -half_width) and at z about +580 with (0, 0, +half_width); glass 6 mm, n = 1 / 1.46 / 1.33;
+    a 1280 x 1024 sensor of 12 um pixels, ``cc`` 70 mm. With ``truth_lens`` each camera has its own small principal-point offset and
+    lens terms (k1, k2, p1, p2) of the size the real refinement found, so a calibration that leaves them out is wrong in a known way."""
+    from pathlib import Path
+
+    from openptv2.recorrespond import load_parameters
+
+    yml = Path(__file__).resolve().parents[2] / "test_data" / "test_cavity_small" / "parameters_Run1.yaml"
+    cpar, _vpar, cals, _ = load_parameters(yml)
+    cpar = copy.copy(cpar)
+    cpar.imx, cpar.imy = imx, imy
+    cals = [copy.deepcopy(c) for c in cals]
+    lens = [(-2.5e-4, 3e-6, 1.5e-4, -2.0e-4, 0.8, -0.3), (-1.5e-4, 2e-6, -1.0e-4, -2.5e-4, -0.9, 0.4),
+            (-1.0e-4, 2e-6, 2.0e-5, -3.0e-4, 0.4, 0.6), (-2.0e-4, 2e-6, -3.5e-4, -4.0e-4, -0.7, -0.5)]
+    for cal, (k1, k2, p1, p2, xh, yh) in zip(cals, lens):
+        g = np.asarray(cal.get_glass_vec(), float)
+        cal.set_glass_vec(g / np.linalg.norm(g) * half_width)
+        if truth_lens:
+            cal.added_par.k1, cal.added_par.k2, cal.added_par.p1, cal.added_par.p2 = k1, k2, p1, p2
+            cal.int_par.xh, cal.int_par.yh = xh, yh
+        cal.invalidate_mmlut()
+    rig = TruthRig.from_cals(cals, cpar)
+    rig.cpar = cpar
+    rig.vpar = load_parameters(yml.parents[1] / "test_cavity" / "parameters_Run1.yaml")[1]       # volume +-40 mm, eps0 0.04
+    rig.note = "cavity-like rig, two cameras per side"
+    return rig
+
+
+def synthetic_run(
+    rig: "TruthRig",
+    path: Any,
+    frames: list[int],
+    n_particles: int = 900,
+    half_size: float = 30.0,
+    noise_px: float = 0.15,
+    detect_prob: float = 0.8,
+    seed: int = 0,
+    centre: tuple = (0.0, 0.0, 0.0),
+    half_z: float | None = None,
+    gauss_xy: float | None = None,
+) -> dict:
+    """A run store of ``frames`` with blobs of ``n_particles`` random tracers in a cube (``half_size`` mm) seen through ``rig``: each
+    camera detects a particle with probability ``detect_prob`` and adds Gaussian centroid noise. ``half_z`` limits the depth separately,
+    ``gauss_xy`` (mm) replaces the lateral uniform distribution by a Gaussian. The target number ``pnr`` is the
+    particle index, so a matched quadruplet is right when all its blobs share it. Nothing is matched yet.
+    Returns ``{frame: positions (n, 3)}`` (the truth)."""
+    from openptv2.storage import RunStore
+
+    rng = np.random.default_rng(seed)
+    st = RunStore(str(path), mode="a")
+    truth = {}
+    for f in frames:
+        pts = np.asarray(centre) + rng.uniform(-half_size, half_size, (n_particles, 3))
+        if half_z is not None:
+            pts[:, 2] = centre[2] + rng.uniform(-half_z, half_z, n_particles)
+        if gauss_xy is not None:                          # a cloud concentrated at the centre, sparse towards the sensor edges
+            pts[:, :2] = np.asarray(centre)[:2] + rng.normal(0, gauss_xy, (n_particles, 2))
+        px = rig.observe(pts, noise_px, rng)
+        seen = np.isfinite(px[:, :, 0]) & (rng.random((n_particles, len(rig.cals))) < detect_prob)
+        for c in range(len(rig.cals)):
+            rows = np.flatnonzero(seen[:, c])
+            tg = np.zeros((len(rows), 8))
+            tg[:, 0] = rows
+            tg[:, 1:3] = px[rows, c]
+            tg[:, 3], tg[:, 4], tg[:, 5], tg[:, 6], tg[:, 7] = 9, 3, 3, 400, -1
+            st.write_targets(c, f, tg[np.argsort(tg[:, 2], kind="stable")])         # sorted by y like the detector's output
+        truth[f] = pts
+    return truth
+
+
+def score_matching(store: Any, frames: list[int], truth: dict, n_cams: int = 4) -> dict:
+    """Truth-based scores of the correspondences stored for ``frames``: matched points, right quadruplets (all blobs of one
+    particle), wrong ones (ghosts), the recall of the particles seen by all cameras, and the median 3D error of the right ones."""
+    right = wrong = total = possible = 0
+    err = []
+    for f in frames:
+        pos, ids = store.read_correspondences(f)
+        pos, ids = np.asarray(pos, float), np.asarray(ids)[:, :n_cams]
+        tg = [np.asarray(store.root[f"targets/cam_{c}/frame_{f:06d}"]) for c in range(n_cams)]
+        pnr = np.full(ids.shape, -1.0)
+        for c in range(n_cams):
+            m = ids[:, c] >= 0
+            pnr[m, c] = tg[c][ids[m, c], 0]
+        quad = (ids >= 0).all(axis=1)
+        good = quad & (pnr == pnr[:, :1]).all(axis=1)
+        total += int(quad.sum())
+        right += int(good.sum())
+        wrong += int((quad & ~good).sum())
+        seen_all = np.ones(len(truth[f]), bool)
+        for c in range(n_cams):
+            seen_all &= np.isin(np.arange(len(truth[f])), tg[c][:, 0].astype(int))
+        possible += int(seen_all.sum())
+        if good.any():
+            err.append(np.linalg.norm(pos[good] - truth[f][pnr[good, 0].astype(int)], axis=1))
+    e = np.concatenate(err) if err else np.zeros(0)
+    return dict(quads=total, right=right, ghosts=wrong, possible=possible, recall=right / max(possible, 1),
+                ghost_share=wrong / max(total, 1), err_med=float(np.median(e)) if len(e) else float("nan"))
+
+
+__all__ = ["TruthRig", "air_direction", "cavity_rig", "score_matching", "synthetic_run", "transformed"]

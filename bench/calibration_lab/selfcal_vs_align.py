@@ -108,7 +108,7 @@ if "selfcal" in variants:
     idx = np.flatnonzero(fit)
     idx = idx[np.random.default_rng(1).permutation(len(idx))[:12000]]
     t0 = time.perf_counter()
-    res = joint_self_calibrate(xy[idx], pos[idx], cals, cpar, max_nfev=200, free_radial=("k1", "k2"), ext_sigma_scale=3.0)
+    res = joint_self_calibrate(xy[idx], pos[idx], cals, cpar, max_nfev=200, free_radial=("k1", "k2"), ext_sigma_scale=3.0, edge_px=1.0)
     print(f"    selfcal: {res.n_obs} observations, rms {res.rms_before_px:.3f} -> {res.rms_after_px:.3f} px, {res.nfev} evaluations, {time.perf_counter() - t0:.0f}s")
     report("selfcal", res.cals)
     d = clone(base, "v_selfcal")

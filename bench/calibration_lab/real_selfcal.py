@@ -64,7 +64,7 @@ if "align" in variants:
     print("\n" + r.text())
 if "selfcal" in variants:
     t0 = time.perf_counter()
-    res = self_calibrate_from_store(st_off, frames, cals, cpar, vpar)
+    res = self_calibrate_from_store(st_off, frames, cals, cpar, vpar, **({'hold_cam': os.environ['HOLD']} if os.environ.get('HOLD') else {}))
     print(f"\n{res.text()}   ({time.perf_counter() - t0:.0f}s)")
     write_calibration(res.cals, dirs["selfcal"] / "cal", prefix="cam_", suffix=".tif")
     cpar2, vpar2, cals2, _ = load_parameters(dirs["selfcal"] / "parameters_Run1.yaml")

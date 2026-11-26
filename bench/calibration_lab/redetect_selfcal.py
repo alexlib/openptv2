@@ -100,6 +100,8 @@ if __name__ == "__main__":
             os.symlink(YAML, d0 / "parameters_Run1.yaml")
         kw["body"] = known_body_from_calibration(d0, cals, cpar)
         print(f"anchor: {len(kw['body'].xyz)} calibration-target points")
+    if os.environ.get('HOLD'):
+        kw['hold_cam'] = os.environ['HOLD']
     res = self_calibrate_from_store(st, FR, cals, cpar, vpar, **kw)
     print("\n" + res.text())
     d1 = make("selfcal", cal_from=res.cals); shutil.copytree(d0 / "res", d1 / "res")

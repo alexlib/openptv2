@@ -118,26 +118,47 @@ the matches, not camera consistency; its calibration was already refined once by
 (`scripts/particle_bundle_adjust.py`). Recommendation: do not self-calibrate `test_cavity`; more frames would let the report separate
 noise from structure (it needs a held-out half of frames to judge a field).
 
-### lv_multi (real, one side, 20 frames each): self-calibration made tracking worse
+### lv_multi (real, one side, 20 frames each): self-calibration made tracking worse, and why
 
 Run with `bench/calibration_lab/redetect_selfcal.py` (the stores hold only trajectories, so all 20 frames are detected from the
-multiplexed images and matched with the production loop). Both sub-runs: report `marginal` (0.14 / 0.12 px; jumps 3-25 µm), the
-fit is accepted by the jump criterion (held-out 24.2 -> 0.5 µm and 18.8 -> 1.8 µm) and the volume changes by -0.94 % / -1.09 %
-(stretches down to 0.984 / 0.982) with 4.8 / 6.2 mm shift. Good trajectories (>= 4 frames, quadratic-fit rms < 0.2 mm) before ->
-after:
+multiplexed images and matched with the production loop). With the first version of the fit both sub-runs looked fine by the jump
+criterion (held-out 24.2 -> 0.5 µm and 18.8 -> 1.8 µm) but good trajectories (>= 4 frames, quadratic-fit rms < 0.2 mm) fell:
+two_phase 1430 -> 1292 (-9.7 %) and 1096 -> 1015 (-7.4 %), trackcorr and fast_3d -1.5 ... -3 %, and wp5 lost 10 % of its 4-camera
+matches. A calibration-target anchor fixed the volume change but not the loss, so it was not the gauge. **Cause found:** the priors on
+the lens terms.
 
-| run | two_phase | trackcorr | fast_3d | 4-camera matches per frame |
-|---|---|---|---|---|
-| wp5 | 1430 -> 1292 (**-9.7 %**) | 2033 -> 2001 (-1.5 %) | 1495 -> 1471 (-1.6 %) | 642 -> 576 (**-10 %**) |
-| wp4 | 1096 -> 1015 (**-7.4 %**) | 1646 -> 1621 (-1.5 %) | 1250 -> 1210 (-3.2 %) | 515 -> 516 |
+1. **Which parameters.** Refitting with one group of parameters at a time and matching all 20 frames again (`lv_why.py`), 4-camera
+   matches against the old cameras: exterior only 103.7 %, + principal point 104.8 %, **+ decentering (p1, p2) 108.5 %**, **+ radial
+   (k1, k2) 77.3 %**, + principal point + radial 79.2 %, everything 90.9 % (wp2: 98.6 % with k1, k2, 112 % with p1, p2).
+2. **Where the matches are lost** (`lv_lost.py`, lv5, everything free): 65 % of the matches lie within 3 mm of the sensor centre and only
+   2.6 % beyond 5 mm. Of the old matches 8.6 % are lost in the 0-3 mm ring, 35 % in 3-5 mm and **97 % beyond 5 mm**; 85 % of the newly
+   gained ones are in the centre. Exterior only: 4.5 % lost, 8.2 % gained. The fit improves the centre where it has data and wrecks
+   the periphery where it has none.
+3. **Why.** The distortion acts on the image-plane radius in mm: k1 ~ r^3, k2 ~ r^5, p ~ r^2. On this sensor (corner radius 9.8 mm) a
+   change of k1 by 1e-4 moves the corner by about 8 px and a change of k2 by 1e-5 by about 75 px. The priors on k and p were fixed numbers
+   (0.02 and 0.002), thousands of pixels at the edge: no prior at all. The data fix k1, k2 near the centre and the rest is extrapolation.
+4. **Fix.** `joint_self_calibrate(edge_px=...)` sets every lens term's prior as the image shift (px, 1 sigma) it may cause at the sensor
+   corner (sigma = edge_px * pixel / r_corner^n); `self_calibrate_from_store` uses 1 px. Matches against the old cameras, loose priors
+   -> `edge_px` 1: lv5 90.9 % -> **108.5 %**, lv4 99.7 % -> **108.4 %**, wp2 105.9 % -> 111.7 %, wp1 104.9 % -> 109.8 %; flat from 0.25 to 2 px,
+   worse above 5 px (lv4: 105.5 % at 5, 100.3 % at 20).
+5. **End to end** (good trajectories before -> after, two_phase / trackcorr / fast_3d): lv5 1430 -> 1450 (+1.4 %) / 2033 -> 2142 (+5.4 %) /
+   1495 -> 1568 (+4.9 %), 4-camera matches per frame 642 -> 687; lv4 1096 -> 1090 (-0.5 %) / 1646 -> 1730 (+5.1 %) / 1250 -> 1297 (+3.8 %),
+   515 -> 548. The volume change is the same as before (-0.94 % / -1.09 %, 5-6 mm): a separate, still open, issue. On the real
+   recordings the benefit grew: wp2 300 frames tracks >= 50 frames +11.7 % (was +9.8 %), points in tracks >= 20 frames +10.5 % (was +7.8 %);
+   wp1 +15.2 % (was +9.5 %) and +10.9 % (was +6.8 %).
 
-Anchoring with the 95 calibration-target points (`known_body_from_calibration`) fixes the gauge (wp5: scale -0.14 %, shift 0.04 mm;
-wp4 similar) and the same jump removal, **and the same tracking loss** (two_phase -8.7 % / -7.8 %, wp5 matches -8 %). The cause is
-not known. What we learned: the jump criterion alone accepted cameras that were worse for tracking, because both the fit and the
-check use points the old cameras matched. A second criterion, the yield of matching again with the new cameras on held-out frames,
-now guards the acceptance (`min_yield`, default 1.0): it declines wp5 (ratio 0.913), accepts wp1 / wp2 (1.055-1.074, where tracking
-gained 9-14 % long tracks), but misses wp4 (0.997) and declines rendered syn1 (0.965) although its accuracy against truth improved
-(a yield-for-accuracy trade; lower `min_yield` to accept it). The report remains necessary, not sufficient: compare your own tracking.
+The matching-yield acceptance test stays (it is how this was noticed), but it no longer has to decline anything on these data.
+
+### Synthetic cavity with truth (cameras on both sides): `docs/self-calibration-cavity-synthetic.md`
+
+`cavity_rig()` (independent ray tracer, cameras at -z and +z, glass vectors of both signs) and `bench/calibration_lab/cavity_synth_lab.py`:
+13 experiments, 5 invariance moves, noise and frame-count variations, and a reproduction of the lv_multi mechanism. Findings: the fit
+works only if the old calibration still matches (image error below about 1.5-3 px); consistency is always restored but the error against
+the truth depends on the reference camera (a held, drifted camera made it worse, 1.03 -> 1.60 px); glass distance / thickness are
+not recoverable; the volume keeps its shape to 0.35 %; the half-turn invariance holds to three digits; the matcher cannot handle a rig
+turned 90 degrees; with fit data concentrated at the axis the old loose lens priors destroy the outermost sensor ring (recall 51 % against
+100 % for the true cameras) and the physical priors do not. `hold_cam="auto"` (the camera with the smallest residual) is the default
+reference.
 
 ### Full length (wp1, all 1072 frames, two_phase)
 
@@ -176,5 +197,5 @@ also explains the unexplained `trackcorr` yield of 0.0001 in the earlier #51 con
 
 * A dumbbell or plate anchor measured on a real recording (does it remove the deformation?); the full wp1 length.
 * Rigs with cameras on opposite sides: tested on `test_cavity` (5 frames, above) but not with a truth-known rig; the ladder is same-side only.
-* The cause of the lv_multi tracking loss; whether a better acceptance test (a short tracking run on held-out frames) than the matching yield exists.
+* Whether the volume deformation (not the tracking loss) is a calibration correction or a bias: needs an independent length on a real recording.
 * A GUI button for the check and for `selfcal`.

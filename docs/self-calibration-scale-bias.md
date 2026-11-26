@@ -55,13 +55,22 @@ times larger.
 **An anchor helps, but not with everything.** On lv_multi wp5 the 95 calibration-target points (seen by 74-88 of the 95 in each camera;
 `known_body_from_calibration`) as a known body reduce the volume change from -0.94 % to -0.14 % (stretches 0.9941, 1.0004,
 1.0013) and the shift from 4.78 mm to 0.04 mm, with the same removal of the camera-subset jump (24.2 -> 0.8 µm). So an anchor
-removes most of the deformation, and it can be built from the calibration images in the folder. **It did not repair the tracking:**
-see "When self-calibration made things worse" in `docs/calibration-consistency.md`. Anchoring on wp2 is not measured.
+removes most of the deformation, and it can be built from the calibration images in the folder. (It did not change the tracking loss
+that lv_multi showed with the first version of the fit; that loss was caused by the lens-term priors and is fixed, see
+`docs/calibration-consistency.md`. The deformation itself is unchanged by that fix: re-measured with it on wp1, wp2 (300 frames) and both lv_multi runs, the stretches agree with the table above to 0.1 %.) Anchoring on wp2
+is not measured.
 
 "+0.3 % scale" is the geometric mean of the three. The deformation is **not uniform**: on wp1 and wp2 one direction is stretched by about 1.1 % while another is compressed by 0.5 %; on lv_multi all three shrink, one by 1.8 %. The directions are mixtures of the lab axes (the map also
 contains a rotation), not one clean depth stretch. Tighter priors on the camera positions (0.3, 1.0, 3.0 times the default)
 leave the wp2 change at +0.27...+0.31 %; looser priors on focal length / glass make it worse (test_cavity: -0.2 % → -0.5 %).
 So the data drive it, and more freedom gives more of it.
+
+**What the truth-known synthetic cavity adds** (`docs/self-calibration-cavity-synthetic.md`): with cameras on both sides, after the fit the
+volume keeps its shape to 0.35 % of the truth (stretches 0.9984 ... 1.0035) in 13 different experiments, and a fluid-index error of
+0.005 alone gives a 0.27 % depth stretch that the fit leaves in place. The real volume changes (0.5-1.8 %) are several times larger
+than anything the fit produced on its own there, which favours "correction of real calibration errors" over "bias of the fit", but
+that is still an inference. The choice of the reference camera changes the unanchored volume change on real data: wp2 +0.34 %
+(camera 1 held), +0.40 % (the most consistent camera, the default), +0.45 % (none held).
 
 **What we do not know:** whether the real-data deformation is a *correction* (the old calibration really has that error and the
 tracers found it) or the *bias* seen in the synthetic runs, ten times larger. The synthetic runs say the method can introduce

@@ -201,6 +201,7 @@ def joint_self_calibrate(
     free_cc: bool = False,
     free_radial: tuple = ("k1", "k2"),
     free_decentering: bool = True,
+    edge_px: float | None = None,
     free_multimedia: tuple = (),
     free_glass: bool = False,
     mm_sigma: dict | None = None,
@@ -254,6 +255,17 @@ def joint_self_calibrate(
     cur = [copy.deepcopy(c) for c in cals]
     valid = np.isfinite(obs_px[:, :, 0])
 
+    # Priors on the lens terms in physical units: the image shift (px) that one standard deviation of each term causes at the sensor
+    # corner. The distortion acts on the image-plane radius in mm (k1 ~ r^3, k2 ~ r^5, p ~ r^2), so a fixed number for k2 means
+    # thousands of pixels at the periphery where the data are sparse: the fit then sets k2 from the centre and extrapolates.
+    if edge_px is not None:
+        r_corner = float(np.hypot(cpar.imx * cpar.pix_x / 2.0, cpar.imy * cpar.pix_y / 2.0))
+        shift = float(edge_px) * float(cpar.pix_x)
+        k_sig_by = {"k1": shift / r_corner**3, "k2": shift / r_corner**5, "k3": shift / r_corner**7}
+        p_sigma = shift / r_corner**2
+    else:
+        k_sig_by = None
+
     # multimedia parameters shared by all cameras (glass thickness, indices): a private copy of cpar carries them
     import copy as _copy
 
@@ -305,7 +317,7 @@ def joint_self_calibrate(
         if free_radial:
             nm = tuple(free_radial)
             groups.append((lambda cc, nm=nm: _add_get(cc, nm), lambda cc, v, nm=nm: _add_set(cc, v, nm),
-                           np.full(len(nm), k_sigma)))
+                           np.array([k_sig_by[n] for n in nm]) if k_sig_by else np.full(len(nm), k_sigma)))
         if free_decentering:
             groups.append((lambda cc: _add_get(cc, ("p1", "p2")), lambda cc, v: _add_set(cc, v, ("p1", "p2")),
                            np.full(2, p_sigma)))
