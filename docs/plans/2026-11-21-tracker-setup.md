@@ -728,3 +728,76 @@ Scripts: `bench/limits/loss_in_episodes.py` (syn1, truth), `loss_streaks_real.py
 - The streak flags lose their power on real data: 66 % of mid-track points already have a flagged blob (mass noise 2.8 times larger, detection flicker makes topology events), so the end-of-track enrichment is 1.09 against 1.5 on syn1.
 
 **Reading.** Merges explain most of the loss that is not faint, and the dose-response is clear, but a streak bridge would add at most 2 to 6 points of raw yield on top of the shared pass, and fewer long track gaps than the id switches. The two larger parts of the loss need other tools: faint particles (no blob at all) need a lower local threshold on the image; episodes with no clean frame and the id switches need a per-frame resolution, which is what the pixel fit did at observation level (it fixes the points that exist, not the ones never matched).
+
+## 23. Relaxing blob exclusivity in the matcher, and a pixel check of the candidates (2026-11-24)
+
+Question: the losses left after sections 21-22 are shared views that no streak can bridge, and id switches. Does a looser second matcher pass recover them, and can the raw image decide which of the new candidates are real? Scripts: `bench/limits/relax_exclusivity.py` (syn1, truth), `new_points_quality.py`, `candidate_pixel_check.py`, `light_check_real.py`, `relax_real.py` (real wp2, truth-free). The pass is `correspondences.shared_blob_pass`; its ratio decides which matched blobs are offered again (brighter than ratio x the second-dimmest view of their point; default 1.7) and `min_own` how many unused blobs a new point needs (default 2). Offering every blob (ratio 0) reproduces the first pass, because the second pass is exclusive too: the lever is the selection.
+
+**syn1, 40 frames, with `shared_correction` (truth):**
+
+| | yield | ghost points | raw link precision | velocity error | error of the extra points | id switches |
+|---|---|---|---|---|---|---|
+| no second pass | 0.709 | 3.19 % | 0.9685 | 0.1099 | - | 709 |
+| default pass (1.7, 2) | 0.724 | 3.27 % | 0.9679 | 0.1122 | 0.202 | 832 |
+| ratio 1.05, 1 own view | 0.743 | 3.29 % | 0.9675 | 0.1166 | 0.268 | 1134 |
+| ratio 1.05 + pixel fit | 0.742 | 3.29 % | 0.9677 | 0.1166 | 0.280 | 1134 |
+| no pass + light filter z>=10 | 0.706 | 2.40 % | 0.9754 | 0.1090 | - | 685 |
+| ratio 1.05 + light filter z>=6 | 0.742 | 2.54 % | 0.9742 | 0.1159 | 0.248 | 1079 |
+| ratio 1.05 + light filter z>=10 | 0.740 | 2.42 % | 0.9752 | 0.1167 | 0.268 | 1069 |
+
+(Without correction, ratio 1.05 gives yield 0.737 and velocity error 0.182 against 0.160 for the plain run.) Yield rises monotonically as the ratio falls and flattens at 1.0.
+
+- The points the loose pass adds are 7 % of all points, 91 % of them with 3 cameras: 30 % ghosts, position error 0.102 mm median against 0.025 for the ordinary points, 61 % singletons. The cost in velocity error is the real but poor extra points (0.27 against 0.11 overall), not the ghosts, and the id switches rise 60 %.
+- **Light check:** project a 3-camera point into its missing camera and measure the raw image there (peak within 1.5 px over the local background, in units of the local noise, z). For the new points the ghosts have median z 4.7, the real ones 91; AUC for ghost against real 0.876, against 0.627 for the blob-level cues (brightness of the views). Used as a filter after matching it takes the ghost share of the output from 3.2 % to 2.4 % and the raw link precision from 0.9685 to 0.9754, at no cost in yield (base: 0.709 to 0.706). It does not cure the extra points' error or the id switches.
+- The pixel fit on the observations adds nothing here either (velocity 0.1166 both, 278 s against 4 s).
+
+**Real wp2, first 40 frames, fresh matching and tracking, scratch copy, `shared_correction` on (truth-free):**
+
+| | points/frame | singletons | in tracks of 30+ of 40 frames | points in those tracks per frame | roughness median | LOCO median |
+|---|---|---|---|---|---|---|
+| no second pass | 1178 | 11.8 % | 47.5 % | 560 | 0.0490 | 0.355 |
+| + light filter z>=10 | 1080 | 8.9 % | 49.8 % | 538 | 0.0487 | 0.355 |
+| ratio 1.05 | 1265 | 14.0 % | 52.6 % | 665 | 0.0499 | 0.357 |
+| ratio 1.05 + z>=10 | 1138 | 9.6 % | 56.0 % | 638 | 0.0491 | 0.357 |
+| ratio 1.05 + z>=20 | 1094 | 9.1 % | 55.8 % | 610 | 0.0484 | 0.357 |
+
+- Missing views of 3-camera points carry less light on real data: 24.5 % have z < 10 (syn1: 11 %); median z 46 against 100. The light filter therefore removes more on real (8 % of the points at z>=10) and, alone, 4 % of the points that end in long tracks; with the relaxed pass the long-track points rise by 14 %, singletons fall below the plain run, roughness and the LOCO residual do not change.
+- Track length inside the store's own linkage could not validate the filter on real data (72 % singletons even with strong light: that linkage is not comparable), hence the fresh runs above.
+
+**Reading.** The second pass is a real yield lever (+3 points on syn1, +14 % points in long tracks on wp2) and the light check is a cheap, effective ghost filter (AUC 0.88 against 0.63). The price is accuracy: the extra points sit on shared views with two own cameras, their error is 2.5 times the average and the id switches rise, which the observation-level fixes (correction, pixel fit) do not change; velocity error on syn1 +6 % at the loosest setting. Not shipped; open: a 300-frame real run, the cost of reading images in the matching stage, and whether weighting or dropping the extra points' shared views in linking removes the extra id switches.
+
+## 24. Light check: implementation and validation (2026-11-24)
+
+Implementation: `src/openptv2/light_check.py` (`light_z`, `missing_view_light`, `light_keep`, `apply_light_check`, `light_check_from_params`), called after the matching in both paths of `gui/ptv.py::py_sequence_loop` (batch and per frame) when `ptv.light_check` is true or a number. Default threshold z >= 6. The `rcm` array is filtered with the points; unreadable images skip the frame with one warning. Tests: `tests/unit/test_light_check.py` (12: vectorised against the plain-loop definition, edges, scene, store round trip, empty frame, the real `py_sequence_loop` on `test_cavity`, unreadable images). Benchmarks: `bench/limits/light_check_bench.py` (real pipeline, scratch copies), `switch_diag.py`, `track_variants.py`.
+
+**Why the track gate is not relaxed.** Re-tracking the relaxed-pass store with the point-quality gate (`q_seed`, `q_young`) off removes the id switches among the new points (609 to 108), but doubles the ghosts (3.3 to 7.5 %) and raises the velocity error from 0.117 to 0.163; the two-hop confirmation off is worse (0.161). The light check does not make the gate safe to drop (syn1, 100 frames, ratio 1.05 + light check: velocity error 0.114 with the gate, 0.132 without). The gate removes ghosts and real new points together; keep it.
+
+**syn1, truth, real pipeline, `shared_correction` on:**
+
+| 400 frames | yield | ghost | link precision | velocity error | id switches |
+|---|---|---|---|---|---|
+| base | 0.675 | 3.56 % | 0.9645 | 0.1189 | 10792 |
+| light check only (10) | 0.669 | 2.58 % | 0.9736 | 0.1185 | 9713 |
+| shared pass (1.7) | 0.694 | 3.58 % | 0.9643 | 0.1188 | 11846 |
+| pass + light check z>=4 | 0.691 | 2.86 % | 0.9710 | 0.1174 | 11534 |
+| pass + light check z>=6 | 0.690 | 2.71 % | 0.9724 | 0.1132 | 11116 |
+| pass + light check z>=8 | 0.688 | 2.64 % | 0.9731 | 0.1133 | 10960 |
+| pass + light check z>=10 | 0.687 | 2.59 % | 0.9736 | 0.1134 | 10804 |
+
+(100 frames, same direction: pass + light check 0.1030 against 0.1102 base; loosening the ratio to 1.05 costs velocity error, 0.1140.) z>=6 is the default: velocity error as low as at 10, more yield, and on real data more long-track points.
+
+**Real recordings, 300 frames, `shared_correction` on, truth-free** (points in tracks of 50+ frames per frame; singletons; roughness p90; LOCO median):
+
+| | wp2 | wp1 |
+|---|---|---|
+| base | 587; 11.2 %; 0.1485; 0.347 | 579; 11.0 %; 0.1499; 0.349 |
+| light check only (10) | 551; 8.6 %; 0.1456; 0.347 | 544; 8.5 %; 0.1468; 0.349 |
+| pass | 649; 11.3 %; 0.1488; 0.348 | 648; 11.1 %; 0.1504; 0.350 |
+| pass + z>=4 | 626; 9.1 %; 0.1478; 0.348 | 627; 9.0 %; 0.1494; 0.350 |
+| pass + z>=6 | 621; 8.8 %; 0.1469; 0.348 | 621; 8.7 %; 0.1485; 0.350 |
+| pass + z>=8 | 614; 8.7 %; 0.1463; 0.348 | 614; 8.6 %; 0.1478; 0.350 |
+| pass + z>=10 | 611; 8.5 %; 0.1459; 0.348 | 610; 8.4 %; 0.1471; 0.350 |
+
+The pass adds 11-12 % points in long tracks; the check takes 4-6 % of them back and removes the singletons (11 to 9 %) and the roughness tail; the leave-one-camera-out residual stays 0.347-0.351. Matching time 4.7 s to 8-10 s over 300 frames (tracking 28 s). On the other camera setup (lv-multi wp5, 20 frames) the check removes 20 % of the points at z>=10 (3-camera points 52 to 40 %) and 17 % at z>=6, mean track length 10.7 to 11.9 and roughness tail 0.1725 to 0.1606 (pass against pass + z>=10); its run store for wp4 holds no targets, so only wp5 was usable.
+
+**Limits.** No truth on the real recordings: the removed points that are real cannot be counted, only bounded (hidden views of 4-camera points fall below z=6 in 2.6 % on wp2, 1 % on syn1). One synthetic case with images exists. The full unit suite (2132 passed, 94 skipped) has one failure, `test_sequence_triangulation_method::test_lsq_triangulation_reprojects_better_than_pairs` ('run.zarr does not exist'), which also fails with these changes stashed. The GUI has no checkbox for `shared_pass` or `light_check` (YAML only).
