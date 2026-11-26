@@ -84,6 +84,7 @@ class TrackingSetup:
     tracker: str = DEFAULT_TRACKER
     direction: str = DEFAULT_DIRECTION
     postprocess: bool = True
+    align_4cam: bool = True           # all trackers: align 3-cam subsets onto the 4-cam gauge (zero scale drift)
     holistic_rounds: int = 0
     shared_correction: bool = False   # two_phase only: re-estimate the points that touch a shared blob, link again
     epi_weight: float = 0.0           # fast_3d only: soft epipolar penalty, 0 = pure 3D
@@ -203,6 +204,7 @@ def resolve_tracking_setup(
     direction = _old_direction_key(track) or legacy_direction or DEFAULT_DIRECTION
 
     postprocess = bool(track.get("postprocess", True))
+    align_4cam = bool(track.get("align_4cam", True))
 
     rounds_raw = track.get("holistic_rounds", legacy_rounds)
     try:
@@ -225,6 +227,7 @@ def resolve_tracking_setup(
         tracker=tracker,
         direction=direction,
         postprocess=postprocess,
+        align_4cam=align_4cam,
         holistic_rounds=rounds,
         shared_correction=shared_correction,
         epi_weight=epi_weight,
@@ -260,6 +263,7 @@ def apply_tracking_setup(
     track["tracker"] = setup.tracker
     track["direction"] = setup.direction
     track["postprocess"] = bool(setup.postprocess)
+    track["align_4cam"] = bool(setup.align_4cam)
     track["holistic_rounds"] = int(setup.holistic_rounds)
     track["shared_correction"] = bool(setup.shared_correction)
     if setup.tracker == "fast_3d":
@@ -298,6 +302,12 @@ def add_tracker_arguments(parser: Any) -> None:
         help="Re-estimate points that touch a shared blob from their tracks and link again (two_phase only). "
              "Default: track.shared_correction, which defaults to false.",
     )
+    parser.add_argument(
+        "--align-4cam", dest="align_4cam", action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Align partial-camera (3-cam) points onto the 4-camera gauge before tracking (all trackers). "
+             "Default: track.align_4cam, which defaults to true.",
+    )
 
 
 def tracker_overrides_from_argv(argv: list[str] | None = None) -> dict[str, Any]:
@@ -314,4 +324,6 @@ def tracker_overrides_from_argv(argv: list[str] | None = None) -> dict[str, Any]
         out["holistic_rounds"] = int(known.holistic_rounds)
     if known.shared_correction is not None:
         out["shared_correction"] = bool(known.shared_correction)
+    if known.align_4cam is not None:
+        out["align_4cam"] = bool(known.align_4cam)
     return out

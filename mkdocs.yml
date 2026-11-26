@@ -65,6 +65,9 @@ nav:
   - User Guides:
     - Zarr & HDF5 Storage: zarr-hdf5-storage.md
     - Tracking Pipeline & Results: tracking_guide.md
+    - Particle Trackers (Quick Start & Choosing): trackers.md
+    - Camera-Subset Alignment & Merge Refinement: camera-subset-alignment.md
+    - Holistic Tracking (Merged-Blob Loop): holistic-tracking.md
     - Tracking Parameters (what to measure, how to set): tracking_parameters_guide.md
     - tracking_advice (measure your data, get the values): tracking_advice.md
     - Point Quality and Ghost Marks: tracking_quality.md
@@ -86,6 +89,7 @@ nav:
     - Auto-Calibration (warmup): tutorials/warmup_tutorial.md
     - Reprojection RMS vs Ray Convergence: calibration-rms-vs-rcm.md
     - Bundle Adjustment: calibration-bundle-adjustment.md
+    - Joint Self-Calibration: self-calibration.md
     - Tracer Self-Calibration: tracer-self-calibration.md
   - Benchmarks:
     - Benchmarking & Tracker Selection: benchmarking_guide.md

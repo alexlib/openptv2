@@ -42,10 +42,14 @@ it softly, as a *ghost probability* between 0 and 1 for every point.
   brightness about 0.15 on real data); a ghost combines blobs of different particles (about
   0.4). The brightness of each camera is first divided by that camera's typical value (its
   run median), because real cameras differ in gain by 0.13-0.17 in log, as much as the
-  spread itself. It is a logistic model on [relative rcm, 3-camera flag, log spread], fitted
-  on synthetic data whose per-camera brightness scatter matches real data
-  (`synth_bench build --amp-jitter 0.18`). If the blobs carry no brightness (constant
-  values) the plugin falls back to `rcm` with a message.
+  spread itself. **Shared-blob masking (`mask_shared=True`, default):** if a blob is shared
+  by two or more points in the same frame (for example from `ptv.shared_pass`), its summed
+  brightness is naturally ~2× higher than the particle's other views; `log_brightness_from_arrays`
+  excludes shared views from the spread whenever the point has at least two unshared cameras,
+  so recovered merged particles are not misclassified as ghosts. It is a logistic model on
+  [relative rcm, 3-camera flag, log spread], fitted on synthetic data whose per-camera
+  brightness scatter matches real data (`synth_bench build --amp-jitter 0.18`). If the blobs
+  carry no brightness (constant values) the plugin falls back to `rcm` with a message.
 - Measured on four independent realistic synthetic cases (against `rcm`): velocity error
   −0.005 (sparse), −0.015 (×2 density), −0.039 (×4 density), −0.001 (clustered with frame
   skip ×4); ghost fraction 1 to 2 points lower; true points kept at most 0.007 lower. On
