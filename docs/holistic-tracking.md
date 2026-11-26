@@ -13,8 +13,9 @@ The holistic loop (an option of `two_phase`, not a separate tracker) lets tracks
 1. link with `two_phase`;
 2. infer from the tracks which blobs hold several particles;
 3. estimate each particle's brightness per camera (jointly with the blob counts);
-4. give each particle its own effective pixel observation in a shared blob and triangulate again (a short
-   path prior keeps it stable);
+4. align the 4 cameras onto a zero-drift 3D gauge (`align_4cam=True`, eliminating 3-camera/4-camera subset jumps;
+   see [Camera-Subset Alignment](camera-subset-alignment.md)), give each particle its own effective pixel observation
+   in a shared blob, and re-triangulate directly from the aligned views (`prior=False`, no quadratic curve bias);
 5. add particles hidden in other particles' blobs, found from the unexplained brightness, matched in 3D;
 6. link again.
 
@@ -41,10 +42,12 @@ observation table (`obs/`) and per-point sigma (`psigma/`). Cost: about 0.6 s pe
 
 ## Measured (details: `docs/plans/2026-11-20-holistic-ptv.md`)
 
-| | `two_phase` | with `holistic_rounds: 2` |
+| | `two_phase` | with `holistic_rounds: 2` (+ `shared_pass`) |
 |---|---|---|
-| Rendered images, 200 frames: velocity error | 0.140 | 0.108 |
-| Same: yield / long-track completeness | 0.691 / 0.544 | 0.741 / 0.670 |
+| Rendered images (`L2`), 200 frames: velocity error | 0.140 | **0.095** |
+| Same: yield / long-track completeness | 0.691 / 0.544 | **0.750 / 0.677** |
+| Real-like (`L1 m0.75`), 200 frames: velocity / acc error | 0.105 / 5.80 | **0.082 / 4.96** |
+| Same: yield / long-track completeness | 0.754 / 0.623 | **0.796 / 0.747** |
 | Dense (x4): velocity error | 0.433 | 0.382 |
 | Real wp2, 300 frames: mean track length | 20.7 | 28.2 |
 | Real wp2: jump share | 1.44 % | 0.47 % |
