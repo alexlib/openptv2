@@ -102,7 +102,6 @@ temp/
 
 # uv
 .uv/
-uv.lock
 
 # algorithms/ - ignore generated files
 algorithms/__pycache__/
