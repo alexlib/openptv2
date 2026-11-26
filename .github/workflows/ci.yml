@@ -24,8 +24,11 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
+      # --locked: use the committed uv.lock and fail if it is out of date with pyproject.toml,
+      # so a half-published PyPI release (fonttools 4.69.0, 2026-11-25) cannot break CI.
+      # After changing dependencies: uv lock
       - name: Install dependencies
-        run: uv sync --extra dev
+        run: uv sync --extra dev --locked
 
       - name: Install Qt system libraries (Linux)
         if: runner.os == 'Linux'
