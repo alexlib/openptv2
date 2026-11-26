@@ -161,6 +161,24 @@ class TruthRig:
     def _vacuum(self) -> MmNp:
         return MmNp(1, 1.0, [1.0], [0.0, 0.0, 0.0], 1.0)
 
+    def ray_path(self, c: int, pts: np.ndarray) -> np.ndarray:
+        """The traced ray of camera ``c`` to each point: (N, 4, 3) = camera centre, point on the air-side glass surface,
+        point on the water-side surface, the particle. For drawing and for checking the tracer by eye."""
+        cal = self.cals[c]
+        pts = np.asarray(pts, float).reshape(-1, 3)
+        gvec = np.asarray(cal.get_glass_vec(), float)
+        s_front = float(np.linalg.norm(gvec))
+        ghat = gvec / s_front
+        nf, nb = _tilted(ghat, self.tilt_front[c]), _tilted(ghat, self.tilt_back[c])
+        cam = np.asarray(cal.get_pos(), float)
+        u = air_direction(cam, pts, ghat, s_front, self.glass_thickness, self.n_air, self.n_glass, self.n_water, nb, nf)
+        n = len(pts)
+        camb = np.broadcast_to(cam, (n, 3))
+        pa = _hit(camb, u, np.broadcast_to(nb, (n, 3)), np.broadcast_to((s_front + self.glass_thickness) * ghat, (n, 3)))
+        ug = _refract(u, np.broadcast_to(nb, (n, 3)), self.n_air / self.n_glass)
+        pb = _hit(pa, ug, np.broadcast_to(nf, (n, 3)), np.broadcast_to(s_front * ghat, (n, 3)))
+        return np.stack([camb, pa, pb, pts], axis=1)
+
     def project_cam(self, c: int, pts: np.ndarray) -> np.ndarray:
         """Pixels (N, 2) of ``pts`` in camera ``c`` (no image-bounds check)."""
         from openptv2.algorithms.imgcoord import img_coord_batch
