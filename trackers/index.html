@@ -2330,6 +2330,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#before-tracking-the-light-check-ptvlight_check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before tracking: the light check (ptv.light_check)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#old-names-still-work-for-one-release" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2975,6 +2986,77 @@ It costs about 10 % more matching time and changes nothing when no blob is share
 continuity; at 4x density it costs a little velocity error and a few more ghost points, so use it for sparse to
 moderate seeding. Combined with <code>holistic_rounds</code> it supplies most of what the births do, and the loop's position
 refinement then lowers the error further. Measurements: <code>docs/plans/2026-11-21-tracker-setup.md</code>, sections 14 and 15.</p>
+<h2 id="before-tracking-the-light-check-ptvlight_check">Before tracking: the light check (<code>ptv.light_check</code>)<a class="headerlink" href="#before-tracking-the-light-check-ptvlight_check" title="Permanent link">&para;</a></h2>
+<p>A point matched in all cameras but one is the weakest kind the stereo matcher makes: a few rays that meet by chance (a
+ghost) look like a particle seen in one camera less. A real particle leaves light in the camera that did not see it.
+The light check projects every such point into its missing camera, reads the raw image there, and drops the point when
+there is no light:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">ptv</span><span class="p">:</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">light_check</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">      </span><span class="c1"># or a number, the minimum light in noise units (default 6); false / absent = off (default)</span>
+</span></code></pre></div>
+<p>The light is the peak within 1.5 px of the projected position over the local background (median of the ring beyond
+4 px), in units of the local noise (1.4826 times the median absolute deviation). A ghost shows noise there (median about
+4), a real particle a clear peak (median about 90 on the rendered benchmark, about half that on real recordings). Only
+points with exactly one camera missing are judged; a point whose window leaves the image is kept; a frame whose images
+cannot be read is skipped with one warning and keeps all its points. It runs after the matching, needs the images (read
+once per frame), and adds about 3 to 4 s per 300 frames of 4 cameras.</p>
+<p>Measured with <code>two_phase</code> + <code>shared_correction</code> (docs/plans/2026-11-21-tracker-setup.md, sections 23 and 24):</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>pass only</th>
+<th>pass + light check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rendered benchmark syn1, 400 frames: yield</td>
+<td>0.694</td>
+<td>0.690</td>
+</tr>
+<tr>
+<td>ghost points</td>
+<td>3.58 %</td>
+<td>2.71 %</td>
+</tr>
+<tr>
+<td>raw link precision</td>
+<td>0.9643</td>
+<td>0.9724</td>
+</tr>
+<tr>
+<td>velocity error</td>
+<td>0.1188</td>
+<td>0.1132</td>
+</tr>
+<tr>
+<td>real wp2, 300 frames: points in tracks of 50+ frames, per frame</td>
+<td>649</td>
+<td>621</td>
+</tr>
+<tr>
+<td>singletons</td>
+<td>11.3 %</td>
+<td>8.8 %</td>
+</tr>
+<tr>
+<td>real wp1, 300 frames: points in tracks of 50+ frames, per frame</td>
+<td>648</td>
+<td>621</td>
+</tr>
+<tr>
+<td>singletons</td>
+<td>11.1 %</td>
+<td>8.7 %</td>
+</tr>
+</tbody>
+</table>
+<p>On real recordings the missing views carry less light than on the benchmark (a quarter of the 3-camera points show
+none), so the check removes 8 to 10 % of the points; the roughness tail and the leave-one-camera-out residual do not
+get worse, but some of the removed points are real. Lower the number (4) to keep more, raise it (10) to remove more.
+It is meant to go with <code>shared_pass</code>, whose new points are 3-camera points and, left alone, add ghosts. Without
+<code>shared_pass</code> it removes ghosts at a small cost in points.</p>
 <h2 id="old-names-still-work-for-one-release">Old names still work (for one release)<a class="headerlink" href="#old-names-still-work-for-one-release" title="Permanent link">&para;</a></h2>
 <p>A saved YAML or script that uses an old name is translated by <code>tracking_setup.resolve_tracking_setup</code>, and the log
 says what it became. Old names will stop working after one release of warnings.</p>
