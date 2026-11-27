@@ -1,5 +1,11 @@
 # Tracer Self-Calibration ("Shaking")
 
+!!! abstract "In short"
+    Refine a plate calibration with real tracked particles in a joint fit of all cameras. The plate is shallow and fixes the depth direction poorly; particles fill the volume.
+
+    **Basics:** [Course page 8](course/08-calibration.md). **Do it:** [Tracks break when the set of cameras changes](recipes/camera-set-changes.md).
+
+
 Refine an existing camera calibration using real tracked tracer particles
 from your flow, instead of only the calibration plate. This is the "modern
 shaking" step: after a normal plate calibration, particles that were tracked

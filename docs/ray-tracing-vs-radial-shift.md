@@ -1,5 +1,11 @@
 # Ray tracing through the window against the radial-shift model
 
+!!! abstract "In short"
+    Two ways to model the glass window: the library's fast radial-shift lookup, and an exact 3D ray trace. They agree to 0.0007 px for flat windows; the trace is about 100 times slower; a tilted window is the case the library cannot represent.
+
+    **Basics:** [Course page 3](course/03-cameras.md). **Do it:** [Cameras on both sides of a water cell](recipes/water-cell-two-sides.md).
+
+
 An interactive marimo notebook walks through the independent ray tracer of `docs/synthetic-rig.md` and compares it with the
 multimedia model that openptv2 uses (the radial shift of `openptv2.algorithms.multimed`):
 

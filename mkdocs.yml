@@ -109,6 +109,7 @@ nav:
     - Particle-Based Refinement: tutorials/particle_calibration.md
     - Dumbbell Calibration: tutorials/dumbbell_calibration.md
     - Auto-Calibration (warmup): tutorials/warmup_tutorial.md
+  - Reference and research:
     - Reprojection RMS vs Ray Convergence: calibration-rms-vs-rcm.md
     - Bundle Adjustment: calibration-bundle-adjustment.md
     - Tracer Self-Calibration: tracer-self-calibration.md
@@ -117,6 +118,8 @@ nav:
     - Self-Calibration on a Synthetic Cavity: self-calibration-cavity-synthetic.md
     - Synthetic Truth Rig: synthetic-rig.md
     - Ray Tracing vs Radial Shift: ray-tracing-vs-radial-shift.md
+    - Holistic Tracking (merged blobs): holistic-tracking.md
+    - Self-Calibration (API and scripts): self-calibration.md
   - Benchmarks:
     - Benchmarking & Tracker Selection: benchmarking_guide.md
     - Multi-Engine Benchmark Results: tracking-benchmark-results.md

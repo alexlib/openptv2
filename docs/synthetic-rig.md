@@ -1,5 +1,11 @@
 # The truth rig: an independent ray tracer for testing calibration
 
+!!! abstract "In short"
+    An independent ray tracer (Snell's law in 3D) gives a test rig with a known answer. It agrees with the library's radial-shift model for flat parallel windows, and shows what tilted windows cost.
+
+    **Basics:** [Course page 3](course/03-cameras.md). **Do it:** [Ray tracing vs radial shift](ray-tracing-vs-radial-shift.md).
+
+
 `openptv2.synthetic_rig.TruthRig` computes where a 3D point appears in each camera by tracing the light ray through the
 real physical layers, with Snell's law in 3D. It is deliberately **not** the code the library uses to calibrate and track.
 That gives a test bed with a known answer: the rig is the truth, a calibration is a guess about it, and every difference is

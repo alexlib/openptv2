@@ -1,5 +1,11 @@
 # Comprehensive Tracker Benchmarking, Selection & Strategy Guide for OpenPTV2
 
+!!! abstract "In short"
+    How to compare trackers on synthetic flows and choose one. There is no single best tracker; the current advice is on the trackers page.
+
+    **Basics:** [Course page 6](course/06-track.md). **Do it:** [Particle trackers](trackers.md).
+
+
 ## Executive Summary & Key Findings
 
 Based on empirical cross-tracker benchmarking on turbulent synthetic flow fields, **there is no single "best" tracker for every flow**. For the current per-tracker recommendations see `docs/trackers.md`. (`nearest_hungarian_3d` and `predictive_gmm_3d` were removed on 2026-10-09, together with the hybrid cascading strategies built on them.)

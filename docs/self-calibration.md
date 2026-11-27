@@ -1,5 +1,11 @@
 # Joint self-calibration from tracer particles
 
+!!! abstract "In short"
+    The API and scripts for the joint fit of cameras and particles, with the settings that matter and how to run it on a finished run.
+
+    **Basics:** [Course page 8](course/08-calibration.md). **Do it:** [Tracks break when the set of cameras changes](recipes/camera-set-changes.md).
+
+
 `openptv2.selfcal.joint_self_calibrate` refines the camera parameters (exterior orientation, principal point, radial and
 decentering distortion) and the 3D positions of many tracer particles together, by bundle adjustment on their blob
 centres. The gauge is fixed by holding one camera's exterior and by soft priors, so the world frame stays put. Existing

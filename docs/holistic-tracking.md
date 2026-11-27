@@ -1,5 +1,11 @@
 # Holistic tracking (the add-on: `holistic_rounds` with `two_phase`)
 
+!!! abstract "In short"
+    The merged-blob loop: tracks and blobs resolve each other, so overlapping particles keep their own positions. Switch: `track.holistic_rounds: 2`.
+
+    **Basics:** [Course page 6](course/06-track.md). **Do it:** [Dense seeding](recipes/dense-seeding.md).
+
+
 Switch: `track.holistic_rounds: 2` (default 0 = off). See [Particle trackers](trackers.md) for the whole setup.
 
 Detection, stereo matching and tracking normally run once each, in that order. The weak point is the **merged blob**:

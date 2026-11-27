@@ -1,5 +1,11 @@
 # Self-calibration on a synthetic cavity: what it does with cameras on both sides, with the truth known
 
+!!! abstract "In short"
+    A synthetic water cell with the truth known: self-calibration restores consistency in all 13 experiments, but not always the true calibration, and it cannot start from a calibration that is more than about 3 px off.
+
+    **Basics:** [Cameras on both sides of a water cell](recipes/water-cell-two-sides.md). **Do it:** [Course page 8](course/08-calibration.md).
+
+
 Real recordings cannot tell whether a self-calibrated camera set is *right*, only whether it is *consistent*. This page uses a
 synthetic rig close to `test_cavity` whose truth is known, to see what self-calibration really does, with cameras at negative and
 positive z and glass vectors of both signs. Run it with `bench/calibration_lab/cavity_synth_lab.py`; regression tests are in

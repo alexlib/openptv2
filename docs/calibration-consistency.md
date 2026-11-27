@@ -1,5 +1,11 @@
 # Calibration consistency: check it, fix it, and only then patch it
 
+!!! abstract "In short"
+    The same particle must get the same position from all cameras and from any three of them. Check it in seconds; fix it by fitting the cameras again or by aligning the partial points. Never adopt the fix from the report alone.
+
+    **Basics:** [Course page 8](course/08-calibration.md). **Do it:** [Tracks break when the set of cameras changes](recipes/camera-set-changes.md).
+
+
 A 3D-PTV run is only as good as the agreement between its cameras. When a particle is seen by all four cameras, four rays meet
 in one point. When one camera drops out, the three remaining rays meet in a *slightly different* point if the calibration is
 not perfectly consistent. The measured position **jumps** whenever a track changes between "4 cameras" and "3 cameras, camera

@@ -1,5 +1,11 @@
 # Self-calibration from tracers changes the volume: a bias that is easy to miss
 
+!!! abstract "In short"
+    Fitting cameras to particles makes them agree, but cannot fix the size of the volume. Every fit we made changed the scale or shape of the volume by 0.2 to 1 %. Anchor the fit with a known length, and report the change.
+
+    **Basics:** [Course page 8](course/08-calibration.md). **Do it:** [Dumbbell](recipes/dumbbell.md).
+
+
 **Short version.** Fitting cameras to tracer particles makes the cameras agree with each other, which is what removes the
 camera-switching jump and improves tracking. It does **not** tell the fit what the size or the shape of the measurement volume is.
 In every run we made, the fit also changed the volume: a scale change and an uneven stretch of a fraction of a percent up to

@@ -1,5 +1,11 @@
 # Bundle adjustment in OpenPTV calibration
 
+!!! abstract "In short"
+    How the usual calibration works (one camera at a time), why that can leave the cameras disagreeing in 3D, and the joint fit that closes the gap.
+
+    **Basics:** [Course page 8](course/08-calibration.md). **Do it:** [One rig, a target](recipes/calibration-known-target.md).
+
+
 This page explains how OpenPTV calibrates today, why that leaves a cross-camera
 gap ([RCM](calibration-rms-vs-rcm.md)), and how the **joint bundle adjustment**
 closes it — plus the roadmap to a full self-calibration.
