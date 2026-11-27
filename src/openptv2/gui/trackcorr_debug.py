@@ -20,6 +20,8 @@ winner) is.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 
 from openptv2.algorithms.constants import CORRES_NONE, NEXT_NONE, POSI
@@ -34,6 +36,40 @@ from openptv2.algorithms.track_kernels import (
     trackcorr_loop_fast as _trackcorr_loop_fast,
 )
 from openptv2.algorithms.tracking_run import TrackingRun
+
+
+def _candidate_appearance(targ_tnr, targ_sumg, num_targets, maxparts2, nc):
+    """Mean grey sum over each frame-2 particle's claimed targets, -1 where a particle claims none.
+
+    The same per-step array the tracker builds (algorithms/track.py), so the kernel sees what it
+    sees in a real run (it feeds the ``app_weight`` cost term).
+    """
+    cand = np.full(maxparts2, -1.0, dtype=np.float64)
+    sums = np.zeros(maxparts2, dtype=np.float64)
+    cnts = np.zeros(maxparts2, dtype=np.int32)
+    for cam in range(nc):
+        nt = int(num_targets[cam])
+        tnr = np.asarray(targ_tnr[cam, :nt])
+        sg = np.asarray(targ_sumg[cam, :nt])
+        ok = (tnr >= 0) & (tnr < maxparts2)
+        np.add.at(sums, tnr[ok], sg[ok])
+        np.add.at(cnts, tnr[ok], 1)
+    has = cnts > 0
+    cand[has] = sums[has] / cnts[has]
+    return cand
+
+
+def _needs_grid(run_info, nc, frames):
+    """use_grid as the tracker decides it: asked for, or forced when the targets of frames 2/3 are
+    not sorted by y (the binary search would skip targets). ``frames`` = [(targ_y, num_targets), ...]."""
+    if int(getattr(run_info, "use_grid", 0)):
+        return 1
+    for targ_y, num_targets in frames:
+        for c in range(nc):
+            nt = int(num_targets[c])
+            if nt > 1 and not (np.diff(np.asarray(targ_y[c, :nt])) >= -1e-7).all():
+                return 1
+    return 0
 
 
 def _trackcorr_c_loop_capture(run_info, step, num_threads=1):
@@ -85,6 +121,14 @@ def _trackcorr_c_loop_capture(run_info, step, num_threads=1):
     np3 = np.array([fb.buf[3].num_parts], dtype=np.int32)
     nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
     nt3 = np.array(fb.buf[3].num_targets[:nc], dtype=np.int32)
+    cand_app_2 = _candidate_appearance(
+        fb.buf[2].targ_tnr, fb.buf[2].targ_sumg, fb.buf[2].num_targets,
+        fb.buf[2].path_x.shape[0], nc,
+    )
+    use_grid = _needs_grid(
+        run_info, nc,
+        [(fb.buf[2].targ_y, fb.buf[2].num_targets), (fb.buf[3].targ_y, fb.buf[3].num_targets)],
+    )
 
     count1, num_added = _trackcorr_loop_fast(
         orig_parts,
@@ -100,6 +144,7 @@ def _trackcorr_c_loop_capture(run_info, step, num_threads=1):
         fb.buf[1].targ_x,
         fb.buf[1].targ_y,
         fb.buf[1].targ_tnr,
+        fb.buf[1].targ_sumg,
         fb.buf[2].path_x,
         fb.buf[2].path_prev,
         fb.buf[2].path_next,
@@ -113,6 +158,8 @@ def _trackcorr_c_loop_capture(run_info, step, num_threads=1):
         fb.buf[2].targ_x,
         fb.buf[2].targ_y,
         fb.buf[2].targ_tnr,
+        fb.buf[2].targ_sumg,
+        cand_app_2,
         nt2,
         np2,
         fb.buf[3].path_x,
@@ -164,6 +211,11 @@ def _trackcorr_c_loop_capture(run_info, step, num_threads=1):
         cpar.pix_y,
         run_info.flatten_tol,
         num_threads,
+        int(getattr(run_info, "loser_retry", 1)),
+        int(getattr(run_info, "cold_start_neighbour", 1)),
+        float(getattr(run_info, "app_weight", 0.0)),
+        None,
+        use_grid,
     )
 
     # --- Capture point: fb.buf[1]/[2] still hold `step`'s data, pre-rotation. ---
@@ -210,14 +262,41 @@ def _trackcorr_c_loop_capture(run_info, step, num_threads=1):
     return snapshot, count1, num_added
 
 
-def load_run(cpar, spar, vpar, tpar, cals, flatten_tol=0.0001, max_targets=10000):
+def open_scratch_store(dataset_dir):
+    """A throw-away copy of the dataset's run store, opened for writing.
+
+    Stepping the tracker writes link frames into the store it works on. The viewer works on this
+    copy, so the user's ``res/run.zarr`` is never touched. Returns ``(store, tmp_dir)``; delete
+    ``tmp_dir`` when done. Run the sequence step first: the store must hold the targets and the
+    correspondences of the frames you want to look at.
+    """
+    import shutil
+    import tempfile
+
+    from openptv2.storage import RunStore, find_existing_store
+
+    src = find_existing_store(dataset_dir)
+    if src is None:
+        raise FileNotFoundError(
+            f"No res/run.zarr in {dataset_dir}: run the sequence (detection + matching) first"
+        )
+    tmp_dir = Path(tempfile.mkdtemp(prefix="trackcorr_debug_"))
+    dst = tmp_dir / "run.zarr"
+    shutil.copytree(src, dst)
+    return RunStore(dst, mode="a"), tmp_dir
+
+
+def load_run(cpar, spar, vpar, tpar, cals, store, flatten_tol=0.0001, max_targets=None):
     """Build a fresh TrackingRun ready for forward stepping (mirrors
-    ``openptv2.tracker.Tracker.restart()``, minus store/naming plumbing this
-    debug tool doesn't need). Reads the run's own res/rt_is.*, res/ptv_is.*,
-    res/added.* -- the standard file bases -- from the current working
-    directory (same convention as ``openptv2.tracker.default_naming``); this
-    does not write any output back."""
+    ``openptv2.tracker.Tracker.restart()``). Frames are read from, and the tracker's link
+    results written to, ``store``: pass a scratch copy from ``open_scratch_store()``, not the
+    user's own store."""
+    from openptv2.tracker import _estimate_max_targets, default_naming
+
     tpar_tuple = convert_track_par_to_tuple(tpar)
+    store.clear_linkage(Path(default_naming["linkage"]).name)
+    if max_targets is None:
+        max_targets = _estimate_max_targets(spar, default_naming, store)
     run = TrackingRun(
         seq_par=spar,
         tpar=tpar_tuple,
@@ -225,11 +304,12 @@ def load_run(cpar, spar, vpar, tpar, cals, flatten_tol=0.0001, max_targets=10000
         cpar=cpar,
         buf_len=4,
         max_targets=max_targets,
-        corres_file_base="res/rt_is",
-        linkage_file_base="res/ptv_is",
-        prio_file_base="res/added",
+        corres_file_base=default_naming["corres"],
+        linkage_file_base=default_naming["linkage"],
+        prio_file_base=default_naming["prio"],
         cal=list(cals),
         flatten_tol=flatten_tol,
+        store=store,
     )
     track_forward_start(run)
     return run
@@ -349,6 +429,7 @@ def probe_particle(
             "targ_x": np.array(frm.targ_x),
             "targ_y": np.array(frm.targ_y),
             "targ_tnr": np.array(frm.targ_tnr),
+            "targ_sumg": np.array(frm.targ_sumg),
             "num_targets": np.array(frm.num_targets[:nc], dtype=np.int32),
             "num_parts": frm.num_parts,
         }
@@ -357,6 +438,13 @@ def probe_particle(
     f3 = _frame_copy(fb.buf[3])
     np2 = np.array([f2["num_parts"]], dtype=np.int32)
     np3 = np.array([f3["num_parts"]], dtype=np.int32)
+
+    cand_app_2 = _candidate_appearance(
+        f2["targ_tnr"], f2["targ_sumg"], f2["num_targets"], f2["path_x"].shape[0], nc
+    )
+    use_grid = _needs_grid(
+        run, nc, [(f2["targ_y"], f2["num_targets"]), (f3["targ_y"], f3["num_targets"])]
+    )
 
     def _v(override, real):
         return real if override is None else override
@@ -375,6 +463,7 @@ def probe_particle(
         fb.buf[1].targ_x,
         fb.buf[1].targ_y,
         fb.buf[1].targ_tnr,
+        fb.buf[1].targ_sumg,
         f2["path_x"],
         f2["path_prev"],
         f2["path_next"],
@@ -388,6 +477,8 @@ def probe_particle(
         f2["targ_x"],
         f2["targ_y"],
         f2["targ_tnr"],
+        f2["targ_sumg"],
+        cand_app_2,
         f2["num_targets"],
         np2,
         f3["path_x"],
@@ -439,6 +530,11 @@ def probe_particle(
         cpar.pix_y,
         run.flatten_tol,
         num_threads,
+        int(getattr(run, "loser_retry", 1)),
+        int(getattr(run, "cold_start_neighbour", 1)),
+        float(getattr(run, "app_weight", 0.0)),
+        None,
+        use_grid,
     )
 
     snapshot = {

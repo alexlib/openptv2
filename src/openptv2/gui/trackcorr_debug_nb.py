@@ -133,10 +133,12 @@ def _():
 
 @app.cell
 def _(Calibration, ControlPar, SequencePar, TrackPar, VolumePar, dataset_dir, load_run, os):
-    # trackcorr_debug.load_run() reads res/rt_is.*/ptv_is.*/added.* (the
-    # standard file bases) relative to the current directory -- chdir into
-    # the dataset for the duration of loading+stepping, same as
-    # test_track.py's own test_cavity fixtures do.
+    # The tracker reads the targets and correspondences from the dataset's res/run.zarr and writes
+    # its links into a scratch copy of it (your results are never touched). Run the sequence
+    # (detection + matching) once first. The parameter and calibration files are read relative to
+    # the dataset, so chdir into it while loading.
+    from openptv2.gui.trackcorr_debug import open_scratch_store
+
     _cwd = os.getcwd()
     os.chdir(dataset_dir)
     try:
@@ -148,7 +150,7 @@ def _(Calibration, ControlPar, SequencePar, TrackPar, VolumePar, dataset_dir, lo
             Calibration.from_file(f"cal/cam{c + 1}.tif.ori", f"cal/cam{c + 1}.tif.addpar")
             for c in range(cpar.num_cams)
         ]
-        run = load_run(cpar, spar, vpar, tpar, cals)
+        run = load_run(cpar, spar, vpar, tpar, cals, open_scratch_store(dataset_dir)[0])
     finally:
         os.chdir(_cwd)
     return cals, cpar, run, spar, tpar, vpar
@@ -237,10 +239,12 @@ def _(cals, cpar, dataset_dir, load_run, os, spar, tpar, vpar):
     # `run` (which step_and_capture already advanced) would violate
     # probe_particle's precondition. Stepped up to (not through)
     # first_number.value, matching what the real-capture cell assumes.
+    from openptv2.gui.trackcorr_debug import open_scratch_store
+
     _cwd = os.getcwd()
     os.chdir(dataset_dir)
     try:
-        probe_run = load_run(cpar, spar, vpar, tpar, cals)
+        probe_run = load_run(cpar, spar, vpar, tpar, cals, open_scratch_store(dataset_dir)[0])
     finally:
         os.chdir(_cwd)
     return (probe_run,)

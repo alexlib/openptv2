@@ -30,21 +30,40 @@ def _read_all_calibration(num_cams, base_path="."):
     return cals
 
 
-@pytest.fixture
-def cavity_run(tmp_path):
+@pytest.fixture(scope="module")
+def prepared_cavity(tmp_path_factory):
+    """A private copy of test_cavity with detection + matching done into res/run.zarr (the debug tool
+    reads the targets and correspondences of each frame from the run store). Built once per module;
+    each test works on its own scratch copy of the store."""
+    tmp_path = tmp_path_factory.mktemp("trackcorr_debug")
     src = "test_data/test_cavity"
-    if not os.path.exists(f"{src}/res_orig") or not os.path.exists(f"{src}/img_orig"):
-        pytest.skip("test_cavity res_orig/img_orig fixtures not present")
+    if not os.path.exists(f"{src}/img_orig"):
+        pytest.skip("test_cavity img_orig fixtures not present")
 
     dst = tmp_path / "test_cavity"
-    shutil.copytree(src, dst)
-    if (dst / "res").exists():
-        shutil.rmtree(dst / "res")
+    shutil.copytree(src, dst, ignore=shutil.ignore_patterns("res*", "run.zarr", "tmp*.txt"))
     if (dst / "img").exists():
         shutil.rmtree(dst / "img")
-    shutil.copytree(dst / "res_orig", dst / "res")
     shutil.copytree(dst / "img_orig", dst / "img")
 
+    cwd = os.getcwd()
+    os.chdir(dst)
+    try:
+        from openptv2.batch import pyptv_batch
+
+        spar = SequencePar.from_yaml("parameters.yaml")
+        pyptv_batch.main(dst / "parameters_Run1.yaml", spar.get_first(), spar.get_last(), mode="sequence")
+    finally:
+        os.chdir(cwd)
+    return dst
+
+
+@pytest.fixture
+def cavity_run(prepared_cavity):
+    from openptv2.gui.trackcorr_debug import open_scratch_store
+
+    dst = prepared_cavity
+    store, scratch = open_scratch_store(dst)
     cwd = os.getcwd()
     os.chdir(dst)
     try:
@@ -53,31 +72,23 @@ def cavity_run(tmp_path):
         vpar = VolumePar.from_yaml("parameters.yaml")
         tpar = TrackPar.from_yaml("parameters.yaml")
         cals = _read_all_calibration(cpar.num_cams)
-        run = load_run(cpar, spar, vpar, tpar, cals)
+        run = load_run(cpar, spar, vpar, tpar, cals, store)
         yield run, spar
     finally:
         os.chdir(cwd)
+        shutil.rmtree(scratch, ignore_errors=True)
 
 
 @pytest.fixture
-def cavity_loader(tmp_path):
+def cavity_loader(prepared_cavity):
     """Like cavity_run, but yields a zero-arg factory for a *fresh* run each
     call (needed by probe_particle tests, which require an unstepped run:
     calling it more than once, or after step_and_capture has advanced a
     prior run, must not share state between them)."""
-    src = "test_data/test_cavity"
-    if not os.path.exists(f"{src}/res_orig") or not os.path.exists(f"{src}/img_orig"):
-        pytest.skip("test_cavity res_orig/img_orig fixtures not present")
+    from openptv2.gui.trackcorr_debug import open_scratch_store
 
-    dst = tmp_path / "test_cavity"
-    shutil.copytree(src, dst)
-    if (dst / "res").exists():
-        shutil.rmtree(dst / "res")
-    if (dst / "img").exists():
-        shutil.rmtree(dst / "img")
-    shutil.copytree(dst / "res_orig", dst / "res")
-    shutil.copytree(dst / "img_orig", dst / "img")
-
+    dst = prepared_cavity
+    scratches = []
     cwd = os.getcwd()
     os.chdir(dst)
     try:
@@ -88,11 +99,15 @@ def cavity_loader(tmp_path):
         cals = _read_all_calibration(cpar.num_cams)
 
         def _fresh_run():
-            return load_run(cpar, spar, vpar, tpar, cals)
+            store, scratch = open_scratch_store(dst)
+            scratches.append(scratch)
+            return load_run(cpar, spar, vpar, tpar, cals, store)
 
         yield _fresh_run, spar
     finally:
         os.chdir(cwd)
+        for sc in scratches:
+            shutil.rmtree(sc, ignore_errors=True)
 
 
 def test_winner_is_always_among_captured_candidates(cavity_run):
