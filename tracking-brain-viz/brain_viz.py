@@ -89,8 +89,9 @@ def _(mo):
 
 @app.cell
 def _(np, zarr_path, img_dir):
-    import imageio.v2 as iio
     from pathlib import Path
+
+    import imageio.v2 as iio
 
     from openptv2.storage import RunStore
 
