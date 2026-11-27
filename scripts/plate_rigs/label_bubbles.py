@@ -1,4 +1,4 @@
-"""Click-to-mark bubble centroids on the Illmenau dataset, in a native Tk window,
+"""Click-to-mark bubble centroids on the plate-rig dataset, in a native Tk window,
 plus an automatic detector overlay to check against.
 
 Displays the image after openptv2's standard background removal (box-blur
@@ -32,9 +32,9 @@ the final connected-component centroid -- so the actual detection step
 reuses the tested Cython code, not a one-off reimplementation.
 
 Usage:
-    uv run python scripts/label_illmenau_bubbles.py [image_path] [marks_path]
+    uv run python scripts/label_bubbles.py [image_path] [marks_path]
 
-Defaults to the wp4/Messung_5 frame used to develop this tool and an
+Defaults to the wp4/measurement_5 frame used to develop this tool and an
 adjacent bubble_marks.json.
 """
 
@@ -55,7 +55,7 @@ from openptv2.algorithms.parameters import ControlPar
 from openptv2.algorithms.track_kernels_batch import targ_rec_fast
 from openptv2.image_processing import preprocess_image
 
-DEFAULT_IMG_PATH = r"C:\Users\alex\Downloads\Illmenau\Messung_5\00002400.tiff"
+DEFAULT_IMG_PATH = "00002400.tiff"
 
 # Local-normalization + merge-and-detect parameters (see module docstring).
 Z_WINDOW = 25  # local mean/std window, in pixels

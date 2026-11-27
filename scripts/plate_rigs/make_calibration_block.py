@@ -11,7 +11,7 @@ Point id convention is row-major and 1-based from the bottom-left corner of the
 lattice, `id = iy*nx + ix + 1`, and the datum dot (the coded L corner, whose
 grid index comes from plate.yaml) sits at the origin.
 
-    ILLMENAU_DIR=<folder> ILLMENAU_CAMS=5,6,7,8 python make_calibration_block.py
+    PLATE_RIG_DIR=<folder> PLATE_RIG_CAMS=5,6,7,8 python make_calibration_block.py
 """
 
 import os

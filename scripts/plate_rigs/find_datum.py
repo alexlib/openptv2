@@ -16,7 +16,7 @@ complete views only.
 Run it before anything else on a new camera group, and put the answer in
 plate.yaml:datum.
 
-    ILLMENAU_DIR=<folder> ILLMENAU_CAMS=5,6,7,8 python find_datum.py [--frames N]
+    PLATE_RIG_DIR=<folder> PLATE_RIG_CAMS=5,6,7,8 python find_datum.py [--frames N]
 """
 
 import os

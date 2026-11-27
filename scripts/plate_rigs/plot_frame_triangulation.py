@@ -17,7 +17,7 @@ Per frame, two panels:
          mislabelled dot shows up here as one id sitting far off its grid node,
          which the 3D view alone cannot make obvious.
 
-Written to $ILLMENAU_DIR/triangulation/frame_XXXXXXXX.png, plus summary.png and
+Written to $PLATE_RIG_DIR/triangulation/frame_XXXXXXXX.png, plus summary.png and
 summary.csv of the per-frame numbers.
 """
 

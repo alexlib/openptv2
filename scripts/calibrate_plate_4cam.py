@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Headless 4-camera calibration pipeline (Illmenau and multi-view 6x7 dot plates).
+"""Headless 4-camera calibration pipeline (plate-rig and multi-view 6x7 dot plates).
 
 Uses:
 - openptv2.detect_plate (ROI + negative target recognition + coded dot classification)
@@ -8,13 +8,14 @@ Uses:
 - OpenPTV2 .ori and .addpar conversion
 
 Usage:
-  uv run python scripts/calibrate_illmenau_4cam.py
-  uv run python scripts/calibrate_illmenau_4cam.py --base "C:/Users/alex/Downloads/Illmenau" --out "C:/Users/alex/Downloads/Illmenau/openptv_illmenau_4cam"
+  uv run python scripts/calibrate_plate_4cam.py
+  uv run python scripts/calibrate_plate_4cam.py --base "<raw folder>" --out "<raw>/openptv_rig_a_4cam"
 """
 
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
 import numpy as np
@@ -37,13 +38,13 @@ def parse_args():
     ap.add_argument(
         "--base",
         type=str,
-        default=r"C:\Users\alex\Downloads\Illmenau",
-        help="Kalibrierung_1..4 parent folder",
+        default=os.environ.get("PLATE_RIG_RAW", "."),
+        help="plate_cam1..4 parent folder",
     )
     ap.add_argument(
         "--out",
         type=str,
-        default=r"C:\Users\alex\Downloads\Illmenau\openptv_illmenau_4cam",
+        default=os.path.join(os.environ.get("PLATE_RIG_RAW", "."), "openptv_rig_a_4cam"),
         help="OpenPTV2 dataset out folder",
     )
     ap.add_argument(
@@ -79,7 +80,7 @@ def main():
     pitch_val = float(args.pitch)
     focal_mm = float(args.focal_mm)
 
-    folders = [base / f"Kalibrierung_{i}" for i in (1, 2, 3, 4)]
+    folders = [base / f"plate_cam{i}" for i in (1, 2, 3, 4)]
     for f in folders:
         if not f.exists():
             raise FileNotFoundError(f"Missing camera calibration folder: {f}")

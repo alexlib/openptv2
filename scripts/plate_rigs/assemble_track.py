@@ -1,15 +1,15 @@
-"""Assemble full-diameter correspondences and track one Illmenau rig.
+"""Assemble full-diameter correspondences and track one plate-rig rig.
 
 Merges the shards of correspond_fulldiam.py into a new store
 res/run_fulldiam.zarr (with the detections of res/run.zarr), then tracks it
 with the production two_phase tracker and the parameter file's `track:`
 section -- the generic steps are openptv2.recorrespond.write_store and
-openptv2.plugins.two_phase_tracking.track_store.  The Illmenau part is only
+openptv2.plugins.two_phase_tracking.track_store.  The plate-rig part is only
 the shard files and the rig folder.
 
 Usage (ONE rig at a time; env selects it):
-    ILLMENAU_DIR=.../openptv_illmenau_4cam ILLMENAU_CAMS=1,2,3,4 \
-    uv run python scripts/illmenau/assemble_track.py [--first F --last L]
+    PLATE_RIG_DIR=.../openptv_rig_a_4cam PLATE_RIG_CAMS=1,2,3,4 \
+    uv run python scripts/plate_rigs/assemble_track.py [--first F --last L]
 """
 
 import argparse

@@ -23,8 +23,8 @@ from the axis (~3350 mm), which a wrong origin would not give.  The alternative
 -- cameras on the 3575 mm outer wall -- needs two equal and opposite ~250 mm
 origin shifts and is printed for comparison only.
 
-    ILLMENAU_RAW=/Users/alex/Downloads/Ilmenau \\
-        uv run python scripts/illmenau/reconstruct_plates_barrel.py
+    PLATE_RIG_RAW=<raw folder> \\
+        uv run python scripts/plate_rigs/reconstruct_plates_barrel.py
 
 Writes <RAW>/plate_reconstruction/{barrel_top,barrel_3d,fov_coverage}.png and
 plates.csv (one row per rig/frame).
@@ -48,11 +48,11 @@ from openptv2.algorithms.parameters import ControlPar, MmNp
 from openptv2.algorithms.trafo import dist_to_flat, pixel_to_metric
 from openptv2.orientation import multi_cam_point_positions
 
-RAW = Path(os.environ.get("ILLMENAU_RAW", "/Users/alex/Downloads/Ilmenau"))
+RAW = Path(os.environ.get("PLATE_RIG_RAW", "<raw folder>"))
 OUT = RAW / "plate_reconstruction"
 RIGS = {
-    "1-4": (RAW / "openptv_illmenau_4cam", [1, 2, 3, 4], "tab:orange"),
-    "5-8": (RAW / "openptv_illmenau_5678", [5, 6, 7, 8], "tab:blue"),
+    "1-4": (RAW / "openptv_rig_a_4cam", [1, 2, 3, 4], "tab:orange"),
+    "5-8": (RAW / "openptv_rig_b_4cam", [5, 6, 7, 8], "tab:blue"),
 }
 IMX, IMY, PIX = 2560, 2048, 0.005
 PITCH, NX, NY, DATUM = 120.0, 6, 7, (2, 3)

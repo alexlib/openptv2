@@ -1,12 +1,12 @@
-# Illmenau dots-plate pipeline: hand-held multi-plane → OpenCV → openPTV
+# the example rig dots-plate pipeline: hand-held multi-plane → OpenCV → openPTV
 
-> **Update 2026-09-01:** `PR #36` merged as `6a1e81aa` — `src/openptv2/calibration_import.py`, `detect_plate.py`, `plate_bundle.py`, `scripts/illmenau/*`, `presorted` and the joint bundle for cams 1–4 are done. This doc is now the delivered procedure for 1–4; **§8 (cams 5–8) remains open**.
+> **Update 2026-09-01:** `PR #36` merged as `6a1e81aa` — `src/openptv2/calibration_import.py`, `detect_plate.py`, `plate_bundle.py`, `scripts/plate_rigs/*`, `presorted` and the joint bundle for cams 1–4 are done. This doc is now the delivered procedure for 1–4; **§8 (cams 5–8) remains open**.
 
 **Status (2026-08-31, validated over all 48 planes — see §5):** cameras **1–4 are calibrated and accepted**. The route
 taken differs from the original plan in two substantive ways — see §0. The
-delivered procedure is `docs/illmenau-4cam-calibration.md` (tutorial, numbers)
+delivered procedure is `docs/plate-calibration-worked-example.md` (tutorial, numbers)
 and `.claude/skills/openptv-multiplane-calibrate/SKILL.md` (reusable recipe);
-the code is `scripts/illmenau/`. **Next: cameras 5–8 on the −Z wall (§8).**
+the code is `scripts/plate_rigs/`. **Next: cameras 5–8 on the −Z wall (§8).**
 
 Companion to `2026-08-30-calibration-hub-multi-source.md`, which stays the
 source-agnostic spec (four doors, verified OpenCV→`.ori` conversion `S` on the
@@ -63,14 +63,14 @@ Point id = `iy·6 + ix + 1`; `cal/calibration_block.txt` runs `1 −240 −360 0
 
 The `run3` `−Z` camera confusion in the old §2 is resolved: it was a lab-frame
 difference, and the frame above is now declared explicitly and drawn by
-`scripts/illmenau/draw_rig_global.py`.
+`scripts/plate_rigs/draw_rig_global.py`.
 
 ## 2) Pipeline as built
 
 ```
-Kalibrierung_{1..4}/{frame}_*.tiff
+Calibration_{1..4}/{frame}_*.tiff
   → detect_plate.detect_plate_targets  (ROI + negative + coded-dot classification)
-  → plate_labeler.label_coded_6x7      (L corner → (ix,iy) → point id)   [scripts/illmenau/detect_plate_frames.py, cached to npz]
+  → plate_labeler.label_coded_6x7      (L corner → (ix,iy) → point id)   [scripts/plate_rigs/detect_plate_frames.py, cached to npz]
   → fit ONE shared cc from multi-plane cross-camera consistency          [fit_plate_cc.py]
   → solvePnP on the reference frame, zero distortion
      → calibration_from_opencv → angles_from_dm → .ori/.addpar           [refit_plate_pinhole.py]
@@ -158,7 +158,7 @@ a shallow minimum near 8.8 mm, 15.5 -> 12.8 mm, no collapse) and intrinsics
 reprojection RMS is the wrong objective here). Per the user's decision, `cc`
 stays at 8.5858 mm, which is what frame `00000000` verifies by hand in the GUI.
 
-**Fixed by the joint bundle** (`scripts/illmenau/bundle_plate_poses.py`, done):
+**Fixed by the joint bundle** (`scripts/plate_rigs/bundle_plate_poses.py`, done):
 four camera poses + one 6-dof plate pose per frame, `cc` fixed at 8.5858 mm,
 reference plate pose held at identity as the gauge so the datum cannot drift.
 Three gates reject outliers *before* the fit rather than relying on robust loss
@@ -191,11 +191,11 @@ highest-value next change.**
 
 ## 6) Files
 
-*Delivered:* `scripts/illmenau/{detect_plate_frames, fit_plate_cc,
+*Delivered:* `scripts/plate_rigs/{detect_plate_frames, fit_plate_cc,
 refit_plate_pinhole, check_plate_triangulation, check_epipolar, check_all_frames,
-plot_frame_triangulation, check_epipolar_volume, draw_rig_global}.py`, `docs/illmenau-4cam-calibration.md`,
+plot_frame_triangulation, check_epipolar_volume, draw_rig_global}.py`, `docs/plate-calibration-worked-example.md`,
 `.claude/skills/openptv-multiplane-calibrate/SKILL.md`. Dataset paths come from
-`ILLMENAU_RAW` / `ILLMENAU_DIR`. OpenCV is not a project dependency — the two
+`PLATE_RIG_RAW` / `PLATE_RIG_DIR`. OpenCV is not a project dependency — the two
 scripts that need it run under `uv run --with opencv-python-headless`.
 
 *Already in place from the earlier phases:* `src/openptv2/{detect_plate,

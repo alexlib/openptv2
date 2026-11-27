@@ -71,7 +71,7 @@ gui = [
     "pandas>=2.0.0",
     # legacy-io brings `tables`: flowtracks.io imports it at module level,
     # and since flowtracks 1.2.2 it is an optional extra. 1.7.0: flowtracks.clean
-    # and flowtracks.merge (scripts/illmenau).
+    # and flowtracks.merge (scripts/plate_rigs).
     "flowtracks[legacy-io]>=1.7.0",
     "imagecodecs>=2023.1.23",
 ]
@@ -96,7 +96,7 @@ viz = [
     "wigglystuff>=0.5.22",
 ]
 # Multi-plane plate calibration: the PnP steps of openptv2.plate_multiplane
-# and the scripts/illmenau drivers. Only those steps need OpenCV.
+# and the scripts/plate_rigs drivers. Only those steps need OpenCV.
 calibration = [
     "opencv-python-headless>=4.8",
 ]

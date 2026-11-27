@@ -19,7 +19,7 @@ Current active plans (in `docs/plans/`):
 - `2026-08-27-backward-postprocess-double-claim-bug-plan.md` — 185 double-claims via postprocess
 - `2026-08-27-verified-pipeline-ghost-particle-study-plan.md` — Phase1 rerun with highpass + Phase3 gated implementation
 - `2026-08-27-eps0-dynamic-band-study-plan.md` — per-particle epipolar band (deferred)
-- `2026-08-30-illmenau-dots-plate-pipeline.md` — 1–4 done via PR #36, §8 cams 5–8 remains
+- `2026-08-30-plate-rig-dots-plate-pipeline.md` — 1–4 done via PR #36, §8 cams 5–8 remains
 - `2026-08-30-calibration-hub-multi-source.md` — Doors A/B done via PR #36, Doors C/D + DLT/rig.yaml/eps remain
 - `2026-08-31-16bit-image-handling.md` — 16→8 scaling (`to_uint8` + `targ_rec_scaled`)
 - `differentiable_ptv_nextgen_plan.md` — nextgen differentiable PTV (long-term vision)

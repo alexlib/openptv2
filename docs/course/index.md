@@ -29,7 +29,7 @@ flowchart LR
 | 2. Match | A spot in camera 1 lies on a line in camera 2 (the *epipolar line*). Spots that fit the lines in all cameras are one particle. | [5. Match across cameras](05-match.md) |
 | 3. Triangulate | The lines of sight of the cameras cross at the particle. The crossing is its 3D position. | [5. Match across cameras](05-match.md) |
 | 4. Track | Predict where the particle goes next and link it to the nearest candidate. Repeat for every frame. | [6. Track in time](06-track.md) |
-| 5. Check and use | Count the particles, look at the track lengths, check that the tracks are smooth. | [7. Is the result good?](07-check.md) |
+| 5. Check and use | Count the particles, look at the track lengths, check that the tracks are smooth, check that the cameras agree, and compute velocities. | [7. Is the result good?](07-check.md), [8. Is the calibration good?](08-calibration.md), [9. Use the results](09-results.md) |
 
 ## How this course works
 

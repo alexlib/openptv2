@@ -39,6 +39,12 @@ def _steps(text: str) -> list[tuple[str, str, str | None]]:
         cmd = _dedent(m.group(1)).strip()
         if cmd.startswith("cp -r test_data/"):
             out.append(("cp", cmd, None))
+        elif cmd.startswith("python -m openptv2."):
+            tail = text[m.end():]
+            e = re.search(r"## What you should see\s+.*?```text\n(.*?)```", tail, re.S)
+            # a command whose output block is right after it (before the next heading), else the one under "What you should see"
+            near = re.match(r"\s*(?:[^`#]*?)```text\n(.*?)```", tail, re.S)
+            out.append(("module", cmd, (near or e).group(1)))
         elif cmd.startswith("openptv2-batch"):
             tail = text[m.end():]
             e = re.search(r"```text\n(.*?)```", tail, re.S)
@@ -58,7 +64,7 @@ def _norm(s: str) -> str:
 
 def test_course_is_tested_end_to_end(tmp_path):
     (tmp_path / "test_data").symlink_to(ROOT / "test_data", target_is_directory=True)
-    ran = {"cp": 0, "batch": 0, "python": 0}
+    ran = {"cp": 0, "batch": 0, "python": 0, "module": 0}
     for page in PAGES:
         for kind, cmd, expected in _steps(page.read_text()):
             if kind == "cp":
@@ -75,13 +81,17 @@ def test_course_is_tested_end_to_end(tmp_path):
                 for line in (expected or "").splitlines():
                     if line.startswith(("Average over sequence", "Sealed:", "Batch processing")):
                         assert line.strip() in r.stdout, f"{page.name}: the batch output no longer contains {line!r}"
+            elif kind == "module":
+                r = subprocess.run([sys.executable] + cmd.split()[1:], cwd=tmp_path, capture_output=True, text=True, timeout=300)
+                assert r.returncode in (0, 1), f"{page.name}: {r.stderr[-1500:]}"      # 1 = a verdict other than "consistent"
+                assert _norm(r.stdout) == _norm(expected), f"{page.name}: the output differs from the page\n{r.stdout}"
             else:
                 r = subprocess.run([sys.executable, "-c", cmd], cwd=tmp_path, capture_output=True, text=True, timeout=300)
                 assert r.returncode == 0, f"{page.name}: {r.stderr[-1500:]}"
                 assert expected is not None, f"{page.name}: a python -c block without an output block"
                 assert _norm(r.stdout) == _norm(expected), f"{page.name}: the output differs from the page\n{r.stdout}"
             ran[kind] += 1
-    assert ran["cp"] >= 1 and ran["batch"] >= 2 and ran["python"] >= 5, ran
+    assert ran["cp"] >= 2 and ran["batch"] >= 3 and ran["python"] >= 6 and ran["module"] >= 2, ran
 
 
 def test_self_check_passes():

@@ -1,13 +1,13 @@
-"""Shared configuration for the Illmenau calibration drivers.
+"""Shared configuration for the plate-rig calibration drivers.
 
 Everything that used to be duplicated (and hard-coded to cameras 1-4) across the
 scripts in this folder lives here, so a second camera group is a matter of
 environment rather than editing eight files:
 
-    ILLMENAU_RAW    dataset root holding Kalibrierung_<cam>/
-    ILLMENAU_DIR    openptv2 working folder (cal/, parameters_Run1.yaml, ...)
-    ILLMENAU_CAMS   comma-separated PHYSICAL camera numbers, e.g. "5,6,7,8"
-    ILLMENAU_NPZ    name of the cached detections inside cal/
+    PLATE_RIG_RAW    dataset root holding plate_cam<cam>/
+    PLATE_RIG_DIR    openptv2 working folder (cal/, parameters_Run1.yaml, ...)
+    PLATE_RIG_CAMS   comma-separated PHYSICAL camera numbers, e.g. "5,6,7,8"
+    PLATE_RIG_NPZ    name of the cached detections inside cal/
 
 Camera numbers are kept physical (cam5..cam8 really are named cam5..cam8 on
 disk) so nothing downstream has to remember an offset, while the arrays stay
@@ -31,19 +31,19 @@ from pathlib import Path
 
 from openptv2.plate_multiplane import PlateGrid, load_plate_views
 
-ILLMENAU_RAW = os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau")
-ILLMENAU_DIR = os.environ.get(
-    "ILLMENAU_DIR", os.path.join(ILLMENAU_RAW, "openptv_illmenau_4cam")
+PLATE_RIG_RAW = os.environ.get("PLATE_RIG_RAW", ".")
+PLATE_RIG_DIR = os.environ.get(
+    "PLATE_RIG_DIR", os.path.join(PLATE_RIG_RAW, "openptv_rig_a_4cam")
 )
-RAW = Path(ILLMENAU_RAW)
-DIR = Path(ILLMENAU_DIR)
+RAW = Path(PLATE_RIG_RAW)
+DIR = Path(PLATE_RIG_DIR)
 CAL = DIR / "cal"
 
 CAMS = [
-    int(c) for c in os.environ.get("ILLMENAU_CAMS", "1,2,3,4").split(",") if c.strip()
+    int(c) for c in os.environ.get("PLATE_RIG_CAMS", "1,2,3,4").split(",") if c.strip()
 ]
 NCAM = len(CAMS)
-NPZ = os.environ.get("ILLMENAU_NPZ", "labelled_all_frames.npz")
+NPZ = os.environ.get("PLATE_RIG_NPZ", "labelled_all_frames.npz")
 
 # Plate geometry.  nx/ny/pitch describe the printed lattice; the datum is the
 # grid index of the coded L corner, which is what pins the world to a physical
@@ -75,7 +75,7 @@ def _check_group_matches_folder() -> None:
     """Refuse to mix a camera group with another group's working folder.
 
     Each group is a separate world with its own calibration, and the folders are
-    the only thing keeping them apart.  ILLMENAU_DIR defaults to the cameras 1-4
+    the only thing keeping them apart.  PLATE_RIG_DIR defaults to the cameras 1-4
     folder, so forgetting to set it while working on 5-8 -- or running a
     write-script "just to check" -- silently overwrites a good calibration with
     one fitted from the wrong cameras.  That happened once here: a regression
@@ -96,10 +96,10 @@ def _check_group_matches_folder() -> None:
     if names != want:
         raise SystemExit(
             f"camera group / working folder mismatch.\n"
-            f"  ILLMENAU_CAMS = {sorted(int(c) for c in want)}\n"
+            f"  PLATE_RIG_CAMS = {sorted(int(c) for c in want)}\n"
             f"  {par} describes cameras {sorted(int(n) for n in names)}\n"
             f"These are separate calibrations of separate worlds; writing one into "
-            f"the other's folder destroys it.\nSet ILLMENAU_DIR and ILLMENAU_CAMS "
+            f"the other's folder destroys it.\nSet PLATE_RIG_DIR and PLATE_RIG_CAMS "
             f"together, or fix parameters_Run1.yaml if the folder is genuinely new."
         )
 
@@ -119,7 +119,7 @@ def cam_ori(ci: int) -> tuple[str, str]:
 
 
 def image_dir(ci: int) -> Path:
-    return RAW / f"Kalibrierung_{cam_number(ci)}"
+    return RAW / f"plate_cam{cam_number(ci)}"
 
 
 def control_par():

@@ -28,7 +28,7 @@ image on its own, and both matter more than the detector settings:
   plate is held vertical, so its own +Y is world +Y; under strong perspective
   the coded L's 1:2 right angle is distorted enough that the wrong dot can win
   on geometry alone, rotating or reflecting the whole grid.  The hint settles
-  it.  Needs cal/camN.tif.ori to exist -- set ILLMENAU_NO_HINT=1 for the very
+  it.  Needs cal/camN.tif.ori to exist -- set PLATE_RIG_NO_HINT=1 for the very
   first run of a new rig, then re-run detection once a calibration exists.
 
 Cameras on the far wall see the BACK face of the plate.  The L code still names
@@ -57,16 +57,16 @@ from openptv2.plate_multiplane import (
     save_plate_views,
 )
 
-# Dataset location; override with ILLMENAU_RAW / ILLMENAU_DIR.
-ILLMENAU_RAW = os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau")
-ILLMENAU_DIR = os.environ.get(
-    "ILLMENAU_DIR", os.path.join(ILLMENAU_RAW, "openptv_illmenau_4cam")
+# Dataset location; override with PLATE_RIG_RAW / PLATE_RIG_DIR.
+PLATE_RIG_RAW = os.environ.get("PLATE_RIG_RAW", ".")
+PLATE_RIG_DIR = os.environ.get(
+    "PLATE_RIG_DIR", os.path.join(PLATE_RIG_RAW, "openptv_rig_a_4cam")
 )
 
 CAMS = [
-    int(c) for c in os.environ.get("ILLMENAU_CAMS", "1,2,3,4").split(",") if c.strip()
+    int(c) for c in os.environ.get("PLATE_RIG_CAMS", "1,2,3,4").split(",") if c.strip()
 ]
-NPZ = os.environ.get("ILLMENAU_NPZ", "labelled_all_frames.npz")
+NPZ = os.environ.get("PLATE_RIG_NPZ", "labelled_all_frames.npz")
 for _i, _a in enumerate(sys.argv):
     if _a == "--cams":
         CAMS = [int(c) for c in sys.argv[_i + 1].split(",")]
@@ -74,8 +74,8 @@ for _i, _a in enumerate(sys.argv):
         NPZ = sys.argv[_i + 1]
 REFINE = "--no-refine-centroids" not in sys.argv
 
-base = Path(ILLMENAU_RAW)
-out = Path(ILLMENAU_DIR)
+base = Path(PLATE_RIG_RAW)
+out = Path(PLATE_RIG_DIR)
 GRID = PlateGrid(nx=6, ny=7, pitch_x=120.0, pitch_y=120.0, datum_ix=2, datum_iy=3)
 tpar = plate_tpar_from_yaml(out / "parameters_Run1.yaml")
 cpar = ControlPar(
@@ -94,7 +94,7 @@ cpar = ControlPar(
 )
 
 CODED_THR = (30, 25, 20, 15, 10)
-USE_HINT = os.environ.get("ILLMENAU_NO_HINT", "") == ""
+USE_HINT = os.environ.get("PLATE_RIG_NO_HINT", "") == ""
 cals = {}
 if USE_HINT:
     from openptv2.algorithms.calibration import Calibration
@@ -111,7 +111,7 @@ if USE_HINT:
 print(f"cameras {CAMS} -> cal/{NPZ}")
 views = {}
 for ci, cam in enumerate(CAMS):
-    for f in sorted((base / f"Kalibrierung_{cam}").glob("*.tif*")):
+    for f in sorted((base / f"plate_cam{cam}").glob("*.tif*")):
         fr = f.name.split("_")[0]
         try:
             img = np.array(Image.open(f))

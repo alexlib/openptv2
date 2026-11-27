@@ -38,7 +38,7 @@ def _():
 @app.cell
 def _(mo):
     yaml_path_ui = mo.ui.text(
-        value="/home/user/Downloads/Illmenau/pyPTV_folder/parameters_Run3.yaml",
+        value="my_run/parameters_Run3.yaml",
         label="YAML configuration path",
         full_width=True,
     )
@@ -54,7 +54,7 @@ def _(mo):
 def _(Path):
     # TODO: set your YAML path
     yaml_path = Path(
-        "/home/user/Downloads/Illmenau/pyPTV_folder/parameters_Run3.yaml"
+        "my_run/parameters_Run3.yaml"
     ).resolve()
     return (yaml_path,)
 
@@ -200,7 +200,7 @@ def _(np, plt):
 def _(mo):
     file_selected = mo.ui.file_browser(
         label="Select 3D target file",
-        initial_path="/home/user/Downloads/Illmenau/pyPTV_folder/res/",
+        initial_path="my_run/res/",
     )
     file_selected
     return (file_selected,)

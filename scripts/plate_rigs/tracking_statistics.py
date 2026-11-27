@@ -1,4 +1,4 @@
-"""Tracking statistics + figures for the Ilmenau dual-rig dataset.
+"""Tracking statistics + figures for the plate-rig dual-rig dataset.
 
 Mirrors the content of Full_measurement_with_8_cameras (trajectory counts,
 length histograms, longest tracks, velocity stats, reconstruction quality),
@@ -7,20 +7,21 @@ numbers) over frames 10001-10500.
 
 Usage:
     uv run --with matplotlib,numpy,zarr python \
-        scripts/illmenau/tracking_statistics.py [--outdir DIR]
+        scripts/plate_rigs/tracking_statistics.py [--outdir DIR]
 Outputs stats_*.png figures and prints markdown-ready numbers to stdout.
 """
 import argparse
+import os
 from pathlib import Path
 
 import numpy as np
 
-BASE = Path("/Users/alex/Downloads/Ilmenau")
+BASE = Path(os.environ.get("PLATE_RIG_RAW", "."))
 RIGS = [
-    ("1-4", BASE / "openptv_illmenau_4cam" / "res" / "run_postptv_clean.zarr",
-     BASE / "openptv_illmenau_4cam" / "res" / "run.zarr"),
-    ("5-8", BASE / "openptv_illmenau_5678" / "res" / "run_postptv_clean.zarr",
-     BASE / "openptv_illmenau_5678" / "res" / "run.zarr"),
+    ("1-4", BASE / "openptv_rig_a_4cam" / "res" / "run_postptv_clean.zarr",
+     BASE / "openptv_rig_a_4cam" / "res" / "run.zarr"),
+    ("5-8", BASE / "openptv_rig_b_4cam" / "res" / "run_postptv_clean.zarr",
+     BASE / "openptv_rig_b_4cam" / "res" / "run.zarr"),
 ]
 FMIN, FMAX = 10001, 10500
 FRAMES = np.arange(FMIN, FMAX + 1)

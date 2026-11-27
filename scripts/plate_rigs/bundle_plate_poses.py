@@ -1,4 +1,4 @@
-"""Illmenau driver for the joint plate bundle.
+"""plate-rig driver for the joint plate bundle.
 
 The solver and the vertical prior live in ``openptv2.plate_bundle``, the gates
 and the initial poses in ``openptv2.plate_multiplane.prepare_bundle``; this file

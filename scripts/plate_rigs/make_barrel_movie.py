@@ -1,4 +1,4 @@
-"""Movie of the merged Ilmenau trajectories in the look of the delivered
+"""Movie of the merged plate-rig trajectories in the look of the delivered
 TimeStep_10000_to_12000.mp4: same viewing direction, same colour bar
 (vertical velocity v, -0.5..0.5 m/s), trailing beads, grey back walls, 500 mm grid,
 plus the barrel's bottom (heating) and top (cooling) rims as circles.
@@ -7,11 +7,12 @@ Coordinates are OURS, not the movie's: the barrel frame of merged_fulldiam.zarr
 (mm, origin on the barrel axis at mid-height, +Y up); v is the Y velocity.
 Rendering is postptv's flowtracks.graphics.animate_trajectories_3d (PyVista).
 
-    uv run --project /Users/alex/Documents/Github/postptv python \
-        scripts/illmenau/make_barrel_movie.py [--first 10250 --last 10250] [--out DIR]
+    uv run --project <postptv checkout> python \
+        scripts/plate_rigs/make_barrel_movie.py [--first 10250 --last 10250] [--out DIR]
 """
 
 import argparse
+import os
 from pathlib import Path
 
 import numpy as np
@@ -19,7 +20,7 @@ import yaml
 from flowtracks.graphics import animate_trajectories_3d
 from matplotlib.colors import LinearSegmentedColormap
 
-R = Path("/Users/alex/Downloads/Ilmenau")
+R = Path(os.environ.get("PLATE_RIG_RAW", "."))
 
 # colour bar of the reference movie, sampled from its frames at -0.5, -0.4 ... +0.5
 REF_COLOURS = np.array([
@@ -27,7 +28,7 @@ REF_COLOURS = np.array([
     [250, 250, 250],
     [251, 172, 173], [253, 90, 88], [251, 8, 8], [212, 0, 1], [173, 0, 4],
 ]) / 255.0
-REF_CMAP = LinearSegmentedColormap.from_list("ilmenau_reference", REF_COLOURS, N=256)
+REF_CMAP = LinearSegmentedColormap.from_list("reference", REF_COLOURS, N=256)
 
 # viewing direction of the reference movie, fitted to the six outer corners of
 # its box (residual 6-15 px of 2920x1840): elevation 31 deg, from the -x/+z
@@ -40,7 +41,7 @@ FONT = "/System/Library/Fonts/Supplemental/Arial.ttf"  # VTK's own font has no [
 def barrel_rims(n=360):
     """Bottom and top rim of the barrel in the barrel frame [mm]: radius and
     height from plate.yaml's test_section, origin at mid-height."""
-    ts = yaml.safe_load((R / "openptv_illmenau_4cam" / "plate.yaml").read_text())
+    ts = yaml.safe_load((R / "openptv_rig_a_4cam" / "plate.yaml").read_text())
     ts = ts["plate"]["test_section"] if "plate" in ts else ts["test_section"]
     r, h = float(ts["radius"]), float(ts["height"])
     a = np.linspace(0, 2 * np.pi, n, endpoint=False)

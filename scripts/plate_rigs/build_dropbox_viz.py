@@ -1,21 +1,22 @@
-"""Dropbox postptv visualization: longest tracks of the merged dual-rig set.
+"""postptv visualization: longest tracks of the merged dual-rig set.
 
 Self-contained plotly HTML (plotly.js embedded, no server needed).
-Source: /Users/alex/Downloads/Ilmenau/merged_fulldiam.zarr
+Source: <raw folder>/merged_fulldiam.zarr
 (meters, barrel frame; trajid 1000..1000+N14-1 = rig 1-4, rest = rig 5-8).
 
 Usage:
-    uv run python scripts/illmenau/build_dropbox_viz.py [--n58 6000] [--out PATH]
+    uv run python scripts/plate_rigs/build_dropbox_viz.py [--n58 6000] [--out PATH]
 """
 
 import argparse
+import os
 from pathlib import Path
 
 import numpy as np
 import plotly.graph_objects as go
 import zarr
 
-RAW = Path("/Users/alex/Downloads/Ilmenau")
+RAW = Path(os.environ.get("PLATE_RIG_RAW", "."))
 N14 = 3402  # len(ta) at merge time: rig 1-4 ids are 1000..1000+N14-1
 
 
@@ -23,9 +24,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n58", type=int, default=6000)
     ap.add_argument("--src", default=str(RAW / "merged_fulldiam.zarr"))
-    ap.add_argument("--out", default=str(
-        Path("/Users/alex/Library/CloudStorage/Dropbox/3DPTV_Illmenau/"
-             "August2026/illmenau_dual_rig_postptv_v5.html")))
+    ap.add_argument("--out", default="dual_rig_postptv.html")
     a = ap.parse_args()
 
     g = zarr.open(a.src, mode="r")["trajectories"]
@@ -87,8 +86,8 @@ def main():
             textfont=dict(size=8), hoverinfo="skip", showlegend=False))
 
     # cameras (both rigs, barrel meters) + barrel rings
-    folders = {"1-4": RAW / "openptv_illmenau_4cam",
-               "5-8": RAW / "openptv_illmenau_5678"}
+    folders = {"1-4": RAW / "openptv_rig_a_4cam",
+               "5-8": RAW / "openptv_rig_b_4cam"}
     for rig, cams, col in (("1-4", [1, 2, 3, 4], "#ff7f0e"),
                            ("5-8", [5, 6, 7, 8], "#1f77b4")):
         folder = folders[rig]
@@ -131,7 +130,7 @@ def main():
 
     med = float(np.median(list(lens.values())))
     fig.update_layout(
-        title=(f"Illmenau dual-rig postptv — merged barrel set "
+        title=(f"plate-rig dual-rig postptv — merged barrel set "
                f"({len(tids)} tracks, median len {med:.0f}; "
                f"self-cal .ori, full-diameter boxes, v_max=40, no confirm)"),
         height=860, margin=dict(l=0, r=0, t=40, b=0),

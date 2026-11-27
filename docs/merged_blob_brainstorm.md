@@ -183,7 +183,7 @@ Batch (synthetic L1 cases, oracle split, two_phase):
 - L1_d1 ..._a0.18_f0.05: 210513→213383 /300000 (+0.9 pp)
 
 Consistent +0.9–2.0 pp coverage gain across densities/shear/jitter. Real datasets (lv_multi,
-Illmenau) have no ground truth, so the oracle split cannot be scored there; testing there requires
+The example rig) have no ground truth, so the oracle split cannot be scored there; testing there requires
 implementing a predictor-based membership (nearest predicted track) and measuring yield/vErr/ghost.
 the larger vErr benefit (user's "bringing them back makes existing particles more accurate") requires
 also fixing shifted centres (Idea 4, mixture split), which this upper bound includes for positions but

@@ -4,7 +4,7 @@ Replaces standard global-threshold connected-components target recognition with
 locally-adaptive z-score contrast scoring (against sliding-window local mean/std)
 and radius-hop glare-fragment merging via compiled `detect_bubbles_fast`.
 
-Designed for large-distance measurements (e.g. Ilmenau Rayleigh-Bénard convection
+Designed for large-distance measurements (e.g. a Rayleigh-Bénard convection barrel
 with helium-filled soap bubbles) where bubbles appear as faint pairs of specular
 reflections rather than solid Gaussian blobs.
 
@@ -19,7 +19,7 @@ Configured via the optional `bubble_detection:` block in parameters_*.yaml:
       nnmax: 5000       # max pixel count per blob (default 5000)
       lowpass_dim: 1    # box low-pass (pixels) before detection; 1 = off.
                         # 3 suppresses single-pixel sensor noise and steadies
-                        # the centroids of 1-5 px bubbles (Ilmenau: fewer
+                        # the centroids of 1-5 px bubbles (large barrel: fewer
                         # ghosts, ~25 % smoother links)
       filter_hp: 0      # high-pass mode of preprocess_image (0 = default)
 

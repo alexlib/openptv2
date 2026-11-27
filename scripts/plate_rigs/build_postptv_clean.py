@@ -1,4 +1,4 @@
-"""Post-PTV clean chain for one Illmenau rig.
+"""Post-PTV clean chain for one plate-rig rig.
 
 reconnect (openptv2.reconnect) -> the flowtracks cleaning chain
 (flowtracks.clean: repair -> smooth -> kink split -> smooth -> stitch ->
@@ -38,7 +38,7 @@ values and their source are printed at the start.
 
 Usage (flowtracks >= 1.7.0, postptv):
     uv run python \
-        scripts/illmenau/build_postptv_clean.py RIGDIR [--first F] [--last L] \
+        scripts/plate_rigs/build_postptv_clean.py RIGDIR [--first F] [--last L] \
         [--store run_fulldiam.zarr] [--out run_fulldiam_clean.zarr] [--fps 10 ...]
 """
 

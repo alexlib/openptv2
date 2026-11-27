@@ -78,18 +78,13 @@ gives a ratio of 0.57. The step there is 0.3 mm, about as large as the position 
 The lesson: check 4 depends on the particle speed. Slow particles, with a step close to the noise, always give a high ratio.
 Then use more frames and a smoothing fit, not the raw steps.
 
-The four checks are a quick filter, not a proof. Page 8 (coming) adds a check that works on the calibration itself.
+The four checks are a quick filter, not a proof. [Page 8](08-calibration.md) adds a check of the calibration itself.
 
 ## Is the calibration good?
 
-The reprojection error of the calibration is not enough. It looks at one camera at a time. Two checks look at the cameras
-together:
-
-* **Ray convergence**: how well the lines of sight of all cameras cross at one point. See
-  [Reprojection RMS vs ray convergence](../calibration-rms-vs-rcm.md).
-* **Camera-switching jump**: when a track changes from 3 to 4 cameras, its position should not jump. See
-  [Calibration consistency check](../calibration-consistency.md). It also shows how to repair a calibration with the particles
-  themselves (self-calibration), and when not to.
+The four checks above look at the result. They cannot say whether the cameras agree with each other. That is the job of
+[page 8](08-calibration.md): the reprojection error looks at one camera at a time, and the camera-switching jump looks at all of
+them together.
 
 ## If it did not work
 
@@ -100,4 +95,4 @@ together:
 | check 3 shows only short trajectories | the allowed step is too small, or the seeding is too dense | change `dvxmax` and the others (page 6) |
 | check 4 is 1 or more | wrong links, or a step as small as the noise | check page 5 for ghosts; use more frames |
 
-[Back to the start](index.md){ .md-button }
+[Next: 8. Is the calibration good? →](08-calibration.md){ .md-button .md-button--primary }

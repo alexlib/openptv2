@@ -5,7 +5,7 @@ steps instead of repeating them. Recipes are named for the situation, not for th
 
 | You have ... | You want ... | Recipe |
 |---|---|---|
-| two rigs of four cameras each and a hand-held dots plate | a calibration for each rig (OpenCV-style free-pose plate calibration), then tracking | *in preparation*; until then: [Plate calibration how-to](../plate-calibration-howto.md) and [the worked 4-camera case](../illmenau-4cam-calibration.md) |
+| two rigs of four cameras each and a hand-held dots plate | a calibration for each rig (OpenCV-style free-pose plate calibration), then tracking | [Two rigs of four cameras, hand-held plate](plate-calibration-two-rigs.md) |
 | one rig and a plate moved by known steps | the classic multi-plane calibration | [Camera calibration](../tutorials/calibration.md) |
 | cameras on both sides of a water cell | to track through two windows | *in preparation*; see [Synthetic cavity study](../self-calibration-cavity-synthetic.md) |
 | a calibration you are not sure about | to know whether it is good enough | *in preparation*; see [Calibration consistency check](../calibration-consistency.md) |

@@ -1,11 +1,11 @@
-"""Score one tracking store over a frame window — Ilmenau 1-4 re-track sweep.
+"""Score one tracking store over a frame window — plate-rig 1-4 re-track sweep.
 
-Metrics match docs/plans/2026-10-05-ilmenau-14-retrack-plan.md §7:
+Metrics match the 2026-10-05 retrack plan in docs/plans §7:
 yield, ghost rates, length stats, roughness, speed, interior-gap fraction.
 
 Usage:
-    uv run --project /Users/alex/Documents/Github/openptv2 python \
-        scripts/illmenau/score_subset.py STORE.zarr FMIN FMAX [--corr]
+    uv run --project <openptv2 checkout> python \
+        scripts/plate_rigs/score_subset.py STORE.zarr FMIN FMAX [--corr]
     --corr also scores correspondence-level stats (needs correspondences/ group).
 """
 import argparse

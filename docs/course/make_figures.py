@@ -166,3 +166,44 @@ ax[1].set_xlabel("z (mm)"); ax[1].set_ylabel("y (mm)"); ax[1].set_title("side vi
 fig.suptitle(f"{len(np.unique(tr['trajid']))} trajectories over 5 frames (dot = first frame, triangle = last)", fontsize=10)
 fig.tight_layout(); fig.savefig(out / "tracks.png", dpi=110); plt.close(fig)
 print("course figures written to", out)
+
+
+# ======================================================================================================================
+# Pages 8-9: the larger example (test_data/test_cavity: same experiment, full images), on a scratch copy
+from openptv2.calibration_consistency import consistency_report
+
+big = Path(tempfile.mkdtemp(prefix="course_fig_big_")) / "big_run"
+shutil.copytree(root.parent / "test_cavity", big, ignore=shutil.ignore_patterns("res"))
+for mode in ("sequence", "tracking"):
+    subprocess.run(batch + ["--workdir", str(big), "--first", "10000", "--last", "10004", "--mode", mode], check=True, capture_output=True)
+bstore = RunStore(big / "res" / "run.zarr", mode="r")
+bcpar, bvpar, bcals, _ = load_parameters(big / "parameters_Run1.yaml")
+rep = consistency_report(bstore, FR, bcals, bcpar, bvpar)
+um_px = rep.mm_per_px * 1000.0
+fig, a = plt.subplots(figsize=(8.5, 3.4))
+a.axvspan(0, 0.05 * um_px, color="#2e8b57", alpha=0.18); a.axvspan(0.05 * um_px, 0.30 * um_px, color="#e0a458", alpha=0.25)
+a.axvspan(0.30 * um_px, 0.45 * um_px, color="#b23a48", alpha=0.18)
+a.barh([f"camera {i + 1}" for i in range(4)], rep.jump_um, xerr=[3 * s for s in rep.se_um], color="#4f7cac", capsize=3)
+a.text(0.025 * um_px, 3.55, "consistent", ha="center", fontsize=8); a.text(0.175 * um_px, 3.55, "marginal", ha="center", fontsize=8)
+a.text(0.375 * um_px, 3.55, "inconsistent", ha="center", fontsize=8)
+a.set_xlim(0, 0.45 * um_px); a.invert_yaxis()
+a.set_xlabel("position jump when this camera is missing (micrometres; bar = value, whisker = 3 standard errors)")
+a.set_title(f"camera-switching jump, {rep.n_points} four-camera points in 5 frames: verdict {rep.verdict.upper()}", fontsize=10)
+fig.tight_layout(); fig.savefig(out / "consistency_jump.png", dpi=110); plt.close(fig)
+
+# page 9: the trajectories of the larger example, coloured by speed
+tr = bstore.trajectories()
+fig, a = plt.subplots(figsize=(7.5, 4.6))
+segs, spd = [], []
+for tid in np.unique(tr["trajid"]):
+    m = tr["trajid"] == tid
+    o = np.argsort(tr["time"][m]); p = 1000.0 * tr["pos"][m][o]
+    for p0, p1 in zip(p[:-1], p[1:]):
+        segs.append([(p0[0], p0[1]), (p1[0], p1[1])]); spd.append(np.linalg.norm(p1 - p0))
+from matplotlib.collections import LineCollection
+lc = LineCollection(segs, array=np.array(spd), cmap="viridis", linewidths=1.6)
+a.add_collection(lc); a.autoscale(); a.set_aspect("equal")
+fig.colorbar(lc, ax=a, label="step between two frames (mm)")
+a.set_xlabel("x (mm)"); a.set_ylabel("y (mm)"); a.set_title(f"{len(np.unique(tr['trajid']))} trajectories of the larger example, seen along z", fontsize=10)
+fig.tight_layout(); fig.savefig(out / "tracks_big.png", dpi=110); plt.close(fig)
+print("page 8-9 figures written")

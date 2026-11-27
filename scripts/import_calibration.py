@@ -2,7 +2,7 @@
 """Import a foreign calibration (OpenCV / points-file) into openPTV .ori/.addpar.
 
 Two doors → one bundle adjust, per docs/plans/2026-08-30-calibration-hub-multi-source.md
-and ...-illmenau-dots-plate-pipeline.md:
+and ...-plate_rig-dots-plate-pipeline.md:
 
     uv run python scripts/import_calibration.py \
         --model-dir <dir with calib_c*.txt> \

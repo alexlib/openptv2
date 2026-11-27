@@ -8,7 +8,7 @@
 # ]
 # requires-python = ">=3.11"
 # ///
-"""Interactive bubble-detection tuning for the Ilmenau rigs.
+"""Interactive bubble-detection tuning for the plate-rig rigs.
 
 Background on/off, background pedigree (frames/method), background image
 before subtraction, demo frame with vs without background, and detection
@@ -16,8 +16,8 @@ with vs without background — per rig, with one-click write-back of the
 `bubble_detection:` block into that rig's parameters_Run1.yaml.
 
 Run:
-    uv run --project /Users/alex/Documents/Github/openptv2 marimo edit \
-        /Users/alex/Downloads/Ilmenau/bubble_detection_tuning_marimo.py
+    uv run --project <openptv2 checkout> marimo edit \
+        <raw folder>/bubble_detection_tuning_marimo.py
 """
 
 import marimo
@@ -40,7 +40,7 @@ def _():
 @app.cell
 def _(mo):
     mo.md(r"""
-    # Bubble-detection tuning (Ilmenau rigs 1–4 / 5–8)
+    # Bubble-detection tuning (plate-rig rigs 1–4 / 5–8)
 
     Tune the `bubble_sequence` detector from `openptv2`: local-contrast
     window, z-threshold, glare merging — with and without static-background
@@ -55,8 +55,8 @@ def _(mo):
 def _(mo):
     rig_select = mo.ui.dropdown(
         options={
-            "rig 5-8 (dimmer)": "/Users/alex/Downloads/Ilmenau/openptv_illmenau_5678/parameters_Run1.yaml",
-            "rig 1-4 (brighter)": "/Users/alex/Downloads/Ilmenau/openptv_illmenau_4cam/parameters_Run1.yaml",
+            "rig 5-8 (dimmer)": "<raw folder>/openptv_rig_b_4cam/parameters_Run1.yaml",
+            "rig 1-4 (brighter)": "<raw folder>/openptv_rig_a_4cam/parameters_Run1.yaml",
         },
         value="rig 5-8 (dimmer)",
         label="rig (YAML)",

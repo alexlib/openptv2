@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Part 1 — Illmenau 1-4: Kalibrierung images -> per-camera 3D-2D pairs.
+"""Part 1 — plate-rig 1-4: plate images -> per-camera 3D-2D pairs.
 
 Implements the marimo-paired pipeline headless:
   ROI (very-blurred bright rect, sigma=25 -> Otsu -> pad 0.07)
@@ -11,8 +11,8 @@ Labels with plate_labeler (6x7 pitch 120 y_sign=1) -> XYZ (world) -> xy (image)
 Saves per-camera collections for Part 2 calibration.
 
 Usage:
-  uv run --with opencv-python python scripts/detect_illmenau_4cam_part1.py
-  uv run --with opencv-python python scripts/detect_illmenau_4cam_part1.py --base "C:/Users/alex/Downloads/Illmenau" --out "C:/Users/alex/Downloads/Illmenau/openptv_illmenau_4cam" --pitch 120 --gv 20 --sumg 5000
+  uv run --with opencv-python python scripts/detect_plate_4cam_part1.py
+  uv run --with opencv-python python scripts/detect_plate_4cam_part1.py --base "<raw folder>" --out "<raw>/openptv_rig_a_4cam" --pitch 120 --gv 20 --sumg 5000
 
 Outputs:
   <out>/cal/detections_cam1.npz ... cam4.npz  (flat XYZ->xy, per-frame)
@@ -23,6 +23,7 @@ Outputs:
 from __future__ import annotations
 
 import argparse
+import os
 from collections import defaultdict
 from pathlib import Path
 
@@ -208,12 +209,12 @@ def detect_plate_points(image_path: Path, pitch_val: float, gv_val: int, sumg_va
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Part 1: Kalibrierung -> 3D-2D pairs")
-    ap.add_argument("--base", type=str, default=r"C:\Users\alex\Downloads\Illmenau")
+    ap = argparse.ArgumentParser(description="Part 1: plate images -> 3D-2D pairs")
+    ap.add_argument("--base", type=str, default=os.environ.get("PLATE_RIG_RAW", "."))
     ap.add_argument(
         "--out",
         type=str,
-        default=r"C:\Users\alex\Downloads\Illmenau\openptv_illmenau_4cam",
+        default=os.path.join(os.environ.get("PLATE_RIG_RAW", "."), "openptv_rig_a_4cam"),
     )
     ap.add_argument("--pitch", type=float, default=120.0)
     ap.add_argument("--gv", type=int, default=20)
@@ -224,7 +225,7 @@ def main():
     pitch_val = float(args.pitch)
     gv_val = int(args.gv)
     sumg_val = int(args.sumg)
-    folders = [base / f"Kalibrierung_{i}" for i in (1, 2, 3, 4)]
+    folders = [base / f"plate_cam{i}" for i in (1, 2, 3, 4)]
     for f in folders:
         if not f.exists():
             raise FileNotFoundError(f)
@@ -337,7 +338,7 @@ def main():
             f" cam{ci + 1}: {len(flat_collections[ci])} frames, {sum(len(x[0]) for x in flat_collections[ci])} points -> pairs_cam{ci + 1}.npz + detections_cam{ci + 1}.npz"
         )
     print(
-        "Next: Part 2 -> uv run --with opencv-python python scripts/calibrate_illmenau_4cam_part2.py"
+        "Next: Part 2 -> uv run --with opencv-python python scripts/calibrate_plate_4cam_part2.py"
     )
 
 

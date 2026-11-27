@@ -107,7 +107,7 @@ Two quick checks catch most wrong calibrations:
    points from the middle of the cell to its own window.
 
 A stronger check asks whether the cameras agree with each other on real particles. That comes in
-[page 7](07-check.md#is-the-calibration-good). A calibration can have a small reprojection error and still be wrong between cameras.
+[page 8](08-calibration.md). A calibration can have a small reprojection error and still be wrong between cameras.
 
 ## See what the window does to a ray
 

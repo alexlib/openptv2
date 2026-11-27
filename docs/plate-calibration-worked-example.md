@@ -1,19 +1,19 @@
-# Calibrating the Illmenau 4-camera rig from a hand-held dots plate
+# Worked example: calibrating a 4-camera rig from a hand-held dots plate
 
-How the `.ori` files for cameras 1–4 of the Illmenau barrel were produced, why the
+How the `.ori` files for cameras 1–4 of the barrel rig were produced, why the
 first few attempts failed the epipolar test even at 0.5 px reprojection RMS, how
 far the resulting model can be trusted, and what to run next time. Cameras 5–8
 follow the same recipe (see the last section).
 
-Dataset: `C:\Users\alex\Downloads\Illmenau` — `Kalibrierung_1..4` hold 48
+Dataset: `<raw folder>` — `Calibration_1..4` hold 48
 synchronised frames each of a hand-held 6×7 dot plate at unknown depths;
-`openptv_illmenau_4cam` is the openptv2 working folder.
+`openptv_rig_a_4cam` is the openptv2 working folder.
 
 Everything below assumes:
 
 ```bash
-export ILLMENAU_RAW="C:/Users/alex/Downloads/Illmenau"          # optional, this is the default
-export ILLMENAU_DIR="$ILLMENAU_RAW/openptv_illmenau_4cam"
+export PLATE_RIG_RAW="<raw folder>"          # optional, this is the default
+export PLATE_RIG_DIR="$PLATE_RIG_RAW/openptv_rig_a_4cam"
 ```
 
 OpenCV is not a project dependency, so the two scripts that need it are run with
@@ -40,7 +40,7 @@ In the barrel frame (origin on the test-section axis at mid-height, floor at
 barrel_from_plate(P) = P + [0, -1175, 0]
 ```
 
-Recorded in `plate.yaml:datum`. `scripts/illmenau/draw_rig_global.py` renders the
+Recorded in `plate.yaml:datum`. `scripts/plate_rigs/draw_rig_global.py` renders the
 frame, the barrel, the plate and both the nominal and calibrated camera positions
 (`rig_3d_global.png`).
 
@@ -179,59 +179,59 @@ A clean minimum. **The fitted focal length is 8.586 mm, not the nominal 9.44 mm.
 ## 5. The recipe
 
 `OPTV=<path to openptv2>`. Everything runs from the working folder; the dataset
-is found through `ILLMENAU_RAW` / `ILLMENAU_DIR`. Only steps 1-3 and 5 change the
+is found through `PLATE_RIG_RAW` / `PLATE_RIG_DIR`. Only steps 1-3 and 5 change the
 calibration; the rest only measure it.
 
 ```bash
-cd "$ILLMENAU_DIR"
+cd "$PLATE_RIG_DIR"
 
 # --- 1. DETECT + LABEL every frame of all four cameras, cached to npz.
 # ~192 images, a few minutes -> cal/labelled_all_frames.npz.  Hands the labeller
 # the two things one image cannot settle: the datum's grid index, and the image
 # direction of world +Y from the current .ori (section 9).  On a brand-new rig
-# with no .ori yet, run once with ILLMENAU_NO_HINT=1, then re-run after step 3.
-uv run --project $OPTV python $OPTV/scripts/illmenau/detect_plate_frames.py
+# with no .ori yet, run once with PLATE_RIG_NO_HINT=1, then re-run after step 3.
+uv run --project $OPTV python $OPTV/scripts/plate_rigs/detect_plate_frames.py
 
 # --- 2. FIT the one shared cc, from multi-plane cross-camera consistency.
 # The only quantity a single plane cannot see (section 4, Trap 2).
 uv run --project $OPTV --with opencv-python-headless \
-    python $OPTV/scripts/illmenau/fit_plate_cc.py
+    python $OPTV/scripts/plate_rigs/fit_plate_cc.py
 
 # --- 3. WRITE the .ori: pure pinhole at that cc, poses from the reference
 # frame, zero distortion in .addpar (section 4, Trap 1).
 uv run --project $OPTV --with opencv-python-headless \
-    python $OPTV/scripts/illmenau/refit_plate_pinhole.py 8.5858
+    python $OPTV/scripts/plate_rigs/refit_plate_pinhole.py 8.5858
 
 # --- 4. GATE.  These two decide whether the calibration is usable.  Never gate
 # on per-camera reprojection RMS -- it stayed at 0.5 px through every wrong
 # intermediate result of this work.
-uv run --project $OPTV python $OPTV/scripts/illmenau/check_plate_triangulation.py
-uv run --project $OPTV python $OPTV/scripts/illmenau/check_epipolar.py
+uv run --project $OPTV python $OPTV/scripts/plate_rigs/check_plate_triangulation.py
+uv run --project $OPTV python $OPTV/scripts/plate_rigs/check_epipolar.py
 
 # --- 5. BUNDLE: re-solve all camera poses together with one plate pose per
 # frame, so the model is no longer exact on the reference plane and drifting
 # away from it (section 8b).  cc stays fixed; the reference plate pose is the
 # gauge.  Omit --write for a dry run that changes nothing.
 uv run --project $OPTV --with opencv-python-headless \
-    python $OPTV/scripts/illmenau/bundle_plate_poses.py 8.5858 --write
+    python $OPTV/scripts/plate_rigs/bundle_plate_poses.py 8.5858 --write
 
 # --- 6. RE-GATE (step 4 again), then validate over the whole dataset and look
 # at the pictures.  plot_frame_triangulation.py fits nothing: it shows what the
 # .ori on disk actually reconstruct, one figure per plate position.
-uv run --project $OPTV python $OPTV/scripts/illmenau/check_plate_triangulation.py
-uv run --project $OPTV python $OPTV/scripts/illmenau/check_epipolar.py
-uv run --project $OPTV python $OPTV/scripts/illmenau/plot_frame_triangulation.py
-uv run --project $OPTV python $OPTV/scripts/illmenau/check_all_frames.py
+uv run --project $OPTV python $OPTV/scripts/plate_rigs/check_plate_triangulation.py
+uv run --project $OPTV python $OPTV/scripts/plate_rigs/check_epipolar.py
+uv run --project $OPTV python $OPTV/scripts/plate_rigs/plot_frame_triangulation.py
+uv run --project $OPTV python $OPTV/scripts/plate_rigs/check_all_frames.py
 
 # --- 7. SET THE OBSERVATION VOLUME before opening the GUI (section 6).
 # Reports the largest safe Zmax for this rig; it is a display and search
 # parameter, not a calibration one, and the usual cause of "the epipolar lines
 # are wrong".
-uv run --project $OPTV python $OPTV/scripts/illmenau/check_epipolar_volume.py
+uv run --project $OPTV python $OPTV/scripts/plate_rigs/check_epipolar_volume.py
 
 # --- optional: draw the rig against the global frame, as a sanity check that
 # the cameras came out where they physically are.
-uv run --project $OPTV python $OPTV/scripts/illmenau/draw_rig_global.py
+uv run --project $OPTV python $OPTV/scripts/plate_rigs/draw_rig_global.py
 ```
 
 Step 1 is cached, so re-running 2-5 with a different `cc` costs seconds. After
@@ -367,7 +367,7 @@ volume that big, this is the accuracy floor, and no `.addpar` will fix it.
 
 ## 8b. The joint bundle — spreading the error over the volume
 
-`scripts/illmenau/bundle_plate_poses.py` removes the single-plane anchoring.
+`scripts/plate_rigs/bundle_plate_poses.py` removes the single-plane anchoring.
 Unknowns are the four camera poses and one 6-dof plate pose per frame; `cc`
 stays at 8.5858 mm, distortion stays zero, the principal point stays at the
 sensor centre, and **the reference frame's plate pose is held at identity**.
@@ -513,7 +513,7 @@ cannot see.
 
 ## 10. Cameras 5–8 — the far wall, calibrated as its own rig
 
-**Done.** Working folder `openptv_illmenau_5678/`, its own `cal/`, its own
+**Done.** Working folder `openptv_rig_b_4cam/`, its own `cal/`, its own
 `parameters_Run1.yaml` (cameras named cam5..cam8), its own `plate.yaml`.
 
 ### Why a separate world
@@ -525,7 +525,7 @@ anchored to its own reference frame's coded L-corner dot. Merging them is a
 later job, and the plate is what makes it possible: the two dot planes are
 parallel and **6 mm apart** (the plate's thickness), so the per-frame plate poses
 already solved for cams 1–4 describe the same physical positions. The recipe is
-recorded in `openptv_illmenau_5678/plate.yaml:relation_to_front_rig` — offset a
+recorded in `openptv_rig_b_4cam/plate.yaml:relation_to_front_rig` — offset a
 cams 1–4 plate pose by −6 mm along its normal, then solve the 3-dof in-plane
 placement (yaw about the normal + 2D shift) shared across all frames. Heavily
 over-determined, and it needs no Kabsch fit.
@@ -537,19 +537,19 @@ there is **no** frame in which all eight cameras see the plate.
 
 ### Running it
 
-Every driver is camera-group agnostic via `scripts/illmenau/_config.py`; the
+Every driver is camera-group agnostic via `scripts/plate_rigs/_config.py`; the
 steps themselves are library functions in `openptv2.plate_multiplane`:
 
 ```bash
-export ILLMENAU_DIR="$ILLMENAU_RAW/openptv_illmenau_5678"
-export ILLMENAU_CAMS=5,6,7,8
+export PLATE_RIG_DIR="$PLATE_RIG_RAW/openptv_rig_b_4cam"
+export PLATE_RIG_CAMS=5,6,7,8
 # then §5's recipe verbatim, plus these two first:
-python $OPTV/scripts/illmenau/find_datum.py             # read the datum off the data
-python $OPTV/scripts/illmenau/make_calibration_block.py # block from the same PlateGrid
+python $OPTV/scripts/plate_rigs/find_datum.py             # read the datum off the data
+python $OPTV/scripts/plate_rigs/make_calibration_block.py # block from the same PlateGrid
 ```
 
 The first detection pass has no `.ori` to take an up-hint from, so run
-`ILLMENAU_NO_HINT=1 detect_plate_frames.py --cams 5,6,7,8` once, then re-run it
+`PLATE_RIG_NO_HINT=1 detect_plate_frames.py --cams 5,6,7,8` once, then re-run it
 after the first `.ori` exist.
 
 ### The datum was tested, not inherited

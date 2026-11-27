@@ -1,6 +1,6 @@
 """Pair two camera groups' frames by WHERE the plate was, not by file number.
 
-    !! ON THE ILLMENAU DATASET THIS CANNOT SUCCEED, AND THAT IS THE POINT. !!
+    !! ON A TWO-SESSION DUAL-RIG DATASET THIS CANNOT SUCCEED, AND THAT IS THE POINT. !!
 
 The two groups measure DIFFERENT HALVES of the circular test section, in
 separate acquisition sessions, so the plate never visited the same position
@@ -30,7 +30,7 @@ rig-to-rig registration:
 If two groups genuinely share a volume, tie them through the lab frame or a
 target both can see -- not through plate positions.
 
-    ILLMENAU_RAW=... python match_plate_positions.py [--max-pair-mm 40]
+    PLATE_RIG_RAW=... python match_plate_positions.py [--max-pair-mm 40]
 
 Writes <RAW>/plate_position_pairs.csv and prints the recovered transform.
 """
@@ -49,7 +49,7 @@ from openptv2.algorithms.parameters import ControlPar, MmNp  # noqa: E402
 from openptv2.algorithms.trafo import dist_to_flat, pixel_to_metric  # noqa: E402
 from openptv2.orientation import multi_cam_point_positions  # noqa: E402
 
-RAW = Path(os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau"))
+RAW = Path(os.environ.get("PLATE_RIG_RAW", "."))
 PITCH, NX, NY, DATUM = 120.0, 6, 7, (2, 3)
 THICKNESS_MM = 6.0
 MAX_PAIR_MM = 40.0
@@ -58,8 +58,8 @@ for _i, _a in enumerate(sys.argv):
         MAX_PAIR_MM = float(sys.argv[_i + 1])
 
 RIGS = {
-    "front": (RAW / "openptv_illmenau_4cam", [1, 2, 3, 4]),
-    "back": (RAW / "openptv_illmenau_5678", [5, 6, 7, 8]),
+    "front": (RAW / "openptv_rig_a_4cam", [1, 2, 3, 4]),
+    "back": (RAW / "openptv_rig_b_4cam", [5, 6, 7, 8]),
 }
 
 

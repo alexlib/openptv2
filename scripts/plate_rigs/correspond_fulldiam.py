@@ -1,14 +1,14 @@
-"""Full-diameter correspondence for one Illmenau rig, one shard of frames.
+"""Full-diameter correspondence for one plate-rig rig, one shard of frames.
 
 Re-matches the detections stored in res/run.zarr with the CURRENT calibration
 and the parameter file's settings -- the generic step is
 openptv2.recorrespond -- and writes this shard's per-frame (pos,
 cam_target_ids) into cal/fulldiam_part_<rig>_s<shard>.npz for
-assemble_track.py.  The Illmenau part is only the sharding (one process per
+assemble_track.py.  The plate-rig part is only the sharding (one process per
 shard) and the rig/folder bookkeeping.
 
-Usage (ILLMENAU_DIR / ILLMENAU_CAMS select the rig, see _config.py):
-    uv run python scripts/illmenau/correspond_fulldiam.py --rig 14 --shard 0 \
+Usage (PLATE_RIG_DIR / PLATE_RIG_CAMS select the rig, see _config.py):
+    uv run python scripts/plate_rigs/correspond_fulldiam.py --rig 14 --shard 0 \
         --nshards 6 --first 10001 --last 10500
 """
 
@@ -38,8 +38,8 @@ def main():
     want = [1, 2, 3, 4] if a.rig == "14" else [5, 6, 7, 8]
     if CFG.CAMS != want:
         raise SystemExit(
-            f"camera group mismatch: ILLMENAU_CAMS={CFG.CAMS}, --rig {a.rig} "
-            f"needs {want}. Set ILLMENAU_DIR and ILLMENAU_CAMS together.")
+            f"camera group mismatch: PLATE_RIG_CAMS={CFG.CAMS}, --rig {a.rig} "
+            f"needs {want}. Set PLATE_RIG_DIR and PLATE_RIG_CAMS together.")
     print(f"[{a.rig}/{a.shard}] {CFG.banner()}", flush=True)
 
     from openptv2.recorrespond import correspond_frame, load_parameters, stored_frames

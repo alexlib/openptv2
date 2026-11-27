@@ -73,7 +73,7 @@ def test_ray_tracing():
 
 
 def _batch_test_cal(x0, z0, look_plus_z, glass_vec):
-    """Calibration mimicking the two Ilmenau rig sides.
+    """Calibration mimicking the two sides of a barrel rig.
 
     look_plus_z=True: camera at -Z looking toward +Z (rig 5-8 side,
     ray has positive component along a +Z glass normal, n_dot > 0 --
@@ -93,7 +93,7 @@ def _batch_test_cal(x0, z0, look_plus_z, glass_vec):
 @pytest.mark.parametrize(
     "mm",
     [
-        MmNp(n1=1.0, n2=[1.0], d=[0.0], n3=1.0),  # all-air (Ilmenau)
+        MmNp(n1=1.0, n2=[1.0], d=[0.0], n3=1.0),  # all-air (barrel rig)
         MmNp(n1=1.0, n2=[1.49], d=[5.0], n3=1.33),  # glass/water tank
     ],
     ids=["air", "water"],
@@ -105,7 +105,7 @@ def test_ray_tracing_batch_matches_scalar(look_plus_z, glass_vec, mm):
     Regression test: the batch path forced a negative glass-normal
     component (the pre-fix scalar behaviour), mirroring outgoing rays
     whenever n_dot = glass . ray_dir > 0 -- i.e. cameras looking along
-    +Z with a +Z glass normal (Ilmenau rig 5-8). All file-based fixtures
+    +Z with a +Z glass normal (rig B, cameras 5-8). All file-based fixtures
     (test_cavity: cams at -Z, glass (0,0,-125)) and the old unit tests
     only exercised n_dot < 0, where the forced sign happens to be
     correct, so the suite was blind to it. Production symptom: rig 5-8

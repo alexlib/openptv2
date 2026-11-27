@@ -1,12 +1,12 @@
-# Illmenau: from bubble images to merged barrel trajectories
+# Worked example: from bubble images to merged trajectories of two rigs
 
-The processing chain of the Illmenau barrel dataset (two rigs of four cameras,
+The processing chain of the barrel rig dataset (two rigs of four cameras,
 helium-filled soap bubbles, 10 fps), after calibration
-([Illmenau 4-camera case study](illmenau-4cam-calibration.md)). Each step is a
-generic library function; the scripts in `scripts/illmenau/` only add the
-Illmenau specifics (folders, camera groups, shards, barrel geometry).
+([4-camera case study](plate-calibration-worked-example.md)). Each step is a
+generic library function; the scripts in `scripts/plate_rigs/` only add the
+The example rig specifics (folders, camera groups, shards, barrel geometry).
 
-| step | generic code | Illmenau script | settings (parameter file of the rig) |
+| step | generic code | the example rig script | settings (parameter file of the rig) |
 |---|---|---|---|
 | 1. bubble detection + correspondences | `openptv2-batch --mode sequence`, plugin `bubble_sequence` | — | `bubble_detection:`, `background:`, `criteria:` |
 | 2. re-correspondence with the current calibration, from the stored detections | `openptv2.recorrespond` (`load_parameters`, `stored_frames`, `correspond_frame`, `write_store`) | `correspond_fulldiam.py` (one process per shard) | `ptv:`, `criteria:`, `cal_ori:` |
@@ -26,7 +26,7 @@ overwrite existing results), then the merge:
 ```bash
 bash claude_work_2026-10-10/pipeline/full_pipeline_tuned.sh 14
 bash claude_work_2026-10-10/pipeline/full_pipeline_tuned.sh 58
-uv run python scripts/illmenau/merge_dual_rig.py \
+uv run python scripts/plate_rigs/merge_dual_rig.py \
     --clean run_fulldiam_clean.zarr --out merged_fulldiam.zarr
 ```
 

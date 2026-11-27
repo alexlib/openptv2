@@ -1,7 +1,7 @@
-"""Merge the two Illmenau rigs' cleaned trajectories into ONE barrel-frame dataset.
+"""Merge the two plate-rig rigs' cleaned trajectories into ONE barrel-frame dataset.
 
 The generic steps are flowtracks.merge (postptv); this script supplies the
-Illmenau specifics: the rig folders, the two candidate rotations, the barrel
+plate-rig specifics: the rig folders, the two candidate rotations, the barrel
 frame and walls, and the output layout.
 
   1. MEASURES how rig 5-8's world sits in rig 1-4's from the bubbles both
@@ -27,10 +27,11 @@ frame and walls, and the output layout.
 
 Usage (flowtracks >= 1.7.0, postptv):
     uv run python \
-        scripts/illmenau/merge_dual_rig.py [--dup-mm 20] [--keep-duplicates]
+        scripts/plate_rigs/merge_dual_rig.py [--dup-mm 20] [--keep-duplicates]
 """
 
 import argparse
+import os
 import time
 from pathlib import Path
 
@@ -48,7 +49,7 @@ from flowtracks.trajectory import Trajectory
 
 from openptv2.storage import RunStore
 
-RAW = Path("/Users/alex/Downloads/Ilmenau")
+RAW = Path(os.environ.get("PLATE_RIG_RAW", "."))
 # SAME convention as the cleaned stores: metres, barrel frame.
 # (linkage stores are mm; cleaned trajectories are m.)
 Y_SHIFT_M = -1.175
@@ -94,8 +95,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dup-mm", type=float, default=20.0,
                     help="same-frame duplicate distance [mm]")
-    ap.add_argument("--a", default="openptv_illmenau_4cam")
-    ap.add_argument("--b", default="openptv_illmenau_5678")
+    ap.add_argument("--a", default="openptv_rig_a_4cam")
+    ap.add_argument("--b", default="openptv_rig_b_4cam")
     ap.add_argument("--clean", default="run_fulldiam_clean.zarr")
     ap.add_argument("--out", default="merged_barrel.zarr")
     ap.add_argument("--keep-duplicates", action="store_true",

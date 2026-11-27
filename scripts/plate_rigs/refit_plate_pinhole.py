@@ -2,7 +2,7 @@
 
 Zero distortion, principal point at the sensor centre, one shared `cc` (from
 fit_plate_cc.py).  `.addpar` is written as zeros -- see
-docs/illmenau-4cam-calibration.md section 4, Trap 1 for why distortion fitted
+docs/recipes/plate-calibration-two-rigs.md section 4, Trap 1 for why distortion fitted
 from a single plane is worse than none.
 
 The labelled dots come from the CACHE that detect_plate_frames.py wrote, not

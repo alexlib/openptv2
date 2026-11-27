@@ -19,13 +19,13 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-# Dataset location; override with ILLMENAU_RAW / ILLMENAU_DIR.
-ILLMENAU_RAW = os.environ.get("ILLMENAU_RAW", r"C:\Users\alex\Downloads\Illmenau")
-ILLMENAU_DIR = os.environ.get(
-    "ILLMENAU_DIR", os.path.join(ILLMENAU_RAW, "openptv_illmenau_4cam")
+# Dataset location; override with PLATE_RIG_RAW / PLATE_RIG_DIR.
+PLATE_RIG_RAW = os.environ.get("PLATE_RIG_RAW", ".")
+PLATE_RIG_DIR = os.environ.get(
+    "PLATE_RIG_DIR", os.path.join(PLATE_RIG_RAW, "openptv_rig_a_4cam")
 )
 
-base = Path(ILLMENAU_DIR)
+base = Path(PLATE_RIG_DIR)
 plate = yaml.safe_load((base / "plate.yaml").read_text())["plate"]
 R = plate["test_section"]["radius"]
 H = plate["test_section"]["height"]
@@ -208,7 +208,7 @@ a2.legend(fontsize=8)
 a2.grid(alpha=0.3)
 
 fig.suptitle(
-    "Illmenau global frame:  +X left->right,  +Y bottom->top,  +Z object->camera\n"
+    "plate-rig global frame:  +X left->right,  +Y bottom->top,  +Z object->camera\n"
     "blue squares = nominal wall mounts   |   red triangles = calibrated .ori (cal/cam*.tif.ori)"
 )
 fig.tight_layout()

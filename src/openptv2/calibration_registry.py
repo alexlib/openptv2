@@ -92,7 +92,7 @@ OPENCV_MODEL_INFO = CalibrationSourceInfo(
     ),
     requires="Per-camera OpenCV intrinsics (K, dist) + extrinsics (rvec, tvec), image size and pixel pitch.",
     produces_seed=True,
-    best_for="Ilmenau barrel / any dataset arriving from OpenCV, COLMAP or Metashape with an existing calibration.",
+    best_for="a barrel rig / any dataset arriving from OpenCV, COLMAP or Metashape with an existing calibration.",
     avoid_when="Foreign model used rational/thin-prism/tilt terms (k4.., s1.., taux…) — use door C (resample) instead.",
 )
 CALIBRATION_SOURCE_REGISTRY[OPENCV_MODEL_INFO.name] = OPENCV_MODEL_INFO

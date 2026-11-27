@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-"""Part 2 — Illmenau 1-4: 3D-2D pairs -> openPTV calibration (.ori/.addpar).
+"""Part 2 — plate-rig 1-4: 3D-2D pairs -> openPTV calibration (.ori/.addpar).
 
 Reads Part 1 outputs (per-camera 3D-2D pairs) and calibrates each camera.
 Prefers OpenCV (cv2.calibrateCamera) when available, else DLT fallback.
 
 Usage:
-  uv run --with opencv-python python scripts/calibrate_illmenau_4cam_part2.py
-  uv run --with opencv-python python scripts/calibrate_illmenau_4cam_part2.py --out "C:/Users/alex/Downloads/Illmenau/openptv_illmenau_4cam"
+  uv run --with opencv-python python scripts/calibrate_plate_4cam_part2.py
+  uv run --with opencv-python python scripts/calibrate_plate_4cam_part2.py --out "<raw>/openptv_rig_a_4cam"
 
 Reads:
   <out>/cal/pairs_cam1.npz ... cam4.npz  (from Part 1)
@@ -21,6 +21,7 @@ Writes:
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
 import numpy as np
@@ -58,7 +59,7 @@ def main():
     ap.add_argument(
         "--out",
         type=str,
-        default=r"C:\Users\alex\Downloads\Illmenau\openptv_illmenau_4cam",
+        default=os.path.join(os.environ.get("PLATE_RIG_RAW", "."), "openptv_rig_a_4cam"),
     )
     ap.add_argument(
         "--update-rig",

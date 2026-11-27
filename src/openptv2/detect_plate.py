@@ -1,6 +1,6 @@
 """Tunable plate-dot detection — wrapper around :mod:`openptv2.segmentation`.
 
-Covers small-dot Illmenau failure mode: ``cv2.findCirclesGrid`` is kept only as
+Covers small-dot plate-rig failure mode: ``cv2.findCirclesGrid`` is kept only as
 an opt-in fallback, the default path is ``target_recognition`` (already proven
 for tracer ``sumg``/``nn`` bands) with a separate ``detect_plate`` YAML block.
 """
@@ -35,7 +35,7 @@ class PlateDetectionResult:
 def plate_tpar_from_yaml(yaml_path: str | Path, key: str = "detect_plate") -> TargetPar:
     """Load a ``TargetPar`` from ``key`` in a dataset YAML or a bare dict.
 
-    Falls back to a sensible default for Illmenau 16-bit plates when the key
+    Falls back to a sensible default for plate-rig 16-bit plates when the key
     is absent.
     """
     p = Path(yaml_path)
