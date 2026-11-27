@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-PAGES = sorted((ROOT / "docs" / "course").glob("0*.md")) + [ROOT / "docs" / "recipes" / n for n in ("camera-set-changes.md", "dense-seeding.md", "water-cell-two-sides.md", "many-runs-and-servers.md", "calibration-known-target.md")]
+PAGES = sorted((ROOT / "docs" / "course").glob("0*.md")) + [ROOT / "docs" / "recipes" / n for n in ("camera-set-changes.md", "dense-seeding.md", "water-cell-two-sides.md", "many-runs-and-servers.md", "calibration-known-target.md", "dumbbell.md")]
 BATCH = [sys.executable, "-c", "import sys; from openptv2.batch.pyptv_batch import main_cli; sys.argv[0]='openptv2-batch'; main_cli()"]
 
 pytestmark = pytest.mark.unit
@@ -41,7 +41,7 @@ def _steps(text: str) -> list[tuple[str, str, str | None]]:
             out.append(("cp", cmd, None))
         elif cmd.startswith("cp "):
             out.append(("shell", cmd, None))
-        elif cmd.startswith("python skills/"):
+        elif cmd.startswith(("python skills/", "python scripts/")):
             tail = text[m.end():]
             near = re.match(r"\s*(?:[^`#]*?)```text\n(.*?)```", tail, re.S)
             if near:        # a command without an output block (pick opens a window) is not run
@@ -74,6 +74,7 @@ def _norm(s: str) -> str:
 def test_course_is_tested_end_to_end(tmp_path):
     (tmp_path / "test_data").symlink_to(ROOT / "test_data", target_is_directory=True)
     (tmp_path / "skills").symlink_to(ROOT / "skills", target_is_directory=True)
+    (tmp_path / "scripts").symlink_to(ROOT / "scripts", target_is_directory=True)
     ran = {"cp": 0, "shell": 0, "batch": 0, "python": 0, "module": 0, "tool": 0}
     for page in PAGES:
         for kind, cmd, expected in _steps(page.read_text()):
@@ -109,7 +110,7 @@ def test_course_is_tested_end_to_end(tmp_path):
                 assert expected is not None, f"{page.name}: a python -c block without an output block"
                 assert _norm(r.stdout) == _norm(expected), f"{page.name}: the output differs from the page\n{r.stdout}"
             ran[kind] += 1
-    assert ran["cp"] >= 5 and ran["shell"] >= 1 and ran["batch"] >= 6 and ran["python"] >= 6 and ran["module"] >= 5 and ran["tool"] >= 2, ran
+    assert ran["cp"] >= 5 and ran["shell"] >= 1 and ran["batch"] >= 6 and ran["python"] >= 6 and ran["module"] >= 5 and ran["tool"] >= 5, ran
 
 
 def test_self_check_passes():
