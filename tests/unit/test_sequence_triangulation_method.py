@@ -5,15 +5,17 @@ midpoints) misplaces points and "lsq" (point nearest all rays) reprojects better
 """
 
 import os
+import shutil
 
 import numpy as np
+import pytest
 
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.imgcoord import img_coord_batch
 from openptv2.algorithms.parameters import ControlPar, VolumePar
 from openptv2.algorithms.trafo import metric_to_pixel_batch
 from openptv2.correspondences import match_frame_correspondences
-from openptv2.storage import RunStore
+from openptv2.storage import RunStore, find_existing_store
 from openptv2.tracking_framebuf import read_targets
 from tests._support import find_test_data_root
 
@@ -30,15 +32,37 @@ def _worst_reprojection_px(pos, ids, targets, cals, cpar):
     return err
 
 
-def test_lsq_triangulation_reprojects_better_than_pairs(monkeypatch):
-    monkeypatch.chdir(CAVITY)
+@pytest.fixture(scope="module")
+def cavity_store_dir(tmp_path_factory):
+    """A private copy of test_cavity with frame 10001 detected into res/run.zarr.
+
+    The test used to read a ``run.zarr`` that is not in git (it is ignored), so it failed in
+    every clean clone. Detection of one frame takes a few seconds.
+    """
+    from openptv2.batch import pyptv_batch
+
+    if not (CAVITY / "img").exists():
+        pytest.skip("test_cavity images not present")
+    dst = tmp_path_factory.mktemp("cavity") / "test_cavity"
+    shutil.copytree(CAVITY, dst, ignore=shutil.ignore_patterns("res*", "run.zarr", "tmp*.txt"))
+    cwd = os.getcwd()
+    os.chdir(dst)
+    try:
+        pyptv_batch.main(dst / "parameters_Run1.yaml", 10001, 10001, mode="sequence")
+    finally:
+        os.chdir(cwd)
+    return dst
+
+
+def test_lsq_triangulation_reprojects_better_than_pairs(monkeypatch, cavity_store_dir):
+    monkeypatch.chdir(cavity_store_dir)
     yaml_path = "parameters_Run1.yaml"
     cpar, vpar = ControlPar.from_yaml(yaml_path), VolumePar.from_yaml(yaml_path)
     cals = [
         Calibration.from_file(f"cal/cam{c}.tif.ori", f"cal/cam{c}.tif.addpar")
         for c in range(1, 5)
     ]
-    store = RunStore("run.zarr", mode="r")
+    store = RunStore(find_existing_store(cavity_store_dir), mode="r")
 
     def run(method):
         targets = [

@@ -69,7 +69,5 @@ The VFC tools no longer have the author's machine paths as defaults (`--zarr` is
 
 ## 6. Known problems found on the way
 
-* `tests/unit/test_sequence_triangulation_method.py::test_lsq_triangulation_reprojects_better_than_pairs` passes only where an
-  ignored `test_data/test_cavity/run.zarr` exists. In a clean clone it fails (also on `main`).
 * About 35 scripts and a few modules still carry machine paths (for example `notebooks/marimo_epipolar_tool.py`,
   `src/openptv2/plate_calibration.py`).
