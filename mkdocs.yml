@@ -53,6 +53,14 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Course (the basics):
+    - Start here: course/index.md
+    - 1. Install and check: course/01-install.md
+    - 2. Your data: course/02-your-data.md
+    - 3. Cameras and calibration: course/03-cameras.md
+    - Glossary: course/glossary.md
+  - Recipes:
+    - What to do in your situation: recipes/index.md
   - Installation & Setup: installation.md
   - First Steps: first_steps.md
   - Tutorials:
@@ -87,6 +95,11 @@ nav:
     - Reprojection RMS vs Ray Convergence: calibration-rms-vs-rcm.md
     - Bundle Adjustment: calibration-bundle-adjustment.md
     - Tracer Self-Calibration: tracer-self-calibration.md
+    - Calibration Consistency Check: calibration-consistency.md
+    - Self-Calibration Scale Bias: self-calibration-scale-bias.md
+    - Self-Calibration on a Synthetic Cavity: self-calibration-cavity-synthetic.md
+    - Synthetic Truth Rig: synthetic-rig.md
+    - Ray Tracing vs Radial Shift: ray-tracing-vs-radial-shift.md
   - Benchmarks:
     - Benchmarking & Tracker Selection: benchmarking_guide.md
     - Multi-Engine Benchmark Results: tracking-benchmark-results.md
@@ -96,6 +109,7 @@ nav:
     - Cython & Pure Python Modes: developer_guide/cython_and_pure_python.md
     - Custom Tracking Plugins: developer_guide/custom_tracking_plugins.md
     - Documentation Workflow: developer_guide/documentation_workflow.md
+    - Writing Course Pages and Recipes: developer_guide/writing_course_pages.md
     - Packaging & Releases: developer_guide/packaging_and_releases.md
     - GUI Testing Guide: HOW_TO_TEST_GUI.md
   - Algorithms:

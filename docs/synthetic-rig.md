@@ -53,6 +53,9 @@ These are large in the image, yet a calibration that is fitted afterwards (exter
 all of them: see `docs/plans/2026-11-26-calibration-lab.md` (3-36 µm left in the volume). The shift is smooth and nearly uniform
 across the sensor, which is exactly what camera position, `cc` and the principal point can imitate.
 
+An interactive walk-through with sliders, and a comparison with the radial-shift model, is in
+`docs/ray-tracing-vs-radial-shift.md` (marimo notebook `docs/notebooks/ray_tracing_multimedia.py`).
+
 ## Tests and limits
 
 `tests/unit/test_synthetic_rig.py` checks the agreement with the library to 2e-3 px, that each deviation moves the image by a
