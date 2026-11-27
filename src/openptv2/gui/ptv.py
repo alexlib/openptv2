@@ -1672,6 +1672,8 @@ def py_trackcorr_init(exp):
     if pm is None and hasattr(exp, "exp1"):
         pm = getattr(exp.exp1, "pm", None)
     track_cfg = pm.parameters.get("track", {}) if pm else {}
+    if not isinstance(track_cfg, dict):
+        track_cfg = {}
     if track_cfg.get("dynamic_tracking", False):
         from openptv2.dynamic_tracking import (
             DynamicTrackParams,
