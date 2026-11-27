@@ -30,10 +30,10 @@ edit the notebook itself:
 uv run --extra viz marimo edit src/openptv2/gui/trackcorr_debug_nb.py
 ```
 
-`--dataset` is a directory containing `parameters.yaml`, `cal/`, `img_orig/`
-(or `img/`), and `res_orig/` (or `res/`) -- point it at your own experiment
-once you have run sequence + tracking there. `--first`/`--last` bound the
-frame range trackcorr steps over (`--last` is exclusive); `--particle` is
+`--dataset` is an experiment folder that contains `parameters.yaml`, `cal/`, and `res/run.zarr`. Run the sequence step
+(detection and matching) on it first, because the viewer reads each frame's targets and correspondences from the run store.
+The viewer does not change your results: it works on a temporary copy of `res/run.zarr` and deletes nothing of yours.
+`--first`/`--last` bound the frame range trackcorr steps over (`--last` is exclusive); `--particle` is
 the row index of the particle to inspect in the first stepped frame. All
 four are also editable fields in the notebook itself, so the CLI flags are
 just convenient defaults.
