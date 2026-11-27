@@ -1419,6 +1419,7 @@ class TwoPhaseTracker:
                     frame_ghost,
                     frame_logb,
                     init_vels=None,
+                    frame_sigma=frame_sigma,
                 )
                 links = first[0] if isinstance(first, tuple) else first
                 field = self._bootstrap_field_from_links(links, frame_particles)
@@ -1435,6 +1436,7 @@ class TwoPhaseTracker:
                         frame_ghost,
                         frame_logb,
                         init_vels=field,
+                        frame_sigma=frame_sigma,
                     )
                 # The first pass is not reliable enough -> single pass with
                 # the displacement-mode field.
@@ -1452,6 +1454,7 @@ class TwoPhaseTracker:
             frame_ghost,
             frame_logb,
             init_vels=init_vels,
+            frame_sigma=frame_sigma,
         )
 
     def _mode_bootstrap_field(
@@ -1625,6 +1628,7 @@ class TwoPhaseTracker:
         frame_ghost: list[np.ndarray] | None = None,
         frame_logb: list[np.ndarray] | None = None,
         init_vels: np.ndarray | None = None,
+        frame_sigma: list[np.ndarray] | None = None,
     ) -> (
         list[tuple[int, int, int, int]]
         | tuple[list[tuple[int, int, int, int]], list[dict[str, Any]]]
