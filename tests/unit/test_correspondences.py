@@ -641,6 +641,23 @@ class TestCandidateBuffer:
         assert list(mc) == [150, 0, 0, 150]
         assert sorted(self._pids(con, corrected, pid_by_pnr, 150)) == list(range(150))
 
+    @pytest.mark.filterwarnings("ignore:.*epipolar band.*too wide:RuntimeWarning")
+    def test_dense_frame_at_a_realistic_band_matches_every_particle(self, monkeypatch):
+        # The user report: eps0 = 0.15 mm, dense seeding, the particles visited last were never matched and nothing said
+        # so. 1000 particles at 0.15 mm make 111k candidates, more than the 4 * NMAX = 80960 rows of the old buffer.
+        import openptv2.algorithms.correspondences as corr_mod
+
+        frm, corrected, vpar, cpar, calib, pid_by_pnr = self._frame(1000, eps0=0.15)
+        con, mc = correspondences(frm, corrected, vpar, cpar, calib)
+        assert mc[0] == 1000
+        assert sorted(self._pids(con, corrected, pid_by_pnr, 1000)) == list(range(1000))
+
+        # The same frame with the old fixed size loses particles, and says so (722 quads here, not 1000):
+        monkeypatch.setattr(corr_mod, "MAX_CANDIDATE_ROWS", 4 * corr_mod.NMAX)
+        with pytest.warns(RuntimeWarning, match="candidate buffer reached its cap"):
+            _, mc_old = correspondences(frm, corrected, vpar, cpar, calib)
+        assert mc_old[0] < 1000
+
     def test_a_tiny_initial_buffer_gives_the_same_matches(self, monkeypatch):
         import openptv2.algorithms.correspondences as corr_mod
 
