@@ -72,6 +72,11 @@ nav:
   - Recipes:
     - What to do in your situation: recipes/index.md
     - Tracks break when the set of cameras changes: recipes/camera-set-changes.md
+    - Cameras on both sides of a water cell: recipes/water-cell-two-sides.md
+    - Dense seeding, merged blobs: recipes/dense-seeding.md
+    - Many runs with one calibration, and servers: recipes/many-runs-and-servers.md
+    - One rig, a target with known 3D points: recipes/calibration-known-target.md
+    - Dumbbell, fix or check the scale: recipes/dumbbell.md
   - Installation & Setup: installation.md
   - First Steps: first_steps.md
   - Tutorials:

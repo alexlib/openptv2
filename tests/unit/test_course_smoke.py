@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-PAGES = sorted((ROOT / "docs" / "course").glob("0*.md")) + [ROOT / "docs" / "recipes" / "camera-set-changes.md"]
+PAGES = sorted((ROOT / "docs" / "course").glob("0*.md")) + [ROOT / "docs" / "recipes" / n for n in ("camera-set-changes.md", "dense-seeding.md", "water-cell-two-sides.md", "many-runs-and-servers.md", "calibration-known-target.md")]
 BATCH = [sys.executable, "-c", "import sys; from openptv2.batch.pyptv_batch import main_cli; sys.argv[0]='openptv2-batch'; main_cli()"]
 
 pytestmark = pytest.mark.unit
@@ -41,6 +41,11 @@ def _steps(text: str) -> list[tuple[str, str, str | None]]:
             out.append(("cp", cmd, None))
         elif cmd.startswith("cp "):
             out.append(("shell", cmd, None))
+        elif cmd.startswith("python skills/"):
+            tail = text[m.end():]
+            near = re.match(r"\s*(?:[^`#]*?)```text\n(.*?)```", tail, re.S)
+            if near:        # a command without an output block (pick opens a window) is not run
+                out.append(("tool", cmd, near.group(1)))
         elif cmd.startswith("python -m openptv2."):
             tail = text[m.end():]
             e = re.search(r"## What you should see\s+.*?```text\n(.*?)```", tail, re.S)
@@ -55,7 +60,9 @@ def _steps(text: str) -> list[tuple[str, str, str | None]]:
             code = cmd[len('python -c "'):].rsplit('"', 1)[0]
             tail = text[m.end():]
             e = re.search(r"## What you should see\s+.*?```text\n(.*?)```", tail, re.S)
-            out.append(("python", code, e.group(1) if e else None))
+            near = re.match(r"\s*(?:[^`#]*?)```text\n(.*?)```", tail, re.S)
+            hit = near or e
+            out.append(("python", code, hit.group(1) if hit else None))
     return out
 
 
@@ -66,7 +73,8 @@ def _norm(s: str) -> str:
 
 def test_course_is_tested_end_to_end(tmp_path):
     (tmp_path / "test_data").symlink_to(ROOT / "test_data", target_is_directory=True)
-    ran = {"cp": 0, "shell": 0, "batch": 0, "python": 0, "module": 0}
+    (tmp_path / "skills").symlink_to(ROOT / "skills", target_is_directory=True)
+    ran = {"cp": 0, "shell": 0, "batch": 0, "python": 0, "module": 0, "tool": 0}
     for page in PAGES:
         for kind, cmd, expected in _steps(page.read_text()):
             if kind == "cp":
@@ -87,6 +95,10 @@ def test_course_is_tested_end_to_end(tmp_path):
                 for line in (expected or "").splitlines():
                     if line.startswith(("Average over sequence", "Sealed:", "Batch processing")):
                         assert line.strip() in r.stdout, f"{page.name}: the batch output no longer contains {line!r}"
+            elif kind == "tool":
+                r = subprocess.run([sys.executable] + cmd.split()[1:], cwd=tmp_path, capture_output=True, text=True, timeout=300)
+                assert r.returncode == 0, f"{page.name}: {r.stderr[-1500:]}"
+                assert _norm(r.stdout) == _norm(expected), f"{page.name}: the output differs from the page\n{r.stdout}"
             elif kind == "module":
                 r = subprocess.run([sys.executable] + cmd.split()[1:], cwd=tmp_path, capture_output=True, text=True, timeout=300)
                 assert r.returncode in (0, 1), f"{page.name}: {r.stderr[-1500:]}"      # 1 = a verdict other than "consistent"
@@ -97,7 +109,7 @@ def test_course_is_tested_end_to_end(tmp_path):
                 assert expected is not None, f"{page.name}: a python -c block without an output block"
                 assert _norm(r.stdout) == _norm(expected), f"{page.name}: the output differs from the page\n{r.stdout}"
             ran[kind] += 1
-    assert ran["cp"] >= 5 and ran["shell"] >= 1 and ran["batch"] >= 6 and ran["python"] >= 6 and ran["module"] >= 5, ran
+    assert ran["cp"] >= 5 and ran["shell"] >= 1 and ran["batch"] >= 6 and ran["python"] >= 6 and ran["module"] >= 5 and ran["tool"] >= 2, ran
 
 
 def test_self_check_passes():

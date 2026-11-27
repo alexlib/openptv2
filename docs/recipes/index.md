@@ -6,10 +6,10 @@ steps instead of repeating them. Recipes are named for the situation, not for th
 | You have ... | You want ... | Recipe |
 |---|---|---|
 | two rigs of four cameras each and a hand-held dots plate | a calibration for each rig (OpenCV-style free-pose plate calibration), then tracking | [Two rigs of four cameras, hand-held plate](plate-calibration-two-rigs.md) |
-| one rig and a plate moved by known steps | the classic multi-plane calibration | [Camera calibration](../tutorials/calibration.md) |
-| cameras on both sides of a water cell | to track through two windows | *in preparation*; see [Synthetic cavity study](../self-calibration-cavity-synthetic.md) |
-| a calibration you are not sure about | to know whether it is good enough | *in preparation*; see [Calibration consistency check](../calibration-consistency.md) |
+| one rig and a target with known 3D points | the classic calibration | [One rig, a target with known 3D points](calibration-known-target.md) |
+| cameras on both sides of a water cell | to track through two windows | [Cameras on both sides of a water cell](water-cell-two-sides.md) |
+| a calibration you are not sure about | to know whether it is good enough | [Course page 8: is the calibration good?](../course/08-calibration.md) |
 | tracks that break when the camera set changes | to find out if the cameras are the cause, and repair it | [Tracks break when the set of cameras changes](camera-set-changes.md) |
-| dense seeding, merged blobs | more tracks | *in preparation*; see [Holistic tracking](../holistic-tracking.md) |
-| many runs sharing one calibration, or a server | to process in batch | [Multi-folder runs](../multi-folder-runs.md), [Cloud-like batch](../cloud-batch.md) |
-| a dumbbell | to calibrate or check scale | [Dumbbell calibration](../tutorials/dumbbell_calibration.md) |
+| dense seeding, merged blobs | more tracks | [Dense seeding](dense-seeding.md) |
+| many runs sharing one calibration, or a server | to process in batch | [Many runs and servers](many-runs-and-servers.md) |
+| a dumbbell | to calibrate or check scale | [Dumbbell](dumbbell.md) |
