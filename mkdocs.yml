@@ -101,7 +101,8 @@ nav:
     - Cloud-like Batch Deployment: cloud-batch.md
     - Multi-Folder Experiments: multi-folder-runs.md
     - Tracking Visualization: tutorials/tracking_visualization.md
-    - Debug Visualization: tutorials/tracking_debug_visualization.md
+    - trackcorr Candidate Viewer: tutorials/trackcorr_candidate_viewer.md
+    - Debug Visualization (broken, GUI panel): tutorials/tracking_debug_visualization.md
   - Calibration:
     - Two Rigs with a Hand-Held Plate (recipe): recipes/plate-calibration-two-rigs.md
     - Plate Calibration How-To (reference): plate-calibration-howto.md
