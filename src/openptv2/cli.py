@@ -475,7 +475,7 @@ def main():
             from pathlib import Path
 
             parser = argparse.ArgumentParser(prog="openptv tune-dynamic")
-            parser.add_argument("yaml_file", help="Experiment YAML (rt_is.# must already exist)")
+            parser.add_argument("yaml_file", help="Experiment parameters YAML (matching must already be in res/run.zarr)")
             parser.add_argument(
                 "--window",
                 type=int,
@@ -514,13 +514,14 @@ def main():
             seq_cfg = pm.parameters.get("sequence", {})
             first, last = int(seq_cfg.get("first", 0)), int(seq_cfg.get("last", 0))
             track_cfg = pm.parameters.get("track", {})
-            num_cams = int(pm.num_cams or 4)
 
             print(f"Step 1/2: running static tracking pass on {yaml_file} ...")
             batch_main(yaml_file, first, last, mode="tracking")
 
-            linkage_base = exp_path / "res" / "ptv_is"
-            rates = per_frame_link_rate(linkage_base, first, last)
+            from openptv2.storage import RunStore, find_existing_store
+
+            store = RunStore(find_existing_store(exp_path), mode="r")
+            rates = per_frame_link_rate(store, first, last)
             flagged = flag_low_quality_steps(rates, threshold=args.threshold)
 
             if not flagged:
@@ -532,12 +533,7 @@ def main():
 
             print(f"Step 2/2: {len(flagged)} step(s) flagged as under-linked: {flagged}")
             overrides = suggest_step_overrides(
-                exp_path / "res",
-                flagged,
-                first,
-                last,
-                num_cams=num_cams,
-                window=args.window,
+                store, flagged, first, last, window=args.window
             )
 
             out_path = (

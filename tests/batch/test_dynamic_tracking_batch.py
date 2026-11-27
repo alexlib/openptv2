@@ -36,8 +36,21 @@ def _update_track_cfg(yaml_path, **updates) -> None:
     with open(yaml_path) as f:
         data = yaml.safe_load(f)
     data.setdefault("track", {}).update(updates)
+    # Per-step parameters act on the classic trackcorr tracker. The default tracker (two_phase)
+    # builds its own and does not read them.
+    data.setdefault("plugins", {})["selected_tracking"] = "trackcorr"
     with open(yaml_path, "w") as f:
         yaml.safe_dump(data, f)
+
+
+def _assert_linked(workdir, first, last):
+    """Tracking wrote forward linkage for every frame in [first, last) to res/run.zarr."""
+    from openptv2.storage import RunStore, find_existing_store
+
+    store = RunStore(find_existing_store(workdir), mode="r")
+    for frame in range(first, last):
+        _prev, nxt, _pos = store.read_linkage(frame, "ptv_is")
+        assert len(nxt) > 0, f"frame {frame}: no linked particles"
 
 
 def test_dynamic_tracking_absent_key_runs_static_unchanged(cavity_workdir, capsys):
@@ -51,9 +64,7 @@ def test_dynamic_tracking_absent_key_runs_static_unchanged(cavity_workdir, capsy
     out = capsys.readouterr().out
     assert "[dynamic tracking]" not in out
 
-    res_dir = cavity_workdir / "res"
-    for frame in range(start_frame, end_frame + 1):
-        assert (res_dir / f"ptv_is.{frame}").exists()
+    _assert_linked(cavity_workdir, start_frame, end_frame)
 
 
 def test_dynamic_tracking_enabled_missing_file_falls_back(cavity_workdir, capsys):
@@ -68,9 +79,7 @@ def test_dynamic_tracking_enabled_missing_file_falls_back(cavity_workdir, capsys
     out = capsys.readouterr().out
     assert "enabled but" in out and "not found" in out
 
-    res_dir = cavity_workdir / "res"
-    for frame in range(start_frame, end_frame + 1):
-        assert (res_dir / f"ptv_is.{frame}").exists()
+    _assert_linked(cavity_workdir, start_frame, end_frame)
 
 
 def test_dynamic_tracking_enabled_with_overrides_runs_end_to_end(cavity_workdir, capsys):
@@ -95,13 +104,7 @@ def test_dynamic_tracking_enabled_with_overrides_runs_end_to_end(cavity_workdir,
     out = capsys.readouterr().out
     assert f"[dynamic tracking] per-step overrides loaded from {dyn_path}" in out
 
-    res_dir = cavity_workdir / "res"
-    for frame in range(start_frame, end_frame + 1):
-        ptv_is_file = res_dir / f"ptv_is.{frame}"
-        assert ptv_is_file.exists()
-        lines = ptv_is_file.read_text().strip().splitlines()
-        num_tracks = int(lines[0]) if lines else 0
-        assert num_tracks > 0, f"No tracks found in {ptv_is_file}."
+    _assert_linked(cavity_workdir, start_frame, end_frame)
 
 
 def test_dynamic_tracking_custom_params_file(cavity_workdir):
@@ -120,8 +123,7 @@ def test_dynamic_tracking_custom_params_file(cavity_workdir):
     # No exception raised -> the custom sidecar file was found and parsed.
     pyptv_batch.main(yaml_file, start_frame, end_frame)
 
-    res_dir = cavity_workdir / "res"
-    assert (res_dir / f"ptv_is.{start_frame}").exists()
+    _assert_linked(cavity_workdir, start_frame, start_frame + 1)
 
 
 def test_tune_dynamic_pipeline_end_to_end(cavity_workdir):
@@ -131,12 +133,14 @@ def test_tune_dynamic_pipeline_end_to_end(cavity_workdir):
     yaml_file = cavity_workdir / "parameters_Run1.yaml"
     start_frame, end_frame = 10000, 10004
 
-    # Step 1: static tracking pass produces rt_is (positions) and ptv_is
-    # (linkage) on disk.
+    # Step 1: static tracking pass writes the correspondences (positions) and
+    # the linkage to res/run.zarr.
     pyptv_batch.main(yaml_file, start_frame, end_frame)
 
-    res_dir = cavity_workdir / "res"
-    rates = per_frame_link_rate(res_dir / "ptv_is", start_frame, end_frame)
+    from openptv2.storage import RunStore, find_existing_store
+
+    store = RunStore(find_existing_store(cavity_workdir), mode="r")
+    rates = per_frame_link_rate(store, start_frame, end_frame)
     assert rates, "static pass should have produced linkage data"
     assert set(rates) == set(range(start_frame, end_frame))
 
@@ -146,12 +150,7 @@ def test_tune_dynamic_pipeline_end_to_end(cavity_workdir):
     flagged = flag_low_quality_steps(rates, threshold=2.0)
     assert flagged == sorted(rates)
 
-    with open(yaml_file) as f:
-        num_cams = yaml.safe_load(f)["num_cams"]
-
-    overrides = suggest_step_overrides(
-        res_dir, flagged, start_frame, end_frame, num_cams=num_cams, window=2
-    )
+    overrides = suggest_step_overrides(store, flagged, start_frame, end_frame, window=2)
     assert set(overrides) == set(flagged)
     for step, step_overrides in overrides.items():
         assert step_overrides.get("dvxmax", 0) > 0, (
@@ -168,8 +167,7 @@ def test_tune_dynamic_pipeline_end_to_end(cavity_workdir):
     # Step 2: feed the generated file straight back into a real batch run.
     _update_track_cfg(yaml_file, dynamic_tracking=True)
     pyptv_batch.main(yaml_file, start_frame, end_frame)
-    for frame in range(start_frame, end_frame + 1):
-        assert (res_dir / f"ptv_is.{frame}").exists()
+    _assert_linked(cavity_workdir, start_frame, end_frame)
 
 
 def test_tune_dynamic_cli_writes_overrides_file(cavity_workdir):
@@ -180,7 +178,7 @@ def test_tune_dynamic_cli_writes_overrides_file(cavity_workdir):
     tune-dynamic has no --first/--last of its own -- it always operates over
     the YAML's own `sequence.first`/`sequence.last`, so the prep run below
     must cover that same range (not an arbitrary sub-range) for its static
-    pass to find rt_is/ptv_is on disk for every step it will measure."""
+    pass to find the correspondences and linkage in res/run.zarr for every step it will measure."""
     yaml_file = cavity_workdir / "parameters_Run1.yaml"
     with open(yaml_file) as f:
         seq_cfg = yaml.safe_load(f)["sequence"]

@@ -299,6 +299,23 @@ See `C:\Users\alex\Downloads\aorta_phantom\wp1\copy_trajectories.py` and `docs/z
 
 ---
 
+## 6b. Per-step parameters for transient or periodic flows (opt-in)
+
+One search window for the whole run is wrong when the flow changes a lot in time (a pulse, a cycle). Per-step parameters let some frame transitions use wider bounds. **It works with the classic `trackcorr` tracker only** (`plugins.selected_tracking: trackcorr`); the default `two_phase` tracker builds its own tracker and does not read them.
+
+1. Let the program suggest the steps: `uv run python -m openptv2.cli tune-dynamic parameters_Run1.yaml`. It runs one tracking pass, flags frames where unusually few particles got a forward link (a real particle that failed to link is what a wider window fixes; no truth is needed), and writes `dynamic_track.yaml` next to the YAML file.
+2. Read it and edit it. It lists only the flagged steps:
+   ```yaml
+   steps:
+     117: {dvxmin: -25.0, dvxmax: 25.0, dacc: 12.0}
+   ```
+3. Turn it on in the YAML file: `track: {dynamic_tracking: true}`. A step with no entry uses the normal parameters. `track.dynamic_params_file` gives another file name.
+4. Track again. The log shows `[dynamic tracking] per-step overrides loaded from ...`. If the file is missing, the run prints a warning and uses the normal parameters for every step.
+
+Without the `dynamic_tracking` key nothing changes.
+
+---
+
 ## 7. Interpreting Statistics
 
 `seal` reports `n_trajectories`, `n_rows`, `n_dropped`. With `z-noise/motion≈19` (aorta phantom) expect short fragments (median ~10 with `min_length=5`, median 1 without filter). For Eulerian `velocity` fields use `flowtracks`/`postptv`, not long Lagrangian `trajid`.
