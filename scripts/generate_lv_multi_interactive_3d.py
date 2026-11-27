@@ -30,7 +30,7 @@ def make_line_coords(links, pos_list):
 
 
 def generate_interactive_html(
-    zarr_path: str = "/Users/alex/Documents/Github/openptv-cloud/examples/lv-multi/wp5/res/run.zarr",
+    zarr_path: str,
     output_html: str = "lv_multi_interactive_3d.html",
 ):
     print(f"Loading data from: {zarr_path}")
@@ -439,7 +439,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--zarr",
         type=str,
-        default="/Users/alex/Documents/Github/openptv-cloud/examples/lv-multi/wp5/res/run.zarr",
+        required=True,
+        help="Path to the res/run.zarr of the run to show",
     )
     parser.add_argument("--output", type=str, default="lv_multi_interactive_3d.html")
     args = parser.parse_args()

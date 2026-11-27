@@ -37,7 +37,8 @@ def _(mo):
 @app.cell
 def _(mo):
     base = mo.ui.text(
-        value="/Users/alex/Downloads/HiDImaging/CompleteTest-5000",
+        value="",
+        placeholder="path to the experiment folder (it holds wp1/ with its res/run.zarr)",
         label="Experiment folder",
     )
     run_paths = {
