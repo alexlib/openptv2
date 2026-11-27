@@ -39,6 +39,8 @@ It installs the program. Then a built-in test checks that everything is in place
 
 ## What you should see
 
+The program is called **openptv2** (the package name) and its command is `openptv`. Both names mean the same software.
+
 ```bash
 openptv self-check
 ```

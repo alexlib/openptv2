@@ -35,7 +35,7 @@ The default tracker is `two_phase`. It first links the clear cases and then the 
 
 ## What you should see
 
-The last lines of the output:
+The output has one line per frame, a warning, and some summary lines. These are the lines to look at:
 
 ```text
 Average over sequence, particles: 43.0, links: 20.8, lost: 22.2
@@ -46,6 +46,13 @@ Batch processing completed successfully
 * *particles 43.0*: on average 43 points per frame
 * *links 20.8*: on average 20.8 of them were linked to a point of the next frame
 * *8 trajectories*, 40 points in all: eight particles that were followed through all five frames
+* *Sealed*: the trajectories were written to the run folder. Without this line nothing was saved.
+
+The line that starts with `TwoPhaseTracker: v_max=15.5 mm/frame is large` is a warning, not an error. The parameter file of this
+example allows a particle to move 15.5 mm between two frames, which is much more than it really moves here. A looser limit gives the
+tracker more wrong candidates. The warning is about a second safety check (`confirm_tol`) that is off. For this course you can ignore
+it; for your own data, set the speed limit near your real largest step (page 9 measures the steps), as described on the
+[trackers page](../trackers.md).
 
 ![The eight trajectories](figures/tracks.png)
 

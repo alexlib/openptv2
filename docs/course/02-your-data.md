@@ -24,6 +24,10 @@ test_cavity_small/
 └── res/                      the results are written here
 ```
 
+The example folder has a few more things: `ground_truth/` (the true particle positions, because the example is synthetic) and
+`parameters/` (an older format of the settings). You can ignore them. If your copy already has a `res/run.zarr` from an
+earlier run, delete `res/` first, so that every result you see is made by your own run.
+
 * **Image names** are `cam<camera number>.<frame number>`. The frame number is a counter. Here it runs from 10000 to 10004.
 * **One frame** is one moment in time, seen by all four cameras: `cam1.10000`, `cam2.10000`, `cam3.10000`, `cam4.10000`.
 

@@ -67,7 +67,7 @@ self-calibration ACCEPTED: the camera-subset jump on held-out frames fell; the s
 new cameras written to fix_run/cal_selfcal (4 files); the originals are untouched. Point the yaml's cal_ori at them and match the frames again before tracking (the stored points belong to the old cameras).
 ```
 
-How to read it:
+How to read it (the program says "4 files" and means 4 cameras: each has an `.ori` and an `.addpar`, 8 files):
 
 * **ACCEPTED** means two tests passed: the jump on held-out frames fell, and the matching did not lose points (yield 101.6 %,
   must be at least 100 %). If it says *declined*, keep your old cameras.
@@ -120,6 +120,9 @@ calibration consistency: MARGINAL  (2199 four-camera points in 5 frames, 1 px = 
 ## 5. What you should see, and the honest result
 
 On this example, the worst jump fell from 0.28 to 0.20 px, and the tracks did **not** improve: 153 trajectories before, 151 after.
+(The selfcal report says 0.32 to 0.11 px: it measures on the frames it did not use. The 0.28 and 0.20 are from the check on all
+frames. They differ, and both are right.) Look at the table again: the jump of cameras 1 and 3 fell (20 → 9.5 and 27 → 18 µm), but
+that of cameras 2 and 4 **rose** (5.6 → 18.6 and 1.2 → 10.9 µm). The fit moved the error around more than it removed it.
 Five frames is too short for self-calibration to give a gain, and 781 points is a small fit. The same method gave 5 to 15 % more
 long tracks on recordings of 300 frames or more ([measurements](../self-calibration-scale-bias.md)), but it hurt on one rig before
 we fixed the lens priors. So the rule is:

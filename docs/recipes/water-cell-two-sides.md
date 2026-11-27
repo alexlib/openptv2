@@ -39,8 +39,8 @@ camera 4: z =    536.7 mm   glass vector z =    138.3 mm
 ```
 
 Rule: the glass vector has the sign of the side its camera is on (negative z with negative z, positive with positive). The sizes
-differ between cameras, because each is measured from the camera's own origin. A wrong sign is the first thing to look for when
-almost nothing matches.
+differ between cameras, even between two cameras on the same side (3 and 4 here differ by 118 mm), so do not compare them.
+The sign is the check. A wrong sign is the first thing to look for when almost nothing matches.
 
 The materials are in the YAML file, section `ptv`: `mmp_n1` (air, 1.0), `mmp_n2` (glass, 1.46 here), `mmp_n3` (water, 1.33)
 and `mmp_d` (glass thickness in mm, 6.0). Measure the thickness with a caliper, and use the water index for your temperature and

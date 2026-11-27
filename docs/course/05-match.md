@@ -73,7 +73,7 @@ volume of the YAML.*
 ## Check that it worked
 
 * **Most targets should become 3D points.** In a good run, a large share of the targets of each camera is part of a match.
-  Here there are about 100 targets per camera and 45 points. Many particles are seen by fewer than three cameras, and one
+  Here there are about 100 targets per camera and 45 points. Most points are seen by three cameras and only a few by all four, and one
   camera sees them dimmer than another.
 * **Many points should be seen by 4 cameras.** Here only about 3 of 45 are. This example is a small crop of a bigger image, so
   few particles are inside all four fields of view. A real run should have far more. If you have many 3-camera points and

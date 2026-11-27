@@ -20,7 +20,7 @@ frame gets a false step of that size.
 ![The jump when each camera is left out](figures/consistency_jump.png)
 
 *Example from the larger run on this page. The bar is the jump when one camera is missing. The whisker is 3 standard errors: if
-it does not touch 0, the jump is real and not noise. The colours are the three verdicts.*
+it does not touch 0, the jump is real and not noise. The colours show the verdict.*
 
 ## Do it
 
@@ -72,7 +72,7 @@ calibration consistency: MARGINAL  (2170 four-camera points in 5 frames, 1 px = 
   worst systematic jump 0.28 px footprint -> small systematic offsets between camera subsets; align_partial_points() can remove them, or re-calibrate
 ```
 
-The command returns exit code 0 when the verdict is *consistent* and 1 otherwise, so a script can use it as a gate.
+The command returns exit code 0 when the verdict is *consistent*, or when it cannot judge ("too few points"), and 1 for *marginal* and *inconsistent*, so a script can use it as a gate.
 
 ## How to read it
 
@@ -80,6 +80,10 @@ The command returns exit code 0 when the verdict is *consistent* and 1 otherwise
   points it left out because their cameras disagree wildly (wrong matches, called ghosts).
 * **Residual median / p90:** how far the blob in each image is from the projection of the 4-camera 3D point, in pixels. Half of
   the points are closer than the first number, nine tenths are closer than the second.
+* **Smooth field (px):** the part of the residual that changes slowly across the image, like a small warp. A random error does not
+  do that, a calibration error does.
+* **Field reproducible:** the share of that smooth field that is real. The program fits the field on the odd frames and tests it on
+  the even frames. Near 0 % means the field is noise; a high share means a real, repeatable error. With five frames the number is small and uncertain.
 * **Jump when missing:** the table's main column. The systematic part is the average jump. The `+-` is its standard error. The
   last number is the random scatter of single points (the noise of one point).
 * **Last line:** the biggest systematic jump, measured in "pixel footprints" (one pixel size in the volume), and what to do.

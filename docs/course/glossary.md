@@ -13,7 +13,17 @@ Words are in the order a beginner meets them.
 | **Principal distance, `cc`** | The distance from the pinhole to the sensor, mm. Close to the focal length when the lens is focused at infinity; larger when focused near. |
 | **Lens distortion** | Straight lines in the world appear slightly curved in the image. Described by a few small numbers (`k1`, `k2`, `p1`, `p2`). |
 | **Multimedia / refraction** | Light bends where it passes from air into glass and from glass into water. Needs the indices (1.0, 1.46, 1.33), the glass thickness and the window position. |
-| **Glass vector** | The arrow from the origin of the lab coordinates to the window, perpendicular to it. |
+| **Glass vector** | The arrow from the origin of the lab coordinates to the window, perpendicular to it. Its sign tells which side the window is on. |
+| **Blob** | The group of bright pixels of one detected spot. Two particles that touch in the image make one blob. |
+| **High-pass filter** | Removes the slowly changing background of an image, so that only small bright spots stay. The program applies it before the threshold. |
+| **`run.zarr`** | The file (a folder) in `res/` where the program stores targets, matches and trajectories. |
+| **Sealed** | The trajectories were written to `run.zarr` and closed. |
+| **`--mode sequence / tracking / both`** | `sequence`: detect and match, frame by frame. `tracking`: link the matched points into trajectories. `both`: the two, one after the other. |
+| **`v_max`, `confirm_tol`** | The largest step of a particle between two frames that the tracker accepts, and a second check of each link. See the warning on page 6. |
+| **Held-out** | Frames that the fit did not use. A fit is judged on them, as an exam is judged on questions the student has not seen. |
+| **Yield** | How many 4-camera points the program finds. A better calibration finds more. |
+| **Footprint** | One pixel, expressed as a length in the volume (here 95 µm). A jump of 0.3 px footprint is 0.3 pixels. |
+| **Seeding** | The particles you put into the fluid: how many and how big. |
 | **Epipolar line** | The image in camera 2 of the line of sight of one spot in camera 1. The same particle must lie on it. |
 | **`eps0`** | How far from its epipolar line a spot may be and still count as a match (mm on the sensor). |
 | **Correspondence / match** | Targets in different cameras that belong to the same particle. |

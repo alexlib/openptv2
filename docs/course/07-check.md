@@ -7,6 +7,9 @@
 The program finishes without an error even when the result is wrong. This page gives you four checks that you can do on every
 run, with numbers. Each check looks at one step of the chain.
 
+One thing to know before you read the code: matched points are stored in millimetres, but trajectories are stored in
+**metres**. The code multiplies the trajectory positions by 1000 to get millimetres.
+
 ## Do it
 
 ```bash
