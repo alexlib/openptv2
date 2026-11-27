@@ -57,7 +57,9 @@ A few lines above it you should see `Engine: cython3-pure-python (compiled)`.
 
 * **"0 failed"** is what matters. A warning about *Numba* or *PyTorch* is about optional parts. The course does not use them.
 * **"(compiled)"** means you have the fast version. If it says *interpreted*, everything works but real data runs 50 to 100
-  times slower. Install a wheel for your platform.
+  times slower. The compiled parts were not built for your platform. Try
+  `pip install --upgrade --force-reinstall "openptv2[gui]"`: pip takes a ready-made build when one exists for your system. If it
+  has to build from the source, it needs a C compiler; see [building from source](../developer_guide/building.md).
 
 ## If it did not work
 

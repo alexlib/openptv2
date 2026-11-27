@@ -49,6 +49,9 @@ and a shear, which are `1` and `0` for a digital camera. So `0 0 0 0 0 1 0` mean
 The **glass vector** is the arrow from the origin to the window, at right angles to the window. Its length (125 mm here) is
 the distance from the middle of the cell to the water side of the window.
 
+**Pixel positions.** The origin (0, 0) is the top-left corner of the image. x grows to the right and y grows **downward**, as in
+every image viewer. A position of 246.6 in y, in an image that is 256 pixels high, is therefore close to the bottom edge.
+
 ## Do it
 
 === "Command line"

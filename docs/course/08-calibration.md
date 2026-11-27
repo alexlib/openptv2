@@ -86,7 +86,10 @@ The command returns exit code 0 when the verdict is *consistent*, or when it can
   the even frames. Near 0 % means the field is noise; a high share means a real, repeatable error. With five frames the number is small and uncertain.
 * **Jump when missing:** the table's main column. The systematic part is the average jump. The `+-` is its standard error. The
   last number is the random scatter of single points (the noise of one point).
-* **Last line:** the biggest systematic jump, measured in "pixel footprints" (one pixel size in the volume), and what to do.
+* **Last line:** the biggest systematic jump, measured in "pixel footprints" (one pixel size in the volume), and what to do. It
+  names two repairs. `align_partial_points()` is the program's name for the *align* repair: it moves only the points that miss a camera.
+  The other is to calibrate again. Both are shown, with commands, in the recipe
+  [Tracks break when the set of cameras changes](../recipes/camera-set-changes.md).
 
 | Verdict | Biggest systematic jump | What it means | What to do |
 |---|---|---|---|

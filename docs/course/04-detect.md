@@ -37,6 +37,33 @@ In the command line, detection and matching (page 5) run together, in one comman
     "
     ```
 
+    To look at the targets, draw a red cross on each one in the image of camera 1, frame 10000. The picture is saved as a
+    file that you open with any image viewer:
+
+    ```bash
+    python -c "
+    import numpy as np
+    import imageio.v3 as iio
+    from openptv2.storage.run_store import RunStore
+    store = RunStore('my_run/res/run.zarr', mode='r')
+    im = iio.imread('my_run/img/cam1.10000', extension='.tif').astype(float)
+    rgb = np.clip(np.stack([im] * 3, axis=-1) * 2.5, 0, 255).astype(np.uint8)
+    targets = store.read_targets(0, 10000)
+    for t in targets:
+        x, y = int(round(t.x)), int(round(t.y))
+        rgb[max(y - 4, 0):y + 5, x] = (255, 60, 60)
+        rgb[y, max(x - 4, 0):x + 5] = (255, 60, 60)
+    iio.imwrite('my_run/overlay_cam1.png', rgb)
+    print('wrote my_run/overlay_cam1.png:', len(targets), 'targets marked')
+    "
+    ```
+
+    ```text
+    wrote my_run/overlay_cam1.png: 108 targets marked
+    ```
+
+    (The image is brightened 2.5 times so that the dim particles show. Camera 1 is `0` in the code, because the code counts from 0.)
+
 === "Graphical interface"
 
     1. Open the example as on page 2 (**Start → Init / Reload**).
@@ -71,7 +98,7 @@ This is what the first image looks like with the targets drawn on it:
 
 * **The numbers per camera should be similar from frame to frame.** Here they are all between 92 and 148. A camera that
   suddenly finds half as many targets has a problem: an image that is too dark, a lamp that flickered, a cable that moved.
-* **Look at the picture, not only at the numbers.** Every bright dot should have a mark. Dim marks on empty background mean the
+* **Look at the picture, not only at the numbers** (`my_run/overlay_cam1.png` on the command line). Every bright dot should have a mark. Dim marks on empty background mean the
   threshold is too low.
 
 ## The threshold
