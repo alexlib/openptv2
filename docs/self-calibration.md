@@ -5,13 +5,6 @@
 
     **Basics:** [Course page 8](course/08-calibration.md). **Do it:** [Tracks break when the set of cameras changes](recipes/camera-set-changes.md).
 
-> [!TIP]
-> **Just want cleaner velocities without re-calibrating your cameras?**
-> If your main goal is eliminating 3-camera vs. 4-camera calibration jumps along tracks, `track.shared_correction: true`
-> (and `holistic_rounds`) now runs **Zero-Gauge-Drift 4-Camera Residual Alignment** automatically in `< 0.05 s` with
-> `0.000%` scale drift—no dumbbell or calibration-plate anchor required. On real `wp2` data it cuts held-out 3-camera
-> LOCO error by **-43.6%** (`0.347 -> 0.196 px`). See [Camera-Subset Alignment](camera-subset-alignment.md).
-> Use full bundle adjustment below when you need updated physical camera orientation/distortion files.
 
 `openptv2.selfcal.joint_self_calibrate` refines the camera parameters (exterior orientation, principal point, radial and
 decentering distortion) and the 3D positions of many tracer particles together, by bundle adjustment on their blob

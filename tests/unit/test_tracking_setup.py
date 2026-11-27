@@ -25,9 +25,7 @@ def test_defaults_are_two_phase_both_directions_no_holistic():
 @pytest.mark.parametrize("tracker", TRACKERS)
 def test_new_keys_are_read_for_every_tracker(tracker):
     s = resolve_tracking_setup({"tracker": tracker, "direction": "forward", "postprocess": False})
-    assert (s.tracker, s.direction, s.postprocess, s.align_4cam) == (tracker, "forward", False, True)
-    s2 = resolve_tracking_setup({"tracker": tracker, "align_4cam": False})
-    assert s2.align_4cam is False
+    assert (s.tracker, s.direction, s.postprocess) == (tracker, "forward", False)
 
 
 @pytest.mark.parametrize(

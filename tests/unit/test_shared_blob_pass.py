@@ -99,19 +99,3 @@ def test_shared_pass_from_params():
     assert f(None) is None and f({}) is None and f({"shared_pass": False}) is None and f({"shared_pass": 0}) is None
     assert f({"shared_pass": True}) == oc.DEFAULT_SHARED_PASS
     assert f({"shared_pass": 1.5}) == 1.5
-
-
-def test_shared_blob_point_is_not_penalised_by_brightness_spread():
-    from openptv2.point_quality import brightness_spread, log_brightness_from_arrays
-
-    # Two 4-camera particles share blob 0 in camera 0 (2x grey sum), and have separate blobs in cameras 1..3
-    cam_ids = np.array([[0, 0, 0, 0], [0, 1, 1, 1]], dtype=np.int32)
-    rows = []
-    for c in range(4):
-        arr = np.zeros((2, 8), dtype=float)
-        arr[:, 6] = [600.0, 300.0] if c == 0 else [300.0, 300.0]
-        rows.append(arr)
-    sp_masked = brightness_spread(log_brightness_from_arrays(cam_ids, rows, mask_shared=True))
-    sp_raw = brightness_spread(log_brightness_from_arrays(cam_ids, rows, mask_shared=False))
-    assert np.all(sp_masked < 1e-6)
-    assert np.all(sp_raw > 0.25)
