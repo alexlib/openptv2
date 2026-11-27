@@ -122,13 +122,12 @@ def _(np, zarr_path, img_dir):
             return np.zeros((0, 3)), np.zeros((0, 0), dtype=int)
 
     def load_link(_f, _name="ptv_is"):
+        # Through the store API: runs keep their links in blocks (linkage/<name>/block_*), not in
+        # one array per frame, so reading the frame arrays directly finds nothing.
         try:
-            _g = _store.root[f"linkage/{_name}/frame_{_f:06d}"]
-            return (
-                np.asarray(_g["prev"]).astype(int),
-                np.asarray(_g["next"]).astype(int),
-            )
-        except KeyError:
+            _prev, _next, _pos = _store.read_linkage(_f, _name)
+            return np.asarray(_prev).astype(int), np.asarray(_next).astype(int)
+        except Exception:
             return None, None
 
     _cams = _store.target_cameras()
@@ -200,6 +199,7 @@ def _(
     c0,
     load_image,
     load_targets,
+    load_corr,
     load_link,
     show_image,
     show_ids,
@@ -223,14 +223,18 @@ def _(
             for _row in _tg0[:: max(1, len(_tg0) // 60)]:
                 _ax.text(float(_row[1]) + 3, float(_row[2]) - 3, f"{int(_row[0])}", fontsize=7)
     if show_links.value and _nx0 is not None and len(_tg0):
+        # A linkage row is a 3D particle. Its target in this camera is in the correspondences
+        # table (one column per camera), not at the same row of the target list.
         _id2xy = {int(_row[0]): (float(_row[1]), float(_row[2])) for _row in _tg0}
         _tg1 = load_targets(c0, t0 + 1)
         _id2xy1 = {int(_row[0]): (float(_row[1]), float(_row[2])) for _row in _tg1}
-        for _i in range(min(len(_nx0), 400)):
+        _, _ids0 = load_corr(t0)
+        _, _ids1 = load_corr(t0 + 1)
+        for _i in range(min(len(_nx0), len(_ids0), 400)):
             _j = int(_nx0[_i])
-            if _j < 0 or _i >= len(_tg0) or _j >= len(_tg1):
+            if _j < 0 or _j >= len(_ids1) or c0 >= _ids0.shape[1] or c0 >= _ids1.shape[1]:
                 continue
-            _a, _b = _id2xy.get(int(_tg0[_i, 0])), _id2xy1.get(int(_tg1[_j, 0]))
+            _a, _b = _id2xy.get(int(_ids0[_i, c0])), _id2xy1.get(int(_ids1[_j, c0]))
             if _a and _b:
                 _ax.annotate("", xy=_b, xytext=_a,
                              arrowprops=dict(arrowstyle="->", lw=0.7))
