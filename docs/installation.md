@@ -32,7 +32,7 @@ pip install "openptv2[gui]"
 ```
 
 > [!NOTE]
-> The `[gui]` extra installs Tkinter/ttkbootstrap support, Matplotlib, and other scientific python libraries required for visualization. If you only need batch tracking on a remote server, omit the `[gui]` extra.
+> The `[gui]` extra installs the TraitsUI/Chaco (PySide6) desktop GUI, Matplotlib, and other scientific python libraries required for visualization. If you only need batch tracking on a remote server, omit the `[gui]` extra.
 
 ### Method B: For Developers (Building from Source)
 If you want to modify OpenPTV2 or build it on an unsupported platform, you must build it from source.

@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 openptv2 is a Particle Tracking Velocimetry (PTV) library centered on a single Cython 3 Pure Python implementation:
 - **Pure Python/NumPy/Cython modules** (`src/openptv2/algorithms/`) — the only algorithm implementation path
 - **openptv2 package** (`src/openptv2/`) — public API and compatibility namespace over that runtime
-- **GUI** (`src/openptv2/gui/`) — Tkinter/ttkbootstrap-based desktop application
+- **GUI** (`src/openptv2/gui/`) — TraitsUI/Chaco (PySide6) desktop application, migrating to marimo notebooks
 
 The current focus is optimizing and validating the single-engine pure Python/Cython modules and keeping the GUI/API aligned with that runtime. See `STATUS.md` for translation and migration progress.
 
