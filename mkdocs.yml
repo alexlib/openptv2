@@ -71,6 +71,7 @@ nav:
     - Glossary: course/glossary.md
   - Recipes:
     - What to do in your situation: recipes/index.md
+    - Tracks break when the set of cameras changes: recipes/camera-set-changes.md
   - Installation & Setup: installation.md
   - First Steps: first_steps.md
   - Tutorials:

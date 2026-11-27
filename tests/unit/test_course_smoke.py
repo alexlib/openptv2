@@ -1,6 +1,6 @@
 """The course pages (docs/course/0*.md) are tested. In page order, in one scratch folder that sees ``test_data``:
 
-* ``cp -r test_data/... my_run`` is executed;
+* ``cp -r test_data/... my_run`` (and other ``cp`` lines) are executed;
 * ``openptv2-batch ...`` is executed, it must finish, and the batch output lines the page prints (``Average over``, ``Sealed``) must appear;
 * every ``python -c "..."`` block is executed and its output must equal the ``text`` block under "What you should see" on the page.
 
@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-PAGES = sorted((ROOT / "docs" / "course").glob("0*.md"))
+PAGES = sorted((ROOT / "docs" / "course").glob("0*.md")) + [ROOT / "docs" / "recipes" / "camera-set-changes.md"]
 BATCH = [sys.executable, "-c", "import sys; from openptv2.batch.pyptv_batch import main_cli; sys.argv[0]='openptv2-batch'; main_cli()"]
 
 pytestmark = pytest.mark.unit
@@ -37,8 +37,10 @@ def _steps(text: str) -> list[tuple[str, str, str | None]]:
     out = []
     for m in re.finditer(r"```bash\n(.*?)```", text, re.S):
         cmd = _dedent(m.group(1)).strip()
-        if cmd.startswith("cp -r test_data/"):
+        if cmd.startswith("cp -r "):
             out.append(("cp", cmd, None))
+        elif cmd.startswith("cp "):
+            out.append(("shell", cmd, None))
         elif cmd.startswith("python -m openptv2."):
             tail = text[m.end():]
             e = re.search(r"## What you should see\s+.*?```text\n(.*?)```", tail, re.S)
@@ -64,7 +66,7 @@ def _norm(s: str) -> str:
 
 def test_course_is_tested_end_to_end(tmp_path):
     (tmp_path / "test_data").symlink_to(ROOT / "test_data", target_is_directory=True)
-    ran = {"cp": 0, "batch": 0, "python": 0, "module": 0}
+    ran = {"cp": 0, "shell": 0, "batch": 0, "python": 0, "module": 0}
     for page in PAGES:
         for kind, cmd, expected in _steps(page.read_text()):
             if kind == "cp":
@@ -72,7 +74,11 @@ def test_course_is_tested_end_to_end(tmp_path):
                 dst = cmd.split()[3]
                 import shutil
 
-                shutil.copytree(tmp_path / src, tmp_path / dst, ignore=shutil.ignore_patterns("tmp*.txt", "res"))
+                ignore = shutil.ignore_patterns("tmp*.txt", "res") if src.startswith("test_data") else None
+                shutil.copytree(tmp_path / src, tmp_path / dst, ignore=ignore)
+            elif kind == "shell":
+                r = subprocess.run(["bash", "-ec", cmd], cwd=tmp_path, capture_output=True, text=True, timeout=60)
+                assert r.returncode == 0, f"{page.name}: {r.stderr[-1500:]}"
             elif kind == "batch":
                 args = cmd.split()[1:]
                 r = subprocess.run(BATCH + args, cwd=tmp_path, capture_output=True, text=True, timeout=300)
@@ -91,7 +97,7 @@ def test_course_is_tested_end_to_end(tmp_path):
                 assert expected is not None, f"{page.name}: a python -c block without an output block"
                 assert _norm(r.stdout) == _norm(expected), f"{page.name}: the output differs from the page\n{r.stdout}"
             ran[kind] += 1
-    assert ran["cp"] >= 2 and ran["batch"] >= 3 and ran["python"] >= 6 and ran["module"] >= 2, ran
+    assert ran["cp"] >= 5 and ran["shell"] >= 1 and ran["batch"] >= 6 and ran["python"] >= 6 and ran["module"] >= 5, ran
 
 
 def test_self_check_passes():
