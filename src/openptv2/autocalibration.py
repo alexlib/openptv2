@@ -51,7 +51,6 @@ from openptv2.algorithms.orientation import (
 )
 from openptv2.algorithms.parameters import ControlPar, MmNp
 from openptv2.algorithms.sortgrid import read_calblock, sortgrid
-from openptv2.algorithms.tracking_frame_buf import read_targets
 from openptv2.algorithms.trafo import metric_to_pixel
 
 # Distortion flag-sets tried per camera; lowest reprojection RMS wins.
