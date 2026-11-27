@@ -34,7 +34,8 @@ pyptv_batch --workdir=test_data/test_cavity --first=10000 --last=10001
 | Install on my platform      | [Installation](installation.md)                              |
 | Run without the GUI         | [Command-Line Batch Processing](tutorials/batch_processing.md) |
 | Calibrate my own cameras    | [Plate Calibration How-To](plate-calibration-howto.md)       |
-| Pick a tracker              | [Tracker Engines & Parameters](tracker-tutorials.md)         |
+| Pick a tracker              | [Particle Trackers (`two_phase`, `trackcorr`, `fast_3d`)](trackers.md) |
+| Fix calibration jumps & merged blobs | [Camera-Subset Alignment & Merge Refinement](camera-subset-alignment.md) |
 | Store large runs efficiently| [Zarr & HDF5 Storage](zarr-hdf5-storage.md)                  |
 | Contribute code             | [Building from Source](developer_guide/building.md)          |
 
