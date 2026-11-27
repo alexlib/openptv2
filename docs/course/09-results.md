@@ -36,7 +36,7 @@ simplest curve is a quadratic in time (constant acceleration).
 
 ![The trajectories of the larger example](figures/tracks_big.png)
 
-*153 trajectories of 5 frames each. The colour is the step between two frames.*
+*152 trajectories of 5 frames each. The colour is the step between two frames.*
 
 ## Do it
 
@@ -68,8 +68,8 @@ print(f'median distance of the points from the fitted curve {np.median(noise):.2
 ## What you should see
 
 ```text
-trajectories with 4 or more frames: 153
-median speed 0.34 mm/frame
+trajectories with 4 or more frames: 152
+median speed 0.33 mm/frame
 median distance of the points from the fitted curve 0.06 mm
 ```
 
