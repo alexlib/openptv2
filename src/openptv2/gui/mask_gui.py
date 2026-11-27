@@ -25,6 +25,7 @@ from traits.api import Bool, Button, HasTraits, Instance, Int, Str
 from traitsui.api import HGroup, Item, ListEditor, VGroup, View
 
 from openptv2.image_scaling import to_uint8
+from openptv2.roi_mask import load_mask_polygon
 
 from . import ptv
 from .experiment import Experiment
@@ -268,7 +269,12 @@ class MaskGUI(HasTraits):
         self.need_reset = 0
         self.experiment = experiment
         self.active_path = Path(experiment.active_params.yaml_path).parent
-        self.working_folder = self.active_path.parent
+        # Working folder = the yaml's own directory, matching how MainGUI
+        # chdirs (pyptv_gui.py's init_action: os.chdir(yaml_path.parent)) --
+        # this used to go one level too high (active_path.parent), landing
+        # in the experiment's parent dir instead of the run folder, which
+        # made every relative img_name/mask path resolve to the wrong place.
+        self.working_folder = self.active_path
 
         os.chdir(self.working_folder)
         print(f"Inside a folder: {Path.cwd()}")
@@ -344,8 +350,32 @@ class MaskGUI(HasTraits):
             self.images.append(img_as_ubyte(im))
 
         self.reset_show_images()
+        self.reload_masks()
         self.pass_init = True
         self.status_text = "Initialization finished."
+
+    def reload_masks(self):
+        """Redraw each camera's previously saved mask_{cam}.txt polygon, if any."""
+        for i, cam in enumerate(self.camera):
+            polygon_xy = load_mask_polygon(i, self.working_folder)
+            if polygon_xy is None:
+                continue
+            cam._x = list(polygon_xy[:, 0])
+            cam._y = list(polygon_xy[:, 1])
+            cam.plot_data.set_data("px", polygon_xy[:, 0])
+            cam.plot_data.set_data("py", polygon_xy[:, 1])
+            cam._plot.plot(
+                ("px", "py"),
+                type="polygon",
+                face_color=(0, 0.8, 1),
+                edge_color=(0, 0, 0),
+                edge_style="solid",
+                alpha=0.5,
+            )
+            cam.drawcross(
+                "coord_x", "coord_y", cam._x, cam._y, "red", 5
+            )
+            cam._plot.request_redraw()
 
     def _button_manual_fired(self):
         self.mask_files = [f"mask_{cam}.txt" for cam in range(self.num_cams)]

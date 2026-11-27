@@ -28,9 +28,11 @@ from openptv2.parameters import (
     TrackingParams,
     VolumeParams,
 )
+from openptv2.roi_mask import apply_roi_mask
 from openptv2.segmentation import target_recognition
 from openptv2.tracker import Tracker, default_naming
 from openptv2.tracking_framebuf import TargetArray
+from openptv2.trajectory_roi import trajectory_roi_mask
 
 # PyPTV imports
 from . import ptv_calibration
@@ -235,6 +237,7 @@ def _process_frame_worker(args: Tuple) -> int:
                 img = np.clip(img - background, 0, 255).astype(np.uint8)
             except (ValueError, FileNotFoundError):
                 pass
+        img = apply_roi_mask(img, i_cam)
         high_pass = simple_highpass(
             img, cpar, ptv_params.get("highpass_size", DEFAULT_HIGHPASS_FILTER_SIZE)
         )
@@ -795,6 +798,10 @@ def py_determination_proc_c(
     else:
         print_corresp = concatenated_corresp
 
+    keep = trajectory_roi_mask(pos)
+    if keep is not None:
+        pos, print_corresp, rcm = pos[keep], print_corresp[:, keep], rcm[keep]
+
     if store is None:
         raise ValueError("RunStore is required (ASCII rt_is files are removed)")
     store.write_correspondences(
@@ -1004,6 +1011,8 @@ def read_frame_images(pm, img_base_names, num_cams, frame) -> List[np.ndarray]:
             except (ValueError, FileNotFoundError, TypeError):
                 print("failed to read the mask")
 
+    images = [apply_roi_mask(img, i_cam) for i_cam, img in enumerate(images)]
+
     return images
 
 
@@ -1196,6 +1205,12 @@ def py_sequence_loop(exp) -> None:
             if len(extra[0]):
                 pos = np.vstack([np.asarray(pos), extra[0]])
                 ids_out = np.vstack([np.asarray(ids_out, dtype=np.int32), extra[1]])
+
+        keep = trajectory_roi_mask(pos)
+        if keep is not None:
+            n_rcm = len(rcm)
+            pos, ids_out = pos[keep], ids_out[keep]
+            rcm = rcm[keep[:n_rcm]]
 
         store.write_correspondences(
             frame=frame, pos_3d=pos, cam_target_ids=ids_out
@@ -1459,6 +1474,7 @@ def py_sequence_loop_python(exp) -> None:
                         img = np.clip(img - background, 0, 255).astype(np.uint8)
                     except (ValueError, FileNotFoundError):
                         print("failed to read the mask")
+                img = apply_roi_mask(img, i_cam)
                 high_pass = simple_highpass(
                     img,
                     cpar,
@@ -1581,6 +1597,10 @@ def py_sequence_loop_python(exp) -> None:
             print_corresp[:num_cams, :] = concatenated_corresp
         else:
             print_corresp = concatenated_corresp
+
+        keep = trajectory_roi_mask(pos)
+        if keep is not None:
+            pos, print_corresp, rcm = pos[keep], print_corresp[:, keep], rcm[keep]
 
         store.write_correspondences(
             frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
