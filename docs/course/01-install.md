@@ -4,8 +4,7 @@
 
 ## What this step does
 
-Installs the program and runs a built-in test that tells you whether everything it needs is present, and whether the fast
-(compiled) version is in use.
+It installs the program. Then a built-in test checks that everything is in place, and that the fast (compiled) version is used.
 
 ## Do it
 
@@ -15,27 +14,28 @@ Installs the program and runs a built-in test that tells you whether everything 
     pip install "openptv2[gui]"
     ```
 
-    Leave out `[gui]` on a server that has no screen. If you work on the source code instead, see
+    On a server without a screen, leave out `[gui]`. To work on the source code, see
     [building from source](../developer_guide/building.md).
 
-    Get the example data (it is in the source repository, not in the pip package):
+    The example data is in the source repository, not in the pip package. Download it:
 
     ```bash
     git clone https://github.com/alexlib/openptv2
     cd openptv2
     ```
 
-    Everything in the course is run from this folder.
+    Run every command of the course from this folder.
 
 === "Graphical interface"
 
-    After the same `pip install`, start the window:
+    Install the same way, then start the window:
 
     ```bash
     openptv2-gui
     ```
 
-    A window with a menu bar opens (Start, Preprocess, Sequence, Tracking, ...). Close it again; the next pages use it.
+    A window with a menu bar opens (Start, Preprocess, Sequence, Tracking and more). Close it again. You will use it from
+    page 2 on.
 
 ## What you should see
 
@@ -43,26 +43,26 @@ Installs the program and runs a built-in test that tells you whether everything 
 openptv self-check
 ```
 
-ends with a summary line like
+ends with a line like this:
 
 ```text
 Summary: 18 passed, 0 failed, 2 warnings (Total: 20)
 ```
 
-and, higher up, `Engine: cython3-pure-python (compiled)`.
+A few lines above it you should see `Engine: cython3-pure-python (compiled)`.
 
 ## Check that it worked
 
-* **0 failed** is what matters. Warnings about *Numba* or *PyTorch* are about optional extras that this course does not use.
-* `cython_compiled ... (compiled)` means you have the fast version. If it says *interpreted*, everything still works but
-  runs 50 to 100 times slower on real data; reinstall from a wheel for your platform.
+* **"0 failed"** is what matters. A warning about *Numba* or *PyTorch* is about optional parts. The course does not use them.
+* **"(compiled)"** means you have the fast version. If it says *interpreted*, everything works but real data runs 50 to 100
+  times slower. Install a wheel for your platform.
 
 ## If it did not work
 
-| You see | Cause | Do |
+| You see | Cause | What to do |
 |---|---|---|
-| `command not found: openptv` | the folder of pip's scripts is not on your PATH | run `python -m openptv2.cli self-check` instead |
-| `No module named PySide6` when opening the window | installed without `[gui]` | `pip install "openptv2[gui]"` |
-| a failed line starting `dep_` | one dependency is missing or too old | the line names it; `pip install` that package |
+| `command not found: openptv` | pip's script folder is not on your PATH | run `python -m openptv2.cli self-check` |
+| `No module named PySide6` | installed without `[gui]` | `pip install "openptv2[gui]"` |
+| a failed line that starts with `dep_` | a package is missing or too old | the line names it. Install it with pip. |
 
-[Next: look at your data →](02-your-data.md){ .md-button .md-button--primary }
+[Next: 2. Your data →](02-your-data.md){ .md-button .md-button--primary }
