@@ -5,7 +5,7 @@ neighborhood, but that neighborhood's brightness varies a lot across a real
 frame -- so a single global threshold either misses faint/far bubbles or
 drowns in false positives from brighter regions elsewhere. Score every pixel
 against its own local background instead (a z-score against a sliding-window
-local mean/std): validated in scripts/label_illmenau_bubbles.py against 30
+local mean/std): validated in scripts/plate_rigs/label_bubbles.py against 30
 hand-labeled bubbles (bright/close and faint/far alike) -- every one scored
 at least 8 local-sigma above its neighborhood, none of the tested false
 candidates came close.

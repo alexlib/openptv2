@@ -2,7 +2,7 @@
 
 A complete walk-through of calibrating a multi-camera openptv2 rig from folders
 of coded-dot-plate images, naming every piece of code involved and what it is
-for. Worked on the Illmenau barrel (two groups of four cameras, 6×7 coded
+for. Worked on the barrel rig (two groups of four cameras, 6×7 coded
 plate, ~48 hand-held plate positions each); the numbers quoted throughout are
 from that rig.
 
@@ -13,7 +13,7 @@ plate is moved by known translations, every plane's points have known x, y, z,
 and the GUI (`multi_planes`, `Combine_Flag`) stacks them into one virtual 3D
 target body. If the plate positions are known, use that simpler GUI path.
 
-Companion documents: `docs/illmenau-4cam-calibration.md` records what happened
+Companion documents: `docs/plate-calibration-worked-example.md` records what happened
 on that dataset, including the failures; `.claude/skills/openptv-multiplane-calibrate/SKILL.md`
 is the condensed procedure.
 
@@ -29,7 +29,7 @@ rather than obviously wrong, which is the theme of this whole document.
 One folder per camera, frames synchronised by filename prefix:
 
 ```
-<ILLMENAU_RAW>/Kalibrierung_<cam>/<frame>_<serial>.tiff
+<PLATE_RIG_RAW>/plate_cam<cam>/<frame>_<serial>.tiff
 ```
 
 The frame number is everything before the first `_`. Every camera of a group
@@ -55,30 +55,30 @@ These are not fitted. They are used to *check* the answer, and in one case to
 make the detection work at all:
 
 - **Frame convention**, stated with handedness and drawn before fitting
-  anything. Illmenau: `+X` left→right, `+Y` bottom→top, `+Z` object→camera,
+  anything. The example rig: `+X` left→right, `+Y` bottom→top, `+Z` object→camera,
   right-handed. Getting this wrong is not visible in any residual.
 - **Approximate camera positions.** PnP needs no seed; these exist so you can
   compare fitted positions against the mounts, and pairwise camera distances,
   which are frame-invariant.
-- **Plate orientation, if constrained.** The Illmenau plate is held vertical —
+- **Plate orientation, if constrained.** The example rig plate is held vertical —
   measured: normal within 0.83° of horizontal, plate-up within 1.23° of world
   +Y, yaw spanning ±30°. This is used three ways in §3, §6 and §7.
 - **Lab-frame offset** of the datum dot, so results relate to the facility.
-  Illmenau: `barrel_from_plate(P) = P + [0, −1175, 0]`.
+  the example rig: `barrel_from_plate(P) = P + [0, −1175, 0]`.
 
 ### Selecting a camera group
 
-Everything is driven by `scripts/illmenau/_config.py`, so a second group of
+Everything is driven by `scripts/plate_rigs/_config.py`, so a second group of
 cameras is a matter of environment rather than editing code:
 
 ```bash
-export ILLMENAU_RAW=".../Illmenau"                       # holds Kalibrierung_<cam>/
-export ILLMENAU_DIR="$ILLMENAU_RAW/openptv_illmenau_5678" # holds cal/, parameters, plate.yaml
-export ILLMENAU_CAMS=5,6,7,8                              # physical camera numbers
+export PLATE_RIG_RAW=".../<raw folder>"                       # holds plate_cam<cam>/
+export PLATE_RIG_DIR="$PLATE_RIG_RAW/openptv_rig_b_4cam" # holds cal/, parameters, plate.yaml
+export PLATE_RIG_CAMS=5,6,7,8                              # physical camera numbers
 export OPTV=".../openptv2"
 ```
 
-`_config.py` cross-checks `ILLMENAU_CAMS` against the camera names in the
+`_config.py` cross-checks `PLATE_RIG_CAMS` against the camera names in the
 folder's `parameters_Run1.yaml` and **refuses to run on a mismatch**. Each
 group is a separate world with its own calibration; writing one into the
 other's folder destroys it, and that has happened.
@@ -121,13 +121,13 @@ needed**: no manual-orientation clicking (PnP is direct) and no `sortgrid`
 **Verify the datum index from the data:**
 
 ```bash
-python $OPTV/scripts/illmenau/find_datum.py
+python $OPTV/scripts/plate_rigs/find_datum.py
 ```
 
 It labels a view that sees the *complete* lattice with `corner_index=None` —
 the one situation where anchoring on the smallest detected index is genuinely
 correct — reads off which node the corner occupies, and votes across views. It
-recovers Illmenau's known `(2,3)` independently. Put the answer in
+recovers the example rig's known `(2,3)` independently. Put the answer in
 `plate.yaml:datum`.
 
 If no view shows the complete lattice (common when the far wall sees the plate
@@ -135,27 +135,27 @@ obliquely), use the cross-check instead: label everything with a candidate
 index and look at the id histogram over all views. A wrong index pushes part of
 the lattice outside the `nx × ny` rectangle, where the labeller silently drops
 it, so the right candidate is the one that leaves no id unseen and no lattice
-edge under-covered. That is how the Illmenau back face was confirmed to share
+edge under-covered. That is how the example rig back face was confirmed to share
 the front's `(2,3)`: all 42 ids seen, per-id counts 110/191/193, edges
 1309/1326/1147/962 against the front's 106/192/192 and 1303/1316/1149/962.
 
 Then generate the point table openptv2 reads:
 
 ```bash
-python $OPTV/scripts/illmenau/make_calibration_block.py
+python $OPTV/scripts/plate_rigs/make_calibration_block.py
 ```
 
 It writes `cal/calibration_block.txt` from the *same* `_config.obj_of` every
 other step uses, so the block cannot disagree with the object points. Point id
 convention is `id = iy·nx + ix + 1`, and the datum dot sits at the origin — for
-Illmenau that is **id 21**, line `21 0.0 0.0 0.0`.
+The example rig that is **id 21**, line `21 0.0 0.0 0.0`.
 
 ---
 
 ## 3. Detect and label every frame, once
 
 ```bash
-python $OPTV/scripts/illmenau/detect_plate_frames.py --cams 5,6,7,8
+python $OPTV/scripts/plate_rigs/detect_plate_frames.py --cams 5,6,7,8
 ```
 
 Writes `cal/labelled_all_frames.npz` as `{(camera index, frame): (ids, pixels)}`.
@@ -195,8 +195,8 @@ and no orientation anchor and returns a confidently labelled grid rotated 90°.
 It now raises instead.
 
 The first run on a new rig has no `.ori` for the up-hint. Run it once with
-`ILLMENAU_NO_HINT=1`, then re-run after §5 — a better calibration rescues frames
-the labeller previously got wrong. On Illmenau that loop took the usable set from
+`PLATE_RIG_NO_HINT=1`, then re-run after §5 — a better calibration rescues frames
+the labeller previously got wrong. On the example rig that loop took the usable set from
 **20/48 to 48/48**.
 
 ---
@@ -204,7 +204,7 @@ the labeller previously got wrong. On Illmenau that loop took the usable set fro
 ## 4. Fit the one shared focal length
 
 ```bash
-uv run --with opencv-python-headless python $OPTV/scripts/illmenau/fit_plate_cc.py
+uv run --with opencv-python-headless python $OPTV/scripts/plate_rigs/fit_plate_cc.py
 ```
 
 **`cc` is exactly degenerate on a single plane.** Re-fit the pose at a different
@@ -222,7 +222,7 @@ reference plane. Minimise the median spread:
 |---|---|---|---|---|---|---|
 | cross-camera spread [mm] | 84 | 62 | **33.6** | 41 | 70 | 125 |
 
-Illmenau cams 1–4: **8.5858 mm** against a nominal 9.44. Cams 5–8, fitted
+The example rig cams 1–4: **8.5858 mm** against a nominal 9.44. Cams 5–8, fitted
 independently: **8.6313 mm** — agreeing to 0.5 %, which is corroboration since
 nothing constrained the two groups to agree.
 
@@ -235,7 +235,7 @@ curve means the frames do not span enough depth — capture more.
 ## 5. Write the `.ori`
 
 ```bash
-uv run --with opencv-python-headless python $OPTV/scripts/illmenau/refit_plate_pinhole.py 8.5858
+uv run --with opencv-python-headless python $OPTV/scripts/plate_rigs/refit_plate_pinhole.py 8.5858
 ```
 
 Object points from §2, pixels from the §3 cache, `cv2.solvePnP` +
@@ -262,11 +262,11 @@ camera, not that the pose is hard to fit.
 ## 6. Spread the error over the volume — the joint bundle
 
 ```bash
-uv run --with opencv-python-headless python $OPTV/scripts/illmenau/bundle_plate_poses.py 8.5858 --write
+uv run --with opencv-python-headless python $OPTV/scripts/plate_rigs/bundle_plate_poses.py 8.5858 --write
 ```
 
 Solving every pose on one plane makes the model exact **there by construction**
-and lets its error grow linearly away. Measured on Illmenau: ray-convergence
+and lets its error grow linearly away. Measured on the example rig: ray-convergence
 miss ≈ **0.58 % of the distance from the anchor plane** — sub-millimetre at the
 plane, ~18 mm at 3–4 m — while per-camera reprojection RMS sat at 0.5 px
 throughout.
@@ -299,7 +299,7 @@ to chase reprojection RMS: every tightening improved RMS while making planarity
 A known plate orientation can also enter as a **soft** penalty on the off-yaw
 rotation components (`BUNDLE_VERT_PX`, default 10 px per 1°). Soft, never hard —
 a hand-held plate really is ~1° off vertical, and forcing that to zero biases a
-720 mm plate's corners by ~15 mm. Be honest about what it buys: on Illmenau it
+720 mm plate's corners by ~15 mm. Be honest about what it buys: on the example rig it
 changed nothing measurable (RCM 2.67 vs 2.71 mm disabled), because 44 frames
 already pinned the poses. Its value was as the gate above, and on a sparser
 dataset.
@@ -334,21 +334,21 @@ Three numbers that do work:
 | **deviation from the rigid grid** — Kabsch-fit the ideal pattern onto the triangulated dots | did the pattern come back as the pattern | the **labeller** mis-assigned dots |
 | planarity RMS | is the plate flat | little — a systematic model error distorts a plane consistently and still looks flat |
 
-Planarity alone misleads. Illmenau frame 30: textbook grid (1.7 mm median
+Planarity alone misleads. The example rig frame 30: textbook grid (1.7 mm median
 deviation), 0.90 mm planarity, correct pitch — and a 10.6 mm RCM at 2131 mm.
 Nothing mislabelled; the rays genuinely did not meet.
 
 ```bash
-python $OPTV/scripts/illmenau/check_plate_triangulation.py   # gate A
-python $OPTV/scripts/illmenau/check_epipolar.py              # gate B
-python $OPTV/scripts/illmenau/plot_frame_triangulation.py    # every frame, as pictures
-python $OPTV/scripts/illmenau/check_all_frames.py            # accuracy vs depth
+python $OPTV/scripts/plate_rigs/check_plate_triangulation.py   # gate A
+python $OPTV/scripts/plate_rigs/check_epipolar.py              # gate B
+python $OPTV/scripts/plate_rigs/plot_frame_triangulation.py    # every frame, as pictures
+python $OPTV/scripts/plate_rigs/check_all_frames.py            # accuracy vs depth
 ```
 
 **Gate A** — triangulate the reference plate: plane normal along the plate
 normal, planarity well under 1 mm, pitch within a few tenths of a percent, and
 the strong one: **absolute** positions against the known block coordinates with
-**no alignment applied**. Illmenau: normal (0,0,1), planarity 0.34 mm, absolute
+**no alignment applied**. The example rig: normal (0,0,1), planarity 0.34 mm, absolute
 error 1.35 mm median.
 
 **Gate B** — for every *ordered* pair, trace each dot's ray from A, project it
@@ -372,18 +372,18 @@ else.
 **Do not fit distortion from a single plane.** `k1,k2,k3` trade against pose and
 the solver returns a polynomial that fits those 42 points and diverges
 everywhere else. The signature is unmistakable: **the projection of a straight
-3D ray doubles back inside the sensor**, which a pinhole cannot do. On Illmenau
+3D ray doubles back inside the sensor**, which a pinhole cannot do. On the example rig
 this made cameras 2 and 4 miss by up to 13 px while their reprojection RMS sat
 at 0.5 px.
 
 Before adding any term:
 
 1. Decompose the residuals into radial and tangential. Distortion is purely
-   radial and grows with radius. Illmenau: radial 0.27–0.35 px, *smaller* than
+   radial and grows with radius. The example rig: radial 0.27–0.35 px, *smaller* than
    tangential 0.44–0.46 px, and flat in radius — nothing to fit.
-2. Check whether `k1` reduces the §4 spread. Illmenau: best `k1 = −0.02` for a
+2. Check whether `k1` reduces the §4 spread. The example rig: best `k1 = −0.02` for a
    4 % improvement, within noise, while worsening reprojection RMS.
-3. Note the radius the plate actually covers. Illmenau never exceeded r ≈ 1000 px
+3. Note the radius the plate actually covers. The example rig never exceeded r ≈ 1000 px
    of a 1638 px half-diagonal, so the sensor corners are untested. If particles
    will be imaged there, capture plate frames that reach them rather than
    extrapolating a polynomial into them.
@@ -395,7 +395,7 @@ The delivered `.addpar` are zeros.
 ## 9. Set the observation volume before opening the GUI
 
 ```bash
-python $OPTV/scripts/illmenau/check_epipolar_volume.py
+python $OPTV/scripts/plate_rigs/check_epipolar_volume.py
 ```
 
 `src/openptv2/algorithms/epi.py:epi_mm` does **not** compute a line. It computes
@@ -416,7 +416,7 @@ them. So the box changes what you see in three ways, only one of which is a bug:
   sensor, throwing the chord across the image. Nothing is wrong with the
   calibration; the box asked for a point behind the camera.
 
-The script solves the horizon in closed form. Illmenau's binding pair is at
+The script solves the horizon in closed form. The example rig's binding pair is at
 Z = 3479 mm, so `Zmax_lay` ≤ ~2780 mm with a 20 % margin. The ±4000 box that
 started the original "epipolar lines are wrong" report was past the horizon for
 six of twelve pairs. Keep both layer values of each bound equal so the X
@@ -432,12 +432,12 @@ reported by the diagnostic instead of enforced by the library.
 ## 10. Sanity-check against the physical rig
 
 ```bash
-python $OPTV/scripts/illmenau/draw_rig_global.py
+python $OPTV/scripts/plate_rigs/draw_rig_global.py
 ```
 
 Draws the frame, the test section, the plate and both nominal and fitted camera
 positions. Compare fitted positions against the mounts, and pairwise camera
-distances, which are frame-invariant. Illmenau cams 5–8 came out at
+distances, which are frame-invariant. The example rig cams 5–8 came out at
 X ≈ ±1450–1460, Z ≈ −2990…−3040, mirroring cams 1–4 at Z ≈ +2960…+3055 — not
 constrained to, so it is a real check.
 
@@ -449,7 +449,7 @@ Each group is calibrated **standalone**, in its own working folder, anchored to
 its own reference frame's datum dot. Two separate worlds.
 
 Whether they can ever be merged depends on the physics, not the software. On
-Illmenau the two groups measure **different halves of the circular test
+The example rig the two groups measure **different halves of the circular test
 section**, so the plate never visited the same positions twice and there is no
 shared observation to register against. Any apparent correspondence between the
 two sets of plate positions is the mirror symmetry of the *placement procedure*,

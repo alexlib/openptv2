@@ -1,6 +1,6 @@
 """The coded-plate labeller must anchor on the coded corner, not on what it saw.
 
-Regression test for the failure that wasted half the Illmenau calibration
+Regression test for the failure that wasted half the plate-rig calibration
 frames: without ``corner_index`` the grid is re-anchored to ``min(ix)`` over the
 dots a given view happened to detect, so any view missing the leftmost column or
 the bottom row labels every dot one step off.  The result is wrong yet perfectly
@@ -15,7 +15,7 @@ import pytest
 from openptv2.plate_labeler import _identify_L, label_coded_6x7
 
 NX, NY, PITCH = 6, 7, 120.0
-CORNER = (2, 3)  # grid index of the coded L corner on the Illmenau plate
+CORNER = (2, 3)  # grid index of the coded L corner on the plate-rig plate
 
 
 def synth_plate(*, drop_left_column=False, scale=7.0, origin=(400.0, 1300.0)):

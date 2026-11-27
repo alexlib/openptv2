@@ -1,6 +1,6 @@
 """Plate labeler — regular grid → (X,Y) with two profiles.
 
-* ``small_6x7_coded`` (Illmenau ``Kalibrierung_1``): 3 white-in-black L
+* ``small_6x7_coded`` (plate-rig ``plate_cam1``): 3 white-in-black L
   (corner ``(0,0)`` + ``+1·pitch`` in ``+Y`` + ``+2·pitch`` in ``+X`` with a
   black dot at ``+1·pitch,0`` between). Unambiguous origin/axes per view.
 
@@ -9,7 +9,7 @@
 
 Selection is auto-detected by ``n_coded == 3`` (so no explicit profile flag is
 required), though a ``profile`` arg can force it.  ``pitch_x``/``pitch_y`` is
-always a user param; ``y_sign = +1`` for Illmenau bottom→top, ``−1`` for legacy
+always a user param; ``y_sign = +1`` for plate-rig bottom→top, ``−1`` for legacy
 ``multiview_calibration.py:75`` top→bottom.
 """
 
@@ -412,7 +412,7 @@ def label_plate(
         # catastrophic: it has no origin and no orientation anchor, so it
         # returns a confidently labelled grid that can be rotated 90 deg and
         # offset arbitrarily, with a sub-pixel per-camera PnP residual to match.
-        # That is exactly how frames 02 and 14 of the Illmenau set were ruined.
+        # That is exactly how frames 02 and 14 of the plate-rig set were ruined.
         # A coded plate with the wrong number of coded dots is a DETECTION
         # failure -- say so, and let the caller retune or drop the view.
         raise ValueError(

@@ -1,7 +1,7 @@
 """Multi-plane plate calibration steps on a synthetic rig with known truth.
 
 Four pinhole cameras watch a 6x7 plate (120 mm pitch, datum at grid (2,3)) held
-vertical at several yaws and depths -- the Illmenau geometry, without its noise.
+vertical at several yaws and depths -- the plate-rig geometry, without its noise.
 Every step must recover the truth exactly, and every gate must catch the
 labelling failure it exists for.
 """
@@ -535,7 +535,7 @@ def test_refine_dot_centroids_is_unbiased_at_the_plate_border():
     assert ok.all()
     err = np.linalg.norm(got - true, axis=1)
     # right column and bottom row: 4-6 px between dot and plate border (0.35-0.5
-    # dot radii), like the closest Illmenau views
+    # dot radii), like the closest plate-rig views
     gap = np.minimum(308 - (true[:, 0] + 12), 205 - (true[:, 1] + 12))
     assert (gap < 7).sum() >= 9
     assert err.max() < 0.05, f"worst {err.max():.3f} px (dot {int(err.argmax())})"
