@@ -15,18 +15,20 @@ from openptv2.storage import RunStore, find_existing_store
 CAVITY_DIR = "test_data/test_cavity"
 
 
-def test_real_store_uses_correspondences_directly_in_mm():
-    """test_cavity's store has correspondences but wasn't necessarily just
-    sealed -- this is the path a user hits drawing a ROI before tracking."""
-    store_path = find_existing_store(CAVITY_DIR)
-    store = RunStore(store_path, mode="r")
-    frames = store.frames(source="correspondences")
-    assert frames, "sanity: test_cavity should have correspondence frames"
-    expected = np.concatenate(
-        [store.read_correspondences(f)[0] for f in frames], axis=0
-    )
+def test_real_store_uses_correspondences_directly_in_mm(tmp_path):
+    """A run that has matched (not yet tracked or sealed): the ROI is drawn on the
+    correspondence positions, in mm, exactly as stored."""
+    store = RunStore(tmp_path / "res" / "run.zarr", mode="w")
+    written = []
+    for frame, n in ((10001, 5), (10002, 3)):
+        pos = np.arange(n * 3, dtype=np.float64).reshape(n, 3) + frame
+        store.write_correspondences(
+            frame=frame, pos_3d=pos, cam_target_ids=np.zeros((n, 4), dtype=np.int32)
+        )
+        written.append(pos)
+    expected = np.concatenate(written, axis=0)
 
-    positions = m.load_trajectory_positions(CAVITY_DIR)
+    positions = m.load_trajectory_positions(tmp_path)
 
     assert np.array_equal(positions, expected)
 

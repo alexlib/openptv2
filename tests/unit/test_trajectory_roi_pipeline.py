@@ -120,3 +120,11 @@ def test_saved_roi_strictly_reduces_correspondences(temp_cavity_dir):
 
     assert 0 < len(masked_pos) < len(baseline_pos)
     assert (masked_pos[:, 0] <= mid_x + 1e-6).all()
+
+    # The per-point ray-miss array is row-aligned with the points: the ROI must drop the same
+    # rows from it, in the same order (it used to be written unfiltered, one value per
+    # original point).
+    baseline_rcm = baseline_store.read_rcm(FRAME)
+    masked_rcm = masked_store.read_rcm(FRAME)
+    assert len(masked_rcm) == len(masked_pos)
+    assert np.allclose(masked_rcm, baseline_rcm[baseline_pos[:, 0] <= mid_x + 1e-6])
