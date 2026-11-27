@@ -1,6 +1,6 @@
 num_cams: 4
 plugins:
-  selected_tracking: default
+  selected_tracking: two_phase
   selected_sequence: default
 cal_ori:
   chfield: 0
@@ -55,6 +55,7 @@ dumbbell:
   dumbbell_penalty_weight: 1.0
   dumbbell_scale: 25.0
   dumbbell_step: 1
+  dumbbell_fixed_camera: 0
 examine:
   Combine_Flag: false
   Examine_Flag: false
@@ -131,6 +132,8 @@ ptv:
   negative: false
   parallel_preprocess: false
   num_workers: 0
+  shared_pass: false
+  light_check: false
 sequence:
   base_name:
   - img/cam1.%d
@@ -144,6 +147,8 @@ shaking:
   shaking_last_frame: 10004
   shaking_max_num_frames: 5
   shaking_max_num_points: 10
+  shaking_tol_px: 2.0
+  shaking_hold_cam: 1
 sortgrid:
   radius: 20
 targ_rec:
@@ -171,10 +176,17 @@ track:
   dvzmax: 1.0
   dvzmin: -1.0
   flagNewParticles: true
-  track_mode: 0
+  track_mode: 1
   corrective_passes: 1
   corrective_release_ghosts: true
   corrective_forward: true
+  tracker: two_phase
+  direction: forward
+  postprocess: true
+  align_4cam: true
+  holistic_rounds: 0
+  shared_correction: false
+  leaf_weight: 1.0
 masking:
   mask_flag: false
   mask_base_name: ''
