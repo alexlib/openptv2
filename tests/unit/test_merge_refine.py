@@ -193,3 +193,93 @@ def test_pixel_fit_hook_replaces_the_split_of_shared_blobs(scene):
     e0 = np.linalg.norm(r0.x - truth, axis=1)[merged]
     e1 = np.linalg.norm(r1.x - truth, axis=1)[merged]
     assert np.sqrt(np.mean(e1 ** 2)) < np.sqrt(np.mean(e0 ** 2))
+
+
+def test_4cam_residual_field_eliminates_3cam_subset_jump_with_zero_4cam_drift(scene):
+    """A static per-camera pixel offset makes 3-camera points jump relative to 4-camera points.
+    4-camera residual alignment eliminates the 3-camera subset jump while keeping 4-camera positions invariant."""
+    from openptv2.merge_refine import eval_4cam_residual_field, fit_4cam_residual_field
+
+    cpar, vpar, cals, _frame, _pid, _blob, _centre, _sumg, _truth = scene
+    rng = np.random.default_rng(19)
+    n = 150
+    pts = rng.uniform(-6.0, 6.0, (n, 3))
+    bias_px = np.array([[0.45, -0.30], [-0.35, 0.40], [0.25, 0.35], [-0.30, -0.40]])
+    centre = np.stack([project_pixels(pts, c, cpar) for c in cals], axis=1) + bias_px[None, :, :]
+    frame = np.arange(n)
+    pid = np.zeros(n, dtype=int)
+    blob = np.tile(np.arange(n)[:, None], (1, 4))
+    sumg = np.full((n, 4), 200.0)
+
+    # First 120 points are clean 4-camera points; last 30 lose camera 0
+    blob[120:, 0] = -1
+    centre_3 = centre.copy()
+    centre_3[120:, 0] = np.nan
+
+    r_unaligned = refine_merged(frame, pid, blob, centre_3, sumg, cpar, cals, vpar, rounds=1, align_4cam=False)
+    r_aligned = refine_merged(frame, pid, blob, centre_3, sumg, cpar, cals, vpar, rounds=1, align_4cam=True, min_align_points=50)
+    r_all4 = refine_merged(frame, pid, np.tile(np.arange(n)[:, None], (1, 4)), centre, sumg, cpar, cals, vpar, rounds=1, align_4cam=False)
+
+    # 4-camera gauge is invariant (zero drift)
+    drift_4cam = np.linalg.norm(r_aligned.x[:120] - r_unaligned.x[:120], axis=1).max()
+    assert drift_4cam < 1e-3
+
+    # 3-camera subset jump relative to the 4-camera gauge is virtually eliminated
+    jump_before = np.linalg.norm(r_unaligned.x[120:] - r_all4.x[120:], axis=1).mean()
+    jump_after = np.linalg.norm(r_aligned.x[120:] - r_all4.x[120:], axis=1).mean()
+    assert jump_before > 1e-3
+    assert jump_after < 0.1 * jump_before
+
+    # Direct fit/eval sanity
+    field = fit_4cam_residual_field(r_all4.x[:120], centre[:120], cals, cpar)
+    delta = eval_4cam_residual_field(r_all4.x[120:], field)
+    assert delta.shape == (30, 4, 2) and np.all(np.isfinite(delta))
+
+
+def test_align_store_correspondences_4cam_aligns_3cam_points_for_all_trackers(scene, tmp_path):
+    """align_store_correspondences_4cam aligns 3-camera points in a RunStore before any tracker runs,
+    leaving 4-camera points invariant (zero scale drift)."""
+    from openptv2.loco import pixels_to_flat
+    from openptv2.merge_refine import align_store_correspondences_4cam
+    from openptv2.orientation import point_positions
+    from openptv2.storage import RunStore
+
+    cpar, vpar, cals, _frame, _pid, _blob, _centre, _sumg, _truth = scene
+    rng = np.random.default_rng(23)
+    n = 140
+    pts = rng.uniform(-6.0, 6.0, (n, 3))
+    bias_px = np.array([[0.45, -0.30], [-0.35, 0.40], [0.25, 0.35], [-0.30, -0.40]])
+    centre = np.stack([project_pixels(pts, c, cpar) for c in cals], axis=1) + bias_px[None, :, :]
+
+    # Triangulate all 4-camera reference positions (the 4-camera gauge)
+    flat_all4 = np.stack([pixels_to_flat(centre[:, c], cals[c], cpar) for c in range(4)], axis=1)
+    pos_all4 = np.asarray(point_positions(flat_all4, cpar, cals, vpar, method="lsq")[0], float)
+
+    # Last 20 points lose camera 0
+    ids = np.tile(np.arange(n, dtype=np.int64)[:, None], (1, 4))
+    ids[120:, 0] = -1
+    flat_obs = flat_all4.copy()
+    flat_obs[120:, 0] = -1e10
+    pos_obs = np.asarray(point_positions(flat_obs, cpar, cals, vpar, method="lsq")[0], float)
+
+    st = RunStore(tmp_path / "run.zarr", mode="w")
+    for c in range(4):
+        rows = np.zeros((n, 8), dtype=float)
+        rows[:, 0] = np.arange(n)
+        rows[:, 1:3] = centre[:, c]
+        rows[:, 6] = 200.0
+        st.write_targets(c, 1, rows)
+    st.write_correspondences(1, pos_obs, ids)
+
+    jump_before = np.linalg.norm(pos_obs[120:] - pos_all4[120:], axis=1).mean()
+    n_updated = align_store_correspondences_4cam(st, [1], cals, cpar, vpar, min_align_points=50)
+    assert n_updated == 20
+
+    pos_after, ids_after = st.read_correspondences(1)
+    np.testing.assert_array_equal(ids_after, ids)
+    # 4-camera points untouched (exact zero drift)
+    np.testing.assert_allclose(pos_after[:120], pos_obs[:120], atol=0.0)
+    # 3-camera subset jump eliminated
+    jump_after = np.linalg.norm(pos_after[120:] - pos_all4[120:], axis=1).mean()
+    assert jump_before > 1e-3
+    assert jump_after < 0.1 * jump_before

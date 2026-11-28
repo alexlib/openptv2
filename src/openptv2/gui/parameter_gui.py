@@ -101,6 +101,22 @@ class ParamHandler(Handler):
                     "negative": main_params.Negative,
                     "parallel_preprocess": main_params.Parallel_Preprocess,
                     "num_workers": main_params.Num_Workers,
+                    "shared_pass": (
+                        experiment.pm.parameters["ptv"].get("shared_pass")
+                        if main_params.Shared_Pass
+                        and isinstance(experiment.pm.parameters["ptv"].get("shared_pass"), (int, float))
+                        and not isinstance(experiment.pm.parameters["ptv"].get("shared_pass"), bool)
+                        and experiment.pm.parameters["ptv"].get("shared_pass") > 0
+                        else bool(main_params.Shared_Pass)
+                    ),
+                    "light_check": (
+                        experiment.pm.parameters["ptv"].get("light_check")
+                        if main_params.Light_Check
+                        and isinstance(experiment.pm.parameters["ptv"].get("light_check"), (int, float))
+                        and not isinstance(experiment.pm.parameters["ptv"].get("light_check"), bool)
+                        and experiment.pm.parameters["ptv"].get("light_check") > 0
+                        else bool(main_params.Light_Check)
+                    ),
                 }
             )
 
@@ -389,6 +405,7 @@ class TrackHandler(Handler):
                 tracker=track_params.tracker,
                 direction=track_params.direction,
                 postprocess=bool(track_params.postprocess),
+                align_4cam=bool(track_params.align_4cam),
                 holistic_rounds=int(track_params.holistic_rounds),
                 shared_correction=bool(track_params.shared_correction),
                 epi_weight=float(track_params.epi_weight),
@@ -447,6 +464,7 @@ class Tracking_Params(HasTraits):
     epi_weight = Float(0.0)
     accel_gate = Bool(False)
     postprocess = Bool(True)
+    align_4cam = Bool(True)
     dvxmin = Float()
     dvxmax = Float()
     dvymin = Float()
@@ -501,6 +519,7 @@ class Tracking_Params(HasTraits):
         self.tracker = setup.tracker if setup.tracker in TRACKERS else TRACKERS[0]
         self.direction = setup.direction
         self.postprocess = setup.postprocess
+        self.align_4cam = setup.align_4cam
         self.holistic_rounds = setup.holistic_rounds
         self.shared_correction = setup.shared_correction
         self.epi_weight = setup.epi_weight
@@ -522,6 +541,10 @@ class Tracking_Params(HasTraits):
                 name="postprocess",
                 label="Post-process (trackcorr, fast_3d: reciprocity + gap bridging):",
                 enabled_when="tracker != 'two_phase'",
+            ),
+            Item(
+                name="align_4cam",
+                label="Align 4-camera subsets (fixes 3-cam calibration jumps for all trackers):",
             ),
             show_border=True,
             label="Pipeline",
@@ -546,14 +569,16 @@ class Tracking_Params(HasTraits):
             HGroup(
                 Item(name="leaf_weight", label="two_phase: 2D leaf weight (0=off):",
                      enabled_when="tracker == 'two_phase'"),
+                Item(name="shared_correction", label="Correct shared blobs (two_phase):",
+                     enabled_when="tracker == 'two_phase'"),
+                Item(name="holistic_rounds", label="Merged-blob rounds (two_phase; 0=off):",
+                     enabled_when="tracker == 'two_phase'"),
+            ),
+            HGroup(
                 Item(name="epi_weight", label="fast_3d: epipolar penalty (0=off):",
                      enabled_when="tracker == 'fast_3d'"),
                 Item(name="accel_gate", label="fast_3d: limit by dacc/angle:",
                      enabled_when="tracker == 'fast_3d'"),
-                Item(name="holistic_rounds", label="Merged-blob loop rounds (two_phase; 0=off):",
-                     enabled_when="tracker == 'two_phase'"),
-                Item(name="shared_correction", label="Correct points in shared blobs (two_phase):",
-                     enabled_when="tracker == 'two_phase'"),
             ),
             show_border=True,
             label="Search Box & Kinematic Limits",
@@ -663,6 +688,8 @@ class Main_Params(HasTraits):
     Sum_gv = Float(label="sum of gv")
     Min_Weight_corr = Float(label="min for weighted correlation")
     Tol_Band = Float(label="eps0, epipolar band (mm)")
+    Shared_Pass = Bool(label="Shared-blob second pass (recover overlapping particles)")
+    Light_Check = Bool(label="Light check on 3-cam points (drop ghosts)")
 
     Group1 = Group(
         Group(
@@ -785,18 +812,26 @@ class Main_Params(HasTraits):
 
     Group6 = Group(
         Group(
-            Item(name="Min_Corr_nx"),
-            Item(name="Min_Corr_npix"),
-            Item(name="Min_Weight_corr"),
-            orientation="vertical",
+            Group(
+                Item(name="Min_Corr_nx"),
+                Item(name="Min_Corr_npix"),
+                Item(name="Min_Weight_corr"),
+                orientation="vertical",
+            ),
+            Group(
+                Item(name="Min_Corr_ny"),
+                Item(name="Sum_gv"),
+                Item(name="Tol_Band"),
+                orientation="vertical",
+            ),
+            orientation="horizontal",
         ),
         Group(
-            Item(name="Min_Corr_ny"),
-            Item(name="Sum_gv"),
-            Item(name="Tol_Band"),
-            orientation="vertical",
+            Item(name="Shared_Pass"),
+            Item(name="Light_Check"),
+            orientation="horizontal",
         ),
-        orientation="horizontal",
+        orientation="vertical",
         label="Criteria for correspondences",
         show_border=True,
     )
@@ -908,6 +943,10 @@ class Main_Params(HasTraits):
 
         self.Parallel_Preprocess = bool(ptv_params.get("parallel_preprocess", False))
         self.Num_Workers = int(ptv_params.get("num_workers", 0))
+        sp_val = ptv_params.get("shared_pass", False)
+        self.Shared_Pass = bool(sp_val) and (not isinstance(sp_val, (int, float)) or sp_val > 0)
+        lc_val = ptv_params.get("light_check", False)
+        self.Light_Check = bool(lc_val) and (not isinstance(lc_val, (int, float)) or lc_val > 0)
 
         criteria_params = pm.get_section("criteria")
         X_lay = criteria_params["X_lay"]

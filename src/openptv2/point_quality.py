@@ -77,15 +77,33 @@ def frame_rcm(store: Any, frame: int, cals: list, cpar: Any) -> np.ndarray:
     return rcm_from_arrays(pos, cam_ids, rows, cals, cpar)
 
 
-def log_brightness_from_arrays(cam_ids: np.ndarray, rows: list) -> np.ndarray:
+def log_brightness_from_arrays(
+    cam_ids: np.ndarray, rows: list, mask_shared: bool = True
+) -> np.ndarray:
     """(N, C) log blob brightness (``sumg``) in each camera that sees the point;
-    NaN where the camera does not see it."""
+    NaN where the camera does not see it.
+
+    When ``mask_shared`` is True (default), views that share a blob with another
+    point in the same frame are masked to NaN whenever the point still has at
+    least two unshared views. This prevents ``brightness_spread`` from penalising
+    merged-blob points recovered by ``shared_blob_pass``.
+    """
     n, n_cams = len(cam_ids), cam_ids.shape[1]
     logb = np.full((n, n_cams), np.nan)
+    shared = np.zeros((n, n_cams), dtype=bool)
     for cam in range(n_cams):
         sel = np.flatnonzero(cam_ids[:, cam] >= 0)
         if len(sel):
             logb[sel, cam] = np.log(np.maximum(rows[cam][cam_ids[sel, cam]][:, 6], 1.0))
+            if mask_shared:
+                _, inv, cnt = np.unique(
+                    cam_ids[sel, cam], return_inverse=True, return_counts=True
+                )
+                shared[sel, cam] = cnt[inv] >= 2
+    if mask_shared and shared.any():
+        n_clean = ((cam_ids >= 0) & ~shared).sum(axis=1)
+        mask = shared & (n_clean >= 2)[:, None]
+        logb[mask] = np.nan
     return logb
 
 

@@ -277,7 +277,7 @@ def refine_merged(
     trust: bool = True,
     trust_support: float = 3.0,
     gate: float = 4.0,
-    prior: bool = True,
+    prior: bool = False,
     prior_scale: float = 1.0,
     var_unknown: float = 1.0,
     hidden_mass: float | None = 1.4,
@@ -287,6 +287,8 @@ def refine_merged(
     x_init: np.ndarray | None = None,
     shared_only: bool = False,
     pixel_fit: Any = None,
+    align_4cam: bool = True,
+    min_align_points: int = 100,
 ) -> RefineResult:
     from openptv2.orientation import point_positions
 
@@ -296,6 +298,63 @@ def refine_merged(
     det = blob >= 0
     share = shared_blobs(frame, blob)
     clean = det & (share == 1)
+
+    if align_4cam and n_cams >= 4:
+        clean4 = clean.sum(1) == n_cams
+        if hidden_mass is not None:
+            sig_full = np.asarray(signatures, float) if signatures is not None else None
+            if sig_full is None:
+                sig_dict = _signatures(pid, clean, sumg)
+                up_a, inv_a = np.unique(pid, return_inverse=True)
+                tab_a = np.full((len(up_a), n_cams), np.nan)
+                for (p_, c_), v_ in sig_dict.items():
+                    tab_a[np.searchsorted(up_a, p_), c_] = v_
+                sig_full = tab_a[inv_a]
+            with np.errstate(invalid="ignore"):
+                is_hid = (clean & np.isfinite(sig_full) & (sig_full > 0)
+                          & (sumg >= hidden_mass * sig_full)).any(1)
+            clean4 = clean4 & ~is_hid
+        if x_init is not None:
+            x_align = np.asarray(x_init, float)
+        else:
+            flat_align = np.full((n, n_cams, 2), -1e10)
+            for c in range(n_cams):
+                v = ~np.isnan(centre[:, c, 0])
+                if v.any():
+                    flat_align[v, c] = pixels_to_flat(centre[v, c], cals[c], cpar)
+            x_align = np.asarray(point_positions(flat_align, cpar, cals, vpar, method="lsq")[0], float)
+        ok4 = clean4 & np.isfinite(x_align[:, 0])
+        if ok4.sum() >= min_align_points:
+            # Solve pixel-space LSQ on clean4 so the 4-camera normal equations sum(J_c^T r_c) = 0 hold exactly
+            c4 = centre[ok4]
+            x4_px = triangulate_weighted(
+                c4, np.full((len(c4), n_cams), var_c), cpar, cals, x_align[ok4], n_iter=3, frozen_jacobian=True
+            )
+            ok4_px = np.isfinite(x4_px[:, 0])
+            if ok4_px.sum() >= min_align_points:
+                field = fit_4cam_residual_field(x4_px[ok4_px], c4[ok4_px], cals, cpar)
+                ok_x = np.isfinite(x_align[:, 0])
+                delta = np.zeros_like(centre)
+                delta[ok_x] = eval_4cam_residual_field(x_align[ok_x], field)
+                centre = centre - delta
+                if x_init is not None and shared_only:
+                    three_clean = clean.sum(1) == (n_cams - 1)
+                    if three_clean.any():
+                        flat_3 = np.full((int(three_clean.sum()), n_cams, 2), -1e10)
+                        c_sub = centre[three_clean]
+                        m_sub = clean[three_clean]
+                        for c in range(n_cams):
+                            v = m_sub[:, c] & ~np.isnan(c_sub[:, c, 0])
+                            if v.any():
+                                flat_3[v, c] = pixels_to_flat(c_sub[v, c], cals[c], cpar)
+                        x3 = np.asarray(point_positions(flat_3, cpar, cals, vpar, method="lsq")[0], float)
+                        x_init_new = np.asarray(x_init, float).copy()
+                        ok3 = np.isfinite(x3[:, 0])
+                        if ok3.any():
+                            idx3 = np.flatnonzero(three_clean)[ok3]
+                            x_init_new[idx3] = x3[ok3]
+                        x_init = x_init_new
+
     est = np.flatnonzero(det.sum(1) >= 2)          # rows that can be triangulated
     pidx = np.full(n, -1)
     pidx[est] = np.arange(len(est))
