@@ -32,6 +32,15 @@ theme:
     - content.code.copy
     - content.code.annotate
 
+plugins:
+  - search
+  - redirects:
+      redirect_maps:
+        # Pages that were named after one dataset were renamed; the old addresses still work.
+        illmenau-pipeline.md: dual-rig-processing-chain.md
+        illmenau-4cam-calibration.md: plate-calibration-worked-example.md
+        plans/2026-08-30-illmenau-dots-plate-pipeline.md: plans/2026-08-30-plate-rig-dots-plate-pipeline.md
+
 extra_css:
   - stylesheets/extra.css
 
