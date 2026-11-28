@@ -1,4 +1,5 @@
 import argparse
+import os
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -11,12 +12,12 @@ from openptv2.detect_plate import detect_plate_targets, plate_tpar_from_yaml
 
 def main():
     parser = argparse.ArgumentParser(description="Interactive Plate Grid Clicker")
-    parser.add_argument("--base", type=str, default=r"C:\Users\alex\Downloads\Illmenau")
+    parser.add_argument("--base", type=str, default=os.environ.get("PLATE_RIG_RAW", "."))
     parser.add_argument("--cam", type=int, default=1, help="Camera index 1..4")
     parser.add_argument("--frame", type=str, default="00000000", help="Frame prefix")
     parser.add_argument("--pitch", type=float, default=120.0, help="Grid pitch mm")
     args = parser.parse_args()
-    cam_folder = Path(args.base) / ("Kalibrierung_" + str(args.cam))
+    cam_folder = Path(args.base) / ("plate_cam" + str(args.cam))
     tifs = list(cam_folder.glob(args.frame + "*.tiff")) + list(
         cam_folder.glob(args.frame + "*.tif")
     )
@@ -25,7 +26,7 @@ def main():
         return
     img = Image.open(tifs[0])
     raw = np.array(img)
-    yaml_path = Path(args.base) / "openptv_illmenau_4cam" / "parameters_Run1.yaml"
+    yaml_path = Path(args.base) / "openptv_rig_a_4cam" / "parameters_Run1.yaml"
     tpar = plate_tpar_from_yaml(yaml_path) if yaml_path.exists() else None
     cpar = ControlPar(
         num_cams=4,

@@ -1,5 +1,11 @@
 # Joint self-calibration from tracer particles
 
+!!! abstract "In short"
+    The API and scripts for the joint fit of cameras and particles, with the settings that matter and how to run it on a finished run.
+
+    **Basics:** [Course page 8](course/08-calibration.md). **Do it:** [Tracks break when the set of cameras changes](recipes/camera-set-changes.md).
+
+
 `openptv2.selfcal.joint_self_calibrate` refines the camera parameters (exterior orientation, principal point, radial and
 decentering distortion) and the 3D positions of many tracer particles together, by bundle adjustment on their blob
 centres. The gauge is fixed by holding one camera's exterior and by soft priors, so the world frame stays put. Existing
@@ -56,3 +62,13 @@ What it can and cannot show (2026-11-21):
   positions move by about 0.09 mm (median), of which a global linear part of about 0.5 % (the scale is not constrained by
   tracers). Tracer data fix consistency between cameras, not absolute scale; check the scale against a known length
   (dumbbell) before using a new calibration for velocities.
+
+## Priors on the lens terms are in pixels at the sensor corner (`edge_px`)
+
+The distortion terms act on the image-plane radius in mm: k1 ~ r^3, k2 ~ r^5, decentering p ~ r^2. On a sensor with a corner radius
+of 9.8 mm a change of k1 by 1e-4 moves the corner by about 8 px, a change of k2 by 1e-5 by about 75 px. A fixed prior number (the
+old `k_sigma=0.02`, `p_sigma=0.002`) is therefore no prior at all, and since the tracers sit mostly near the centre the fit sets
+k1, k2 there and extrapolates: on lv_multi it lost 97 % of the matches beyond 5 mm from the centre and made tracking worse.
+`joint_self_calibrate(..., edge_px=1.0)` sets each lens term's prior as the image shift in pixels (1 sigma) it may cause at the
+sensor corner (`sigma = edge_px * pixel / r_corner^n`, n = 3, 5, 2). `self_calibrate_from_store` uses 1 px; the result was flat
+from 0.25 to 2 px and worse above 5 px. The default of `joint_self_calibrate` itself is still the old behaviour (`edge_px=None`).

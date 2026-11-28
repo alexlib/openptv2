@@ -102,10 +102,10 @@ def cmd_run(args) -> int:
         return 1
 
     print("\nResult:")
-    print(f"  Frames used:       {result.n_used} / {result.n_total}")
-    print(f"  RMS before (px):   {result.rms_before:.4f}")
-    print(f"  RMS after  (px):   {result.rms_after:.4f}")
-    print(f"  Improvement:       {result.rms_before - result.rms_after:+.4f} px")
+    print(f"  Frames used:       {result.n_frames_used} / {result.n_frames_total}")
+    print(f"  Cost before:       {result.fun_initial:.4g}  (sum of squared residuals)")
+    print(f"  Cost after:        {result.fun_final:.4g}")
+    print(f"  Optimizer:         {'converged' if result.success else 'stopped: ' + result.message}")
     if not write:
         print("  (dry-run: no files written)")
     else:

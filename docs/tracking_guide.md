@@ -134,7 +134,108 @@ store.write_traj_index(trajid, first, last, length, first_row)  # run_store.py:4
 
 ---
 
-## 4. Tracking Algorithms & Plugins
+## 4. How to Choose a Tracker for Your Dataset
+
+Selecting the optimal tracking algorithm depends on your experimental setup, particle density, camera calibration, optical noise characteristics (especially $Z$-axis depth uncertainty), and processing speed requirements.
+
+```
+                               ┌─────────────────────────────┐
+                               │ What is your primary need?  │
+                               └──────────────┬──────────────┘
+                                              │
+                     ┌────────────────────────┴────────────────────────┐
+                     ▼                                                 ▼
+        ⚡ Maximum Throughput / Speed                     🎯 Maximum Precision & Quality
+   ┌───────────────────────────────────┐             ┌───────────────────────────────────┐
+   │ Fast 3D Space Tracker             │             │ What is the main challenge?       │
+   │ (`priority_segment_3d`)           │             └─────────────────┬─────────────────┘
+   │ >800,000 p/s (~3,800 FPS)         │                               │
+   └───────────────────────────────────┘       ┌───────────────────────┼───────────────────────┐
+                                               ▼                       ▼                       ▼
+                                      🔬 High Z-Depth Noise    👥 High Particle Density   🌊 Complex / Noisy
+                                      & Optical Ambiguity     & Track Crossings          Trajectories / Dropouts
+                                      ┌──────────────────────┐┌─────────────────────────┐┌──────────────────────┐
+                                      │ Multi-Cam Epipolar   ││ 3D Kalman-Hungarian     ││ 3D Smooth / proPTV   │
+                                      │ (`trackcorr` /       ││ (`kalman_hungarian_3d`) ││ (`fast_3d_smooth` /  │
+                                      │  `full_multipass`)   ││ Multi-term cost solver ││  `predictive_gmm_3d`)│
+                                      └──────────────────────┘└─────────────────────────┘└──────────────────────┘
+```
+
+---
+
+### A. Quick Selection Decision Matrix
+
+| Dataset Condition / Goal | Recommended Tracker Key | Preset / Plugin Name | Key Strengths & Why It Works |
+| :--- | :--- | :--- | :--- |
+| **Ultra-fast batch processing / Quick previews** | `priority_segment_3d` | `priority_segment_3d` | Fastest engine in OpenPTV2 (>800,000 particles/sec). Uses 4-level Cython segment linking. |
+| **High $Z$-depth noise / Stereo optical uncertainty** | `cython_epipolar_tracking` | `full_multipass` | Projects 3D search volumes to 2D camera images. Uses multi-camera visibility consensus to resolve $Z$-axis ambiguity. |
+| **High particle density ($>1,000$ particles/frame)** | `kalman_hungarian_3d` | `kalman_hungarian_3d` | 9D Kalman filter + cKDTree Hungarian assignment. Global bipartite matching prevents "track swapping" at crossings. |
+| **Noisy 3D triangulations / Single-frame velocity jitter** | `fast_3d_smooth` | `fast_3d_smooth` | Savitzky-Golay order-3 polynomial velocity filter. Cuts single-frame velocity noise amplification in half. |
+| **Smooth velocity/acceleration fields required** | `predictive_gmm_3d` | `proptv` / `custom_plugin` | Continuous spatial-temporal Gaussian Mixture Model (GMM) fitting for analytic derivative estimation. |
+| **Custom multi-term cost weights (e.g. intensity)** | `nearest_hungarian_3d` | `nearest_hungarian_3d` | Configurable physical cost matrix $\{w_{\text{dist}}, w_{\text{vel}}, w_{\text{acc}}, w_{\text{intensity}}\}$ with gap recovery (`max_gap`). |
+| **Poor 3D calibration / Heavy $Z$-reconstruction ghosts** | `myptv_2d_tracking` | `myptv_2d_tracking` | Tracks 2D targets in pixel space per camera view first, then triangulates matched 2D trajectories. |
+
+---
+
+### B. Speed vs. Accuracy Comparison
+
+Tracking algorithms in OpenPTV2 span a wide trade-off spectrum from high-throughput Cython engines to sophisticated multi-term optimization solvers:
+
+| Tracker Engine | Implementation | Processing Speed (FPS) | Throughput (particles/sec) | Accuracy & Precision | Trajectory Recovery |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **`priority_segment_3d`** | Cython C-Memoryview | **$>3,800\text{ FPS}$** | **$>800,000\text{ p/s}$** | High ($99.1\%\text{--}99.5\%$) | Standard (Forward only) |
+| **`fast_3d_smooth`** | Python / NumPy | **$\sim 1,000\text{ FPS}$** | **$\sim 200,000\text{ p/s}$** | High ($98.5\%$) | High (GAP relinking) |
+| **`kalman_hungarian_3d`** | Python / cKDTree | **$\sim 300\text{--}500\text{ FPS}$** | **$\sim 80,000\text{--}100,000\text{ p/s}$** | Highest (**$98.0\%\text{--}99.0\%$**) | Highest (Dynamic innovation gating) |
+| **`cython_epipolar_tracking` (`trackcorr`)** | Cython / C Loop | **$\sim 250\text{--}800\text{ FPS}$** | **$\sim 50,000\text{--}160,000\text{ p/s}$** | Highest (**2D+3D Reciprocity**) | Highest (3-Pass Forward + Backward + Pass 3) |
+| **`predictive_gmm_3d` (proPTV)** | Python / GMM | **$\sim 100\text{--}300\text{ FPS}$** | **$\sim 20,000\text{--}60,000\text{ p/s}$** | Highest (Analytic derivatives) | High (Backtracking & gap tracking) |
+| **`nearest_hungarian_3d` (MyPTV)** | Pure Python / SciPy | **$\sim 50\text{--}400\text{ FPS}$** | **$\sim 10,000\text{--}80,000\text{ p/s}$** | Standard ($91.7\%$) | Highest (Longest tracks: $14.3\text{ fr}$) |
+| **`myptv_2d_tracking`** | Pure Python | **$\sim 10\text{--}50\text{ FPS}$** | **$\sim 2,000\text{--}10,000\text{ p/s}$** | Moderate | Moderate (Per-camera 2D space) |
+
+---
+
+### C. Matching Trackers to Dataset Conditions
+
+#### 1. Handling $Z$-Axis Depth Noise & Optical Ambiguity
+
+> [!IMPORTANT]
+> **Understanding $Z$-Noise in 3D PTV:**
+> In stereoscopic and tomographic multi-camera setups, camera optical axes typically form narrow viewing angles ($< 30^\circ\text{--}45^\circ$). Consequently, reconstructed 3D particle positions exhibit $Z$-axis depth uncertainty that is **$3\times\text{ to }10\times$ higher** than in-plane $X,Y$ noise ($\sigma_Z \gg \sigma_X, \sigma_Y$).
+
+* **Why pure 3D distance trackers fail under high $Z$-noise:**
+  Trackers that search purely in 3D Euclidean distance ($\Delta r = \sqrt{\Delta X^2 + \Delta Y^2 + \Delta Z^2}$) can mistakenly jump between different nearby particles along the optical $Z$-axis because random $Z$-jitter exceeds the true inter-frame physical displacement.
+* **How to overcome high $Z$-noise:**
+  * **Option A: Multi-Camera Epipolar Re-projection (`cython_epipolar_tracking` / `full_multipass`)**
+    Instead of relying solely on 3D distance, `trackcorr` projects a 3D candidate search cuboid back onto each camera's 2D image plane ($x_i, y_i$). Because $Z$-uncertainty projects along epipolar lines on different cameras, requiring cross-camera target consensus eliminates fake $Z$-jumps.
+  * **Option B: Savitzky-Golay Velocity Filtering (`fast_3d_smooth`)**
+    Applies an order-3 Savitzky-Golay polynomial filter over a 5-frame moving window. This smooths out high-frequency $Z$-jitter while preserving physical flow acceleration, reducing single-frame velocity noise amplification by $\sim 50\%$.
+  * **Option C: 2D Image-Space Tracking (`myptv_2d_tracking`)**
+    If 3D triangulation is severely degraded by calibration errors, track in 2D pixel space per camera first, then perform multi-camera triangulation on the resulting 2D trajectories.
+
+#### 2. High Particle Density & Track Crossings
+
+* **The Problem:** As seeding density increases ($>1,000$ particles/frame), the mean distance between neighboring particles approaches the frame-to-frame displacement magnitude. Greedy nearest-neighbor scanners suffer from **order-dependent claim bias** and "track swapping" when two particles pass close to each other.
+* **The Solution:**
+  * Use **`kalman_hungarian_3d`** or **`nearest_hungarian_3d`**.
+  * Both trackers construct a bipartite candidate graph and solve global assignment using SciPy's Hungarian algorithm (`linear_sum_assignment`).
+  * `kalman_hungarian_3d` incorporates a multi-term physical cost function ($w_{\text{distance}} + w_{\text{velocity\_continuity}} + w_{\text{acceleration\_penalty}}$) so that candidates maintaining momentum win over closer candidates that require unphysical trajectory bends.
+
+#### 3. Optical Occlusions, Missing Frames & Detection Dropouts
+
+* **The Problem:** In physical experiments, particles frequently disappear for 1–2 frames due to laser sheet non-uniformity, bubble shadows, or field-of-view edges.
+* **The Solution:**
+  * Use **`full_multipass`** (Pass 3 post-processing bridges gaps and uses backward pass to discover cold-start seeds).
+  * Use **`kalman_hungarian_3d`** or **`nearest_hungarian_3d`** with `max_gap = 2` (or higher). The tracker extrapolates track position through invisible frames using established Kalman/polynomial velocity vectors, reconnecting when the particle reappears.
+
+#### 4. Complex Fluid Dynamics & High Acceleration
+
+* **The Problem:** In turbulent flows, vortices, or high-shear boundary layers, linear constant-velocity extrapolation ($\mathbf{X}_{t+1} = \mathbf{X}_t + \mathbf{V}_t \Delta t$) fails near sharp streamline curvatures.
+* **The Solution:**
+  * Use **`kalman_hungarian_3d`** (uses a 9D Constant-Acceleration state model $\begin{bmatrix}\mathbf{X} & \mathbf{V} & \mathbf{A}\end{bmatrix}^T$ that dynamically adapts innovation bounds).
+  * Use **`predictive_gmm_3d`** (proPTV) for continuous spatial-temporal Gaussian Mixture Model smoothing, providing analytical velocity and acceleration derivatives.
+
+---
+
+## 5. Tracking Algorithms & Plugins Reference
 
 | Plugin | Description |
 | :--- | :--- |
@@ -194,6 +295,23 @@ See `C:\Users\alex\Downloads\aorta_phantom\wp1\copy_trajectories.py` and `docs/z
    uv run openptv2-batch <exp> 1 50 --mode tracking --tracking-plugin two_phase --output bench_two_phase.zarr
    ```
    API: `from openptv2.batch.pyptv_batch import main; main(yaml, 1, 5005, mode="tracking", output="bench.zarr")` (`src/openptv2/batch/pyptv_batch.py:264`)
+
+---
+
+## 6b. Per-step parameters for transient or periodic flows (opt-in)
+
+One search window for the whole run is wrong when the flow changes a lot in time (a pulse, a cycle). Per-step parameters let some frame transitions use wider bounds. **It works with the classic `trackcorr` tracker only** (`plugins.selected_tracking: trackcorr`); the default `two_phase` tracker builds its own tracker and does not read them.
+
+1. Let the program suggest the steps: `uv run python -m openptv2.cli tune-dynamic parameters_Run1.yaml`. It runs one tracking pass, flags frames where unusually few particles got a forward link (a real particle that failed to link is what a wider window fixes; no truth is needed), and writes `dynamic_track.yaml` next to the YAML file.
+2. Read it and edit it. It lists only the flagged steps:
+   ```yaml
+   steps:
+     117: {dvxmin: -25.0, dvxmax: 25.0, dacc: 12.0}
+   ```
+3. Turn it on in the YAML file: `track: {dynamic_tracking: true}`. A step with no entry uses the normal parameters. `track.dynamic_params_file` gives another file name.
+4. Track again. The log shows `[dynamic tracking] per-step overrides loaded from ...`. If the file is missing, the run prints a warning and uses the normal parameters for every step.
+
+Without the `dynamic_tracking` key nothing changes.
 
 ---
 

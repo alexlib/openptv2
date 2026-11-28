@@ -6,7 +6,7 @@ already a core dependency).  Primitives ``angles_from_dm`` /
 is the canonical owner (hub plan Part 2 S1.1).
 
 Verified facts live in ``docs/plans/2026-08-30-calibration-hub-multi-source.md``
-and ``…-illmenau-dots-plate-pipeline.md`` — do not re-derive.
+and ``…-plate-rig-dots-plate-pipeline.md`` — do not re-derive.
 """
 
 from __future__ import annotations
@@ -292,7 +292,7 @@ def read_xyXYZ(
 
 
 def read_opencv_flat15(path: str | Path) -> dict:
-    """Read the Ilmenau ``calib_cN.txt``: 15 floats, one per line.
+    """Read a ``calib_cN.txt``: 15 floats, one per line.
 
     Layout (from Multiview-Calibration's own extract_calibration.py):
         [0:3]  rvec  [3:6]  tvec  [6] fx [7] fy [8] cx [9] cy [10:15] dist=k1,k2,p1,p2,k3

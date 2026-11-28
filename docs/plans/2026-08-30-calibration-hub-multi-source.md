@@ -1,6 +1,6 @@
 # Calibration hub: multiple sources/algorithms -> `.ori`/`.addpar`
 
-> **Update 2026-09-01:** `PR #36` merged as `6a1e81aa` — Part 1 Doors A/B (OpenCV `K,dist,rvec,tvec` + `calibration_import.py` `angles_from_dm`/`calibration_from_opencv`, `presorted` bypass, `import_calibration.py`) and Illmenau acceptance are done. Doors C/D (proPTV v19/20 polynomial grid, checkerboard `extra`), Tier1 standalone `dlt_resection`, `rig.yaml` auto-generation, `eps=None` derivation and zero-`cc` guard remain open. See `archive/2026-09-01-zarr-only-final-cutover-plan.md` for storage.
+> **Update 2026-09-01:** `PR #36` merged as `6a1e81aa` — Part 1 Doors A/B (OpenCV `K,dist,rvec,tvec` + `calibration_import.py` `angles_from_dm`/`calibration_from_opencv`, `presorted` bypass, `import_calibration.py`) and the example rig acceptance are done. Doors C/D (proPTV v19/20 polynomial grid, checkerboard `extra`), Tier1 standalone `dlt_resection`, `rig.yaml` auto-generation, `eps=None` derivation and zero-`cc` guard remain open. See `archive/2026-09-01-zarr-only-final-cutover-plan.md` for storage.
 
 **Status:** implementation plan, ready to execute. Supersedes the
 2026-08-29/30 draft of this file (phased-roadmap framing), which is folded in
@@ -10,7 +10,7 @@ as Step 8 and Appendix C.
 
 - **Part 1 (below, Steps 0-9)** — *importing* a calibration that already
   exists elsewhere: the four doors, the verified OpenCV -> `.ori`/`.addpar`
-  conversion, and the Ilmenau acceptance run.
+  conversion, and the example rig acceptance run.
 - **Part 2 (Steps S1-S7, from "Part 2 — The seed")** — *creating* the initial
   `.ori` when there is nothing to import. Nothing in the package does this
   today; every path reads an `.ori` or raises. Adds `rig.yaml` -> `.ori`
@@ -68,7 +68,7 @@ All funnel into the existing `CalibrationPointSet` -> `_refine_and_select` ->
 | **C. polynomial model** | proPTV Soloff, DaVis 3rd-order, MyPTV extendedZolof | no exterior orientation exists to convert at all; *evaluate* the foreign model on a grid over the measurement volume -> regenerates door A. Only valid inside the fitted volume -- a cubic diverges fast outside it. |
 | **D. images** | calblock, checkerboard, multiplane, wand | the old plan's Phases 2 and 4; the only doors needing cv2. |
 
-**First target: the Ilmenau barrel dataset** (`../Multiview-Calibration`),
+**First target: the example rig barrel dataset** (`../Multiview-Calibration`),
 with the fewest conversions and the least error. It is the ideal first case
 because it is a convection cell **in air** (`mmp_n1=n2=n3=1.0, mmp_d=1.0,
 interf: 0`), so OpenCV's model and openptv2's are the *same* model
@@ -177,7 +177,7 @@ OpenCV fixes only `fx = cc/pix_x`, `fy = cc/pix_y`. You may *choose* `pix_x`
 and set `cc = fx*pix_x`; the projection is bit-identical and only the printed
 focal length is fictional. World-space quantities are unaffected -- their
 scale comes from the calibration object, not the sensor. The real pitch
-matters only if you want `cc` to be physically meaningful. Ilmenau has it
+matters only if you want `cc` to be physically meaningful. The example rig has it
 anyway (0.005 mm).
 
 ### Open question -- resolve with data, do not assume
@@ -331,7 +331,7 @@ Raise on <5 columns, naming the file and the line.
 
 ```python
 def read_opencv_flat15(path) -> dict:
-    """Read the Ilmenau `calib_cN.txt`: 15 floats, one per line.
+    """Read the example rig `calib_cN.txt`: 15 floats, one per line.
 
     Layout (from Multiview-Calibration's own extract_calibration.py):
         [0:3]  rvec        [3:6]  tvec
@@ -462,7 +462,7 @@ entry point today and adding one is a separate decision.
 
 ---
 
-## Step 6 -- the Ilmenau run (acceptance test for the whole feature)
+## Step 6 -- the example rig run (acceptance test for the whole feature)
 
 Data lives in `../Multiview-Calibration`, branch **`origin/nov_2025`** (the
 checked-out `main` is ~1% of the repo). **No LICENSE file -- reference only,
@@ -608,7 +608,7 @@ uv run ruff check .
   conversion.
 - `test_distortion_centre_gap_bounded` inside 0.1-2 px -- proves the known
   limitation is still the known limitation.
-- Ilmenau: refined RMS <= seed RMS, and `cross_camera_rcm` median plus the
+- the example rig: refined RMS <= seed RMS, and `cross_camera_rcm` median plus the
   pairwise camera separations physically sensible for a 2.38 m x 7.0 m barrel.
 - No Cython rebuild required; `uv run python setup.py build_ext --inplace` is
   **not** part of this plan.
@@ -702,7 +702,7 @@ Every one of these has bitten someone in this exact problem domain.
   multiplane dataset in openptv2's classic layout
   (`parametersMultiPlane/multi_planes.par`), already parseable by
   `MultiPlanesPar.from_file`. The Step 8 multiplane fixture.
-- **`alexlib/Multiview-Calibration` (Ilmenau barrel)** -- 4 cameras, 18 planes
+- **`alexlib/Multiview-Calibration` (the example rig barrel)** -- 4 cameras, 18 planes
   used, 2.38 m x 7.0 m barrel at 2560x2048, 40 mm marker pitch, ~8550
   points/camera. Live branch is `origin/nov_2025`. Pipeline: flat-Z0 init ->
   per-camera `cv2.calibrateCamera` -> `stereoCalibrate` on plane 0 ->
@@ -829,7 +829,7 @@ spacing in the image. Format `matched / wrongly-matched`:
 2. **The default `eps = 15` is far too tight** for a rough seed — a 5 mm
    position error drops matching from 75 to 4. Use `eps ~= 3-4x` the projected
    grid spacing. Shipped `sortgrid.par` values are 9-25 px, tuned for an
-   already-good `.ori`; Multiview-Calibration's Ilmenau config uses **151**.
+   already-good `.ori`; Multiview-Calibration's the example rig config uses **151**.
 
 Consequence: **with a good `cc` and a generous `eps`, the 4-point manual click
 is unnecessary** — `sortgrid` identifies the correspondences, then
@@ -1215,4 +1215,4 @@ uv run ruff check .
   committed solve. This proves a first-time user with a tape measure and a
   lens marking can bootstrap a dataset that today requires an `.ori` to
   already exist.
-- Then Ilmenau (Part 1 Step 6) still runs unchanged.
+- Then the example rig (Part 1 Step 6) still runs unchanged.

@@ -26,10 +26,14 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
+    - toc.integrate
     - search.suggest
     - search.highlight
     - content.code.copy
     - content.code.annotate
+
+extra_css:
+  - stylesheets/extra.css
 
 markdown_extensions:
   - admonition
@@ -53,6 +57,26 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Course (the basics):
+    - Start here: course/index.md
+    - 1. Install and check: course/01-install.md
+    - 2. Your data: course/02-your-data.md
+    - 3. Cameras and calibration: course/03-cameras.md
+    - 4. Find the particles: course/04-detect.md
+    - 5. Match across cameras: course/05-match.md
+    - 6. Track in time: course/06-track.md
+    - 7. Is the result good?: course/07-check.md
+    - 8. Is the calibration good?: course/08-calibration.md
+    - 9. Use the results: course/09-results.md
+    - Glossary: course/glossary.md
+  - Recipes:
+    - What to do in your situation: recipes/index.md
+    - Tracks break when the set of cameras changes: recipes/camera-set-changes.md
+    - Cameras on both sides of a water cell: recipes/water-cell-two-sides.md
+    - Dense seeding, merged blobs: recipes/dense-seeding.md
+    - Many runs with one calibration, and servers: recipes/many-runs-and-servers.md
+    - One rig, a target with known 3D points: recipes/calibration-known-target.md
+    - Dumbbell, fix or check the scale: recipes/dumbbell.md
   - Installation & Setup: installation.md
   - First Steps: first_steps.md
   - Tutorials:
@@ -62,6 +86,7 @@ nav:
     - 4-View Image Splitter: tutorials/four_view_splitter/README.md
     - Sequence & Tracking Plugins: tutorials/plugins.md
     - Parameter Management: tutorials/parameters.md
+    - Getting Started with the Spatial Consensus (VFC): tutorials/vfc_getting_started.md
   - User Guides:
     - Zarr & HDF5 Storage: zarr-hdf5-storage.md
     - Tracking Pipeline & Results: tracking_guide.md
@@ -69,24 +94,37 @@ nav:
     - tracking_advice (measure your data, get the values): tracking_advice.md
     - Point Quality and Ghost Marks: tracking_quality.md
     - Tracker Engines & Parameters: tracker-tutorials.md
+    - Which Tracker to Use: trackers.md
+    - The two_phase Tracker: two-phase-tracking.md
+    - Spatial Consensus & Cold-Start Bootstrap: two-phase-spatial-consensus.md
     - Lagrangian Turbulence Quality: lagrangian_turbulence_quality_guide.md
     - Command-Line Batch Processing: tutorials/batch_processing.md
     - Cloud-like Batch Deployment: cloud-batch.md
     - Multi-Folder Experiments: multi-folder-runs.md
     - Tracking Visualization: tutorials/tracking_visualization.md
-    - Debug Visualization: tutorials/tracking_debug_visualization.md
+    - trackcorr Candidate Viewer: tutorials/trackcorr_candidate_viewer.md
+    - Debug Visualization (broken, GUI panel): tutorials/tracking_debug_visualization.md
   - Calibration:
-    - Plate Calibration How-To: plate-calibration-howto.md
-    - Illmenau 4-Camera Case Study: illmenau-4cam-calibration.md
-    - Illmenau Processing Pipeline: illmenau-pipeline.md
+    - Two Rigs with a Hand-Held Plate (recipe): recipes/plate-calibration-two-rigs.md
+    - Plate Calibration How-To (reference): plate-calibration-howto.md
+    - Plate Calibration, Worked Example: plate-calibration-worked-example.md
+    - Two-Rig Processing Chain (worked example): dual-rig-processing-chain.md
     - Best Practices: calibration_best_practices.md
     - Camera Calibration: tutorials/calibration.md
     - Particle-Based Refinement: tutorials/particle_calibration.md
     - Dumbbell Calibration: tutorials/dumbbell_calibration.md
     - Auto-Calibration (warmup): tutorials/warmup_tutorial.md
+  - Reference and research:
     - Reprojection RMS vs Ray Convergence: calibration-rms-vs-rcm.md
     - Bundle Adjustment: calibration-bundle-adjustment.md
     - Tracer Self-Calibration: tracer-self-calibration.md
+    - Calibration Consistency Check: calibration-consistency.md
+    - Self-Calibration Scale Bias: self-calibration-scale-bias.md
+    - Self-Calibration on a Synthetic Cavity: self-calibration-cavity-synthetic.md
+    - Synthetic Truth Rig: synthetic-rig.md
+    - Ray Tracing vs Radial Shift: ray-tracing-vs-radial-shift.md
+    - Holistic Tracking (merged blobs): holistic-tracking.md
+    - Self-Calibration (API and scripts): self-calibration.md
   - Benchmarks:
     - Benchmarking & Tracker Selection: benchmarking_guide.md
     - Multi-Engine Benchmark Results: tracking-benchmark-results.md
@@ -96,6 +134,7 @@ nav:
     - Cython & Pure Python Modes: developer_guide/cython_and_pure_python.md
     - Custom Tracking Plugins: developer_guide/custom_tracking_plugins.md
     - Documentation Workflow: developer_guide/documentation_workflow.md
+    - Writing Course Pages and Recipes: developer_guide/writing_course_pages.md
     - Packaging & Releases: developer_guide/packaging_and_releases.md
     - GUI Testing Guide: HOW_TO_TEST_GUI.md
   - Algorithms:

@@ -1,5 +1,11 @@
 # RMS vs RCM: two very different calibration quality numbers
 
+!!! abstract "In short"
+    RMS (pixels, one camera) tells whether a camera fits its own dots. RCM (millimetres) tells whether the cameras agree in 3D. They can differ by 10 times; read both.
+
+    **Basics:** [Course page 8](course/08-calibration.md). **Do it:** [One rig, a target](recipes/calibration-known-target.md).
+
+
 OpenPTV reports **two** calibration errors that are easy to confuse. They measure
 different things, and on many real rigs they disagree by ~10×. Reading only the
 first one will make you believe a rig is far better than it is.

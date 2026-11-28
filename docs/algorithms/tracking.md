@@ -71,7 +71,8 @@ These tests demonstrate the full workflow and can be used as a template for your
 ---
 # Tracking Algorithms
 
-OpenPTV implements two tracking strategies for particle trajectory reconstruction:
+For guidance on selecting the best tracking algorithm for your dataset conditions (processing speed, particle density, $Z$-axis depth noise, missing frames), see:
+👉 [**Selecting the Right Tracker for Your Dataset**](../tracking_guide.md#4-how-to-choose-a-tracker-for-your-dataset)
 
 ## Case Study: Burgers Dataset Gap Relinking
 
@@ -388,7 +389,7 @@ To support high-throughput processing on large experimental datasets (e.g., thou
 The preprocessing pipeline (including highpass filtering, thresholding, background subtraction, and image segmentation/detection) is parallelized across frames.
 * **Mechanism:** Rather than processing each camera sequence sequentially, OpenPTV2 chunks and distributes the image-processing workload across threads using OpenMP.
 * **Speedup:** Provides a **2.4x to 4x speedup** on multi-core systems, greatly reducing batch initialization times.
-* **Integration:** Seamlessly integrated into both the Python CLI/batch processing backend and the modern Tkinter/ttkbootstrap GUI.
+* **Integration:** Seamlessly integrated into both the Python CLI/batch processing backend and the TraitsUI/Chaco GUI.
 
 ### 2. Particle-Level Parallel Tracking (Approach B)
 The forward multi-camera tracking loop (`trackcorr_loop_fast`) is parallelized at the particle level, distributing calculations concurrently across OpenMP threads.

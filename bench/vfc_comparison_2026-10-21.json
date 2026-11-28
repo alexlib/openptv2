@@ -1,0 +1,174 @@
+{
+  "date": "2026-10-21",
+  "what": "Spatial consensus (VFC) of the two_phase tracker, measured against the truth of the synthetic bench (tracker-bench-2026-09-29). Same YAML for every row, only the vfc_* keys differ. The gate must be well above the noise: the tight gate (0.2) buys a lower velocity error by throwing the long tracks and the yield away.",
+  "vfc_settings": {
+    "vfc_radius": 12.0,
+    "vfc_gate": 0.4,
+    "vfc_post_min_tol": 0.4,
+    "vfc_bootstrap_passes": 2
+  },
+  "cases": {
+    "L1_d1_c0_k1_n200": {
+      "two_phase": {
+        "time_s": 3.9,
+        "link_precision": 0.9645,
+        "link_recall": 0.9745,
+        "vel_err": 0.1601,
+        "acc_err": 8.709,
+        "ghost_frac": 0.0353,
+        "long_completeness": 0.532,
+        "fragments": 2.16,
+        "yield": 0.703
+      },
+      "vfc_gate_filter": {
+        "time_s": 17.2,
+        "link_precision": 0.9657,
+        "link_recall": 0.9728,
+        "vel_err": 0.1595,
+        "acc_err": 8.723,
+        "ghost_frac": 0.035,
+        "long_completeness": 0.531,
+        "fragments": 2.16,
+        "yield": 0.702
+      },
+      "vfc_gate_filter_bootstrap_affine": {
+        "time_s": 38.9,
+        "link_precision": 0.9659,
+        "link_recall": 0.9727,
+        "vel_err": 0.1579,
+        "acc_err": 8.533,
+        "ghost_frac": 0.0348,
+        "long_completeness": 0.531,
+        "fragments": 2.16,
+        "yield": 0.702
+      },
+      "vfc_gate_filter_tight_gate": {
+        "time_s": 17.1,
+        "link_precision": 0.9674,
+        "link_recall": 0.9335,
+        "vel_err": 0.1672,
+        "acc_err": 8.915,
+        "ghost_frac": 0.0336,
+        "long_completeness": 0.479,
+        "fragments": 2.78,
+        "yield": 0.696
+      }
+    },
+    "L1_d1_c0_k1_n200_s0.08": {
+      "two_phase": {
+        "time_s": 3.8,
+        "link_precision": 0.9627,
+        "link_recall": 0.9636,
+        "vel_err": 0.1839,
+        "acc_err": 11.31,
+        "ghost_frac": 0.0365,
+        "long_completeness": 0.52,
+        "fragments": 2.27,
+        "yield": 0.702
+      },
+      "vfc_gate_filter": {
+        "time_s": 17.4,
+        "link_precision": 0.964,
+        "link_recall": 0.9615,
+        "vel_err": 0.1803,
+        "acc_err": 11.07,
+        "ghost_frac": 0.0363,
+        "long_completeness": 0.519,
+        "fragments": 2.28,
+        "yield": 0.701
+      },
+      "vfc_gate_filter_bootstrap_affine": {
+        "time_s": 38.8,
+        "link_precision": 0.9642,
+        "link_recall": 0.9613,
+        "vel_err": 0.1797,
+        "acc_err": 11.022,
+        "ghost_frac": 0.0361,
+        "long_completeness": 0.518,
+        "fragments": 2.28,
+        "yield": 0.701
+      }
+    },
+    "L1_d2_c0.3_k4_n150": {
+      "two_phase": {
+        "time_s": 4.0,
+        "link_precision": 0.9488,
+        "link_recall": 0.8658,
+        "vel_err": 0.1593,
+        "acc_err": 2.754,
+        "ghost_frac": 0.0481,
+        "long_completeness": 0.344,
+        "fragments": 2.32,
+        "yield": 0.395
+      },
+      "vfc_gate_filter": {
+        "time_s": 18.6,
+        "link_precision": 0.9636,
+        "link_recall": 0.8344,
+        "vel_err": 0.1403,
+        "acc_err": 2.431,
+        "ghost_frac": 0.0358,
+        "long_completeness": 0.325,
+        "fragments": 2.34,
+        "yield": 0.379
+      },
+      "vfc_gate_filter_bootstrap_affine": {
+        "time_s": 43.0,
+        "link_precision": 0.961,
+        "link_recall": 0.7424,
+        "vel_err": 0.1745,
+        "acc_err": 2.78,
+        "ghost_frac": 0.0383,
+        "long_completeness": 0.292,
+        "fragments": 2.09,
+        "yield": 0.341
+      }
+    },
+    "L1_d4_c0_k1_n150": {
+      "two_phase": {
+        "time_s": 4.5,
+        "link_precision": 0.9353,
+        "link_recall": 0.8623,
+        "vel_err": 0.3828,
+        "acc_err": 24.422,
+        "ghost_frac": 0.0645,
+        "long_completeness": 0.172,
+        "fragments": 1.56,
+        "yield": 0.243
+      },
+      "vfc_gate_filter": {
+        "time_s": 26.1,
+        "link_precision": 0.9387,
+        "link_recall": 0.8589,
+        "vel_err": 0.3706,
+        "acc_err": 23.445,
+        "ghost_frac": 0.0624,
+        "long_completeness": 0.171,
+        "fragments": 1.56,
+        "yield": 0.243
+      },
+      "vfc_gate_filter_bootstrap_affine": {
+        "time_s": 59.3,
+        "link_precision": 0.9388,
+        "link_recall": 0.8586,
+        "vel_err": 0.3706,
+        "acc_err": 23.429,
+        "ghost_frac": 0.0624,
+        "long_completeness": 0.171,
+        "fragments": 1.56,
+        "yield": 0.243
+      },
+      "vfc_gate_filter_tight_gate": {
+        "time_s": 25.4,
+        "link_precision": 0.9451,
+        "link_recall": 0.8044,
+        "vel_err": 0.3362,
+        "acc_err": 20.679,
+        "ghost_frac": 0.0576,
+        "long_completeness": 0.159,
+        "fragments": 1.62,
+        "yield": 0.235
+      }
+    }
+  }
+}

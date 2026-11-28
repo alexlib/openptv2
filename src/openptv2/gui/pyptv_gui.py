@@ -42,6 +42,7 @@ from traitsui.menu import Action, Menu, MenuBar
 
 from openptv2 import __version__ as openptv_version
 from openptv2.epipolar import epipolar_curve
+from openptv2.roi_mask import apply_roi_mask
 
 from . import ptv
 from .calibration_gui import CalibrationGUI
@@ -738,6 +739,24 @@ class TreeMenuHandler(Handler):
         mask_gui = MaskGUI(info.object.exp1)
         mask_gui.configure_traits()
 
+    def draw_trajectory_roi_action(self, info):
+        """Draw the 3D trajectory ROI (XY/XZ/YZ inclusion polygons)."""
+        from openptv2.gui.trajectory_roi_gui import draw_trajectory_roi
+        from openptv2.storage import RunStoreError
+
+        working_folder = Path(info.object.exp1.active_params.yaml_path).parent
+        try:
+            draw_trajectory_roi(working_folder)
+        except FileNotFoundError as exc:
+            print(f"Could not draw trajectory ROI: {exc}")
+        except RunStoreError as exc:
+            print(
+                "Could not draw trajectory ROI: no sealed trajectories yet "
+                f"({exc}). Run sequence + tracking for this experiment first "
+                "-- the ROI is drawn against triangulated 3D positions, which "
+                "only exist once tracking has produced trajectories."
+            )
+
     def highpass_action(self, info):
         """highpass_action - calls ptv.py_pre_processing_c()"""
         mainGui = info.object
@@ -766,6 +785,10 @@ class TreeMenuHandler(Handler):
                     ).astype(np.uint8)
             except ValueError as exc:
                 raise ValueError("Failed subtracting mask") from exc
+
+        mainGui.orig_images = [
+            apply_roi_mask(im, i) for i, im in enumerate(mainGui.orig_images)
+        ]
 
         print("highpass started")
         mainGui.orig_images = ptv.py_pre_processing_c(
@@ -908,6 +931,45 @@ class TreeMenuHandler(Handler):
         print("Starting tracking with display")
         panel = create_tracking_viz_panel(mainGui, num_frames=5)
         panel.configure_traits()
+
+    def trackcorr_candidate_viewer_action(self, info):
+        """Launch the interactive trackcorr candidate viewer (marimo notebook)
+        as a separate browser-based app, pointed at the current experiment."""
+        import subprocess
+
+        from pyface.api import warning
+
+        mainGui = info.object
+        try:
+            import marimo  # noqa: F401
+        except ImportError:
+            warning(
+                info.ui.control,
+                "marimo is not installed.\n\n"
+                'Install it with: uv pip install -e ".[viz]"',
+            )
+            return
+
+        seq_params = mainGui.get_parameter("sequence")
+        nb_path = Path(__file__).parent / "trackcorr_debug_nb.py"
+        cmd = [
+            sys.executable,
+            "-m",
+            "marimo",
+            "run",
+            str(nb_path),
+            "--",
+            "--dataset",
+            str(mainGui.exp_path),
+            "--first",
+            str(seq_params["first"]),
+            "--last",
+            str(min(int(seq_params["first"]) + 2, int(seq_params["last"]))),
+            "--particle",
+            "0",
+        ]
+        print("Launching trackcorr candidate viewer:", " ".join(cmd))
+        subprocess.Popen(cmd)
 
     def three_d_positions(self, info):
         """Extracts and saves 3D positions from the list of correspondences"""
@@ -1270,6 +1332,11 @@ menu_bar = MenuBar(
             enabled_when="pass_init",
         ),
         Action(
+            name="trackcorr candidate viewer (interactive)",
+            action="trackcorr_candidate_viewer_action",
+            enabled_when="pass_init",
+        ),
+        Action(
             name="Show trajectories",
             action="traject_action_flowtracks",
             enabled_when="pass_init",
@@ -1298,6 +1365,10 @@ menu_bar = MenuBar(
             enabled_when="pass_init",
         ),
         name="Drawing mask",
+    ),
+    Menu(
+        Action(name="Draw trajectory ROI", action="draw_trajectory_roi_action"),
+        name="Trajectory ROI",
     ),
 )
 

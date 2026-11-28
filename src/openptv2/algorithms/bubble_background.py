@@ -1,6 +1,6 @@
 """Temporal background estimation for bubble/glare-point detection.
 
-Large-scale HFSB frames (e.g. Ilmenau barrel) carry uneven, STATIC
+Large-scale HFSB frames (e.g. a large barrel) carry uneven, STATIC
 background: wall shading, seams, stuck sensor pattern. The bubbles move, so
 the background is whatever does NOT change over time. For each pixel:
 

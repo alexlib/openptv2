@@ -9,8 +9,8 @@ are small and self-contained; step 3 touches a Cython hot path.
 
 openptv2's detection thresholds — `targ_rec.gvthres`, `targ_rec.sumg_min`,
 `detect_plate.gvth_*`, `detect_plate.sum_grey` — are all written on a 0–255
-scale. The Illmenau cameras deliver **16-bit** images (`uint16`, measured range
-2112–65520 on both the `Kalibrierung_*` and `Messung_*` sets). Something must
+scale. The example rig cameras deliver **16-bit** images (`uint16`, measured range
+2112–65520 on both the `Calibration_*` and `measurement_*` sets). Something must
 map one onto the other, and today **three different things do, inconsistently**:
 
 | path | conversion | effect on a 2112–65520 image |
@@ -26,7 +26,7 @@ a 2112–65520 image into 8–255 and leaves the median at 21.
 
 ### What it cost
 
-On the Illmenau cameras 5–8 measurement frame, `targ_rec` with the configured
+On the example rig cameras 5–8 measurement frame, `targ_rec` with the configured
 `gvthres: 3` found **550 / 416 / 1044 / 504** blobs per camera — mostly noise,
 because 3 is far below the noise floor of the fixed-mapped image. That
 saturated the epipolar candidate lists:
@@ -113,7 +113,7 @@ Start with (1) — it closes the crash and the compiled/interpreted divergence.
 * `to_uint8` round-trips and matches `img_as_ubyte` exactly in `fixed` mode, and
   reproduces the current `detect_plate` output byte-for-byte in `stretch` mode.
 * Compiled and pure-Python `targ_rec` agree on a `uint16` input.
-* The Illmenau cameras 5–8 plate frame still yields **40 quadruplets**.
+* The example rig cameras 5–8 plate frame still yields **40 quadruplets**.
 * `uv run pytest tests/unit -q` stays green.
 
 ## Out of scope

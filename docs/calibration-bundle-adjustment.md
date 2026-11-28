@@ -1,5 +1,11 @@
 # Bundle adjustment in OpenPTV calibration
 
+!!! abstract "In short"
+    How the usual calibration works (one camera at a time), why that can leave the cameras disagreeing in 3D, and the joint fit that closes the gap.
+
+    **Basics:** [Course page 8](course/08-calibration.md). **Do it:** [One rig, a target](recipes/calibration-known-target.md).
+
+
 This page explains how OpenPTV calibrates today, why that leaves a cross-camera
 gap ([RCM](calibration-rms-vs-rcm.md)), and how the **joint bundle adjustment**
 closes it — plus the roadmap to a full self-calibration.
@@ -128,7 +134,7 @@ you where the error is coming from.** The remaining error needs §3/§4, not mor
 
 The calibration plans live in [`docs/plans/`](https://github.com/alexlib/openptv2/blob/main/docs/plans) -- see
 `2026-08-30-calibration-hub-multi-source.md` and
-`2026-08-30-illmenau-dots-plate-pipeline.md`.  (This used to point at a
+`2026-08-30-plate-rig-dots-plate-pipeline.md`.  (This used to point at a
 `master-plan.md` that was never written.)
 Status: RCM reporting **done**, joint-plate BA first cut **done**, the rest below
 **TODO**.

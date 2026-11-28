@@ -2,7 +2,7 @@
 
 Solving every camera's pose on a single reference frame makes the model exact on
 that plane by construction and lets its error grow linearly away from it.  On
-the Illmenau 4-camera rig that cost 0.58 % of the plate's distance from the
+the plate-rig 4-camera rig that cost 0.58 % of the plate's distance from the
 anchor plane in ray-convergence miss -- sub-millimetre at the plane, ~18 mm at
 3-4 m -- while per-camera reprojection RMS sat at a healthy 0.5 px throughout.
 This module removes the anchoring: the unknowns become every camera pose *and*
@@ -18,7 +18,7 @@ The camera interior, by default fixed:
     yaw they are determined, and ``free_intrinsics`` fits them per camera in
     openptv's own interior model (``cc``, ``xh``, ``yh``, Brown ``k1..k3``,
     ``p1``, ``p2``), so the result writes to ``.ori``/``.addpar`` exactly.  On
-    Illmenau that took the ray-convergence miss on held-out plates from 3.8 to
+    plate-rig that took the ray-convergence miss on held-out plates from 3.8 to
     0.3 mm.  Judge it on plates the fit did not see -- in-sample RMS always
     improves with more parameters.  Air only: the projection has no
     refraction, like the pinhole path.

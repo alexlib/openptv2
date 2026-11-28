@@ -1,7 +1,7 @@
 """Multi-plane plate → OpenCV intrinsics/extrinsics → solved Z_per_plane.
 
 Reproduces the loop previewed in
-``file:///C:/Users/alex/Dropbox/3DPTV_Illmenau/Multiview-Calibration/manual_openptv_orientation_from_opencv_pipeline.html``
+``file:///C:/Users/alex/Dropbox/3DPTV_plate-rig/Multiview-Calibration/manual_openptv_orientation_from_opencv_pipeline.html``
 (``multiview_calibration.py:87-118``): flat-Z0 ``calibrateCamera`` per cam →
 ``stereoCalibrate`` plane 0 → 4-cam DLT tri → recalibrate, before the hub's
 algebraic OpenCV→``.ori`` tail.  Kept ``cv2``-free in spirit — the ``cv2``

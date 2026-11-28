@@ -1,5 +1,11 @@
 # OpenPTV2 Tracking Improvement & Multi-Engine Benchmark Results
 
+!!! abstract "In short"
+    Results of the multi-engine tracker benchmark (August 2026). No tracker is best for every flow. For the current advice, read the trackers page.
+
+    **Basics:** [Course page 6](course/06-track.md). **Do it:** [Particle trackers](trackers.md).
+
+
 **Branch:** `tracking/a1-metrics`  
 **Date:** August 2026  
 **Status:** All Stages A1–A6 and Phase B Performance & Accuracy Optimizations Complete  

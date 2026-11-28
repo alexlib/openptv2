@@ -26,8 +26,8 @@ depend on a particular dataset:
 
 The procedure, the order of the steps and what each check catches are in
 ``.claude/skills/openptv-multiplane-calibrate/SKILL.md``; the numbers on a real
-rig are in ``docs/illmenau-4cam-calibration.md``.  Thin drivers for that rig
-live in ``scripts/illmenau/``.
+rig are in ``docs/recipes/plate-calibration-two-rigs.md``.  Thin drivers for that rig
+live in ``scripts/plate_rigs/``.
 
 OpenCV is needed only for the PnP steps and is imported where they run.
 """
@@ -281,7 +281,7 @@ def refine_dot_centroids(
     size of a dot.  For a dot near the plate border the dark scene beyond the
     border is bright in that inverted image, so the local mean is raised on
     the outer side and the centroid is pulled toward the plate centre -- on
-    Illmenau by ~2.6 mm (X) / 1.85 mm (Y) at the edges, up to 8 px in close
+    plate-rig by ~2.6 mm (X) / 1.85 mm (Y) at the edges, up to 8 px in close
     views.  The bundle then stretches the interior to absorb it: the world
     came out ~0.45 % too large.
 

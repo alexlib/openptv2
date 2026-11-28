@@ -1256,14 +1256,14 @@ class CalibrationGUI(HasTraits):
             )
 
     def _button_tracer_selfcal_fired(self):
-        """Joint self-calibration on tracer particles -- the modern "shaking":
-        couples the cameras via free 3D particle positions from res/ptv_is.*,
-        reaching the depth the shallow plate can't. Reads the `shaking` parameter
-        block (first/last frame, max frames, max points) so the user tunes it in
-        the calibration parameters dialog. Reports cross-camera RCM before/after
-        and, when it improves, writes the refined .ori/.addpar (backups via
-        _backup_ori_files) for the free cameras. Needs tracking results first."""
-        from openptv2.autocalibration import tracer_self_calibrate
+        """Joint self-calibration on real tracer particles from the Zarr RunStore:
+        diagnoses which camera causes the most ghosts, filters out ghost
+        candidates, couples the cameras via high-confidence real 3D particles,
+        and re-triangulates the RunStore when RCM improves."""
+        from openptv2.autocalibration import (
+            retriangulate_store,
+            tracer_self_calibrate,
+        )
 
         # Shaking parameters (optional block) drive the tracer self-calibration.
         try:
@@ -1281,8 +1281,9 @@ class CalibrationGUI(HasTraits):
                 frames = [frames[i] for i in idx]
         max_particles = int(shk.get("shaking_max_num_points") or 400)
         tol_px = float(shk.get("shaking_tol_px") or 2.0)
-        # held camera is 1-indexed in the dialog, 0-indexed internally
-        hold_cam = max(0, int(shk.get("shaking_hold_cam") or 1) - 1)
+        # 0 in the dialog selects "auto" (cleanest camera); 1..N is 1-indexed
+        raw_hold = int(shk.get("shaking_hold_cam", 0) or 0)
+        hold_cam: int | str = "auto" if raw_hold <= 0 else (raw_hold - 1)
 
         self.status_text = "Tracer self-calibration (this may take a moment)..."
         print("Tracer self-cal: button clicked, starting...", flush=True)
@@ -1308,9 +1309,17 @@ class CalibrationGUI(HasTraits):
             )
             return
         before, after = info["rcm_before"] * 1000, info["rcm_after"] * 1000
+        sep0 = info.get("separation_ratio_before")
+        sep1 = info.get("separation_ratio_after")
+        sep_txt = (
+            f", ghost/real sep {sep0:.2f}x -> {sep1:.2f}x"
+            if sep0 is not None and sep1 is not None
+            else ""
+        )
         msg = (
-            f"Tracer self-cal: cross-camera RCM {before:.1f} -> {after:.1f} um "
-            f"({info['n_particles']} particles, cam{info['hold_cam'] + 1} held)"
+            f"Tracer self-cal: RCM {before:.1f} -> {after:.1f} um"
+            f"{sep_txt} ({info['n_particles']} real particles, "
+            f"cam{info['hold_cam'] + 1} held, worst=cam{info.get('worst_cam', 0) + 1})"
         )
         print(msg)
         if after < before:
@@ -1319,7 +1328,20 @@ class CalibrationGUI(HasTraits):
             for cam in range(self.num_cams):
                 if cam != info["hold_cam"]:
                     self._write_ori(cam, addpar_flag=True)
-            self.status_text = msg + " -- refined .ori written (backups *.bck)."
+            try:
+                retri = retriangulate_store(
+                    self.working_folder, new_cals, self.cpar
+                )
+                print(
+                    f"[tracer self-cal] updated Zarr RunStore correspondences: "
+                    f"{retri['n_points']} points across {retri['n_frames']} frames",
+                    flush=True,
+                )
+            except Exception as exc:  # noqa: BLE001
+                print(f"[tracer self-cal] note: retriangulate_store skipped ({exc})")
+            self.status_text = (
+                msg + " -- refined .ori + RunStore updated (backups *.bck)."
+            )
         else:
             self.status_text = msg + " -- no improvement; cals unchanged."
 

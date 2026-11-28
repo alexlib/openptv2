@@ -13,7 +13,7 @@ in three places that disagreed:
   (2112 -> 64, 65520 -> 240), so a compiled and an interpreted build could
   disagree catastrophically on the same input.
 
-The practical cost of that on the Illmenau rig: a ``gvthres`` of 3, sensible
+The practical cost of that on the plate-rig rig: a ``gvthres`` of 3, sensible
 under a stretch, sat far below the noise floor under the fixed map, which found
 550-1044 blobs per camera instead of a few hundred particles, saturated the
 epipolar candidate lists and collapsed correspondences to a handful of
