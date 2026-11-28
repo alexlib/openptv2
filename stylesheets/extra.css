@@ -1,0 +1,7 @@
+/* One sidebar instead of two (the page outline sits in the left sidebar, see toc.integrate in mkdocs.yml),
+   and a wider centre column for text, tables and figures. */
+.md-grid { max-width: 80rem; }
+.md-sidebar--primary { width: 14.5rem; }
+.md-content__inner { margin-right: 1.2rem; }
+.md-typeset img { height: auto; }
+.md-typeset table:not([class]) { font-size: 0.78rem; }

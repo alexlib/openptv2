@@ -16,7 +16,7 @@
         <link rel="prev" href="../plate-calibration-howto/">
       
       
-        <link rel="next" href="../illmenau-pipeline/">
+        <link rel="next" href="../dual-rig-processing-chain/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Illmenau 4-Camera Case Study - OpenPTV2 Documentation</title>
+        <title>Plate Calibration, Worked Example - OpenPTV2 Documentation</title>
       
     
     
@@ -52,6 +52,8 @@
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -78,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#calibrating-the-illmenau-4-camera-rig-from-a-hand-held-dots-plate" class="md-skip">
+        <a href="#worked-example-calibrating-a-4-camera-rig-from-a-hand-held-dots-plate" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Illmenau 4-Camera Case Study
+              Plate Calibration, Worked Example
             
           </span>
         </div>
@@ -243,6 +245,46 @@
   
   
   
+    
+    
+      <li class="md-tabs__item">
+        <a href="../course/" class="md-tabs__link">
+          
+  
+  
+  Course (the basics)
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../recipes/" class="md-tabs__link">
+          
+  
+  
+  Recipes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
     <li class="md-tabs__item">
       <a href="../installation/" class="md-tabs__link">
         
@@ -326,11 +368,31 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../plate-calibration-howto/" class="md-tabs__link">
+        <a href="../recipes/plate-calibration-two-rigs/" class="md-tabs__link">
           
   
   
   Calibration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../calibration-rms-vs-rcm/" class="md-tabs__link">
+          
+  
+  
+  Reference and research
 
         </a>
       </li>
@@ -457,7 +519,9 @@
   
 
 
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
       
@@ -505,6 +569,632 @@
   
 
       </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Course (the basics)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Course (the basics)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../course/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start here
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../course/01-install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Install and check
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../course/02-your-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Your data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../course/03-cameras/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Cameras and calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../course/04-detect/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Find the particles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../course/05-match/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Match across cameras
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../course/06-track/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Track in time
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../course/07-check/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Is the result good?
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../course/08-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Is the calibration good?
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../course/09-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Use the results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../course/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recipes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Recipes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What to do in your situation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../recipes/camera-set-changes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracks break when the set of cameras changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../recipes/water-cell-two-sides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cameras on both sides of a water cell
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../recipes/dense-seeding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dense seeding, merged blobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../recipes/many-runs-and-servers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Many runs with one calibration, and servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../recipes/calibration-known-target/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One rig, a target with known 3D points
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../recipes/dumbbell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dumbbell, fix or check the scale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -585,10 +1275,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -606,8 +1296,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -785,6 +1475,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/vfc_getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started with the Spatial Consensus (VFC)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -814,10 +1532,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
@@ -835,8 +1553,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1021,6 +1739,90 @@
   
   
     <li class="md-nav__item">
+      <a href="../trackers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Which Tracker to Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../two-phase-tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The two_phase Tracker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../two-phase-spatial-consensus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial Consensus & Cold-Start Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../lagrangian_turbulence_quality_guide/" class="md-nav__link">
         
   
@@ -1161,6 +1963,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../tutorials/trackcorr_candidate_viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    trackcorr Candidate Viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tutorials/tracking_debug_visualization/" class="md-nav__link">
         
   
@@ -1168,7 +1998,7 @@
   <span class="md-ellipsis">
     
   
-    Debug Visualization
+    Debug Visualization (broken, GUI panel)
   
 
     
@@ -1214,10 +2044,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
@@ -1235,8 +2065,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1253,6 +2083,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../recipes/plate-calibration-two-rigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Rigs with a Hand-Held Plate (recipe)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../plate-calibration-howto/" class="md-nav__link">
         
   
@@ -1260,7 +2118,7 @@
   <span class="md-ellipsis">
     
   
-    Plate Calibration How-To
+    Plate Calibration How-To (reference)
   
 
     
@@ -1297,7 +2155,7 @@
   <span class="md-ellipsis">
     
   
-    Illmenau 4-Camera Case Study
+    Plate Calibration, Worked Example
   
 
     
@@ -1315,7 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    Illmenau 4-Camera Case Study
+    Plate Calibration, Worked Example
   
 
     
@@ -1655,14 +2513,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../illmenau-pipeline/" class="md-nav__link">
+      <a href="../dual-rig-processing-chain/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Illmenau Processing Pipeline
+    Two-Rig Processing Chain (worked example)
   
 
     
@@ -1816,6 +2674,67 @@
 
               
             
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
               
                 
   
@@ -1900,6 +2819,202 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../calibration-consistency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration Consistency Check
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../self-calibration-scale-bias/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Calibration Scale Bias
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../self-calibration-cavity-synthetic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Calibration on a Synthetic Cavity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../synthetic-rig/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Synthetic Truth Rig
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ray-tracing-vs-radial-shift/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ray Tracing vs Radial Shift
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../holistic-tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Holistic Tracking (merged blobs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../self-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Calibration (API and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1929,10 +3044,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
             
   
   
@@ -1950,8 +3065,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2073,10 +3188,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
             
   
   
@@ -2094,8 +3209,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2224,6 +3339,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../developer_guide/writing_course_pages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Writing Course Pages and Recipes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../developer_guide/packaging_and_releases/" class="md-nav__link">
         
   
@@ -2302,10 +3445,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
@@ -2323,8 +3466,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_10">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2475,10 +3618,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
         
           
-          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
             
   
   
@@ -2496,8 +3639,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_11">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2549,331 +3692,6 @@
               </div>
             
             
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-the-coordinate-frame" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. The coordinate frame
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-how-the-grid-is-numbered" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. How the grid is numbered
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-from-a-grid-at-an-arbitrary-position-to-an-ori-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. From a grid at an arbitrary position to an .ori file
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-the-two-traps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. The two traps
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. The two traps">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#trap-1-distortion-fitted-from-a-single-plane-is-unphysical" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Trap 1 — distortion fitted from a single plane is unphysical
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#trap-2-cc-cannot-be-fitted-from-one-plane-but-is-well-determined-by-many" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Trap 2 — cc cannot be fitted from one plane, but is well determined by many
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-the-recipe" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. The recipe
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-set-the-observation-volume-before-opening-the-gui" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Set the observation volume before opening the GUI
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-what-the-result-looks-like" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. What the result looks like
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#8-validating-the-model-on-all-48-planes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        8. Validating the model on all 48 planes
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#8b-the-joint-bundle-spreading-the-error-over-the-volume" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        8b. The joint bundle — spreading the error over the volume
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="8b. The joint bundle — spreading the error over the volume">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#rejecting-outliers-before-the-fit-not-during-it" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Rejecting outliers before the fit, not during it
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#the-plate-is-held-vertical" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The plate is held vertical
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#what-the-bundle-bought" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What the bundle bought
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#9-the-labeller-three-bugs-and-what-the-calibration-paid-for-them" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9. The labeller — three bugs, and what the calibration paid for them
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="9. The labeller — three bugs, and what the calibration paid for them">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#91-the-grid-was-anchored-to-whatever-the-view-happened-to-see" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9.1 The grid was anchored to whatever the view happened to see
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#92-the-coded-l-could-resolve-to-the-wrong-corner" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9.2 The coded L could resolve to the wrong corner
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#93-a-failed-coded-detection-fell-through-to-the-uncoded-labeller" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        9.3 A failed coded detection fell through to the uncoded labeller
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#what-the-fixes-bought" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What the fixes bought
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#10-cameras-58-the-far-wall-calibrated-as-its-own-rig" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        10. Cameras 5–8 — the far wall, calibrated as its own rig
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="10. Cameras 5–8 — the far wall, calibrated as its own rig">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#why-a-separate-world" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why a separate world
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#running-it" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Running it
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#the-datum-was-tested-not-inherited" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The datum was tested, not inherited
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#result" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Result
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#what-went-wrong-and-what-it-cost" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What went wrong, and what it cost
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
           
           
             <div class="md-content" data-md-component="content">
@@ -2887,17 +3705,17 @@
   
 
 
-<h1 id="calibrating-the-illmenau-4-camera-rig-from-a-hand-held-dots-plate">Calibrating the Illmenau 4-camera rig from a hand-held dots plate<a class="headerlink" href="#calibrating-the-illmenau-4-camera-rig-from-a-hand-held-dots-plate" title="Permanent link">&para;</a></h1>
-<p>How the <code>.ori</code> files for cameras 1–4 of the Illmenau barrel were produced, why the
+<h1 id="worked-example-calibrating-a-4-camera-rig-from-a-hand-held-dots-plate">Worked example: calibrating a 4-camera rig from a hand-held dots plate<a class="headerlink" href="#worked-example-calibrating-a-4-camera-rig-from-a-hand-held-dots-plate" title="Permanent link">&para;</a></h1>
+<p>How the <code>.ori</code> files for cameras 1–4 of the barrel rig were produced, why the
 first few attempts failed the epipolar test even at 0.5 px reprojection RMS, how
 far the resulting model can be trusted, and what to run next time. Cameras 5–8
 follow the same recipe (see the last section).</p>
-<p>Dataset: <code>C:\Users\alex\Downloads\Illmenau</code> — <code>Kalibrierung_1..4</code> hold 48
+<p>Dataset: <code>&lt;raw folder&gt;</code> — <code>Calibration_1..4</code> hold 48
 synchronised frames each of a hand-held 6×7 dot plate at unknown depths;
-<code>openptv_illmenau_4cam</code> is the openptv2 working folder.</p>
+<code>openptv_rig_a_4cam</code> is the openptv2 working folder.</p>
 <p>Everything below assumes:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ILLMENAU_RAW</span><span class="o">=</span><span class="s2">"C:/Users/alex/Downloads/Illmenau"</span><span class="w">          </span><span class="c1"># optional, this is the default</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ILLMENAU_DIR</span><span class="o">=</span><span class="s2">"</span><span class="nv">$ILLMENAU_RAW</span><span class="s2">/openptv_illmenau_4cam"</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PLATE_RIG_RAW</span><span class="o">=</span><span class="s2">"&lt;raw folder&gt;"</span><span class="w">          </span><span class="c1"># optional, this is the default</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PLATE_RIG_DIR</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PLATE_RIG_RAW</span><span class="s2">/openptv_rig_a_4cam"</span>
 </span></code></pre></div>
 <p>OpenCV is not a project dependency, so the two scripts that need it are run with
 <code>uv run --with opencv-python-headless</code>.</p>
@@ -2914,7 +3732,7 @@ fourth row from both top and bottom.</p>
 −3580/2 = −1790) that dot sits at <code>(0, −3580/2 + 615, 0) = (0, −1175, 0)</code>, so</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>barrel_from_plate(P) = P + [0, -1175, 0]
 </span></code></pre></div>
-<p>Recorded in <code>plate.yaml:datum</code>. <code>scripts/illmenau/draw_rig_global.py</code> renders the
+<p>Recorded in <code>plate.yaml:datum</code>. <code>scripts/plate_rigs/draw_rig_global.py</code> renders the
 frame, the barrel, the plate and both the nominal and calibrated camera positions
 (<code>rig_3d_global.png</code>).</p>
 <h2 id="2-how-the-grid-is-numbered">2. How the grid is numbered<a class="headerlink" href="#2-how-the-grid-is-numbered" title="Permanent link">&para;</a></h2>
@@ -3140,57 +3958,57 @@ reconstruction. <code>cc</code> is unobservable there.</p>
 <p>A clean minimum. <strong>The fitted focal length is 8.586 mm, not the nominal 9.44 mm.</strong></p>
 <h2 id="5-the-recipe">5. The recipe<a class="headerlink" href="#5-the-recipe" title="Permanent link">&para;</a></h2>
 <p><code>OPTV=&lt;path to openptv2&gt;</code>. Everything runs from the working folder; the dataset
-is found through <code>ILLMENAU_RAW</code> / <code>ILLMENAU_DIR</code>. Only steps 1-3 and 5 change the
+is found through <code>PLATE_RIG_RAW</code> / <code>PLATE_RIG_DIR</code>. Only steps 1-3 and 5 change the
 calibration; the rest only measure it.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">cd</span><span class="w"> </span><span class="s2">"</span><span class="nv">$ILLMENAU_DIR</span><span class="s2">"</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">cd</span><span class="w"> </span><span class="s2">"</span><span class="nv">$PLATE_RIG_DIR</span><span class="s2">"</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># --- 1. DETECT + LABEL every frame of all four cameras, cached to npz.</span>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># ~192 images, a few minutes -&gt; cal/labelled_all_frames.npz.  Hands the labeller</span>
 </span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># the two things one image cannot settle: the datum's grid index, and the image</span>
 </span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="c1"># direction of world +Y from the current .ori (section 9).  On a brand-new rig</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># with no .ori yet, run once with ILLMENAU_NO_HINT=1, then re-run after step 3.</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/detect_plate_frames.py
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># with no .ori yet, run once with PLATE_RIG_NO_HINT=1, then re-run after step 3.</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/detect_plate_frames.py
 </span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
 </span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="c1"># --- 2. FIT the one shared cc, from multi-plane cross-camera consistency.</span>
 </span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="c1"># The only quantity a single plane cannot see (section 4, Trap 2).</span>
 </span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>--with<span class="w"> </span>opencv-python-headless<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/fit_plate_cc.py
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/fit_plate_cc.py
 </span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>
 </span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="c1"># --- 3. WRITE the .ori: pure pinhole at that cc, poses from the reference</span>
 </span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="c1"># frame, zero distortion in .addpar (section 4, Trap 1).</span>
 </span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>--with<span class="w"> </span>opencv-python-headless<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">    </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/refit_plate_pinhole.py<span class="w"> </span><span class="m">8</span>.5858
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">    </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/refit_plate_pinhole.py<span class="w"> </span><span class="m">8</span>.5858
 </span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>
 </span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="c1"># --- 4. GATE.  These two decide whether the calibration is usable.  Never gate</span>
 </span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="c1"># on per-camera reprojection RMS -- it stayed at 0.5 px through every wrong</span>
 </span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="c1"># intermediate result of this work.</span>
-</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/check_plate_triangulation.py
-</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/check_epipolar.py
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/check_plate_triangulation.py
+</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/check_epipolar.py
 </span><span id="__span-4-25"><a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>
 </span><span id="__span-4-26"><a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a><span class="c1"># --- 5. BUNDLE: re-solve all camera poses together with one plate pose per</span>
 </span><span id="__span-4-27"><a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="c1"># frame, so the model is no longer exact on the reference plane and drifting</span>
 </span><span id="__span-4-28"><a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="c1"># away from it (section 8b).  cc stays fixed; the reference plate pose is the</span>
 </span><span id="__span-4-29"><a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a><span class="c1"># gauge.  Omit --write for a dry run that changes nothing.</span>
 </span><span id="__span-4-30"><a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>--with<span class="w"> </span>opencv-python-headless<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-31"><a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="w">    </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/bundle_plate_poses.py<span class="w"> </span><span class="m">8</span>.5858<span class="w"> </span>--write
+</span><span id="__span-4-31"><a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="w">    </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/bundle_plate_poses.py<span class="w"> </span><span class="m">8</span>.5858<span class="w"> </span>--write
 </span><span id="__span-4-32"><a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a>
 </span><span id="__span-4-33"><a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="c1"># --- 6. RE-GATE (step 4 again), then validate over the whole dataset and look</span>
 </span><span id="__span-4-34"><a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="c1"># at the pictures.  plot_frame_triangulation.py fits nothing: it shows what the</span>
 </span><span id="__span-4-35"><a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a><span class="c1"># .ori on disk actually reconstruct, one figure per plate position.</span>
-</span><span id="__span-4-36"><a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/check_plate_triangulation.py
-</span><span id="__span-4-37"><a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/check_epipolar.py
-</span><span id="__span-4-38"><a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/plot_frame_triangulation.py
-</span><span id="__span-4-39"><a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/check_all_frames.py
+</span><span id="__span-4-36"><a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/check_plate_triangulation.py
+</span><span id="__span-4-37"><a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/check_epipolar.py
+</span><span id="__span-4-38"><a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/plot_frame_triangulation.py
+</span><span id="__span-4-39"><a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/check_all_frames.py
 </span><span id="__span-4-40"><a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a>
 </span><span id="__span-4-41"><a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a><span class="c1"># --- 7. SET THE OBSERVATION VOLUME before opening the GUI (section 6).</span>
 </span><span id="__span-4-42"><a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a><span class="c1"># Reports the largest safe Zmax for this rig; it is a display and search</span>
 </span><span id="__span-4-43"><a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a><span class="c1"># parameter, not a calibration one, and the usual cause of "the epipolar lines</span>
 </span><span id="__span-4-44"><a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a><span class="c1"># are wrong".</span>
-</span><span id="__span-4-45"><a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/check_epipolar_volume.py
+</span><span id="__span-4-45"><a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/check_epipolar_volume.py
 </span><span id="__span-4-46"><a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a>
 </span><span id="__span-4-47"><a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a><span class="c1"># --- optional: draw the rig against the global frame, as a sanity check that</span>
 </span><span id="__span-4-48"><a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a><span class="c1"># the cameras came out where they physically are.</span>
-</span><span id="__span-4-49"><a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/draw_rig_global.py
+</span><span id="__span-4-49"><a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a>uv<span class="w"> </span>run<span class="w"> </span>--project<span class="w"> </span><span class="nv">$OPTV</span><span class="w"> </span>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/draw_rig_global.py
 </span></code></pre></div>
 <p>Step 1 is cached, so re-running 2-5 with a different <code>cc</code> costs seconds. After
 step 5 it is worth re-running step 1 once: the labeller uses the <code>.ori</code> for its
@@ -3409,7 +4227,7 @@ clean demonstration that reprojection RMS is the wrong objective for this rig.</
 1.5 m of the reference plane, and degrades to ~1–2 cm at 3–4 m. If you measure in a
 volume that big, this is the accuracy floor, and no <code>.addpar</code> will fix it.</p>
 <h2 id="8b-the-joint-bundle-spreading-the-error-over-the-volume">8b. The joint bundle — spreading the error over the volume<a class="headerlink" href="#8b-the-joint-bundle-spreading-the-error-over-the-volume" title="Permanent link">&para;</a></h2>
-<p><code>scripts/illmenau/bundle_plate_poses.py</code> removes the single-plane anchoring.
+<p><code>scripts/plate_rigs/bundle_plate_poses.py</code> removes the single-plane anchoring.
 Unknowns are the four camera poses and one 6-dof plate pose per frame; <code>cc</code>
 stays at 8.5858 mm, distortion stays zero, the principal point stays at the
 sensor centre, and <strong>the reference frame's plate pose is held at identity</strong>.
@@ -3602,7 +4420,7 @@ recorded datum index, or the calibration. Where neither can settle it, fail
 loudly. A labeller that guesses produces exactly the errors reprojection RMS
 cannot see.</p>
 <h2 id="10-cameras-58-the-far-wall-calibrated-as-its-own-rig">10. Cameras 5–8 — the far wall, calibrated as its own rig<a class="headerlink" href="#10-cameras-58-the-far-wall-calibrated-as-its-own-rig" title="Permanent link">&para;</a></h2>
-<p><strong>Done.</strong> Working folder <code>openptv_illmenau_5678/</code>, its own <code>cal/</code>, its own
+<p><strong>Done.</strong> Working folder <code>openptv_rig_b_4cam/</code>, its own <code>cal/</code>, its own
 <code>parameters_Run1.yaml</code> (cameras named cam5..cam8), its own <code>plate.yaml</code>.</p>
 <h3 id="why-a-separate-world">Why a separate world<a class="headerlink" href="#why-a-separate-world" title="Permanent link">&para;</a></h3>
 <p>Cameras 5–8 see the <strong>back</strong> face of the plate, and the back face carries a
@@ -3612,7 +4430,7 @@ anchored to its own reference frame's coded L-corner dot. Merging them is a
 later job, and the plate is what makes it possible: the two dot planes are
 parallel and <strong>6 mm apart</strong> (the plate's thickness), so the per-frame plate poses
 already solved for cams 1–4 describe the same physical positions. The recipe is
-recorded in <code>openptv_illmenau_5678/plate.yaml:relation_to_front_rig</code> — offset a
+recorded in <code>openptv_rig_b_4cam/plate.yaml:relation_to_front_rig</code> — offset a
 cams 1–4 plate pose by −6 mm along its normal, then solve the 3-dof in-plane
 placement (yaw about the normal + 2D shift) shared across all frames. Heavily
 over-determined, and it needs no Kabsch fit.</p>
@@ -3621,16 +4439,16 @@ over-determined, and it needs no Kabsch fit.</p>
 length, which are properties of the plate, not of the side you view it from), and
 there is <strong>no</strong> frame in which all eight cameras see the plate.</p>
 <h3 id="running-it">Running it<a class="headerlink" href="#running-it" title="Permanent link">&para;</a></h3>
-<p>Every driver is camera-group agnostic via <code>scripts/illmenau/_config.py</code>; the
+<p>Every driver is camera-group agnostic via <code>scripts/plate_rigs/_config.py</code>; the
 steps themselves are library functions in <code>openptv2.plate_multiplane</code>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ILLMENAU_DIR</span><span class="o">=</span><span class="s2">"</span><span class="nv">$ILLMENAU_RAW</span><span class="s2">/openptv_illmenau_5678"</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ILLMENAU_CAMS</span><span class="o">=</span><span class="m">5</span>,6,7,8
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PLATE_RIG_DIR</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PLATE_RIG_RAW</span><span class="s2">/openptv_rig_b_4cam"</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PLATE_RIG_CAMS</span><span class="o">=</span><span class="m">5</span>,6,7,8
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># then §5's recipe verbatim, plus these two first:</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/find_datum.py<span class="w">             </span><span class="c1"># read the datum off the data</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/illmenau/make_calibration_block.py<span class="w"> </span><span class="c1"># block from the same PlateGrid</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/find_datum.py<span class="w">             </span><span class="c1"># read the datum off the data</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>python<span class="w"> </span><span class="nv">$OPTV</span>/scripts/plate_rigs/make_calibration_block.py<span class="w"> </span><span class="c1"># block from the same PlateGrid</span>
 </span></code></pre></div>
 <p>The first detection pass has no <code>.ori</code> to take an up-hint from, so run
-<code>ILLMENAU_NO_HINT=1 detect_plate_frames.py --cams 5,6,7,8</code> once, then re-run it
+<code>PLATE_RIG_NO_HINT=1 detect_plate_frames.py --cams 5,6,7,8</code> once, then re-run it
 after the first <code>.ori</code> exist.</p>
 <h3 id="the-datum-was-tested-not-inherited">The datum was tested, not inherited<a class="headerlink" href="#the-datum-was-tested-not-inherited" title="Permanent link">&para;</a></h3>
 <p>The back face's coded L corner turns out to sit at the same grid node as the
@@ -3806,7 +4624,7 @@ exists to detect, and it will look like the calibration's fault.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>

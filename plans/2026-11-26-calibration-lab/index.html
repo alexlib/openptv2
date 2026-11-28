@@ -1,0 +1,3779 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+      
+        <title>Calibration lab: verify the imaging assumptions one by one, then use what they teach - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#calibration-lab-verify-the-imaging-assumptions-one-by-one-then-use-what-they-teach" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Calibration lab: verify the imaging assumptions one by one, then use what they teach
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../course/" class="md-tabs__link">
+          
+  
+  
+  Course (the basics)
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../recipes/" class="md-tabs__link">
+          
+  
+  
+  Recipes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../zarr-hdf5-storage/" class="md-tabs__link">
+          
+  
+  
+  User Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../recipes/plate-calibration-two-rigs/" class="md-tabs__link">
+          
+  
+  
+  Calibration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../calibration-rms-vs-rcm/" class="md-tabs__link">
+          
+  
+  
+  Reference and research
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../benchmarking_guide/" class="md-tabs__link">
+          
+  
+  
+  Benchmarks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-tabs__link">
+          
+  
+  
+  Decisions
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Course (the basics)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Course (the basics)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start here
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course/01-install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Install and check
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course/02-your-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Your data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course/03-cameras/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Cameras and calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course/04-detect/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Find the particles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course/05-match/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Match across cameras
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course/06-track/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. Track in time
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course/07-check/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Is the result good?
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course/08-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Is the calibration good?
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course/09-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Use the results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course/glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recipes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Recipes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../recipes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What to do in your situation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../recipes/camera-set-changes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracks break when the set of cameras changes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../recipes/water-cell-two-sides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cameras on both sides of a water cell
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../recipes/dense-seeding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dense seeding, merged blobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../recipes/many-runs-and-servers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Many runs with one calibration, and servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../recipes/calibration-known-target/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One rig, a target with known 3D points
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../recipes/dumbbell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dumbbell, fix or check the scale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Your First Tracking (GUI)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/cavity_flow_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lid-Driven Cavity Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aorta_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Aorta Flow (cloud-native)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/four_view_splitter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4-View Image Splitter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sequence & Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parameter Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/vfc_getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started with the Spatial Consensus (VFC)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../zarr-hdf5-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Pipeline & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_parameters_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Parameters (what to measure, how to set)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_advice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tracking_advice (measure your data, get the values)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking_quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Point Quality and Ghost Marks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracker-tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracker Engines & Parameters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../trackers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Which Tracker to Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../two-phase-tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The two_phase Tracker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../two-phase-spatial-consensus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial Consensus & Cold-Start Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lagrangian_turbulence_quality_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lagrangian Turbulence Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-batch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud-like Batch Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multi-folder-runs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Folder Experiments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/trackcorr_candidate_viewer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    trackcorr Candidate Viewer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization (broken, GUI panel)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Calibration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../recipes/plate-calibration-two-rigs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Rigs with a Hand-Held Plate (recipe)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plate-calibration-howto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plate Calibration How-To (reference)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plate-calibration-worked-example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plate Calibration, Worked Example
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dual-rig-processing-chain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-Rig Processing Chain (worked example)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/particle_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle-Based Refinement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/dumbbell_calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dumbbell Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/warmup_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auto-Calibration (warmup)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference and research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-rms-vs-rcm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reprojection RMS vs Ray Convergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-bundle-adjustment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bundle Adjustment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracer-self-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracer Self-Calibration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../calibration-consistency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration Consistency Check
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../self-calibration-scale-bias/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Calibration Scale Bias
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../self-calibration-cavity-synthetic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Calibration on a Synthetic Cavity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../synthetic-rig/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Synthetic Truth Rig
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ray-tracing-vs-radial-shift/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ray Tracing vs Radial Shift
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../holistic-tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Holistic Tracking (merged blobs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../self-calibration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Calibration (API and scripts)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Benchmarks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../benchmarking_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarking & Tracker Selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tracking-benchmark-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Engine Benchmark Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/custom_tracking_plugins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Tracking Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/writing_course_pages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Writing Course Pages and Recipes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../software_map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Software Map (Trackers & Strategy)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/correspondence-eps0-semantics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Correspondence eps0 Semantics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decisions
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Decisions
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../decisions/ADR-001-cython-optimization-plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001 Cython Optimization Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="calibration-lab-verify-the-imaging-assumptions-one-by-one-then-use-what-they-teach">Calibration lab: verify the imaging assumptions one by one, then use what they teach<a class="headerlink" href="#calibration-lab-verify-the-imaging-assumptions-one-by-one-then-use-what-they-teach" title="Permanent link">&para;</a></h1>
+<p>Date 2026-11-26. Status: layers 1-3 built and tested on rendered syn1 (3 calibrations x 3 trackers) and on real wp1 / wp2 (two ranges).</p>
+<h2 id="why">Why<a class="headerlink" href="#why" title="Permanent link">&para;</a></h2>
+<p>PR #51 (<code>align_4cam</code>) removed a symptom (positions jump when a track changes camera subset) silently and by default, for a
+cause nobody had located. The study of that PR showed that the benefit grows with calibration error and vanishes for a perfect
+calibration. So the useful question is not "should the symptom be patched" but <strong>"is the calibration consistent, where does the
+inconsistency come from, and can it be removed at the source?"</strong> This plan turns the machinery into a measurement and a fix,
+and builds a truth-known test bed so that each assumption of the imaging model is tested separately.</p>
+<h2 id="what-was-built">What was built<a class="headerlink" href="#what-was-built" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>piece</th>
+<th>where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Independent ray-traced truth rig (Snell's law in 3D, glass tilt / wedge / thickness / index)</td>
+<td><code>src/openptv2/synthetic_rig.py</code></td>
+</tr>
+<tr>
+<td>Layer 1: consistency report with verdict</td>
+<td><code>openptv2.calibration_consistency.consistency_report</code>, CLI <code>check</code></td>
+</tr>
+<tr>
+<td>Layer 2: re-calibration from the run's tracers, validated on held-out frames, never overwrites</td>
+<td><code>self_calibrate_from_store</code>, <code>write_calibration</code>, CLI <code>selfcal</code></td>
+</tr>
+<tr>
+<td>Layer 3: explicit, guarded, marked partial-point alignment</td>
+<td><code>align_partial_points</code>, CLI <code>align</code></td>
+</tr>
+<tr>
+<td>Self-calibration: coarse-to-fine robust loss (big errors converge), optional free glass thickness / fluid index / glass distance</td>
+<td><code>openptv2.selfcal.joint_self_calibrate</code> (<code>anneal</code>, <code>free_multimedia</code>, <code>free_glass</code>)</td>
+</tr>
+<tr>
+<td>Lab scripts</td>
+<td><code>bench/calibration_lab/{ladder,selfcal_vs_align,real_selfcal,detection_bias}.py</code></td>
+</tr>
+<tr>
+<td>Tests</td>
+<td><code>tests/unit/test_synthetic_rig.py</code>, <code>tests/unit/test_calibration_consistency.py</code></td>
+</tr>
+<tr>
+<td>User page</td>
+<td><code>docs/calibration-consistency.md</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-ladder-rig-syn1-cameras-845-plate-dots-on-5-planes-3000-tracers-01-px-centroid-noise-scores-on-2000-held-out-points">The ladder (rig = syn1 cameras; 845 plate dots on 5 planes; 3000 tracers; 0.1 px centroid noise; scores on 2000 held-out points)<a class="headerlink" href="#the-ladder-rig-syn1-cameras-845-plate-dots-on-5-planes-3000-tracers-01-px-centroid-noise-scores-on-2000-held-out-points" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>step</th>
+<th>assumption tested</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S0</td>
+<td>the library's radial-shift multimedia equals an exact 3D ray trace for flat parallel layers</td>
+<td>max difference 0.0006 px (cavity rig). Verified; the tracer is a valid truth</td>
+</tr>
+<tr>
+<td>S1</td>
+<td>with the model right, plate calibration of one camera recovers it</td>
+<td>position error 3.3 µm, jumps 0.1-1.8 µm, LOCO 0.011 px (the floor)</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>a wrong glass thickness / fluid index / glass offset / tilt / wedge hurts a plate calibration</td>
+<td>no: each is absorbed by the other camera parameters inside the plate volume: d+1 mm 3.6 µm, n3+0.01 7.5 µm, glass +1 mm 3.6 µm, 0.3° tilt 4.2 µm, 0.3° wedge 5.3 µm; jumps ≤ 3 µm</td>
+</tr>
+<tr>
+<td>S2b</td>
+<td>same with a plate spanning only 25 % of the depth, mismatch ×4 (d+4 mm, n3+0.04, 1.2° wedge)</td>
+<td>still small: d 4.6 µm (glass nearly index-matched to the fluid in this rig), n3 26 µm, wedge 36 µm; jumps ≤ 3 µm. These errors are smooth: velocity impact negligible</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>self-calibration with free glass thickness, fluid index and glass distance closes the remainder</td>
+<td>no: n3 fitted 1.416 for a true 1.45 and error unchanged: not identifiable at the level where it matters (and the effect is below 40 µm)</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>cameras moved after the plate (drift 0.09 mm / 0.3 mrad ×1 and ×3)</td>
+<td>plate calibration leaves 1.14 mm / 3.4 mm position error, LOCO 1.8 / 5.5 px, jumps 130-600 / 400-1800 µm; <strong>tracer self-calibration: LOCO 0.008 px, jumps &lt; 2 µm</strong> (3 seeds); absolute position moves 0.2-0.8 mm (the gauge: tracers cannot define it)</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>the blob detector returns the true sub-pixel centre</td>
+<td>bias ≤ 0.002 px, pixel locking ≤ 0.027 px (faint small spots), centre convention (+0.5) confirmed</td>
+</tr>
+</tbody>
+</table>
+<p>Reading: inside the volume covered by a plate calibration the multimedia simplifications cost tens of µm at most and are not
+identifiable from tracers. The large, removable error is <strong>inconsistency between cameras after the plate was recorded</strong>.</p>
+<h2 id="measured-end-to-end">Measured end-to-end<a class="headerlink" href="#measured-end-to-end" title="Permanent link">&para;</a></h2>
+<p><strong>Scoring note.</strong> <code>vel_err_rel</code> is computed on each run's own matched points, so it is not comparable between variants (a
+perfect calibration shows ±15 % differences from set composition alone). The tables use the velocity error on the <strong>common set</strong>
+(the points the first run tracked) and the position error.</p>
+<h3 id="rendered-syn1-truth-400-frames-3-calibrations-x-3-trackers">Rendered syn1 (truth, 400 frames), 3 calibrations x 3 trackers<a class="headerlink" href="#rendered-syn1-truth-400-frames-3-calibrations-x-3-trackers" title="Permanent link">&para;</a></h3>
+<p>Velocity error on the common set (position error in brackets); "off" = the store as matched, "align" = <code>align_partial_points</code>,
+"selfcal" = <code>self_calibrate_from_store</code> then matched again:</p>
+<table>
+<thead>
+<tr>
+<th>calibration</th>
+<th>tracker</th>
+<th>off</th>
+<th>align</th>
+<th>selfcal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>real syn1 error (LOCO 0.305 px)</td>
+<td>two_phase</td>
+<td>(0.0785)</td>
+<td>0.120 (0.0693)</td>
+<td><strong>0.107</strong> (0.0711)</td>
+</tr>
+<tr>
+<td></td>
+<td>fast_3d</td>
+<td>0.311 (0.0815)</td>
+<td>0.277 (0.0724)</td>
+<td><strong>0.229</strong> (0.0746)</td>
+</tr>
+<tr>
+<td></td>
+<td>trackcorr (legacy)</td>
+<td>(0.0806)</td>
+<td>0.191 (0.0712)</td>
+<td><strong>0.161</strong> (0.0738)</td>
+</tr>
+<tr>
+<td>error doubled (LOCO 0.523 px)</td>
+<td>two_phase</td>
+<td>(0.0919)</td>
+<td>0.144 (0.0748)</td>
+<td><strong>0.104</strong> (0.0730)</td>
+</tr>
+<tr>
+<td></td>
+<td>fast_3d</td>
+<td>0.405 (0.0955)</td>
+<td>0.423 (0.0787)</td>
+<td><strong>0.234</strong> (0.0766)</td>
+</tr>
+<tr>
+<td></td>
+<td>trackcorr (legacy)</td>
+<td>(0.0768)</td>
+<td>0.244 (0.0768)</td>
+<td><strong>0.143</strong> (0.0758)</td>
+</tr>
+<tr>
+<td>perfect (LOCO 0.143 px)</td>
+<td>two_phase</td>
+<td>(0.0670)</td>
+<td>0.112 (0.0669)</td>
+<td>0.111 (0.0705)</td>
+</tr>
+<tr>
+<td></td>
+<td>fast_3d</td>
+<td>0.212 (0.0710)</td>
+<td>0.207 (0.0711)</td>
+<td>0.212 (0.0744)</td>
+</tr>
+<tr>
+<td></td>
+<td>trackcorr (legacy)</td>
+<td>(0.0702)</td>
+<td>0.180 (0.0703)</td>
+<td>0.171 (0.0736)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Perfect calibration: nothing to gain, nothing lost (self-calibration declines in the CLI; forced here to show it is harmless on
+  velocity). Position error is 4-5 % worse with self-calibration there because the volume shifts (see the gauge note).</li>
+<li>Self-calibration is at least as good as alignment in every case and the gap grows with the calibration error; alignment
+  made <code>fast_3d</code> 5 % worse with the doubled error, and changed nothing for <code>trackcorr</code> there.</li>
+<li>Position error: alignment and self-calibration are about equal.</li>
+<li>The legacy <code>trackcorr</code> rows are valid only since the <code>tnr</code> fix (below).</li>
+</ul>
+<h3 id="real-recordings-no-truth-two_phase-300-300-201-frames">Real recordings (no truth), two_phase, 300 / 300 / 201 frames<a class="headerlink" href="#real-recordings-no-truth-two_phase-300-300-201-frames" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>recording</th>
+<th>report (worst jump)</th>
+<th>tracks &gt;= 50 frames</th>
+<th>points in tracks &gt;= 20</th>
+<th>held-out jump after selfcal</th>
+<th>scale / shift of the volume</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>wp2 frames 1-300</td>
+<td>marginal, 0.14 px</td>
+<td>align +3.3 %, <strong>selfcal +9.8 %</strong></td>
+<td>+2.7 % / <strong>+7.8 %</strong></td>
+<td>22.9 -&gt; 0.3 um</td>
+<td>+0.31 % / 2.2 mm</td>
+</tr>
+<tr>
+<td>wp1 frames 1-300</td>
+<td>marginal, 0.11 px</td>
+<td>align 0 %, <strong>selfcal +9.5 %</strong></td>
+<td>0 % / <strong>+6.8 %</strong></td>
+<td>18.7 -&gt; 0.4 um</td>
+<td>+0.32 % / 2.3 mm</td>
+</tr>
+<tr>
+<td>wp2 frames 700-900</td>
+<td>marginal, 0.15 px</td>
+<td>align +2.7 %, <strong>selfcal +13.7 %</strong></td>
+<td>+1.7 % / <strong>+8.3 %</strong></td>
+<td>24.6 -&gt; 1.0 um</td>
+<td>+0.25 % / 2.2 mm</td>
+</tr>
+</tbody>
+</table>
+<p>After self-calibration the report reads <code>consistent</code> on all three (0.02-0.03 px). Along tracks the jump at camera changes was
+already small on wp1 (2-4 um), alignment removes it where it exists (wp2: 10-18 -&gt; 2-5 um), and self-calibration leaves 1-10 um;
+the gain in long tracks does not come from that jump alone.</p>
+<h3 id="full-length-wp2-all-1072-frames-two_phase">Full length (wp2, all 1072 frames, two_phase)<a class="headerlink" href="#full-length-wp2-all-1072-frames-two_phase" title="Permanent link">&para;</a></h3>
+<p>Same behaviour as the 300-frame ranges: report <code>marginal</code> (0.13 px), self-calibration accepted (held-out jump 23.5 -&gt; 1.3 µm,
+<code>consistent</code> afterwards), tracks of 50 frames or longer 5723 -&gt; 5884 with align (+2.8 %) and <strong>6283 with selfcal (+9.8 %)</strong>, points in
+tracks of 20 frames or longer +2.2 % / <strong>+8.7 %</strong>. The volume change did not shrink with more data: stretches 0.9958, 1.0042,
+1.0110 (mean +0.37 %), shift 2.5 mm.</p>
+<h3 id="cavity-geometry-test_datatest_cavity-cameras-on-opposite-sides-real-images-5-frames-430-quads-per-frame">Cavity geometry (<code>test_data/test_cavity</code>, cameras on opposite sides, real images, 5 frames, ~430 quads per frame)<a class="headerlink" href="#cavity-geometry-test_datatest_cavity-cameras-on-opposite-sides-real-images-5-frames-430-quads-per-frame" title="Permanent link">&para;</a></h3>
+<p>Run with <code>bench/calibration_lab/cavity_selfcal.py</code> (detect and match all five frames with the production loop in a scratch copy).
+Result: <strong>self-calibration is possible but gives nothing measurable here</strong>, and testing it exposed three defects, now fixed:</p>
+<ul>
+<li>The first run said INCONSISTENT with 198 µm jumps and the fit made things worse. The stored quads contain many wrong matches
+  (reprojection residual median 0.78 px, 99th percentile 17 px, maximum 43 px). Wrong matches now are excluded from every number
+  (<code>inlier_mask</code>: rms residual above max(1.5 px, 3 x median)); 12 % of the points were left out, the real systematic jump is about
+  30 µm, and wp1 / wp2 / syn1 reports are unchanged (0 % left out). Test: <code>test_wrong_matches_do_not_spoil_the_report</code>.</li>
+<li>A verdict from one frame and 434 points was printed with confidence. The report now has an <code>inconclusive</code> verdict when the
+  offsets are within 3 standard errors of the sample noise, shows the standard error, and prints "n/a" instead of "0 %" for the
+  reproducibility when there is no held-out half.</li>
+<li>On the perfect syn1 control the self-calibration was ACCEPTED although the cameras were already consistent. It now declines
+  (test <code>test_self_calibration_declines_when_there_is_nothing_to_gain</code>).</li>
+</ul>
+<p>With those fixed: report <code>marginal</code> (0.28 px, jumps 1-27 µm, smooth field <strong>not reproducible</strong>, 0-4 %: there is no consistent camera
+error to fit); self-calibration accepted (held-out jump 30 -&gt; 12 µm) with stretches 0.9952 / 0.9989 / 0.9999 (-0.20 % mean, 0.26 mm
+shift); free focal length, glass thickness, fluid index and glass distance change nothing (fitted d 5.98 mm for 6.0, n3 1.335 for 1.33;
+looser priors: scale -0.5 %). Tracking over the five frames, good trajectories (&gt;= 4 frames, quadratic-fit rms &lt; 0.2 mm):</p>
+<table>
+<thead>
+<tr>
+<th>tracker</th>
+<th>shipped cameras</th>
+<th>self-calibrated</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>two_phase</td>
+<td>189</td>
+<td>191</td>
+<td>+1 %</td>
+</tr>
+<tr>
+<td>trackcorr</td>
+<td>408</td>
+<td>416</td>
+<td>+2 %</td>
+</tr>
+<tr>
+<td>fast_3d</td>
+<td>576</td>
+<td>545</td>
+<td>-5 %</td>
+</tr>
+</tbody>
+</table>
+<p>That is noise. What limits <code>test_cavity</code> is the per-blob noise (residuals 0.6-0.75 px against 0.2 px on wp1 / wp2) and the ghosts in
+the matches, not camera consistency; its calibration was already refined once by the particle bundle adjustment
+(<code>scripts/particle_bundle_adjust.py</code>). Recommendation: do not self-calibrate <code>test_cavity</code>; more frames would let the report separate
+noise from structure (it needs a held-out half of frames to judge a field).</p>
+<h3 id="lv_multi-real-one-side-20-frames-each-self-calibration-made-tracking-worse-and-why">lv_multi (real, one side, 20 frames each): self-calibration made tracking worse, and why<a class="headerlink" href="#lv_multi-real-one-side-20-frames-each-self-calibration-made-tracking-worse-and-why" title="Permanent link">&para;</a></h3>
+<p>Run with <code>bench/calibration_lab/redetect_selfcal.py</code> (the stores hold only trajectories, so all 20 frames are detected from the
+multiplexed images and matched with the production loop). With the first version of the fit both sub-runs looked fine by the jump
+criterion (held-out 24.2 -&gt; 0.5 µm and 18.8 -&gt; 1.8 µm) but good trajectories (&gt;= 4 frames, quadratic-fit rms &lt; 0.2 mm) fell:
+two_phase 1430 -&gt; 1292 (-9.7 %) and 1096 -&gt; 1015 (-7.4 %), trackcorr and fast_3d -1.5 ... -3 %, and wp5 lost 10 % of its 4-camera
+matches. A calibration-target anchor fixed the volume change but not the loss, so it was not the gauge. <strong>Cause found:</strong> the priors on
+the lens terms.</p>
+<ol>
+<li><strong>Which parameters.</strong> Refitting with one group of parameters at a time and matching all 20 frames again (<code>lv_why.py</code>), 4-camera
+   matches against the old cameras: exterior only 103.7 %, + principal point 104.8 %, <strong>+ decentering (p1, p2) 108.5 %</strong>, <strong>+ radial
+   (k1, k2) 77.3 %</strong>, + principal point + radial 79.2 %, everything 90.9 % (wp2: 98.6 % with k1, k2, 112 % with p1, p2).</li>
+<li><strong>Where the matches are lost</strong> (<code>lv_lost.py</code>, lv5, everything free): 65 % of the matches lie within 3 mm of the sensor centre and only
+   2.6 % beyond 5 mm. Of the old matches 8.6 % are lost in the 0-3 mm ring, 35 % in 3-5 mm and <strong>97 % beyond 5 mm</strong>; 85 % of the newly
+   gained ones are in the centre. Exterior only: 4.5 % lost, 8.2 % gained. The fit improves the centre where it has data and wrecks
+   the periphery where it has none.</li>
+<li><strong>Why.</strong> The distortion acts on the image-plane radius in mm: k1 ~ r^3, k2 ~ r^5, p ~ r^2. On this sensor (corner radius 9.8 mm) a
+   change of k1 by 1e-4 moves the corner by about 8 px and a change of k2 by 1e-5 by about 75 px. The priors on k and p were fixed numbers
+   (0.02 and 0.002), thousands of pixels at the edge: no prior at all. The data fix k1, k2 near the centre and the rest is extrapolation.</li>
+<li><strong>Fix.</strong> <code>joint_self_calibrate(edge_px=...)</code> sets every lens term's prior as the image shift (px, 1 sigma) it may cause at the sensor
+   corner (sigma = edge_px * pixel / r_corner^n); <code>self_calibrate_from_store</code> uses 1 px. Matches against the old cameras, loose priors
+   -&gt; <code>edge_px</code> 1: lv5 90.9 % -&gt; <strong>108.5 %</strong>, lv4 99.7 % -&gt; <strong>108.4 %</strong>, wp2 105.9 % -&gt; 111.7 %, wp1 104.9 % -&gt; 109.8 %; flat from 0.25 to 2 px,
+   worse above 5 px (lv4: 105.5 % at 5, 100.3 % at 20).</li>
+<li><strong>End to end</strong> (good trajectories before -&gt; after, two_phase / trackcorr / fast_3d): lv5 1430 -&gt; 1450 (+1.4 %) / 2033 -&gt; 2142 (+5.4 %) /
+   1495 -&gt; 1568 (+4.9 %), 4-camera matches per frame 642 -&gt; 687; lv4 1096 -&gt; 1090 (-0.5 %) / 1646 -&gt; 1730 (+5.1 %) / 1250 -&gt; 1297 (+3.8 %),
+   515 -&gt; 548. The volume change is the same as before (-0.94 % / -1.09 %, 5-6 mm): a separate, still open, issue. On the real
+   recordings the benefit grew: wp2 300 frames tracks &gt;= 50 frames +11.7 % (was +9.8 %), points in tracks &gt;= 20 frames +10.5 % (was +7.8 %);
+   wp1 +15.2 % (was +9.5 %) and +10.9 % (was +6.8 %).</li>
+</ol>
+<p>The matching-yield acceptance test stays (it is how this was noticed), but it no longer has to decline anything on these data.</p>
+<h3 id="synthetic-cavity-with-truth-cameras-on-both-sides-docsself-calibration-cavity-syntheticmd">Synthetic cavity with truth (cameras on both sides): <code>docs/self-calibration-cavity-synthetic.md</code><a class="headerlink" href="#synthetic-cavity-with-truth-cameras-on-both-sides-docsself-calibration-cavity-syntheticmd" title="Permanent link">&para;</a></h3>
+<p><code>cavity_rig()</code> (independent ray tracer, cameras at -z and +z, glass vectors of both signs) and <code>bench/calibration_lab/cavity_synth_lab.py</code>:
+13 experiments, 5 invariance moves, noise and frame-count variations, and a reproduction of the lv_multi mechanism. Findings: the fit
+works only if the old calibration still matches (image error below about 1.5-3 px); consistency is always restored but the error against
+the truth depends on the reference camera (a held, drifted camera made it worse, 1.03 -&gt; 1.60 px); glass distance / thickness are
+not recoverable; the volume keeps its shape to 0.35 %; the half-turn invariance holds to three digits; the matcher cannot handle a rig
+turned 90 degrees; with fit data concentrated at the axis the old loose lens priors destroy the outermost sensor ring (recall 51 % against
+100 % for the true cameras) and the physical priors do not. <code>hold_cam="auto"</code> (the camera with the smallest residual) is the default
+reference.</p>
+<h3 id="full-length-wp1-all-1072-frames-two_phase">Full length (wp1, all 1072 frames, two_phase)<a class="headerlink" href="#full-length-wp1-all-1072-frames-two_phase" title="Permanent link">&para;</a></h3>
+<p>Report marginal (0.11 px), selfcal held-out jump 19.4 -&gt; 1.1 µm, stretches 0.9950 / 1.0036 / 1.0101 (+0.29 %, 2.1 mm). Tracks of 50 frames
+or longer 5961 -&gt; 6138 with align (+3.0 %) and 6513 with selfcal (+9.3 %); points in tracks of 20 frames or longer +2.1 % / +8.2 %.</p>
+<h3 id="limitation-the-gauge">Limitation: the gauge<a class="headerlink" href="#limitation-the-gauge" title="Permanent link">&para;</a></h3>
+<p>Tracers define consistency, not scale, shape or frame. On every real recording the fit moves the volume by +0.25...+0.37 % in
+mean scale (principal stretches up to 0.995 / 1.011: not uniform) and about 2.2 mm in position (cavity: -0.20 %, 0.26 mm), and tighter priors on the camera positions (sigma 0.3, 1.0, 3.0 times the default) leave it at
++0.27...+0.31 %: it is driven by the data, either a real scale error of the old calibration or the scale degeneracy of tracers
+(the glass and fluid index couple to it). Velocity is shift-invariant but a 0.3 % scale change is a 0.3 % velocity bias. The
+result prints the scale and warns; check it against a known length (dumbbell, plate) or pass an anchor
+(<code>KnownBody</code> / <code>Dumbbell</code> in <code>openptv2.selfcal</code>) before using absolute velocities from new cameras. Written up in
+<code>docs/self-calibration-scale-bias.md</code>; from a perfect start on rendered syn1 the fit introduced +0.04...0.10 %. Soft gauge rows over all
+points were tried and dropped (they make the sparse Jacobian dense, a 10x slowdown).</p>
+<h2 id="a-bug-found-on-the-way-re-matching-left-stale-target-pointers">A bug found on the way: re-matching left stale target pointers<a class="headerlink" href="#a-bug-found-on-the-way-re-matching-left-stale-target-pointers" title="Permanent link">&para;</a></h2>
+<p><code>match_correspondences_batch_parallel(write_to_store=True)</code> wrote the new correspondences but not the per-target <code>tnr</code> pointers
+(target -&gt; 3D point) that the sequence loop writes. The legacy <code>trackcorr</code> follows those pointers: after any re-matching (new
+calibration, new settings) it found no links (448 504 tracks for 449 168 points). Only 52 of 13 090 stored targets still pointed at
+their point. <code>sync_target_tnr</code> now updates them with the correspondences (tests in <code>tests/unit/test_target_tnr_sync.py</code>);
+re-matched self-calibrated syn1 gives 7 041 tracks of mean length 10.1 on 60 frames instead of 70 910 of length 1. This
+also explains the unexplained <code>trackcorr</code> yield of 0.0001 in the earlier #51 controls.</p>
+<h2 id="decisions-this-supports">Decisions this supports<a class="headerlink" href="#decisions-this-supports" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Layer 1 is cheap and informative everywhere: ship it, run it in <code>self_check</code> / GUI later.</li>
+<li>Layer 2 can help (+9-14 % long tracks on wp1 / wp2) but is <strong>not</strong> a universal fix (lv_multi: -7 to -10 %). The report says
+   whether there is a camera inconsistency, not whether removing it improves tracking: match again and compare your own tracking.
+   The acceptance requires a held-out jump reduction and no loss of matching yield.</li>
+<li>Layer 3 only as an explicit stopgap. <code>align_4cam</code> as a silent default in the loader is not needed.</li>
+<li>The multimedia parameters are not where quality is lost for this rig class; revisit only with a rig whose plate does not
+   cover the volume or whose fluid index is uncertain by more than 0.04.</li>
+</ol>
+<h2 id="open">Open<a class="headerlink" href="#open" title="Permanent link">&para;</a></h2>
+<ul>
+<li>A dumbbell or plate anchor measured on a real recording (does it remove the deformation?); the full wp1 length.</li>
+<li>Rigs with cameras on opposite sides: tested on <code>test_cavity</code> (5 frames, above) but not with a truth-known rig; the ladder is same-side only.</li>
+<li>Whether the volume deformation (not the tracking loss) is a calibration correction or a bias: needs an independent length on a real recording.</li>
+<li>A GUI button for the check and for <code>selfcal</code>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>
