@@ -15,7 +15,7 @@ def _():
         Every step from folders of coded-plate images to the `.ori` / `.addpar`
         files, run live, with the reasoning beside the code. Companion to
         `docs/plate-calibration-howto.md` (the procedure) and
-        `docs/illmenau-4cam-calibration.md` (what happened on this dataset).
+        `docs/plate-calibration-worked-example.md` (what happened on this dataset).
 
         Switch between the two Illmenau camera groups with the selector below —
         they are **separate calibrations of separate worlds**, each anchored to
