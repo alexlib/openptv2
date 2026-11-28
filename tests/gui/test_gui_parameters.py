@@ -355,27 +355,27 @@ def test_calib_params_sortgrid_radius_keeps_other_sortgrid_keys_and_ignores_canc
     assert exp.pm.parameters["sortgrid"] == {"radius": 4, "note": "keep me"}
 
 
-def test_tracking_params_align_4cam_defaults_true_and_roundtrips_for_all_trackers(temp_experiment):
-    """align_4cam defaults to True, works for every tracker, and round-trips through YAML."""
+def test_tracking_params_align_4cam_is_opt_in_and_roundtrips_for_all_trackers(temp_experiment):
+    """align_4cam is off by default, works for every tracker, and round-trips through YAML."""
     exp = temp_experiment
     tp = Tracking_Params(exp)
-    assert tp.align_4cam is True
+    assert tp.align_4cam is False
 
     tp.tracker = "fast_3d"
-    tp.align_4cam = False
+    tp.align_4cam = True
     TrackHandler().closed(DummyInfo(tp), is_ok=True)
     assert exp.pm.parameters["track"]["tracker"] == "fast_3d"
-    assert exp.pm.parameters["track"]["align_4cam"] is False
-    assert _yaml_of(exp)["track"]["align_4cam"] is False
-    assert Tracking_Params(exp).align_4cam is False
+    assert exp.pm.parameters["track"]["align_4cam"] is True
+    assert _yaml_of(exp)["track"]["align_4cam"] is True
+    assert Tracking_Params(exp).align_4cam is True
 
     tp2 = Tracking_Params(exp)
     tp2.tracker = "trackcorr"
-    tp2.align_4cam = True
+    tp2.align_4cam = False
     TrackHandler().closed(DummyInfo(tp2), is_ok=True)
     assert exp.pm.parameters["track"]["tracker"] == "trackcorr"
-    assert exp.pm.parameters["track"]["align_4cam"] is True
-    assert _yaml_of(exp)["track"]["align_4cam"] is True
+    assert exp.pm.parameters["track"]["align_4cam"] is False
+    assert _yaml_of(exp)["track"]["align_4cam"] is False
 
 
 def test_main_params_shared_pass_and_light_check_roundtrip_and_preserve_numeric_thresholds(temp_experiment):

@@ -84,7 +84,7 @@ class TrackingSetup:
     tracker: str = DEFAULT_TRACKER
     direction: str = DEFAULT_DIRECTION
     postprocess: bool = True
-    align_4cam: bool = True           # all trackers: align 3-cam subsets onto the 4-cam gauge (zero scale drift)
+    align_4cam: bool = False          # all trackers: align 3-cam subsets onto the 4-cam gauge (zero scale drift); opt-in
     holistic_rounds: int = 0
     shared_correction: bool = False   # two_phase only: re-estimate the points that touch a shared blob, link again
     epi_weight: float = 0.0           # fast_3d only: soft epipolar penalty, 0 = pure 3D
@@ -204,7 +204,7 @@ def resolve_tracking_setup(
     direction = _old_direction_key(track) or legacy_direction or DEFAULT_DIRECTION
 
     postprocess = bool(track.get("postprocess", True))
-    align_4cam = bool(track.get("align_4cam", True))
+    align_4cam = bool(track.get("align_4cam", False))
 
     rounds_raw = track.get("holistic_rounds", legacy_rounds)
     try:
@@ -306,7 +306,7 @@ def add_tracker_arguments(parser: Any) -> None:
         "--align-4cam", dest="align_4cam", action=argparse.BooleanOptionalAction,
         default=None,
         help="Align partial-camera (3-cam) points onto the 4-camera gauge before tracking (all trackers). "
-             "Default: track.align_4cam, which defaults to true.",
+             "Default: track.align_4cam, which defaults to false.",
     )
 
 

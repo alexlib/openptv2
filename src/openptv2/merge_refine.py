@@ -166,6 +166,7 @@ def align_store_correspondences_4cam(
     *,
     min_align_points: int = 100,
     var_c: float = 0.01,
+    overlay: bool = False,
 ) -> int:
     """Align partial-camera (e.g. 3-camera) correspondences in ``store`` onto the 4-camera gauge.
 
@@ -174,11 +175,19 @@ def align_store_correspondences_4cam(
     with aligned 2D observations. Clean 4-camera points are untouched (zero scale drift).
     Works for every tracker (``two_phase``, ``trackcorr``, ``fast_3d``, custom plugins).
 
+    ``overlay=False`` (default) rewrites the correspondences in place: the explicit, recorded repair of
+    ``calibration_consistency.align_partial_points``. ``overlay=True`` (the ``track.align_4cam`` option) leaves
+    the measured positions alone: the aligned ones go to a separate array (``RunStore.write_aligned_positions``)
+    that ``read_correspondences`` returns in their place, the fit always starts from the measured ones, so running
+    this twice gives the same result, and ``RunStore.clear_aligned_positions()`` undoes it.
+
     Returns the number of partial-camera points updated.
     """
     from openptv2.orientation import point_positions
 
     n_cams = len(cals)
+    if overlay:
+        store.clear_aligned_positions()  # start from the measured positions, whatever an earlier run left
     if n_cams < 4 or not frames:
         return 0
 
@@ -187,7 +196,7 @@ def align_store_correspondences_4cam(
     ctr4_list = []
     for f in frames:
         try:
-            pos, cam_ids = store.read_correspondences(f)
+            pos, cam_ids = store.read_correspondences(f, raw=True)
         except Exception:
             continue
         pos = np.asarray(pos, dtype=float)
@@ -255,7 +264,10 @@ def align_store_correspondences_4cam(
         if ok_new.any():
             pos_out = pos.copy()
             pos_out[p_idx[ok_new]] = x_new[ok_new]
-            store.write_correspondences(f, pos_out, cam_ids)
+            if overlay:
+                store.write_aligned_positions(f, pos_out)
+            else:
+                store.write_correspondences(f, pos_out, cam_ids)
             n_updated += int(ok_new.sum())
     return n_updated
 
@@ -277,7 +289,7 @@ def refine_merged(
     trust: bool = True,
     trust_support: float = 3.0,
     gate: float = 4.0,
-    prior: bool = False,
+    prior: bool = True,
     prior_scale: float = 1.0,
     var_unknown: float = 1.0,
     hidden_mass: float | None = 1.4,
@@ -287,7 +299,7 @@ def refine_merged(
     x_init: np.ndarray | None = None,
     shared_only: bool = False,
     pixel_fit: Any = None,
-    align_4cam: bool = True,
+    align_4cam: bool = False,
     min_align_points: int = 100,
 ) -> RefineResult:
     from openptv2.orientation import point_positions

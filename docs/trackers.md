@@ -17,7 +17,6 @@ particles) `openptv recommend <run.zarr>` measures your points and says which ex
 track:
   tracker: two_phase      # two_phase | trackcorr | fast_3d          default: two_phase
   direction: both         # forward | both                           default: both
-  align_4cam: true        # all trackers: fix 3-cam calibration jumps  default: true
   postprocess: true       # trackcorr, fast_3d: reciprocity + gaps   default: true
   holistic_rounds: 0      # two_phase add-on: merged-blob loop       default: 0 (off)
   shared_correction: false  # two_phase add-on: fix points in shared blobs  default: false
@@ -219,13 +218,12 @@ remove (down-weighting such points in the smoothing gained 2 % even with perfect
 `shared_correction: true` the linker does this:
 
 1. link once (as usual);
-2. align the 4 camera views onto a single zero-drift 3D gauge (`align_4cam=True`) so switching between 4 cameras, 3 cameras, or down-weighted merged views does not introduce a calibration jump (see [Camera-Subset Alignment](camera-subset-alignment.md));
-3. for every point that touches a shared blob (or whose blob is too bright for its own particle), take the track's
+2. for every point that touches a shared blob (or whose blob is too bright for its own particle), take the track's
    predicted position of the *other* members of the blob and compute this point's own share of the blob centre,
    `(centre - sum of the others' weights x predicted positions) / its own weight`; weights are the brightness
-   signatures of the tracks. Re-triangulate purely from those aligned, corrected camera views (`prior=False`, no quadratic
-   smoothing bias). Clean 4-camera points are untouched; clean 3-camera points are aligned onto the 4-camera gauge;
-4. link again with the corrected positions. The second link is needed: it is what lets the linker connect the
+   signatures of the tracks. Triangulate from those corrected views, against the track's path as a prior. Points that
+   touch no shared blob are not touched;
+3. link again with the corrected positions. The second link is needed: it is what lets the linker connect the
    corrected points (link recall 0.974 to 0.984 on the benchmark); keeping the old links with new positions was
    measurably worse.
 
@@ -235,17 +233,15 @@ track:
 ```
 
 If no blob is shared by two points the step is skipped. It works best with `ptv.shared_pass` (the new points of the
-pass are then corrected too and are no longer penalised by the ghost filter's brightness check). Cost: about 2.5 to 3.5
-times the `two_phase` run time (two link passes plus the aligned refinement).
+pass are then corrected too and are as smooth as the others). Cost: about 4 times the `two_phase` run time (two link
+passes plus the correction).
 
 Measured (benchmark with truth; velocity error, long-track completeness, fragments per long track, yield):
 
 | Case | `two_phase` | `shared_correction` | + `shared_pass` |
 |---|---|---|---|
-| rendered with cal offset (`syn1`, 40 fr) | 0.1670 / — / — / 0.706 | **0.0930** / — / — / 0.710 | **0.0921** / — / — / 0.730 |
-| rendered (`L2`, 200 fr) | 0.1400 / 0.544 / 2.03 / 0.691 | **0.0913** / 0.569 / 1.86 / 0.695 | **0.0891** / 0.611 / 1.71 / 0.716 |
-| real-like merge rate (`m0.75`) | 0.1046 / 0.623 / 1.68 / 0.754 | **0.0879** / 0.641 / 1.58 / 0.756 | **0.0824** / 0.692 / 1.36 / 0.775 |
-| default merge rate | 0.1825 / 0.503 / 2.29 / 0.680 | 0.1283 / 0.528 / 2.07 / 0.686 | **0.1212** / 0.568 / 1.92 / 0.712 |
+| real-like merge rate (m0.75) | 0.1046 / 0.623 / 1.68 / 0.754 | 0.0921 / 0.639 / 1.57 / 0.755 | 0.0876 / 0.685 / 1.38 / 0.773 |
+| default merge rate | 0.1825 / 0.503 / 2.29 / 0.680 | 0.1283 / 0.528 / 2.07 / 0.686 | 0.1281 / 0.563 / 1.91 / 0.708 |
 | 4x density | 0.433 / 0.182 / 0.77 / 0.227 | 0.361 / 0.189 / 0.77 / 0.232 | 0.365 / 0.196 / 0.78 / 0.240 |
 | no merged blobs | no change (skipped) | | |
 

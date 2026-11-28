@@ -56,10 +56,10 @@ Tracking in OpenPTV2 links 3D particle positions across consecutive frames to re
 
 ```yaml
 track:
-  tracker: two_phase      # two_phase | trackcorr | fast_3d (default two_phase)
-  direction: both         # forward | both (default both)
-  shared_correction: false  # two_phase add-on: 4-cam alignment + merged-blob refinement
-  holistic_rounds: 0      # two_phase add-on: full merged-blob loop with births, 0 = off
+  tracker: two_phase  # two_phase | trackcorr | fast_3d (default two_phase)
+  direction: both     # forward | both (default both)
+  holistic_rounds: 0  # two_phase add-on: merged-blob loop, 0 = off
+  align_4cam: false   # all trackers, opt-in: put 3-camera points on the 4-camera gauge (camera-subset-alignment.md)
   dvxmin: -10.0
   dvxmax: 10.0
   dvymin: -10.0
@@ -86,6 +86,7 @@ plugins:
 | `direction` | `forward`, `both` (forward + backward) | `both` |
 | `postprocess` | reciprocity + gap bridging, for `trackcorr` and `fast_3d` | `true` |
 | `holistic_rounds` | merged-blob loop, `two_phase` only; 0 = off | `0` |
+| `align_4cam` | align 3-camera points onto the 4-camera gauge before linking, all trackers; see [Camera-subset alignment](camera-subset-alignment.md) | `false` |
 
 The old presets (`full_multipass`, `standard_forward`, `priority_segment_3d`, ...) are translated and logged; see
 [Particle trackers](trackers.md) for the table of old names and for how to choose.
@@ -102,7 +103,7 @@ The old presets (`full_multipass`, `standard_forward`, `priority_segment_3d`, ..
 | `postprocess` | bool | true | Pass 3 reciprocity |
 | `leaf_weight` | float | 1.0 | `two_phase` 2D ranking weight (0=3D-only) |
 | `min_trajectory_length` | int | 5 | `seal` discards shorter traj (`src/openptv2/storage/seal.py:73`) |
-| `selected_tracking` | str | `default` | `default` (reads `track.tracker`, defaulting to `two_phase`), `two_phase`, `trackcorr`, `fast_3d`, or a custom plugin name |
+| `selected_tracking` | str | `default` | `default` (trackcorr), `two_phase` (3D→2D Hungarian), `hybrid_deltat_3d`, … |
 
 ---
 

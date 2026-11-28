@@ -283,3 +283,101 @@ def test_align_store_correspondences_4cam_aligns_3cam_points_for_all_trackers(sc
     jump_after = np.linalg.norm(pos_after[120:] - pos_all4[120:], axis=1).mean()
     assert jump_before > 1e-3
     assert jump_after < 0.1 * jump_before
+
+
+def _store_with_partial_points(scene, tmp_path):
+    from openptv2.loco import pixels_to_flat
+    from openptv2.orientation import point_positions
+    from openptv2.storage import RunStore
+
+    cpar, vpar, cals, *_ = scene
+    rng = np.random.default_rng(23)
+    n = 140
+    pts = rng.uniform(-6.0, 6.0, (n, 3))
+    bias_px = np.array([[0.45, -0.30], [-0.35, 0.40], [0.25, 0.35], [-0.30, -0.40]])
+    centre = np.stack([project_pixels(pts, c, cpar) for c in cals], axis=1) + bias_px[None, :, :]
+    flat = np.stack([pixels_to_flat(centre[:, c], cals[c], cpar) for c in range(4)], axis=1)
+    ids = np.tile(np.arange(n, dtype=np.int64)[:, None], (1, 4))
+    ids[120:, 0] = -1
+    flat[120:, 0] = -1e10
+    pos_obs = np.asarray(point_positions(flat, cpar, cals, vpar, method="lsq")[0], float)
+    st = RunStore(tmp_path / "run.zarr", mode="w")
+    for c in range(4):
+        rows = np.zeros((n, 8))
+        rows[:, 0] = np.arange(n)
+        rows[:, 1:3] = centre[:, c]
+        rows[:, 6] = 200.0
+        st.write_targets(c, 1, rows)
+    st.write_correspondences(1, pos_obs, ids)
+    return st, pos_obs, ids
+
+
+def test_alignment_never_overwrites_the_measured_positions(scene, tmp_path):
+    """The aligned positions live in a separate array: the measured ones stay readable, a second run gives the
+    same answer, and clearing the aligned array restores what read_correspondences returns."""
+    from openptv2.merge_refine import align_store_correspondences_4cam
+
+    cpar, vpar, cals, *_ = scene
+    st, pos_obs, ids = _store_with_partial_points(scene, tmp_path)
+
+    assert align_store_correspondences_4cam(st, [1], cals, cpar, vpar, min_align_points=50, overlay=True) == 20
+    aligned, _ = st.read_correspondences(1)
+    raw, _ = st.read_correspondences(1, raw=True)
+    np.testing.assert_array_equal(raw, pos_obs)                      # measured positions untouched
+    assert not np.allclose(aligned[120:], pos_obs[120:])             # the partial points moved
+    np.testing.assert_array_equal(aligned[:120], pos_obs[:120])      # the 4-camera points did not
+
+    assert align_store_correspondences_4cam(st, [1], cals, cpar, vpar, min_align_points=50, overlay=True) == 20
+    again, _ = st.read_correspondences(1)
+    np.testing.assert_allclose(again, aligned, atol=1e-12)           # idempotent: the fit starts from the raw
+
+    st.clear_aligned_positions()
+    assert not st.has_aligned_positions()
+    np.testing.assert_array_equal(st.read_correspondences(1)[0], pos_obs)
+
+
+def test_rewriting_the_correspondences_drops_a_stale_aligned_copy(scene, tmp_path):
+    from openptv2.merge_refine import align_store_correspondences_4cam
+
+    cpar, vpar, cals, *_ = scene
+    st, pos_obs, ids = _store_with_partial_points(scene, tmp_path)
+    align_store_correspondences_4cam(st, [1], cals, cpar, vpar, min_align_points=50, overlay=True)
+    keep = np.arange(len(pos_obs)) % 2 == 0                          # e.g. a ghost filter removes rows
+    st.write_correspondences(1, pos_obs[keep], ids[keep])
+    np.testing.assert_array_equal(st.read_correspondences(1)[0], pos_obs[keep])
+
+
+def test_the_tracking_hook_aligns_only_when_asked_and_cleans_up_when_not(scene, tmp_path):
+    from types import SimpleNamespace
+
+    from openptv2.plugins.loader import _maybe_align_store_4cam
+
+    cpar, vpar, cals, *_ = scene
+    st, pos_obs, _ids = _store_with_partial_points(scene, tmp_path)
+    exp = SimpleNamespace(_store=st, cals=cals, cpar=cpar, vpar=vpar,
+                          spar=SimpleNamespace(get_first=lambda: 1, get_last=lambda: 1))
+    _maybe_align_store_4cam(exp, SimpleNamespace(align_4cam=False))
+    assert not st.has_aligned_positions()                            # opt-in: nothing happens by default
+
+    _maybe_align_store_4cam(exp, SimpleNamespace(align_4cam=True))
+    assert st.has_aligned_positions()
+    assert not np.allclose(st.read_correspondences(1)[0][120:], pos_obs[120:])
+
+    _maybe_align_store_4cam(exp, SimpleNamespace(align_4cam=False))  # the next run has it off: measured again
+    assert not st.has_aligned_positions()
+    np.testing.assert_array_equal(st.read_correspondences(1)[0], pos_obs)
+
+
+def test_handing_back_the_rows_a_tracker_read_keeps_the_measured_positions(scene, tmp_path):
+    """trackcorr and fast_3d write every frame back. Rows read through the aligned view and written unchanged
+    must not turn the aligned positions into the measured ones."""
+    from openptv2.merge_refine import align_store_correspondences_4cam
+
+    cpar, vpar, cals, *_ = scene
+    st, pos_obs, ids = _store_with_partial_points(scene, tmp_path)
+    align_store_correspondences_4cam(st, [1], cals, cpar, vpar, min_align_points=50, overlay=True)
+    pos, cam_ids = st.read_correspondences(1)
+    st.write_correspondences(1, pos, cam_ids)
+    np.testing.assert_array_equal(st.read_correspondences(1, raw=True)[0], pos_obs)
+    assert st.has_aligned_positions()
+    np.testing.assert_array_equal(st.read_correspondences(1)[0], pos)

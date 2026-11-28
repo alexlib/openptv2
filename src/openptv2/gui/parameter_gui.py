@@ -464,7 +464,7 @@ class Tracking_Params(HasTraits):
     epi_weight = Float(0.0)
     accel_gate = Bool(False)
     postprocess = Bool(True)
-    align_4cam = Bool(True)
+    align_4cam = Bool(False)
     dvxmin = Float()
     dvxmax = Float()
     dvymin = Float()

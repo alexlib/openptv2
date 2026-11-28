@@ -78,12 +78,12 @@ def frame_rcm(store: Any, frame: int, cals: list, cpar: Any) -> np.ndarray:
 
 
 def log_brightness_from_arrays(
-    cam_ids: np.ndarray, rows: list, mask_shared: bool = True
+    cam_ids: np.ndarray, rows: list, mask_shared: bool = False
 ) -> np.ndarray:
     """(N, C) log blob brightness (``sumg``) in each camera that sees the point;
     NaN where the camera does not see it.
 
-    When ``mask_shared`` is True (default), views that share a blob with another
+    When ``mask_shared`` is True (opt-in), views that share a blob with another
     point in the same frame are masked to NaN whenever the point still has at
     least two unshared views. This prevents ``brightness_spread`` from penalising
     merged-blob points recovered by ``shared_blob_pass``.
