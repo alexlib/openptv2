@@ -59,6 +59,7 @@ track:
   tracker: two_phase  # two_phase | trackcorr | fast_3d (default two_phase)
   direction: both     # forward | both (default both)
   holistic_rounds: 0  # two_phase add-on: merged-blob loop, 0 = off
+  align_4cam: false   # all trackers, opt-in: put 3-camera points on the 4-camera gauge (camera-subset-alignment.md)
   dvxmin: -10.0
   dvxmax: 10.0
   dvymin: -10.0
@@ -85,6 +86,7 @@ plugins:
 | `direction` | `forward`, `both` (forward + backward) | `both` |
 | `postprocess` | reciprocity + gap bridging, for `trackcorr` and `fast_3d` | `true` |
 | `holistic_rounds` | merged-blob loop, `two_phase` only; 0 = off | `0` |
+| `align_4cam` | align 3-camera points onto the 4-camera gauge before linking, all trackers; see [Camera-subset alignment](camera-subset-alignment.md) | `false` |
 
 The old presets (`full_multipass`, `standard_forward`, `priority_segment_3d`, ...) are translated and logged; see
 [Particle trackers](trackers.md) for the table of old names and for how to choose.

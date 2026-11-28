@@ -216,6 +216,54 @@ def _experiment_params(exp: Any) -> dict:
     return params if isinstance(params, dict) else {}
 
 
+def _maybe_align_store_4cam(exp: Any, setup: Any) -> None:
+    """Align partial-camera (3-cam) points onto the 4-camera gauge before the tracker runs (opt-in:
+    ``track.align_4cam``). The aligned positions are stored beside the measured ones, which stay as they were;
+    with the option off, aligned positions left by an earlier run are removed so the run uses the measured ones."""
+    store = getattr(exp, "_store", None)
+    if store is None:
+        zarr_path = Path("res") / "run.zarr"
+        if not zarr_path.exists():
+            return
+        try:
+            from openptv2.storage import RunStore
+
+            store = RunStore(zarr_path, mode="a")
+        except Exception as exc:
+            _log.warning("align_4cam: cannot open %s: %s", zarr_path, exc)
+            return
+    if not hasattr(store, "clear_aligned_positions"):
+        return
+    if not getattr(setup, "align_4cam", False):
+        if store.has_aligned_positions():
+            store.clear_aligned_positions()
+            _log.info("align_4cam is off: removed the aligned positions of an earlier run")
+        return
+    cals = getattr(exp, "cals", None)
+    cpar = getattr(exp, "cpar", None)
+    vpar = getattr(exp, "vpar", None)
+    if cals is None or cpar is None or vpar is None or len(cals) < 4:
+        _log.info("align_4cam: needs 4 or more cameras, skipped")
+        return
+    spar = getattr(exp, "spar", None)
+    if spar is not None and hasattr(spar, "get_first") and hasattr(spar, "get_last"):
+        frames = list(range(int(spar.get_first()), int(spar.get_last()) + 1))
+    elif hasattr(store, "frames"):
+        frames = list(store.frames())
+    else:
+        return
+    if not frames:
+        return
+    try:
+        from openptv2.merge_refine import align_store_correspondences_4cam
+
+        n_aligned = align_store_correspondences_4cam(store, frames, list(cals), cpar, vpar, overlay=True)
+        _log.info("align_4cam: aligned %d partial-camera points onto the 4-camera gauge", n_aligned)
+    except Exception as exc:
+        store.clear_aligned_positions()
+        _log.warning("align_4cam failed, the run uses the measured positions: %s", exc)
+
+
 def run_tracking_plugin(name: str, exp: Any, plugins_dir: Path | None = None) -> None:
     """Run the tracker for this experiment.
 
@@ -243,6 +291,8 @@ def run_tracking_plugin(name: str, exp: Any, plugins_dir: Path | None = None) ->
         module = resolve_plugin_module(name, BUILTIN_TRACKING_PLUGINS, plugins_dir)
     if not hasattr(module, "Tracking"):
         raise PluginError(f"Tracking plugin {name!r} has no Tracking class")
+
+    _maybe_align_store_4cam(exp, setup)
 
     from openptv2.gui import ptv as ptv_module
 

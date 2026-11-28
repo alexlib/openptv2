@@ -125,6 +125,7 @@ nav:
     - Ray Tracing vs Radial Shift: ray-tracing-vs-radial-shift.md
     - Holistic Tracking (merged blobs): holistic-tracking.md
     - Self-Calibration (API and scripts): self-calibration.md
+    - Camera-Subset Alignment (opt-in): camera-subset-alignment.md
   - Benchmarks:
     - Benchmarking & Tracker Selection: benchmarking_guide.md
     - Multi-Engine Benchmark Results: tracking-benchmark-results.md

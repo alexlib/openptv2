@@ -5,6 +5,8 @@
 
     **Basics:** [Course page 8](course/08-calibration.md). **Do it:** [Tracks break when the set of cameras changes](recipes/camera-set-changes.md).
 
+    **Lighter alternative:** if the only problem is the jump when a particle changes between 3 and 4 cameras, the opt-in [camera-subset alignment](camera-subset-alignment.md) fixes that without changing the camera files.
+
 
 `openptv2.selfcal.joint_self_calibrate` refines the camera parameters (exterior orientation, principal point, radial and
 decentering distortion) and the 3D positions of many tracer particles together, by bundle adjustment on their blob

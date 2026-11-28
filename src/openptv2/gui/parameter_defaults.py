@@ -46,6 +46,8 @@ DEFAULT_PTV_OPTIONAL = {
     "triangulation": "lsq",
     "splitter": False,
     "splitter_order": [0, 1, 3, 2],
+    "shared_pass": False,
+    "light_check": False,
     # Multimedia parameters
     "mmp_n1": 1.0,
     "mmp_n2": 1.33,
@@ -68,6 +70,7 @@ DEFAULT_TRACK = {
     # the tracker setup (docs/trackers.md): three trackers, two switches, one add-on
     "tracker": "two_phase",     # two_phase | trackcorr | fast_3d
     "direction": "both",        # forward | both
+    "align_4cam": False,         # align 3-cam subsets onto 4-cam gauge (all trackers)
     "holistic_rounds": 0,       # merged-blob loop (two_phase); 0 = off
     "shared_correction": False,  # re-estimate points in shared blobs (two_phase)
     "dvxmin": -20,

@@ -129,6 +129,8 @@ class PtvParams(SectionModel):
     # Mapping from image quadrant (TL, TR, BL, BR) to camera index when
     # splitter mode is on. The historical hardware default is [0, 1, 3, 2].
     splitter_order: list[int] = [0, 1, 3, 2]
+    shared_pass: bool | float = False
+    light_check: bool | float = False
 
 
 class SequenceParams(SectionModel):
@@ -165,6 +167,7 @@ class TrackParams(SectionModel):
     # the tracker setup (docs/trackers.md)
     tracker: str = "two_phase"      # two_phase | trackcorr | fast_3d
     direction: str = "both"         # forward | both
+    align_4cam: bool = False        # align 3-cam subsets onto 4-cam gauge (all trackers)
     holistic_rounds: int = 0        # merged-blob loop (two_phase); 0 = off
     shared_correction: bool = False  # re-estimate points in shared blobs (two_phase)
     angle: float = 120.0

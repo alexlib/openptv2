@@ -35,6 +35,7 @@ pyptv_batch --workdir=test_data/test_cavity --first=10000 --last=10001
 | Run without the GUI         | [Command-Line Batch Processing](tutorials/batch_processing.md) |
 | Calibrate my own cameras    | [Plate Calibration How-To](plate-calibration-howto.md)       |
 | Pick a tracker              | [Tracker Engines & Parameters](tracker-tutorials.md)         |
+| Remove the jump when a track changes camera set | [Camera-subset alignment](camera-subset-alignment.md) |
 | Store large runs efficiently| [Zarr & HDF5 Storage](zarr-hdf5-storage.md)                  |
 | Contribute code             | [Building from Source](developer_guide/building.md)          |
 

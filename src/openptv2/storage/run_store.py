@@ -413,6 +413,8 @@ class RunStore:
         digest = _digest(combined)
         if self._clean.get(key) == digest:
             return
+        if self._rewrites_aligned_view(frame, pos_3d, cam_target_ids):
+            return  # a tracker handing back the rows it read (the aligned view): keep the measured ones
         try:
             _put_array(self.root["correspondences"], _frame_key(frame), combined)
             self._clean[key] = digest
@@ -420,9 +422,81 @@ class RunStore:
             raise RunStoreError(
                 f"Failed to write correspondences for frame {frame}: {exc}"
             ) from exc
+        self._drop_aligned_frame(frame)  # an aligned copy of the old rows no longer matches
         self._mark_unsealed()
 
-    def read_correspondences(self, frame: int) -> tuple[np.ndarray, np.ndarray]:
+    # -- aligned positions (an overlay: the measured positions are never overwritten) --
+
+    _ALIGNED = "correspondences_aligned"
+
+    def write_aligned_positions(self, frame: int, pos_3d: np.ndarray) -> None:
+        """Store aligned positions (N,3) mm for ``frame``. ``read_correspondences`` then returns them in place
+        of the measured ones (``raw=True`` returns the measured ones); the cam ids are unchanged."""
+        pos_3d = np.asarray(pos_3d, dtype=np.float64)
+        n = self._raw_rows(frame)
+        if pos_3d.shape != (n, 3):
+            raise RunStoreError(
+                f"aligned positions for frame {frame} must be ({n}, 3), got {pos_3d.shape}"
+            )
+        _put_array(self.root.require_group(self._ALIGNED), _frame_key(frame), pos_3d)
+        self._mark_unsealed()
+
+    def _rewrites_aligned_view(self, frame: int, pos_3d: np.ndarray, cam_ids: np.ndarray) -> bool:
+        """True if ``pos_3d``/``cam_ids`` are exactly what ``read_correspondences`` returns for ``frame`` while an
+        aligned copy exists: writing them would only copy the aligned positions over the measured ones."""
+        if self._ALIGNED not in self.root:
+            return False
+        try:
+            al = np.asarray(self.root[f"{self._ALIGNED}/{_frame_key(frame)}"])
+            raw = np.asarray(self.root[f"correspondences/{_frame_key(frame)}"])
+        except KeyError:
+            return False
+        return (
+            al.shape == pos_3d.shape
+            and raw.shape[0] == cam_ids.shape[0]
+            and np.array_equal(al, pos_3d)
+            and np.array_equal(raw[:, 3:].astype(np.int32), cam_ids)
+        )
+
+    def has_aligned_positions(self) -> bool:
+        return self._ALIGNED in self.root and len(list(self.root[self._ALIGNED].keys())) > 0
+
+    def clear_aligned_positions(self) -> None:
+        """Remove every aligned position: ``read_correspondences`` returns the measured positions again."""
+        if self._ALIGNED in self.root:
+            del self.root[self._ALIGNED]
+            self._mark_unsealed()
+
+    def _raw_rows(self, frame: int) -> int:
+        try:
+            return int(self.root[f"correspondences/{_frame_key(frame)}"].shape[0])
+        except KeyError:
+            raise RunStoreError(f"No correspondences stored for frame {frame}") from None
+
+    def _drop_aligned_frame(self, frame: int) -> None:
+        if self._ALIGNED in self.root:
+            try:
+                del self.root[f"{self._ALIGNED}/{_frame_key(frame)}"]
+            except KeyError:
+                pass
+
+    def read_correspondences(
+        self, frame: int, raw: bool = False
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """``(pos (N,3) mm, cam_ids (N,C))``. Aligned positions, when stored for this frame (and they still fit
+        the rows), replace the measured ones unless ``raw=True``."""
+        pos, ids = self._read_correspondences_raw(frame)
+        if raw or self._ALIGNED not in self.root:
+            return pos, ids
+        try:
+            al = np.asarray(self.root[f"{self._ALIGNED}/{_frame_key(frame)}"])
+        except KeyError:
+            return pos, ids
+        if al.shape != pos.shape:
+            return pos, ids
+        return al, ids
+
+    def _read_correspondences_raw(self, frame: int) -> tuple[np.ndarray, np.ndarray]:
         key = f"correspondences/{_frame_key(frame)}"
         try:
             data = np.asarray(self.root[key])
